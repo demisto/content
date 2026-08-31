@@ -1093,7 +1093,7 @@ Retrieves files from selected endpoints. You can retrieve up to 20 files from no
 | linux_file_paths | A comma-separated list of file paths on the Linux platform. | Optional |
 | mac_file_paths | A comma-separated list of file paths on the Mac platform. | Optional |
 | generic_file_path | A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on. | Optional |
-| paths_separator | The delimiter used to separate multiple file paths. Set to a different character (for example, ";") when a file path itself contains a comma. Default is ,. | Optional |
+| paths_separator | The delimiter used to separate multiple file paths. Set to a different character (for example, ";") when a file path contains a comma. Default is ,. | Optional |
 | action_id | For polling use. | Optional |
 | interval_in_seconds | Interval in seconds between each poll. | Optional |
 | timeout_in_seconds | Polling timeout in seconds. | Optional |
@@ -3425,3 +3425,48 @@ Note: This action is only supported on XDR Agent version 8.9 and above.
 |---|---|---|
 | Success | AAA | 1.1.1.1 |
 | Failure: Endpoint Disconnected | AAA | 2.2.2.2 |
+
+<~PLATFORM>
+
+## License Requirements
+
+The following commands require one of these licenses: **Cortex XSIAM**, **EP / EDR - Endpoint Protection**, or **Cloud Runtime Security**:
+
+- `core-isolate-endpoint`
+- `core-isolate-endpoint-quick-action`
+- `core-unisolate-endpoint`
+- `core-get-endpoints`
+- `core-get-audit-agent-reports`
+- `core-blocklist-files`
+- `core-allowlist-files`
+- `core-quarantine-files`
+- `core-quarantine-files-quick-action`
+- `core-get-quarantine-status`
+- `core-restore-file`
+- `core-restore-file-quick-action`
+- `core-endpoint-scan`
+- `core-endpoint-scan-quick-action`
+- `core-endpoint-scan-abort`
+- `core-retrieve-files`
+- `core-retrieve-files-quick-action`
+- `core-retrieve-file-details`
+- `core-action-status-get`
+- `core-run-script`
+- `core-run-snippet-code-script`
+- `core-get-script-execution-status`
+- `core-get-script-execution-results`
+- `core-get-script-execution-result-files`
+- `core-run-script-execute-commands`
+- `core-run-script-delete-file`
+- `core-run-script-file-exists`
+- `core-run-script-kill-process`
+- `endpoint`
+- `core-remove-allowlist-files`
+- `core-remove-blocklist-files`
+- `core-script-run`
+- `core-script-run-quick-action`
+- `core-terminate-process`
+- `core-terminate-causality`
+- `core-terminate-causality-quick-action`
+
+</~PLATFORM>

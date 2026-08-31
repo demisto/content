@@ -2080,6 +2080,68 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
     assert zipfile.ZipFile(file_name).namelist() == ["your_file.txt"]
 
 
+def test_get_script_execution_files_command_rbac(mocker, request):
+    """
+    Given:
+        - An XSIAM tenant where FORWARD_USER_RUN_RBAC is True, so requests are forwarded
+          through demisto._apiCall and no requests.Response object is ever available.
+    When:
+        - Running the get-script-execution-result-files command.
+    Then:
+        - Verify the command does not fail and returns a valid ZIP file result.
+    """
+    import base64
+
+    from CoreIRApiModule import CoreClient, get_script_execution_result_files_command
+
+    mocker.patch.object(demisto, "uniqueFile", return_value="test_rbac_file_result")
+    mocker.patch.object(demisto, "investigation", return_value={"id": "1"})
+    file_name = "1_test_rbac_file_result"
+
+    def cleanup():
+        try:
+            os.remove(file_name)
+        except OSError:
+            pass
+
+    request.addfinalizer(cleanup)
+
+    zip_bytes = (
+        b"PK\x03\x04\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00"
+        b"\x00\x00\x00\x00\r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xb6\x81\x00\x00\x00\x00your_file"
+        b".txtPK\x01\x02\x14\x00\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00"
+        b"\x00\x00\x00\x00\r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xb6\x81\x00\x00\x00\x00your_file"
+        b".txtPK\x05\x06\x00\x00\x00\x00\x01\x00\x01\x00;\x00\x00\x00+\x00\x00\x00\x00\x00"
+    )
+
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch("CoreIRApiModule.ALLOW_RESPONSE_AS_BINARY", new=True)
+    mocker.patch.object(
+        demisto,
+        "_apiCall",
+        side_effect=[
+            {
+                "name": "/api/webapp/public_api/v1/scripts/get_script_execution_results_files",
+                "status": 200,
+                "data": json.dumps({"reply": {"DATA": "https://test.com/download/example-link.zip"}}),
+            },
+            {
+                "name": "/api/webapp/public_api/v1/download/example-link.zip",
+                "status": 200,
+                "data": base64.b64encode(zip_bytes),
+            },
+        ],
+    )
+
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+    args = {"action_id": "action_id", "endpoint_id": "endpoint_id"}
+
+    response = get_script_execution_result_files_command(client, args)
+
+    assert response["File"] == "action_id.zip"
+    assert zipfile.ZipFile(file_name).namelist() == ["your_file.txt"]
+
+
 @pytest.mark.parametrize("command_input, expected_command", POWERSHELL_COMMAND_CASES)
 def test_form_powershell_command(command_input: str, expected_command: str):
     """
