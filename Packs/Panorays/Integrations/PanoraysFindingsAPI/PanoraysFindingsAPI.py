@@ -96,7 +96,7 @@ def verify_module(client: Client) -> str:
         message = str(e)
         if "Unauthorized" in message or "Forbidden" in message:
             raise DemistoException("Authorization Error: check your API Key.") from e
-        if "Too Many Requests" in message or "429" in message:
+        if _is_rate_limited(e):
             raise DemistoException(
                 "Rate limit reached. The Panorays API blocks callers for one hour after 150 requests per minute; "
                 "wait for the block to expire and lower the 'Maximum API requests per minute' setting."
@@ -116,6 +116,16 @@ def _make_aware(dt):
 def _csv_arg(args: dict[str, Any], key: str) -> list[str] | None:
     value = args.get(key)
     return argToList(value) if value else None
+
+
+def _is_rate_limited(error: Exception) -> bool:
+    """Detect the Panorays rate-limit response.
+
+    Panorays blocks the caller for a full hour once the limit is tripped, so continuing to poll
+    while blocked achieves nothing and risks extending the block.
+    """
+    message = str(error)
+    return "429" in message or "Too Many Requests" in message
 
 
 def _severity_matches(finding_severity: Any, wanted: list[str] | None) -> bool:
@@ -372,6 +382,16 @@ def fetch_supplier_incidents_command(
                 date_range_from=date_from,
             )
         except Exception as e:
+            if _is_rate_limited(e):
+                # Abort the whole run rather than hammering the remaining suppliers while blocked.
+                # The cursor stays on this supplier, so the pass resumes here once the block lifts.
+                demisto.error(
+                    f"Panorays: rate limit reached at supplier {supplier_id}. Stopping this fetch; it will "
+                    f"resume from this supplier on the next run. Lower 'Maximum API requests per minute' "
+                    f"or increase the fetch interval if this recurs."
+                )
+                completed_pass = False
+                break
             # One bad supplier must not sink the whole fetch cycle.
             demisto.error(f"Panorays: failed fetching findings for supplier {supplier_id}: {e}")
             index += 1

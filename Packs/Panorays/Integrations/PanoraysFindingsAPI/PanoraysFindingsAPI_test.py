@@ -5,6 +5,7 @@ import PanoraysFindingsAPI
 from CommonServerPython import arg_to_datetime
 from PanoraysFindingsAPI import (
     Client,
+    _is_rate_limited,
     _severity_matches,
     fetch_incidents_command,
     fetch_supplier_incidents_command,
@@ -358,6 +359,62 @@ def test_fetch_supplier_incidents_survives_one_bad_supplier(mocker):
     )
     _, incidents = _fetch_suppliers(client, {})
     assert [i["CustomFields"]["panoraysfindingid"] for i in incidents] == ["f-9"]
+
+
+@pytest.mark.parametrize(
+    "message,expected",
+    [
+        ("Error in API call [429] - Too Many Requests", True),
+        ("Too Many Requests", True),
+        ("Error in API call [403] - Forbidden", False),
+        ("connection reset", False),
+    ],
+)
+def test_is_rate_limited(message, expected):
+    assert _is_rate_limited(Exception(message)) is expected
+
+
+def test_rate_limit_aborts_run_and_holds_cursor(mocker):
+    """A 429 must stop the run immediately.
+
+    Panorays blocks the caller for an hour once tripped, so walking the rest of the portfolio just
+    burns failing requests and can keep the block alive. The cursor must stay put so nothing is lost.
+    """
+    client = get_client()
+    mocker.patch.object(PanoraysFindingsAPI.demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(PanoraysFindingsAPI.demisto, "setIntegrationContext")
+    mocker.patch.object(client, "list_suppliers", return_value=load_test_data("suppliers.json")["data"])
+    findings = mocker.patch.object(
+        client,
+        "list_supplier_findings",
+        side_effect=Exception("Error in API call [429] - Too Many Requests"),
+    )
+
+    next_run, incidents = _fetch_suppliers(client, {"last_fetch": "2098-01-01T00:00:00Z"})
+
+    assert incidents == []
+    # Only the first supplier was attempted -- the run stopped instead of trying the second.
+    assert findings.call_count == 1
+    assert next_run["supplier_index"] == 0, "cursor must stay on the supplier that hit the limit"
+    assert next_run["last_fetch"] == "2098-01-01T00:00:00Z", "window must not advance"
+
+
+def test_non_rate_limit_error_still_skips_one_supplier(mocker):
+    """A normal error on one supplier must not abort the run -- that behavior is unchanged."""
+    client = get_client()
+    mocker.patch.object(PanoraysFindingsAPI.demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(PanoraysFindingsAPI.demisto, "setIntegrationContext")
+    mocker.patch.object(client, "list_suppliers", return_value=load_test_data("suppliers.json")["data"])
+    mocker.patch.object(
+        client,
+        "list_supplier_findings",
+        side_effect=[
+            Exception("Error in API call [500] - Internal Server Error"),
+            [{"id": "f-ok", "severity": "CRITICAL", "asset_name": "z", "insert_ts": "2099-01-01T00:00:00Z"}],
+        ],
+    )
+    _, incidents = _fetch_suppliers(client, {})
+    assert [i["CustomFields"]["panoraysfindingid"] for i in incidents] == ["f-ok"]
 
 
 def test_supplier_cache_is_reused(mocker):

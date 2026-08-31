@@ -45,6 +45,12 @@ and then requests findings per supplier — roughly one request per supplier, pe
 The integration protects against the block in three ways:
 
 * Requests are throttled to the **Maximum API requests per minute** setting (default 120).
+* If the limit is reached anyway, the fetch stops immediately rather than polling the remaining
+  suppliers while blocked, and resumes from the same supplier on a later run.
+
+If an instance does get blocked, disable **Fetches incidents** until the hour has elapsed. Leaving it
+enabled means every fetch fails against the block, and the instance may be re-blocked as soon as the
+first one expires.
 * The supplier list is cached and re-enumerated only once per **Supplier list cache TTL (hours)** (default 12).
 * If a fetch reaches **Maximum number of incidents to fetch per run** part-way through the portfolio, it
   records its position and resumes there on the next run. When the limit falls in the middle of a single
