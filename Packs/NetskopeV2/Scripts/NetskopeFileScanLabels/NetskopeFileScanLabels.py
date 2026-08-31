@@ -31,7 +31,7 @@ def main():
             "labels_json": json.dumps(labels),
             "summary": (
                 f'Recorded Netskope File Scan labels on the incident for job "{result.get("jobid", "")}" '
-                f'(verdict: {result.get("verdict", "n/a")}).'
+                f"(verdict: {result.get('verdict', 'n/a')})."
             ),
         }
 

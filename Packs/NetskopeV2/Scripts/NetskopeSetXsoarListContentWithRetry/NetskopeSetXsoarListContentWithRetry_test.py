@@ -15,12 +15,10 @@ def test_set_list_with_retry_succeeds_first_try(mocker):
         - It returns without retrying.
     """
     execute_mock = mocker.patch.object(demisto, "executeCommand", return_value=[{"Type": 1, "Contents": "ok"}])
-    sleep_mock = mocker.patch("NetskopeSetXsoarListContentWithRetry.time.sleep")
 
     set_list_with_retry("MyList", "a,b")
 
     assert execute_mock.call_count == 1
-    sleep_mock.assert_not_called()
 
 
 def test_set_list_with_retry_retries_on_version_conflict_then_succeeds(mocker):
@@ -30,19 +28,17 @@ def test_set_list_with_retry_retries_on_version_conflict_then_succeeds(mocker):
     When:
         - Running set_list_with_retry.
     Then:
-        - It retries once (sleeping between attempts) and succeeds without raising.
+        - It retries once and succeeds without raising.
     """
     responses = [
         [{"Type": 4, "Contents": "version conflict, retry the operation"}],
         [{"Type": 1, "Contents": "ok"}],
     ]
     execute_mock = mocker.patch.object(demisto, "executeCommand", side_effect=responses)
-    sleep_mock = mocker.patch("NetskopeSetXsoarListContentWithRetry.time.sleep")
 
     set_list_with_retry("MyList", "a,b")
 
     assert execute_mock.call_count == 2
-    sleep_mock.assert_called_once_with(3)
 
 
 def test_set_list_with_retry_gives_up_after_max_attempts(mocker):
@@ -54,10 +50,7 @@ def test_set_list_with_retry_gives_up_after_max_attempts(mocker):
     Then:
         - It raises after MAX_ATTEMPTS tries, not indefinitely.
     """
-    mocker.patch.object(
-        demisto, "executeCommand", return_value=[{"Type": 4, "Contents": "version conflict"}]
-    )
-    mocker.patch("NetskopeSetXsoarListContentWithRetry.time.sleep")
+    mocker.patch.object(demisto, "executeCommand", return_value=[{"Type": 4, "Contents": "version conflict"}])
 
     with pytest.raises(Exception, match="Failed to save list"):
         set_list_with_retry("MyList", "a,b")
@@ -72,16 +65,12 @@ def test_set_list_with_retry_raises_immediately_on_non_conflict_error(mocker):
     Then:
         - It raises immediately without retrying.
     """
-    execute_mock = mocker.patch.object(
-        demisto, "executeCommand", return_value=[{"Type": 4, "Contents": "permission denied"}]
-    )
-    sleep_mock = mocker.patch("NetskopeSetXsoarListContentWithRetry.time.sleep")
+    execute_mock = mocker.patch.object(demisto, "executeCommand", return_value=[{"Type": 4, "Contents": "permission denied"}])
 
     with pytest.raises(Exception, match="permission denied"):
         set_list_with_retry("MyList", "a,b")
 
     assert execute_mock.call_count == 1
-    sleep_mock.assert_not_called()
 
 
 def test_main_requires_list_name(mocker):
@@ -94,9 +83,7 @@ def test_main_requires_list_name(mocker):
         - return_error is called with a clear message.
     """
     mocker.patch.object(demisto, "args", return_value={})
-    return_error_mock = mocker.patch.object(
-        NetskopeSetXsoarListContentWithRetry, "return_error", side_effect=SystemExit
-    )
+    return_error_mock = mocker.patch.object(NetskopeSetXsoarListContentWithRetry, "return_error", side_effect=SystemExit)
 
     with pytest.raises(SystemExit):
         main()

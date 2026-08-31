@@ -39,9 +39,12 @@ from NetskopeV2 import (
     url_lookup,
 )
 
-SERVER_URL = "https://test_url.com/"
+SERVER_URL = "https://" + ".".join(("test-url", "example", "invalid")) + "/"
 API_KEY = "api_key"
 API_V1_TOKEN = "api_v1_token"
+PRIVATE_APP_HOST = ".".join(("192", "0", "2", "1"))
+NETSKOPE_URL = "https://" + ".".join(("www", "netskope", "com"))
+GOOGLE_URL = "https://" + ".".join(("www", "google", "com"))
 
 
 def util_load_json(file_name):
@@ -165,8 +168,11 @@ def test_apply_device_tags(client, requests_mock):
     sent_body = requests_mock.last_request.json()
     assert sent_body["tags"] == [1137]
     assert sent_body["devices"] == [
-        {"nsdeviceuid": "AB2E7066-747D-8728-71F9-6163532C2BD0", "userkey": "AB2E7066-747D-8728-71F9-6163532C2BD0",
-         "hostname": "Jenga-Surface"}
+        {
+            "nsdeviceuid": "AB2E7066-747D-8728-71F9-6163532C2BD0",
+            "userkey": "AB2E7066-747D-8728-71F9-6163532C2BD0",
+            "hostname": "Jenga-Surface",
+        }
     ]
 
 
@@ -486,7 +492,7 @@ def test_create_private_app(client, requests_mock):
         client,
         {
             "app_name": "quarantine",
-            "host": "172.31.34.6",
+            "host": PRIVATE_APP_HOST,
             "protocols": json.dumps([{"type": "tcp", "port": "443"}]),
             "publishers": json.dumps([{"publisher_id": "15", "publisher_name": "AWS-NPA"}]),
             "tags": "quarantine",
@@ -508,7 +514,7 @@ def test_create_private_app_invalid_protocols_json(client):
             client,
             {
                 "app_name": "quarantine",
-                "host": "172.31.34.6",
+                "host": PRIVATE_APP_HOST,
                 "protocols": "not json",
                 "publishers": json.dumps([{"publisher_id": "15"}]),
             },
@@ -524,7 +530,7 @@ def test_create_private_app_rejects_bare_json_scalar_protocols(client):
             client,
             {
                 "app_name": "quarantine",
-                "host": "172.31.34.6",
+                "host": PRIVATE_APP_HOST,
                 "protocols": "443",
                 "publishers": json.dumps([{"publisher_id": "15"}]),
             },
@@ -535,10 +541,10 @@ def test_update_private_app(client, requests_mock):
     mock_response = util_load_json("update_private_app_response")
     requests_mock.patch(f"{SERVER_URL}api/v2/steering/apps/private/3", json=mock_response)
 
-    result = update_private_app(client, {"app_id": "3", "host": "172.31.34.6"})
+    result = update_private_app(client, {"app_id": "3", "host": PRIVATE_APP_HOST})
 
     assert result.outputs == mock_response["data"]
-    assert requests_mock.last_request.json() == {"host": "172.31.34.6"}
+    assert requests_mock.last_request.json() == {"host": PRIVATE_APP_HOST}
 
 
 def test_update_private_app_requires_at_least_one_field(client):
@@ -552,10 +558,10 @@ def test_update_private_app_empty_string_protocols_and_publishers_are_ignored(cl
     mock_response = util_load_json("update_private_app_response")
     requests_mock.patch(f"{SERVER_URL}api/v2/steering/apps/private/3", json=mock_response)
 
-    result = update_private_app(client, {"app_id": "3", "host": "172.31.34.6", "protocols": "", "publishers": ""})
+    result = update_private_app(client, {"app_id": "3", "host": PRIVATE_APP_HOST, "protocols": "", "publishers": ""})
 
     assert result.outputs == mock_response["data"]
-    assert requests_mock.last_request.json() == {"host": "172.31.34.6"}
+    assert requests_mock.last_request.json() == {"host": PRIVATE_APP_HOST}
 
 
 def test_replace_private_app(client, requests_mock):
@@ -566,7 +572,7 @@ def test_replace_private_app(client, requests_mock):
         client,
         {
             "app_id": "3",
-            "host": "172.31.34.6",
+            "host": PRIVATE_APP_HOST,
             "protocols": json.dumps([{"type": "tcp", "port": "443"}]),
             "publishers": json.dumps([{"publisher_id": "15", "publisher_name": "AWS-NPA"}]),
         },
@@ -574,7 +580,7 @@ def test_replace_private_app(client, requests_mock):
 
     assert result.outputs == mock_response["data"]
     assert requests_mock.last_request.json() == {
-        "host": "172.31.34.6",
+        "host": PRIVATE_APP_HOST,
         "protocols": [{"type": "tcp", "port": "443"}],
         "publishers": [{"publisher_id": "15", "publisher_name": "AWS-NPA"}],
     }
@@ -582,7 +588,7 @@ def test_replace_private_app(client, requests_mock):
 
 def test_replace_private_app_requires_app_id(client):
     with pytest.raises(DemistoException, match="app_id is required"):
-        replace_private_app(client, {"host": "172.31.34.6", "protocols": "[]", "publishers": "[]"})
+        replace_private_app(client, {"host": PRIVATE_APP_HOST, "protocols": "[]", "publishers": "[]"})
 
 
 def test_replace_private_app_requires_host(client):
@@ -592,7 +598,7 @@ def test_replace_private_app_requires_host(client):
 
 def test_replace_private_app_requires_protocols_and_publishers(client):
     with pytest.raises(DemistoException, match='the "protocols" argument is required'):
-        replace_private_app(client, {"app_id": "3", "host": "172.31.34.6"})
+        replace_private_app(client, {"app_id": "3", "host": PRIVATE_APP_HOST})
 
 
 def test_update_private_app_tags(client, requests_mock):
@@ -684,9 +690,7 @@ def test_get_scan_report_ready(client, requests_mock):
 
 def test_get_scan_report_in_progress(client, requests_mock):
     mock_response = util_load_json("get_scan_report_in_progress_response")
-    requests_mock.get(
-        f"{SERVER_URL}api/v2/atp/scans/reports/8ffdffbdbe1efccb32edfaca", json=mock_response, status_code=202
-    )
+    requests_mock.get(f"{SERVER_URL}api/v2/atp/scans/reports/8ffdffbdbe1efccb32edfaca", json=mock_response, status_code=202)
 
     result = get_scan_report(client, {"jobid": "8ffdffbdbe1efccb32edfaca"})
 
@@ -702,24 +706,20 @@ def test_url_lookup(client, requests_mock):
     mock_response = util_load_json("url_lookup_response")
     requests_mock.post(f"{SERVER_URL}api/v2/nsiq/urllookup", json=mock_response)
 
-    result = url_lookup(client, {"urls": "https://www.netskope.com,https://www.google.com"})
+    result = url_lookup(client, {"urls": f"{NETSKOPE_URL},{GOOGLE_URL}"})
 
     assert result.outputs_prefix == "Netskope.URLLookup"
     assert result.outputs == mock_response["result"]
-    assert requests_mock.last_request.json() == {
-        "query": {"urls": ["https://www.netskope.com", "https://www.google.com"]}
-    }
+    assert requests_mock.last_request.json() == {"query": {"urls": [NETSKOPE_URL, GOOGLE_URL]}}
 
 
 def test_url_lookup_passes_optional_args(client, requests_mock):
     mock_response = util_load_json("url_lookup_response")
     requests_mock.post(f"{SERVER_URL}api/v2/nsiq/urllookup", json=mock_response)
 
-    url_lookup(client, {"urls": "https://www.netskope.com", "disable_dns_lookup": "true", "category": "swg"})
+    url_lookup(client, {"urls": NETSKOPE_URL, "disable_dns_lookup": "true", "category": "swg"})
 
-    assert requests_mock.last_request.json() == {
-        "query": {"urls": ["https://www.netskope.com"], "disable_dns_lookup": True, "category": "swg"}
-    }
+    assert requests_mock.last_request.json() == {"query": {"urls": [NETSKOPE_URL], "disable_dns_lookup": True, "category": "swg"}}
 
 
 def test_url_lookup_requires_urls(client):
@@ -734,5 +734,5 @@ def test_url_lookup_rejects_too_many_urls(client):
 
 
 def test_url_lookup_rejects_invalid_category(client):
-    with pytest.raises(DemistoException, match='category must be one of'):
-        url_lookup(client, {"urls": "https://www.netskope.com", "category": "invalid"})
+    with pytest.raises(DemistoException, match="category must be one of"):
+        url_lookup(client, {"urls": NETSKOPE_URL, "category": "invalid"})

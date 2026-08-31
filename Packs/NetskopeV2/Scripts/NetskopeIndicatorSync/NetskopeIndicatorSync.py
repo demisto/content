@@ -15,15 +15,15 @@ def format_value(indicator_type: str, value: str) -> str:
 
 
 def chunk_list(items: list, size: int) -> list:
-    return [items[i: i + size] for i in range(0, len(items), size)]
+    return [items[i : i + size] for i in range(0, len(items), size)]
 
 
 def build_query(types: list, tags: list, skip_tags: list) -> str:
     query = f"type:({' '.join(types)})"
     if tags:
-        query += f' and tags:({" ".join(tags)})'
+        query += f" and tags:({' '.join(tags)})"
     if skip_tags:
-        query += f' and -tags:({" ".join(skip_tags)})'
+        query += f" and -tags:({' '.join(skip_tags)})"
     return query
 
 
@@ -61,11 +61,14 @@ def find_new_values(types: list, tags: list, skip_tags: list, existing: set, max
 
 
 def append_chunk(profile_id: str, chunk: list) -> None:
-    res = demisto.executeCommand("netskopev2-update-destination-profile-values", {
-        "id": profile_id,
-        "operation": "append",
-        "values": chunk,
-    })
+    res = demisto.executeCommand(
+        "netskopev2-update-destination-profile-values",
+        {
+            "id": profile_id,
+            "operation": "append",
+            "values": chunk,
+        },
+    )
     if is_error(res):
         raise DemistoException(f"Failed to append batch {chunk} to profile {profile_id}: {get_error(res)}")
 

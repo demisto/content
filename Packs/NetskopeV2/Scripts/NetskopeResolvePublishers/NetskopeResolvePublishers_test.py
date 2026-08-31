@@ -86,9 +86,7 @@ def test_get_all_publishers_reads_entry_context_not_contents(mocker):
     )
     publishers = get_all_publishers()
     assert publishers == [{"publisher_id": 10, "publisher_name": "AWS-NPA"}]
-    execute_mock.assert_called_once_with(
-        "netskopev2-list-publishers", {"fields": "publisher_id,publisher_name"}
-    )
+    execute_mock.assert_called_once_with("netskopev2-list-publishers", {"fields": "publisher_id,publisher_name"})
 
 
 def test_main_empty_publisher_names_does_not_call_executeCommand(mocker):

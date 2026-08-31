@@ -76,7 +76,7 @@ def test_main_handles_list_result_uses_first_entry(mocker):
     main()
 
     outputs = results_mock.call_args[0][0]["EntryContext"]["NetskopeURLLookupLabels"]
-    assert "evil.com" in outputs["summary"]
+    assert outputs["summary"] == 'Recorded Netskope URL Lookup labels on the incident for "evil.com".'
 
 
 def test_main_handles_empty_result(mocker):

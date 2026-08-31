@@ -85,9 +85,7 @@ def test_get_all_apps_reads_entry_context_not_contents(mocker):
                 "Type": 1,
                 "Contents": {"data": {"private_apps": [{"app_id": 1}]}},
                 "EntryContext": {
-                    "Netskope.PrivateApp(val.app_id && val.app_id == obj.app_id)": [
-                        {"app_id": 1, "app_name": "[a]"}
-                    ]
+                    "Netskope.PrivateApp(val.app_id && val.app_id == obj.app_id)": [{"app_id": 1, "app_name": "[a]"}]
                 },
             }
         ],

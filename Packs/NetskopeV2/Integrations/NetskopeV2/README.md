@@ -4,7 +4,6 @@ This integration uses both Netskope API v1 and API v2, depending on the command.
 
 ## Configure Netskope - Direct to Zero Trust in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | URL of Netskope Tenant (e.g. https://tenant.goskope.com) | True |

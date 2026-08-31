@@ -143,8 +143,12 @@ def test_main_passes_through_direct_values_when_nothing_to_add_or_remove(mocker)
     mocker.patch.object(
         demisto,
         "args",
-        return_value={"app_id": "4458", "host": "10.0.0.6",
-                      "protocols_json": '[{"type": "tcp", "port": "443"}]', "tags": "existing"},
+        return_value={
+            "app_id": "4458",
+            "host": "10.0.0.6",
+            "protocols_json": '[{"type": "tcp", "port": "443"}]',
+            "tags": "existing",
+        },
     )
     execute_mock = mocker.patch.object(demisto, "executeCommand")
     results_mock = mocker.patch.object(demisto, "results")

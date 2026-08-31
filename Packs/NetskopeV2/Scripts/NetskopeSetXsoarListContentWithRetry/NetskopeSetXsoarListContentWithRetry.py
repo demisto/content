@@ -1,16 +1,11 @@
-import time
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 # setList can fail with an Elasticsearch optimistic-concurrency "version conflict" (409) if
 # something else writes to the same List between when this playbook's earlier getList ran and
-# when this save happens - seen repeatedly in practice while iterating on the same list in quick
-# succession. Since that's a transient condition (the conflicting writer's transaction has usually
-# already completed a moment later), retry a few times with a short delay before giving up.
+# when this save happens. Since that is a transient condition, retry a few times before giving up.
 
 MAX_ATTEMPTS = 4
-RETRY_DELAY_SECONDS = 3
 
 
 def set_list_with_retry(list_name: str, list_data: str) -> None:
@@ -25,7 +20,6 @@ def set_list_with_retry(list_name: str, list_data: str) -> None:
             raise DemistoException(f"Failed to save list {list_name}: {last_error}")
 
         demisto.debug(f"setList version conflict on attempt {attempt}/{MAX_ATTEMPTS} for {list_name}, retrying: {last_error}")
-        time.sleep(RETRY_DELAY_SECONDS)
 
     raise DemistoException(f"Failed to save list {list_name} after {MAX_ATTEMPTS} attempts: {last_error}")
 

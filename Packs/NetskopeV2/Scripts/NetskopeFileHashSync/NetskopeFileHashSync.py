@@ -35,7 +35,7 @@ def build_query(tags: list) -> str:
     # filtering for which values are actually MD5/SHA256, regardless of which type matched.
     query = f"type:({FILE_INDICATOR_TYPES})"
     if tags:
-        query += f' and tags:({" ".join(tags)})'
+        query += f" and tags:({' '.join(tags)})"
     return query
 
 

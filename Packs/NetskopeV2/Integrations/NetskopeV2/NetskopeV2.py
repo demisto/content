@@ -350,7 +350,7 @@ def validate_description(description):
 
 
 def chunk_list(items, size):
-    return [items[i: i + size] for i in range(0, len(items), size)]
+    return [items[i : i + size] for i in range(0, len(items), size)]
 
 
 def bool_query_param(value):
@@ -619,7 +619,10 @@ def find_device(client: Client, args: dict[str, Any]) -> CommandResults:
     markdown = tableToMarkdown("Devices found", devices)
 
     return CommandResults(
-        readable_output=markdown, outputs_prefix="Netskope.Device", outputs_key_field="nsdeviceuid", outputs=devices,
+        readable_output=markdown,
+        outputs_prefix="Netskope.Device",
+        outputs_key_field="nsdeviceuid",
+        outputs=devices,
         raw_response=r,
     )
 
@@ -696,7 +699,10 @@ def _list_profiles(client: Client, profile_type: str, args: dict[str, Any]) -> C
     markdown = tableToMarkdown(f"{config.outputs_prefix.split('.')[-1]}s", elements)
 
     return CommandResults(
-        readable_output=markdown, outputs_prefix=config.outputs_prefix, outputs_key_field="id", outputs=elements,
+        readable_output=markdown,
+        outputs_prefix=config.outputs_prefix,
+        outputs_key_field="id",
+        outputs=elements,
         raw_response=r,
     )
 
@@ -1033,7 +1039,10 @@ def list_private_apps(client: Client, args: dict[str, Any]) -> CommandResults:
     markdown = tableToMarkdown("Private Apps", apps)
 
     return CommandResults(
-        readable_output=markdown, outputs_prefix="Netskope.PrivateApp", outputs_key_field="app_id", outputs=apps,
+        readable_output=markdown,
+        outputs_prefix="Netskope.PrivateApp",
+        outputs_key_field="app_id",
+        outputs=apps,
         raw_response=r,
     )
 
@@ -1046,8 +1055,11 @@ def list_publishers(client: Client, args: dict[str, Any]) -> CommandResults:
     markdown = tableToMarkdown("Publishers", publishers)
 
     return CommandResults(
-        readable_output=markdown, outputs_prefix="Netskope.Publisher", outputs_key_field="publisher_id",
-        outputs=publishers, raw_response=r,
+        readable_output=markdown,
+        outputs_prefix="Netskope.Publisher",
+        outputs_key_field="publisher_id",
+        outputs=publishers,
+        raw_response=r,
     )
 
 
@@ -1080,7 +1092,10 @@ def create_private_app(client: Client, args: dict[str, Any]) -> CommandResults:
     markdown = tableToMarkdown(f'Created private app "{app_name}"', data)
 
     return CommandResults(
-        readable_output=markdown, outputs_prefix="Netskope.PrivateApp", outputs_key_field="app_id", outputs=data,
+        readable_output=markdown,
+        outputs_prefix="Netskope.PrivateApp",
+        outputs_key_field="app_id",
+        outputs=data,
         raw_response=r,
     )
 
@@ -1115,7 +1130,10 @@ def update_private_app(client: Client, args: dict[str, Any]) -> CommandResults:
     markdown = tableToMarkdown(f'Updated private app "{app_id}"', data)
 
     return CommandResults(
-        readable_output=markdown, outputs_prefix="Netskope.PrivateApp", outputs_key_field="app_id", outputs=data,
+        readable_output=markdown,
+        outputs_prefix="Netskope.PrivateApp",
+        outputs_key_field="app_id",
+        outputs=data,
         raw_response=r,
     )
 
@@ -1152,7 +1170,10 @@ def replace_private_app(client: Client, args: dict[str, Any]) -> CommandResults:
     markdown = tableToMarkdown(f'Replaced private app "{app_id}"', data)
 
     return CommandResults(
-        readable_output=markdown, outputs_prefix="Netskope.PrivateApp", outputs_key_field="app_id", outputs=data,
+        readable_output=markdown,
+        outputs_prefix="Netskope.PrivateApp",
+        outputs_key_field="app_id",
+        outputs=data,
         raw_response=r,
     )
 
@@ -1177,7 +1198,10 @@ def update_private_app_tags(client: Client, args: dict[str, Any]) -> CommandResu
     markdown = tableToMarkdown("Updated private app tags", apps)
 
     return CommandResults(
-        readable_output=markdown, outputs_prefix="Netskope.PrivateApp", outputs_key_field="app_id", outputs=apps,
+        readable_output=markdown,
+        outputs_prefix="Netskope.PrivateApp",
+        outputs_key_field="app_id",
+        outputs=apps,
         raw_response=r,
     )
 
@@ -1191,7 +1215,10 @@ def delete_private_app(client: Client, args: dict[str, Any]) -> CommandResults:
     markdown = tableToMarkdown(f'Deleted private app "{app_id}"', data)
 
     return CommandResults(
-        readable_output=markdown, outputs_prefix="Netskope.PrivateApp", outputs_key_field="app_id", outputs=data,
+        readable_output=markdown,
+        outputs_prefix="Netskope.PrivateApp",
+        outputs_key_field="app_id",
+        outputs=data,
         raw_response=r,
     )
 
@@ -1223,7 +1250,10 @@ def submit_file_scan(client: Client, args: dict[str, Any]) -> CommandResults:
     markdown = tableToMarkdown(f'Submitted "{file_name}" for sandbox scan', outputs)
 
     return CommandResults(
-        readable_output=markdown, outputs_prefix="Netskope.FileScan", outputs_key_field="jobid", outputs=outputs,
+        readable_output=markdown,
+        outputs_prefix="Netskope.FileScan",
+        outputs_key_field="jobid",
+        outputs=outputs,
         raw_response=r,
     )
 
@@ -1239,7 +1269,10 @@ def get_scan_report(client: Client, args: dict[str, Any]) -> CommandResults:
     markdown = tableToMarkdown(f'Scan report for job "{jobid}" (status: {r.get("status")})', summary)
 
     return CommandResults(
-        readable_output=markdown, outputs_prefix="Netskope.FileScanReport", outputs_key_field="jobid", outputs=r,
+        readable_output=markdown,
+        outputs_prefix="Netskope.FileScanReport",
+        outputs_key_field="jobid",
+        outputs=r,
         raw_response=r,
     )
 
@@ -1267,7 +1300,10 @@ def url_lookup(client: Client, args: dict[str, Any]) -> CommandResults:
     markdown = tableToMarkdown("URL Lookup Results", results)
 
     return CommandResults(
-        readable_output=markdown, outputs_prefix="Netskope.URLLookup", outputs_key_field="url", outputs=results,
+        readable_output=markdown,
+        outputs_prefix="Netskope.URLLookup",
+        outputs_key_field="url",
+        outputs=results,
         raw_response=r,
     )
 
@@ -1285,9 +1321,7 @@ def main() -> None:
     api_key = demisto.params().get("api_key_credentials", {}).get("password") or demisto.params().get("api_key")
     if not api_key:
         return_error("Please provide a valid API Key")
-    api_v1_token = demisto.params().get("api_v1_token_credentials", {}).get("password") or demisto.params().get(
-        "api_v1_token"
-    )
+    api_v1_token = demisto.params().get("api_v1_token_credentials", {}).get("password") or demisto.params().get("api_v1_token")
     verify_certificate = not demisto.params().get("insecure", False)
     proxy = demisto.params().get("proxy", False)
 

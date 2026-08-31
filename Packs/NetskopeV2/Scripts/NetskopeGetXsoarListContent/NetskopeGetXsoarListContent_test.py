@@ -14,9 +14,7 @@ def test_get_or_create_list_content_returns_existing_content(mocker):
     Then:
         - The existing content is returned, and createList is never called.
     """
-    execute_mock = mocker.patch.object(
-        demisto, "executeCommand", return_value=[{"Type": 1, "Contents": "a,b,c"}]
-    )
+    execute_mock = mocker.patch.object(demisto, "executeCommand", return_value=[{"Type": 1, "Contents": "a,b,c"}])
     content = get_or_create_list_content("MyList")
     assert content == "a,b,c"
     execute_mock.assert_called_once_with("getList", {"listName": "MyList"})
@@ -31,6 +29,7 @@ def test_get_or_create_list_content_creates_missing_list(mocker):
     Then:
         - createList is called to create it empty, and an empty string is returned.
     """
+
     def fake_execute(command, args):
         if command == "getList":
             return [{"Type": 4, "Contents": "Item not found - MyList"}]

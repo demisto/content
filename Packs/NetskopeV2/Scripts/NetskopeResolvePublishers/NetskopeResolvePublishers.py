@@ -60,9 +60,7 @@ def main():
     names = [n.strip() for n in argToList(args.get("publisher_names")) if n.strip()]
     if not names:
         outputs = {"publishers_json": "", "error": "publisher_names must not be empty."}
-        return_results(
-            CommandResults(readable_output=outputs["error"], outputs_prefix="ResolvedPublishers", outputs=outputs)
-        )
+        return_results(CommandResults(readable_output=outputs["error"], outputs_prefix="ResolvedPublishers", outputs=outputs))
         return
 
     resolved, errors = resolve_publishers(names, get_all_publishers())

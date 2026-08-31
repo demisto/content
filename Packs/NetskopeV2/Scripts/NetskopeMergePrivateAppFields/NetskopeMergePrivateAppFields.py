@@ -112,9 +112,7 @@ def main():
     final_protocols_json = args.get("protocols_json") or ""
     final_tags = args.get("tags") or ""
 
-    needs_current = (
-        hosts_to_add or ports_to_add or hosts_to_remove or ports_to_remove or tags_to_add or tags_to_remove
-    )
+    needs_current = hosts_to_add or ports_to_add or hosts_to_remove or ports_to_remove or tags_to_add or tags_to_remove
     if needs_current:
         if not app_id:
             raise DemistoException("app_id is required to add/remove hosts, ports, or tags")
@@ -147,8 +145,7 @@ def main():
 
     outputs = {"host": final_host, "protocols_json": final_protocols_json, "tags": final_tags}
     readable_output = (
-        f"Merged fields for app_id {app_id!r}: host={final_host!r}, "
-        f"protocols_json={final_protocols_json!r}, tags={final_tags!r}"
+        f"Merged fields for app_id {app_id!r}: host={final_host!r}, protocols_json={final_protocols_json!r}, tags={final_tags!r}"
     )
 
     return_results(
