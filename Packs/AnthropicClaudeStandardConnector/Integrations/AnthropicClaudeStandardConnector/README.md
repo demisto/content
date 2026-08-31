@@ -34,9 +34,35 @@ Permanently delete a Claude file (a conversation file or a project binary file) 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AnthropicClaude.DeletedFile.id | String | The ID of the file that was deleted. | 
-| AnthropicClaude.DeletedFile.type | String | The deletion confirmation type \(claude_file_deleted\). | 
-| AnthropicClaude.DeletedFile.Deleted | Boolean | The deletion result for the file \(true when deleted\). | 
+| AnthropicClaude.DeletedFile.id | String | The ID of the file that was deleted. |
+| AnthropicClaude.DeletedFile.type | String | The deletion confirmation type \(claude_file_deleted\). |
+| AnthropicClaude.DeletedFile.Deleted | Boolean | The deletion result for the file \(true when deleted\). |
+
+#### Command example
+
+```!claude-chat-file-delete file_id=claude_file_011CbqYrHZoNLmjzW2AC53fK```
+
+#### Context Example
+
+```json
+{
+    "AnthropicClaude": {
+        "DeletedFile": {
+            "Deleted": true,
+            "id": "claude_file_011CbqYrHZoNLmjzW2AC53fK",
+            "type": "claude_file_deleted"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### File deleted
+>
+>|id|type|Deleted|
+>|---|---|---|
+>| claude_file_011CbqYrHZoNLmjzW2AC53fK | claude_file_deleted | true |
 
 ### claude-project-document-delete
 
@@ -57,6 +83,32 @@ Permanently delete a Claude project document (a plain-text project_doc) via the 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AnthropicClaude.DeletedProjectDocument.id | String | The ID of the project document that was deleted. | 
-| AnthropicClaude.DeletedProjectDocument.type | String | The deletion confirmation type \(claude_project_document_deleted\). | 
-| AnthropicClaude.DeletedProjectDocument.Deleted | Boolean | The deletion result for the project document \(true when deleted\). | 
+| AnthropicClaude.DeletedProjectDocument.id | String | The ID of the project document that was deleted. |
+| AnthropicClaude.DeletedProjectDocument.type | String | The deletion confirmation type \(claude_project_document_deleted\). |
+| AnthropicClaude.DeletedProjectDocument.Deleted | Boolean | The deletion result for the project document \(true when deleted\). |
+
+#### Command example
+
+```!claude-project-document-delete document_id=claude_proj_doc_011CbqYrHZoNLmjzW2AC53fK```
+
+#### Context Example
+
+```json
+{
+    "AnthropicClaude": {
+        "DeletedProjectDocument": {
+            "Deleted": true,
+            "id": "claude_proj_doc_011CbqYrHZoNLmjzW2AC53fK",
+            "type": "claude_project_document_deleted"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Project document deleted
+>
+>|id|type|Deleted|
+>|---|---|---|
+>| claude_proj_doc_011CbqYrHZoNLmjzW2AC53fK | claude_project_document_deleted | true |
