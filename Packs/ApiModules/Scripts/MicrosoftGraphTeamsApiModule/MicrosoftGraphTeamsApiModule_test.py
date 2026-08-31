@@ -6,6 +6,7 @@ code that was extracted verbatim inherits the community pack's `tests: - No test
 (auto formatted)` posture and is intentionally not re-tested here.
 """
 
+import demistomock as demisto
 import pytest
 
 from CommonServerPython import DemistoException
@@ -17,6 +18,7 @@ from MicrosoftGraphTeamsApiModule import (
     update_teams_message_policy_violation_command,
     validate_teams_message_target_args,
 )
+from MicrosoftGraphTeamsApiModule import test_function as run_test_function
 
 
 # ---------------------------------------------------------------------------
@@ -342,3 +344,86 @@ class TestDemistoArgsShape:
         body = dummy.calls[0]["json_data"]
         # dlp_action absent → empty string, still passes verbatim.
         assert body["policyViolation"]["dlpAction"] == ""
+
+
+# ---------------------------------------------------------------------------
+# test_function
+# ---------------------------------------------------------------------------
+
+
+class TestTestFunction:
+    """Regression coverage for the UCP application-only auth context bug.
+
+    The MicrosoftGraphTeamsStandardConnector always authenticates through UCP
+    using the client_credentials (application-only) grant. Microsoft Graph's
+    `GET /chats` endpoint only supports delegated (signed-in user) auth, so
+    calling it under UCP raises:
+        "Requested API is not supported in application-only context" (400).
+
+    test_function must not call an endpoint that requires delegated context
+    when running under UCP app-only auth.
+    """
+
+    def test_ucp_app_only_auth_does_not_call_delegated_only_chats_endpoint(self, mocker):
+        """Under UCP (should_use_ucp_auth() == True), test_function must not issue
+        a GET to the 'chats' endpoint, since that endpoint is delegated-only and
+        raises a 400 'application-only context' error for client_credentials auth.
+        """
+        mocker.patch("MicrosoftGraphTeamsApiModule.should_use_ucp_auth", return_value=True)
+        mocker.patch.object(demisto, "params", return_value={})
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch("MicrosoftGraphTeamsApiModule.return_results")
+
+        dummy = _DummyMsClient(response={})
+        client = _make_client_with_stubbed_ms_client(dummy)
+
+        run_test_function(client, None)
+
+        # No call may target the delegated-only "chats" collection endpoint.
+        assert not any(call.get("url_suffix") == "chats" for call in dummy.calls)
+
+    def test_ucp_app_only_auth_uses_metadata_endpoint_instead(self, mocker):
+        """Under UCP, test_function validates connectivity via `$metadata`, which only
+        requires a valid access token and works in application-only context.
+        """
+        mocker.patch("MicrosoftGraphTeamsApiModule.should_use_ucp_auth", return_value=True)
+        mocker.patch.object(demisto, "params", return_value={})
+        mocker.patch.object(demisto, "command", return_value="test-module")
+        mocker.patch("MicrosoftGraphTeamsApiModule.return_results")
+
+        dummy = _DummyMsClient(response={})
+        client = _make_client_with_stubbed_ms_client(dummy)
+
+        run_test_function(client, None)
+
+        assert any(call.get("url_suffix") == "$metadata" for call in dummy.calls)
+
+    def test_self_deployed_legacy_path_still_raises_on_test_module(self, mocker):
+        """Preserves existing behavior: legacy self-deployed community-pack config
+        still refuses the *Test* button and instructs use of !msgraph-teams-test.
+        """
+        mocker.patch("MicrosoftGraphTeamsApiModule.should_use_ucp_auth", return_value=False)
+        mocker.patch.object(demisto, "params", return_value={"self_deployed": True})
+        mocker.patch.object(demisto, "command", return_value="test-module")
+
+        dummy = _DummyMsClient(response={})
+        client = _make_client_with_stubbed_ms_client(dummy)
+
+        with pytest.raises(Exception, match="self-deployed configuration"):
+            run_test_function(client, None)
+
+    def test_non_ucp_non_self_deployed_still_calls_chats(self, mocker):
+        """Preserves existing behavior for the legacy oproxy/delegated community pack
+        path (not self-deployed, not UCP): still uses GET /chats to validate connectivity.
+        """
+        mocker.patch("MicrosoftGraphTeamsApiModule.should_use_ucp_auth", return_value=False)
+        mocker.patch.object(demisto, "params", return_value={"self_deployed": False})
+        mocker.patch.object(demisto, "command", return_value="msgraph-teams-test")
+        mocker.patch("MicrosoftGraphTeamsApiModule.return_results")
+
+        dummy = _DummyMsClient(response={})
+        client = _make_client_with_stubbed_ms_client(dummy)
+
+        run_test_function(client, None)
+
+        assert any(call.get("url_suffix") == "chats" for call in dummy.calls)
