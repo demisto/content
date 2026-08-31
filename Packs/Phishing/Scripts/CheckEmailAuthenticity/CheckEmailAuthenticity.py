@@ -1,5 +1,6 @@
 import re
 import traceback
+from email.parser import HeaderParser
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -7,6 +8,67 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 """HELPER FUNCTIONS"""
+
+
+def _headers_from_mapping(headers: dict) -> list[dict]:
+    """
+    Convert a HeadersMap object into a list of {name, value} entries.
+    A single key may hold several values (for example a Received header per hop),
+    in which case each value becomes its own entry.
+    """
+    normalized: list[dict] = []
+    for name, value in headers.items():
+        values = value if isinstance(value, list) else [value]
+        normalized.extend({"name": str(name), "value": item} for item in values)
+    return normalized
+
+
+def _headers_from_string(headers: str) -> list[dict]:
+    """
+    Parse a raw header block into a list of {name, value} entries.
+    An email parser is used so that folded (multi line) values are joined correctly
+    and values containing commas are kept intact.
+    """
+    parsed = HeaderParser().parsestr(headers)
+    return [{"name": name, "value": value} for name, value in parsed.items()]
+
+
+def normalize_headers(headers: Any) -> list[dict]:
+    """
+    Normalize the supported header containers into a single list of {name, value} entries.
+
+    'ParseEmailFilesV2' deprecated the 'Email.Headers' list in favor of the 'Email.HeadersMap'
+    object, so the headers may arrive as a list of {name, value} entries, as a HeadersMap
+    object, or as the raw header block. Normalizing them here keeps the rest of the script
+    working with a single structure, regardless of the integration that fetched the email.
+
+    Args:
+        headers: The headers argument given by the user, in any of the supported containers.
+
+    Returns:
+        A list of {name, value} entries. An empty list is returned when there are no headers.
+    """
+    if not headers:
+        return []
+
+    if isinstance(headers, dict):
+        return _headers_from_mapping(headers)
+
+    if isinstance(headers, str):
+        return _headers_from_string(headers)
+
+    if isinstance(headers, list):
+        normalized_list: list[dict] = []
+        for header in headers:
+            if isinstance(header, dict) and "name" in header:
+                normalized_list.append({"name": str(header.get("name")), "value": header.get("value")})
+            elif isinstance(header, dict):
+                normalized_list.extend(_headers_from_mapping(header))
+            elif isinstance(header, str):
+                normalized_list.extend(_headers_from_string(header))
+        return normalized_list
+
+    return []
 
 
 def get_spf(auth, spf):
@@ -135,7 +197,10 @@ def get_authentication_value(headers, original_authentication_header):
 def main():
     try:
         args = demisto.args()
-        headers = argToList(demisto.args().get("headers"))
+        raw_headers = args.get("headers")
+        headers = normalize_headers(raw_headers)
+        if raw_headers and not headers:
+            demisto.debug(f"CheckEmailAuthenticity: could not read any header from a {type(raw_headers).__name__} input.")
         original_authentication_header = args.get("original_authentication_header", "").lower()
         auth = get_authentication_value(headers, original_authentication_header)
         spf = None
@@ -191,6 +256,10 @@ def main():
         )
 
         if not auth and not spf:
+            demisto.debug(
+                f"CheckEmailAuthenticity: no Authentication-Results or Received-SPF header found "
+                f"in {len(headers)} header(s), the authenticity check is undetermined."
+            )
             context = {f"{email_key}.AuthenticityCheck": "undetermined"}
             return_outputs("No header information was found.", context)
             sys.exit(0)

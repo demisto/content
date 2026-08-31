@@ -27,7 +27,7 @@ This script is used in the following playbooks and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| headers | A list of dictionaries of headers in the form of "Header name":"Header value". |
+| headers | The email headers. Supported formats: a list of dictionaries in the form of "Header name":"Header value" \(Email.Headers\), a headers object in the form of "Header name": "Header value" \(Email.HeadersMap\), or the raw header block as a string. |
 | original_authentication_header | The header that holds the original Authentication-Results header value. This can be used when an intermediate server changes the original email and holds the original header value in a different header. Note - Use this only if you trust the server creating this header. |
 | SPF_override_none | Override value for SPF=None. |
 | SPF_override_neutral | Override value for SPF=neutral. |
