@@ -1825,7 +1825,7 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
     return _container_operation_result(response, "Google Cloud Container Cluster Security Update Operation Started Successfully")
 
 
-def container_cluster_legacy_abac_auth_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def gke_cluster_legacy_abac_auth_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Enables or disables legacy ABAC authorization for a GKE cluster.
 
@@ -1858,7 +1858,7 @@ def container_cluster_legacy_abac_auth_set(creds: Credentials, args: dict[str, A
     )
 
 
-def container_clusters_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def gke_clusters_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Lists all GKE clusters owned by a project in a specified location.
 
@@ -1901,7 +1901,7 @@ def container_clusters_list(creds: Credentials, args: dict[str, Any]) -> Command
     )
 
 
-def container_cluster_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def gke_cluster_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Gets the details of a specific GKE cluster.
 
@@ -1941,7 +1941,7 @@ def container_cluster_get(creds: Credentials, args: dict[str, Any]) -> CommandRe
     )
 
 
-def container_node_pools_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def gke_node_pools_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Lists the node pools for a GKE cluster.
 
@@ -1986,7 +1986,7 @@ def container_node_pools_list(creds: Credentials, args: dict[str, Any]) -> Comma
     )
 
 
-def container_node_pool_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def gke_node_pool_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Gets the details of a specific node pool in a GKE cluster.
 
@@ -2028,7 +2028,7 @@ def container_node_pool_get(creds: Credentials, args: dict[str, Any]) -> Command
     )
 
 
-def container_node_pool_management_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def gke_node_pool_management_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Enables or disables the auto-repair and/or auto-upgrade management features of a node pool.
 
@@ -2073,7 +2073,7 @@ def container_node_pool_management_set(creds: Credentials, args: dict[str, Any])
     )
 
 
-def container_operations_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def gke_operations_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Lists all GKE operations in a project for a specified location.
 
@@ -2116,7 +2116,7 @@ def container_operations_list(creds: Credentials, args: dict[str, Any]) -> Comma
     )
 
 
-def container_operation_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def gke_operation_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Gets the details of a specific GKE operation.
 
@@ -2156,7 +2156,7 @@ def container_operation_get(creds: Credentials, args: dict[str, Any]) -> Command
     )
 
 
-def container_operation_cancel(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def gke_operation_cancel(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Cancels a specific GKE operation.
 
@@ -3432,15 +3432,15 @@ def main():  # pragma: no cover
             "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
             # Container (GKE) commands
             "gcp-container-cluster-security-update": container_cluster_security_update,
-            "gcp-gke-cluster-legacy-abac-auth-set": container_cluster_legacy_abac_auth_set,
-            "gcp-gke-clusters-list": container_clusters_list,
-            "gcp-gke-cluster-get": container_cluster_get,
-            "gcp-gke-node-pools-list": container_node_pools_list,
-            "gcp-gke-node-pool-get": container_node_pool_get,
-            "gcp-gke-node-pool-management-set": container_node_pool_management_set,
-            "gcp-gke-operations-list": container_operations_list,
-            "gcp-gke-operation-get": container_operation_get,
-            "gcp-gke-operation-cancel": container_operation_cancel,
+            "gcp-gke-cluster-legacy-abac-auth-set": gke_cluster_legacy_abac_auth_set,
+            "gcp-gke-clusters-list": gke_clusters_list,
+            "gcp-gke-cluster-get": gke_cluster_get,
+            "gcp-gke-node-pools-list": gke_node_pools_list,
+            "gcp-gke-node-pool-get": gke_node_pool_get,
+            "gcp-gke-node-pool-management-set": gke_node_pool_management_set,
+            "gcp-gke-operations-list": gke_operations_list,
+            "gcp-gke-operation-get": gke_operation_get,
+            "gcp-gke-operation-cancel": gke_operation_cancel,
             # IAM commands
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
             # BigQuery commands
