@@ -1127,6 +1127,9 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
     else:
         start_time = last_run.get("last_successful_run", default_start)
 
+    # Preserve the timestamp of the run that initiated the current pending cycle.
+    cycle_start_time = last_run.get("cycle_start_time") or current_time.strftime(DATE_FORMAT)
+
     # Calculate total types (including threat objects if enabled)
     total_types = 0
     if THREAT_OBJECTS_TYPE in feed_types:
@@ -1195,13 +1198,15 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
         )
 
     if pending_units:
-        next_run = {"start_time": start_time, "pending_units": pending_units}
+        next_run = {"start_time": start_time, "pending_units": pending_units, "cycle_start_time": cycle_start_time}
         demisto.info(
             f"UNIT42FEED: Fetch limit reached with more data available. "
             f"Next run will resume {len(pending_units)} pending type(s) from start_time {start_time}."
         )
     else:
-        next_run = {"last_successful_run": current_time.strftime(DATE_FORMAT)}
+        # Store the cycle start time, when types finish at different times across resumed runs -
+        # this ensures the next full cycle starts from the original time so no indicators are missed.
+        next_run = {"last_successful_run": cycle_start_time}
 
     demisto.info(f"UNIT42FEED: Fetch complete. Total indicators: {total_fetched} (limit per type: {limit_per_type})")
 
