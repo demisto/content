@@ -6704,6 +6704,19 @@ class TestParseNamedPorts:
             {"name": "https", "port": 443},
         ]
 
+    def test_parse_named_ports_with_surrounding_whitespace(self):
+        """
+        Given: A named ports string with spaces around the semicolon separator.
+        When: parse_named_ports is called.
+        Then: Each entry is stripped before matching and parsed successfully.
+        """
+        from GCP import parse_named_ports
+
+        assert parse_named_ports(" name=http,port=80 ; name=https,port=443 ") == [
+            {"name": "http", "port": 80},
+            {"name": "https", "port": 443},
+        ]
+
     def test_parse_named_ports_invalid_format_raises(self):
         """
         Given: A named ports string that does not match the expected format.
@@ -6981,19 +6994,6 @@ class TestGCPComputeInstanceGroupInsert:
 
         assert mock_instance_groups.insert.call_args.kwargs["body"] == {"name": "group-a"}
 
-    def test_gcp_compute_instance_group_insert_missing_name_raises(self, mocker):
-        """
-        Given: A command call without the required name argument.
-        When: gcp_compute_instance_group_insert is called.
-        Then: A ValueError is raised before any API call is made.
-        """
-        from GCP import gcp_compute_instance_group_insert
-
-        mock_creds = mocker.Mock()
-
-        with pytest.raises(ValueError, match="The 'name' argument is required"):
-            gcp_compute_instance_group_insert(mock_creds, {"project_id": "test-project", "zone": "us-central1-a"})
-
 
 class TestGCPComputeInstanceGroupDelete:
     def test_gcp_compute_instance_group_delete_success(self, mocker):
@@ -7083,20 +7083,6 @@ class TestGCPComputeInstanceGroupInstancesAdd:
             },
         )
 
-    def test_gcp_compute_instance_group_instances_add_missing_instances_raises(self, mocker):
-        """
-        Given: A command call without the required instances argument.
-        When: gcp_compute_instance_group_instances_add is called.
-        Then: A ValueError is raised before any API call is made.
-        """
-        from GCP import gcp_compute_instance_group_instances_add
-
-        mock_creds = mocker.Mock()
-        args = {"project_id": "test-project", "zone": "us-central1-a", "instance_group": "group-a"}
-
-        with pytest.raises(ValueError, match="The 'instances' argument is required"):
-            gcp_compute_instance_group_instances_add(mock_creds, args)
-
     def test_gcp_compute_instance_group_instances_add_api_error(self, mocker):
         """
         Given: A mocked Compute API that fails when adding instances.
@@ -7146,20 +7132,6 @@ class TestGCPComputeInstanceGroupInstancesRemove:
             instanceGroup="group-a",
             body={"instances": [{"instance": "zones/us-central1-a/instances/vm-1"}]},
         )
-
-    def test_gcp_compute_instance_group_instances_remove_missing_instances_raises(self, mocker):
-        """
-        Given: A command call without the required instances argument.
-        When: gcp_compute_instance_group_instances_remove is called.
-        Then: A ValueError is raised before any API call is made.
-        """
-        from GCP import gcp_compute_instance_group_instances_remove
-
-        mock_creds = mocker.Mock()
-        args = {"project_id": "test-project", "zone": "us-central1-a", "instance_group": "group-a"}
-
-        with pytest.raises(ValueError, match="The 'instances' argument is required"):
-            gcp_compute_instance_group_instances_remove(mock_creds, args)
 
     def test_gcp_compute_instance_group_instances_remove_api_error(self, mocker):
         """
@@ -7234,17 +7206,3 @@ class TestGCPComputeInstanceGroupNamedPortsSet:
         gcp_compute_instance_group_named_ports_set(mock_creds, args)
 
         assert mock_instance_groups.setNamedPorts.call_args.kwargs["body"] == {"namedPorts": [{"name": "http", "port": 80}]}
-
-    def test_gcp_compute_instance_group_named_ports_set_missing_named_ports_raises(self, mocker):
-        """
-        Given: A command call without the required named_ports argument.
-        When: gcp_compute_instance_group_named_ports_set is called.
-        Then: A ValueError is raised before any API call is made.
-        """
-        from GCP import gcp_compute_instance_group_named_ports_set
-
-        mock_creds = mocker.Mock()
-        args = {"project_id": "test-project", "zone": "us-central1-a", "instance_group": "group-a"}
-
-        with pytest.raises(ValueError, match="The 'named_ports' argument is required"):
-            gcp_compute_instance_group_named_ports_set(mock_creds, args)

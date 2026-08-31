@@ -441,8 +441,8 @@ def parse_named_ports(named_ports_str: str) -> list[dict[str, Any]]:
         list[dict[str, Any]]: A list of dictionaries containing 'name' and 'port' pairs.
     """
     named_ports = []
-    for f in named_ports_str.strip().split(";"):
-        if f:
+    for f in named_ports_str.split(";"):
+        if f := f.strip():
             match = NAMED_PORT_REGEX.match(f)
             if match is None:
                 raise ValueError(
@@ -2804,7 +2804,7 @@ def gcp_compute_instance_groups_list(creds: Credentials, args: dict[str, Any]) -
         CommandResults: The instance groups located in the specified zone.
     """
     project_id = args.get("project_id")
-    zone = extract_zone_name(args.get("zone"))
+    zone = extract_zone_name(args["zone"])
     limit = (arg_to_number(args.get("limit")) or 50) if args.get("limit", "50") != "0" else 0
     filters = args.get("filters")
     order_by = args.get("order_by")
@@ -2932,8 +2932,8 @@ def gcp_compute_instance_group_instances_list(creds: Credentials, args: dict[str
         CommandResults: The instances that belong to the specified instance group.
     """
     project_id = args.get("project_id")
-    zone = extract_zone_name(args.get("zone"))
-    instance_group = args.get("instance_group")
+    zone = extract_zone_name(args["zone"])
+    instance_group = args["instance_group"]
     limit = (arg_to_number(args.get("limit")) or 50) if args.get("limit", "50") != "0" else 0
     filters = args.get("filters")
     order_by = args.get("order_by")
@@ -3006,11 +3006,8 @@ def gcp_compute_instance_group_insert(creds: Credentials, args: dict[str, Any]) 
         CommandResults: The operation started for creating the instance group.
     """
     project_id = args.get("project_id")
-    zone = extract_zone_name(args.get("zone"))
-    name = args.get("name")
-
-    if not name:
-        raise ValueError("The 'name' argument is required to create an instance group.")
+    zone = extract_zone_name(args["zone"])
+    name = args["name"]
 
     named_ports = args.get("named_ports")
     body = remove_empty_elements(
@@ -3058,8 +3055,9 @@ def gcp_compute_instance_group_delete(creds: Credentials, args: dict[str, Any]) 
         CommandResults: The operation started for deleting the instance group.
     """
     project_id = args.get("project_id")
-    zone = extract_zone_name(args.get("zone"))
-    instance_group = args.get("instance_group")
+    zone = extract_zone_name(args["zone"])
+    instance_group = args["instance_group"]
+    demisto.debug(f"Deleting instance group {instance_group} in project {project_id} and zone {zone}")
 
     compute = GCPServices.COMPUTE.build(creds)
     response = (
@@ -3097,14 +3095,12 @@ def gcp_compute_instance_group_instances_add(creds: Credentials, args: dict[str,
         CommandResults: The operation started for adding the instances to the instance group.
     """
     project_id = args.get("project_id")
-    zone = extract_zone_name(args.get("zone"))
-    instance_group = args.get("instance_group")
-    instances = argToList(args.get("instances"))
-
-    if not instances:
-        raise ValueError("The 'instances' argument is required to add instances to an instance group.")
+    zone = extract_zone_name(args["zone"])
+    instance_group = args["instance_group"]
+    instances = argToList(args["instances"])
 
     body = {"instances": [{"instance": instance} for instance in instances]}
+    demisto.debug(f"Instance group {instance_group} add instances body: {body}")
 
     compute = GCPServices.COMPUTE.build(creds)
     response = (
@@ -3141,14 +3137,12 @@ def gcp_compute_instance_group_instances_remove(creds: Credentials, args: dict[s
         CommandResults: The operation started for removing the instances from the instance group.
     """
     project_id = args.get("project_id")
-    zone = extract_zone_name(args.get("zone"))
-    instance_group = args.get("instance_group")
-    instances = argToList(args.get("instances"))
-
-    if not instances:
-        raise ValueError("The 'instances' argument is required to remove instances from an instance group.")
+    zone = extract_zone_name(args["zone"])
+    instance_group = args["instance_group"]
+    instances = argToList(args["instances"])
 
     body = {"instances": [{"instance": instance} for instance in instances]}
+    demisto.debug(f"Instance group {instance_group} remove instances body: {body}")
 
     compute = GCPServices.COMPUTE.build(creds)
     response = (
@@ -3185,12 +3179,9 @@ def gcp_compute_instance_group_named_ports_set(creds: Credentials, args: dict[st
         CommandResults: The operation started for setting the named ports on the instance group.
     """
     project_id = args.get("project_id")
-    zone = extract_zone_name(args.get("zone"))
-    instance_group = args.get("instance_group")
-    named_ports = args.get("named_ports")
-
-    if not named_ports:
-        raise ValueError("The 'named_ports' argument is required to set named ports on an instance group.")
+    zone = extract_zone_name(args["zone"])
+    instance_group = args["instance_group"]
+    named_ports = args["named_ports"]
 
     body = remove_empty_elements(
         {
