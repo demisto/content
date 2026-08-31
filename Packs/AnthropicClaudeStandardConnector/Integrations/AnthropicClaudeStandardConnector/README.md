@@ -2,7 +2,6 @@ This integration is configured automatically as part of the Anthropic Claude Sta
 
 ## Configure Anthropic Claude (Standard Connector) in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Compliance Access Key | The Anthropic Compliance Access Key \(sk-ant-api01-...\) used for the delete commands. Requires the delete:compliance_user_data scope. | False |
