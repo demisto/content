@@ -24,5 +24,9 @@
     "weeks": 0,
     "weeksR": 0,
     "fromVersion": "6.10.0",
-    "playbookId": "Doppel Screenshot Preview"
+    "playbookId": "Doppel Screenshot Preview",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

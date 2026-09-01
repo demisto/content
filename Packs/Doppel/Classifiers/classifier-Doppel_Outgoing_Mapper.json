@@ -129,5 +129,9 @@
 	"name": "Doppel Outgoing_Mapper",
 	"type": "mapping-outgoing",
 	"version": -1,
-	"fromVersion": "6.10.0"
+	"fromVersion": "6.10.0",
+	"supportedModules": [
+		"agentix",
+		"xsiam"
+	]
 }
