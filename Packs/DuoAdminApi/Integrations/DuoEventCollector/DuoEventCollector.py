@@ -246,7 +246,7 @@ class GetEvents:
     def make_sdk_call(self) -> tuple:
         events, metadata = self.client.call(self.request_order)
         demisto.debug(f"make_sdk_call {len(events)=}")
-        events = events[: int(self.client.params.limit)]
+        events = events[: self.client.params.limit]
         demisto.debug(f"make_sdk_call after update {len(events)=}")
         return events, metadata
 
@@ -265,7 +265,7 @@ class GetEvents:
         """
         # if 1
         if (
-            self.client.params.fetch_delay == "0"
+            self.client.params.fetch_delay == 0
             or datetime.fromtimestamp(events[-1]["timestamp"]) < self.client.params.end_window
         ):
             demisto.debug(
@@ -332,13 +332,13 @@ class GetEvents:
         for events in self._iter_events():
             demisto.debug(f"Got {len(events)}, events for {self.request_order[0]} logs")
             stored_events.extend(events)
-            if len(stored_events) >= int(self.client.params.limit) or not events:
+            if len(stored_events) >= self.client.params.limit or not events:
                 return stored_events
             demisto.debug(
                 f"updating the limit current value is {self.client.params.limit} the new value will be "
-                f"{int(self.client.params.limit) - len(stored_events)}"
+                f"{self.client.params.limit - len(stored_events)}"
             )
-            self.client.params.limit = str(int(self.client.params.limit) - len(stored_events))
+            self.client.params.limit = self.client.params.limit - len(stored_events)
         return stored_events
 
     def get_last_run(self):
