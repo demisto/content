@@ -1163,7 +1163,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
 
         demisto.debug(
             f"UNIT42FEED: Fetching {unit_type} "
-            f"(limit: {type_limit}{'[LAST TYPE - includes remaining quota]' if is_last_type else ''}, "
+            f"(limit: {type_limit}{' [LAST TYPE - includes remaining quota]' if is_last_type else ''}, "
             f"page_token={page_token})"
         )
 
