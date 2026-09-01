@@ -1,0 +1,26 @@
+{
+    "_meta": {
+        "supported_features": "union",
+        "trusted_platform_scripts": "global_only"
+    },
+    "global": {
+        "supported_features": [
+            "supported_feature_a",
+            "supported_feature_b"
+        ],
+        "trusted_platform_scripts": [
+            "excluded_item_a",
+            "excluded_item_b"
+        ]
+    },
+    "us": {
+        "supported_features": [
+            "supported_feature_d"
+        ]
+    },
+    "eu": {
+        "supported_features": [
+            "supported_feature_e"
+        ]
+    }
+}
