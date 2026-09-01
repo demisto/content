@@ -1778,3 +1778,52 @@ Retrieves the IAM policy for a specific object in a bucket. Required permission:
 | GCP.Storage.BucketObjectPolicies.bucketName | String | Name of the bucket containing the object. |
 | GCP.Storage.BucketObjectPolicies.objectName | String | Name of the object. |
 | GCP.Storage.BucketObjectPolicies.bindings | Unknown | List of role bindings for the object. |
+
+### gcp-gke-cluster-security-update
+
+***
+Configures security settings for GKE clusters, including access controls and visibility. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list.
+
+#### Base Command
+
+`gcp-gke-cluster-security-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | GCP region. | Required |
+| resource_name | Name of the GKE cluster. | Required |
+| enable_intra_node_visibility | Enable intra-node visibility. Possible values are: true, false. | Optional |
+| enable_master_authorized_networks | Enable Master Authorized Networks. Possible values are: true, false. | Optional |
+| cidrs | Comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.<br/>If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.<br/>. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.GKE.Operations.name | String | The name of the GKE cluster. |
+| GCP.GKE.Operations.zone | String | The zone of the GKE cluster. |
+| GCP.GKE.Operations.enableStackdriverLogging | Boolean | Whether Stackdriver Logging is enabled for the cluster. |
+| GCP.GKE.Operations.enableStackdriverMonitoring | Boolean | Whether Stackdriver Monitoring is enabled for the cluster. |
+| GCP.GKE.Operations.enablePrivateNodes | Boolean | Whether private nodes are enabled for the GKE cluster. |
+| GCP.GKE.Operations.enablePrivateEndpoint | Boolean | Whether private endpoint is enabled for the GKE cluster control plane. |
+| GCP.GKE.Operations.enableHttpsOnly | Boolean | Whether HTTPS-only traffic is enforced for the cluster. |
+| GCP.GKE.Operations.enableNetworkPolicy | Boolean | Whether network policies are enabled for the cluster. |
+| GCP.GKE.Operations.enableAutoscaling | Boolean | Whether autoscaling is enabled for the cluster nodes. |
+| GCP.GKE.Operations.enableIstio | Boolean | Whether Istio is enabled for the GKE cluster. |
+| GCP.GKE.Operations.enablePodSecurityPolicy | Boolean | Whether PodSecurityPolicy is enabled for the GKE cluster. |
+| GCP.GKE.Operations.enableBinaryAuthorization | Boolean | Whether Binary Authorization is enabled for the cluster. |
+| GCP.GKE.Operations.enableLegacyABAC | Boolean | Whether legacy ABAC is enabled for the cluster. |
+| GCP.GKE.Operations.clusterIpv4Cidr | String | The cluster’s IPv4 CIDR block. |
+| GCP.GKE.Operations.masterAuthorizedNetworksConfig.cidrBlocks | Unknown | List of authorized CIDR blocks that can access the GKE cluster master. |
+| GCP.GKE.Operations.masterAuthorizedNetworksConfig.enabled | Boolean | Whether master authorized networks are enabled for the cluster. |
+| GCP.GKE.Operations.network | String | The network to which the GKE cluster belongs. |
+| GCP.GKE.Operations.subnetwork | String | The subnetwork to which the GKE cluster belongs. |
+| GCP.GKE.Operations.loggingService | String | The logging service used for the cluster \(e.g., "logging.googleapis.com"\). |
+| GCP.GKE.Operations.monitoringService | String | The monitoring service used for the cluster \(e.g., "monitoring.googleapis.com"\). |
+| GCP.GKE.Operations.nodePools | Unknown | A list of node pools in the cluster, with their configuration and security settings. |
+| GCP.GKE.Operations.privateClusterConfig.enablePrivateNodes | Boolean | Whether private nodes are enabled in the cluster. |
+| GCP.GKE.Operations.privateClusterConfig.enablePrivateEndpoint | Boolean | Whether private endpoint is enabled for the cluster control plane. |
+| GCP.GKE.Operations.masterVersion | String | The current version of the Kubernetes master in the GKE cluster. |
