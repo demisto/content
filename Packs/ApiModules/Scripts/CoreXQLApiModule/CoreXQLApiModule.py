@@ -2,6 +2,7 @@ import copy
 import json
 import secrets
 import string
+import traceback
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -474,7 +475,29 @@ def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
         )
 
 
-def add_playbook_metadata(data: dict, command: str):
+def get_source_override(args: Optional[dict], key: str) -> str:
+    """Get a non-empty source override value from the command arguments.
+
+    Args:
+        args (Optional[dict]): The command arguments.
+        key (str): The argument name to read ('source_id' or 'source_name').
+
+    Returns:
+        str: The stripped argument value, or an empty string if it was not provided or is blank.
+    """
+    if not args:
+        return ""
+    return str(args.get(key) or "").strip()
+
+
+def add_playbook_metadata(data: dict, command: str, args: Optional[dict] = None) -> None:
+    """Add the playbook metadata to the request data.
+
+    Args:
+        data (dict): The request data to enrich.
+        command (str): The name of the command being executed.
+        args (Optional[dict]): The command arguments, used to read the source overrides.
+    """
     ctx_output: dict = demisto.callingContext or {}
 
     context = ctx_output.get("context") or {}
@@ -487,6 +510,10 @@ def add_playbook_metadata(data: dict, command: str):
     task_name = entry_task.get("taskName", "")
     task_id = entry_task.get("taskId", "")
     brand = ctx_output.get("context", {}).get("IntegrationBrand", "")
+
+    playbook_id = get_source_override(args, "source_id") or playbook_id
+    playbook_name = get_source_override(args, "source_name") or playbook_name
+
     playbook_metadata = {
         "playbook_name": playbook_name,
         "playbook_id": playbook_id,
@@ -525,9 +552,10 @@ def start_xql_query(client: CoreClient, args: Dict[str, Any]) -> str:
     }
 
     try:
-        add_playbook_metadata(data, "start_xql_query")
+        add_playbook_metadata(data, "start_xql_query", args)
     except Exception as e:
         demisto.error(f"Error adding playbook metadata: {str(e)}")
+        demisto.debug(traceback.format_exc())
 
     time_frame = args.get("time_frame")
     if time_frame:
