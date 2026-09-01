@@ -614,7 +614,7 @@ def main():
             return_results(test_module(client=client, auth_code=auth_code))
 
         # in the generate login url command we still don't't have the auth code do get the token
-        if command != "ms-management-activity-generate-login-url":
+        if command != "ms-management-activity-generate-login-url" or "ms-management-activity-auth-reset":
             access_token, token_data = client.get_access_token_data()
             client.access_token = access_token
             client.tenant_id = token_data["tid"]
