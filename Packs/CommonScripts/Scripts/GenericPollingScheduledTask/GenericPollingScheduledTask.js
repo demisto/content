@@ -133,6 +133,14 @@ function shouldRunWithGuid() {
     // If not, we are running on an older version of platform and we need to use the old polling mechanism.
     // The try/catch mechanism is to support development and to ignore parseInt errors.
     try {
+        // unified_platform (Cortex/XSIAM) always supports the GUID flow and does not expose a
+        // comparable build number in all versions, so the version/build gate only applies to xsoar.
+        // See XSUP-58905: on unified_platform the legacy flow could finish the blocking task prematurely.
+        if (platform === "unified_platform") {
+            logDebug('[GenericPollingScheduledTask] Using GUID flow (unified_platform). platform=' + platform +
+                ' version=' + version + ' buildNumber=' + buildNumber);
+            return true;
+        }
         var platformMatch = (platform === "xsoar");
         var versionMatch = (compareVersions(version, MINIMUM_XSOAR_VERSION) >= 0);
         var buildMatch = (parseInt(buildNumber) >= MINIMUM_BUILD_NUMBER_XSOAR);
@@ -195,9 +203,28 @@ function genericPollingScheduled(){
         logDebug('[GenericPollingScheduledTask] pendingPath=' + pendingPath +
             ' | pendings=' + JSON.stringify(pendings) + ' | ids=' + JSON.stringify(ids));
 
+        // A null/empty result from dq() is AMBIGUOUS: it can mean either (a) all ids finished, or
+        // (b) the polling data has not been written to the context yet (e.g. on the first iteration,
+        // before the polling command's results populate the sub-playbook context - XSUP-58905).
+        //
+        // XSUP-58905: On unified_platform running the OLD (legacy) flow, the very first scheduled poll
+        // fires ~10s after ScheduleGenericPolling, BEFORE the polling command has run even once, so
+        // dq() legitimately returns null (data-not-in-context-yet). Treating that null as "all done"
+        // finishes the blocking task prematurely (e.g. a firewall-upgrade job is never checked once).
+        // In BOTH flows we now keep polling on null instead of finishing:
+        //   - GUID flow is bounded by an absolute endTime (checked above).
+        //   - OLD  flow is bounded by the decrementing `timeout` (checked above; setNextRun subtracts
+        //     `interval` each iteration and the timeout<=0 guard finishes deterministically).
+        // Either way polling still stops deterministically; we just no longer exit on the first null.
         if (pendings === null) {
-            logDebug('[GenericPollingScheduledTask] No pending ids found in context, finishing (YES).');
-            return finish(args.playbookId, args.tag, undefined, args.scheduledEntryGuid);
+            if (shouldRunWithGuid) {
+                logDebug('[GenericPollingScheduledTask] GUID flow: dq() returned null - data not in context yet, ' +
+                    'continuing to poll all ids (bounded by endTime) to avoid a premature finish.');
+            } else {
+                logDebug('[GenericPollingScheduledTask] OLD flow: dq() returned null - data not in context yet, ' +
+                    'continuing to poll all ids (bounded by timeout) to avoid a premature finish (XSUP-58905).');
+            }
+            pendings = ids;
         }
 
         var idsStrArr = listOfStrings(ids);
