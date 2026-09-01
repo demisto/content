@@ -21,8 +21,8 @@ class OktaASAClient(BaseClient):
 
     def __init__(
         self,
-        key_id: str,
-        key_secret: str,
+        key_id: str | None,
+        key_secret: str | None,
         base_url: str,
         verify=True,
         proxy=False,
