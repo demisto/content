@@ -28,6 +28,7 @@ Every method needs different parameters as show in the following:
     - **Username** (the service-user login, used as the Client ID)
     - **Password** (the service-user password, used as the Client Secret)
     - **Set name** (comma separated value)
+    - **EPM API Version** (optional, advanced): the version segment in `/EPM/API/<Version>/Sets`. Defaults to `26.7.0`.
 
 #### Vendor-side setup for the Idira OAuth (CyberArk Identity / ISPSS) method
 
@@ -53,7 +54,7 @@ Every method needs different parameters as show in the following:
 
 ### Fetch Information
 
-- There are three event types that are fetched for the Event Collector: 
+- There are three event types that are fetched for the Event Collector:
     * Policy audits.
     * Admin audits.
     * Events.
