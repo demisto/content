@@ -2954,8 +2954,8 @@ script:
       description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, to exclude the machine type named example-machine-type, specify name != example-machine-type.
     - name: order_by
       description: The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
-    - name: page_token
-      description: The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+    - name: next_token
+      description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results.
     outputs:
     - contextPath: GCP.Compute.MachineTypes.id
       description: The unique identifier for the resource. This identifier is defined by the server.
@@ -3021,8 +3021,8 @@ script:
       description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, to exclude the machine type named example-machine-type, specify name != example-machine-type.
     - name: order_by
       description: The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
-    - name: page_token
-      description: The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+    - name: next_token
+      description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results.
     outputs:
     - contextPath: GCP.Compute.MachineTypes.id
       description: The unique identifier for the resource. This identifier is defined by the server.

@@ -5368,7 +5368,7 @@ def test_gcp_compute_machine_types_list_default_limit(mocker):
 def test_gcp_compute_machine_types_list_with_all_parameters(mocker):
     """
     Given: A mocked compute client returning a machine type and a next page token.
-    When: gcp_compute_machine_types_list is called with limit, filters, order_by and page_token.
+    When: gcp_compute_machine_types_list is called with limit, filters, order_by and next_token.
     Then: The API is called with all the given parameters and the next page token is returned in the outputs.
     """
     from GCP import GCPServices, gcp_compute_machine_types_list
@@ -5394,7 +5394,7 @@ def test_gcp_compute_machine_types_list_with_all_parameters(mocker):
         "limit": "25",
         "filters": "name=n2*",
         "order_by": "name",
-        "page_token": "prev-token",
+        "next_token": "prev-token",
     }
     result = gcp_compute_machine_types_list(mock_creds, args)
 
@@ -5402,7 +5402,6 @@ def test_gcp_compute_machine_types_list_with_all_parameters(mocker):
         project="test-project", zone="us-central1-a", filter="name=n2*", maxResults=25, orderBy="name", pageToken="prev-token"
     )
     assert result.outputs["GCP.Compute(true)"]["MachineTypesNextPageToken"] == "next-token-123"
-    assert "next-token-123" in result.readable_output
 
 
 def test_gcp_compute_machine_types_list_empty_response(mocker):

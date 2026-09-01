@@ -2989,7 +2989,7 @@ def gcp_compute_machine_types_list(creds: Credentials, args: dict[str, Any]) -> 
     Retrieves a list of machine types available in the specified zone.
     Args:
         creds (Credentials): GCP credentials.
-        args (dict[str, Any]): Must include 'zone'. May include 'limit', 'filters', 'order_by' and 'page_token'.
+        args (dict[str, Any]): Must include 'zone'. May include 'limit', 'filters', 'order_by' and 'next_token'.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -2999,14 +2999,14 @@ def gcp_compute_machine_types_list(creds: Credentials, args: dict[str, Any]) -> 
     limit = arg_to_number(args.get("limit")) if args.get("limit") else 50
     filters = args.get("filters")
     order_by = args.get("order_by")
-    page_token = args.get("page_token")
+    next_token = args.get("next_token")
 
     validate_limit(limit)
 
     compute = GCPServices.COMPUTE.build(creds)
     response = (
         compute.machineTypes()  # pylint: disable=E1101
-        .list(project=project_id, zone=zone, filter=filters, maxResults=limit, orderBy=order_by, pageToken=page_token)
+        .list(project=project_id, zone=zone, filter=filters, maxResults=limit, orderBy=order_by, pageToken=next_token)
         .execute()
     )
     machine_types = response.get("items", [])
@@ -3016,19 +3016,11 @@ def gcp_compute_machine_types_list(creds: Credentials, args: dict[str, Any]) -> 
         f"{len(machine_types)} machine types returned, {next_page_token=}"
     )
 
-    metadata = (
-        "Run the following command to retrieve the next batch of machine types:\n"
-        f"!gcp-compute-machine-types-list project_id={project_id} zone={zone} page_token={next_page_token}"
-        if next_page_token
-        else None
-    )
-
     readable_output = tableToMarkdown(
         "GCP Compute Machine Types",
         machine_types,
         headers=["id", "name", "memoryMb", "guestCpus"],
         removeNull=True,
-        metadata=metadata,
         headerTransform=pascalToSpace,
     )
 
@@ -3048,7 +3040,7 @@ def gcp_compute_machine_types_aggregated_list(creds: Credentials, args: dict[str
     Retrieves an aggregated list of machine types across all zones of the specified project.
     Args:
         creds (Credentials): GCP credentials.
-        args (dict[str, Any]): May include 'limit', 'filters', 'order_by' and 'page_token'.
+        args (dict[str, Any]): May include 'limit', 'filters', 'order_by' and 'next_token'.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -3057,14 +3049,14 @@ def gcp_compute_machine_types_aggregated_list(creds: Credentials, args: dict[str
     limit = arg_to_number(args.get("limit")) if args.get("limit") else 50
     filters = args.get("filters")
     order_by = args.get("order_by")
-    page_token = args.get("page_token")
+    next_token = args.get("next_token")
 
     validate_limit(limit)
 
     compute = GCPServices.COMPUTE.build(creds)
     response = (
         compute.machineTypes()  # pylint: disable=E1101
-        .aggregatedList(project=project_id, filter=filters, maxResults=limit, orderBy=order_by, pageToken=page_token)
+        .aggregatedList(project=project_id, filter=filters, maxResults=limit, orderBy=order_by, pageToken=next_token)
         .execute()
     )
     machine_types: list[dict[str, Any]] = []
@@ -3078,19 +3070,11 @@ def gcp_compute_machine_types_aggregated_list(creds: Credentials, args: dict[str
         f"{len(machine_types)} machine types returned, {next_page_token=}"
     )
 
-    metadata = (
-        "Run the following command to retrieve the next batch of machine types:\n"
-        f"!gcp-compute-machine-types-aggregated-list project_id={project_id} page_token={next_page_token}"
-        if next_page_token
-        else None
-    )
-
     readable_output = tableToMarkdown(
         "GCP Compute Machine Types",
         machine_types,
         headers=["id", "name", "zone", "memoryMb", "guestCpus"],
         removeNull=True,
-        metadata=metadata,
         headerTransform=pascalToSpace,
     )
 
