@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: Akamai_SIEM_ModelingRule
-name: Akamai_SIEM Modeling Rule
+id: Akamai_WAF_ModelingRule
+name: Akamai WAF Modeling Rule
 rules: ''
 schema: ''
 tags: ''

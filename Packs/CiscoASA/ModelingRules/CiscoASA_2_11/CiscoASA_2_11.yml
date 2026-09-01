@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: CiscoASA_ModelingRule
-name: CiscoASA Modeling Rule
+id: cisco_asa_modeling_rule
+name: Cisco ASA Modeling Rule
 rules: ''
 schema: ''
 tags: ''

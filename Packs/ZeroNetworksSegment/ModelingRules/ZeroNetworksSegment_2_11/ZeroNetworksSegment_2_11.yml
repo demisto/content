@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: ZeroNetworksSegment_ModelingRule
-name: ZeroNetworksSegment Modeling Rule
+id: Zero_Networks_Segment_ModelingRule
+name: Zero Networks Segment Modeling Rule
 rules: ''
 schema: ''
 tags: Zero Networks Segment
