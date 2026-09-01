@@ -48,6 +48,7 @@ Fetches DLP reports associated with a report ID.
 | --- | --- | --- |
 | report_id | DLP report ID. | Required |
 | fetch_snippets | If True, includes snippets with the reports. Possible values are: true, false. Default is false. | Optional |
+| service_name | The DLP service the report belongs to. Determines which backend the report is retrieved from. If not specified, the service defaults to prisma-access. Possible values are: ngfw, prisma-access, prisma-saas, prisma-access-browser, endpoint-dlp. | Optional |
 
 #### Context Output
 
