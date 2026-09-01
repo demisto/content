@@ -1,0 +1,18 @@
+commonfields:
+  id: FlashpointReportDetails
+  version: -1
+name: FlashpointReportDetails
+script: ''
+type: python
+tags: []
+comment: Retrieves the full information of the report.
+enabled: true
+args:
+- name: report_id
+  description: "The ID of the report for which the details are to be fetched.\n\nNote: If not provided, the script will try to retrieve it from the incident context."
+scripttarget: 0
+subtype: python3
+dockerimage: demisto/python3:3.12.13.10404775
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

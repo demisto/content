@@ -589,7 +589,7 @@ Retrieves a list of alerts based on the filter values provided in the command ar
 | cursor | The cursor to retrieve next page data. Used for pagination only. The value of the cursor can be found from the output context path (Ignite.PageToken.Alert.cursor) or the HR output of the flashpoint-ignite-alert-list command. | Optional |
 | status | Filter alerts by status. Possible values are: Archived, Starred, Sent, None. | Optional |
 | origin | Filter alerts by origin. Possible values are: Searches, Assets. | Optional |
-| sources | Filter alerts by source. Possible values are: Github, Gitlab, Bitbucket, Communities, Images, Marketplaces. | Optional |
+| sources | Filter alerts by source. Possible values are: Github, Gitlab, Bitbucket, Communities, Images, Marketplaces, Reports, Vulnerabilities. | Optional |
 | tags | A comma-separated list of alerts filtered by tags. | Optional |
 | asset_type | Filter alerts by asset type. | Optional |
 | asset_ip | Filter alerts by asset IP. | Optional |
@@ -3960,6 +3960,7 @@ List Vulnerabilities using provided filters.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| vulnerability_ids | Filter by the vulnerability IDs assigned by Flashpoint. Supports comma-separated values.<br/><br/>Example: 463513, FP-VULN-463512. | Optional |
 | updated_after | Get vulnerabilities that were updated after the specified date or relative timestamp.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. | Optional |
 | updated_before | Get vulnerabilities that were updated before the specified date or relative timestamp.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. | Optional |
 | disclosed_after | Get vulnerabilities that were disclosed after the specified date or relative timestamp.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. | Optional |
