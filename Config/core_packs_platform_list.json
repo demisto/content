@@ -71,14 +71,16 @@
                 "cloud_runtime_security",
                 "cloud_posture",
                 "xsiam",
-                "edr"
+                "edr",
+                "xti"
             ]
         },
         {
             "id": "CommonTypes",
             "supportedModules": [
                 "agentix",
-                "xsiam"
+                "xsiam",
+                "xti"
             ]
         },
         {

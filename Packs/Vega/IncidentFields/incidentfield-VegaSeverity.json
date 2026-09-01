@@ -1,0 +1,37 @@
+{
+    "id": "incident_vegaseverity",
+    "version": -1,
+    "name": "Vega Severity",
+    "ownerOnly": false,
+    "description": "The severity assigned to the Vega incident.",
+    "cliName": "vegaseverity",
+    "type": "singleSelect",
+    "selectValues": [
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "CRITICAL"
+    ],
+    "openEnded": false,
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Vega Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

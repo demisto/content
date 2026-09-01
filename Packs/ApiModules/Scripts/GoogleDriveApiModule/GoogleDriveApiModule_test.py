@@ -1769,6 +1769,45 @@ def test_get_file_content_command_regular_text_file(mocker_http_request, gsuite_
 
 
 @patch(MOCKER_HTTP_METHOD)
+def test_get_file_content_command_binary_file_base64(mocker_http_request, gsuite_client, mocker):
+    """
+    Given:
+        A Google Drive URL pointing to a regular binary file (a .docx uploaded to Drive).
+    When:
+        Calling the get-file-content command with the URL.
+    Then:
+        Content holds the base64-encoded bytes and Type is suffixed with ';base64'
+        so downstream consumers know Content must be base64-decoded.
+    """
+    import base64 as _b64
+
+    from GoogleDriveApiModule import get_file_content_command
+
+    docx_mime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    mock_metadata = {
+        "id": "test-docx-id",
+        "name": "report.docx",
+        "mimeType": docx_mime,
+        "webViewLink": "https://drive.google.com/file/d/test-docx-id/view",
+    }
+    mocker_http_request.return_value = mock_metadata
+    mocker.patch.object(demisto, "callingContext", {"context": {"User": {"email": "user@example.com"}}})
+
+    raw_bytes = b"PK\x03\x04binary-docx-bytes\x00\xff"
+    mock_drive_service = MagicMock()
+    mock_drive_service.files().get_media().execute.return_value = raw_bytes
+
+    with patch("GoogleDriveApiModule.discovery.build", return_value=mock_drive_service):
+        args = {"url": "https://drive.google.com/file/d/test-docx-id/view"}
+        result = get_file_content_command(gsuite_client, args)
+
+    assert result.outputs["Type"] == f"{docx_mime};base64"
+    # Content is base64 and decodes back to the exact original bytes.
+    assert result.outputs["Content"] == _b64.b64encode(raw_bytes).decode("ascii")
+    assert _b64.b64decode(result.outputs["Content"]) == raw_bytes
+
+
+@patch(MOCKER_HTTP_METHOD)
 def test_get_file_content_command_unapproved_format(mocker_http_request, gsuite_client, mocker):
     """
     Given:
