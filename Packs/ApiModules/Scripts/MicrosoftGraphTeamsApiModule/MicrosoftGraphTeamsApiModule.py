@@ -572,7 +572,13 @@ def test_function(client, _):
                 "Please enable the integration and run the !msgraph-teams-test command in order to test it"
             )
 
-    client.ms_client.http_request(method="GET", url_suffix="chats")
+    # `chats` resolves the chats of the *signed-in user*, so it is delegated-only: Microsoft Graph
+    # rejects it with 400 "Requested API is not supported in application-only context" whenever no
+    # user is present. Under UCP the platform injects an app-only (client credentials) token, so the
+    # connectivity probe has to target a resource that is addressable without a user. `teams` is the
+    # app-only equivalent that stays closest to this integration's Teams scope.
+    url_suffix = "teams" if should_use_ucp_auth() else "chats"
+    client.ms_client.http_request(method="GET", url_suffix=url_suffix)
     return_results(CommandResults(readable_output="✅ Success!"))
     return response, None, None
 

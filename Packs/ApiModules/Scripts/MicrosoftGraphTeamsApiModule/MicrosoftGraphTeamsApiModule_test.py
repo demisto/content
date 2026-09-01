@@ -19,6 +19,10 @@ from MicrosoftGraphTeamsApiModule import (
     validate_teams_message_target_args,
 )
 
+# Aliased on import: pytest would otherwise collect the `test_`-prefixed production
+# function as a test case and error on its unresolvable `client` / `_` parameters.
+from MicrosoftGraphTeamsApiModule import test_function as run_test_function
+
 # ---------------------------------------------------------------------------
 # build_teams_message_url_suffix
 # ---------------------------------------------------------------------------
@@ -211,6 +215,47 @@ class TestUpdateMessagePolicyViolationClient:
         assert call["json_data"] == body
         # resp_type="response" is required so callers can inspect status codes.
         assert call["resp_type"] == "response"
+
+
+# ---------------------------------------------------------------------------
+# test_function
+# ---------------------------------------------------------------------------
+
+
+class TestTestFunctionEndpointSelection:
+    """`chats` is delegated-only: Microsoft Graph rejects it with 400 "Requested API is not
+    supported in application-only context" when there is no signed-in user. Under UCP the
+    platform injects an app-only token, so the probe must target `teams` instead.
+    """
+
+    def _run(self, mocker, *, ucp_enabled, params=None):
+        mocker.patch("MicrosoftGraphTeamsApiModule.should_use_ucp_auth", return_value=ucp_enabled)
+        mocker.patch.object(demisto, "params", return_value=params or {})
+        mocker.patch("MicrosoftGraphTeamsApiModule.return_results")
+        dummy = _DummyMsClient(response="ok")
+        client = _make_client_with_stubbed_ms_client(dummy)
+        run_test_function(client, {})
+        return dummy
+
+    def test_ucp_mode_probes_app_only_endpoint(self, mocker):
+        dummy = self._run(mocker, ucp_enabled=True)
+
+        assert len(dummy.calls) == 1
+        assert dummy.calls[0]["url_suffix"] == "teams"
+        assert dummy.calls[0]["method"] == "GET"
+
+    def test_non_ucp_mode_keeps_delegated_endpoint(self, mocker):
+        # The community pack authenticates as a delegated user, for which `chats` is correct.
+        dummy = self._run(mocker, ucp_enabled=False)
+
+        assert len(dummy.calls) == 1
+        assert dummy.calls[0]["url_suffix"] == "chats"
+
+    def test_ucp_mode_unaffected_by_self_deployed_param(self, mocker):
+        # UCP never sets `self_deployed`, but pin that a stray value cannot redirect the probe.
+        dummy = self._run(mocker, ucp_enabled=True, params={"self_deployed": False})
+
+        assert dummy.calls[0]["url_suffix"] == "teams"
 
 
 # ---------------------------------------------------------------------------
