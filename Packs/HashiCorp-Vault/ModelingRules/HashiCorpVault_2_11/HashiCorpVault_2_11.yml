@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: HashiCorp-Vault_ModelingRule
-name: HashiCorp-Vault Modeling Rule
+id: HashiCorp_Vault_ModelingRule
+name: HashiCorp Vault Modeling Rule
 rules: ''
 schema: ''
 tags:

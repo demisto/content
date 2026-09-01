@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: MicrosoftIntune_ModelingRule
-name: MicrosoftIntune Modeling Rule
+id: Microsoft_Intune
+name: Microsoft Intune
 rules: ''
 schema: ''
 tags: Microsoft Intune
