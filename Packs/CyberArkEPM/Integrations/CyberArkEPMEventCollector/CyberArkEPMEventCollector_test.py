@@ -464,7 +464,7 @@ def test_oauth_uses_server_url_as_base_url(mocker, requests_mock):
     assert requests_mock.call_count == 1
     assert client._headers["Authorization"] == "Bearer TOKEN123"
     # Data calls must use the uppercase, versioned EPM SET API path (matches CyberArk Postman).
-    assert client._base_url == f"{server_url}/EPM/API/26.7.0/"
+    assert client._base_url == f"{server_url}/EPM/API/26.8.0/"
 
 
 def test_client_configuration_debug_log_for_oauth(mocker, requests_mock):
@@ -631,13 +631,13 @@ def test_client_configuration_debug_log_reports_missing_credentials(requests_moc
 @pytest.mark.parametrize(
     "raw_value, expected_version",
     [
-        pytest.param(None, "26.7.0", id="not_configured_falls_back_to_default"),
-        pytest.param("", "26.7.0", id="empty_string_falls_back_to_default"),
-        pytest.param("   ", "26.7.0", id="whitespace_only_falls_back_to_default"),
-        pytest.param("/", "26.7.0", id="slash_only_falls_back_to_default"),
-        pytest.param("///", "26.7.0", id="multiple_slashes_only_fall_back_to_default"),
-        pytest.param(" / ", "26.7.0", id="mixed_whitespace_and_slash_only_falls_back_to_default"),
-        pytest.param("26.8.0", "26.8.0", id="custom_three_segment_version"),
+        pytest.param(None, "26.8.0", id="not_configured_falls_back_to_default"),
+        pytest.param("", "26.8.0", id="empty_string_falls_back_to_default"),
+        pytest.param("   ", "26.8.0", id="whitespace_only_falls_back_to_default"),
+        pytest.param("/", "26.8.0", id="slash_only_falls_back_to_default"),
+        pytest.param("///", "26.8.0", id="multiple_slashes_only_fall_back_to_default"),
+        pytest.param(" / ", "26.8.0", id="mixed_whitespace_and_slash_only_falls_back_to_default"),
+        pytest.param("26.9.0", "26.9.0", id="custom_three_segment_version"),
         pytest.param("26.8", "26.8", id="custom_two_segment_version"),
         pytest.param("26.8.0.900", "26.8.0.900", id="custom_four_segment_version_per_vendor_docs"),
         pytest.param("26", "26", id="custom_single_segment_version"),
@@ -671,8 +671,8 @@ def test_normalize_epm_api_version(raw_value, expected_version):
 @pytest.mark.parametrize(
     "epm_api_version, expected_version",
     [
-        pytest.param(None, "26.7.0", id="not_provided_falls_back_to_default"),
-        pytest.param("26.8.0", "26.8.0", id="custom_three_segment_version"),
+        pytest.param(None, "26.8.0", id="not_provided_falls_back_to_default"),
+        pytest.param("26.9.0", "26.9.0", id="custom_three_segment_version"),
         pytest.param("26.8", "26.8", id="custom_two_segment_version"),
         pytest.param("26.8.0.900", "26.8.0.900", id="custom_four_segment_version_per_vendor_docs"),
     ],
@@ -823,10 +823,10 @@ def test_epm_api_version_is_ignored_for_epm_auth_method(requests_mock):
         password="pass",
         application_id="1",
         auth_method="EPM",
-        epm_api_version="26.8.0",
+        epm_api_version="26.9.0",
     )
 
-    assert "26.8.0" not in client._base_url
+    assert "26.9.0" not in client._base_url
 
 
 def test_oauth_token_refresh_preserves_configured_epm_api_version(mocker, requests_mock):
@@ -1051,7 +1051,7 @@ def test_oauth_data_call_401_refreshes_and_retries_once(mocker, requests_mock):
     client, token_matcher = _build_oauth_client(requests_mock, identity_url, server_url)
 
     data_matcher = requests_mock.get(
-        f"{server_url}/EPM/API/26.7.0/Sets",
+        f"{server_url}/EPM/API/26.8.0/Sets",
         [
             {"status_code": 401, "json": {"error": "unauthorized"}},
             {"status_code": 200, "json": {"Sets": [{"Id": "id1", "Name": "set_name1"}]}},
@@ -1359,7 +1359,7 @@ def test_oauth_data_call_non_401_error_propagates_without_refresh(mocker, reques
 
     client, token_matcher = _build_oauth_client(requests_mock, identity_url, server_url)
 
-    data_matcher = requests_mock.get(f"{server_url}/EPM/API/26.7.0/Sets", status_code=500, json={"error": "server error"})
+    data_matcher = requests_mock.get(f"{server_url}/EPM/API/26.8.0/Sets", status_code=500, json={"error": "server error"})
 
     with pytest.raises(DemistoException):
         client._http_request("GET", url_suffix="Sets")

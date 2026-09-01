@@ -47,7 +47,7 @@ class Config:
     # https://docs.cyberark.com/epm/latest/en/content/webservices/getsetslist.htm
     # Overridable per instance via the *EPM API Version* parameter, so operators can follow the
     # vendor's version cadence without waiting for a content release.
-    DEFAULT_EPM_API_VERSION = "26.7.0"
+    DEFAULT_EPM_API_VERSION = "26.8.0"
 
     # Context outputs prefix per event type. The *-get-events commands expose the parsed/normalized
     # events under these prefixes so operators can verify the normalization while debugging.
