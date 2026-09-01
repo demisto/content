@@ -1,7 +1,10 @@
 import json
 import re
 import traceback
-from datetime import datetime, UTC
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from dataclasses import dataclass, field
+from datetime import datetime, timedelta, UTC
+from enum import Enum
 from typing import Any
 from collections.abc import Callable
 
@@ -137,6 +140,44 @@ class Config:
     DEFAULT_LIMIT = 50
     MAX_LIMIT = 1000
 
+    # Event collection
+    VENDOR = "koi"
+    PRODUCT = "koi"
+    DEFAULT_MAX_FETCH = 5000
+    DEFAULT_FROM_TIME = "5 minutes ago"
+    SORT_DIRECTION = "asc"
+    TEST_MODULE_LOOKBACK_MINUTES = 5
+    TEST_MODULE_MAX_EVENTS = 1
+
+
+class LogType(Enum):
+    """Enum to hold all configuration for different log types."""
+
+    ALERTS = ("alerts", "Alerts", ApiPaths.ALERTS, "alerts")
+    AUDIT = ("audit", "Audit", ApiPaths.AUDIT_LOGS, "items")
+
+    def __init__(self, type_string: str, title: str, api_endpoint: str, response_key: str):
+        self.type_string = type_string
+        self.title = title
+        self.api_endpoint = api_endpoint
+        self.response_key = response_key
+
+
+VALID_AUDIT_TYPES = [
+    "approval_requests",
+    "devices",
+    "endpoints",
+    "extensions",
+    "firewall",
+    "guardrails",
+    "notifications",
+    "policies",
+    "remediation",
+    "requests",
+    "settings",
+    "vetting",
+]
+
 
 # Valid marketplace values for allowlist operations
 VALID_MARKETPLACES = [
@@ -212,6 +253,67 @@ def parse_date_or_use_current(date_string: str | None) -> datetime:
 
     demisto.debug(f"[Date Helper] Final parsed date: {parsed_datetime.isoformat()}")
     return parsed_datetime
+
+
+def get_log_types_from_titles(event_types_to_fetch: list[str]) -> list[LogType]:
+    """Convert user-facing event type titles into LogType Enum members."""
+    valid_titles = {lt.title for lt in LogType}
+    invalid_types = [title for title in event_types_to_fetch if title not in valid_titles]
+    if invalid_types:
+        valid_options = ", ".join(sorted(valid_titles))
+        raise DemistoException(
+            f"Invalid event type(s) provided: {invalid_types}. Please select from the following list: {valid_options}"
+        )
+    return [lt for lt in LogType if lt.title in event_types_to_fetch]
+
+
+def extract_time_from_event(event: dict, log_type: LogType) -> str | None:
+    """Extract the time field value from an event based on log type."""
+    if log_type == LogType.ALERTS:
+        finding_info = event.get("finding_info") or {}
+        created_time_ms = finding_info.get("created_time")
+        if created_time_ms:
+            try:
+                dt = datetime.fromtimestamp(created_time_ms / 1000, tz=UTC)
+                return dt.strftime(Config.DATE_FORMAT)
+            except (ValueError, TypeError, OSError):
+                demisto.debug(f"[Time Extract] Failed to parse alert created_time: {created_time_ms}")
+                return None
+    else:
+        return event.get("created_at")
+    return None
+
+
+def add_time_to_events(events: list[dict], log_type: LogType) -> None:
+    """Add _time and source_log_type fields to events for XSIAM ingestion."""
+    for event in events:
+        event_time = extract_time_from_event(event, log_type)
+        if event_time:
+            event["_time"] = event_time
+        else:
+            demisto.debug(f"[Event Time] WARNING: Event missing time field: {event.get('id', 'unknown')}")
+        event["source_log_type"] = log_type.title
+
+
+def get_event_id(event: dict) -> str | None:
+    """Extract the event ID from an event dictionary."""
+    for id_field in ("id", "alert_id", "log_id", "uuid"):
+        event_id = event.get(id_field)
+        if event_id:
+            return str(event_id)
+    return None
+
+
+def deduplicate_events(events: list[dict], last_fetched_ids: list[str]) -> list[dict]:
+    """Remove already-processed events based on previously fetched IDs."""
+    if not events or not last_fetched_ids:
+        return events
+    fetched_ids_set = set(last_fetched_ids)
+    new_events = [event for event in events if get_event_id(event) not in fetched_ids_set]
+    skipped_count = len(events) - len(new_events)
+    if skipped_count > 0:
+        demisto.debug(f"[Dedup] Skipped {skipped_count} duplicates. {len(new_events)} new events remain.")
+    return new_events
 
 
 def parse_list_items_from_entry_id(entry_id: str) -> list[dict[str, Any]]:
@@ -1187,6 +1289,43 @@ class Client(ContentClient):
             ok_codes=(204,),
         )
 
+    def get_events_page(
+        self,
+        log_type: LogType,
+        created_at_gte: str | None = None,
+        created_at_lte: str | None = None,
+        page: int = 1,
+        page_size: int = Config.DEFAULT_PAGE_SIZE,
+        audit_types: list[str] | None = None,
+    ) -> list[dict]:
+        """Fetch a single page of events from the KOI API."""
+        params: dict[str, Any] = {
+            "page": page,
+            "page_size": min(page_size, Config.MAX_PAGE_SIZE),
+            "sort_direction": Config.SORT_DIRECTION,
+        }
+        if created_at_gte:
+            params["created_at_gte"] = created_at_gte
+        if created_at_lte:
+            params["created_at_lte"] = created_at_lte
+        if log_type == LogType.AUDIT and audit_types:
+            params["types"] = ",".join(audit_types)
+
+        demisto.debug(f"[API Fetch] {log_type.type_string} | Page: {page} | Params: {params}")
+        response = self._http_request(
+            method="GET",
+            url_suffix=log_type.api_endpoint,
+            params=params,
+        )
+        events = response.get(log_type.response_key, [])
+        demisto.debug(f"[API Fetch] {log_type.type_string} | Page {page}: {len(events)} events returned")
+        return events
+
+    def send_events(self, events: list[dict]) -> None:
+        """Send events to XSIAM using send_events_to_xsiam."""
+        demisto.debug(f"[API] Sending {len(events)} events to XSIAM")
+        send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
+        demisto.debug(f"[API] Successfully sent {len(events)} events to XSIAM")
 
 
 # endregion
@@ -1198,7 +1337,7 @@ class Client(ContentClient):
 
 
 def test_module(client: Client) -> str:
-    """Test API connectivity by fetching a single page of alerts.
+    """Test API connectivity by fetching events.
 
     Args:
         client: The KOI client.
@@ -1208,7 +1347,15 @@ def test_module(client: Client) -> str:
     """
     demisto.debug("[Test Module] Starting...")
     try:
-        client.get_alerts(page=1, page_size=1)
+        utc_now = datetime.now(UTC)
+        test_time = (utc_now - timedelta(minutes=Config.TEST_MODULE_LOOKBACK_MINUTES)).strftime(Config.DATE_FORMAT)
+        demisto.debug(f"[Test Module] Fetching alerts from: {test_time}")
+        fetch_events_with_pagination(
+            client,
+            log_type=LogType.ALERTS,
+            created_after=test_time,
+            max_events=Config.TEST_MODULE_MAX_EVENTS,
+        )
         demisto.debug("[Test Module] Success")
         return "ok"
 
@@ -1218,6 +1365,233 @@ def test_module(client: Client) -> str:
         if "401" in error_msg or "403" in error_msg:
             return "Authorization Error: Verify your API Key."
         raise
+
+
+def fetch_events_with_pagination(
+    client: Client,
+    log_type: LogType,
+    created_after: str,
+    created_before: str | None = None,
+    max_events: int = Config.DEFAULT_MAX_FETCH,
+    audit_types: list[str] | None = None,
+) -> list[dict]:
+    """Fetch events with bounded pagination support."""
+    events: list[dict] = []
+    page = 1
+    page_size = min(Config.MAX_PAGE_SIZE, max_events)
+
+    demisto.debug(
+        f"[Pagination Loop] Start | Type: {log_type.type_string} | Goal: {max_events} | "
+        f"Time: {created_after} -> {created_before or 'Now'}"
+    )
+
+    for _ in range(Config.MAX_PAGES_PER_FETCH):
+        page_events = client.get_events_page(
+            log_type=log_type,
+            created_at_gte=created_after,
+            created_at_lte=created_before,
+            page=page,
+            page_size=page_size,
+            audit_types=audit_types if log_type == LogType.AUDIT else None,
+        )
+
+        if not page_events:
+            break
+
+        events.extend(page_events)
+        demisto.debug(f"[Pagination Loop] Page {page}: +{len(page_events)} events. Total: {len(events)}")
+
+        if len(page_events) < page_size or len(events) >= max_events:
+            break
+
+        page += 1
+
+    if len(events) > max_events:
+        events = events[:max_events]
+
+    demisto.debug(f"[Pagination Result] Returning {len(events)} {log_type.type_string} events")
+    return events
+
+
+def get_events_command(client: Client, args: dict, params: dict) -> CommandResults | str:
+    """Manual command to get events for debugging/development."""
+    demisto.debug("[Command] koi-get-events triggered")
+
+    limit = int(args.get("limit", "50"))
+    start_time_input = args.get("start_time", Config.DEFAULT_FROM_TIME)
+    end_time_input = args.get("end_time")
+    should_push_events = resolve_should_push_events(args)
+
+    event_type_arg = argToList(args.get("event_type"))
+    event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Alerts", "Audit"]))
+    log_types = get_log_types_from_titles(event_type_arg if event_type_arg else event_types_to_fetch)
+
+    created_after = get_formatted_utc_time(start_time_input)
+    created_before = get_formatted_utc_time(end_time_input) if end_time_input else None
+
+    audit_types_filter = argToList(params.get("audit_types_filter")) or None
+
+    all_events: list[dict] = []
+
+    for log_type in log_types:
+        events = fetch_events_with_pagination(
+            client,
+            log_type=log_type,
+            created_after=created_after,
+            created_before=created_before,
+            max_events=limit,
+            audit_types=audit_types_filter if log_type == LogType.AUDIT else None,
+        )
+        add_time_to_events(events, log_type)
+        all_events.extend(events)
+
+    demisto.debug(f"[Command Result] Total events retrieved: {len(all_events)}")
+
+    if should_push_events and all_events:
+        client.send_events(all_events)
+        return f"Successfully retrieved and pushed {len(all_events)} events to XSIAM"
+
+    readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Events", all_events, removeNull=True)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Event",
+        outputs_key_field="id",
+        outputs=all_events,
+        raw_response=all_events,
+    )
+
+
+@dataclass
+class FetchResult:
+    """Result of fetching events for a single log type."""
+
+    log_type: LogType
+    new_events: list[dict] = field(default_factory=list)
+    last_run_updates: dict[str, str | list[str]] = field(default_factory=dict)
+    error: str | None = None
+
+
+def _fetch_single_log_type(
+    client: Client,
+    log_type: LogType,
+    last_run: dict[str, str | list[str]],
+    max_events: int,
+    audit_types: list[str] | None,
+) -> FetchResult:
+    """Fetch and process events for a single log type (thread-safe)."""
+    result = FetchResult(log_type=log_type)
+
+    try:
+        last_fetch_key = f"last_fetch_{log_type.type_string}"
+        previous_ids_key = f"previous_ids_{log_type.type_string}"
+
+        raw_timestamp = last_run.get(last_fetch_key)
+        last_fetch_timestamp: str | None = raw_timestamp if isinstance(raw_timestamp, str) else None
+        raw_ids = last_run.get(previous_ids_key)
+        last_fetched_ids: list[str] = raw_ids if isinstance(raw_ids, list) else []
+
+        if last_fetch_timestamp:
+            time_input = last_fetch_timestamp
+        else:
+            time_input = Config.DEFAULT_FROM_TIME
+
+        created_after = get_formatted_utc_time(time_input)
+
+        events = fetch_events_with_pagination(
+            client,
+            log_type=log_type,
+            created_after=created_after,
+            max_events=max_events,
+            audit_types=audit_types if log_type == LogType.AUDIT else None,
+        )
+
+        if not events:
+            return result
+
+        event_times: list[str] = [extract_time_from_event(event, log_type) or "" for event in events]
+
+        new_events = deduplicate_events(events, last_fetched_ids)
+
+        if new_events:
+            add_time_to_events(new_events, log_type)
+            result.new_events = new_events
+
+        new_last_run_time = event_times[-1] if event_times else None
+
+        if new_last_run_time:
+            ids_at_last_timestamp: list[str] = [
+                event_id
+                for event, event_time in zip(events, event_times)
+                if event_time == new_last_run_time and (event_id := get_event_id(event))
+            ]
+
+            if new_last_run_time == last_fetch_timestamp:
+                ids_at_last_timestamp = list(set(last_fetched_ids) | set(ids_at_last_timestamp))
+
+            result.last_run_updates[last_fetch_key] = new_last_run_time
+            result.last_run_updates[previous_ids_key] = ids_at_last_timestamp
+
+    except Exception as e:
+        result.error = str(e)
+        demisto.debug(f"[Fetch] {log_type.type_string}: Error fetching events: {e!s}.")
+
+    return result
+
+
+def fetch_events_command(client: Client) -> None:
+    """Scheduled command to fetch events using parallel threads."""
+    params = demisto.params()
+    max_events_to_fetch = int(params.get("max_fetch", Config.DEFAULT_MAX_FETCH))
+
+    event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Alerts", "Audit"]))
+    log_types = get_log_types_from_titles(event_types_to_fetch)
+
+    audit_types_filter = argToList(params.get("audit_types_filter")) or None
+
+    last_run = demisto.getLastRun()
+    demisto.debug(f"[Fetch] Starting with last_run: {last_run}")
+
+    if not log_types:
+        demisto.setLastRun(last_run)
+        return
+
+    results: list[FetchResult] = []
+    with ThreadPoolExecutor(max_workers=len(log_types)) as executor:
+        futures = {
+            executor.submit(
+                _fetch_single_log_type,
+                client=client,
+                log_type=log_type,
+                last_run=dict(last_run),
+                max_events=max_events_to_fetch,
+                audit_types=audit_types_filter,
+            ): log_type
+            for log_type in log_types
+        }
+        for future in as_completed(futures):
+            log_type = futures[future]
+            try:
+                result = future.result()
+                results.append(result)
+            except Exception as e:
+                demisto.debug(f"[Fetch] {log_type.type_string}: Thread failed: {e!s}")
+
+    all_new_events: list[dict] = []
+    updated_last_run: dict[str, str | list[str]] = dict(last_run)
+
+    for result in results:
+        if result.error:
+            demisto.debug(f"[Fetch] {result.log_type.type_string}: Skipped due to error: {result.error}")
+            continue
+        all_new_events.extend(result.new_events)
+        updated_last_run.update(result.last_run_updates)
+
+    if all_new_events:
+        client.send_events(all_new_events)
+
+    demisto.setLastRun(updated_last_run)
+    demisto.debug(f"[Fetch] Last run updated: {updated_last_run}")
 
 
 def koi_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2120,7 +2494,7 @@ def koi_device_list_command(client: Client, args: dict[str, Any]) -> CommandResu
         headers=["id", "hostname", "os", "platform", "status", "last_seen", "serial"],
         headerTransform=string_to_table_header,
     )
-    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Device", outputs_key_field="id", outputs=items)
+    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Device", outputs_key_field="id", outputs=items, raw_response=items)
 
 
 def koi_device_archive_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2154,7 +2528,8 @@ def koi_device_inventory_get_command(client: Client, args: dict[str, Any]) -> Co
 
     readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Device Inventory", items, headerTransform=string_to_table_header)
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.DeviceInventory", outputs_key_field="item_id", outputs=items
+        readable_output=readable_output, outputs_prefix="Koi.DeviceInventory", outputs_key_field="item_id", outputs=items,
+        raw_response=items,
     )
 
 
@@ -2186,7 +2561,7 @@ def koi_finding_list_command(client: Client, args: dict[str, Any]) -> CommandRes
         headers=["id", "name", "description", "risk"],
         headerTransform=string_to_table_header,
     )
-    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Finding", outputs_key_field="id", outputs=items)
+    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Finding", outputs_key_field="id", outputs=items, raw_response=items)
 
 
 def koi_finding_customize_risk_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2227,7 +2602,7 @@ def koi_group_list_command(client: Client, args: dict[str, Any]) -> CommandResul
         headers=["id", "name", "created_at", "devices"],
         headerTransform=string_to_table_header,
     )
-    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Group", outputs_key_field="id", outputs=groups)
+    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Group", outputs_key_field="id", outputs=groups, raw_response=groups)
 
 
 def koi_group_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2250,7 +2625,7 @@ def koi_group_create_command(client: Client, args: dict[str, Any]) -> CommandRes
         headers=["id", "name", "created_at", "devices"],
         headerTransform=string_to_table_header,
     )
-    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Group", outputs_key_field="id", outputs=groups)
+    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Group", outputs_key_field="id", outputs=groups, raw_response=groups)
 
 
 def koi_group_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2508,7 +2883,8 @@ def koi_private_item_list_command(client: Client, args: dict[str, Any]) -> Comma
 
     readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Private Items", items, headerTransform=string_to_table_header)
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.PrivateItem", outputs_key_field="id", outputs=items
+        readable_output=readable_output, outputs_prefix="Koi.PrivateItem", outputs_key_field="id", outputs=items,
+        raw_response=items,
     )
 
 
@@ -2536,7 +2912,8 @@ def koi_private_item_upload_command(client: Client, args: dict[str, Any]) -> Com
         f"{INTEGRATION_NAME} Private Item Uploaded", response, headerTransform=string_to_table_header
     )
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.PrivateItem", outputs_key_field="id", outputs=response
+        readable_output=readable_output, outputs_prefix="Koi.PrivateItem", outputs_key_field="id", outputs=response,
+        raw_response=response,
     )
 
 
@@ -2656,7 +3033,8 @@ def koi_remediation_list_command(client: Client, args: dict[str, Any]) -> Comman
 
     readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Remediations", items, headerTransform=string_to_table_header)
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.Remediation", outputs_key_field="id", outputs=items
+        readable_output=readable_output, outputs_prefix="Koi.Remediation", outputs_key_field="id", outputs=items,
+        raw_response=items,
     )
 
 
@@ -2703,7 +3081,7 @@ def koi_report_create_command(client: Client, args: dict[str, Any]) -> CommandRe
         headers=["id", "report_type", "status"],
         headerTransform=string_to_table_header,
     )
-    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Report", outputs_key_field="id", outputs=response)
+    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Report", outputs_key_field="id", outputs=response, raw_response=response)
 
 
 def koi_report_status_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2718,7 +3096,7 @@ def koi_report_status_get_command(client: Client, args: dict[str, Any]) -> Comma
         headers=["id", "report_type", "status", "download_url", "created_at"],
         headerTransform=string_to_table_header,
     )
-    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Report", outputs_key_field="id", outputs=response)
+    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.Report", outputs_key_field="id", outputs=response, raw_response=response)
 
 
 # --- User Commands ---
@@ -2736,7 +3114,7 @@ def koi_user_list_command(client: Client, args: dict[str, Any]) -> CommandResult
         headers=["id", "email", "role", "created_at"],
         headerTransform=string_to_table_header,
     )
-    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.User", outputs_key_field="id", outputs=users)
+    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.User", outputs_key_field="id", outputs=users, raw_response=users)
 
 
 def koi_user_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -2750,7 +3128,7 @@ def koi_user_create_command(client: Client, args: dict[str, Any]) -> CommandResu
         headers=["id", "email", "role", "created_at"],
         headerTransform=string_to_table_header,
     )
-    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.User", outputs_key_field="id", outputs=response)
+    return CommandResults(readable_output=readable_output, outputs_prefix="Koi.User", outputs_key_field="id", outputs=response, raw_response=response)
 
 
 def koi_user_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -3027,6 +3405,9 @@ def koi_item_enrich_command(client: Client, args: dict[str, Any]) -> list[Comman
 
 COMMAND_MAP: dict[str, Any] = {
     "test-module": test_module,
+    # Events
+    "koi-get-events": get_events_command,
+    "fetch-events": fetch_events_command,
     # Alerts
     "koi-alert-list": koi_alert_list_command,
     # Policies
@@ -3119,6 +3500,11 @@ def main() -> None:
 
         if command == "test-module":
             result = command_func(client)
+            return_results(result)
+        elif command == "fetch-events":
+            command_func(client)
+        elif command == "koi-get-events":
+            result = command_func(client, args, params)
             return_results(result)
         else:
             result = command_func(client, args)
