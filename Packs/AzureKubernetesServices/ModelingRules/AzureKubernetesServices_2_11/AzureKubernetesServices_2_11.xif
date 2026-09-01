@@ -318,6 +318,9 @@ config case_sensitive = true
     xdm.target.user.username = get_properties_log_responseObject_subjects_name,
     xdm.target.identity.username = get_properties_log_responseObject_subjects_name,
     xdm.source.user.user_type = if(
+        get_properties_log_requestObject_subjects_kind = "ServiceAccount", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        get_properties_log_requestObject_subjects_kind = "User", XDM_CONST.USER_TYPE_REGULAR
+    ),
     xdm.source.identity.user_type = if(
         get_properties_log_requestObject_subjects_kind = "ServiceAccount", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
         get_properties_log_requestObject_subjects_kind = "User", XDM_CONST.USER_TYPE_REGULAR
@@ -325,10 +328,13 @@ config case_sensitive = true
     xdm.source.user.identity_type = if(check_identity_type, XDM_CONST.IDENTITY_TYPE_BUILTIN),
     xdm.source.identity.identity_type = if(check_identity_type, XDM_CONST.IDENTITY_TYPE_BUILTIN),
     xdm.target.user.user_type = if(
+        get_properties_log_responseObject_subjects_kind = "ServiceAccount", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        get_properties_log_responseObject_subjects_kind = "User", XDM_CONST.USER_TYPE_REGULAR
+    ),
     xdm.target.identity.user_type = if(
         get_properties_log_responseObject_subjects_kind = "ServiceAccount", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
         get_properties_log_responseObject_subjects_kind = "User", XDM_CONST.USER_TYPE_REGULAR
-    ),      
+    ),
     xdm.target.user.identity_type = if(check_identity_type, XDM_CONST.IDENTITY_TYPE_BUILTIN),
     xdm.target.identity.identity_type = if(check_identity_type, XDM_CONST.IDENTITY_TYPE_BUILTIN);
 

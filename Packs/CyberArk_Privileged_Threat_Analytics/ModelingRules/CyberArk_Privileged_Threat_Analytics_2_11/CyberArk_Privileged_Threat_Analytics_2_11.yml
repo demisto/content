@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: CyberArk_Privileged_Threat_Analytics_ModelingRule
-name: CyberArk_Privileged_Threat_Analytics Modeling Rule
+id: CyberArk_PTA_ModelingRule
+name: CyberArk PTA Modeling Rule
 rules: ''
 schema: ''
 tags: ''

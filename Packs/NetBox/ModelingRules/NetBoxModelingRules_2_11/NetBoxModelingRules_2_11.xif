@@ -18,4 +18,5 @@ filter
     xdm.target.resource.name = json_extract_scalar(changed_object, "$.display"),
     xdm.target.resource.type = changed_object_type,
     xdm.target.resource_before.name = json_extract_scalar(prechange_data, "$.name"),
-    xdm.source.user.username = user_name,    xdm.source.identity.username = user_name;
+    xdm.source.user.username = user_name,    
+    xdm.source.identity.username = user_name;

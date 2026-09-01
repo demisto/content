@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: MySQLEnterprise_ModelingRule
-name: MySQLEnterprise Modeling Rule
+id: mysql_enterprise_modeling_rule
+name: MySQL Enterprise Modeling Rules
 rules: ''
 schema: ''
 tags: MySQL Enterprise

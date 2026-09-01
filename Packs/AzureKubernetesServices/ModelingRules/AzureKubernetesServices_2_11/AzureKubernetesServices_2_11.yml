@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: AzureKubernetesServices_ModelingRule
-name: AzureKubernetesServices Modeling Rule
+id: Azure_AKS_ModelingRule
+name: Azure AKS Modeling Rule
 rules: ''
 schema: ''
 tags: ''
