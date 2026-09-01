@@ -20,6 +20,7 @@
     "supportedModules": [
         "agentix",
         "cloud_runtime_security",
+        "cloud_posture",
         "xsiam",
         "edr",
         "cloud"

@@ -1,4 +1,4 @@
-import demistomock as demisto  # noqa: F401
+import demistomock as demisto  # noqa: F401user_id = user_id if user_id else
 from CommonServerPython import *  # noqa: F401
 
 """ IMPORTS """
