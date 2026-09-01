@@ -2818,11 +2818,11 @@ script:
       description: The name of the operation resource to wait for.
       required: true
     - name: interval_in_seconds
-      description: The interval in seconds between polling attempts.
+      description: The interval in seconds between polling attempts. Must be a positive number.
       required: false
       defaultValue: '30'
     - name: polling_timeout
-      description: The timeout in seconds until polling ends.
+      description: The timeout in seconds until polling ends. Must be a positive number.
       required: false
       defaultValue: '600'
     outputs:
@@ -2888,11 +2888,11 @@ script:
       description: The name of the operation resource to wait for.
       required: true
     - name: interval_in_seconds
-      description: The interval in seconds between polling attempts.
+      description: The interval in seconds between polling attempts. Must be a positive number.
       required: false
       defaultValue: '30'
     - name: polling_timeout
-      description: The timeout in seconds until polling ends.
+      description: The timeout in seconds until polling ends. Must be a positive number.
       required: false
       defaultValue: '600'
     outputs:
@@ -2955,11 +2955,11 @@ script:
       description: The name of the operation resource to wait for.
       required: true
     - name: interval_in_seconds
-      description: The interval in seconds between polling attempts.
+      description: The interval in seconds between polling attempts. Must be a positive number.
       required: false
       defaultValue: '30'
     - name: polling_timeout
-      description: The timeout in seconds until polling ends.
+      description: The timeout in seconds until polling ends. Must be a positive number.
       required: false
       defaultValue: '600'
     outputs:

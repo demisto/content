@@ -351,6 +351,8 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
 }
 
 OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
+# The operation table of the wait commands, which also serve regional operations.
+OPERATION_WAIT_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "region", "status"]
 OPERATION_DONE_STATUS = "DONE"  # The terminal status of a Compute Engine long-running operation.
 DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval between polling attempts for wait commands.
 DEFAULT_TIMEOUT_POLLING_COMMAND = 600  # Default timeout for polling commands.
@@ -424,6 +426,28 @@ def extract_zone_name(zone_input: str | None) -> str:
     if "/" in zone_input:
         return zone_input.strip().split("/")[-1]
     return zone_input.strip()
+
+
+def extract_region_name(region_input: str | None) -> str:
+    """
+    Extracts the GCP region name from a full URL or returns it directly if already a region string.
+
+    Args:
+        region_input (str): The region string or full GCP region URL.
+
+    Returns:
+        str: The region name, e.g., "us-central1".
+        https://www.googleapis.com/compute/v1/projects/test/regions/us-central1 -> us-central1
+
+    Raises:
+        DemistoException: If the region input is empty or invalid.
+    """
+    if not region_input or not region_input.strip():
+        raise DemistoException("The region argument cannot be empty")
+
+    if "/" in region_input:
+        return region_input.strip().split("/")[-1]
+    return region_input.strip()
 
 
 def parse_labels(labels_str: str) -> dict:
@@ -2854,7 +2878,7 @@ def _compute_operation_poll_result(
     readable_output = tableToMarkdown(
         f"Operation {operation_name} completed successfully",
         response,
-        headers=OPERATION_TABLE,
+        headers=OPERATION_WAIT_TABLE,
         removeNull=True,
         headerTransform=pascalToSpace,
     )
@@ -2886,6 +2910,11 @@ def gcp_compute_zone_operation_wait(creds: Credentials, args: dict[str, Any]) ->
     interval = arg_to_number(args.get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS
     timeout = arg_to_number(args.get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND
 
+    if interval <= 0:
+        raise DemistoException(f"The interval_in_seconds argument must be a positive number. Currently the value is {interval}")
+    if timeout <= 0:
+        raise DemistoException(f"The polling_timeout argument must be a positive number. Currently the value is {timeout}")
+
     compute = GCPServices.COMPUTE.build(creds)
 
     return _compute_operation_poll_result(
@@ -2912,10 +2941,15 @@ def gcp_compute_region_operation_wait(creds: Credentials, args: dict[str, Any]) 
         CommandResults: The completed operation, or a scheduled command to poll again.
     """
     project_id = args.get("project_id")
-    region = args.get("region")
+    region = extract_region_name(args.get("region"))
     operation_name = args.get("operation_name")
     interval = arg_to_number(args.get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS
     timeout = arg_to_number(args.get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND
+
+    if interval <= 0:
+        raise DemistoException(f"The interval_in_seconds argument must be a positive number. Currently the value is {interval}")
+    if timeout <= 0:
+        raise DemistoException(f"The polling_timeout argument must be a positive number. Currently the value is {timeout}")
 
     compute = GCPServices.COMPUTE.build(creds)
 
@@ -2946,6 +2980,11 @@ def gcp_compute_global_operation_wait(creds: Credentials, args: dict[str, Any]) 
     operation_name = args.get("operation_name")
     interval = arg_to_number(args.get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS
     timeout = arg_to_number(args.get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND
+
+    if interval <= 0:
+        raise DemistoException(f"The interval_in_seconds argument must be a positive number. Currently the value is {interval}")
+    if timeout <= 0:
+        raise DemistoException(f"The polling_timeout argument must be a positive number. Currently the value is {timeout}")
 
     compute = GCPServices.COMPUTE.build(creds)
 

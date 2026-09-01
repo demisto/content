@@ -1340,8 +1340,8 @@ Polls a zonal Compute Engine operation until it reaches the DONE status. Require
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | operation_name | The name of the operation resource to wait for. | Required |
-| interval_in_seconds | The interval in seconds between polling attempts. | Optional |
-| polling_timeout | The timeout in seconds until polling ends. | Optional |
+| interval_in_seconds | The interval in seconds between polling attempts. Must be a positive number. | Optional |
+| polling_timeout | The timeout in seconds until polling ends. Must be a positive number. | Optional |
 
 #### Context Output
 
@@ -1379,8 +1379,8 @@ Polls a regional Compute Engine operation until it reaches the DONE status. Requ
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | region | The name of the region for this request. | Required |
 | operation_name | The name of the operation resource to wait for. | Required |
-| interval_in_seconds | The interval in seconds between polling attempts. | Optional |
-| polling_timeout | The timeout in seconds until polling ends. | Optional |
+| interval_in_seconds | The interval in seconds between polling attempts. Must be a positive number. | Optional |
+| polling_timeout | The timeout in seconds until polling ends. Must be a positive number. | Optional |
 
 #### Context Output
 
@@ -1417,8 +1417,8 @@ Polls a global Compute Engine operation until it reaches the DONE status. Requir
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | operation_name | The name of the operation resource to wait for. | Required |
-| interval_in_seconds | The interval in seconds between polling attempts. | Optional |
-| polling_timeout | The timeout in seconds until polling ends. | Optional |
+| interval_in_seconds | The interval in seconds between polling attempts. Must be a positive number. | Optional |
+| polling_timeout | The timeout in seconds until polling ends. Must be a positive number. | Optional |
 
 #### Context Output
 
