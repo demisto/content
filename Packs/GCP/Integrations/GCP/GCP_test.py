@@ -6197,6 +6197,760 @@ def test_get_credentials_marketplace_no_project_id_anywhere_raises(mocker):
 
 
 # ---------------------------------------------------------------------------
+# Compute Disks & Disk Types command tests
+# ---------------------------------------------------------------------------
+
+
+def test_compute_disks_list_with_pagination_and_filter(mocker):
+    """
+    Given: Pagination, filter and order_by arguments for a specific zone.
+    When: compute_disks_list is called.
+    Then: The API is called with the mapped request params and the next token is
+          returned under GCP.Compute(true).DisksNextToken.
+    """
+    from GCP import compute_disks_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_disks = mocker.Mock()
+    mock_compute.disks.return_value = mock_disks
+    mock_disks.list.return_value.execute.return_value = {
+        "items": [{"name": "disk-1", "id": "1", "sizeGb": "10"}],
+        "nextPageToken": "t1",
+    }
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "p1",
+        "zone": "us-central1-a",
+        "limit": "2",
+        "page_token": "t0",
+        "filter": "name != disk-2",
+        "order_by": "creationTimestamp desc",
+    }
+    res = compute_disks_list(mock_creds, args)
+
+    called_kwargs = mock_disks.list.call_args[1]
+    assert called_kwargs["project"] == "p1"
+    assert called_kwargs["zone"] == "us-central1-a"
+    assert called_kwargs["maxResults"] == 2
+    assert called_kwargs["pageToken"] == "t0"
+    assert called_kwargs["filter"] == "name != disk-2"
+    assert called_kwargs["orderBy"] == "creationTimestamp desc"
+
+    assert res.outputs["GCP.Compute.Disks(val.id && val.id == obj.id)"][0]["name"] == "disk-1"
+    assert res.outputs["GCP.Compute(true)"]["DisksNextToken"] == "t1"
+
+
+def test_compute_disks_list_no_results(mocker):
+    """
+    Given: A zone with no disks and no next page token.
+    When: compute_disks_list is called.
+    Then: An empty disk list is returned and the next token key is still emitted as
+          None, so consumers can rely on the key always existing.
+    """
+    from GCP import compute_disks_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_disks = mocker.Mock()
+    mock_compute.disks.return_value = mock_disks
+    mock_disks.list.return_value.execute.return_value = {}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_disks_list(mock_creds, {"project_id": "p1", "zone": "us-central1-a"})
+
+    assert res.outputs["GCP.Compute.Disks(val.id && val.id == obj.id)"] == []
+    assert res.outputs["GCP.Compute(true)"]["DisksNextToken"] is None
+
+
+def test_compute_disks_list_invalid_limit(mocker):
+    """
+    Given: A limit argument above the allowed maximum.
+    When: compute_disks_list is called.
+    Then: A DemistoException is raised by validate_limit before any API call.
+    """
+    from GCP import compute_disks_list
+    from CommonServerPython import DemistoException
+
+    mock_compute = mocker.Mock()
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 500"):
+        compute_disks_list(mocker.Mock(spec=Credentials), {"project_id": "p1", "zone": "us-central1-a", "limit": "501"})
+
+    mock_compute.disks.assert_not_called()
+
+
+def test_compute_disks_aggregated_list_flattens_scoped_lists(mocker):
+    """
+    Given: An aggregated response containing disks in some scopes and a warning-only scope.
+    When: compute_disks_aggregated_list is called.
+    Then: Disks from all scopes are flattened into a single list, the warning-only
+          scope contributes nothing, and the token is emitted under its own
+          DisksAggregatedNextToken key so it cannot collide with the zonal list.
+    """
+    from GCP import compute_disks_aggregated_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_disks = mocker.Mock()
+    mock_compute.disks.return_value = mock_disks
+    mock_disks.aggregatedList.return_value.execute.return_value = {
+        "items": {
+            "zones/us-central1-a": {"disks": [{"name": "disk-1", "id": "1"}]},
+            "zones/us-east1-b": {"disks": [{"name": "disk-2", "id": "2"}]},
+            "zones/europe-west1-b": {"warning": {"code": "NO_RESULTS_ON_PAGE"}},
+        },
+        "nextPageToken": "next",
+    }
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_disks_aggregated_list(mock_creds, {"project_id": "p1", "limit": "10"})
+
+    disks = res.outputs["GCP.Compute.Disks(val.id && val.id == obj.id)"]
+    assert [disk["name"] for disk in disks] == ["disk-1", "disk-2"]
+    assert res.outputs["GCP.Compute(true)"]["DisksAggregatedNextToken"] == "next"
+
+
+def test_compute_disks_aggregated_list_no_results(mocker):
+    """
+    Given: An aggregated response with no items.
+    When: compute_disks_aggregated_list is called.
+    Then: An empty disk list is returned and the next token key is still emitted as None.
+    """
+    from GCP import compute_disks_aggregated_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_disks = mocker.Mock()
+    mock_compute.disks.return_value = mock_disks
+    mock_disks.aggregatedList.return_value.execute.return_value = {"items": {}}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_disks_aggregated_list(mock_creds, {"project_id": "p1"})
+
+    assert res.outputs["GCP.Compute.Disks(val.id && val.id == obj.id)"] == []
+    assert res.outputs["GCP.Compute(true)"]["DisksAggregatedNextToken"] is None
+
+
+def test_compute_disk_get_found_and_not_found(mocker):
+    """
+    Given: A disk name that exists and another that does not.
+    When: compute_disk_get is called for each.
+    Then: The disk details are returned for the first and a readable not-found
+          message is returned for the 404 instead of raising.
+    """
+    from GCP import compute_disk_get
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_disks = mocker.Mock()
+    mock_compute.disks.return_value = mock_disks
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    # Found
+    mock_disks.get.return_value.execute.return_value = {"name": "disk-1", "id": "1", "sizeGb": "10"}
+    res = compute_disk_get(mock_creds, {"project_id": "p1", "zone": "us-central1-a", "resource_name": "disk-1"})
+    assert res.outputs_prefix == "GCP.Compute.Disks"
+    assert res.outputs["name"] == "disk-1"
+    assert mock_disks.get.call_args[1] == {"project": "p1", "zone": "us-central1-a", "disk": "disk-1"}
+
+    # Not found
+    resp = mocker.MagicMock()
+    resp.status = 404
+    mock_disks.get.return_value.execute.side_effect = HttpError(
+        resp, b'{"error": {"message": "The resource disk-2 was not found"}}'
+    )
+    res2 = compute_disk_get(mock_creds, {"project_id": "p1", "zone": "us-central1-a", "resource_name": "disk-2"})
+    assert "not found" in res2.readable_output
+
+
+def test_compute_disk_get_propagates_non_404_error(mocker):
+    """
+    Given: The disks get API failing with a 403 permission error.
+    When: compute_disk_get is called.
+    Then: The HttpError propagates so main() can map it to a permission error.
+    """
+    from GCP import compute_disk_get
+    from googleapiclient.errors import HttpError
+
+    mock_compute = mocker.Mock()
+    mock_disks = mocker.Mock()
+    mock_compute.disks.return_value = mock_disks
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    resp = mocker.MagicMock()
+    resp.status = 403
+    mock_disks.get.return_value.execute.side_effect = HttpError(
+        resp, b'{"error": {"message": "Required compute.disks.get permission"}}'
+    )
+
+    with pytest.raises(HttpError):
+        compute_disk_get(mocker.Mock(spec=Credentials), {"project_id": "p1", "zone": "us-central1-a", "resource_name": "d"})
+
+
+def test_compute_disk_insert_builds_body_and_drops_unset_args(mocker):
+    """
+    Given: A disk creation request with a name, type, size, labels and guest OS features.
+    When: compute_disk_insert is called.
+    Then: The request body contains only the provided fields, the name is lowercased,
+          and the empty encryption key objects are pruned.
+    """
+    from GCP import compute_disk_insert
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_disks = mocker.Mock()
+    mock_compute.disks.return_value = mock_disks
+    mock_disks.insert.return_value.execute.return_value = {"id": "op-1", "name": "op-insert", "status": "RUNNING"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "p1",
+        "zone": "us-central1-a",
+        "resource_name": "My-Disk",
+        "disk_type": "pd-ssd",
+        "size_gb": "20",
+        "labels": "key=env,value=prod",
+        "guest_os_features": "UEFI_COMPATIBLE,MULTI_IP_SUBNET",
+    }
+    res = compute_disk_insert(mock_creds, args)
+
+    body = mock_disks.insert.call_args[1]["body"]
+    assert body["name"] == "my-disk"
+    assert body["type"] == "pd-ssd"
+    assert body["sizeGb"] == 20
+    assert body["labels"] == {"env": "prod"}
+    assert body["guestOsFeatures"] == [{"type": "UEFI_COMPATIBLE"}, {"type": "MULTI_IP_SUBNET"}]
+    assert "diskEncryptionKey" not in body
+    assert "sourceSnapshot" not in body
+
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+    assert res.outputs["id"] == "op-1"
+
+
+def test_compute_disk_insert_with_encryption_keys(mocker):
+    """
+    Given: A disk creation request supplying a source snapshot and KMS encryption keys.
+    When: compute_disk_insert is called.
+    Then: The nested encryption key objects are built with only the supplied sub-fields.
+    """
+    from GCP import compute_disk_insert
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_disks = mocker.Mock()
+    mock_compute.disks.return_value = mock_disks
+    mock_disks.insert.return_value.execute.return_value = {"id": "op-1"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "p1",
+        "zone": "us-central1-a",
+        "resource_name": "disk-1",
+        "source_snapshot": "projects/p1/global/snapshots/snap-1",
+        "disk_encryption_key_kms_key_name": "kms-disk",
+        "source_snapshot_encryption_key_raw_key": "raw-snap",
+    }
+    compute_disk_insert(mock_creds, args)
+
+    body = mock_disks.insert.call_args[1]["body"]
+    assert body["sourceSnapshot"] == "projects/p1/global/snapshots/snap-1"
+    assert body["diskEncryptionKey"] == {"kmsKeyName": "kms-disk"}
+    assert body["sourceSnapshotEncryptionKey"] == {"rawKey": "raw-snap"}
+    assert "sourceImageEncryptionKey" not in body
+
+
+def test_compute_disk_insert_propagates_error(mocker):
+    """
+    Given: The disks insert API failing with a 403 permission error.
+    When: compute_disk_insert is called.
+    Then: The HttpError propagates to main() for structured permission reporting.
+    """
+    from GCP import compute_disk_insert
+    from googleapiclient.errors import HttpError
+
+    mock_compute = mocker.Mock()
+    mock_disks = mocker.Mock()
+    mock_compute.disks.return_value = mock_disks
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    resp = mocker.MagicMock()
+    resp.status = 403
+    mock_disks.insert.return_value.execute.side_effect = HttpError(
+        resp, b'{"error": {"message": "Required compute.disks.create permission"}}'
+    )
+
+    with pytest.raises(HttpError):
+        compute_disk_insert(
+            mocker.Mock(spec=Credentials), {"project_id": "p1", "zone": "us-central1-a", "resource_name": "disk-1"}
+        )
+
+
+def test_compute_disk_delete_success(mocker):
+    """
+    Given: An existing persistent disk.
+    When: compute_disk_delete is called.
+    Then: The delete API is called with the disk identifiers and the operation is
+          returned under GCP.Compute.Operations.
+    """
+    from GCP import compute_disk_delete
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_disks = mocker.Mock()
+    mock_compute.disks.return_value = mock_disks
+    mock_disks.delete.return_value.execute.return_value = {"id": "op-2", "operationType": "delete", "status": "RUNNING"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_disk_delete(mock_creds, {"project_id": "p1", "zone": "us-central1-a", "resource_name": "disk-1"})
+
+    assert mock_disks.delete.call_args[1] == {"project": "p1", "zone": "us-central1-a", "disk": "disk-1"}
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+    assert res.outputs["operationType"] == "delete"
+
+
+def test_compute_disk_delete_propagates_error(mocker):
+    """
+    Given: The disks delete API failing with a 403 permission error.
+    When: compute_disk_delete is called.
+    Then: The HttpError propagates to main() for structured permission reporting.
+    """
+    from GCP import compute_disk_delete
+    from googleapiclient.errors import HttpError
+
+    mock_compute = mocker.Mock()
+    mock_disks = mocker.Mock()
+    mock_compute.disks.return_value = mock_disks
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    resp = mocker.MagicMock()
+    resp.status = 403
+    mock_disks.delete.return_value.execute.side_effect = HttpError(
+        resp, b'{"error": {"message": "Required compute.disks.delete permission"}}'
+    )
+
+    with pytest.raises(HttpError):
+        compute_disk_delete(
+            mocker.Mock(spec=Credentials), {"project_id": "p1", "zone": "us-central1-a", "resource_name": "disk-1"}
+        )
+
+
+def test_compute_disk_resize_sends_numeric_size(mocker):
+    """
+    Given: A new disk size provided as a string argument.
+    When: compute_disk_resize is called.
+    Then: The request body carries the size as an integer and the operation is returned.
+    """
+    from GCP import compute_disk_resize
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_disks = mocker.Mock()
+    mock_compute.disks.return_value = mock_disks
+    mock_disks.resize.return_value.execute.return_value = {"id": "op-3", "operationType": "resize"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_disk_resize(
+        mock_creds, {"project_id": "p1", "zone": "us-central1-a", "resource_name": "disk-1", "size_gb": "100"}
+    )
+
+    called_kwargs = mock_disks.resize.call_args[1]
+    assert called_kwargs["disk"] == "disk-1"
+    assert called_kwargs["body"] == {"sizeGb": 100}
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+
+
+def test_compute_disk_resize_propagates_error(mocker):
+    """
+    Given: The disks resize API rejecting a size smaller than the current one.
+    When: compute_disk_resize is called.
+    Then: The HttpError propagates to main() instead of being swallowed.
+    """
+    from GCP import compute_disk_resize
+    from googleapiclient.errors import HttpError
+
+    mock_compute = mocker.Mock()
+    mock_disks = mocker.Mock()
+    mock_compute.disks.return_value = mock_disks
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    resp = mocker.MagicMock()
+    resp.status = 400
+    mock_disks.resize.return_value.execute.side_effect = HttpError(resp, b'{"error": {"message": "Invalid resize request"}}')
+
+    with pytest.raises(HttpError):
+        compute_disk_resize(
+            mocker.Mock(spec=Credentials),
+            {"project_id": "p1", "zone": "us-central1-a", "resource_name": "disk-1", "size_gb": "1"},
+        )
+
+
+def test_compute_disk_labels_set_with_fingerprint(mocker):
+    """
+    Given: Labels and a label fingerprint for a disk.
+    When: compute_disk_labels_set is called.
+    Then: The parsed labels and the fingerprint are sent in the request body under
+          the resource keyword expected by the setLabels API.
+    """
+    from GCP import compute_disk_labels_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_disks = mocker.Mock()
+    mock_compute.disks.return_value = mock_disks
+    mock_disks.setLabels.return_value.execute.return_value = {"id": "op-4", "operationType": "setLabels"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "p1",
+        "zone": "us-central1-a",
+        "resource_name": "disk-1",
+        "labels": "key=env,value=prod;key=team,value=cloud",
+        "label_fingerprint": "fp-123",
+    }
+    res = compute_disk_labels_set(mock_creds, args)
+
+    called_kwargs = mock_disks.setLabels.call_args[1]
+    assert called_kwargs["resource"] == "disk-1"
+    assert called_kwargs["body"] == {"labels": {"env": "prod", "team": "cloud"}, "labelFingerprint": "fp-123"}
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+
+
+def test_compute_disk_labels_set_without_fingerprint(mocker):
+    """
+    Given: Labels without a label fingerprint.
+    When: compute_disk_labels_set is called.
+    Then: The labelFingerprint key is pruned from the request body.
+    """
+    from GCP import compute_disk_labels_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_disks = mocker.Mock()
+    mock_compute.disks.return_value = mock_disks
+    mock_disks.setLabels.return_value.execute.return_value = {"id": "op-4"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    compute_disk_labels_set(
+        mock_creds,
+        {"project_id": "p1", "zone": "us-central1-a", "resource_name": "disk-1", "labels": "key=env,value=prod"},
+    )
+
+    body = mock_disks.setLabels.call_args[1]["body"]
+    assert body == {"labels": {"env": "prod"}}
+
+
+def test_compute_disk_labels_set_propagates_error(mocker):
+    """
+    Given: The disks setLabels API failing with a 412 fingerprint conflict.
+    When: compute_disk_labels_set is called.
+    Then: The HttpError propagates to main() instead of being swallowed.
+    """
+    from GCP import compute_disk_labels_set
+    from googleapiclient.errors import HttpError
+
+    mock_compute = mocker.Mock()
+    mock_disks = mocker.Mock()
+    mock_compute.disks.return_value = mock_disks
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    resp = mocker.MagicMock()
+    resp.status = 412
+    mock_disks.setLabels.return_value.execute.side_effect = HttpError(resp, b'{"error": {"message": "conditionNotMet"}}')
+
+    with pytest.raises(HttpError):
+        compute_disk_labels_set(
+            mocker.Mock(spec=Credentials),
+            {"project_id": "p1", "zone": "us-central1-a", "resource_name": "disk-1", "labels": "key=env,value=prod"},
+        )
+
+
+def test_compute_disk_snapshot_create_builds_body(mocker):
+    """
+    Given: A snapshot request with a mixed-case name, description and labels.
+    When: compute_disk_snapshot_create is called.
+    Then: The snapshot name is lowercased, the labels are parsed, the empty
+          encryption key objects are pruned, and the operation is returned.
+    """
+    from GCP import compute_disk_snapshot_create
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_disks = mocker.Mock()
+    mock_compute.disks.return_value = mock_disks
+    mock_disks.createSnapshot.return_value.execute.return_value = {"id": "op-5", "operationType": "createSnapshot"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "p1",
+        "zone": "us-central1-a",
+        "resource_name": "disk-1",
+        "snapshot_name": "My-Snap",
+        "description": "nightly backup",
+        "labels": "key=env,value=prod",
+    }
+    res = compute_disk_snapshot_create(mock_creds, args)
+
+    called_kwargs = mock_disks.createSnapshot.call_args[1]
+    assert called_kwargs["disk"] == "disk-1"
+    assert called_kwargs["body"]["name"] == "my-snap"
+    assert called_kwargs["body"]["description"] == "nightly backup"
+    assert called_kwargs["body"]["labels"] == {"env": "prod"}
+    assert "snapshotEncryptionKey" not in called_kwargs["body"]
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+
+
+def test_compute_disk_snapshot_create_with_encryption_keys(mocker):
+    """
+    Given: A snapshot request supplying snapshot and source disk encryption keys.
+    When: compute_disk_snapshot_create is called.
+    Then: Both nested encryption key objects are built with only the supplied sub-fields.
+    """
+    from GCP import compute_disk_snapshot_create
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_disks = mocker.Mock()
+    mock_compute.disks.return_value = mock_disks
+    mock_disks.createSnapshot.return_value.execute.return_value = {"id": "op-5"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "p1",
+        "zone": "us-central1-a",
+        "resource_name": "disk-1",
+        "snapshot_name": "snap-1",
+        "snapshot_encryption_key_raw_key": "raw-snap",
+        "source_disk_encryption_key_kms_key_name": "kms-disk",
+    }
+    compute_disk_snapshot_create(mock_creds, args)
+
+    body = mock_disks.createSnapshot.call_args[1]["body"]
+    assert body["snapshotEncryptionKey"] == {"rawKey": "raw-snap"}
+    assert body["sourceDiskEncryptionKey"] == {"kmsKeyName": "kms-disk"}
+
+
+def test_compute_disk_snapshot_create_propagates_error(mocker):
+    """
+    Given: The disks createSnapshot API failing with a 403 permission error.
+    When: compute_disk_snapshot_create is called.
+    Then: The HttpError propagates to main() for structured permission reporting.
+    """
+    from GCP import compute_disk_snapshot_create
+    from googleapiclient.errors import HttpError
+
+    mock_compute = mocker.Mock()
+    mock_disks = mocker.Mock()
+    mock_compute.disks.return_value = mock_disks
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    resp = mocker.MagicMock()
+    resp.status = 403
+    mock_disks.createSnapshot.return_value.execute.side_effect = HttpError(
+        resp, b'{"error": {"message": "Required compute.disks.createSnapshot permission"}}'
+    )
+
+    with pytest.raises(HttpError):
+        compute_disk_snapshot_create(
+            mocker.Mock(spec=Credentials),
+            {"project_id": "p1", "zone": "us-central1-a", "resource_name": "disk-1", "snapshot_name": "snap-1"},
+        )
+
+
+def test_compute_disk_types_list_with_pagination(mocker):
+    """
+    Given: Pagination arguments for a specific zone.
+    When: compute_disk_types_list is called.
+    Then: The disk types are returned and the next token is emitted under
+          GCP.Compute(true).DiskTypesNextToken.
+    """
+    from GCP import compute_disk_types_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_disk_types = mocker.Mock()
+    mock_compute.diskTypes.return_value = mock_disk_types
+    mock_disk_types.list.return_value.execute.return_value = {
+        "items": [{"name": "pd-standard", "id": "1", "validDiskSize": "10GB-64TB"}],
+        "nextPageToken": "t1",
+    }
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_disk_types_list(mock_creds, {"project_id": "p1", "zone": "us-central1-a", "limit": "5", "page_token": "t0"})
+
+    called_kwargs = mock_disk_types.list.call_args[1]
+    assert called_kwargs["zone"] == "us-central1-a"
+    assert called_kwargs["maxResults"] == 5
+    assert called_kwargs["pageToken"] == "t0"
+    assert res.outputs["GCP.Compute(true)"]["DiskTypesNextToken"] == "t1"
+
+
+def test_compute_disk_types_list_no_results(mocker):
+    """
+    Given: A zone with no disk types.
+    When: compute_disk_types_list is called.
+    Then: An empty disk type list is returned and the next token key is still emitted as None.
+    """
+    from GCP import compute_disk_types_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_disk_types = mocker.Mock()
+    mock_compute.diskTypes.return_value = mock_disk_types
+    mock_disk_types.list.return_value.execute.return_value = {}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_disk_types_list(mock_creds, {"project_id": "p1", "zone": "us-central1-a"})
+
+    assert res.outputs["GCP.Compute.DiskTypes(val.id && val.id == obj.id)"] == []
+    assert res.outputs["GCP.Compute(true)"]["DiskTypesNextToken"] is None
+
+
+def test_compute_disk_types_list_invalid_limit(mocker):
+    """
+    Given: A limit argument below the allowed minimum.
+    When: compute_disk_types_list is called.
+    Then: A DemistoException is raised by validate_limit before any API call.
+    """
+    from GCP import compute_disk_types_list
+    from CommonServerPython import DemistoException
+
+    mock_compute = mocker.Mock()
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 500"):
+        compute_disk_types_list(mocker.Mock(spec=Credentials), {"project_id": "p1", "zone": "us-central1-a", "limit": "-1"})
+
+    mock_compute.diskTypes.assert_not_called()
+
+
+def test_compute_disk_types_aggregated_list_flattens_scoped_lists(mocker):
+    """
+    Given: An aggregated response containing disk types in some scopes and a warning-only scope.
+    When: compute_disk_types_aggregated_list is called.
+    Then: Disk types from all scopes are flattened and the warning-only scope contributes nothing.
+          The token uses its own DiskTypesAggregatedNextToken key.
+    """
+    from GCP import compute_disk_types_aggregated_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_disk_types = mocker.Mock()
+    mock_compute.diskTypes.return_value = mock_disk_types
+    mock_disk_types.aggregatedList.return_value.execute.return_value = {
+        "items": {
+            "zones/us-central1-a": {"diskTypes": [{"name": "pd-standard", "id": "1"}]},
+            "zones/us-east1-b": {"diskTypes": [{"name": "pd-ssd", "id": "2"}]},
+            "zones/europe-west1-b": {"warning": {"code": "NO_RESULTS_ON_PAGE"}},
+        }
+    }
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_disk_types_aggregated_list(mock_creds, {"project_id": "p1"})
+
+    disk_types = res.outputs["GCP.Compute.DiskTypes(val.id && val.id == obj.id)"]
+    assert [disk_type["name"] for disk_type in disk_types] == ["pd-standard", "pd-ssd"]
+
+
+def test_compute_disk_types_aggregated_list_no_results(mocker):
+    """
+    Given: An aggregated response with no items.
+    When: compute_disk_types_aggregated_list is called.
+    Then: An empty disk type list is returned and the next token key is still emitted as None.
+    """
+    from GCP import compute_disk_types_aggregated_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_disk_types = mocker.Mock()
+    mock_compute.diskTypes.return_value = mock_disk_types
+    mock_disk_types.aggregatedList.return_value.execute.return_value = {"items": {}}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_disk_types_aggregated_list(mock_creds, {"project_id": "p1"})
+
+    assert res.outputs["GCP.Compute.DiskTypes(val.id && val.id == obj.id)"] == []
+    assert res.outputs["GCP.Compute(true)"]["DiskTypesAggregatedNextToken"] is None
+
+
+def test_compute_disk_type_get_found_and_not_found(mocker):
+    """
+    Given: A disk type name that exists and another that does not.
+    When: compute_disk_type_get is called for each.
+    Then: The disk type details are returned for the first and a readable not-found
+          message is returned for the 404 instead of raising.
+    """
+    from GCP import compute_disk_type_get
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_disk_types = mocker.Mock()
+    mock_compute.diskTypes.return_value = mock_disk_types
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    # Found
+    mock_disk_types.get.return_value.execute.return_value = {"name": "pd-ssd", "id": "1", "validDiskSize": "10GB-64TB"}
+    res = compute_disk_type_get(mock_creds, {"project_id": "p1", "zone": "us-central1-a", "resource_name": "pd-ssd"})
+    assert res.outputs_prefix == "GCP.Compute.DiskTypes"
+    assert mock_disk_types.get.call_args[1] == {"project": "p1", "zone": "us-central1-a", "diskType": "pd-ssd"}
+
+    # Not found
+    resp = mocker.MagicMock()
+    resp.status = 404
+    mock_disk_types.get.return_value.execute.side_effect = HttpError(
+        resp, b'{"error": {"message": "The resource pd-bogus was not found"}}'
+    )
+    res2 = compute_disk_type_get(mock_creds, {"project_id": "p1", "zone": "us-central1-a", "resource_name": "pd-bogus"})
+    assert "not found" in res2.readable_output
+
+
+def test_compute_disk_type_get_propagates_non_404_error(mocker):
+    """
+    Given: The diskTypes get API failing with a 403 permission error.
+    When: compute_disk_type_get is called.
+    Then: The HttpError propagates so main() can map it to a permission error.
+    """
+    from GCP import compute_disk_type_get
+    from googleapiclient.errors import HttpError
+
+    mock_compute = mocker.Mock()
+    mock_disk_types = mocker.Mock()
+    mock_compute.diskTypes.return_value = mock_disk_types
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    resp = mocker.MagicMock()
+    resp.status = 403
+    mock_disk_types.get.return_value.execute.side_effect = HttpError(
+        resp, b'{"error": {"message": "Required compute.diskTypes.get permission"}}'
+    )
+
+    with pytest.raises(HttpError):
+        compute_disk_type_get(
+            mocker.Mock(spec=Credentials), {"project_id": "p1", "zone": "us-central1-a", "resource_name": "pd-ssd"}
+        )
+
+
+# ---------------------------------------------------------------------------
 # YML <-> PY wiring assertion tests
 #
 # These tests read the integration's .yml and .py from disk and assert that

@@ -490,6 +490,832 @@ script:
     - contextPath: GCP.Compute.Snapshot.storageLocations
       description: List of storage locations for the snapshot.
       type: Unknown
+  - name: gcp-compute-disks-list
+    description: "Retrieves a list of persistent disks contained within the specified zone. Required permission: compute.disks.list."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: zone
+      required: true
+      description: The name of the zone for this request.
+    - name: limit
+      defaultValue: '50'
+      description: "Maximum number of results to return. Acceptable values are 1 to 500, inclusive."
+    - name: page_token
+      description: Token for pagination. Set it to the value of GCP.Compute.DisksNextToken returned by a previous request to get the next page of results.
+    - name: filter
+      description: "A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a disk named example-disk, use name != example-disk."
+    - name: order_by
+      description: Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using creationTimestamp desc.
+    outputs:
+    - contextPath: GCP.Compute.Disks.id
+      description: Unique identifier for the disk resource.
+      type: String
+    - contextPath: GCP.Compute.Disks.name
+      description: Name of the disk resource.
+      type: String
+    - contextPath: GCP.Compute.Disks.kind
+      description: Type of the resource, for example compute#disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.description
+      description: An optional description of the disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.status
+      description: The status of disk creation, such as READY or CREATING.
+      type: String
+    - contextPath: GCP.Compute.Disks.sizeGb
+      description: Size of the persistent disk, specified in GB.
+      type: String
+    - contextPath: GCP.Compute.Disks.type
+      description: URL of the disk type resource describing which disk type is used by this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.zone
+      description: URL of the zone where the disk resides.
+      type: String
+    - contextPath: GCP.Compute.Disks.region
+      description: URL of the region where the disk resides. Only applicable for regional resources.
+      type: String
+    - contextPath: GCP.Compute.Disks.creationTimestamp
+      description: Creation timestamp of the disk in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Disks.lastAttachTimestamp
+      description: Last attach timestamp of the disk in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Disks.lastDetachTimestamp
+      description: Last detach timestamp of the disk in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Disks.users
+      description: Links to the users of the disk, meaning the instances the disk is attached to.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.licenses
+      description: A list of publicly visible licenses attached to the disk.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.licenseCodes
+      description: Integer license codes indicating which licenses are attached to the disk.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.guestOsFeatures
+      description: A list of features to enable on the guest operating system, each containing a type field.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.labels
+      description: Labels applied to the disk as key-value pairs.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.labelFingerprint
+      description: Fingerprint for the labels applied to the disk, used for optimistic locking.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceImage
+      description: The source image used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceImageId
+      description: The ID value of the image used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceSnapshot
+      description: The source snapshot used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceSnapshotId
+      description: The unique ID of the snapshot used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.diskEncryptionKey
+      description: The customer-supplied encryption key of the disk, containing the rawKey, kmsKeyName, and sha256 fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.sourceImageEncryptionKey
+      description: The customer-supplied encryption key of the source image, containing the rawKey, kmsKeyName, and sha256 fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.sourceSnapshotEncryptionKey
+      description: The customer-supplied encryption key of the source snapshot, containing the rawKey, kmsKeyName, and sha256 fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.replicaZones
+      description: URLs of the zones where the disk is replicated to. Only applicable for regional resources.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.physicalBlockSizeBytes
+      description: Physical block size of the persistent disk, in bytes.
+      type: String
+    - contextPath: GCP.Compute.Disks.selfLink
+      description: Server-defined URL for the disk resource.
+      type: String
+    - contextPath: GCP.Compute.DisksNextToken
+      description: Next page token for pagination.
+      type: String
+  - name: gcp-compute-disks-aggregated-list
+    description: "Retrieves an aggregated list of persistent disks across all zones in the project. Required permission: compute.disks.list."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: limit
+      defaultValue: '50'
+      description: "Maximum number of results to return. Acceptable values are 1 to 500, inclusive."
+    - name: page_token
+      description: Token for pagination. Set it to the value of GCP.Compute.DisksAggregatedNextToken returned by a previous request to get the next page of results.
+    - name: filter
+      description: "A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a disk named example-disk, use name != example-disk."
+    - name: order_by
+      description: Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using creationTimestamp desc.
+    outputs:
+    - contextPath: GCP.Compute.Disks.id
+      description: Unique identifier for the disk resource.
+      type: String
+    - contextPath: GCP.Compute.Disks.name
+      description: Name of the disk resource.
+      type: String
+    - contextPath: GCP.Compute.Disks.kind
+      description: Type of the resource, for example compute#disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.description
+      description: An optional description of the disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.status
+      description: The status of disk creation, such as READY or CREATING.
+      type: String
+    - contextPath: GCP.Compute.Disks.sizeGb
+      description: Size of the persistent disk, specified in GB.
+      type: String
+    - contextPath: GCP.Compute.Disks.type
+      description: URL of the disk type resource describing which disk type is used by this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.zone
+      description: URL of the zone where the disk resides.
+      type: String
+    - contextPath: GCP.Compute.Disks.region
+      description: URL of the region where the disk resides. Only applicable for regional resources.
+      type: String
+    - contextPath: GCP.Compute.Disks.creationTimestamp
+      description: Creation timestamp of the disk in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Disks.lastAttachTimestamp
+      description: Last attach timestamp of the disk in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Disks.lastDetachTimestamp
+      description: Last detach timestamp of the disk in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Disks.users
+      description: Links to the users of the disk, meaning the instances the disk is attached to.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.licenses
+      description: A list of publicly visible licenses attached to the disk.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.licenseCodes
+      description: Integer license codes indicating which licenses are attached to the disk.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.guestOsFeatures
+      description: A list of features to enable on the guest operating system, each containing a type field.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.labels
+      description: Labels applied to the disk as key-value pairs.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.labelFingerprint
+      description: Fingerprint for the labels applied to the disk, used for optimistic locking.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceImage
+      description: The source image used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceImageId
+      description: The ID value of the image used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceSnapshot
+      description: The source snapshot used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceSnapshotId
+      description: The unique ID of the snapshot used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.diskEncryptionKey
+      description: The customer-supplied encryption key of the disk, containing the rawKey, kmsKeyName, and sha256 fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.sourceImageEncryptionKey
+      description: The customer-supplied encryption key of the source image, containing the rawKey, kmsKeyName, and sha256 fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.sourceSnapshotEncryptionKey
+      description: The customer-supplied encryption key of the source snapshot, containing the rawKey, kmsKeyName, and sha256 fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.replicaZones
+      description: URLs of the zones where the disk is replicated to. Only applicable for regional resources.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.physicalBlockSizeBytes
+      description: Physical block size of the persistent disk, in bytes.
+      type: String
+    - contextPath: GCP.Compute.Disks.selfLink
+      description: Server-defined URL for the disk resource.
+      type: String
+    - contextPath: GCP.Compute.DisksAggregatedNextToken
+      description: Next page token for pagination.
+      type: String
+  - name: gcp-compute-disk-get
+    description: "Returns a specified persistent disk. Required permission: compute.disks.get."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: zone
+      required: true
+      description: The name of the zone for this request.
+    - name: resource_name
+      required: true
+      description: Name of the persistent disk to return.
+    outputs:
+    - contextPath: GCP.Compute.Disks.id
+      description: Unique identifier for the disk resource.
+      type: String
+    - contextPath: GCP.Compute.Disks.name
+      description: Name of the disk resource.
+      type: String
+    - contextPath: GCP.Compute.Disks.kind
+      description: Type of the resource, for example compute#disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.description
+      description: An optional description of the disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.status
+      description: The status of disk creation, such as READY or CREATING.
+      type: String
+    - contextPath: GCP.Compute.Disks.sizeGb
+      description: Size of the persistent disk, specified in GB.
+      type: String
+    - contextPath: GCP.Compute.Disks.type
+      description: URL of the disk type resource describing which disk type is used by this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.zone
+      description: URL of the zone where the disk resides.
+      type: String
+    - contextPath: GCP.Compute.Disks.region
+      description: URL of the region where the disk resides. Only applicable for regional resources.
+      type: String
+    - contextPath: GCP.Compute.Disks.creationTimestamp
+      description: Creation timestamp of the disk in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Disks.lastAttachTimestamp
+      description: Last attach timestamp of the disk in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Disks.lastDetachTimestamp
+      description: Last detach timestamp of the disk in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Disks.users
+      description: Links to the users of the disk, meaning the instances the disk is attached to.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.licenses
+      description: A list of publicly visible licenses attached to the disk.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.licenseCodes
+      description: Integer license codes indicating which licenses are attached to the disk.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.guestOsFeatures
+      description: A list of features to enable on the guest operating system, each containing a type field.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.labels
+      description: Labels applied to the disk as key-value pairs.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.labelFingerprint
+      description: Fingerprint for the labels applied to the disk, used for optimistic locking.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceImage
+      description: The source image used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceImageId
+      description: The ID value of the image used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceSnapshot
+      description: The source snapshot used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceSnapshotId
+      description: The unique ID of the snapshot used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.diskEncryptionKey
+      description: The customer-supplied encryption key of the disk, containing the rawKey, kmsKeyName, and sha256 fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.sourceImageEncryptionKey
+      description: The customer-supplied encryption key of the source image, containing the rawKey, kmsKeyName, and sha256 fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.sourceSnapshotEncryptionKey
+      description: The customer-supplied encryption key of the source snapshot, containing the rawKey, kmsKeyName, and sha256 fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.replicaZones
+      description: URLs of the zones where the disk is replicated to. Only applicable for regional resources.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.physicalBlockSizeBytes
+      description: Physical block size of the persistent disk, in bytes.
+      type: String
+    - contextPath: GCP.Compute.Disks.selfLink
+      description: Server-defined URL for the disk resource.
+      type: String
+  - name: gcp-compute-disk-insert
+    description: "Creates a persistent disk in the specified project and zone. A disk can be created from a source image, from a source snapshot, or as an empty disk by omitting both. Required permission: compute.disks.create."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: zone
+      required: true
+      description: The name of the zone for this request.
+    - name: resource_name
+      required: true
+      description: Name of the disk to create. The name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])?, meaning the first character must be a lowercase letter and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
+    - name: disk_type
+      description: "URL of the disk type resource describing which disk type to use to create the disk. For example: projects/project/zones/zone/diskTypes/pd-standard or pd-ssd."
+    - name: size_gb
+      description: Size of the persistent disk, specified in GB. Acceptable values are 1 to 65536, inclusive. When specified together with source_image or source_snapshot, the value must not be less than the size of the source.
+    - name: description
+      description: An optional description of the disk.
+    - name: source_snapshot
+      description: The source snapshot used to create this disk, provided as a partial or full URL to the resource.
+    - name: source_image
+      description: The source image used to create this disk, provided as a partial or full URL to the resource.
+    - name: licenses
+      description: A comma-separated list of publicly visible licenses to attach to the disk.
+      isArray: true
+    - name: guest_os_features
+      description: A comma-separated list of features to enable on the guest operating system. Applicable only for bootable images.
+      isArray: true
+    - name: disk_encryption_key_raw_key
+      description: Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64, used to encrypt or decrypt this disk.
+    - name: disk_encryption_key_kms_key_name
+      description: The name of the encryption key for this disk that is stored in Google Cloud KMS.
+    - name: source_image_encryption_key_raw_key
+      description: Specifies a 256-bit customer-supplied encryption key of the source image, encoded in RFC 4648 base64.
+    - name: source_image_encryption_key_kms_key_name
+      description: The name of the encryption key of the source image that is stored in Google Cloud KMS.
+    - name: source_snapshot_encryption_key_raw_key
+      description: Specifies a 256-bit customer-supplied encryption key of the source snapshot, encoded in RFC 4648 base64.
+    - name: source_snapshot_encryption_key_kms_key_name
+      description: The name of the encryption key of the source snapshot that is stored in Google Cloud KMS.
+    - name: labels
+      description: "Labels to apply to this disk, in the format key=abc,value=123;key=def,value=456."
+    - name: label_fingerprint
+      description: A fingerprint of the labels being applied to this disk, used for optimistic locking. An up-to-date fingerprint hash must always be provided, otherwise the request fails with error 412 conditionNotMet.
+    - name: replica_zones
+      description: A comma-separated list of URLs of the zones where the disk should be replicated to. Only applicable for regional resources.
+      isArray: true
+    - name: license_codes
+      description: A comma-separated list of integer license codes indicating which licenses are attached to this disk.
+      isArray: true
+    - name: physical_block_size_bytes
+      description: Physical block size of the persistent disk, in bytes. If not provided, a default value is used. Currently supported sizes are 4096 and 16384.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource, for example compute#operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: "The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE."
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator that ranges from 0 to 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time that this operation was requested, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time that this operation was started by the server, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time that this operation was completed, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during processing of the operation, containing an errors list with the code, location, and message fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warnings generated during processing of the operation, each containing the code, message, and data fields.
+      type: Unknown
+  - name: gcp-compute-disk-delete
+    description: "Deletes the specified persistent disk. Deleting a disk removes its data permanently and is irreversible. Snapshots previously created from the disk are not deleted and must be deleted separately. Required permission: compute.disks.delete."
+    execution: true
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: zone
+      required: true
+      description: The name of the zone for this request.
+    - name: resource_name
+      required: true
+      description: Name of the persistent disk to delete.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource, for example compute#operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: "The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE."
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator that ranges from 0 to 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time that this operation was requested, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time that this operation was started by the server, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time that this operation was completed, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during processing of the operation, containing an errors list with the code, location, and message fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warnings generated during processing of the operation, each containing the code, message, and data fields.
+      type: Unknown
+  - name: gcp-compute-disk-resize
+    description: "Resizes the specified persistent disk. The disk size can only be increased. Required permission: compute.disks.resize."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: zone
+      required: true
+      description: The name of the zone for this request.
+    - name: resource_name
+      required: true
+      description: Name of the persistent disk to resize.
+    - name: size_gb
+      required: true
+      description: The new size of the persistent disk, specified in GB.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource, for example compute#operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: "The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE."
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator that ranges from 0 to 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time that this operation was requested, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time that this operation was started by the server, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time that this operation was completed, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during processing of the operation, containing an errors list with the code, location, and message fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warnings generated during processing of the operation, each containing the code, message, and data fields.
+      type: Unknown
+  - name: gcp-compute-disk-labels-set
+    description: "Sets the labels on a persistent disk. Required permission: compute.disks.setLabels."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: zone
+      required: true
+      description: The name of the zone for this request.
+    - name: resource_name
+      required: true
+      description: Name of the persistent disk to set the labels on.
+    - name: labels
+      required: true
+      description: "The labels to set for this disk, in the format key=abc,value=123;key=def,value=456."
+    - name: label_fingerprint
+      description: The fingerprint of the previous set of labels for this disk, used to detect conflicts. Run gcp-compute-disk-get to retrieve the latest fingerprint.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource, for example compute#operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: "The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE."
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator that ranges from 0 to 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time that this operation was requested, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time that this operation was started by the server, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time that this operation was completed, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during processing of the operation, containing an errors list with the code, location, and message fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warnings generated during processing of the operation, each containing the code, message, and data fields.
+      type: Unknown
+  - name: gcp-compute-disk-snapshot-create
+    description: "Creates a snapshot of a specified persistent disk. Required permissions: compute.disks.createSnapshot, compute.snapshots.create."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: zone
+      required: true
+      description: The name of the zone for this request.
+    - name: resource_name
+      required: true
+      description: Name of the persistent disk to snapshot.
+    - name: snapshot_name
+      required: true
+      description: Name of the snapshot to create.
+    - name: description
+      description: An optional description of the snapshot.
+    - name: snapshot_encryption_key_raw_key
+      description: Specifies a 256-bit customer-supplied encryption key for the snapshot, encoded in RFC 4648 base64.
+    - name: snapshot_encryption_key_kms_key_name
+      description: The name of the encryption key for the snapshot that is stored in Google Cloud KMS.
+    - name: source_disk_encryption_key_raw_key
+      description: Specifies a 256-bit customer-supplied encryption key of the source disk, encoded in RFC 4648 base64.
+    - name: source_disk_encryption_key_kms_key_name
+      description: The name of the encryption key of the source disk that is stored in Google Cloud KMS.
+    - name: labels
+      description: "Labels to apply to this snapshot, in the format key=abc,value=123;key=def,value=456."
+    - name: label_fingerprint
+      description: A fingerprint of the labels being applied to this snapshot, used for optimistic locking. An up-to-date fingerprint hash must always be provided, otherwise the request fails with error 412 conditionNotMet.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: Name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.kind
+      description: Type of the resource, for example compute#operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: "The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE."
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator that ranges from 0 to 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies. For a create snapshot operation, this points to the persistent disk that the snapshot was created from.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time that this operation was requested, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time that this operation was started by the server, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time that this operation was completed, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during processing of the operation, containing an errors list with the code, location, and message fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warnings generated during processing of the operation, each containing the code, message, and data fields.
+      type: Unknown
+  - name: gcp-compute-disk-types-list
+    description: "Retrieves a list of disk types available in the specified zone. Required permission: compute.diskTypes.list."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: zone
+      required: true
+      description: The name of the zone for this request.
+    - name: limit
+      defaultValue: '50'
+      description: "Maximum number of results to return. Acceptable values are 1 to 500, inclusive."
+    - name: page_token
+      description: Token for pagination. Set it to the value of GCP.Compute.DiskTypesNextToken returned by a previous request to get the next page of results.
+    - name: filter
+      description: "A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a disk type named pd-standard, use name != pd-standard."
+    - name: order_by
+      description: Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using creationTimestamp desc.
+    outputs:
+    - contextPath: GCP.Compute.DiskTypes.id
+      description: The unique identifier for the disk type resource.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.name
+      description: Name of the disk type resource.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.kind
+      description: Type of the resource, for example compute#diskType.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.description
+      description: An optional description of the disk type.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.validDiskSize
+      description: An optional textual description of the valid disk size, such as 10GB-10TB.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.defaultDiskSizeGb
+      description: Server-defined default disk size in GB.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.zone
+      description: URL of the zone where the disk type resides.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.region
+      description: URL of the region where the disk type resides. Only applicable for regional resources.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.creationTimestamp
+      description: Creation timestamp of the disk type in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.DiskTypes.selfLink
+      description: Server-defined URL for the disk type resource.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.deprecated
+      description: The deprecation status associated with this disk type, containing the state, replacement, deprecated, obsolete, and deleted fields.
+      type: Unknown
+    - contextPath: GCP.Compute.DiskTypesNextToken
+      description: Next page token for pagination.
+      type: String
+  - name: gcp-compute-disk-types-aggregated-list
+    description: "Retrieves an aggregated list of disk types across all zones in the project. Required permission: compute.diskTypes.list."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: limit
+      defaultValue: '50'
+      description: "Maximum number of results to return. Acceptable values are 1 to 500, inclusive."
+    - name: page_token
+      description: Token for pagination. Set it to the value of GCP.Compute.DiskTypesAggregatedNextToken returned by a previous request to get the next page of results.
+    - name: filter
+      description: "A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a disk type named pd-standard, use name != pd-standard."
+    - name: order_by
+      description: Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using creationTimestamp desc.
+    outputs:
+    - contextPath: GCP.Compute.DiskTypes.id
+      description: The unique identifier for the disk type resource.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.name
+      description: Name of the disk type resource.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.kind
+      description: Type of the resource, for example compute#diskType.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.description
+      description: An optional description of the disk type.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.validDiskSize
+      description: An optional textual description of the valid disk size, such as 10GB-10TB.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.defaultDiskSizeGb
+      description: Server-defined default disk size in GB.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.zone
+      description: URL of the zone where the disk type resides.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.region
+      description: URL of the region where the disk type resides. Only applicable for regional resources.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.creationTimestamp
+      description: Creation timestamp of the disk type in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.DiskTypes.selfLink
+      description: Server-defined URL for the disk type resource.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.deprecated
+      description: The deprecation status associated with this disk type, containing the state, replacement, deprecated, obsolete, and deleted fields.
+      type: Unknown
+    - contextPath: GCP.Compute.DiskTypesAggregatedNextToken
+      description: Next page token for pagination.
+      type: String
+  - name: gcp-compute-disk-type-get
+    description: "Returns the specified disk type. Required permission: compute.diskTypes.get."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: zone
+      required: true
+      description: The name of the zone for this request.
+    - name: resource_name
+      required: true
+      description: Name of the disk type to return.
+    outputs:
+    - contextPath: GCP.Compute.DiskTypes.id
+      description: The unique identifier for the disk type resource.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.name
+      description: Name of the disk type resource.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.kind
+      description: Type of the resource, for example compute#diskType.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.description
+      description: An optional description of the disk type.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.validDiskSize
+      description: An optional textual description of the valid disk size, such as 10GB-10TB.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.defaultDiskSizeGb
+      description: Server-defined default disk size in GB.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.zone
+      description: URL of the zone where the disk type resides.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.region
+      description: URL of the region where the disk type resides. Only applicable for regional resources.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.creationTimestamp
+      description: Creation timestamp of the disk type in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.DiskTypes.selfLink
+      description: Server-defined URL for the disk type resource.
+      type: String
+    - contextPath: GCP.Compute.DiskTypes.deprecated
+      description: The deprecation status associated with this disk type, containing the state, replacement, deprecated, obsolete, and deleted fields.
+      type: Unknown
   - name: gcp-compute-instances-aggregated-list-by-ip
     description: "Returns an aggregated list of instances across all zones that can be filtered by internal or external IP. Required permission: cloudasset.assets.searchAllResources."
     arguments:
