@@ -2036,3 +2036,13 @@ Moves a published Knowledge article to Draft using the standard createDraftFromO
 >|Action|DraftVersionId|Id|ObjectType|Status|Unpublished|
 >|---|---|---|---|---|---|
 >| Draft Knowledge Article | ka1dn0000001ZzpAAE | ka1dn0000001ZyDAAU | KnowledgeArticleVersion | Unpublished (Draft created) | true |
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
+
+- Fetch incidents
+
+</~PLATFORM>
