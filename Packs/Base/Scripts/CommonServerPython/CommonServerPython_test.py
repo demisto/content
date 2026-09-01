@@ -10150,6 +10150,9 @@ class TestSendEventsToXSIAMTest:
         for call in legacy_mock.call_args_list:
             legacy_lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
 
+        # reset the health mock so the assertion below reflects only the threaded call
+        demisto.updateModuleHealth.reset_mock()
+
         # streaming + threaded path
         threaded_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
         futures = send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=chunk_size,

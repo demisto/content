@@ -66,9 +66,7 @@ MAX_ERROR_MESSAGE_LENGTH = 50000
 # to a CortexExternalApiError message (avoids dumping huge payloads).
 MAX_API_RESPONSE_BODY_LENGTH = 500
 NUM_OF_WORKERS = 20
-# Max number of compressed chunks kept in flight (submitted-but-not-yet-collected) at once on the
-# streaming + multiple_threads path. Bounds peak memory to ~this many small (~chunk_size) gzip blobs,
-# instead of materializing every chunk up front (the CIAC-16981 "M3" spike). CIAC-17212.
+# Max compressed chunks in flight at once on the streaming + multiple_threads path (bounds peak memory).
 MAX_INFLIGHT_CHUNKS = NUM_OF_WORKERS
 HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
 JSON_SEPARATORS = (",", ":")  # To get the most compact JSON representation, we should specify (',', ':') to eliminate whitespace.
@@ -13943,9 +13941,9 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type use_streaming_send: ``bool``
     :param use_streaming_send: Feature flag (default False). When True, serializes and gzips the data one item at a time
         (streaming) instead of building full copies of the whole batch, keeping peak memory ~flat; the bytes sent to
-        XSIAM are equivalent to the legacy path. When combined with multiple_threads=True (CIAC-17212), each finished
-        (small, compressed) chunk is POSTed on a bounded thread pool so uploads overlap while chunk building stays
-        streaming/free-as-you-go. Ignored when data is already a raw string.
+        XSIAM are equivalent to the legacy path. When combined with multiple_threads=True, each finished compressed
+        chunk is POSTed on a bounded thread pool so uploads overlap while chunk building stays streaming.
+        Ignored when data is already a raw string.
 
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
@@ -14134,9 +14132,9 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :type use_streaming_send: ``bool``
     :param use_streaming_send: Feature flag (default False). When True, serializes and gzips the data one item at a time
         (streaming) instead of building full copies of the whole batch, keeping peak memory ~flat; the bytes sent to
-        XSIAM are equivalent to the legacy path. When combined with multiple_threads=True (CIAC-17212), each finished
-        (small, compressed) chunk is POSTed on a bounded thread pool so uploads overlap while chunk building stays
-        streaming/free-as-you-go. Ignored when data is already a raw string.
+        XSIAM are equivalent to the legacy path. When combined with multiple_threads=True, each finished compressed
+        chunk is POSTed on a bounded thread pool so uploads overlap while chunk building stays streaming.
+        Ignored when data is already a raw string.
 
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
@@ -14162,9 +14160,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
         return
 
-    # Feature flag (CIAC-16981): stream-serialize one item at a time (list-of-items path).
-    # CIAC-17212: the streaming builder now also feeds the multiple_threads path, so streaming is honored
-    # for both single-thread (sequential POST) and multi-thread (bounded concurrent POST) sends.
+    # Stream-serialize one item at a time; honored for both single-thread and multi-thread list sends.
     streaming_send = bool(use_streaming_send) and isinstance(data, list)
     # Decide JSON-encoding once on the first item, like the legacy list path, so the payload is identical.
     streaming_items_are_json = streaming_send and bool(data) and isinstance(data[0], dict)
@@ -14257,12 +14253,11 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                         num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                         zipped_data=zipped_data, is_json_response=True, data_type=data_type)
 
-        # CIAC-17212: when multiple_threads is requested, POST each finished (small, compressed) chunk on a
-        # bounded thread pool so uploads overlap, while the chunk *building* stays streaming/free-as-you-go.
-        # We never materialize all chunks at once: at most MAX_INFLIGHT_CHUNKS compressed blobs are in flight.
+        # When multiple_threads is requested, POST each finished compressed chunk on a bounded thread pool so
+        # uploads overlap while chunk building stays streaming; at most MAX_INFLIGHT_CHUNKS chunks in flight.
         executor = None
         all_futures = []  # type: list  # every submitted future - returned to the caller to tally counts
-        inflight = []     # type: list  # subset still submitted-but-not-yet-collected (bounds peak memory)
+        inflight = []     # type: list  # subset not yet collected (bounds peak memory)
         if multiple_threads:
             demisto.info("Sending events to xsiam with multiple threads (streaming, free-as-you-go).")
             support_multithreading()
@@ -14275,11 +14270,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
             if executor is None:
                 _post_zipped(zipped_data)
                 return item_count
-            # Bound how many compressed chunks are submitted-but-not-yet-collected, so peak memory stays
-            # ~MAX_INFLIGHT_CHUNKS small blobs instead of the whole batch (the CIAC-16981 "M3" spike).
-            # We only drop chunks from the in-flight set once done - the future itself is kept in
-            # all_futures so its zipped payload is already released (the send consumed it) and the caller
-            # can still read the per-chunk count.
+            # Block once the in-flight set is full so we never hold more than MAX_INFLIGHT_CHUNKS chunks;
+            # completed futures stay in all_futures (payload already sent) for the caller's count.
             while len(inflight) >= MAX_INFLIGHT_CHUNKS:
                 done, _ = concurrent.futures.wait(inflight, return_when=concurrent.futures.FIRST_COMPLETED)
                 for finished in done:
