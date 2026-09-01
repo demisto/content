@@ -39,7 +39,11 @@ def generate_intervals(start_dt: datetime, end_dt: datetime) -> list[tuple[datet
 
 def get_event_time(event: dict[str, Any], log_type: str) -> str:
     if log_type == "message":
-        time_stamp = event.get("message", {}).get("timestamp")
+        msg = event.get("message", {})
+        time_stamp =  (
+            msg.get("timestamp")
+            or msg.get("action", {}).get("timestamp", "")
+        )      
     else:
         time_stamp = event.get("timestamp")
     if time_stamp:
