@@ -14217,9 +14217,9 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         try:
             response = res.json()
             error = res.reason
-            if response.get('error').lower() == 'false':
-                xsiam_server_err_msg = response.get('error')
-                error += ": " + xsiam_server_err_msg
+            xsiam_server_err_msg = response.get('error')
+            if xsiam_server_err_msg and str(xsiam_server_err_msg).lower() != 'false':
+                error += ": " + str(xsiam_server_err_msg)
 
         except ValueError:
             if res.text:
@@ -14246,81 +14246,86 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         # memory stays ~flat. At the target chunk size we close the stream, POST it, and open a fresh one.
         target_chunk_size = min(chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
 
-        def _post_zipped(zipped_data):
+        def _send_and_count(zipped_data, item_count):
             """POST one gzipped chunk and return the number of items it held (for the health count)."""
             xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
                                         error_msg=header_msg, headers=headers,
                                         num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                         zipped_data=zipped_data, is_json_response=True, data_type=data_type)
+            return item_count
 
         # When multiple_threads is requested, POST each finished compressed chunk on a bounded thread pool so
         # uploads overlap while chunk building stays streaming; at most MAX_INFLIGHT_CHUNKS chunks in flight.
         executor = None
         all_futures = []  # type: list  # every submitted future - returned to the caller to tally counts
-        inflight = []     # type: list  # subset not yet collected (bounds peak memory)
+        inflight = set()  # type: set  # subset not yet collected (bounds peak memory)
+        mode_desc = "multiple threads" if multiple_threads else "a single thread"
+        demisto.info("Sending events to xsiam with {} (streaming, free-as-you-go).".format(mode_desc))
         if multiple_threads:
-            demisto.info("Sending events to xsiam with multiple threads (streaming, free-as-you-go).")
             support_multithreading()
             executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
-        else:
-            demisto.info("Sending events to xsiam with a single thread (streaming, free-as-you-go).")
 
         def _dispatch(zipped_data, item_count):
             """Send one compressed chunk: inline when single-thread, or submit to the bounded pool when threaded."""
             if executor is None:
-                _post_zipped(zipped_data)
-                return item_count
+                return _send_and_count(zipped_data, item_count)
             # Block once the in-flight set is full so we never hold more than MAX_INFLIGHT_CHUNKS chunks;
             # completed futures stay in all_futures (payload already sent) for the caller's count.
             while len(inflight) >= MAX_INFLIGHT_CHUNKS:
                 done, _ = concurrent.futures.wait(inflight, return_when=concurrent.futures.FIRST_COMPLETED)
                 for finished in done:
                     finished.result()  # surface any send error early
-                    inflight.remove(finished)
-            future = executor.submit(lambda z=zipped_data, c=item_count: (_post_zipped(z), c)[1])
+                    inflight.discard(finished)
+            future = executor.submit(_send_and_count, zipped_data, item_count)
             all_futures.append(future)
-            inflight.append(future)
+            inflight.add(future)
             return 0  # threaded: the caller tallies the count from the returned futures
 
-        buf = _io.BytesIO()
-        gz = gzip.GzipFile(fileobj=buf, mode='wb')
-        chunk_uncompressed = 0  # uncompressed bytes written into the current gzip stream
-        chunk_items = 0         # items written into the current gzip stream
+        try:
+            buf = _io.BytesIO()
+            gz = gzip.GzipFile(fileobj=buf, mode='wb')
+            chunk_uncompressed = 0  # uncompressed bytes written into the current gzip stream
+            chunk_items = 0         # items written into the current gzip stream
 
-        for index in range(len(data)):
-            serialized = json.dumps(data[index]) if streaming_items_are_json else data[index]
-            data[index] = None  # free the source item as soon as it is serialized (keeps peak ~one event)
+            for index in range(len(data)):
+                serialized = json.dumps(data[index]) if streaming_items_are_json else data[index]
+                data[index] = None  # free the source item as soon as it is serialized (keeps peak ~one event)
 
-            # Match legacy split_data_to_chunks: skip and log any single entry larger than the allowed size,
-            # measuring with sys.getsizeof on the serialized string exactly as the legacy path does.
-            entry_size = sys.getsizeof(serialized)
-            if entry_size >= MAX_ALLOWED_ENTRY_SIZE:
-                demisto.error("entry size {size} is larger than the maximum allowed entry size {max_size}, "
-                              "skipping this entry".format(size=entry_size, max_size=MAX_ALLOWED_ENTRY_SIZE))
-                continue
+                # Match legacy split_data_to_chunks: skip and log any single entry larger than the allowed size,
+                # measuring with sys.getsizeof on the serialized string exactly as the legacy path does.
+                entry_size = sys.getsizeof(serialized)
+                if entry_size >= MAX_ALLOWED_ENTRY_SIZE:
+                    demisto.error("entry size {size} is larger than the maximum allowed entry size {max_size}, "
+                                  "skipping this entry".format(size=entry_size, max_size=MAX_ALLOWED_ENTRY_SIZE))
+                    continue
 
-            line = serialized.encode('utf-8')
-            gz.write((b'\n' if chunk_items else b'') + line)  # newline-separate items, like legacy '\n'.join(...)
-            chunk_uncompressed += len(line) + (1 if chunk_items else 0)
-            chunk_items += 1
+                line = serialized.encode('utf-8')
+                gz.write((b'\n' if chunk_items else b'') + line)  # newline-separate items, like legacy '\n'.join(...)
+                chunk_uncompressed += len(line) + (1 if chunk_items else 0)
+                chunk_items += 1
 
-            if chunk_uncompressed >= target_chunk_size:
-                gz.close()
+                if chunk_uncompressed >= target_chunk_size:
+                    gz.close()
+                    data_size += _dispatch(buf.getvalue(), chunk_items)
+                    buf = _io.BytesIO()
+                    gz = gzip.GzipFile(fileobj=buf, mode='wb')
+                    chunk_uncompressed = 0
+                    chunk_items = 0
+
+            # flush the final (partial) chunk
+            gz.close()
+            if chunk_items:
                 data_size += _dispatch(buf.getvalue(), chunk_items)
-                buf = _io.BytesIO()
-                gz = gzip.GzipFile(fileobj=buf, mode='wb')
-                chunk_uncompressed = 0
-                chunk_items = 0
-
-        # flush the final (partial) chunk
-        gz.close()
-        if chunk_items:
-            data_size += _dispatch(buf.getvalue(), chunk_items)
+        except Exception:
+            # On a mid-stream failure, don't leak worker threads: cancel pending work and shut the pool down.
+            if executor is not None:
+                executor.shutdown(wait=False)
+            raise
 
         if multiple_threads:
             # Preserve the multiple_threads contract: hand the caller the futures (each resolves to the number
             # of events its chunk sent) and let the caller await them + call updateModuleHealth itself.
-            demisto.info('Finished submiting {} Futures.'.format(len(all_futures)))
+            demisto.info('Finished submitting {} Futures.'.format(len(all_futures)))
             return all_futures
 
         if should_update_health_module:
