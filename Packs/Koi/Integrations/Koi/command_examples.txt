@@ -1,3 +1,5 @@
+!koi-get-events event_type=Alerts limit=10 should_push_events=false
+!koi-get-events event_type=Audit limit=10 start_time="3 days ago" end_time="now" should_push_events=false
 !koi-policy-list limit=50
 !koi-policy-list page=1 page_size=100
 !koi-allowlist-get

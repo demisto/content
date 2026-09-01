@@ -4,10 +4,11 @@
 
 KOI (AES - Agentic Endpoint Security) is a Palo Alto Networks product for software supply chain governance. It provides visibility and control over browser extensions, IDE extensions, AI coding agents, SaaS applications, and web-based threats across your organization.
 
-This pack includes the **KOI** integration — full Koi API v2 coverage with actionable commands, enrichment with DBot scoring, and EntityRelationship linking for CVEs and file hashes.
+This pack includes the **KOI** integration — full Koi API v2 coverage with XSIAM event collection, actionable commands, enrichment with DBot scoring, and EntityRelationship linking for CVEs and file hashes.
 
 ## What does this pack do?
 
+- **Event Collection**: Fetches alerts and audit logs from KOI and ingests them into Cortex XSIAM for centralized security monitoring, correlation, and threat analysis.
 - **Item Enrichment**: Enriches software items with risk reports, DBot scoring, CVE extraction, and file hash relationships.
 - **Inventory Management**: Query and search the software inventory, inspect item details, and list endpoints using specific items.
 - **Policy Management**: List, enable, and disable organizational security policies, and manage allowlists and blocklists.

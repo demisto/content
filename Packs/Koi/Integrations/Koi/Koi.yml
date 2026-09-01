@@ -36,9 +36,105 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- name: isFetchEvents
+  display: Fetch events
+  type: 8
+  section: Collect
+  required: false
+  hidden:
+  - xsoar
+- name: event_types_to_fetch
+  display: Fetch event types
+  required: true
+  defaultvalue: Alerts,Audit
+  type: 16
+  options:
+  - Alerts
+  - Audit
+  additionalinfo: 'Select which event types to fetch from KOI.'
+  section: Collect
+  hidden:
+  - xsoar
+- name: audit_types_filter
+  display: Audit log type filter
+  required: false
+  type: 16
+  options:
+  - approval_requests
+  - devices
+  - endpoints
+  - extensions
+  - firewall
+  - guardrails
+  - notifications
+  - policies
+  - remediation
+  - requests
+  - settings
+  - vetting
+  additionalinfo: 'Filter audit logs by type(s). If not specified, all audit log types will be fetched.'
+  section: Collect
+  hidden:
+  - xsoar
+- name: max_fetch
+  display: Maximum number of events per fetch
+  type: 0
+  defaultvalue: '5000'
+  additionalinfo: 'Maximum number of events to fetch per type per fetch cycle (default: 5000).'
+  section: Collect
+  required: false
+  hidden:
+  - xsoar
+- defaultvalue: 1
+  display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - xsoar
 description: Koi (Agentic Endpoint Security) provides visibility and governance over non-binary software supply chains including browser extensions, IDE extensions, code packages, AI models, MCP servers, OS packages, binaries, and repositories.
 script:
   commands:
+  - name: koi-get-events
+    description: Gets events from KOI. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
+    arguments:
+    - name: event_type
+      description: 'The type of events to retrieve. If not specified, uses the value configured in the integration parameters.'
+      auto: PREDEFINED
+      defaultValue: 'Alerts,Audit'
+      predefined:
+      - 'Alerts'
+      - 'Audit'
+      isArray: true
+    - name: limit
+      description: The maximum number of events to return per type.
+      defaultValue: '50'
+    - name: start_time
+      description: 'Filter events created at or after this time. Supports ISO 8601 format or relative time expressions (e.g., "3 days ago", "2024-01-01T00:00:00Z").'
+    - name: end_time
+      description: 'Filter events created at or before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z").'
+    - name: should_push_events
+      auto: PREDEFINED
+      defaultValue: 'false'
+      description: The flag that indicates whether to push events to Cortex XSIAM. Pushing events is supported on Cortex XSIAM only. When set to false, or on non-XSIAM platforms, events are displayed without being pushed.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: KOI.Event.id
+      description: The unique identifier of the event.
+      type: String
+    - contextPath: KOI.Event.source_log_type
+      description: The source log type of the event (Alerts or Audit).
+      type: String
+    - contextPath: KOI.Event._time
+      description: The timestamp of the event in ISO 8601 format.
+      type: Date
+    - contextPath: KOI.Event.created_at
+      description: The creation time of the event (audit logs).
+      type: Date
   - name: koi-alert-list
     description: Retrieves a list of alerts from the Koi OCSF alert feed. Supports filtering by alert type, event ID, and date range. Returns structured alert data including finding info, severity, resources, and observables.
     arguments:
@@ -2131,6 +2227,8 @@ script:
   script: '-'
   type: python
   subtype: python3
+  isfetchevents: true
+  isfetchevents:xsoar: false
   dockerimage: demisto/fastapi:0.125.0.10158186
 fromversion: 6.10.0
 tests:
