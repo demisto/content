@@ -34,25 +34,23 @@ def parse_custom_fields(custom_fields: list[str]) -> dict[str, Any]:
         `customfield_10101=foo,customfield_10102=bar`
 
     And are returned as a dict:
-        `{'customfield_10101': 'foo', 'customfield_10102': 'bar'}`
-
-    Values may contain any characters including non-ASCII text (Korean, Japanese, etc.),
-    spaces, hyphens, @, /, and other special characters.
+        `'customfield_10101': 'foo', 'customfield_10101': 'bar'`
 
     Args:
-        - `custom_fields` (`List[str]`): List of custom fields.
+        - `custom_fields` (`List[str]`): List of custom fields.s
 
     Returns:
         - `Dict[str, Any]` representing the custom fields.
     """
 
     result: dict[str, Any] = {}
-    regex = r"([^=,]+)=([^,]+)"
+    regex = r"(customfield_\d{5,})={1}(\w+)"
 
     for custom_field in custom_fields:
-        for field_key, field_value in re.findall(regex, custom_field):
-            field_key = field_key.strip()
-            field_value = field_value.strip()
+        field_regex_match = re.search(regex, custom_field)
+
+        if field_regex_match:
+            field_key, field_value = re.findall(regex, custom_field)[0]
 
             if field_value.isnumeric() and not field_value.startswith("0"):
                 field_value = int(field_value)  # type: ignore
@@ -64,21 +62,16 @@ def parse_custom_fields(custom_fields: list[str]) -> dict[str, Any]:
 
 def add_custom_fields(args: dict[str, Any], custom_fields: dict[str, Any]) -> dict[str, Any]:
     """
-    Merge parsed custom fields directly into the args dict.
-
-    JiraV3's `create_issue_fields` natively handles any arg whose key starts with
-    `customfield` by mapping it to `fields.<key>` in the Jira API payload. This means
-    custom fields can coexist with standard named args (summary, projectKey, etc.)
-    without needing `issue_json`.
+    Method to generate the payload representing the Jira issue custom fields and add it to the script arguments.
 
     Args:
-        - `args` (`dict[str, Any]`): The current command arguments dict.
-        - `custom_fields` (`Dict[str, Any]`): A dict of custom field keys to values.
+        - `custom_fields` (`Dict[str, Any]`): A dicto of custom fields
     Returns:
-        - A `Dict[str, Any]` with custom fields merged in.
+        - A `Dict[str, Any]` with the Jira issue payload
     """
 
-    args.update(custom_fields)
+    args["issueJson"] = {}
+    args["issueJson"]["fields"] = custom_fields
 
     return args
 
@@ -100,7 +93,7 @@ def main():  # pragma: no cover
             if custom_fields:
                 demisto.debug(f"Custom fields parsed: {custom_fields}. Removing 'customFields' argument...")
 
-                # `jira-create-issue` doesn't include `customFields` arg so we need to remove it and merge custom fields directly.
+                # `jira-create-issue`` doesn't include `customFields` arg so we need to remove it and replace it with `issueJson`.
                 del args["customFields"]
                 demisto.debug("'customFields' removed. Adding custom field payload to the rest of the command arguments...")
                 args = add_custom_fields(args, custom_fields)
