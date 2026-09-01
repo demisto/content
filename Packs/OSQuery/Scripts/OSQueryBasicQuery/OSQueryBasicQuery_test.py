@@ -24,30 +24,30 @@ def test_OSQueryBasicQuery_error(mocker):
 
 
 @pytest.mark.parametrize(
-    "injection_payload",
+    "query_with_special_chars",
     [
-        '"; id > /tmp/pwned_xsoar; #',
-        "'; rm -rf /; '",
-        "$(whoami)",
-        "`id`",
-        "query | cat /etc/passwd",
-        "query && curl http://test.com",
+        'SELECT * FROM users WHERE name = "admin"',
+        "SELECT path FROM file WHERE path LIKE '/etc/%'",
+        "SELECT $(echo test) FROM processes",
+        "SELECT `id` FROM users",
+        "SELECT pid, name FROM processes | head",
+        "SELECT * FROM users WHERE uid > 0 && uid < 100",
     ],
 )
-def test_OSQueryBasicQuery_injection_payloads_are_quoted(mocker, injection_payload):
+def test_OSQueryBasicQuery_injection_payloads_are_quoted(mocker, query_with_special_chars):
     """
     Given:
-        - A query argument containing shell metacharacters (injection payload).
+        - A query argument containing shell special characters.
     When:
         - Running the OSQueryBasicQuery script.
     Then:
         - The command passed to RemoteExec, when parsed by a POSIX shell, yields the
-          payload as a single literal argument to osqueryi — no metacharacter expansion.
+          query as a single literal argument to osqueryi — no shell interpretation.
     """
     import shlex
     from OSQueryBasicQuery import main
 
-    mocker.patch.object(demisto, "args", return_value={"system": "target-host", "query": injection_payload})
+    mocker.patch.object(demisto, "args", return_value={"system": "target-host", "query": query_with_special_chars})
     execute_mock = mocker.patch.object(demisto, "executeCommand", return_value=[{"Type": 1, "Contents": "[]"}])
     mocker.patch.object(demisto, "results")
     main()
@@ -56,13 +56,13 @@ def test_OSQueryBasicQuery_injection_payloads_are_quoted(mocker, injection_paylo
     called_cmd = execute_mock.call_args[0][1]["cmd"]
 
     # Parse the command exactly as a POSIX shell would: the third token (index 2)
-    # must equal the raw payload — proving shlex.quote neutralised all metacharacters
-    # and the shell would treat the entire payload as one literal argument.
+    # must equal the raw query — proving shlex.quote neutralised all special characters
+    # and the shell would treat the entire query as one literal argument.
     parsed_args = shlex.split(called_cmd)
     assert len(parsed_args) == 3, f"Expected 3 shell tokens (osqueryi --json <query>), got {parsed_args!r}"
-    assert parsed_args[2] == injection_payload, (
-        f"Shell would not receive the payload as a single literal argument. "
-        f"cmd={called_cmd!r}, parsed arg={parsed_args[2]!r}, expected={injection_payload!r}"
+    assert parsed_args[2] == query_with_special_chars, (
+        f"Shell would not receive the query as a single literal argument. "
+        f"cmd={called_cmd!r}, parsed arg={parsed_args[2]!r}, expected={query_with_special_chars!r}"
     )
 
 

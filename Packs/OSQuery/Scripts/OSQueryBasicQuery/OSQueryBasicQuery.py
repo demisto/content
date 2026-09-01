@@ -5,8 +5,7 @@ import shlex
 
 
 # ssh command to run, json format, param = query to execute.
-# No surrounding quotes here: shlex.quote() (applied at call-site) provides its own
-# shell-safe single-quoting, so the template must not add extra "..." around {0}.
+# {0} is filled with a shlex.quote()-escaped value at call-site.
 COMMAND = "osqueryi --json {0}"
 
 
