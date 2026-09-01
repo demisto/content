@@ -354,7 +354,7 @@
     },
     "SyncActionReason": {
       "type": "string",
-      "is_array": false
+      "is_array": true
     },
     "SessionId": {
       "type": "string",
