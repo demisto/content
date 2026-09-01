@@ -1,0 +1,57 @@
+category: Identity and Access Management
+provider: Hydden
+commonfields:
+  id: Hydden Control
+  version: -1
+configuration:
+- display: Hydden API URL (e.g., https://control.hydden.ai/api/public/v1)
+  name: url
+  defaultvalue: https://control.hydden.ai/api/public/v1
+  type: 0
+  required: true
+  section: Connect
+- display: Client ID
+  displaypassword: Client Secret
+  name: credentials
+  type: 9
+  required: true
+  section: Connect
+description: Calculate account blast radius and deprovision accounts from Cortex using Hydden Control.
+display: Hydden Control
+name: Hydden Control
+sectionorder:
+- Connect
+script:
+  commands:
+  - name: hydden-blast-radius
+    description: Return the account's blast radius information as a string from Hydden Control using GET /blast-radius?account_id=.
+    arguments:
+    - name: account_id
+      required: true
+      description: The Cortex account ID. Sent to Hydden as the account_id query parameter.
+    outputs:
+    - contextPath: Hydden.Identity.blast_radius
+      description: The account's blast radius information.
+      type: String
+  - name: hydden-deprovision-account
+    description: Deprovision an account across the Hydden identity fabric using POST /account-actions/deprovision?account_id=.
+    execution: true
+    arguments:
+    - name: account_id
+      required: true
+      description: The Cortex account ID to deprovision. Sent to Hydden as the account_id query parameter.
+    outputs:
+    - contextPath: Hydden.Identity.deprovisioned
+      description: Whether deprovisioning succeeded.
+      type: Boolean
+  dockerimage: demisto/python3:3.12.13.10399583
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+marketplaces:
+- marketplacev2
+- platform
+tests:
+- No tests

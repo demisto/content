@@ -1,0 +1,36 @@
+{
+    "name": "Hydden Control",
+    "description": "Complement Cortex XSIAM identity analytics with Hydden Control's identity fabric system of record.",
+    "support": "partner",
+    "currentVersion": "1.2.17",
+    "author": "Hydden",
+    "url": "https://www.hydden.com",
+    "email": "support@hydden.com",
+    "categories": [
+        "Identity and Access Management"
+    ],
+    "tags": [
+        "IAM",
+        "Incident Response",
+        "Security Analytics"
+    ],
+    "useCases": [
+        "Identity and Access Management",
+        "Incident Response"
+    ],
+    "keywords": [
+        "hydden",
+        "identity",
+        "ivip",
+        "nhi",
+        "identity analytics",
+        "identity fabric",
+        "identity system of record",
+        "hydden control"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "created": "2026-08-16T00:00:00Z"
+}
