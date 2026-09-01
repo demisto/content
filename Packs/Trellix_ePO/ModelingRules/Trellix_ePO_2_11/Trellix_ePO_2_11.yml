@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: Trellix_ePO_ModelingRule
-name: Trellix_ePO Modeling Rule
+id: trellix_epo_ModelingRule
+name: Trellix ePO Modeling Rule
 rules: ''
 schema: ''
 tags: TrellixEpoModelingRules

@@ -1,7 +1,7 @@
 
 fromversion: 8.15.0
-id: SymantecEndpointSecurity_ModelingRule
-name: SymantecEndpointSecurity Modeling Rule
+id: Symantec_Endpoint_Security_ModelingRule
+name: Symantec Endpoint Security Modeling Rule
 rules: ''
 schema: ''
 tags: ''

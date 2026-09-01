@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: OktaAuth0_ModelingRule
-name: OktaAuth0 Modeling Rule
+id: auth0_okta_ModelingRule
+name: Auth0 Okta Modeling Rule
 rules: ''
 schema: ''
 tags: auth0
