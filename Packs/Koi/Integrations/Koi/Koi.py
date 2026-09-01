@@ -1,9 +1,7 @@
 import json
+import re
 import traceback
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta, UTC
-from enum import Enum
+from datetime import datetime, UTC
 from typing import Any
 from collections.abc import Callable
 
@@ -18,7 +16,7 @@ urllib3.disable_warnings()
 
 """
 KOI
-Integration for fetching Alerts and Audit Logs from the KOI API.
+Integration for Koi Agentic Endpoint Security platform.
 """
 
 # region Constants and helpers
@@ -26,6 +24,10 @@ Integration for fetching Alerts and Audit Logs from the KOI API.
 # Constants and helpers
 # =================================
 INTEGRATION_NAME = "KOI"
+INDICATOR_TYPE = "Koi Software Item"
+
+SHA1_RE = re.compile(r'^[A-Fa-f0-9]{40}$')
+SHA256_RE = re.compile(r'^[A-Fa-f0-9]{64}$')
 
 
 class ApiPaths:
@@ -124,9 +126,6 @@ class ApiPaths:
 class Config:
     """Global static configuration."""
 
-    VENDOR = "koi"
-    PRODUCT = "koi"
-
     # Date format for API requests (ISO 8601)
     DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
@@ -138,47 +137,6 @@ class Config:
     DEFAULT_LIMIT = 50
     MAX_LIMIT = 1000
 
-    # Fetch defaults
-    DEFAULT_MAX_FETCH = 5000
-    # Default lookback time for first fetch or get-events command
-    DEFAULT_FROM_TIME = "5 minutes ago"
-
-    # API sort direction for chronological ordering
-    SORT_DIRECTION = "asc"
-
-    # Test module settings
-    TEST_MODULE_LOOKBACK_MINUTES = 5
-    TEST_MODULE_MAX_EVENTS = 1
-
-
-class LogType(Enum):
-    """Enum to hold all configuration for different log types."""
-
-    ALERTS = ("alerts", "Alerts", ApiPaths.ALERTS, "alerts")
-    AUDIT = ("audit", "Audit", ApiPaths.AUDIT_LOGS, "items")
-
-    def __init__(self, type_string: str, title: str, api_endpoint: str, response_key: str):
-        self.type_string = type_string
-        self.title = title
-        self.api_endpoint = api_endpoint
-        self.response_key = response_key
-
-
-# Valid audit log type filters
-VALID_AUDIT_TYPES = [
-    "approval_requests",
-    "devices",
-    "endpoints",
-    "extensions",
-    "firewall",
-    "guardrails",
-    "notifications",
-    "policies",
-    "remediation",
-    "requests",
-    "settings",
-    "vetting",
-]
 
 # Valid marketplace values for allowlist operations
 VALID_MARKETPLACES = [
@@ -211,57 +169,6 @@ VALID_MARKETPLACES = [
     "vscode",
     "windows",
     "windsurf",
-]
-
-VALID_PLATFORMS = [
-    "antigravity",
-    "aqua",
-    "arc",
-    "brave",
-    "brew",
-    "chatgpt_atlas",
-    "chocolatey",
-    "chrome",
-    "chromium",
-    "claude",
-    "claude_code",
-    "claude_desktop",
-    "clion",
-    "codex",
-    "comet",
-    "cursor",
-    "datagrip",
-    "dataspell",
-    "dia",
-    "edge",
-    "excel",
-    "firefox",
-    "fleet",
-    "goland",
-    "hugging_face",
-    "ollama",
-    "intellij_community",
-    "intellij",
-    "kiro",
-    "mac",
-    "npm",
-    "notepad++",
-    "opera",
-    "outlook",
-    "phpstorm",
-    "powerpoint",
-    "prisma_access_browser",
-    "pycharm",
-    "pypi",
-    "rider",
-    "rubymine",
-    "rustrover",
-    "vscode",
-    "webstorm",
-    "windsurf",
-    "word",
-    "windows",
-    "writerside",
 ]
 
 
@@ -305,126 +212,6 @@ def parse_date_or_use_current(date_string: str | None) -> datetime:
 
     demisto.debug(f"[Date Helper] Final parsed date: {parsed_datetime.isoformat()}")
     return parsed_datetime
-
-
-def get_log_types_from_titles(event_types_to_fetch: list[str]) -> list[LogType]:
-    """Convert user-facing event type titles into LogType Enum members.
-
-    Args:
-        event_types_to_fetch: List of event type titles (e.g., ["Alerts", "Audit"]).
-
-    Raises:
-        DemistoException: If any of the provided event type titles are invalid.
-
-    Returns:
-        List of LogType Enum members.
-    """
-    valid_titles = {lt.title for lt in LogType}
-    invalid_types = [title for title in event_types_to_fetch if title not in valid_titles]
-
-    if invalid_types:
-        valid_options = ", ".join(sorted(valid_titles))
-        raise DemistoException(
-            f"Invalid event type(s) provided: {invalid_types}. Please select from the following list: {valid_options}"
-        )
-
-    return [lt for lt in LogType if lt.title in event_types_to_fetch]
-
-
-def extract_time_from_event(event: dict, log_type: LogType) -> str | None:
-    """Extract the time field value from an event based on log type.
-
-    For alerts: finding_info.created_time (epoch ms) -> converted to ISO 8601.
-    For audit logs: created_at (ISO 8601 string).
-
-    Args:
-        event: The event dictionary.
-        log_type: The LogType Enum member.
-
-    Returns:
-        ISO 8601 formatted time string, or None if not found.
-    """
-    if log_type == LogType.ALERTS:
-        finding_info = event.get("finding_info", {})
-        created_time_ms = finding_info.get("created_time")
-        if created_time_ms:
-            try:
-                dt = datetime.fromtimestamp(created_time_ms / 1000, tz=UTC)
-                return dt.strftime(Config.DATE_FORMAT)
-            except (ValueError, TypeError, OSError):
-                demisto.debug(f"[Time Extract] Failed to parse alert created_time: {created_time_ms}")
-                return None
-    else:
-        return event.get("created_at")
-
-    return None
-
-
-def add_time_to_events(events: list[dict], log_type: LogType) -> None:
-    """Add _time and source_log_type fields to events for XSIAM ingestion.
-
-    Uses extract_time_from_event for consistent time extraction across all code paths.
-
-    Args:
-        events: List of event dictionaries to enrich.
-        log_type: The LogType Enum member representing the source.
-    """
-    for event in events:
-        event_time = extract_time_from_event(event, log_type)
-        if event_time:
-            event["_time"] = event_time
-        else:
-            demisto.debug(f"[Event Time] WARNING: Event missing time field: {event.get('id', 'unknown')}")
-
-        event["source_log_type"] = log_type.title
-
-
-def get_event_id(event: dict) -> str | None:
-    """Extract the event ID from an event dictionary.
-
-    Args:
-        event: The event dictionary.
-
-    Returns:
-        The event ID string, or None if not found.
-    """
-    for id_field in ("id", "alert_id", "log_id", "uuid"):
-        event_id = event.get(id_field)
-        if event_id:
-            return str(event_id)
-    return None
-
-
-def deduplicate_events(events: list[dict], last_fetched_ids: list[str]) -> list[dict]:
-    """Remove already-processed events based on previously fetched IDs.
-
-    Args:
-        events: List of events to deduplicate.
-        last_fetched_ids: List of event IDs from the previous run.
-
-    Returns:
-        List of new (non-duplicate) events.
-    """
-    if not events:
-        demisto.debug("[Dedup] No events to process")
-        return events
-
-    if not last_fetched_ids:
-        demisto.debug("[Dedup] No deduplication needed (first run - no previous IDs)")
-        return events
-
-    demisto.debug(f"[Dedup] Checking {len(events)} events against {len(last_fetched_ids)} previously fetched IDs")
-
-    fetched_ids_set = set(last_fetched_ids)
-    new_events = [event for event in events if get_event_id(event) not in fetched_ids_set]
-
-    skipped_count = len(events) - len(new_events)
-    if skipped_count > 0:
-        demisto.debug(f"[Dedup] Skipped {skipped_count} duplicates. {len(new_events)} new events remain.")
-    else:
-        demisto.debug("[Dedup] No duplicates found.")
-
-    return new_events
 
 
 def parse_list_items_from_entry_id(entry_id: str) -> list[dict[str, Any]]:
@@ -612,13 +399,6 @@ def parse_integration_params(params: dict[str, Any]) -> dict[str, Any]:
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
 
-    # Validate audit types filter if provided
-    audit_types_filter = argToList(params.get("audit_types_filter"))
-    if audit_types_filter:
-        invalid = [t for t in audit_types_filter if t not in VALID_AUDIT_TYPES]
-        if invalid:
-            raise DemistoException(f"Invalid audit log type(s): {invalid}. Valid types: {VALID_AUDIT_TYPES}")
-
     demisto.debug(f"[Config] URL: {base_url}")
 
     return {
@@ -635,6 +415,27 @@ def _validate_pagination_args(page_size: int, limit_arg: int | None) -> None:
         raise DemistoException(f"page_size ({page_size}) exceeds the maximum allowed value of {Config.MAX_PAGE_SIZE}.")
     if limit_arg and limit_arg > Config.MAX_LIMIT:
         raise DemistoException(f"limit ({limit_arg}) exceeds the maximum allowed value of {Config.MAX_LIMIT}.")
+
+
+def koi_risk_to_dbot_score(risk_score: float | None, risk_level: str | None) -> int:
+    """Map Koi risk score (0-10) to DBot score (0-3).
+
+    Koi risk levels: Low (1-3), Medium (4-6), High (7-9), Critical (10).
+    DBot scores: 0=Unknown, 1=Good, 2=Suspicious, 3=Malicious.
+    """
+    if risk_score is None and risk_level is None:
+        return Common.DBotScore.NONE
+    if risk_level and risk_level.lower() == "pending":
+        return Common.DBotScore.NONE
+    if risk_score is not None:
+        if risk_score <= 3:
+            return Common.DBotScore.GOOD
+        if risk_score <= 6:
+            return Common.DBotScore.SUSPICIOUS
+        return Common.DBotScore.BAD
+    level_map = {"low": Common.DBotScore.GOOD, "medium": Common.DBotScore.SUSPICIOUS,
+                 "high": Common.DBotScore.BAD, "critical": Common.DBotScore.BAD}
+    return level_map.get(risk_level.lower() if risk_level else "", Common.DBotScore.NONE)
 
 
 # endregion
@@ -684,56 +485,26 @@ class Client(ContentClient):
             retry_policy=retry_policy,
         )
 
-    def get_events_page(
+    def get_alerts(
         self,
-        log_type: LogType,
-        created_at_gte: str | None = None,
-        created_at_lte: str | None = None,
         page: int = 1,
         page_size: int = Config.DEFAULT_PAGE_SIZE,
-        audit_types: list[str] | None = None,
-    ) -> list[dict]:
-        """Fetch a single page of events from the KOI API.
-
-        This is the single unified method used by all commands (test-module,
-        fetch-events, get-events) to retrieve events from the API.
-
-        Args:
-            log_type: The LogType to fetch (ALERTS or AUDIT).
-            created_at_gte: Filter events created at or after this datetime (ISO 8601).
-            created_at_lte: Filter events created at or before this datetime (ISO 8601).
-            page: Page number (1-based).
-            page_size: Number of results per page (max 500).
-            audit_types: Optional list of audit log types to filter by (only for AUDIT).
-
-        Returns:
-            List of event dictionaries from the API response.
-        """
-        params: dict[str, Any] = {
-            "page": page,
-            "page_size": min(page_size, Config.MAX_PAGE_SIZE),
-            "sort_direction": Config.SORT_DIRECTION,
-        }
-
-        if created_at_gte:
-            params["created_at_gte"] = created_at_gte
-        if created_at_lte:
-            params["created_at_lte"] = created_at_lte
-        if log_type == LogType.AUDIT and audit_types:
-            params["types"] = ",".join(audit_types)
-
-        demisto.debug(f"[API Fetch] {log_type.type_string} | Page: {page} | Params: {params}")
-
-        response = self._http_request(
-            method="GET",
-            url_suffix=log_type.api_endpoint,
-            params=params,
+        alert_type: str | None = None,
+        created_at_gte: str | None = None,
+        created_at_lte: str | None = None,
+        event_id: str | None = None,
+        sort_direction: str | None = None,
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = assign_params(
+            page=page,
+            page_size=min(page_size, Config.MAX_PAGE_SIZE),
+            alert_type=alert_type,
+            created_at_gte=created_at_gte,
+            created_at_lte=created_at_lte,
+            event_id=event_id,
+            sort_direction=sort_direction,
         )
-
-        events = response.get(log_type.response_key, [])
-        demisto.debug(f"[API Fetch] {log_type.type_string} | Page {page}: {len(events)} events returned")
-
-        return events
+        return self._http_request(method="GET", url_suffix=ApiPaths.ALERTS, params=params)
 
     def get_policies(
         self,
@@ -1416,18 +1187,6 @@ class Client(ContentClient):
             ok_codes=(204,),
         )
 
-    def send_events(self, events: list[dict]) -> None:
-        """Send events to XSIAM using the ContentClient context.
-
-        Wraps send_events_to_xsiam to keep event sending encapsulated
-        within the client class for consistent logging and diagnostics.
-
-        Args:
-            events: List of event dicts to send.
-        """
-        demisto.debug(f"[API] Sending {len(events)} events to XSIAM")
-        send_events_to_xsiam(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
-        demisto.debug(f"[API] Successfully sent {len(events)} events to XSIAM")
 
 
 # endregion
@@ -1439,7 +1198,7 @@ class Client(ContentClient):
 
 
 def test_module(client: Client) -> str:
-    """Test API connectivity by fetching a small number of events.
+    """Test API connectivity by fetching a single page of alerts.
 
     Args:
         client: The KOI client.
@@ -1449,17 +1208,7 @@ def test_module(client: Client) -> str:
     """
     demisto.debug("[Test Module] Starting...")
     try:
-        utc_now = datetime.now(UTC)
-        test_time = (utc_now - timedelta(minutes=Config.TEST_MODULE_LOOKBACK_MINUTES)).strftime(Config.DATE_FORMAT)
-
-        demisto.debug(f"[Test Module] Fetching alerts from: {test_time}")
-        fetch_events_with_pagination(
-            client,
-            log_type=LogType.ALERTS,
-            created_after=test_time,
-            max_events=Config.TEST_MODULE_MAX_EVENTS,
-        )
-
+        client.get_alerts(page=1, page_size=1)
         demisto.debug("[Test Module] Success")
         return "ok"
 
@@ -1469,340 +1218,6 @@ def test_module(client: Client) -> str:
         if "401" in error_msg or "403" in error_msg:
             return "Authorization Error: Verify your API Key."
         raise
-
-
-def fetch_events_with_pagination(
-    client: Client,
-    log_type: LogType,
-    created_after: str,
-    created_before: str | None = None,
-    max_events: int = Config.DEFAULT_MAX_FETCH,
-    audit_types: list[str] | None = None,
-) -> list[dict]:
-    """Fetch events with pagination support.
-
-    This is the single unified pagination function used by all commands
-    (test-module, fetch-events, get-events).
-
-    Args:
-        client: The KOI client.
-        log_type: The LogType to fetch.
-        created_after: Start time (ISO 8601).
-        created_before: End time (ISO 8601) or None.
-        max_events: Maximum number of events to fetch.
-        audit_types: Optional list of audit log types to filter by.
-
-    Returns:
-        List of event dictionaries.
-    """
-    events: list[dict] = []
-    page = 1
-    page_size = min(Config.MAX_PAGE_SIZE, max_events)
-
-    demisto.debug(
-        f"[Pagination Loop] Start | Type: {log_type.type_string} | Goal: {max_events} | "
-        f"Time: {created_after} -> {created_before or 'Now'}"
-    )
-
-    while len(events) < max_events:
-        page_events = client.get_events_page(
-            log_type=log_type,
-            created_at_gte=created_after,
-            created_at_lte=created_before,
-            page=page,
-            page_size=page_size,
-            audit_types=audit_types if log_type == LogType.AUDIT else None,
-        )
-
-        if not page_events:
-            demisto.debug(f"[Pagination Loop] Page {page}: Empty. Stopping.")
-            break
-
-        events.extend(page_events)
-        demisto.debug(f"[Pagination Loop] Page {page}: +{len(page_events)} events. Total: {len(events)}")
-
-        if len(page_events) < page_size:
-            demisto.debug("[Pagination Loop] Last page (partial). Stopping.")
-            break
-
-        page += 1
-
-        if page > Config.MAX_PAGES_PER_FETCH:
-            demisto.debug(f"[Pagination Loop] Max page limit reached ({Config.MAX_PAGES_PER_FETCH}). Stopping.")
-            break
-
-        if len(events) >= max_events:
-            demisto.debug(f"[Pagination Loop] Threshold reached ({len(events)} >= {max_events}). Stopping.")
-            break
-
-    # Slice to limit
-    if len(events) > max_events:
-        demisto.debug(f"[Pagination Result] Slicing {len(events)} events to limit {max_events}")
-        events = events[:max_events]
-
-    demisto.debug(f"[Pagination Result] Returning {len(events)} {log_type.type_string} events")
-    return events
-
-
-def get_events_command(client: Client, args: dict, params: dict) -> CommandResults | str:
-    """Manual command to get events for debugging/development.
-
-    Args:
-        client: The KOI client.
-        args: Command arguments.
-        params: Integration parameters.
-
-    Returns:
-        CommandResults or string message.
-    """
-    demisto.debug("[Command] koi-get-events triggered")
-
-    limit = int(args.get("limit", "50"))
-    start_time_input = args.get("start_time", Config.DEFAULT_FROM_TIME)
-    end_time_input = args.get("end_time")
-    should_push_events = resolve_should_push_events(args)
-
-    event_type_arg = argToList(args.get("event_type"))
-    event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Alerts", "Audit"]))
-    log_types = get_log_types_from_titles(event_type_arg if event_type_arg else event_types_to_fetch)
-
-    created_after = get_formatted_utc_time(start_time_input)
-    created_before = get_formatted_utc_time(end_time_input) if end_time_input else None
-
-    audit_types_filter = argToList(params.get("audit_types_filter")) or None
-
-    demisto.debug(f"[Command Params] From: {created_after}, To: {created_before}, Limit: {limit}, Push: {should_push_events}")
-
-    all_events: list[dict] = []
-
-    for log_type in log_types:
-        events = fetch_events_with_pagination(
-            client,
-            log_type=log_type,
-            created_after=created_after,
-            created_before=created_before,
-            max_events=limit,
-            audit_types=audit_types_filter if log_type == LogType.AUDIT else None,
-        )
-        add_time_to_events(events, log_type)
-        all_events.extend(events)
-
-    demisto.debug(f"[Command Result] Total events retrieved: {len(all_events)}")
-
-    if should_push_events and all_events:
-        client.send_events(all_events)
-        return f"Successfully retrieved and pushed {len(all_events)} events to XSIAM"
-
-    readable_output = tableToMarkdown(f"{INTEGRATION_NAME} Events", all_events, removeNull=True)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix="Koi.Event",
-        outputs_key_field="id",
-        outputs=all_events,
-    )
-
-
-@dataclass
-class FetchResult:
-    """Result of fetching events for a single log type."""
-
-    log_type: LogType
-    new_events: list[dict] = field(default_factory=list)
-    last_run_updates: dict[str, str | list[str]] = field(default_factory=dict)
-    error: str | None = None
-
-
-def _fetch_single_log_type(
-    client: Client,
-    log_type: LogType,
-    last_run: dict[str, str | list[str]],
-    max_events: int,
-    audit_types: list[str] | None,
-) -> FetchResult:
-    """Fetch and process events for a single log type.
-
-    This function is executed in a separate thread by fetch_events_command via
-    ThreadPoolExecutor, enabling parallel fetching of multiple log types.
-    Each thread receives an immutable copy of last_run to avoid shared mutable state.
-
-    The function handles its own errors — if an API call fails, the error is captured
-    in FetchResult.error and the thread returns gracefully without affecting other threads.
-
-    Thread safety:
-        - Receives a dict copy of last_run (no shared mutable state).
-        - Returns a FetchResult with last_run_updates (merged by the main thread after completion).
-        - Uses demisto.debug() for logging (thread-safe in XSOAR runtime).
-
-    Args:
-        client: The KOI client (thread-safe — ContentClient uses httpx which is thread-safe).
-        log_type: The LogType to fetch (ALERTS or AUDIT).
-        last_run: Immutable copy of the current last_run state dict.
-        max_events: Maximum events to fetch per type.
-        audit_types: Optional audit type filter (only applied for AUDIT log type).
-
-    Returns:
-        FetchResult containing new_events, last_run_updates, and any error message.
-    """
-    result = FetchResult(log_type=log_type)
-
-    try:
-        last_fetch_key = f"last_fetch_{log_type.type_string}"
-        previous_ids_key = f"previous_ids_{log_type.type_string}"
-
-        raw_timestamp = last_run.get(last_fetch_key)
-        last_fetch_timestamp: str | None = raw_timestamp if isinstance(raw_timestamp, str) else None
-        raw_ids = last_run.get(previous_ids_key)
-        last_fetched_ids: list[str] = raw_ids if isinstance(raw_ids, list) else []
-
-        if last_fetch_timestamp:
-            time_input = last_fetch_timestamp
-            demisto.debug(f"[Fetch] {log_type.type_string}: Continuing from {time_input}. Prev ID count: {len(last_fetched_ids)}")
-        else:
-            time_input = Config.DEFAULT_FROM_TIME
-            demisto.debug(f"[Fetch] {log_type.type_string}: First run - starting from default time")
-
-        created_after = get_formatted_utc_time(time_input)
-
-        # Fetch events using the unified pagination function
-        events = fetch_events_with_pagination(
-            client,
-            log_type=log_type,
-            created_after=created_after,
-            max_events=max_events,
-            audit_types=audit_types if log_type == LogType.AUDIT else None,
-        )
-
-        if not events:
-            demisto.debug(f"[Fetch] {log_type.type_string}: No events found.")
-            return result
-
-        # Pre-compute time values to avoid redundant extract_time_from_event calls.
-        # Events are already sorted chronologically by the API (sort_direction=asc).
-        event_times: list[str] = [extract_time_from_event(event, log_type) or "" for event in events]
-
-        # Deduplicate
-        new_events = deduplicate_events(events, last_fetched_ids)
-
-        if new_events:
-            add_time_to_events(new_events, log_type)
-            result.new_events = new_events
-            demisto.debug(f"[Fetch] {log_type.type_string}: {len(new_events)} new events after dedup")
-        else:
-            demisto.debug(f"[Fetch] {log_type.type_string}: All events were duplicates.")
-
-        # Update Last Run - always update based on ALL fetched events (not just new_events)
-        new_last_run_time = event_times[-1] if event_times else None
-
-        if new_last_run_time:
-            # Collect IDs for the new high-water mark timestamp using pre-computed times
-            ids_at_last_timestamp: list[str] = [
-                event_id
-                for event, event_time in zip(events, event_times)
-                if event_time == new_last_run_time and (event_id := get_event_id(event))
-            ]
-
-            # If the HWM timestamp hasn't changed, merge with previous IDs to prevent duplicates
-            if new_last_run_time == last_fetch_timestamp:
-                ids_at_last_timestamp = list(set(last_fetched_ids) | set(ids_at_last_timestamp))
-
-            result.last_run_updates[last_fetch_key] = new_last_run_time
-            result.last_run_updates[previous_ids_key] = ids_at_last_timestamp
-            demisto.debug(f"[Fetch] {log_type.type_string}: State updated. New HWM: {new_last_run_time}")
-        else:
-            demisto.debug(f"[Fetch] {log_type.type_string}: Warning: Last event missing time. State not updated.")
-
-    except Exception as e:
-        result.error = str(e)
-        demisto.debug(f"[Fetch] {log_type.type_string}: Error fetching events: {e!s}.")
-
-    return result
-
-
-def fetch_events_command(client: Client) -> None:
-    """Scheduled command to fetch events using parallel threads.
-
-    Uses ThreadPoolExecutor to fetch all configured log types (Alerts, Audit)
-    simultaneously. This ensures that if one type takes a long time or fails,
-    the other type still completes within the XSOAR execution timeout.
-
-    Architecture:
-        1. Single getLastRun() read at the start.
-        2. Each log type is fetched in a separate thread via _fetch_single_log_type().
-           Each thread receives an immutable copy of last_run (no shared mutable state).
-        3. After all threads complete, results are merged sequentially:
-           - New events from successful types are collected.
-           - last_run updates from successful types are applied.
-           - Failed types are skipped (their previous state is preserved).
-        4. All events are sent to XSIAM in a single batch.
-        5. Single setLastRun() write at the end.
-
-    Race condition prevention:
-        - One getLastRun() call, one setLastRun() call.
-        - Threads don't share mutable state — each gets a dict copy.
-        - Merge happens after all threads complete (no concurrent writes).
-
-    Args:
-        client: The KOI client.
-    """
-    params = demisto.params()
-    max_events_to_fetch = int(params.get("max_fetch", Config.DEFAULT_MAX_FETCH))
-
-    event_types_to_fetch = argToList(params.get("event_types_to_fetch", ["Alerts", "Audit"]))
-    log_types = get_log_types_from_titles(event_types_to_fetch)
-
-    audit_types_filter = argToList(params.get("audit_types_filter")) or None
-
-    # Single read of last_run state — no race condition
-    last_run = demisto.getLastRun()
-    demisto.debug(f"[Fetch] Starting with last_run: {last_run}")
-
-    # Guard against an empty log_types selection — ThreadPoolExecutor(max_workers=0) raises ValueError.
-    if not log_types:
-        demisto.debug("[Fetch] No event types selected. Nothing to fetch. Preserving last_run as-is.")
-        demisto.setLastRun(last_run)
-        return
-
-    # Fetch all log types in parallel so one slow type doesn't block the other
-    results: list[FetchResult] = []
-    with ThreadPoolExecutor(max_workers=len(log_types)) as executor:
-        futures = {
-            executor.submit(
-                _fetch_single_log_type,
-                client=client,
-                log_type=log_type,
-                last_run=dict(last_run),
-                max_events=max_events_to_fetch,
-                audit_types=audit_types_filter,
-            ): log_type
-            for log_type in log_types
-        }
-        for future in as_completed(futures):
-            log_type = futures[future]
-            try:
-                result = future.result()
-                results.append(result)
-            except Exception as e:
-                demisto.debug(f"[Fetch] {log_type.type_string}: Thread failed: {e!s}")
-
-    # Merge results — collect all new events and last_run updates
-    all_new_events: list[dict] = []
-    updated_last_run: dict[str, str | list[str]] = dict(last_run)
-
-    for result in results:
-        if result.error:
-            demisto.debug(f"[Fetch] {result.log_type.type_string}: Skipped due to error: {result.error}")
-            continue
-        all_new_events.extend(result.new_events)
-        updated_last_run.update(result.last_run_updates)
-
-    # Send all successfully fetched events to XSIAM
-    if all_new_events:
-        client.send_events(all_new_events)
-
-    # Single write of last_run state — preserves progress from successful types
-    demisto.setLastRun(updated_last_run)
-    demisto.debug(f"[Fetch] Last run updated: {updated_last_run}")
 
 
 def koi_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -1859,6 +1274,7 @@ def koi_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResu
         outputs_prefix="Koi.Policy",
         outputs_key_field="id",
         outputs=policies,
+        raw_response=policies,
     )
 
 
@@ -1901,6 +1317,7 @@ def koi_allowlist_get_command(client: Client, args: dict[str, Any]) -> CommandRe
         outputs_prefix="Koi.Allowlist",
         outputs_key_field="item_id",
         outputs=items,
+        raw_response=items,
     )
 
 
@@ -2005,6 +1422,7 @@ def koi_blocklist_get_command(client: Client, args: dict[str, Any]) -> CommandRe
         outputs_prefix="Koi.Blocklist",
         outputs_key_field="item_id",
         outputs=items,
+        raw_response=items,
     )
 
 
@@ -2114,6 +1532,7 @@ def koi_policy_status_update_command(client: Client, args: dict[str, Any]) -> Co
         outputs_prefix="Koi.Policy",
         outputs_key_field="id",
         outputs=response,
+        raw_response=response,
     )
 
 
@@ -2221,6 +1640,7 @@ def koi_inventory_list_command(client: Client, args: dict[str, Any]) -> CommandR
         outputs_prefix="Koi.Inventory",
         outputs_key_field="item_id",
         outputs=items,
+        raw_response=items,
     )
 
 
@@ -2288,6 +1708,7 @@ def koi_inventory_item_get_command(client: Client, args: dict[str, Any]) -> Comm
         outputs_prefix="Koi.Inventory",
         outputs_key_field="item_id",
         outputs=response,
+        raw_response=response,
     )
 
 
@@ -2385,6 +1806,7 @@ def koi_inventory_search_command(client: Client, args: dict[str, Any]) -> Comman
         outputs_prefix="Koi.Inventory",
         outputs_key_field="item_id",
         outputs=items,
+        raw_response=items,
     )
 
 
@@ -2465,6 +1887,7 @@ def koi_inventory_item_endpoints_list_command(client: Client, args: dict[str, An
         outputs_prefix="Koi.Inventory.Endpoint",
         outputs_key_field="id",
         outputs=endpoints,
+        raw_response=endpoints,
     )
 
 
@@ -3097,6 +2520,8 @@ def koi_private_item_upload_command(client: Client, args: dict[str, Any]) -> Com
     marketplace = args["marketplace"]
 
     file_result = demisto.getFilePath(entry_id)
+    if not file_result:
+        raise DemistoException(f"File not found for entry ID: {entry_id}")
     file_path = file_result["path"]
     file_name = file_result["name"]
 
@@ -3122,11 +2547,78 @@ def koi_private_item_details_get_command(client: Client, args: dict[str, Any]) -
     version = args.get("version")
     response = client.get_private_item_details(item_id=item_id, version=version)
 
-    readable_output = tableToMarkdown(
-        f"{INTEGRATION_NAME} Private Item Details", response, headerTransform=string_to_table_header
+    overview = response.get("overview") or {}
+    extension = overview.get("extension") or {}
+    findings = overview.get("findings") or []
+    vulnerabilities_data = response.get("vulnerabilities") or {}
+    vulns = vulnerabilities_data.get("vulnerabilities", []) if isinstance(vulnerabilities_data, dict) else []
+    secrets_data = response.get("secrets") or {}
+    secrets = secrets_data.get("secrets", []) if isinstance(secrets_data, dict) else []
+    ext_comms = response.get("externalCommunication") or {}
+    domains = ext_comms.get("domains", []) if isinstance(ext_comms, dict) else []
+    code_analysis = response.get("codeAnalysis") or {}
+    safer_alts = response.get("saferAlternatives") or []
+
+    overview_row = {
+        "item_id": extension.get("extensionId", item_id),
+        "display_name": extension.get("displayName"),
+        "version": extension.get("version"),
+        "marketplace": extension.get("marketplace"),
+        "publisher": extension.get("publisherName"),
+        "risk_level": extension.get("riskLevel"),
+        "risk_score": extension.get("riskScore"),
+        "installs": extension.get("installs"),
+    }
+    overview_table = tableToMarkdown(
+        f"{INTEGRATION_NAME} Private Item Overview", overview_row,
+        headers=["item_id", "display_name", "version", "marketplace", "publisher",
+                 "risk_level", "risk_score", "installs"],
+        headerTransform=string_to_table_header,
     )
+
+    findings_table = tableToMarkdown(
+        "Security Findings", findings,
+        headers=["name", "category", "riskLevel", "description"],
+        headerTransform=string_to_table_header,
+    ) if findings else ""
+
+    vuln_table = tableToMarkdown(
+        "Vulnerabilities", vulns,
+        headers=["cve", "packageName", "packageVersion", "cvssScore"],
+        headerTransform=string_to_table_header,
+    ) if vulns else ""
+
+    secrets_table = tableToMarkdown(
+        "Hardcoded Secrets", secrets,
+        headers=["name", "path", "verified"],
+        headerTransform=string_to_table_header,
+    ) if secrets else ""
+
+    domains_table = tableToMarkdown(
+        "External Domains", domains[:20],
+        headers=["domain", "path"],
+        headerTransform=string_to_table_header,
+    ) if domains else ""
+
+    insights = code_analysis.get("insights") if isinstance(code_analysis, dict) else None
+    insights_section = f"\n\n### Code Analysis Insights\n{insights}" if insights else ""
+
+    alts_table = tableToMarkdown(
+        "Safer Alternatives", safer_alts,
+        headers=["displayName", "marketplace", "riskLevel"],
+        headerTransform=string_to_table_header,
+    ) if safer_alts else ""
+
+    sections = [overview_table, findings_table, vuln_table, secrets_table,
+                domains_table, insights_section, alts_table]
+    readable_output = "\n\n".join(s for s in sections if s)
+
     return CommandResults(
-        readable_output=readable_output, outputs_prefix="Koi.PrivateItem", outputs_key_field="id", outputs=response
+        readable_output=readable_output,
+        outputs_prefix="Koi.PrivateItem",
+        outputs_key_field="overview.extension.extensionId",
+        outputs=response,
+        raw_response=response,
     )
 
 
@@ -3300,6 +2792,232 @@ def _paginate_generic(
     return items
 
 
+# --- Alert Commands ---
+
+
+def koi_alert_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    demisto.debug("[Command] koi-alert-list triggered")
+
+    filter_kwargs = assign_params(
+        alert_type=args.get("alert_type"),
+        created_at_gte=get_formatted_utc_time(args["created_at_gte"]) if args.get("created_at_gte") else None,
+        created_at_lte=get_formatted_utc_time(args["created_at_lte"]) if args.get("created_at_lte") else None,
+        event_id=args.get("event_id"),
+        sort_direction=args.get("sort_direction"),
+    )
+
+    page_arg = arg_to_number(args.get("page"))
+    page_size = arg_to_number(args.get("page_size")) or Config.DEFAULT_PAGE_SIZE
+    limit_arg = arg_to_number(args.get("limit"))
+    _validate_pagination_args(page_size, limit_arg)
+
+    if page_arg:
+        response = client.get_alerts(page=page_arg, page_size=page_size, **filter_kwargs)
+        demisto.debug(f"[Command] koi-alert-list raw response keys: {list(response.keys())}, "
+                      f"total_count: {response.get('total_count')}, alerts count: {len(response.get('alerts', []))}")
+        alerts = response.get("alerts", [])
+    else:
+        limit = limit_arg or Config.DEFAULT_LIMIT
+        alerts = _paginate_generic(
+            lambda p, ps: client.get_alerts(page=p, page_size=ps, **filter_kwargs),
+            limit=limit,
+            items_key="alerts",
+        )
+        demisto.debug(f"[Command] koi-alert-list auto-paginated {len(alerts)} alerts")
+
+    display_rows = []
+    for alert in alerts:
+        finding_info = alert.get("finding_info", {})
+        metadata = alert.get("metadata", {})
+        resources = alert.get("resources", [])
+        item_resource = next((r for r in resources if r.get("type") == "item"), None)
+        device_resource = next((r for r in resources if r.get("type") == "device"), None)
+
+        row = {
+            "notification_event_id": metadata.get("notification_event_id"),
+            "title": finding_info.get("title"),
+            "type": ", ".join(finding_info.get("types", [])),
+            "severity": alert.get("severity"),
+            "risk_level": alert.get("risk_level"),
+            "risk_score": alert.get("risk_score"),
+            "status": alert.get("status"),
+            "confidence": alert.get("confidence"),
+            "message": alert.get("message"),
+            "item_name": item_resource.get("name") if item_resource else None,
+            "item_uid": item_resource.get("uid") if item_resource else None,
+            "device_name": device_resource.get("name") if device_resource else None,
+            "time": datetime.fromtimestamp(alert["time"] / 1000, tz=UTC).strftime(Config.DATE_FORMAT) if alert.get("time") else None,
+        }
+        display_rows.append(row)
+
+    readable_output = tableToMarkdown(
+        f"{INTEGRATION_NAME} Alerts",
+        display_rows,
+        headers=["notification_event_id", "title", "type", "severity", "risk_level", "risk_score",
+                 "status", "item_name", "device_name", "time", "message"],
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="Koi.Alert",
+        outputs_key_field="metadata.notification_event_id",
+        outputs=alerts,
+        raw_response=alerts,
+    )
+
+
+# --- Enrichment Commands ---
+
+
+def koi_item_enrich_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+    demisto.debug("[Command] koi-item-enrich triggered")
+
+    item_id = args["item_id"]
+    marketplace = args["marketplace"]
+    version = args.get("version")
+
+    response = client.get_koidex_risk_report(
+        item_id=item_id, marketplace=marketplace, version=version
+    )
+
+    risk_score = response.get("risk")
+    risk_level = response.get("risk_level")
+    indicator_value = f"{item_id}:{marketplace}"
+
+    dbot_score = Common.DBotScore(
+        indicator=indicator_value,
+        indicator_type=DBotScoreType.CUSTOM,
+        integration_name=INTEGRATION_NAME,
+        score=koi_risk_to_dbot_score(risk_score, risk_level),
+        reliability=demisto.params().get("integrationReliability", "B - Usually reliable"),
+    )
+
+    findings_data = response.get("findings", {})
+    findings_list = findings_data.get("findings", []) if isinstance(findings_data, dict) else []
+    compliance_data = response.get("compliance", {})
+    compliance_rules = compliance_data.get("rules", []) if isinstance(compliance_data, dict) else []
+
+    indicator_data = {
+        "item_id": item_id,
+        "marketplace": marketplace,
+        "version": response.get("version"),
+        "item_display_name": response.get("item_display_name"),
+        "package_name": response.get("package_name"),
+        "risk_score": risk_score,
+        "risk_level": risk_level,
+        "risk_status": response.get("risk_status"),
+        "ai_risk_summary": response.get("ai_risk_summary"),
+        "findings_count": findings_data.get("total_count", 0) if isinstance(findings_data, dict) else 0,
+        "compliance_count": compliance_data.get("total_count", 0) if isinstance(compliance_data, dict) else 0,
+    }
+
+    custom_indicator = Common.CustomIndicator(
+        indicator_type="Koi Software Item",
+        dbot_score=dbot_score,
+        value=indicator_value,
+        data=indicator_data,
+        context_prefix="KoiSoftwareItem",
+    )
+
+    results: list[CommandResults] = []
+
+    findings_table = tableToMarkdown(
+        "Findings", findings_list,
+        headers=["finding_id", "finding_name", "severity", "description"],
+        headerTransform=string_to_table_header,
+    ) if findings_list else "No findings."
+
+    compliance_table = tableToMarkdown(
+        "Compliance Rules", compliance_rules,
+        headers=["rule_id", "rule_name", "status", "description"],
+        headerTransform=string_to_table_header,
+    ) if compliance_rules else "No compliance data."
+
+    summary_table = tableToMarkdown(
+        f"{INTEGRATION_NAME} Item Enrichment",
+        indicator_data,
+        headers=["item_id", "item_display_name", "marketplace", "version",
+                 "risk_score", "risk_level", "risk_status", "findings_count", "compliance_count"],
+        headerTransform=string_to_table_header,
+    )
+
+    relationships: list[EntityRelationship] = []
+    reliability = demisto.params().get("integrationReliability", "B - Usually reliable")
+
+    sha256 = response.get("sha256", "")
+    if sha256 and SHA256_RE.match(sha256):
+        relationships.append(EntityRelationship(
+            entity_a=indicator_value,
+            entity_a_type=INDICATOR_TYPE,
+            name=EntityRelationship.Relationships.RELATED_TO,
+            entity_b=sha256,
+            entity_b_type=FeedIndicatorType.File,
+            reverse_name=EntityRelationship.Relationships.RELATED_TO,
+            source_reliability=reliability,
+            brand=INTEGRATION_NAME,
+        ))
+    elif SHA1_RE.match(item_id) or SHA256_RE.match(item_id):
+        relationships.append(EntityRelationship(
+            entity_a=indicator_value,
+            entity_a_type=INDICATOR_TYPE,
+            name=EntityRelationship.Relationships.RELATED_TO,
+            entity_b=item_id,
+            entity_b_type=FeedIndicatorType.File,
+            reverse_name=EntityRelationship.Relationships.RELATED_TO,
+            source_reliability=reliability,
+            brand=INTEGRATION_NAME,
+        ))
+
+    for finding in findings_list:
+        finding_name = finding.get("finding_name", "")
+        if finding_name.upper().startswith("CVE-"):
+            relationships.append(EntityRelationship(
+                entity_a=indicator_value,
+                entity_a_type=INDICATOR_TYPE,
+                name=EntityRelationship.Relationships.RELATED_TO,
+                entity_b=finding_name,
+                entity_b_type=FeedIndicatorType.CVE,
+                reverse_name=EntityRelationship.Relationships.RELATED_TO,
+                source_reliability=reliability,
+                brand=INTEGRATION_NAME,
+            ))
+
+    readable = f"{summary_table}\n\n### AI Risk Summary\n{response.get('ai_risk_summary', 'N/A')}\n\n{findings_table}\n\n{compliance_table}"
+
+    results.append(CommandResults(
+        readable_output=readable,
+        outputs_prefix="Koi.ItemEnrichment",
+        outputs_key_field="item_id",
+        outputs=response,
+        indicator=custom_indicator,
+        relationships=relationships,
+        raw_response=response,
+    ))
+
+    for finding in findings_list:
+        finding_name = finding.get("finding_name", "")
+        if finding_name.upper().startswith("CVE-"):
+            cve_id = finding_name.upper()
+            cve_dbot = Common.DBotScore(
+                indicator=cve_id,
+                indicator_type=DBotScoreType.CVE,
+                integration_name=INTEGRATION_NAME,
+                score=koi_risk_to_dbot_score(None, finding.get("severity")),
+            )
+            cve = Common.CVE(
+                id=cve_id,
+                description=finding.get("description", ""),
+                dbot_score=cve_dbot,
+            )
+            results.append(CommandResults(
+                readable_output=f"CVE {cve_id} found in {response.get('item_display_name', item_id)}",
+                indicator=cve,
+            ))
+
+    return results
+
+
 # endregion
 
 # region Main router
@@ -3309,8 +3027,8 @@ def _paginate_generic(
 
 COMMAND_MAP: dict[str, Any] = {
     "test-module": test_module,
-    "koi-get-events": get_events_command,
-    "fetch-events": fetch_events_command,
+    # Alerts
+    "koi-alert-list": koi_alert_list_command,
     # Policies
     "koi-policy-list": koi_policy_list_command,
     "koi-policy-status-update": koi_policy_status_update_command,
@@ -3372,6 +3090,8 @@ COMMAND_MAP: dict[str, Any] = {
     "koi-user-list": koi_user_list_command,
     "koi-user-create": koi_user_create_command,
     "koi-user-delete": koi_user_delete_command,
+    # Enrichment
+    "koi-item-enrich": koi_item_enrich_command,
 }
 
 
@@ -3399,11 +3119,6 @@ def main() -> None:
 
         if command == "test-module":
             result = command_func(client)
-            return_results(result)
-        elif command == "fetch-events":
-            command_func(client)
-        elif command == "koi-get-events":
-            result = command_func(client, args, params)
             return_results(result)
         else:
             result = command_func(client, args)
