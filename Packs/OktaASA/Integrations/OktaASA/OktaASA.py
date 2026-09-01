@@ -313,8 +313,13 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
 
-    api_key_id = params.get("credentials", {}).get("identifier")
-    api_key_secret = params.get("credentials", {}).get("password")
+    if should_use_ucp_auth():
+        api_key_id = None
+        api_key_secret = None
+    else:
+        api_key_id = params.get("credentials", {}).get("identifier")
+        api_key_secret = params.get("credentials", {}).get("password")
+    # Non-secret config fields are delivered by field id under both paths.
     team_name = params.get("team_name", "").lower()
     base_url = urljoin(params.get("url"), f"/v1/teams/{team_name}")
     verify_certificate = not params.get("insecure", False)
