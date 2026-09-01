@@ -71,3 +71,5 @@ fromversion: 5.5.0
 supportedFeatures:
 - supported_feature_a
 - supported_feature_b
+- supported_feature_d
+- supported_feature_e

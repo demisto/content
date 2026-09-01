@@ -50,5 +50,11 @@
         "cloud_posture",
         "xsiam",
         "edr"
+    ],
+    "supportedFeatures": [
+        "supported_feature_a",
+        "supported_feature_b",
+        "supported_feature_d",
+        "supported_feature_e"
     ]
 }
