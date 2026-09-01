@@ -139,33 +139,6 @@ URL_SUFFIX_TO_EVENT_TYPE_AND_CREATED_TIME_FIELD = {
     ),
 }
 
-# last_run fields owned by each log type. When a type's fetch raises, these fields keep their previous
-# values so its checkpoint is neither advanced nor lost, while the other types still commit their progress.
-LOG_TYPE_LAST_RUN_FIELDS = {
-    LogTypes.WORKBENCH.value: (
-        "workbench_start_time",
-        "found_workbench_logs",
-    ),
-    LogTypes.OBSERVED_ATTACK_TECHNIQUES.value: (
-        "oat_detection_start_time",
-        "dedup_found_oat_logs",
-        "pagination_found_oat_logs",
-        "oat_detection_next_link",
-        "oat_detection_window_end_time",
-    ),
-    LogTypes.SEARCH_DETECTIONS.value: (
-        "search_detection_start_time",
-        "dedup_found_search_detection_logs",
-        "pagination_found_search_detection_logs",
-        "search_detection_next_link",
-        "search_detection_window_end_time",
-    ),
-    LogTypes.AUDIT.value: (
-        "audit_start_time",
-        "found_audit_logs",
-    ),
-}
-
 """ CLIENT CLASS """
 
 
