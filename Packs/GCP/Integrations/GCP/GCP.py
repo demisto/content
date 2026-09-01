@@ -233,6 +233,15 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
             "compute.firewalls.get",
         ],
     ),
+    "gcp-compute-address-get": (GCPServices.COMPUTE, ["compute.addresses.get"]),
+    "gcp-compute-address-list": (GCPServices.COMPUTE, ["compute.addresses.list"]),
+    "gcp-compute-address-aggregated-list": (GCPServices.COMPUTE, ["compute.addresses.list"]),
+    "gcp-compute-address-insert": (GCPServices.COMPUTE, ["compute.addresses.create"]),
+    "gcp-compute-address-delete": (GCPServices.COMPUTE, ["compute.addresses.delete"]),
+    "gcp-compute-global-address-get": (GCPServices.COMPUTE, ["compute.globalAddresses.get"]),
+    "gcp-compute-global-address-list": (GCPServices.COMPUTE, ["compute.globalAddresses.list"]),
+    "gcp-compute-global-address-insert": (GCPServices.COMPUTE, ["compute.globalAddresses.create"]),
+    "gcp-compute-global-address-delete": (GCPServices.COMPUTE, ["compute.globalAddresses.delete"]),
     "gcp-compute-snapshots-list": (
         GCPServices.COMPUTE,
         [
@@ -2944,6 +2953,482 @@ def gcp_compute_networks_list(creds: Credentials, args: dict[str, Any]) -> Comma
     )
 
 
+def compute_address_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the specified regional address resource.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - region (str): Name of the region for this request.
+            - address (str): Name of the address resource to return.
+
+    Returns:
+        CommandResults: Object containing the address details under `GCP.Compute.Addresses`.
+    """
+    project_id = args.get("project_id")
+    region = args.get("region")
+    address = args.get("address")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.addresses().get(project=project_id, region=region, address=address).execute()  # pylint: disable=E1101
+    demisto.debug(f"Address get response for {address} in project {project_id}: \n{response}")
+
+    hr = tableToMarkdown(
+        f"GCP Compute Address: {address}",
+        response,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Addresses",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_address_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of regional address resources in the specified region.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - region (str): Name of the region for this request.
+            - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
+            - page_token (str, optional): Token to retrieve the next page of results.
+            - filters (str, optional): Expression for filtering the listed resources.
+            - order_by (str, optional): Sorts list results by a certain order.
+
+    Returns:
+        CommandResults: Object containing the list of addresses,
+        with `GCP.Compute.Addresses` and `GCP.Compute.AddressesNextToken` context outputs.
+    """
+    project_id = args.get("project_id")
+    region = args.get("region")
+    limit = arg_to_number(args.get("limit")) or 50
+    page_token = args.get("page_token")
+    filters = args.get("filters")
+    order_by = args.get("order_by")
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "region": region,
+        "maxResults": limit,
+        "pageToken": page_token,
+        "filter": filters,
+        "orderBy": order_by,
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.addresses().list(**params).execute()  # pylint: disable=E1101
+    items = response.get("items", [])
+    next_token = response.get("nextPageToken")
+
+    if not items:
+        return CommandResults(readable_output="No addresses found.", raw_response=response)
+
+    headers = ["name", "id", "address", "addressType", "status", "region", "creationTimestamp"]
+    metadata = (
+        "Run the following command to retrieve the next batch of addresses:\n"
+        f"!gcp-compute-address-list project_id={project_id} region={region} page_token={next_token}"
+        if next_token
+        else None
+    )
+    readable_output = tableToMarkdown(
+        "GCP Compute Addresses",
+        items,
+        headers=headers,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+        metadata=metadata,
+    )
+
+    outputs = {
+        "GCP.Compute.Addresses(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"AddressesNextToken": next_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=remove_empty_elements(outputs),
+        raw_response=response,
+    )
+
+
+def compute_address_aggregated_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves an aggregated list of regional address resources across all regions.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
+            - page_token (str, optional): Token to retrieve the next page of results.
+            - filters (str, optional): Expression for filtering the listed resources.
+            - order_by (str, optional): Sorts list results by a certain order.
+
+    Returns:
+        CommandResults: Object containing the aggregated list of addresses,
+        with `GCP.Compute.Addresses` and `GCP.Compute.AddressesAggregatedNextToken` context outputs.
+    """
+    project_id = args.get("project_id")
+    limit = arg_to_number(args.get("limit")) or 50
+    page_token = args.get("page_token")
+    filters = args.get("filters")
+    order_by = args.get("order_by")
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "maxResults": limit,
+        "pageToken": page_token,
+        "filter": filters,
+        "orderBy": order_by,
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.addresses().aggregatedList(**params).execute()  # pylint: disable=E1101
+    next_token = response.get("nextPageToken")
+
+    items: list[dict[str, Any]] = []
+    for scope in response.get("items", {}).values():
+        items.extend(scope.get("addresses", []) or [])
+
+    if not items:
+        return CommandResults(readable_output="No addresses found.", raw_response=response)
+
+    headers = ["name", "id", "address", "addressType", "status", "region", "creationTimestamp"]
+    metadata = (
+        "Run the following command to retrieve the next batch of addresses:\n"
+        f"!gcp-compute-address-aggregated-list project_id={project_id} page_token={next_token}"
+        if next_token
+        else None
+    )
+    readable_output = tableToMarkdown(
+        "GCP Compute Addresses",
+        items,
+        headers=headers,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+        metadata=metadata,
+    )
+
+    outputs = {
+        "GCP.Compute.Addresses(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"AddressesAggregatedNextToken": next_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=remove_empty_elements(outputs),
+        raw_response=response,
+    )
+
+
+def compute_address_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates a regional address resource in the specified project using the data included in the request.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - region (str): Name of the region for this request.
+            - name (str): Name of the address resource to create.
+            - description (str, optional): An optional description of this resource.
+            - address (str, optional): The static IP address to reserve.
+            - prefix_length (int, optional): The prefix length if the resource represents an IP range.
+            - network_tier (str, optional): The networking tier used for the address (PREMIUM or STANDARD).
+            - address_type (str, optional): The type of address to reserve (INTERNAL or EXTERNAL).
+            - purpose (str, optional): The purpose of the resource.
+            - subnetwork (str, optional): The URL of the subnetwork in which to reserve the address.
+            - network (str, optional): The URL of the network in which to reserve the address.
+
+    Returns:
+        CommandResults: Object containing the operation details of the address insert request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    region = args.get("region")
+    name = args.get("name")
+
+    body: dict[str, Any] = {
+        "name": name.lower() if name else None,
+        "description": args.get("description"),
+        "address": args.get("address"),
+        "prefixLength": arg_to_number(args.get("prefix_length")),
+        "networkTier": args.get("network_tier"),
+        "addressType": args.get("address_type"),
+        "purpose": args.get("purpose"),
+        "subnetwork": args.get("subnetwork"),
+        "network": args.get("network"),
+    }
+    remove_nulls_from_dictionary(body)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"Address insert body for {name} in project {project_id}: {body}")
+    response = compute.addresses().insert(project=project_id, region=region, body=body).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Address Insert Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_address_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified regional address resource.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - region (str): Name of the region for this request.
+            - address (str): Name of the address resource to delete.
+
+    Returns:
+        CommandResults: Object containing the operation details of the address delete request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    region = args.get("region")
+    address = args.get("address")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.addresses().delete(project=project_id, region=region, address=address).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Address Delete Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_global_address_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the specified global address resource.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - address (str): Name of the address resource to return.
+
+    Returns:
+        CommandResults: Object containing the address details under `GCP.Compute.Addresses`.
+    """
+    project_id = args.get("project_id")
+    address = args.get("address")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.globalAddresses().get(project=project_id, address=address).execute()  # pylint: disable=E1101
+    demisto.debug(f"Global address get response for {address} in project {project_id}: \n{response}")
+
+    hr = tableToMarkdown(
+        f"GCP Compute Global Address: {address}",
+        response,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Addresses",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_global_address_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of global address resources.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
+            - page_token (str, optional): Token to retrieve the next page of results.
+            - filters (str, optional): Expression for filtering the listed resources.
+            - order_by (str, optional): Sorts list results by a certain order.
+
+    Returns:
+        CommandResults: Object containing the list of global addresses,
+        with `GCP.Compute.Addresses` and `GCP.Compute.GlobalAddressesNextToken` context outputs.
+    """
+    project_id = args.get("project_id")
+    limit = arg_to_number(args.get("limit")) or 50
+    page_token = args.get("page_token")
+    filters = args.get("filters")
+    order_by = args.get("order_by")
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "maxResults": limit,
+        "pageToken": page_token,
+        "filter": filters,
+        "orderBy": order_by,
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.globalAddresses().list(**params).execute()  # pylint: disable=E1101
+    items = response.get("items", [])
+    next_token = response.get("nextPageToken")
+
+    if not items:
+        return CommandResults(readable_output="No global addresses found.", raw_response=response)
+
+    headers = ["name", "id", "address", "addressType", "status", "creationTimestamp"]
+    metadata = (
+        "Run the following command to retrieve the next batch of global addresses:\n"
+        f"!gcp-compute-global-address-list project_id={project_id} page_token={next_token}"
+        if next_token
+        else None
+    )
+    readable_output = tableToMarkdown(
+        "GCP Compute Global Addresses",
+        items,
+        headers=headers,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+        metadata=metadata,
+    )
+
+    outputs = {
+        "GCP.Compute.Addresses(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"GlobalAddressesNextToken": next_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=remove_empty_elements(outputs),
+        raw_response=response,
+    )
+
+
+def compute_global_address_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates a global address resource in the specified project using the data included in the request.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - name (str): Name of the address resource to create.
+            - description (str, optional): An optional description of this resource.
+            - address (str, optional): The static IP address to reserve.
+            - prefix_length (int, optional): The prefix length if the resource represents an IP range.
+            - network_tier (str, optional): The networking tier used for the address (PREMIUM or STANDARD).
+            - ip_version (str, optional): The IP version that will be used by this address (IPV4 or IPV6).
+            - address_type (str, optional): The type of address to reserve (INTERNAL or EXTERNAL).
+            - purpose (str, optional): The purpose of the resource.
+            - subnetwork (str, optional): The URL of the subnetwork in which to reserve the address.
+            - network (str, optional): The URL of the network in which to reserve the address.
+
+    Returns:
+        CommandResults: Object containing the operation details of the global address insert request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    name = args.get("name")
+
+    body: dict[str, Any] = {
+        "name": name.lower() if name else None,
+        "description": args.get("description"),
+        "address": args.get("address"),
+        "prefixLength": arg_to_number(args.get("prefix_length")),
+        "networkTier": args.get("network_tier"),
+        "ipVersion": args.get("ip_version"),
+        "addressType": args.get("address_type"),
+        "purpose": args.get("purpose"),
+        "subnetwork": args.get("subnetwork"),
+        "network": args.get("network"),
+    }
+    remove_nulls_from_dictionary(body)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"Global address insert body for {name} in project {project_id}: {body}")
+    response = compute.globalAddresses().insert(project=project_id, body=body).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Global Address Insert Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_global_address_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified global address resource.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - address (str): Name of the address resource to delete.
+
+    Returns:
+        CommandResults: Object containing the operation details of the global address delete request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    address = args.get("address")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.globalAddresses().delete(project=project_id, address=address).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Global Address Delete Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Main function to route commands and execute logic.
@@ -2971,6 +3456,15 @@ def main():  # pragma: no cover
             "gcp-compute-firewall-insert": compute_firewall_insert,
             "gcp-compute-firewall-list": compute_firewall_list,
             "gcp-compute-firewall-get": compute_firewall_get,
+            "gcp-compute-address-get": compute_address_get,
+            "gcp-compute-address-list": compute_address_list,
+            "gcp-compute-address-aggregated-list": compute_address_aggregated_list,
+            "gcp-compute-address-insert": compute_address_insert,
+            "gcp-compute-address-delete": compute_address_delete,
+            "gcp-compute-global-address-get": compute_global_address_get,
+            "gcp-compute-global-address-list": compute_global_address_list,
+            "gcp-compute-global-address-insert": compute_global_address_insert,
+            "gcp-compute-global-address-delete": compute_global_address_delete,
             "gcp-compute-snapshots-list": compute_snapshots_list,
             "gcp-compute-snapshot-get": compute_snapshot_get,
             "gcp-compute-instances-aggregated-list-by-ip": compute_instances_aggregated_list_by_ip,

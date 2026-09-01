@@ -3525,6 +3525,554 @@ script:
       - contextPath: GCP.Compute.Operations.kind
         description: Type of the resource. Always compute#operation for Operation resources.
         type: string
+  - name: gcp-compute-address-get
+    description: "Returns the specified regional address resource. Required permission: compute.addresses.get."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: region
+      description: The name of the region for this request.
+      required: true
+    - name: address
+      description: The name of the address resource to return.
+      required: true
+    outputs:
+    - contextPath: GCP.Compute.Addresses.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.Addresses.creationTimestamp
+      description: The creation timestamp in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Addresses.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.description
+      description: An optional description of this resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.address
+      description: The static IP address represented by this resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.prefixLength
+      description: The prefix length if the resource represents an IP range.
+      type: number
+    - contextPath: GCP.Compute.Addresses.status
+      description: 'The status of the address, which can be one of RESERVING, RESERVED, or IN_USE.'
+      type: string
+    - contextPath: GCP.Compute.Addresses.region
+      description: The URL of the region where a regional address resides.
+      type: string
+    - contextPath: GCP.Compute.Addresses.users
+      description: The URLs of the resources that are using this address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.networkTier
+      description: 'The networking tier used for configuring this address, which can be PREMIUM or STANDARD.'
+      type: string
+    - contextPath: GCP.Compute.Addresses.addressType
+      description: 'The type of address to reserve, either INTERNAL or EXTERNAL.'
+      type: string
+    - contextPath: GCP.Compute.Addresses.purpose
+      description: The purpose of this resource, which can be used for network load balancing or other purposes.
+      type: string
+    - contextPath: GCP.Compute.Addresses.subnetwork
+      description: The URL of the subnetwork in which to reserve the address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.network
+      description: The URL of the network in which to reserve the address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.ipVersion
+      description: The IP version that will be used by this address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.selfLink
+      description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.kind
+      description: The type of the resource. Always compute#address for addresses.
+      type: string
+  - name: gcp-compute-address-list
+    description: "Retrieves the list of regional address resources in the specified region. Required permission: compute.addresses.list."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: region
+      description: The name of the region for this request.
+      required: true
+    - name: limit
+      description: 'The maximum number of results to return. Acceptable values are 1 to 500, inclusive.'
+      defaultValue: '50'
+    - name: filters
+      description: A filter expression that filters resources listed in the response.
+    - name: order_by
+      description: The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name.
+    - name: page_token
+      description: The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+    outputs:
+    - contextPath: GCP.Compute.Addresses.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.Addresses.creationTimestamp
+      description: The creation timestamp in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Addresses.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.description
+      description: An optional description of this resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.address
+      description: The static IP address represented by this resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.prefixLength
+      description: The prefix length if the resource represents an IP range.
+      type: number
+    - contextPath: GCP.Compute.Addresses.status
+      description: 'The status of the address, which can be one of RESERVING, RESERVED, or IN_USE.'
+      type: string
+    - contextPath: GCP.Compute.Addresses.region
+      description: The URL of the region where a regional address resides.
+      type: string
+    - contextPath: GCP.Compute.Addresses.users
+      description: The URLs of the resources that are using this address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.networkTier
+      description: 'The networking tier used for configuring this address, which can be PREMIUM or STANDARD.'
+      type: string
+    - contextPath: GCP.Compute.Addresses.addressType
+      description: 'The type of address to reserve, either INTERNAL or EXTERNAL.'
+      type: string
+    - contextPath: GCP.Compute.Addresses.purpose
+      description: The purpose of this resource, which can be used for network load balancing or other purposes.
+      type: string
+    - contextPath: GCP.Compute.Addresses.subnetwork
+      description: The URL of the subnetwork in which to reserve the address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.network
+      description: The URL of the network in which to reserve the address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.selfLink
+      description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.kind
+      description: The type of the resource. Always compute#address for addresses.
+      type: string
+    - contextPath: GCP.Compute.AddressesNextToken
+      description: The token used to retrieve the next page of results for list requests.
+      type: string
+  - name: gcp-compute-address-aggregated-list
+    description: "Retrieves an aggregated list of regional address resources across all regions. Required permission: compute.addresses.list."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: limit
+      description: 'The maximum number of results to return. Acceptable values are 1 to 500, inclusive.'
+      defaultValue: '50'
+    - name: filters
+      description: A filter expression that filters resources listed in the response.
+    - name: order_by
+      description: The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name.
+    - name: page_token
+      description: The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+    outputs:
+    - contextPath: GCP.Compute.Addresses.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.Addresses.creationTimestamp
+      description: The creation timestamp in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Addresses.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.description
+      description: An optional description of this resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.address
+      description: The static IP address represented by this resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.prefixLength
+      description: The prefix length if the resource represents an IP range.
+      type: number
+    - contextPath: GCP.Compute.Addresses.status
+      description: 'The status of the address, which can be one of RESERVING, RESERVED, or IN_USE.'
+      type: string
+    - contextPath: GCP.Compute.Addresses.region
+      description: The URL of the region where a regional address resides.
+      type: string
+    - contextPath: GCP.Compute.Addresses.users
+      description: The URLs of the resources that are using this address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.networkTier
+      description: 'The networking tier used for configuring this address, which can be PREMIUM or STANDARD.'
+      type: string
+    - contextPath: GCP.Compute.Addresses.addressType
+      description: 'The type of address to reserve, either INTERNAL or EXTERNAL.'
+      type: string
+    - contextPath: GCP.Compute.Addresses.purpose
+      description: The purpose of this resource, which can be used for network load balancing or other purposes.
+      type: string
+    - contextPath: GCP.Compute.Addresses.subnetwork
+      description: The URL of the subnetwork in which to reserve the address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.network
+      description: The URL of the network in which to reserve the address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.selfLink
+      description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.kind
+      description: The type of the resource. Always compute#address for addresses.
+      type: string
+    - contextPath: GCP.Compute.AddressesAggregatedNextToken
+      description: The token used to retrieve the next page of results for list requests.
+      type: string
+  - name: gcp-compute-address-insert
+    description: "Creates a regional address resource in the specified project using the data included in the request. Required permission: compute.addresses.create."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: region
+      description: The name of the region for this request.
+      required: true
+    - name: name
+      description: The name of the address resource to create.
+      required: true
+    - name: description
+      description: An optional description of this resource.
+    - name: address
+      description: The static IP address to reserve. If not specified, an unused ephemeral IP address is assigned.
+    - name: prefix_length
+      description: The prefix length if the resource represents an IP range.
+    - name: network_tier
+      description: The networking tier used for configuring this address.
+      auto: PREDEFINED
+      predefined:
+      - PREMIUM
+      - STANDARD
+    - name: address_type
+      description: The type of address to reserve.
+      auto: PREDEFINED
+      predefined:
+      - INTERNAL
+      - EXTERNAL
+    - name: purpose
+      description: The purpose of this resource, such as GCE_ENDPOINT, SHARED_LOADBALANCER_VIP, or VPC_PEERING.
+    - name: subnetwork
+      description: The URL of the subnetwork in which to reserve the address. Required if the address type is INTERNAL.
+    - name: network
+      description: The URL of the network in which to reserve the address.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator that ranges from 0 to 100.
+      type: number
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides. Only available when performing regional operations.
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource. Always compute#operation for Operation resources.
+      type: string
+  - name: gcp-compute-address-delete
+    description: "Deletes the specified regional address resource. Required permission: compute.addresses.delete."
+    execution: true
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: region
+      description: The name of the region for this request.
+      required: true
+    - name: address
+      description: The name of the address resource to delete.
+      required: true
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator that ranges from 0 to 100.
+      type: number
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides. Only available when performing regional operations.
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource. Always compute#operation for Operation resources.
+      type: string
+  - name: gcp-compute-global-address-get
+    description: "Returns the specified global address resource. Required permission: compute.globalAddresses.get."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: address
+      description: The name of the address resource to return.
+      required: true
+    outputs:
+    - contextPath: GCP.Compute.Addresses.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.Addresses.creationTimestamp
+      description: The creation timestamp in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Addresses.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.description
+      description: An optional description of this resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.address
+      description: The static IP address represented by this resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.prefixLength
+      description: The prefix length if the resource represents an IP range.
+      type: number
+    - contextPath: GCP.Compute.Addresses.status
+      description: 'The status of the address, which can be one of RESERVING, RESERVED, or IN_USE.'
+      type: string
+    - contextPath: GCP.Compute.Addresses.users
+      description: The URLs of the resources that are using this address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.networkTier
+      description: 'The networking tier used for configuring this address, which can be PREMIUM or STANDARD.'
+      type: string
+    - contextPath: GCP.Compute.Addresses.addressType
+      description: 'The type of address to reserve, either INTERNAL or EXTERNAL.'
+      type: string
+    - contextPath: GCP.Compute.Addresses.purpose
+      description: The purpose of this resource, which can be used for network load balancing or other purposes.
+      type: string
+    - contextPath: GCP.Compute.Addresses.subnetwork
+      description: The URL of the subnetwork in which to reserve the address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.network
+      description: The URL of the network in which to reserve the address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.ipVersion
+      description: The IP version that will be used by this address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.selfLink
+      description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.kind
+      description: The type of the resource. Always compute#address for addresses.
+      type: string
+  - name: gcp-compute-global-address-list
+    description: "Retrieves the list of global address resources. Required permission: compute.globalAddresses.list."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: limit
+      description: 'The maximum number of results to return. Acceptable values are 1 to 500, inclusive.'
+      defaultValue: '50'
+    - name: filters
+      description: A filter expression that filters resources listed in the response.
+    - name: order_by
+      description: The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name.
+    - name: page_token
+      description: The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+    outputs:
+    - contextPath: GCP.Compute.Addresses.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.Addresses.creationTimestamp
+      description: The creation timestamp in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Addresses.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.description
+      description: An optional description of this resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.address
+      description: The static IP address represented by this resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.prefixLength
+      description: The prefix length if the resource represents an IP range.
+      type: number
+    - contextPath: GCP.Compute.Addresses.status
+      description: 'The status of the address, which can be one of RESERVING, RESERVED, or IN_USE.'
+      type: string
+    - contextPath: GCP.Compute.Addresses.users
+      description: The URLs of the resources that are using this address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.networkTier
+      description: 'The networking tier used for configuring this address, which can be PREMIUM or STANDARD.'
+      type: string
+    - contextPath: GCP.Compute.Addresses.addressType
+      description: 'The type of address to reserve, either INTERNAL or EXTERNAL.'
+      type: string
+    - contextPath: GCP.Compute.Addresses.purpose
+      description: The purpose of this resource, which can be used for network load balancing or other purposes.
+      type: string
+    - contextPath: GCP.Compute.Addresses.subnetwork
+      description: The URL of the subnetwork in which to reserve the address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.network
+      description: The URL of the network in which to reserve the address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.selfLink
+      description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Addresses.kind
+      description: The type of the resource. Always compute#address for addresses.
+      type: string
+    - contextPath: GCP.Compute.GlobalAddressesNextToken
+      description: The token used to retrieve the next page of results for list requests.
+      type: string
+  - name: gcp-compute-global-address-insert
+    description: "Creates a global address resource in the specified project using the data included in the request. Required permission: compute.globalAddresses.create."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: name
+      description: The name of the address resource to create.
+      required: true
+    - name: description
+      description: An optional description of this resource.
+    - name: address
+      description: The static IP address to reserve. If not specified, an unused ephemeral IP address is assigned.
+    - name: prefix_length
+      description: The prefix length if the resource represents an IP range.
+    - name: network_tier
+      description: The networking tier used for configuring this address.
+      auto: PREDEFINED
+      predefined:
+      - PREMIUM
+      - STANDARD
+    - name: ip_version
+      description: The IP version that will be used by this address.
+      auto: PREDEFINED
+      predefined:
+      - IPV4
+      - IPV6
+    - name: address_type
+      description: The type of address to reserve.
+      auto: PREDEFINED
+      predefined:
+      - INTERNAL
+      - EXTERNAL
+    - name: purpose
+      description: The purpose of this resource, such as GCE_ENDPOINT, SHARED_LOADBALANCER_VIP, or VPC_PEERING.
+    - name: subnetwork
+      description: The URL of the subnetwork in which to reserve the address. Required if the address type is INTERNAL.
+    - name: network
+      description: The URL of the network in which to reserve the address.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator that ranges from 0 to 100.
+      type: number
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource. Always compute#operation for Operation resources.
+      type: string
+  - name: gcp-compute-global-address-delete
+    description: "Deletes the specified global address resource. Required permission: compute.globalAddresses.delete."
+    execution: true
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: address
+      description: The name of the address resource to delete.
+      required: true
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator that ranges from 0 to 100.
+      type: number
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource. Always compute#operation for Operation resources.
+      type: string
 
 # The command is currently unsupported.
 #  - name: gcp-admin-user-update
