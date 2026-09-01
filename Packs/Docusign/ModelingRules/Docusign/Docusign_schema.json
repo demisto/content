@@ -10,7 +10,7 @@
       },
       "city": {
         "type": "string",
-        "is_array": false
+        "is_array": true
       },
       "country": {
         "type": "string",

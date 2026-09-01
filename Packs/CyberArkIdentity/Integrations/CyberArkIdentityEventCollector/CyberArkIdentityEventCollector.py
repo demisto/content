@@ -200,7 +200,7 @@ def main(command: str, demisto_params: dict):
     request = CyberArkIdentityEventsRequest(**request_params)
     client = CyberArkIdentityEventsClient(request, options, credentials)
     get_events = CyberArkIdentityGetEvents(client, options)
-
+    demisto.debug(f"Command being called is {command}")
     try:
         if command == "test-module":
             get_events.run()
