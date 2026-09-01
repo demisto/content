@@ -879,11 +879,6 @@ def test_list_account_command(mocker):
     "args, mock_response, expected_outputs_prefix",
     [
         (
-            {"limit": "1", "page": "1", "page_size": "1", "policyType": "blockedsenders"},
-            (util_load_json("test_data/list_policies_response.json"), 1),
-            "Mimecast.BlockedSendersPolicy",
-        ),
-        (
             {"limit": "1", "page": "1", "page_size": "1", "policyType": "antispoofing-bypass"},
             (util_load_json("test_data/list_policies_response.json"), 1),
             "Mimecast.AntispoofingBypassPolicy",
@@ -897,11 +892,11 @@ def test_list_account_command(mocker):
 )
 def test_list_policies_command(mocker, args, mock_response, expected_outputs_prefix):
     """
-    Unit test for the list_policies_command function in MimecastV2 integration.
+    Unit test for the list_policies_command function in MimecastV2 integration (v1 policy types).
 
     Given
     - list_policies_command function from MimecastV2 integration.
-    - command args including policyType set to "address-alteration".
+    - command args including policyType set to a non-blockedsenders (v1) type.
     - command raw response from the server.
     When
     - mock the server response to request_with_pagination.
@@ -1029,38 +1024,6 @@ def test_update_address_alteration_policy_command(mocker):
     assert result.outputs == mock_response.get("data")
     assert result.readable_output == f"{id} has been updated successfully"
     assert result.outputs_prefix == "Mimecast.AddressAlterationPolicy"
-    assert result.outputs_key_field == "id"
-
-
-def test_create_block_sender_policy_command(mocker):
-    """Unit test
-    Given:
-    - Valid input arguments to create a block sender policy.
-
-    When:
-    - The create_or_update_policy_request method is called.
-
-    Then:
-    - Ensure the returned result matches the expected output.
-    - Ensure the readable output is as expected.
-    - Ensure the outputs prefix and key field are correct.
-    """
-    args = {
-        "description": "test",
-        "fromPart": "both",
-        "fromType": "email_domain",
-        "fromValue": "google.com",
-        "option": "block_sender",
-        "toType": "everyone",
-    }
-    mock_response = util_load_json("test_data/create_block_sender_policy_response.json")
-    result_outputs = util_load_json("test_data/create_block_sender_policy_result_outputs.json")
-    result_readable_output = util_load_json("test_data/create_block_sender_policy_result_readable_output.md")
-    mocker.patch.object(MimecastV2, "create_or_update_policy_request", return_value=mock_response)
-    result = MimecastV2.create_block_sender_policy_command(args)
-    assert result.outputs == result_outputs
-    assert result.readable_output == result_readable_output
-    assert result.outputs_prefix == "Mimecast.BlockedSendersPolicy"
     assert result.outputs_key_field == "id"
 
 
@@ -1446,3 +1409,423 @@ class TestFetchIncidents:
         MimecastV2.fetch_incidents()
 
         assert set_last_run_mock.called
+
+
+class TestHttpRequestErrorHandling:
+    """Tests for the v2 error-envelope parsing in http_request."""
+
+    def test_success_returns_json(self, requests_mock):
+        """200 response returns parsed JSON."""
+        requests_mock.get("http://test.com/api/test", json={"key": "value"})
+        result = MimecastV2.http_request("GET", "/api/test")
+        assert result == {"key": "value"}
+
+    def test_is_file_returns_response_object(self, requests_mock):
+        """is_file=True returns the raw response object, not json()."""
+        requests_mock.get("http://test.com/api/test", content=b"binary")
+        result = MimecastV2.http_request("GET", "/api/test", is_file=True)
+        assert result.content == b"binary"
+
+    def test_v2_error_envelope_raises_demisto_exception(self, requests_mock):
+        """400 with v2 error envelope raises DemistoException with the message."""
+        requests_mock.patch(
+            "http://test.com/api/test",
+            status_code=400,
+            json={"error": [{"code": "err_test", "message": "Something went wrong"}]},
+        )
+        with pytest.raises(DemistoException, match="Something went wrong"):
+            MimecastV2.http_request("PATCH", "/api/test", payload={})
+
+    def test_v2_multiple_errors_joined(self, requests_mock):
+        """Multiple errors in the v2 envelope are joined with '; '."""
+        requests_mock.patch(
+            "http://test.com/api/test",
+            status_code=400,
+            json={
+                "error": [
+                    {"code": "err_a", "message": "First error"},
+                    {"code": "err_b", "message": "Second error"},
+                ]
+            },
+        )
+        with pytest.raises(DemistoException, match="First error; Second error"):
+            MimecastV2.http_request("PATCH", "/api/test", payload={})
+
+    def test_non_v2_4xx_reraises_http_error(self, requests_mock):
+        """4xx without v2 error key re-raises the original HTTPError."""
+        import requests
+
+        requests_mock.patch(
+            "http://test.com/api/test",
+            status_code=403,
+            json={"message": "Forbidden"},
+        )
+        with pytest.raises(requests.exceptions.HTTPError):
+            MimecastV2.http_request("PATCH", "/api/test", payload={})
+
+    def test_json_parse_failure_reraises_http_error(self, requests_mock):
+        """If the error body is not JSON, re-raises the original HTTPError."""
+        import requests
+
+        requests_mock.patch(
+            "http://test.com/api/test",
+            status_code=400,
+            text="not json",
+            headers={"Content-Type": "text/plain"},
+        )
+        with pytest.raises(requests.exceptions.HTTPError):
+            MimecastV2.http_request("PATCH", "/api/test", payload={})
+
+
+class TestUpdateBlockSenderPolicyCommand:
+    """Tests for update_block_sender_policy_command."""
+
+    def test_missing_policy_id_raises(self):
+        with pytest.raises(DemistoException, match="policy ID"):
+            MimecastV2.update_block_sender_policy_command({})
+
+    def test_success_returns_readable_output(self, requests_mock):
+        requests_mock.patch(
+            "http://test.com/policy-management/cloud-gateway/v1/blocked-senders/policies/abc123", status_code=204, text=""
+        )
+        result = MimecastV2.update_block_sender_policy_command({"policy_id": "abc123", "description": "updated"})
+        assert "abc123" in result.readable_output
+        assert result.outputs is None
+
+    def test_patch_body_contains_from_object(self, requests_mock):
+        adapter = requests_mock.patch(
+            "http://test.com/policy-management/cloud-gateway/v1/blocked-senders/policies/pid",
+            status_code=204,
+            text="",
+        )
+        MimecastV2.update_block_sender_policy_command(
+            {"policy_id": "pid", "fromType": "email_domain", "fromValue": "example.com"}
+        )
+        sent_body = adapter.last_request.json()
+        assert sent_body["from"] == {"type": "email_domain", "domain": "example.com"}
+
+
+class TestOAuth2TokenManagement:
+    """Tests for token_oauth2_request and updating_token_oauth2."""
+
+    # --- token_oauth2_request ---
+
+    def test_token_oauth2_request_returns_token_and_expires_in(self, requests_mock):
+        """Successful token fetch returns (access_token, expires_in) tuple."""
+        requests_mock.post(
+            "http://test.com/oauth/token",
+            json={"access_token": "tok123", "expires_in": 1799, "token_type": "Bearer", "scope": ""},
+        )
+        token, expires_in = MimecastV2.token_oauth2_request()
+        assert token == "tok123"
+        assert expires_in == 1799
+
+    def test_token_oauth2_request_defaults_expires_in_when_missing(self, requests_mock):
+        """If expires_in is absent from the response, defaults to 1799."""
+        requests_mock.post(
+            "http://test.com/oauth/token",
+            json={"access_token": "tok456", "token_type": "Bearer"},
+        )
+        token, expires_in = MimecastV2.token_oauth2_request()
+        assert token == "tok456"
+        assert expires_in == 1799
+
+    # --- updating_token_oauth2 ---
+
+    def test_updating_token_fetches_when_no_context(self, mocker, requests_mock):
+        """Fetches a new token when integration context is empty."""
+        requests_mock.post(
+            "http://test.com/oauth/token",
+            json={"access_token": "new_tok", "expires_in": 1799, "token_type": "Bearer", "scope": ""},
+        )
+        mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+        set_ctx = mocker.patch.object(demisto, "setIntegrationContext")
+
+        MimecastV2.updating_token_oauth2()
+
+        assert MimecastV2.TOKEN_OAUTH2 == "new_tok"
+        ctx = set_ctx.call_args[0][0]
+        assert ctx["value"] == "new_tok"
+        assert ctx["expires_in"] == 1799
+        assert "last_update" in ctx
+
+    @freeze_time("2024-01-15T12:00:00Z")
+    def test_updating_token_reuses_valid_token(self, mocker):
+        """Does not fetch a new token when the existing one is still valid."""
+        now = MimecastV2.epoch_seconds()
+        mocker.patch.object(
+            demisto,
+            "getIntegrationContext",
+            return_value={"value": "cached_tok", "last_update": now - 60, "expires_in": 1799},
+        )
+        fetch_mock = mocker.patch.object(MimecastV2, "token_oauth2_request")
+
+        MimecastV2.updating_token_oauth2()
+
+        fetch_mock.assert_not_called()
+        assert MimecastV2.TOKEN_OAUTH2 == "cached_tok"
+
+    @freeze_time("2024-01-15T12:00:00Z")
+    def test_updating_token_refreshes_when_expired(self, mocker, requests_mock):
+        """Fetches a new token when the existing one has expired."""
+        requests_mock.post(
+            "http://test.com/oauth/token",
+            json={"access_token": "refreshed_tok", "expires_in": 1799, "token_type": "Bearer", "scope": ""},
+        )
+        now = MimecastV2.epoch_seconds()
+        mocker.patch.object(
+            demisto,
+            "getIntegrationContext",
+            return_value={"value": "old_tok", "last_update": now - 1799, "expires_in": 1799},
+        )
+        mocker.patch.object(demisto, "setIntegrationContext")
+
+        MimecastV2.updating_token_oauth2()
+
+        assert MimecastV2.TOKEN_OAUTH2 == "refreshed_tok"
+
+    @freeze_time("2024-01-15T12:00:00Z")
+    def test_updating_token_uses_expires_in_from_context(self, mocker):
+        """Uses the expires_in stored in context, not a hardcoded value."""
+        now = MimecastV2.epoch_seconds()
+        mocker.patch.object(
+            demisto,
+            "getIntegrationContext",
+            return_value={"value": "short_ttl_tok", "last_update": now - 200, "expires_in": 300},
+        )
+        fetch_mock = mocker.patch.object(MimecastV2, "token_oauth2_request")
+
+        MimecastV2.updating_token_oauth2()
+
+        fetch_mock.assert_not_called()
+        assert MimecastV2.TOKEN_OAUTH2 == "short_ttl_tok"
+
+    @freeze_time("2024-01-15T12:00:00Z")
+    def test_updating_token_refreshes_within_safety_margin(self, mocker, requests_mock):
+        """Refreshes when fewer than 60s remain before expiry."""
+        requests_mock.post(
+            "http://test.com/oauth/token",
+            json={"access_token": "margin_tok", "expires_in": 1799, "token_type": "Bearer", "scope": ""},
+        )
+        now = MimecastV2.epoch_seconds()
+        mocker.patch.object(
+            demisto,
+            "getIntegrationContext",
+            return_value={"value": "expiring_tok", "last_update": now - 1750, "expires_in": 1799},
+        )
+        mocker.patch.object(demisto, "setIntegrationContext")
+
+        MimecastV2.updating_token_oauth2()
+
+        assert MimecastV2.TOKEN_OAUTH2 == "margin_tok"
+
+
+BLOCKED_SENDERS_V2_URL = "http://test.com/policy-management/cloud-gateway/v1/blocked-senders/policies"
+
+V2_FLAT_POLICY = {
+    "id": "9f0d1a2b-3c4d-5e6f-7a8b-9c0d1e2f3a4b",
+    "description": "Block example.com",
+    "from": {"type": "email_domain", "domain": "example.com"},
+    "to": {"type": "everyone"},
+    "bidirectional": False,
+    "fromDateTime": "2024-01-15T12:00:00+00:00",
+    "toDateTime": "2024-02-15T12:00:00+00:00",
+    "fromEternal": False,
+    "toEternal": True,
+    "fromPart": "envelope_from",
+    "enabled": True,
+    "enforced": False,
+    "override": False,
+}
+
+
+class TestBuildPolicyV2Bodies:
+    """Tests for the v2 request-body builders shared by create and update."""
+
+    def test_nested_from_to_by_type(self):
+        """fromValue/toValue land in domain/emailAddress/groupId according to the type."""
+        body = MimecastV2.build_blocked_senders_policy_v2_body(
+            {
+                "fromType": "email_domain",
+                "fromValue": "example.com",
+                "toType": "individual_email_address",
+                "toValue": "user@test.com",
+            }
+        )
+        assert body["from"] == {"type": "email_domain", "domain": "example.com"}
+        assert body["to"] == {"type": "individual_email_address", "emailAddress": "user@test.com"}
+
+    def test_group_id_mapping(self):
+        """profile_group maps the value to groupId."""
+        body = MimecastV2.build_blocked_senders_policy_v2_body({"fromType": "profile_group", "fromValue": "grp-1"})
+        assert body["from"] == {"type": "profile_group", "groupId": "grp-1"}
+
+    def test_valueless_type_emits_type_only(self):
+        """A type that takes no value emits only the type key."""
+        body = MimecastV2.build_blocked_senders_policy_v2_body({"toType": "everyone"})
+        assert body["to"] == {"type": "everyone"}
+
+    @freeze_time("2024-01-15T12:00:00Z")
+    def test_date_args_renamed_to_date_time(self):
+        """from_date/to_date are renamed to fromDateTime/toDateTime, keeping the v1 date format."""
+        from_date, to_date = "1 day", "now"
+        expected_from = arg_to_datetime(from_date).strftime(MimecastV2.DATE_FORMAT)  # type: ignore[union-attr]
+        expected_to = arg_to_datetime(to_date).strftime(MimecastV2.DATE_FORMAT)  # type: ignore[union-attr]
+
+        body = MimecastV2.build_blocked_senders_policy_v2_body({"from_date": from_date, "to_date": to_date})
+
+        assert body["fromDateTime"] == expected_from
+        assert body["toDateTime"] == expected_to
+        assert "fromDate" not in body
+        assert "toDate" not in body
+
+    def test_patch_body_omits_unprovided_fields(self):
+        """Partial-update semantics: nothing the user did not provide is sent."""
+        body = MimecastV2.build_blocked_senders_policy_v2_body({"description": "only this"})
+        assert body == {"description": "only this"}
+
+
+class TestCreateBlockSenderPolicyCommand:
+    """Tests for create_block_sender_policy_command (v2 POST)."""
+
+    def test_success_returns_id_in_readable_output(self, requests_mock):
+        """201 {id} produces the success HR and no context."""
+        requests_mock.post(BLOCKED_SENDERS_V2_URL, status_code=201, json={"id": "new-uuid"})
+        result = MimecastV2.create_block_sender_policy_command(
+            {"description": "d", "option": "block_sender", "fromType": "email_domain", "fromValue": "example.com"}
+        )
+        assert result.readable_output == "Policy new-uuid was created successfully."
+        assert result.outputs == {"id": "new-uuid"}
+
+    def test_request_body_is_v2_nested(self, requests_mock):
+        """The POST body uses the nested v2 schema with top-level scalars."""
+        adapter = requests_mock.post(BLOCKED_SENDERS_V2_URL, status_code=201, json={"id": "new-uuid"})
+        MimecastV2.create_block_sender_policy_command(
+            {
+                "description": "Block example.com",
+                "option": "block_sender",
+                "fromPart": "envelope_from",
+                "fromType": "email_domain",
+                "fromValue": "example.com",
+                "toType": "everyone",
+            }
+        )
+        sent_body = adapter.last_request.json()
+        assert sent_body == {
+            "description": "Block example.com",
+            "option": "block_sender",
+            "fromPart": "envelope_from",
+            "from": {"type": "email_domain", "domain": "example.com"},
+            "to": {"type": "everyone"},
+        }
+
+    def test_v2_error_envelope_surfaces_message(self, requests_mock):
+        """A v2 error envelope is surfaced as a DemistoException."""
+        requests_mock.post(
+            BLOCKED_SENDERS_V2_URL,
+            status_code=400,
+            json={"error": [{"code": "err_policy_invalid", "message": "Invalid policy"}]},
+        )
+        with pytest.raises(DemistoException, match="Invalid policy"):
+            MimecastV2.create_block_sender_policy_command({"description": "d"})
+
+
+class TestGetPolicyCommandV2:
+    """Tests for the blockedsenders branch of get_policy_command (v2 per-id GET)."""
+
+    def test_emits_flat_object_under_single_prefix(self, requests_mock):
+        """The bare flat object is emitted verbatim under Mimecast.BlockedSendersPolicy."""
+        policy_id = V2_FLAT_POLICY["id"]
+        requests_mock.get(f"{BLOCKED_SENDERS_V2_URL}/{policy_id}", json=V2_FLAT_POLICY)
+        result = MimecastV2.get_policy_command({"policyID": policy_id, "policyType": "blockedsenders"})
+        assert result.outputs == V2_FLAT_POLICY
+        assert result.outputs_prefix == "Mimecast.BlockedSendersPolicy"
+
+    def test_hr_uses_corrected_receiver_spelling(self, requests_mock):
+        """The HR table uses 'Receiver', not the legacy 'Reciever'."""
+        policy_id = V2_FLAT_POLICY["id"]
+        requests_mock.get(f"{BLOCKED_SENDERS_V2_URL}/{policy_id}", json=V2_FLAT_POLICY)
+        result = MimecastV2.get_policy_command({"policyID": policy_id, "policyType": "blockedsenders"})
+        assert "Receiver" in result.readable_output
+        assert "Reciever" not in result.readable_output
+        assert "example.com" in result.readable_output
+
+    def test_missing_policy_id_raises(self):
+        with pytest.raises(DemistoException, match="policy ID"):
+            MimecastV2.get_policy_command({"policyType": "blockedsenders"})
+
+    def test_v1_policy_type_keeps_legacy_behavior(self, mocker):
+        """A non-blockedsenders type still uses the v1 request and dual-prefix outputs."""
+        mocker.patch.object(
+            MimecastV2,
+            "get_policy_request",
+            return_value=[{"id": "v1-id", "policy": {"from": {}, "to": {}, "fromDate": "d1", "toDate": "d2"}}],
+        )
+        results = MimecastV2.get_policy_command({"policyID": "v1-id", "policyType": "antispoofing-bypass"})
+        assert [r.outputs_prefix for r in results] == ["Mimecast.Policy", "Mimecast.AntispoofingBypassPolicy"]
+
+
+class TestListPoliciesCommandV2:
+    """Tests for the blockedsenders branch of list_policies_command (v2 GET list)."""
+
+    def test_emits_policies_array_verbatim(self, requests_mock):
+        """response['policies'] is emitted as-is, with no reshaping."""
+        requests_mock.get(BLOCKED_SENDERS_V2_URL, json={"policies": [V2_FLAT_POLICY], "meta": {"nextPage": "cursor"}})
+        result = MimecastV2.list_policies_command({"policyType": "blockedsenders"})
+        assert result.outputs == {"policies": [V2_FLAT_POLICY], "NextToken": "cursor"}
+        assert result.outputs_prefix == "Mimecast.BlockedSendersPolicy"
+
+    def test_empty_policies_list(self, requests_mock):
+        """An empty result set does not raise."""
+        requests_mock.get(BLOCKED_SENDERS_V2_URL, json={"policies": [], "meta": {}})
+        result = MimecastV2.list_policies_command({"policyType": "blockedsenders"})
+        assert result.outputs == {}
+
+    def test_hr_uses_corrected_receiver_spelling(self, requests_mock):
+        """The HR table uses 'Receiver', not the legacy 'Reciever'."""
+        requests_mock.get(BLOCKED_SENDERS_V2_URL, json={"policies": [V2_FLAT_POLICY], "meta": {}})
+        result = MimecastV2.list_policies_command({"policyType": "blockedsenders"})
+        assert "Receiver" in result.readable_output
+        assert "Reciever" not in result.readable_output
+
+    def test_defaults_to_blockedsenders(self, requests_mock):
+        """With no policyType the command uses the v2 blockedsenders endpoint."""
+        requests_mock.get(BLOCKED_SENDERS_V2_URL, json={"policies": [V2_FLAT_POLICY], "meta": {}})
+        result = MimecastV2.list_policies_command({})
+        assert result.outputs == {"policies": [V2_FLAT_POLICY]}
+
+
+class TestDeletePolicyCommandV2:
+    """Tests for the blockedsenders branch of delete_policy (v2 DELETE)."""
+
+    def test_204_is_treated_as_success(self, requests_mock):
+        """An empty 204 body is a success; context is built from the input ID."""
+        requests_mock.delete(f"{BLOCKED_SENDERS_V2_URL}/pid", status_code=204, text="")
+        results = MimecastV2.delete_policy({"policyID": "pid", "policyType": "blockedsenders"})
+        assert [r.outputs_prefix for r in results] == ["Mimecast.Policy", "Mimecast.BlockedSendersPolicy"]
+        for result in results:
+            assert result.outputs == {"ID": "pid", "Deleted": True}
+            assert result.readable_output == "Mimecast Policy pid deleted successfully!"
+
+    def test_uses_delete_verb_on_v2_path(self, requests_mock):
+        """The request is a DELETE against the v2 per-id path."""
+        adapter = requests_mock.delete(f"{BLOCKED_SENDERS_V2_URL}/pid", status_code=204, text="")
+        MimecastV2.delete_policy({"policyID": "pid", "policyType": "blockedsenders"})
+        assert adapter.last_request.method == "DELETE"
+        assert adapter.last_request.path.endswith("/blocked-senders/policies/pid")
+
+    def test_not_found_raises(self, requests_mock):
+        """A 404 error envelope is surfaced as a DemistoException."""
+        requests_mock.delete(
+            f"{BLOCKED_SENDERS_V2_URL}/missing",
+            status_code=404,
+            json={"error": [{"code": "err_policy_not_found", "message": "Policy not found"}]},
+        )
+        with pytest.raises(DemistoException, match="Policy not found"):
+            MimecastV2.delete_policy({"policyID": "missing", "policyType": "blockedsenders"})
+
+    def test_v1_policy_type_keeps_legacy_request(self, mocker):
+        """A non-blockedsenders type still routes through the v1 delete request."""
+        v1_request = mocker.patch.object(MimecastV2, "delete_policy_request")
+        MimecastV2.delete_policy({"policyID": "v1-id", "policyType": "address-alteration"})
+        v1_request.assert_called_once_with("address-alteration", "v1-id")
