@@ -46,7 +46,7 @@ configuration:
   section: Connect
 - additionalinfo: 'The EPM API version used as a URL path segment in the data-call paths (/EPM/API/<Version>/Sets). Applies to the Idira OAuth authentication method only. CyberArk documents the format as x.x.x.x (four dot-separated numbers); shorter forms such as 26.7.0 are also accepted. Change this only if your tenant requires a version other than the default.'
   advanced: true
-  defaultvalue: 26.7.0
+  defaultvalue: '26.7.0'
   display: EPM API Version
   name: epm_api_version
   required: false

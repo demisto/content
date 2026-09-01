@@ -93,15 +93,14 @@ class Client(BaseClient):
         self.identity_url = identity_url
         self.web_app_id = web_app_id
         # `server_url` is the EPM server address used only for the Idira OAuth method (e.g.
-        # https://example.epm.cyberark.com/). For the EPM/SAML methods the base URL is resolved
-        # from the login response within the code.
+        # https://example.epm.cyberark.com). For the EPM/SAML methods the base URL is resolved
+        # from the login response within the code. Already normalized by `normalize_server_url`
+        # at the parameter-parsing layer.
         self.server_url = server_url
-        # The version segment of the EPM API path. Passed through as-is (only surrounding
-        # whitespace/slashes are trimmed) rather than shape-validated, since CyberArk's documented
-        # "x.x.x.x" format is broader than the value we ship as the default.
-        # Trim before testing for emptiness: a whitespace/slash-only value is truthy but would
-        # otherwise collapse to "" and build a malformed "/EPM/API//" path.
-        self.epm_api_version = (epm_api_version or "").strip().strip("/").strip() or Config.DEFAULT_EPM_API_VERSION
+        # The version segment of the EPM API path, already normalized by `normalize_epm_api_version`
+        # at the parameter-parsing layer. Callers that construct a Client directly must pass a
+        # usable value; only the None default is resolved here.
+        self.epm_api_version = epm_api_version or Config.DEFAULT_EPM_API_VERSION
         # Resolve the authentication method. When `auth_method` is not provided (e.g. instances
         # created before the parameter existed), fall back to the legacy behavior: SAML when both
         # SAML URLs are set, otherwise EPM. This keeps existing instances backward compatible.
@@ -119,6 +118,35 @@ class Client(BaseClient):
             self.epm_auth_to_cyber_ark()
         self.policy_audits_event_type = policy_audits_event_type
         self.raw_events_event_type = raw_events_event_type
+        self._log_configuration()
+
+    def _log_configuration(self) -> None:
+        """Log the non-sensitive client configuration to aid troubleshooting.
+
+        Emitted once per execution, since the Client is constructed a single time in `main()`, so
+        this does not add per-request log noise.
+
+        Only connection-shaping values are logged. Credentials (username, password) and the
+        Authorization header are deliberately excluded so nothing sensitive reaches the logs; the
+        booleans below record whether a credential was supplied, never its value.
+        """
+        demisto.debug(
+            "[Client] Configuration: "
+            f"auth_method={self.auth_method!r}, "
+            f"base_url={self._base_url!r}, "
+            f"server_url={self.server_url!r}, "
+            f"identity_url={self.identity_url!r}, "
+            f"web_app_id={self.web_app_id!r}, "
+            f"epm_api_version={self.epm_api_version!r}, "
+            f"authentication_url={self.authentication_url!r}, "
+            f"application_url={self.application_url!r}, "
+            f"application_id={self.application_id!r}, "
+            f"policy_audits_event_type={self.policy_audits_event_type!r}, "
+            f"raw_events_event_type={self.raw_events_event_type!r}, "
+            f"verify={self._verify}, "
+            f"has_username={bool(self.username)}, "
+            f"has_password={bool(self.password)}"
+        )
 
     def _get_access_token(self, force_refresh: bool = False) -> str:
         """Get or refresh the OAuth2 access token, with caching in the integration context.
@@ -191,7 +219,7 @@ class Client(BaseClient):
         if not self.server_url:
             raise DemistoException("Server URL is required for Idira OAuth authentication.")
         access_token = self._get_access_token(force_refresh=force_refresh)
-        self._base_url = f"{self.server_url.rstrip('/')}/EPM/API/{self.epm_api_version}/"
+        self._base_url = f"{self.server_url}/EPM/API/{self.epm_api_version}/"
         demisto.debug(f"[oauth_auth_to_cyber_ark] Using EPM SET API base URL: {self._base_url}")
         self._headers["Authorization"] = f"Bearer {access_token}"
 
@@ -704,6 +732,40 @@ def test_module(client: Client, last_run: dict) -> str:
 """ MAIN FUNCTION """
 
 
+def normalize_server_url(server_url: str | None) -> str | None:
+    """Normalize the *Server URL* parameter so it can be joined into a path without duplicate slashes.
+
+    Args:
+        server_url: The raw parameter value, which may be None, empty, or have a trailing slash.
+
+    Returns:
+        The trimmed server URL without a trailing slash, or None when no value was provided. The
+        empty/None case is preserved rather than defaulted, because `oauth_auth_to_cyber_ark`
+        reports a missing Server URL as a user-facing error.
+    """
+    normalized = (server_url or "").strip().rstrip("/")
+    return normalized or None
+
+
+def normalize_epm_api_version(epm_api_version: str | None) -> str:
+    """Normalize the *EPM API Version* parameter into a usable URL path segment.
+
+    The value is passed through verbatim apart from trimming surrounding whitespace and slashes,
+    rather than being shape-validated: CyberArk documents the format as "x.x.x.x", which is broader
+    than the value shipped as the default. See
+    https://docs.cyberark.com/epm/latest/en/content/webservices/getsetslist.htm
+
+    Args:
+        epm_api_version: The raw parameter value, which may be None, empty, or padded.
+
+    Returns:
+        The trimmed version segment, or the default when the value is empty once trimmed. Trimming
+        happens before the emptiness check because a whitespace/slash-only value is truthy but would
+        otherwise collapse to "" and build a malformed "/EPM/API//" path.
+    """
+    return (epm_api_version or "").strip().strip("/").strip() or Config.DEFAULT_EPM_API_VERSION
+
+
 def validate_params(
     auth_method: str,
     base_url: str | None,
@@ -759,8 +821,8 @@ def main():  # pragma: no cover
     auth_method = params.get("authentication_method") or Config.AUTH_METHOD_EPM
     identity_url = params.get("identity_url")
     web_app_id = params.get("web_app_id")
-    server_url = params.get("server_url")
-    epm_api_version = params.get("epm_api_version")
+    server_url = normalize_server_url(params.get("server_url"))
+    epm_api_version = normalize_epm_api_version(params.get("epm_api_version"))
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
 

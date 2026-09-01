@@ -467,8 +467,169 @@ def test_oauth_uses_server_url_as_base_url(mocker, requests_mock):
     assert client._base_url == f"{server_url}/EPM/API/26.7.0/"
 
 
+def test_client_configuration_debug_log_for_oauth(mocker, requests_mock):
+    """
+    Given:
+        - An Idira OAuth configuration.
+
+    When:
+        - Building the Client.
+
+    Then:
+        - A single configuration debug log records the OAuth-relevant fields.
+        - Neither the username, the password, nor the access token appear in any log line.
+    """
+    from CyberArkEPMEventCollector import Client
+
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+    debug = mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    server_url = "https://example.epm.cyberark.com"
+    requests_mock.post(f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "TOKEN123", "expires_in": 900})
+
+    Client(
+        base_url="",
+        username="secret-user",
+        password="secret-pass",
+        application_id="1",
+        auth_method="Idira OAuth",
+        identity_url=identity_url,
+        web_app_id="web-app-1",
+        server_url=server_url,
+        epm_api_version="26.8.0",
+    )
+
+    config_logs = [call.args[0] for call in debug.call_args_list if call.args[0].startswith("[Client] Configuration:")]
+    assert len(config_logs) == 1
+    config_log = config_logs[0]
+    for expected in ("Idira OAuth", identity_url, server_url, "web-app-1", "26.8.0", "has_username=True", "has_password=True"):
+        assert expected in config_log
+
+    all_logs = " ".join(call.args[0] for call in debug.call_args_list)
+    for secret in ("secret-user", "secret-pass", "TOKEN123"):
+        assert secret not in all_logs
+
+
+def test_client_configuration_debug_log_for_epm(requests_mock, mocker):
+    """
+    Given:
+        - An EPM (non-OAuth) configuration.
+
+    When:
+        - Building the Client.
+
+    Then:
+        - The configuration debug log records the EPM-relevant fields, so the log is useful for
+          every authentication method and not only for OAuth.
+        - The credentials do not appear in any log line.
+    """
+    from CyberArkEPMEventCollector import Client
+
+    debug = mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+    requests_mock.post(
+        "https://example.epm.cyberark.com/EPM/API/Auth/EPM/Logon",
+        json={"EPMAuthenticationResult": "TOKEN", "ManagerURL": "https://example.manager.cyberark.com"},
+    )
+
+    Client(
+        base_url="https://example.epm.cyberark.com",
+        username="secret-user",
+        password="secret-pass",
+        application_id="app-1",
+        auth_method="EPM",
+    )
+
+    config_logs = [call.args[0] for call in debug.call_args_list if call.args[0].startswith("[Client] Configuration:")]
+    assert len(config_logs) == 1
+    config_log = config_logs[0]
+    for expected in ("'EPM'", "example.manager.cyberark.com", "app-1", "has_username=True", "has_password=True"):
+        assert expected in config_log
+
+    all_logs = " ".join(call.args[0] for call in debug.call_args_list)
+    for secret in ("secret-user", "secret-pass"):
+        assert secret not in all_logs
+
+
+def test_client_configuration_debug_log_for_saml(requests_mock, mocker):
+    """
+    Given:
+        - A SAML configuration.
+
+    When:
+        - Building the Client.
+
+    Then:
+        - The configuration debug log records the SAML-relevant fields, completing coverage of all
+          three authentication methods.
+        - The credentials and the SAML assertion do not appear in any log line.
+    """
+    from CyberArkEPMEventCollector import Client
+
+    debug = mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+    mocker.patch.object(Client, "get_saml_response", return_value="SAML-ASSERTION")
+    requests_mock.post(
+        "https://example.epm.cyberark.com/SAML/Logon",
+        json={"EPMAuthenticationResult": "TOKEN", "ManagerURL": "https://example.manager.cyberark.com"},
+    )
+
+    Client(
+        base_url="https://example.epm.cyberark.com",
+        username="secret-user",
+        password="secret-pass",
+        application_id="1",
+        auth_method="SAML",
+        authentication_url="https://example.okta.com/api/v1/authn",
+        application_url="https://example.okta.com/home/app/id",
+    )
+
+    config_logs = [call.args[0] for call in debug.call_args_list if call.args[0].startswith("[Client] Configuration:")]
+    assert len(config_logs) == 1
+    config_log = config_logs[0]
+    for expected in ("'SAML'", "example.okta.com/api/v1/authn", "example.okta.com/home/app/id"):
+        assert expected in config_log
+
+    all_logs = " ".join(call.args[0] for call in debug.call_args_list)
+    for secret in ("secret-user", "secret-pass", "SAML-ASSERTION"):
+        assert secret not in all_logs
+
+
+def test_client_configuration_debug_log_reports_missing_credentials(requests_mock, mocker):
+    """
+    Given:
+        - A configuration where no username or password was supplied.
+
+    When:
+        - Building the Client.
+
+    Then:
+        - The presence booleans report False, so the log distinguishes "credential missing" from
+          "credential supplied" without ever revealing the value itself.
+    """
+    from CyberArkEPMEventCollector import Client
+
+    debug = mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+    requests_mock.post(
+        "https://example.epm.cyberark.com/EPM/API/Auth/EPM/Logon",
+        json={"EPMAuthenticationResult": "TOKEN", "ManagerURL": "https://example.manager.cyberark.com"},
+    )
+
+    Client(
+        base_url="https://example.epm.cyberark.com",
+        username="",
+        password=None,
+        application_id="1",
+        auth_method="EPM",
+    )
+
+    config_log = next(call.args[0] for call in debug.call_args_list if call.args[0].startswith("[Client] Configuration:"))
+    assert "has_username=False" in config_log
+    assert "has_password=False" in config_log
+
+
 @pytest.mark.parametrize(
-    "epm_api_version, expected_version",
+    "raw_value, expected_version",
     [
         pytest.param(None, "26.7.0", id="not_configured_falls_back_to_default"),
         pytest.param("", "26.7.0", id="empty_string_falls_back_to_default"),
@@ -483,22 +644,51 @@ def test_oauth_uses_server_url_as_base_url(mocker, requests_mock):
         pytest.param(" /26.8.0/ ", "26.8.0", id="surrounding_whitespace_and_slashes_are_trimmed"),
     ],
 )
+def test_normalize_epm_api_version(raw_value, expected_version):
+    """
+    Given:
+        - An *EPM API Version* parameter value: unset/empty, consisting only of whitespace and/or
+          slashes, a version of one to four segments, or a value padded with whitespace and slashes.
+
+    When:
+        - Normalizing the raw parameter at the parameter-parsing layer.
+
+    Then:
+        - The version is returned verbatim, apart from trimming surrounding whitespace and slashes.
+        - Any value that is empty once trimmed falls back to the default, so a stray space or slash
+          can never produce a malformed "/EPM/API//" path.
+        - When the parameter is unset or empty, the default version is used, so existing instances
+          keep their current behavior.
+    """
+    from CyberArkEPMEventCollector import normalize_epm_api_version
+
+    normalized = normalize_epm_api_version(raw_value)
+
+    assert normalized == expected_version
+    assert normalized.strip().strip("/") == normalized
+
+
+@pytest.mark.parametrize(
+    "epm_api_version, expected_version",
+    [
+        pytest.param(None, "26.7.0", id="not_provided_falls_back_to_default"),
+        pytest.param("26.8.0", "26.8.0", id="custom_three_segment_version"),
+        pytest.param("26.8", "26.8", id="custom_two_segment_version"),
+        pytest.param("26.8.0.900", "26.8.0.900", id="custom_four_segment_version_per_vendor_docs"),
+    ],
+)
 def test_oauth_base_url_uses_configured_epm_api_version(mocker, requests_mock, epm_api_version, expected_version):
     """
     Given:
-        - An Idira OAuth configuration with the *EPM API Version* parameter set to various values:
-          unset/empty, values consisting only of whitespace and/or slashes, versions of one to four
-          segments, and a value padded with whitespace and slashes.
+        - An Idira OAuth configuration receiving an already-normalized *EPM API Version*, including
+          the case where it is not provided at all.
 
     When:
         - Building the Client (which performs the OAuth authentication flow).
 
     Then:
-        - The EPM SET API base URL embeds the configured version verbatim, apart from trimming
-          surrounding whitespace and slashes.
-        - Any value that is empty once trimmed falls back to the default, so a stray space or slash
-          can never produce a malformed "/EPM/API//" path.
-        - When the parameter is unset or empty, the default version is used, so existing instances
+        - The EPM SET API base URL embeds the given version verbatim.
+        - When no version is provided, the default is used, so existing instances and direct callers
           keep their current behavior.
     """
     from CyberArkEPMEventCollector import Client
@@ -528,17 +718,60 @@ def test_oauth_base_url_uses_configured_epm_api_version(mocker, requests_mock, e
     assert "//" not in client._base_url.removeprefix("https://")
 
 
-def test_oauth_base_url_has_no_double_slash_when_server_url_has_trailing_slash(mocker, requests_mock):
+@pytest.mark.parametrize(
+    "raw_value, expected",
+    [
+        pytest.param(None, None, id="not_configured_stays_none"),
+        pytest.param("", None, id="empty_string_stays_none"),
+        pytest.param("   ", None, id="whitespace_only_stays_none"),
+        pytest.param("/", None, id="slash_only_stays_none"),
+        pytest.param(
+            "https://example.epm.cyberark.com",
+            "https://example.epm.cyberark.com",
+            id="already_normalized_is_unchanged",
+        ),
+        pytest.param(
+            "https://example.epm.cyberark.com/",
+            "https://example.epm.cyberark.com",
+            id="trailing_slash_is_trimmed",
+        ),
+        pytest.param(
+            "  https://example.epm.cyberark.com//  ",
+            "https://example.epm.cyberark.com",
+            id="surrounding_whitespace_and_repeated_slashes_are_trimmed",
+        ),
+    ],
+)
+def test_normalize_server_url(raw_value, expected):
     """
     Given:
-        - An Idira OAuth configuration where the Server URL ends with a slash and the *EPM API
-          Version* is padded with slashes.
+        - A *Server URL* parameter value: unset/empty, whitespace or slash only, already normalized,
+          or padded with whitespace and trailing slashes.
+
+    When:
+        - Normalizing the raw parameter at the parameter-parsing layer.
+
+    Then:
+        - Trailing slashes and surrounding whitespace are removed, so joining the value into a path
+          cannot produce duplicated slashes.
+        - A value that is empty once trimmed becomes None rather than an empty string, so the
+          missing-Server-URL error still triggers instead of building a relative URL.
+    """
+    from CyberArkEPMEventCollector import normalize_server_url
+
+    assert normalize_server_url(raw_value) == expected
+
+
+def test_oauth_base_url_has_no_double_slash_in_path(mocker, requests_mock):
+    """
+    Given:
+        - An Idira OAuth configuration built from already-normalized parameters.
 
     When:
         - Building the Client.
 
     Then:
-        - The two values are joined without producing duplicated slashes in the path.
+        - The server URL and the version segment are joined without duplicated slashes in the path.
     """
     from CyberArkEPMEventCollector import Client
 
@@ -557,11 +790,12 @@ def test_oauth_base_url_has_no_double_slash_when_server_url_has_trailing_slash(m
         auth_method="Idira OAuth",
         identity_url=identity_url,
         web_app_id="web-app-1",
-        server_url="https://example.epm.cyberark.com/",
-        epm_api_version="/26.8.0/",
+        server_url="https://example.epm.cyberark.com",
+        epm_api_version="26.8.0",
     )
 
     assert client._base_url == "https://example.epm.cyberark.com/EPM/API/26.8.0/"
+    assert "//" not in client._base_url.removeprefix("https://")
 
 
 def test_epm_api_version_is_ignored_for_epm_auth_method(requests_mock):
