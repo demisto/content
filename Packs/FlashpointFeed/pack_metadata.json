@@ -2,7 +2,7 @@
     "name": "Flashpoint Feed",
     "description": "Ingest indicators of compromise from Flashpoint Ignite.",
     "support": "partner",
-    "currentVersion": "3.0.1",
+    "currentVersion": "3.0.2",
     "author": "Flashpoint",
     "url": "https://flashpoint.my.site.com/helpcenter/s/",
     "email": "support@flashpoint-intel.com",

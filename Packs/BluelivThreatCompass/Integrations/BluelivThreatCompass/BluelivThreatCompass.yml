@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
+- Collect
 provider: Outpost24
 commonfields:
   id: Blueliv ThreatCompass
@@ -8,16 +11,19 @@ configuration:
   name: url
   type: 0
   required: false
+  section: Connect
 - display: Username
   name: credentials
   type: 9
   required: false
+  section: Connect
 - additionalinfo: It can be found in the GUI URL. See Integration tips for more details.
   defaultvalue: '1'
   display: Organization ID
   name: organization
   required: true
   type: 0
+  section: Connect
 - display: Module Type
   name: type
   options:
@@ -32,32 +38,46 @@ configuration:
   - DataLeakage
   required: true
   type: 15
+  section: Collect
 - additionalinfo: It can be found in the GUI URL. See Integration tips for more details.
   display: Module ID
   name: module
   required: true
   type: 0
+  section: Connect
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  advanced: true
+  section: Collect
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
   name: fetch_limit
   type: 0
   required: false
+  section: Collect
 - defaultvalue: POSITIVE,NEGATIVE,INFORMATIVE,IMPORTANT
   display: Fetch resource status (POSITIVE, NEGATIVE...)
   name: fetch_status
@@ -71,11 +91,13 @@ configuration:
   - INFORMATIVE
   type: 16
   required: false
+  section: Collect
 - additionalinfo: Format yyyy-mm-dd or yyyy-mm-ddThh:mm:ss
   display: First fetch time
   name: first_fetch_time
   type: 0
   required: false
+  section: Collect
 description: |-
   Blueliv ThreatCompass systematically looks for information about companies,products, people, brands, logos, assets, technology and other information, depending on your needs. Blueliv ThreatCompass allows you to monitor and track all this information to keep your data, your
   organization and its employees safe.
@@ -245,7 +267,7 @@ script:
     - contextPath: BluelivThreatCompass.Label.TextColor
       description: Hexadecimal color of the label text in the GUI.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   runonce: false
   script: '-'
