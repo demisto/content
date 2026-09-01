@@ -2,6 +2,9 @@ import datetime
 import json
 
 import pytest
+import requests
+
+import demistomock as demisto
 
 """ UTILS """
 
@@ -464,7 +467,7 @@ def test_oauth_uses_server_url_as_base_url(mocker, requests_mock):
     assert requests_mock.call_count == 1
     assert client._headers["Authorization"] == "Bearer TOKEN123"
     # Data calls must use the uppercase, versioned EPM SET API path (matches CyberArk Postman).
-    assert client._base_url == f"{server_url}/EPM/API/26.8.0/"
+    assert client._base_url == f"{server_url}/EPM/API/26.8.0.0/"
 
 
 def test_client_configuration_debug_log_for_oauth(mocker, requests_mock):
@@ -498,7 +501,7 @@ def test_client_configuration_debug_log_for_oauth(mocker, requests_mock):
         identity_url=identity_url,
         web_app_id="web-app-1",
         server_url=server_url,
-        epm_api_version="26.8.0",
+        epm_api_version="26.8.0.0",
     )
 
     config_logs = [call.args[0] for call in debug.call_args_list if call.args[0].startswith("[Client] Configuration:")]
@@ -631,24 +634,23 @@ def test_client_configuration_debug_log_reports_missing_credentials(requests_moc
 @pytest.mark.parametrize(
     "raw_value, expected_version",
     [
-        pytest.param(None, "26.8.0", id="not_configured_falls_back_to_default"),
-        pytest.param("", "26.8.0", id="empty_string_falls_back_to_default"),
-        pytest.param("   ", "26.8.0", id="whitespace_only_falls_back_to_default"),
-        pytest.param("/", "26.8.0", id="slash_only_falls_back_to_default"),
-        pytest.param("///", "26.8.0", id="multiple_slashes_only_fall_back_to_default"),
-        pytest.param(" / ", "26.8.0", id="mixed_whitespace_and_slash_only_falls_back_to_default"),
-        pytest.param("26.9.0", "26.9.0", id="custom_three_segment_version"),
-        pytest.param("26.8", "26.8", id="custom_two_segment_version"),
-        pytest.param("26.8.0.900", "26.8.0.900", id="custom_four_segment_version_per_vendor_docs"),
-        pytest.param("26", "26", id="custom_single_segment_version"),
-        pytest.param(" /26.8.0/ ", "26.8.0", id="surrounding_whitespace_and_slashes_are_trimmed"),
+        pytest.param(None, "26.8.0.0", id="not_configured_falls_back_to_default"),
+        pytest.param("", "26.8.0.0", id="empty_string_falls_back_to_default"),
+        pytest.param("   ", "26.8.0.0", id="whitespace_only_falls_back_to_default"),
+        pytest.param("/", "26.8.0.0", id="slash_only_falls_back_to_default"),
+        pytest.param("///", "26.8.0.0", id="multiple_slashes_only_fall_back_to_default"),
+        pytest.param(" / ", "26.8.0.0", id="mixed_whitespace_and_slash_only_falls_back_to_default"),
+        pytest.param("26.8.0.900", "26.8.0.900", id="custom_four_segment_version"),
+        pytest.param("11.5.0.1", "11.5.0.1", id="older_four_segment_release"),
+        pytest.param(" /26.8.0.0/ ", "26.8.0.0", id="surrounding_whitespace_and_slashes_are_trimmed"),
     ],
 )
 def test_normalize_epm_api_version(raw_value, expected_version):
     """
     Given:
-        - An *EPM API Version* parameter value: unset/empty, consisting only of whitespace and/or
-          slashes, a version of one to four segments, or a value padded with whitespace and slashes.
+        - A well-formed *EPM API Version* parameter value: unset/empty, consisting only of
+          whitespace and/or slashes, a four-segment version, or a four-segment version padded
+          with whitespace and slashes.
 
     When:
         - Normalizing the raw parameter at the parameter-parsing layer.
@@ -657,8 +659,8 @@ def test_normalize_epm_api_version(raw_value, expected_version):
         - The version is returned verbatim, apart from trimming surrounding whitespace and slashes.
         - Any value that is empty once trimmed falls back to the default, so a stray space or slash
           can never produce a malformed "/EPM/API//" path.
-        - When the parameter is unset or empty, the default version is used, so existing instances
-          keep their current behavior.
+        - When the parameter is unset or empty, the four-segment default is used, so existing
+          instances that never configured the parameter get a value the EPM API accepts.
     """
     from CyberArkEPMEventCollector import normalize_epm_api_version
 
@@ -669,9 +671,48 @@ def test_normalize_epm_api_version(raw_value, expected_version):
 
 
 @pytest.mark.parametrize(
+    "raw_value",
+    [
+        pytest.param("26.8.0", id="three_segments_the_XSUP_74944_defect"),
+        pytest.param("26.8", id="two_segments"),
+        pytest.param("26", id="one_segment"),
+        pytest.param("26.8.0.0.0", id="five_segments"),
+        pytest.param("v26.8.0.0", id="leading_v_prefix"),
+        pytest.param("abc.d.e.f", id="four_non_numeric_segments"),
+        pytest.param("26.8.0.x", id="trailing_non_numeric_segment"),
+        pytest.param("latest", id="the_word_latest"),
+    ],
+)
+def test_normalize_epm_api_version_rejects_malformed_values(raw_value):
+    """
+    Given:
+        - An *EPM API Version* value that is not four dot-separated numbers.
+
+    When:
+        - Normalizing the raw parameter at the parameter-parsing layer.
+
+    Then:
+        - A DemistoException is raised naming the offending value and the required format, rather
+          than letting the malformed segment reach the API. XSUP-74944: the EPM router matches the
+          version segment on shape alone, so anything other than "x.x.x.x" produces a bare 404 that
+          tells the operator nothing. Failing here converts that into an actionable message.
+    """
+    from CommonServerPython import DemistoException
+    from CyberArkEPMEventCollector import normalize_epm_api_version
+
+    with pytest.raises(DemistoException, match="Invalid EPM API Version") as raised:
+        normalize_epm_api_version(raw_value)
+
+    # The message must name the offending value and the required format - a bare "invalid input"
+    # would leave the operator exactly as stuck as the 404 it replaces.
+    assert raw_value.strip() in str(raised.value)
+    assert "four" in str(raised.value)
+
+
+@pytest.mark.parametrize(
     "epm_api_version, expected_version",
     [
-        pytest.param(None, "26.8.0", id="not_provided_falls_back_to_default"),
+        pytest.param(None, "26.8.0.0", id="not_provided_falls_back_to_default"),
         pytest.param("26.9.0", "26.9.0", id="custom_three_segment_version"),
         pytest.param("26.8", "26.8", id="custom_two_segment_version"),
         pytest.param("26.8.0.900", "26.8.0.900", id="custom_four_segment_version_per_vendor_docs"),
@@ -791,10 +832,10 @@ def test_oauth_base_url_has_no_double_slash_in_path(mocker, requests_mock):
         identity_url=identity_url,
         web_app_id="web-app-1",
         server_url="https://example.epm.cyberark.com",
-        epm_api_version="26.8.0",
+        epm_api_version="26.8.0.0",
     )
 
-    assert client._base_url == "https://example.epm.cyberark.com/EPM/API/26.8.0/"
+    assert client._base_url == "https://example.epm.cyberark.com/EPM/API/26.8.0.0/"
     assert "//" not in client._base_url.removeprefix("https://")
 
 
@@ -959,6 +1000,142 @@ def test_oauth_missing_server_url_raises(mocker, requests_mock):
     assert token_matcher.call_count == 0
 
 
+@pytest.mark.parametrize(
+    "probe_status, expected_outcome",
+    [
+        pytest.param(200, "SUCCEEDED", id="versionless_path_is_served"),
+        pytest.param(404, "FAILED", id="versionless_path_is_not_served"),
+        pytest.param(401, "FAILED", id="versionless_path_rejects_the_token"),
+        pytest.param(500, "FAILED", id="versionless_path_server_error"),
+    ],
+)
+def test_probe_versionless_api_path_logs_outcome(mocker, requests_mock, probe_status, expected_outcome):
+    """
+    Given:
+        - An authenticated Idira OAuth client, and a version-less `/EPM/API/Sets` endpoint that
+          responds with success, not-found, unauthorized, or a server error.
+
+    When:
+        - Running the temporary XSUP-74944 diagnostic probe.
+
+    Then:
+        - The outcome and the HTTP status are written to the debug log, so we can learn from real
+          tenants whether the version-less path is viable.
+        - The probe returns normally in every case - it reports, it never judges.
+    """
+    from CyberArkEPMEventCollector import probe_versionless_api_path
+
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+    debug_log = mocker.patch.object(demisto, "debug")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    server_url = "https://example.epm.cyberark.com"
+    client, _ = _build_oauth_client(requests_mock, identity_url, server_url)
+    probe_matcher = requests_mock.get(f"{server_url}/EPM/API/Sets", status_code=probe_status, json={})
+
+    probe_versionless_api_path(client)
+
+    assert probe_matcher.called
+    probe_logs = [call.args[0] for call in debug_log.call_args_list if "[VersionlessProbe]" in str(call.args[0])]
+    assert len(probe_logs) == 1, "the probe must log its outcome exactly once"
+    assert expected_outcome in probe_logs[0]
+    assert str(probe_status) in probe_logs[0]
+    # The versioned base URL stays in force regardless of what the probe found.
+    assert client._base_url == f"{server_url}/EPM/API/26.8.0.0/"
+
+
+def test_probe_versionless_api_path_swallows_exceptions(mocker, requests_mock):
+    """
+    Given:
+        - An authenticated client, and a version-less endpoint that raises a transport-level error
+          (connection failure, DNS failure, timeout) rather than returning a response.
+
+    When:
+        - Running the temporary XSUP-74944 diagnostic probe.
+
+    Then:
+        - No exception escapes. This is the whole contract of the probe: a diagnostic must never be
+          able to fail the flow it is measuring, so a broken probe can never fail test-module.
+        - The failure is still recorded in the debug log, naming the exception type.
+    """
+    from CyberArkEPMEventCollector import probe_versionless_api_path
+
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+    debug_log = mocker.patch.object(demisto, "debug")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    server_url = "https://example.epm.cyberark.com"
+    client, _ = _build_oauth_client(requests_mock, identity_url, server_url)
+    requests_mock.get(f"{server_url}/EPM/API/Sets", exc=requests.exceptions.ConnectTimeout)
+
+    # Must not raise.
+    probe_versionless_api_path(client)
+
+    probe_logs = [call.args[0] for call in debug_log.call_args_list if "[VersionlessProbe]" in str(call.args[0])]
+    assert len(probe_logs) == 1
+    assert "FAILED" in probe_logs[0]
+    # BaseClient wraps transport errors in DemistoException, so assert on the underlying cause
+    # that the message carries rather than on the raw requests exception class.
+    assert "Connection Time" in probe_logs[0]
+
+
+def test_test_module_still_passes_when_probe_fails(mocker, requests_mock):
+    """
+    Given:
+        - A working Idira OAuth instance whose real test fetch succeeds, and a version-less probe
+          endpoint that blows up.
+
+    When:
+        - Running test-module.
+
+    Then:
+        - test-module still returns 'ok'. The probe runs after the real test and its result is
+          discarded, so the customer's Test button reflects only genuine connectivity.
+    """
+    from CyberArkEPMEventCollector import test_module
+
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+    debug_log = mocker.patch.object(demisto, "debug")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    server_url = "https://example.epm.cyberark.com"
+    client, _ = _build_oauth_client(requests_mock, identity_url, server_url)
+
+    # The real test fetch succeeds (no sets configured -> nothing to collect)...
+    requests_mock.get(f"{server_url}/EPM/API/26.8.0.0/Sets", json={"Sets": []})
+    # ...while the probe's version-less endpoint fails outright.
+    requests_mock.get(f"{server_url}/EPM/API/Sets", status_code=500, json={})
+
+    assert test_module(client=client, last_run={}) == "ok"
+    assert any("[VersionlessProbe]" in str(call.args[0]) for call in debug_log.call_args_list)
+
+
+def test_probe_does_not_run_for_non_oauth_auth_methods(mocker, requests_mock):
+    """
+    Given:
+        - An EPM (non-OAuth) instance, for which the version-less path question does not apply.
+
+    When:
+        - Running test-module.
+
+    Then:
+        - The probe is not invoked, so EPM and SAML instances pay no extra request for a
+          diagnostic that only concerns the Idira OAuth flow.
+    """
+    from CyberArkEPMEventCollector import test_module
+
+    mocker.patch("CyberArkEPMEventCollector.fetch_events", return_value=([], {}))
+    probe = mocker.patch("CyberArkEPMEventCollector.probe_versionless_api_path")
+
+    client = mocked_client(requests_mock)
+
+    assert test_module(client=client, last_run={}) == "ok"
+    probe.assert_not_called()
+
+
 def _build_oauth_client(requests_mock, identity_url, server_url):
     """Helper: build an Idira OAuth Client with the token endpoint mocked.
 
@@ -1051,7 +1228,7 @@ def test_oauth_data_call_401_refreshes_and_retries_once(mocker, requests_mock):
     client, token_matcher = _build_oauth_client(requests_mock, identity_url, server_url)
 
     data_matcher = requests_mock.get(
-        f"{server_url}/EPM/API/26.8.0/Sets",
+        f"{server_url}/EPM/API/26.8.0.0/Sets",
         [
             {"status_code": 401, "json": {"error": "unauthorized"}},
             {"status_code": 200, "json": {"Sets": [{"Id": "id1", "Name": "set_name1"}]}},
@@ -1359,7 +1536,7 @@ def test_oauth_data_call_non_401_error_propagates_without_refresh(mocker, reques
 
     client, token_matcher = _build_oauth_client(requests_mock, identity_url, server_url)
 
-    data_matcher = requests_mock.get(f"{server_url}/EPM/API/26.8.0/Sets", status_code=500, json={"error": "server error"})
+    data_matcher = requests_mock.get(f"{server_url}/EPM/API/26.8.0.0/Sets", status_code=500, json={"error": "server error"})
 
     with pytest.raises(DemistoException):
         client._http_request("GET", url_suffix="Sets")

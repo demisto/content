@@ -28,7 +28,7 @@ Every method needs different parameters as show in the following:
     - **Username** (the service-user login, used as the Client ID)
     - **Password** (the service-user password, used as the Client Secret)
     - **Set name** (comma separated value)
-    - **EPM API Version** (optional, advanced): the version segment in `/EPM/API/<Version>/Sets`. Defaults to `26.8.0`.
+    - **EPM API Version** (optional, advanced): the version segment in `/EPM/API/<Version>/Sets`. Must be four dot-separated numbers (x.x.x.x). Defaults to `26.8.0.0`.
 
 #### Vendor-side setup for the Idira OAuth (CyberArk Identity / ISPSS) method
 

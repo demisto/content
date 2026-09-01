@@ -42,12 +42,20 @@ class Config:
     CACHE_BUFFER_SECONDS = 60
     # Default EPM API version segment used in the OAuth data-call paths, e.g.
     # https://<EPM_Server>/EPM/API/<Version>/Sets. Only applies to the Idira OAuth flow.
-    # CyberArk documents the version format as "x.x.x.x" (four dot-separated numbers) and, when the
-    # segment is omitted, the server falls back to the latest version. See
-    # https://docs.cyberark.com/epm/latest/en/content/webservices/getsetslist.htm
+    #
+    # The version MUST be four dot-separated numbers ("x.x.x.x"). The EPM router matches the
+    # segment on that shape alone: a three-part value such as "26.8.0" matches no route and the
+    # request is rejected with a bare 404 before it reaches the application. Verified against a
+    # live tenant - "26.8.0.0", "11.5.0.1" and even "1.1.1.1" route (401 without a token), while
+    # "26.8", "26.8.0" and "26.8.0.0.0" all return 404. See
+    # https://docs.cyberark.com/epm/latest/en/content/webservices/webservicesintro.htm
+    #
     # Overridable per instance via the *EPM API Version* parameter, so operators can follow the
     # vendor's version cadence without waiting for a content release.
-    DEFAULT_EPM_API_VERSION = "26.8.0"
+    DEFAULT_EPM_API_VERSION = "26.8.0.0"
+
+    # A well-formed version segment: exactly four dot-separated groups of digits.
+    EPM_API_VERSION_PATTERN = re.compile(r"^\d+\.\d+\.\d+\.\d+$")
 
     # Context outputs prefix per event type. The *-get-events commands expose the parsed/normalized
     # events under these prefixes so operators can verify the normalization while debugging.
@@ -326,8 +334,19 @@ class Client(BaseClient):
         self._headers["Authorization"] = f"basic {result.get('EPMAuthenticationResult')}"
 
     def get_set_list(self) -> dict:
+        # TODO: TEMPORARY DIAGNOSTIC (XSUP-74944) - REMOVE BEFORE GA.
+        # The extra detail below (full URL, and the set names the tenant actually returned) is here
+        # only while we chase the 404 and the set-name resolution failures. It is deliberately
+        # verbose: the previous log printed a count alone, which is why neither the malformed
+        # version segment nor the set-name mismatch was visible in a customer's debug log. Once
+        # both are settled, delete the two lines marked TEMPORARY and keep the count line.
+        demisto.debug(f"[Client.get_set_list] TEMPORARY: requesting {self._base_url}Sets")  # TEMPORARY
         result = self._http_request("GET", url_suffix="Sets")
-        demisto.debug(f"[Client.get_set_list] Retrieved {len(result.get('Sets', []))} sets from API")
+        sets = result.get("Sets", [])
+        demisto.debug(f"[Client.get_set_list] Retrieved {len(sets)} sets from API")
+        demisto.debug(  # TEMPORARY
+            f"[Client.get_set_list] TEMPORARY: set names returned by the tenant: " f"{[entry.get('Name') for entry in sets]}"
+        )
         return result
 
     def get_admin_audits(self, set_id: str, from_date: str = "", limit: int = ADMIN_AUDITS_MAX_LIMIT) -> dict:
@@ -713,6 +732,45 @@ def fetch_events(
     return events, last_run
 
 
+# TODO: TEMPORARY DIAGNOSTIC - REMOVE BEFORE GA.
+# Added under XSUP-74944 to learn, from real tenants, whether the version-less path shape
+# (`/EPM/API/Sets`, which CyberArk documents as "defaults to the latest version on the tenant")
+# is served as reliably as the explicit four-part version the integration sends. If field data
+# says yes, we can drop the *EPM API Version* parameter altogether and stop asking operators for
+# a value that can only ever go stale. Delete this function and its call in `test_module` once
+# that question is answered.
+def probe_versionless_api_path(client: Client) -> None:
+    """Log whether the version-less EPM API path works. Never raises, never affects the caller.
+
+    Diagnostic only. The result is written to the debug log and discarded: a probe must never be
+    able to influence the outcome of the flow it is measuring, so every failure - HTTP, network,
+    timeout, anything at all - is swallowed here and reported only as a log line.
+
+    Args:
+        client: The already-authenticated client whose Server URL and token are reused.
+    """
+    probe_url = f"{client.server_url}/EPM/API/Sets"
+    try:
+        response = client._http_request(
+            method="GET",
+            full_url=probe_url,
+            params={"Limit": 1},
+            resp_type="response",
+            ok_codes=tuple(range(100, 600)),  # never raise on status; we are measuring it
+        )
+        outcome = "SUCCEEDED" if response.ok else "FAILED"
+        demisto.debug(
+            f"[VersionlessProbe] {outcome}: GET {probe_url} -> status={response.status_code}. "
+            f"Diagnostic only - test-module result is unaffected; data calls continue to use "
+            f"{client._base_url!r}."
+        )
+    except Exception as probe_error:  # noqa: BLE001 - a diagnostic must never break the flow
+        demisto.debug(
+            f"[VersionlessProbe] FAILED: GET {probe_url} raised "
+            f"{type(probe_error).__name__}: {probe_error}. Diagnostic only - ignored."
+        )
+
+
 def test_module(client: Client, last_run: dict) -> str:
     """
     Tests API connectivity and authentication'
@@ -725,6 +783,10 @@ def test_module(client: Client, last_run: dict) -> str:
     """
     demisto.debug("[test_module] starting test fetch with max_fetch=5")
     fetch_events(client=client, last_run=last_run, max_fetch=5)
+    client.get_set_list()
+    # TEMPORARY (XSUP-74944): runs after the real test so it can never influence its outcome.
+    if client.auth_method == Config.AUTH_METHOD_OAUTH:
+        probe_versionless_api_path(client)
     demisto.debug("[test_module] test fetch completed successfully")
     return "ok"
 
@@ -748,12 +810,14 @@ def normalize_server_url(server_url: str | None) -> str | None:
 
 
 def normalize_epm_api_version(epm_api_version: str | None) -> str:
-    """Normalize the *EPM API Version* parameter into a usable URL path segment.
+    """Normalize and validate the *EPM API Version* parameter into a usable URL path segment.
 
-    The value is passed through verbatim apart from trimming surrounding whitespace and slashes,
-    rather than being shape-validated: CyberArk documents the format as "x.x.x.x", which is broader
-    than the value shipped as the default. See
-    https://docs.cyberark.com/epm/latest/en/content/webservices/getsetslist.htm
+    CyberArk's EPM router matches the version segment on shape, not on the release actually
+    deployed: it accepts exactly four dot-separated numbers ("x.x.x.x") and nothing else. A
+    three-part value such as "26.8.0" matches no route, so the request is rejected with a bare
+    404 that gives the operator no clue what is wrong. We therefore fail fast here, at the
+    parameter-parsing layer, with a message that names the problem. See
+    https://docs.cyberark.com/epm/latest/en/content/webservices/webservicesintro.htm
 
     Args:
         epm_api_version: The raw parameter value, which may be None, empty, or padded.
@@ -762,8 +826,18 @@ def normalize_epm_api_version(epm_api_version: str | None) -> str:
         The trimmed version segment, or the default when the value is empty once trimmed. Trimming
         happens before the emptiness check because a whitespace/slash-only value is truthy but would
         otherwise collapse to "" and build a malformed "/EPM/API//" path.
+
+    Raises:
+        DemistoException: If a value was supplied but is not four dot-separated numbers.
     """
-    return (epm_api_version or "").strip().strip("/").strip() or Config.DEFAULT_EPM_API_VERSION
+    normalized = (epm_api_version or "").strip().strip("/").strip() or Config.DEFAULT_EPM_API_VERSION
+    if not Config.EPM_API_VERSION_PATTERN.match(normalized):
+        raise DemistoException(
+            f'Invalid EPM API Version "{normalized}". The CyberArk EPM API requires four '
+            f'dot-separated numbers, for example "{Config.DEFAULT_EPM_API_VERSION}". '
+            f"A value with a different number of parts is rejected by the server with a 404."
+        )
+    return normalized
 
 
 def validate_params(

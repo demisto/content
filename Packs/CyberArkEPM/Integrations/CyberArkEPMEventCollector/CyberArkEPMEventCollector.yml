@@ -20,69 +20,69 @@ configuration:
   - EPM
   - SAML
   section: Connect
-- additionalinfo: 'The Server URL. Required for OAuth 2.0 only. For example: https://example.epm.cyberark.com/.'
-  display: Server URL (only for Idira Oauth)
+- display: Server URL (only for Idira Oauth)
+  additionalinfo: 'The Server URL. Required for OAuth 2.0 only. For example: https://example.epm.cyberark.com/.'
   name: server_url
   required: false
   type: 0
   section: Connect
-- additionalinfo: 'The SAML/EPM Logon URL. Required for EPM and SAML authentication methods only. SAML example: https://login.epm.cyberark.com/SAML/Logon.'
-  display: SAML/EPM Logon URL
+- display: SAML/EPM Logon URL
+  additionalinfo: 'The SAML/EPM Logon URL. Required for EPM and SAML authentication methods only. SAML example: https://login.epm.cyberark.com/SAML/Logon.'
   name: url
   required: false
   type: 0
   section: Connect
-- additionalinfo: 'The CyberArk Identity FQDN, e.g. https://<sub-domain>.id.cyberark.cloud. Required for Idira OAuth authentication only. Used only to obtain the OAuth token; must not include a /oauth2/token suffix.'
-  display: Identity URL
+- display: Identity URL
+  additionalinfo: 'The CyberArk Identity FQDN, e.g. https://<sub-domain>.id.cyberark.cloud. Required for Idira OAuth authentication only. Used only to obtain the OAuth token; must not include a /oauth2/token suffix.'
   name: identity_url
   required: false
   type: 0
   section: Connect
-- additionalinfo: 'The registered OAuth2 web-app identifier in CyberArk Identity Administration, used as a URL path segment on the token endpoint (/oauth2/token/<web_app_id>). Required for Idira OAuth authentication only.'
-  display: Web App ID
+- display: Web App ID
+  additionalinfo: 'The registered OAuth2 web-app identifier in CyberArk Identity Administration, used as a URL path segment on the token endpoint (/oauth2/token/<web_app_id>). Required for Idira OAuth authentication only.'
   name: web_app_id
   required: false
   type: 0
   section: Connect
-- additionalinfo: 'The EPM API version used as a URL path segment in the data-call paths (/EPM/API/<Version>/Sets). Applies to the Idira OAuth authentication method only. CyberArk documents the format as x.x.x.x (four dot-separated numbers); shorter forms such as 26.8.0 are also accepted. Change this only if your tenant requires a version other than the default.'
-  advanced: true
-  defaultvalue: '26.8.0'
-  display: EPM API Version
+- display: EPM API Version
   name: epm_api_version
   required: false
   type: 0
   section: Connect
+  additionalinfo: 'The EPM API version used as a URL path segment in the data-call paths (/EPM/API/<Version>/Sets). Applies to the Idira OAuth authentication method only. The value must be four dot-separated numbers (x.x.x.x), for example 26.8.0.0. Change this only if your tenant requires a version other than the default.'
+  advanced: true
+  defaultvalue: '26.8.0.0'
 - display: Username
   name: credentials
   required: true
   type: 9
   section: Connect
 - display: Set name
-  additionalinfo: A comma-separated list of set names to collect events from. Required for all authentication methods (EPM, SAML, and Idira OAuth).
+  additionalinfo: 'A comma-separated list of set names to collect events from. Required for all authentication methods (EPM, SAML, and Idira OAuth).'
   name: set_name
   required: true
   type: 0
   section: Connect
-- additionalinfo: 'Required for local(EPM) authentication only. See how to get the application ID https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID'
-  display: Application ID
+- display: Application ID
+  additionalinfo: 'Required for local(EPM) authentication only. See how to get the application ID https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID'
   name: application_id
   required: false
   type: 0
   section: Connect
-- additionalinfo: 'Required for SAML authentication only, Example for OKTA: https://[COMPANY_NAME].okta.com/api/v1/authn. See how to get the Authentication URL https://developer.okta.com/docs/reference/api/authn/#authentication-operations'
+- display: Authentication URL
+  additionalinfo: 'Required for SAML authentication only, Example for OKTA: https://[COMPANY_NAME].okta.com/api/v1/authn. See how to get the Authentication URL https://developer.okta.com/docs/reference/api/authn/#authentication-operations'
   advanced: true
-  display: Authentication URL
   name: authentication_url
   required: false
   type: 0
   section: Connect
-- additionalinfo: 'Required for SAML authentication only, Example for OKTA: https://[COMPANY_NAME].okta.com/home/[APP_NAME]/[APP_ID].'
+- display: Application URL
   advanced: true
-  display: Application URL
   name: application_url
   required: false
   type: 0
   section: Connect
+  additionalinfo: 'Required for SAML authentication only, Example for OKTA: https://[COMPANY_NAME].okta.com/home/[APP_NAME]/[APP_ID].'
 - display: Trust any certificate (not secure)
   advanced: true
   name: insecure
@@ -90,21 +90,21 @@ configuration:
   type: 8
   section: Connect
 - display: Use system proxy settings
-  advanced: true
   name: proxy
   required: false
   type: 8
   section: Connect
-- defaultvalue: '5000'
-  display: Maximum number of events per fetch
+  advanced: true
+- display: Maximum number of events per fetch
+  defaultvalue: '5000'
   name: max_fetch
   required: false
   type: 0
   section: Collect
-- defaultvalue: 'false'
-  display: Enable admin audits events
+- display: Enable admin audits events
   name: enable_admin_audits
   required: false
+  defaultvalue: 'false'
   type: 8
   section: Collect
 - display: Policy Audit Events
@@ -131,11 +131,12 @@ configuration:
   - Skipped
   section: Collect
 - display: Detailed Events
-  additionalinfo: A comma-separated list of detailed events event type to fetch
+  defaultvalue: 'AttackAttempt,AttackBlock,SuspiciousActivityAttempt,SuspiciousActivityblock'
   name: raw_events_event_type
-  required: false
-  defaultvalue: AttackAttempt,AttackBlock,SuspiciousActivityAttempt,SuspiciousActivityblock
+  additionalinfo: A comma-separated list of detailed events event type to fetch
   type: 16
+  required: false
+  section: Collect
   options:
   - AttackAttempt
   - AttackBlock
@@ -152,16 +153,15 @@ configuration:
   - Block
   - Access
   - Skipped
-  section: Collect
-- defaultvalue: 'false'
-  display: Fetch events
+- display: Fetch events
+  defaultvalue: 'false'
   name: isFetchEvents
-  additionalinfo: Whether to fetch events.
   type: 8
   required: false
   section: Collect
-- defaultvalue: '1'
-  display: Events Fetch Interval
+  additionalinfo: Whether to fetch events.
+- display: Events Fetch Interval
+  defaultvalue: '1'
   name: eventFetchInterval
   type: 19
   required: false
