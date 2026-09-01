@@ -1,5 +1,9 @@
+name: TessianEventCollector
+display: Tessian Event Collector
 category: Analytics & SIEM
 provider: Proofpoint
+description: Collects security events from Proofpoint Tessian for Cortex XSIAM ingestion.
+supportlevelheader: xsoar
 sectionorder:
 - Connect
 - Collect
@@ -11,10 +15,10 @@ configuration:
   display: Server URL
   required: true
   type: 0
-  additionalinfo: 'Proofpoint Tessian portal URL (e.g., https://{subdomain}.tessian-platform.com or https://{subdomain}.tessian-app.com).'
+  additionalinfo: 'The Proofpoint Tessian portal URL (for example, https://[subdomain].tessian-platform.com or https://[subdomain].tessian-app.com).'
   section: Connect
 - displaypassword: API Token
-  additionalinfo: 'API Token generated in the Proofpoint Portal under Integrations > Security Integrations > Proofpoint API.'
+  additionalinfo: 'The API Token generated in the Proofpoint Portal under Integrations > Security Integrations > Proofpoint API.'
   name: api_key
   type: 9
   hiddenusername: true
@@ -41,33 +45,30 @@ configuration:
   display: Maximum number of security events per fetch
   type: 0
   defaultvalue: '1000'
-  additionalinfo: 'Maximum number of security events to fetch per cycle. Each cycle makes up to 10 API calls of 100 events each (max 1000).'
+  additionalinfo: 'The maximum number of security events to fetch per cycle. Each cycle makes up to 10 API calls of 100 events each.'
   section: Collect
   required: false
-- defaultvalue: 1
+- defaultvalue: '1'
   display: Events Fetch Interval
   name: eventFetchInterval
   type: 19
   section: Collect
   advanced: true
   required: false
-description: Collects security events from Proofpoint Tessian for XSIAM ingestion.
-display: Tessian Event Collector
-name: TessianEventCollector
 script:
   commands:
   - name: tessian-get-events
-    description: This command is used for developing/debugging and is to be used with caution, as it can create events, leading to event duplication and API request limitation exceeding.
+    description: Retrieves security events from Proofpoint Tessian. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     arguments:
     - name: limit
-      description: The maximum number of events to return. Default is 100. Maximum is 1000.
-      defaultValue: '100'
+      description: The maximum number of events to return. Maximum is 1000.
+      defaultvalue: '100'
     - name: created_after
-      description: 'Only include events created after this time. ISO 8601 format (e.g., 2024-01-01T00:00:00Z).'
+      description: 'The time after which to include events. Accepts an ISO 8601 timestamp (for example, 2024-01-01T00:00:00Z) or a relative time (for example, 3 days).'
     - name: should_push_events
       auto: PREDEFINED
-      defaultValue: 'false'
-      description: If true, the command creates events in XSIAM; otherwise, it only displays them.
+      defaultvalue: 'false'
+      description: Whether to create events in Cortex XSIAM. If true, the command creates events; otherwise, it only displays them.
       predefined:
       - 'true'
       - 'false'
@@ -77,10 +78,11 @@ script:
   type: python
   subtype: python3
   isfetchevents: true
-  dockerimage: demisto/fastapi:0.125.0.7178097
-fromversion: 8.2.0
+  dockerimage: demisto/fastapi:0.125.0.11206988
+fromversion: 8.4.0
 tests:
 - No tests (auto formatted)
 marketplaces:
 - marketplacev2
 - platform
+

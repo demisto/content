@@ -17,6 +17,7 @@ VENDOR = "proofpoint"
 PRODUCT = "tessian"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DEFAULT_LIMIT = 100
+MIN_API_LIMIT = 2
 MAX_API_LIMIT = 100
 DEFAULT_MAX_FETCH = 1000
 MAX_API_CALLS_PER_FETCH = 10
@@ -38,7 +39,7 @@ class Client(ContentClient):
         api_key: str,
         verify: bool,
         proxy: bool,
-    ):
+    ) -> None:
         """Initialize the Tessian client.
 
         Args:
@@ -121,7 +122,7 @@ def format_url(url: str) -> str:
     return f"https://{url}"
 
 
-def enrich_events(events: list[dict]) -> list[dict]:
+def enrich_events(events: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """Enriches events with _time and _ENTRY_STATUS fields for XSIAM.
 
     Sets _time to created_at.
@@ -156,7 +157,7 @@ def fetch_events_with_pagination(
     created_after: str | None,
     initial_checkpoint: str | None,
     max_fetch: int,
-) -> tuple[list[dict], str | None]:
+) -> tuple[list[dict[str, Any]], str | None]:
     """Fetches events using checkpoint-based pagination.
 
     Makes up to MAX_API_CALLS_PER_FETCH API calls, each returning up to
@@ -171,15 +172,17 @@ def fetch_events_with_pagination(
     Returns:
         A tuple of (collected_events, last_checkpoint).
     """
-    all_events: list[dict] = []
+    all_events: list[dict[str, Any]] = []
     checkpoint = initial_checkpoint
     api_calls = 0
 
     while len(all_events) < max_fetch and api_calls < MAX_API_CALLS_PER_FETCH:
         remaining = max_fetch - len(all_events)
-        page_limit = min(remaining, MAX_API_LIMIT)
+        # The API rejects a limit below MIN_API_LIMIT, so never request less than that.
+        # Any surplus events are trimmed after the loop to honor max_fetch exactly.
+        page_limit = min(max(remaining, MIN_API_LIMIT), MAX_API_LIMIT)
 
-        demisto.debug(f"Fetching events: call={api_calls + 1}, " f"checkpoint={checkpoint}, page_limit={page_limit}")
+        demisto.debug(f"[Fetch] Requesting events: call={api_calls + 1}, checkpoint={checkpoint}, page_limit={page_limit}")
 
         if checkpoint:
             response = client.list_events(
@@ -205,10 +208,14 @@ def fetch_events_with_pagination(
         api_calls += 1
 
         if not events or not has_more:
-            demisto.debug(f"Stopping pagination: events={len(events)}, has_more={has_more}")
+            demisto.debug(f"[Fetch] Stopping pagination: events={len(events)}, has_more={has_more}")
             break
 
-    demisto.debug(f"Pagination complete: total_events={len(all_events)}, " f"api_calls={api_calls}, last_checkpoint={checkpoint}")
+    if len(all_events) > max_fetch:
+        demisto.debug(f"[Fetch] Trimming {len(all_events)} events down to max_fetch={max_fetch}")
+        all_events = all_events[:max_fetch]
+
+    demisto.debug(f"[Fetch] Pagination complete: total_events={len(all_events)}, api_calls={api_calls}, checkpoint={checkpoint}")
 
     return all_events, checkpoint
 
@@ -226,9 +233,9 @@ def test_module(client: Client) -> str:
         'ok' if the test passed, otherwise raises an exception.
     """
     try:
-        response = client.list_events(limit=2)
-        if demisto.get(response, "checkpoint") is None:
-            return f"Unexpected result from the service: " f"expected checkpoint to be a string, response={response!s}"
+        response = client.list_events(limit=MIN_API_LIMIT)
+        if response.get("checkpoint") is None:
+            return f"Unexpected result from the service: expected checkpoint to be a string, response={response!s}"
         return "ok"
     except Exception as e:
         exception_text = str(e).lower()
@@ -240,7 +247,7 @@ def test_module(client: Client) -> str:
 def get_events_command(
     client: Client,
     args: dict[str, Any],
-) -> tuple[list[dict], CommandResults]:
+) -> tuple[list[dict[str, Any]], CommandResults]:
     """Manual command to fetch events for debugging/development.
 
     This command is used for developing/debugging and should be used with caution,
@@ -254,9 +261,11 @@ def get_events_command(
         A tuple of (events, CommandResults).
     """
     limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
-    limit = max(2, min(limit, DEFAULT_MAX_FETCH))
-    created_after = args.get("created_after")
+    limit = max(MIN_API_LIMIT, min(limit, DEFAULT_MAX_FETCH))
     should_push_events = argToBoolean(args.get("should_push_events", False))
+
+    created_after_dt = arg_to_datetime(args.get("created_after"), arg_name="created_after")
+    created_after = created_after_dt.strftime(DATE_FORMAT) if created_after_dt else None
 
     events, _ = fetch_events_with_pagination(
         client=client,
@@ -287,18 +296,25 @@ def get_events_command(
         removeNull=True,
     )
 
-    return enriched, CommandResults(readable_output=hr, raw_response=enriched)
+    return enriched, CommandResults(
+        readable_output=hr,
+        outputs_prefix="Tessian.Event",
+        outputs_key_field="id",
+        outputs=enriched,
+        raw_response=enriched,
+    )
 
 
 def fetch_events_command(
     client: Client,
     last_run: dict[str, Any],
     max_fetch: int,
-) -> tuple[list[dict], dict[str, Any]]:
-    """Fetches security events from Tessian for XSIAM ingestion.
+) -> tuple[list[dict[str, Any]], dict[str, Any]]:
+    """Fetches security events from Tessian for Cortex XSIAM ingestion.
 
-    Uses checkpoint-based pagination. On first run, uses created_after
-    set to the current time. On subsequent runs, uses the stored checkpoint.
+    Uses checkpoint-based pagination. On the first run there is no stored state,
+    so collection starts from the current time. Every subsequent run resumes from
+    the checkpoint persisted in the last run context.
 
     Args:
         client: The Tessian API client.
@@ -313,7 +329,7 @@ def fetch_events_command(
 
     if not checkpoint and not created_after:
         created_after = datetime.now(timezone.utc).strftime(DATE_FORMAT)
-        demisto.debug(f"First fetch, starting from: {created_after}")
+        demisto.info(f"[Fetch] First fetch, starting from: {created_after}")
 
     events, new_checkpoint = fetch_events_with_pagination(
         client=client,
@@ -330,9 +346,11 @@ def fetch_events_command(
     elif checkpoint:
         next_run["checkpoint"] = checkpoint
     else:
+        # No checkpoint was ever issued by the API. Preserve the original start time
+        # so the next cycle re-queries the same window instead of skipping events.
         next_run["created_after"] = created_after
 
-    demisto.debug(f"Fetch complete: {len(enriched)} events, next_run={next_run}")
+    demisto.info(f"[Fetch] Fetch complete: {len(enriched)} events, next_run={next_run}")
 
     return enriched, next_run
 
@@ -347,13 +365,13 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
 
     base_url = format_url(params.get("url", ""))
-    api_key = params.get("api_key", {}).get("password", "")
+    api_key = (params.get("api_key") or {}).get("password", "")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     max_fetch = arg_to_number(params.get("max_fetch")) or DEFAULT_MAX_FETCH
-    max_fetch = max(2, min(max_fetch, DEFAULT_MAX_FETCH))
+    max_fetch = max(MIN_API_LIMIT, min(max_fetch, DEFAULT_MAX_FETCH))
 
-    demisto.debug(f"Command being called is {command}")
+    demisto.debug(f"[Tessian] Command being called is {command}")
 
     try:
         client = Client(
@@ -367,12 +385,12 @@ def main() -> None:  # pragma: no cover
             return_results(test_module(client))
 
         elif command == "tessian-get-events":
-            events, results = get_events_command(client=client, args=args)
+            _, results = get_events_command(client=client, args=args)
             return_results(results)
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
-            demisto.debug(f"Starting fetch with last_run: {last_run}")
+            demisto.info(f"[Fetch] Starting fetch with last_run: {last_run}")
 
             events, next_run = fetch_events_command(
                 client=client,
@@ -380,13 +398,13 @@ def main() -> None:  # pragma: no cover
                 max_fetch=max_fetch,
             )
 
-            demisto.debug(f"Fetched {len(events)} total events")
-
             if events:
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
+            # Only persist the checkpoint after the events were successfully shipped,
+            # so a failure in send_events_to_xsiam does not silently drop events.
             if next_run:
-                demisto.debug(f"Setting new last_run: {next_run}")
+                demisto.info(f"[Fetch] Setting new last_run: {next_run}")
                 demisto.setLastRun(next_run)
 
         else:

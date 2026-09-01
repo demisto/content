@@ -1,13 +1,11 @@
 ## Tessian Event Collector
 
-Use this integration to collect security events from Proofpoint Tessian into Cortex XSIAM.
-
 ### Configure Portal URL
 
 Use the hostname of your Proofpoint/Tessian Portal (your tenant subdomain):
 
-- `https://{subdomain}.tessian-platform.com` (EU-hosted)
-- `https://{subdomain}.tessian-app.com` (US-hosted)
+- `https://[subdomain].tessian-platform.com` (EU-hosted)
+- `https://[subdomain].tessian-app.com` (US-hosted)
 
 ### Permissions
 

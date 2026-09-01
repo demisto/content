@@ -1,6 +1,7 @@
 """Unit tests for TessianEventCollector integration."""
 
 import json
+from datetime import datetime
 
 import pytest
 from freezegun import freeze_time
@@ -279,7 +280,7 @@ class TestFetchEventsWithPagination:
         client = create_mock_client(mocker)
         mock_list = mocker.patch.object(client, "list_events", return_value=mock_response)
 
-        events, checkpoint = fetch_events_with_pagination(
+        _, _ = fetch_events_with_pagination(
             client=client,
             created_after="2024-06-15T00:00:00Z",
             initial_checkpoint="existing_checkpoint",
@@ -291,6 +292,64 @@ class TestFetchEventsWithPagination:
             limit=100,
             after_checkpoint="existing_checkpoint",
         )
+
+    def test_page_limit_never_below_api_minimum(self, mocker):
+        """
+        Given: A max_fetch of 1, which is below the API minimum limit of 2.
+        When:  Fetching events with pagination.
+        Then:  The API is called with the minimum allowed limit and the result is
+               trimmed back down to max_fetch.
+        """
+        from TessianEventCollector import MIN_API_LIMIT, fetch_events_with_pagination
+
+        mock_response = {
+            "checkpoint": "checkpoint_1",
+            "additional_results": False,
+            "results": [
+                {"id": "event-001", "created_at": "2024-06-15T10:00:00Z"},
+                {"id": "event-002", "created_at": "2024-06-15T11:00:00Z"},
+            ],
+        }
+
+        client = create_mock_client(mocker)
+        mock_list = mocker.patch.object(client, "list_events", return_value=mock_response)
+
+        events, _ = fetch_events_with_pagination(
+            client=client,
+            created_after="2024-06-15T00:00:00Z",
+            initial_checkpoint=None,
+            max_fetch=1,
+        )
+
+        mock_list.assert_called_once_with(limit=MIN_API_LIMIT, created_after="2024-06-15T00:00:00Z")
+        assert len(events) == 1
+
+    def test_stops_at_max_api_calls(self, mocker):
+        """
+        Given: An API that always reports more results are available.
+        When:  Fetching with a max_fetch far larger than one page.
+        Then:  Pagination stops after MAX_API_CALLS_PER_FETCH calls.
+        """
+        from TessianEventCollector import MAX_API_CALLS_PER_FETCH, fetch_events_with_pagination
+
+        mock_response = {
+            "checkpoint": "checkpoint_n",
+            "additional_results": True,
+            "results": [{"id": f"event-{i}", "created_at": "2024-06-15T10:00:00Z"} for i in range(100)],
+        }
+
+        client = create_mock_client(mocker)
+        mock_list = mocker.patch.object(client, "list_events", return_value=mock_response)
+
+        events, _ = fetch_events_with_pagination(
+            client=client,
+            created_after="2024-06-15T00:00:00Z",
+            initial_checkpoint=None,
+            max_fetch=100000,
+        )
+
+        assert mock_list.call_count == MAX_API_CALLS_PER_FETCH
+        assert len(events) == MAX_API_CALLS_PER_FETCH * 100
 
     def test_empty_response(self, mocker):
         """Test handling of empty response."""
@@ -385,6 +444,27 @@ class TestCommands:
         assert events[0]["_ENTRY_STATUS"] == "new"
         assert events[1]["_ENTRY_STATUS"] == "updated"
         assert "Tessian Security Events" in results.readable_output
+        assert results.outputs_prefix == "Tessian.Event"
+        assert results.outputs == events
+
+    def test_get_events_command_parses_relative_created_after(self, mocker):
+        """
+        Given: A created_after argument expressed as a relative time string.
+        When:  Running the tessian-get-events command.
+        Then:  The value is normalized to an ISO 8601 timestamp before hitting the API.
+        """
+        from TessianEventCollector import DATE_FORMAT, get_events_command
+
+        mock_response = {"checkpoint": "cp", "additional_results": False, "results": []}
+
+        client = create_mock_client(mocker)
+        mock_list = mocker.patch.object(client, "list_events", return_value=mock_response)
+
+        get_events_command(client=client, args={"limit": "10", "created_after": "3 days"})
+
+        called_value = mock_list.call_args.kwargs["created_after"]
+        # Should be a normalized timestamp, not the raw "3 days" string.
+        datetime.strptime(called_value, DATE_FORMAT)
 
     def test_get_events_command_with_push(self, mocker):
         """Test get-events command with should_push_events=true."""
@@ -443,6 +523,25 @@ class TestCommands:
         assert len(events) == 1
         assert next_run["checkpoint"] == "first_checkpoint"
         assert events[0]["_ENTRY_STATUS"] == "new"
+
+    @freeze_time("2024-06-15T12:00:00Z")
+    def test_fetch_events_first_run_starts_from_now(self, mocker):
+        """
+        Given: No stored last run state.
+        When:  Running fetch-events for the first time.
+        Then:  Collection starts from the current time rather than an arbitrary
+               look-back window.
+        """
+        from TessianEventCollector import fetch_events_command
+
+        mock_response = {"checkpoint": "cp", "additional_results": False, "results": []}
+
+        client = create_mock_client(mocker)
+        mock_list = mocker.patch.object(client, "list_events", return_value=mock_response)
+
+        fetch_events_command(client=client, last_run={}, max_fetch=1000)
+
+        assert mock_list.call_args.kwargs["created_after"] == "2024-06-15T12:00:00Z"
 
     def test_fetch_events_command_with_checkpoint(self, mocker):
         """Test fetch-events command with existing checkpoint."""
