@@ -2762,8 +2762,8 @@ script:
       description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, to exclude an instance group named example-group specify name != example-group.
     - name: order_by
       description: The sort order for the list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc".
-    - name: page_token
-      description: The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+    - name: next_token
+      description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results.
     outputs:
     - contextPath: GCP.Compute.InstanceGroups.id
       description: The unique identifier for the resource. This identifier is defined by the server.
@@ -2807,7 +2807,7 @@ script:
     - contextPath: GCP.Compute.InstanceGroups.kind
       description: The resource type, which is always compute#instanceGroup for instance groups.
       type: string
-    - contextPath: GCP.Compute.InstanceGroupsNextPageToken
+    - contextPath: GCP.Compute.InstanceGroupsNextToken
       description: The token to use to retrieve the next page of instance group results.
       type: string
     - contextPath: GCP.Compute.InstanceGroupsSelfLink
@@ -2832,8 +2832,8 @@ script:
       description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, to exclude an instance group named example-group specify name != example-group.
     - name: order_by
       description: The sort order for the list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc".
-    - name: page_token
-      description: The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+    - name: next_token
+      description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results.
     outputs:
     - contextPath: GCP.Compute.InstanceGroups.id
       description: The unique identifier for the resource. This identifier is defined by the server.
@@ -2877,7 +2877,7 @@ script:
     - contextPath: GCP.Compute.InstanceGroups.kind
       description: The resource type, which is always compute#instanceGroup for instance groups.
       type: string
-    - contextPath: GCP.Compute.InstanceGroupsNextPageToken
+    - contextPath: GCP.Compute.InstanceGroupsNextToken
       description: The token to use to retrieve the next page of instance group results.
       type: string
     - contextPath: GCP.Compute.InstanceGroupsSelfLink
@@ -2911,8 +2911,8 @@ script:
       description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, to exclude an instance named example-instance specify name != example-instance.
     - name: order_by
       description: The sort order for the list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc".
-    - name: page_token
-      description: The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+    - name: next_token
+      description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results.
     outputs:
     - contextPath: GCP.Compute.InstanceGroupsInstances.Group
       description: The name of the instance group that was listed.
@@ -2929,7 +2929,7 @@ script:
     - contextPath: GCP.Compute.InstanceGroupsInstances.Instances.namedPorts.port
       description: The port number, which can be a value between 1 and 65535.
       type: number
-    - contextPath: GCP.Compute.InstanceGroupsInstancesNextPageToken
+    - contextPath: GCP.Compute.InstanceGroupsInstancesNextToken
       description: The token to use to retrieve the next page of instance group instances results.
       type: string
 

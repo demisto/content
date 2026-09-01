@@ -2798,7 +2798,7 @@ def gcp_compute_instance_groups_list(creds: Credentials, args: dict[str, Any]) -
 
     Args:
         creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
-        args (dict[str, Any]): Command arguments including project_id, zone, limit, filters, order_by and page_token.
+        args (dict[str, Any]): Command arguments including project_id, zone, limit, filters, order_by and next_token.
 
     Returns:
         CommandResults: The instance groups located in the specified zone.
@@ -2808,27 +2808,18 @@ def gcp_compute_instance_groups_list(creds: Credentials, args: dict[str, Any]) -
     limit = (arg_to_number(args.get("limit")) or 50) if args.get("limit", "50") != "0" else 0
     filters = args.get("filters")
     order_by = args.get("order_by")
-    page_token = args.get("page_token")
+    next_token = args.get("next_token")
 
     validate_limit(limit)
 
     compute = GCPServices.COMPUTE.build(creds)
     response = (
         compute.instanceGroups()  # pylint: disable=E1101
-        .list(project=project_id, zone=zone, filter=filters, maxResults=limit, orderBy=order_by, pageToken=page_token)
+        .list(project=project_id, zone=zone, filter=filters, maxResults=limit, orderBy=order_by, pageToken=next_token)
         .execute()
     )
 
     next_page_token = response.get("nextPageToken")
-    metadata = (
-        "Run the following command to retrieve the next batch of instance groups:\n"
-        f"!gcp-compute-instance-groups-list project_id={project_id} zone={zone} page_token={next_page_token}"
-        if next_page_token
-        else None
-    )
-    if limit != 50:
-        metadata = f"{metadata} {limit=}"
-
     instance_groups = response.get("items", [])
 
     readable_output = tableToMarkdown(
@@ -2837,13 +2828,12 @@ def gcp_compute_instance_groups_list(creds: Credentials, args: dict[str, Any]) -
         headers=["id", "name", "zone", "network", "size"],
         headerTransform=pascalToSpace,
         removeNull=True,
-        metadata=metadata,
     )
 
     outputs = {
         "GCP.Compute.InstanceGroups(val.id && val.id == obj.id)": instance_groups,
         "GCP.Compute(true)": {
-            "InstanceGroupsNextPageToken": next_page_token,
+            "InstanceGroupsNextToken": next_page_token,
             "InstanceGroupsSelfLink": response.get("selfLink"),
             "InstanceGroupsWarning": response.get("warning"),
         },
@@ -2861,7 +2851,7 @@ def gcp_compute_instance_groups_aggregated_list(creds: Credentials, args: dict[s
 
     Args:
         creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
-        args (dict[str, Any]): Command arguments including project_id, limit, filters, order_by and page_token.
+        args (dict[str, Any]): Command arguments including project_id, limit, filters, order_by and next_token.
 
     Returns:
         CommandResults: The instance groups aggregated by zone.
@@ -2870,14 +2860,14 @@ def gcp_compute_instance_groups_aggregated_list(creds: Credentials, args: dict[s
     limit = (arg_to_number(args.get("limit")) or 50) if args.get("limit", "50") != "0" else 0
     filters = args.get("filters")
     order_by = args.get("order_by")
-    page_token = args.get("page_token")
+    next_token = args.get("next_token")
 
     validate_limit(limit)
 
     compute = GCPServices.COMPUTE.build(creds)
     response = (
         compute.instanceGroups()  # pylint: disable=E1101
-        .aggregatedList(project=project_id, filter=filters, maxResults=limit, orderBy=order_by, pageToken=page_token)
+        .aggregatedList(project=project_id, filter=filters, maxResults=limit, orderBy=order_by, pageToken=next_token)
         .execute()
     )
 
@@ -2887,14 +2877,6 @@ def gcp_compute_instance_groups_aggregated_list(creds: Credentials, args: dict[s
         instance_groups.extend(instance_groups_scoped_list.get("instanceGroups", []))
 
     next_page_token = response.get("nextPageToken")
-    metadata = (
-        "Run the following command to retrieve the next batch of instance groups:\n"
-        f"!gcp-compute-instance-groups-aggregated-list project_id={project_id} page_token={next_page_token}"
-        if next_page_token
-        else None
-    )
-    if limit != 50:
-        metadata = f"{metadata} {limit=}"
 
     readable_output = tableToMarkdown(
         "GCP Instance Groups",
@@ -2902,13 +2884,12 @@ def gcp_compute_instance_groups_aggregated_list(creds: Credentials, args: dict[s
         headers=["id", "name", "zone", "network", "size"],
         headerTransform=pascalToSpace,
         removeNull=True,
-        metadata=metadata,
     )
 
     outputs = {
         "GCP.Compute.InstanceGroups(val.id && val.id == obj.id)": instance_groups,
         "GCP.Compute(true)": {
-            "InstanceGroupsNextPageToken": next_page_token,
+            "InstanceGroupsNextToken": next_page_token,
             "InstanceGroupsSelfLink": response.get("selfLink"),
         },
     }
@@ -2926,7 +2907,7 @@ def gcp_compute_instance_group_instances_list(creds: Credentials, args: dict[str
     Args:
         creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
         args (dict[str, Any]): Command arguments including project_id, zone, instance_group, instance_state, limit,
-            filters, order_by and page_token.
+            filters, order_by and next_token.
 
     Returns:
         CommandResults: The instances that belong to the specified instance group.
@@ -2937,7 +2918,7 @@ def gcp_compute_instance_group_instances_list(creds: Credentials, args: dict[str
     limit = (arg_to_number(args.get("limit")) or 50) if args.get("limit", "50") != "0" else 0
     filters = args.get("filters")
     order_by = args.get("order_by")
-    page_token = args.get("page_token")
+    next_token = args.get("next_token")
 
     validate_limit(limit)
 
@@ -2953,7 +2934,7 @@ def gcp_compute_instance_group_instances_list(creds: Credentials, args: dict[str
             filter=filters,
             maxResults=limit,
             orderBy=order_by,
-            pageToken=page_token,
+            pageToken=next_token,
             body=body,
         )
         .execute()
@@ -2961,15 +2942,6 @@ def gcp_compute_instance_group_instances_list(creds: Credentials, args: dict[str
 
     instances = response.get("items", [])
     next_page_token = response.get("nextPageToken")
-    metadata = (
-        "Run the following command to retrieve the next batch of instances:\n"
-        f"!gcp-compute-instance-group-instances-list project_id={project_id} zone={zone} "
-        f"instance_group={instance_group} page_token={next_page_token}"
-        if next_page_token
-        else None
-    )
-    if limit != 50:
-        metadata = f"{metadata} {limit=}"
 
     readable_output = tableToMarkdown(
         f"GCP Instance Group {instance_group} Instances",
@@ -2977,7 +2949,6 @@ def gcp_compute_instance_group_instances_list(creds: Credentials, args: dict[str
         headers=["instance", "status"],
         headerTransform=pascalToSpace,
         removeNull=True,
-        metadata=metadata,
     )
 
     outputs = {
@@ -2985,7 +2956,7 @@ def gcp_compute_instance_group_instances_list(creds: Credentials, args: dict[str
             "Group": instance_group,
             "Instances": instances,
         },
-        "GCP.Compute(true)": {"InstanceGroupsInstancesNextPageToken": next_page_token},
+        "GCP.Compute(true)": {"InstanceGroupsInstancesNextToken": next_page_token},
     }
     return CommandResults(
         readable_output=readable_output,

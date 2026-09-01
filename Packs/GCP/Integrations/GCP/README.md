@@ -1696,7 +1696,7 @@ Lists the instances in the specified instance group. Required permission: comput
 | limit | The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
 | filters | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, to exclude an instance named example-instance specify name != example-instance. | Optional |
 | order_by | The sort order for the list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". | Optional |
-| page_token | The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+| next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
 
 #### Context Output
 
@@ -1707,7 +1707,7 @@ Lists the instances in the specified instance group. Required permission: comput
 | GCP.Compute.InstanceGroupsInstances.Instances.status | string | The status of the instance. |
 | GCP.Compute.InstanceGroupsInstances.Instances.namedPorts.name | string | The name for this named port. The name must be 1-63 characters long, and comply with RFC1035. |
 | GCP.Compute.InstanceGroupsInstances.Instances.namedPorts.port | number | The port number, which can be a value between 1 and 65535. |
-| GCP.Compute.InstanceGroupsInstancesNextPageToken | string | The token to use to retrieve the next page of instance group instances results. |
+| GCP.Compute.InstanceGroupsInstancesNextToken | string | The token to use to retrieve the next page of instance group instances results. |
 
 ### gcp-compute-instance-group-insert
 
@@ -1770,7 +1770,7 @@ Retrieves the list of instance groups in the specified project across all zones.
 | limit | The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
 | filters | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, to exclude an instance group named example-group specify name != example-group. | Optional |
 | order_by | The sort order for the list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". | Optional |
-| page_token | The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+| next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
 
 #### Context Output
 
@@ -1790,7 +1790,7 @@ Retrieves the list of instance groups in the specified project across all zones.
 | GCP.Compute.InstanceGroups.region | string | The URL of the region where the instance group is located \(for regional resources\). |
 | GCP.Compute.InstanceGroups.subnetwork | string | The URL of the subnetwork to which all instances in the instance group belong. |
 | GCP.Compute.InstanceGroups.kind | string | The resource type, which is always compute\#instanceGroup for instance groups. |
-| GCP.Compute.InstanceGroupsNextPageToken | string | The token to use to retrieve the next page of instance group results. |
+| GCP.Compute.InstanceGroupsNextToken | string | The token to use to retrieve the next page of instance group results. |
 | GCP.Compute.InstanceGroupsSelfLink | string | The server-defined URL for the aggregated instance groups list request. |
 
 ### gcp-compute-instance-groups-list
@@ -1811,7 +1811,7 @@ Retrieves the list of instance groups that are located in the specified project 
 | limit | The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
 | filters | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, to exclude an instance group named example-group specify name != example-group. | Optional |
 | order_by | The sort order for the list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". | Optional |
-| page_token | The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+| next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
 
 #### Context Output
 
@@ -1831,7 +1831,7 @@ Retrieves the list of instance groups that are located in the specified project 
 | GCP.Compute.InstanceGroups.region | string | The URL of the region where the instance group is located \(for regional resources\). |
 | GCP.Compute.InstanceGroups.subnetwork | string | The URL of the subnetwork to which all instances in the instance group belong. |
 | GCP.Compute.InstanceGroups.kind | string | The resource type, which is always compute\#instanceGroup for instance groups. |
-| GCP.Compute.InstanceGroupsNextPageToken | string | The token to use to retrieve the next page of instance group results. |
+| GCP.Compute.InstanceGroupsNextToken | string | The token to use to retrieve the next page of instance group results. |
 | GCP.Compute.InstanceGroupsSelfLink | string | The server-defined URL for the instance groups list request. |
 | GCP.Compute.InstanceGroupsWarning | Unknown | The informational warning which replaces the list of instance groups when the list is empty. |
 

@@ -6765,7 +6765,7 @@ class TestGCPComputeInstanceGroupsList:
         """
         Given: A mocked Compute API returning a nextPageToken.
         When: gcp_compute_instance_groups_list is called.
-        Then: The next page token is returned in the outputs and the readable output explains how to fetch the next batch.
+        Then: The next page token is returned in the outputs.
         """
         from GCP import gcp_compute_instance_groups_list
 
@@ -6776,8 +6776,7 @@ class TestGCPComputeInstanceGroupsList:
         args = {"project_id": "test-project", "zone": "us-central1-a"}
         result = gcp_compute_instance_groups_list(mock_creds, args)
 
-        assert result.outputs["GCP.Compute(true)"]["InstanceGroupsNextPageToken"] == "token-123"
-        assert "token-123" in result.readable_output
+        assert result.outputs["GCP.Compute(true)"]["InstanceGroupsNextToken"] == "token-123"
 
     def test_gcp_compute_instance_groups_list_empty_response(self, mocker):
         """
@@ -6941,7 +6940,7 @@ class TestGCPComputeInstanceGroupInstancesList:
         args = {"project_id": "test-project", "zone": "us-central1-a", "instance_group": "group-a"}
         result = gcp_compute_instance_group_instances_list(mock_creds, args)
 
-        assert result.outputs["GCP.Compute(true)"]["InstanceGroupsInstancesNextPageToken"] == "token-456"
+        assert result.outputs["GCP.Compute(true)"]["InstanceGroupsInstancesNextToken"] == "token-456"
 
 
 class TestGCPComputeInstanceGroupInsert:
