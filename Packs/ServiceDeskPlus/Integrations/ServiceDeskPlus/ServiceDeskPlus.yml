@@ -84,6 +84,13 @@ configuration:
   type: 13
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - defaultvalue: Open
   display: Incidents status. Supports multi-select.
   name: fetch_status
@@ -643,29 +650,29 @@ script:
       auto: PREDEFINED
       defaultValue: "false"
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
     - description: Whether to add notes from a specific request to its linked requests.
       name: add_to_linked_requests
       auto: PREDEFINED
       defaultValue: "false"
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
     - description: Whether to notify the technician.
       name: notify_technician
       auto: PREDEFINED
       defaultValue: "false"
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
     - description: Whether to show request notes to the requester.
       name: show_to_requester
       auto: PREDEFINED
       defaultValue: "false"
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
     name: service-desk-plus-request-notes-add
     description: Adds a request note.
     outputs:
@@ -753,29 +760,29 @@ script:
       auto: PREDEFINED
       defaultValue: "false"
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
     - description: Whether to add notes from a specific request to its linked requests.
       name: add_to_linked_requests
       auto: PREDEFINED
       defaultValue: "false"
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
     - description: Whether to notify the technician.
       name: notify_technician
       auto: PREDEFINED
       defaultValue: "false"
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
     - description: Whether to show request notes to the requester.
       name: show_to_requester
       auto: PREDEFINED
       defaultValue: "false"
       predefined:
-        - "true"
-        - "false"
+      - "true"
+      - "false"
     name: service-desk-plus-request-notes-update
     description: Updates a request note.
     outputs:
@@ -839,7 +846,7 @@ script:
     - contextPath: ServiceDeskPlus.Request.Note.created_by.is_vip_user
       description: 'Whether the request note creator is a VIP user.'
       type: Boolean
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   runonce: false
   script: '-'

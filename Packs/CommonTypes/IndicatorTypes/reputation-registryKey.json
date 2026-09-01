@@ -130,5 +130,9 @@
     },
     "manualMapping": null,
     "fileHashesPriority": null,
-    "layout": "registryKey"
+    "layout": "registryKey",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

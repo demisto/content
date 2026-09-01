@@ -44,18 +44,27 @@ configuration:
   required: false
   defaultvalue: 'true'
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13
   defaultvalue: "Data Loss Prevention"
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "1"
   type: 19
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
@@ -68,6 +77,9 @@ configuration:
   required: false
   type: 0
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch Lookback Window (minutes)
   name: look_back
   defaultvalue: '0'
@@ -245,7 +257,7 @@ script:
   - name: pan-dlp-reset-last-run
     deprecated: true
     description: Deprecated. Reset the "last run" timestamp via the integration instance configuration window.
-  dockerimage: demisto/python3:3.12.13.8428455
+  dockerimage: demisto/python3:3.12.13.10404775
   isFetchSamples: true
   isfetch: true
   script: '-'
