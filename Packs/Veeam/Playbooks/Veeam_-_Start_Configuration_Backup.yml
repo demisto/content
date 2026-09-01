@@ -12,6 +12,7 @@ inputs:
 name: Veeam - Start Configuration Backup
 outputs: []
 starttaskid: "0"
+fromversion: "6.10.0"
 tasks:
   "0":
     continueonerrortype: ""
@@ -28,11 +29,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: bf27ba7c-5126-4287-80ac-5e3c2a4a75ea
+      id: 5ed72362-b351-4a31-8f94-a67c04d7d288
       iscommand: false
       name: ""
       version: -1
-    taskid: bf27ba7c-5126-4287-80ac-5e3c2a4a75ea
+      description: ''
+    taskid: 5ed72362-b351-4a31-8f94-a67c04d7d288
     timertriggers: []
     type: start
     view: |-
@@ -61,14 +63,14 @@ tasks:
     skipunavailable: false
     task:
       brand: VBR REST API
-      description: Start Configuration Backup
-      id: 696e68d7-7c0a-444d-858d-de9e4f405201
+      description: Start Configuration Backup.
+      id: 9460a026-efd2-481f-8eec-864829b5ad93
       iscommand: true
       name: Start Configuration Backup
       script: VBR REST API|||veeam-vbr-start-configuration-backup
       type: regular
       version: -1
-    taskid: 696e68d7-7c0a-444d-858d-de9e4f405201
+    taskid: 9460a026-efd2-481f-8eec-864829b5ad93
     timertriggers: []
     type: regular
     view: |-
@@ -120,13 +122,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check Session State
-      id: 9fff4589-dd93-46ef-88b7-f4cf74e04f0e
+      description: Check Session State.
+      id: d12a0272-020f-4c1f-8c15-8186205ef00e
       iscommand: false
       name: Check Session State
       type: condition
       version: -1
-    taskid: 9fff4589-dd93-46ef-88b7-f4cf74e04f0e
+    taskid: d12a0272-020f-4c1f-8c15-8186205ef00e
     timertriggers: []
     type: condition
     view: |-
@@ -151,12 +153,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: eadc572d-c570-4f83-837b-f6089a00892e
+      id: fee204d0-1afc-4dd8-8f3f-2e8d61dd2d19
       iscommand: false
       name: Success
       type: title
       version: -1
-    taskid: eadc572d-c570-4f83-837b-f6089a00892e
+      description: ''
+    taskid: fee204d0-1afc-4dd8-8f3f-2e8d61dd2d19
     timertriggers: []
     type: title
     view: |-
@@ -181,14 +184,14 @@ tasks:
     skipunavailable: false
     task:
       brand: Builtin
-      description: Close the current incident
-      id: 7877da0c-edd6-4f8d-8521-33d17e750fdc
+      description: Close the current incident.
+      id: fb459a0f-6463-4ab1-879e-8bb5b04928dc
       iscommand: true
       name: Close Investigation
       script: Builtin|||closeInvestigation
       type: regular
       version: -1
-    taskid: 7877da0c-edd6-4f8d-8521-33d17e750fdc
+    taskid: fb459a0f-6463-4ab1-879e-8bb5b04928dc
     timertriggers: []
     type: regular
     view: |-
@@ -210,12 +213,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: d2d3993e-582a-46cf-829d-ceb7187f7e11
+      id: c87342b6-0e9f-4193-8a1c-f053380839aa
       iscommand: false
       name: Done
       type: title
       version: -1
-    taskid: d2d3993e-582a-46cf-829d-ceb7187f7e11
+      description: ''
+    taskid: c87342b6-0e9f-4193-8a1c-f053380839aa
     timertriggers: []
     type: title
     view: |-
@@ -241,12 +245,12 @@ tasks:
     task:
       brand: ""
       description: Configuration backup has not been completed.
-      id: c4e62c08-56aa-4167-8c39-e3ee0a2786f4
+      id: 9c6b21d4-4251-4631-8a8f-a5b5353cb609
       iscommand: false
       name: Failed
       type: condition
       version: -1
-    taskid: c4e62c08-56aa-4167-8c39-e3ee0a2786f4
+    taskid: 9c6b21d4-4251-4631-8a8f-a5b5353cb609
     timertriggers: []
     type: condition
     view: |-
@@ -280,13 +284,13 @@ tasks:
         see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
         \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
         For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
-      id: bf810182-df6c-4906-8bd1-f0cd35eba020
+      id: a11f7ec6-eb00-44f4-88aa-87ba245be872
       iscommand: false
       name: Clear Context Data
       script: DeleteContext
       type: regular
       version: -1
-    taskid: bf810182-df6c-4906-8bd1-f0cd35eba020
+    taskid: a11f7ec6-eb00-44f4-88aa-87ba245be872
     timertriggers: []
     type: regular
     view: |-
@@ -344,13 +348,13 @@ tasks:
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
-      id: efc6a7db-1625-4814-80a2-f7a78d83a31e
+      id: 51e291ce-9bf1-49ba-8192-86eb9b951c65
       iscommand: false
       name: GenericPolling
       playbookId: GenericPolling
       type: playbook
       version: -1
-    taskid: efc6a7db-1625-4814-80a2-f7a78d83a31e
+    taskid: 51e291ce-9bf1-49ba-8192-86eb9b951c65
     timertriggers: []
     type: playbook
     view: |-
@@ -383,14 +387,14 @@ tasks:
     skipunavailable: false
     task:
       brand: VBR REST API
-      description: Get Session
-      id: 47541a25-7098-4914-8be5-e0a19865560a
+      description: Get Session.
+      id: 0aec8ec3-d179-4006-8a5d-7e2f72df3b1f
       iscommand: true
       name: Get Session
       script: VBR REST API|||veeam-vbr-get-session
       type: regular
       version: -1
-    taskid: 47541a25-7098-4914-8be5-e0a19865560a
+    taskid: 0aec8ec3-d179-4006-8a5d-7e2f72df3b1f
     timertriggers: []
     type: regular
     view: |-
@@ -401,7 +405,6 @@ tasks:
         }
       }
 version: -1
-fromversion: 6.10.0
 view: |-
   {
     "linkLabelsPosition": {},

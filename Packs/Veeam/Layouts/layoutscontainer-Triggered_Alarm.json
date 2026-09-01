@@ -596,6 +596,7 @@
     "fromVersion": "6.10.0",
     "description": "Triggered Alarm",
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+		"platform"
     ]
 }

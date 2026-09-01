@@ -21,6 +21,7 @@ name: Veeam - Start Scan Backup
 outputs: []
 quiet: true
 starttaskid: "0"
+fromversion: "6.10.0"
 tasks:
   "0":
     continueonerrortype: ""
@@ -37,11 +38,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 4c8e9ef2-e59a-405d-8829-a761d559e20e
+      id: 5b99568c-5ce7-459e-8b9d-ddc5041067ef
       iscommand: false
       name: ""
       version: -1
-    taskid: 4c8e9ef2-e59a-405d-8829-a761d559e20e
+      description: ''
+    taskid: 5b99568c-5ce7-459e-8b9d-ddc5041067ef
     timertriggers: []
     type: start
     view: |-
@@ -75,14 +77,14 @@ tasks:
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      id: dc615900-f58a-42ac-8d5f-15a22734a3ca
+      id: 8898c438-f466-41ed-8c22-8b427baa8ec3
       iscommand: false
       name: |
         Clear Context Data
       script: DeleteContext
       type: regular
       version: -1
-    taskid: dc615900-f58a-42ac-8d5f-15a22734a3ca
+    taskid: 8898c438-f466-41ed-8c22-8b427baa8ec3
     timertriggers: []
     type: regular
     view: |-
@@ -121,13 +123,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Gets the list of restore points.
-      id: d508f7a4-5f0f-4906-8cbe-8a363e7b9579
+      id: 1268e9fa-326c-4885-8884-c2a54bf53140
       iscommand: true
       name: Get Restore Points
       script: VBR REST API|||veeam-vbr-get-restore-points
       type: regular
       version: -1
-    taskid: d508f7a4-5f0f-4906-8cbe-8a363e7b9579
+    taskid: 1268e9fa-326c-4885-8884-c2a54bf53140
     timertriggers: []
     type: regular
     view: |-
@@ -155,12 +157,12 @@ tasks:
     task:
       brand: ""
       description: Specifies a restore point.
-      id: c5523d28-6eb5-430c-81fd-309903787a4b
+      id: d38440dd-aa02-463a-8064-9dc4a0e01812
       iscommand: false
       name: Select Restore Point
       type: condition
       version: -1
-    taskid: c5523d28-6eb5-430c-81fd-309903787a4b
+    taskid: d38440dd-aa02-463a-8064-9dc4a0e01812
     timertriggers: []
     type: condition
     view: |-
@@ -237,13 +239,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Gets the list of restore points.
-      id: f2fcc207-8c59-46ae-84e5-3ab208df8aa9
+      id: f781a2b9-b010-4b86-8d0e-88da0c26be7a
       iscommand: true
       name: Get Restore Points
       script: VBR REST API|||veeam-vbr-get-restore-points
       type: regular
       version: -1
-    taskid: f2fcc207-8c59-46ae-84e5-3ab208df8aa9
+    taskid: f781a2b9-b010-4b86-8d0e-88da0c26be7a
     timertriggers: []
     type: regular
     view: |-
@@ -296,8 +298,7 @@ tasks:
     isoversize: false
     message:
       bcc: null
-      body:
-        simple: '[Test]'
+      body: {}
       cc: null
       format: ""
       methods: []
@@ -318,12 +319,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 5f98c40f-48ec-46f4-84dc-9daa4906eaf8
+      description: Select Time Range.
+      id: bd432041-db4e-4ce7-810a-f727b68da104
       iscommand: false
       name: Select Time Range
       type: collection
       version: -1
-    taskid: 5f98c40f-48ec-46f4-84dc-9daa4906eaf8
+    taskid: bd432041-db4e-4ce7-810a-f727b68da104
     timertriggers: []
     type: collection
     view: |-
@@ -351,12 +353,12 @@ tasks:
     task:
       brand: ""
       description: Determines a scan type - an antivirus solution or a Yara rule.
-      id: 58e6b0b4-7afb-4666-886b-0c48d035e3b5
+      id: c4d076b4-b87c-4fcd-8658-23b03d613aae
       iscommand: false
       name: Select Scan Type
       type: condition
       version: -1
-    taskid: 58e6b0b4-7afb-4666-886b-0c48d035e3b5
+    taskid: c4d076b4-b87c-4fcd-8658-23b03d613aae
     timertriggers: []
     type: condition
     view: |-
@@ -403,13 +405,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Starts an antivirus scan.
-      id: 7ce126f6-f665-4a26-829b-e807056f7ad8
+      id: 5b7f9b76-0eb3-4463-8274-6e485a5c5b1f
       iscommand: true
       name: Start AV Scan
       script: VBR REST API|||veeam-vbr-start-malware-backup-scan
       type: regular
       version: -1
-    taskid: 7ce126f6-f665-4a26-829b-e807056f7ad8
+    taskid: 5b7f9b76-0eb3-4463-8274-6e485a5c5b1f
     timertriggers: []
     type: regular
     view: |-
@@ -439,13 +441,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Gets a list of Yara rules.
-      id: 51fff261-bacc-4cae-86bb-1ec103f38885
+      id: 1cd3610f-e193-4096-827e-b299dfbf2034
       iscommand: true
       name: Get Yara Rules
       script: VBR REST API|||veeam-vbr-get-yara-rules
       type: regular
       version: -1
-    taskid: 51fff261-bacc-4cae-86bb-1ec103f38885
+    taskid: 1cd3610f-e193-4096-827e-b299dfbf2034
     timertriggers: []
     type: regular
     view: |-
@@ -509,12 +511,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 892f7e08-fcb8-4654-806c-b044b125f1c9
+      description: Select Yara Rule.
+      id: 0cb9153f-6006-4a79-8371-eb49450cc1b9
       iscommand: false
       name: Select Yara Rule
       type: collection
       version: -1
-    taskid: 892f7e08-fcb8-4654-806c-b044b125f1c9
+    taskid: 0cb9153f-6006-4a79-8371-eb49450cc1b9
     timertriggers: []
     type: collection
     view: |-
@@ -568,13 +571,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Starts a Yara scan.
-      id: cc6c11ef-9108-4b22-805a-11b909f7bc06
+      id: c02d43a8-87b2-4cc6-8750-038e01e2bdf4
       iscommand: true
       name: Start Yara Scan
       script: VBR REST API|||veeam-vbr-start-malware-backup-scan
       type: regular
       version: -1
-    taskid: cc6c11ef-9108-4b22-805a-11b909f7bc06
+    taskid: c02d43a8-87b2-4cc6-8750-038e01e2bdf4
     timertriggers: []
     type: regular
     view: |-
@@ -602,12 +605,12 @@ tasks:
     task:
       brand: ""
       description: Determines a scan type - an antivirus solution or a Yara rule.
-      id: 91fcd548-a1cc-4c12-8692-25bf1e78cf7f
+      id: beaceb06-bdf2-4bf2-84ce-52766d203675
       iscommand: false
       name: Select Scan Type
       type: condition
       version: -1
-    taskid: 91fcd548-a1cc-4c12-8692-25bf1e78cf7f
+    taskid: beaceb06-bdf2-4bf2-84ce-52766d203675
     timertriggers: []
     type: condition
     view: |-
@@ -694,13 +697,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Starts an antivirus scan.
-      id: 84cfaa34-55e9-4624-8d09-eb1657c2fb56
+      id: 44f29dfd-f43c-4e58-8bd5-ae1bb96b8fc2
       iscommand: true
       name: Start AV Scan
       script: VBR REST API|||veeam-vbr-start-malware-backup-scan
       type: regular
       version: -1
-    taskid: 84cfaa34-55e9-4624-8d09-eb1657c2fb56
+    taskid: 44f29dfd-f43c-4e58-8bd5-ae1bb96b8fc2
     timertriggers: []
     type: regular
     view: |-
@@ -730,13 +733,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Gets a list of Yara rules.
-      id: d9d398ae-2f90-4c5a-8f3b-6a33a3e4f483
+      id: dab3889a-02be-4531-82a6-d01e37dcc1e4
       iscommand: true
       name: Get Yara Rules
       script: VBR REST API|||veeam-vbr-get-yara-rules
       type: regular
       version: -1
-    taskid: d9d398ae-2f90-4c5a-8f3b-6a33a3e4f483
+    taskid: dab3889a-02be-4531-82a6-d01e37dcc1e4
     timertriggers: []
     type: regular
     view: |-
@@ -800,12 +803,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 9f8e98ad-2ae5-4ed9-81fd-e6b02db73049
+      description: Select Yara Rule.
+      id: 1e0b4c98-1bda-4ea4-82d0-657ac1b71fbc
       iscommand: false
       name: Select Yara Rule
       type: collection
       version: -1
-    taskid: 9f8e98ad-2ae5-4ed9-81fd-e6b02db73049
+    taskid: 1e0b4c98-1bda-4ea4-82d0-657ac1b71fbc
     timertriggers: []
     type: collection
     view: |-
@@ -899,13 +903,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Starts a Yara scan.
-      id: c8a9a763-947f-4fa8-8971-37aea76d9130
+      id: a5d741b6-b05d-416f-89ad-466f2e412b0b
       iscommand: true
       name: Start Yara Scan
       script: VBR REST API|||veeam-vbr-start-malware-backup-scan
       type: regular
       version: -1
-    taskid: c8a9a763-947f-4fa8-8971-37aea76d9130
+    taskid: a5d741b6-b05d-416f-89ad-466f2e412b0b
     timertriggers: []
     type: regular
     view: |-
@@ -963,13 +967,13 @@ tasks:
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
-      id: cb4e7d2b-701b-4ccb-8188-28e165fa4ba5
+      id: a9566d7f-f615-4f85-8b2b-ba8f1059d8ea
       iscommand: false
       name: GenericPolling
       playbookId: GenericPolling
       type: playbook
       version: -1
-    taskid: cb4e7d2b-701b-4ccb-8188-28e165fa4ba5
+    taskid: a9566d7f-f615-4f85-8b2b-ba8f1059d8ea
     timertriggers: []
     type: playbook
     view: |-
@@ -1003,13 +1007,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Gets session data.
-      id: 3b57302c-f9da-4555-8b1e-d2633c900e0d
+      id: db102743-1192-4d92-8fc6-dd7837d9b8c3
       iscommand: true
       name: Get Session
       script: VBR REST API|||veeam-vbr-get-session
       type: regular
       version: -1
-    taskid: 3b57302c-f9da-4555-8b1e-d2633c900e0d
+    taskid: db102743-1192-4d92-8fc6-dd7837d9b8c3
     timertriggers: []
     type: regular
     view: |-
@@ -1059,12 +1063,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 79e45673-b956-471b-84da-9a4c65ddf352
+      description: Check Session State.
+      id: 1ecb7cd1-bfda-48d2-84ba-d8cb95e30a65
       iscommand: false
       name: Check Session State
       type: condition
       version: -1
-    taskid: 79e45673-b956-471b-84da-9a4c65ddf352
+    taskid: 1ecb7cd1-bfda-48d2-84ba-d8cb95e30a65
     timertriggers: []
     type: condition
     view: |-
@@ -1089,12 +1094,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 868cbfb3-82b1-4e8a-8d18-7b64562d082a
+      id: 4d187271-d4ad-40ad-8902-f52a7fb96774
       iscommand: false
       name: Success
       type: title
       version: -1
-    taskid: 868cbfb3-82b1-4e8a-8d18-7b64562d082a
+      description: ''
+    taskid: 4d187271-d4ad-40ad-8902-f52a7fb96774
     timertriggers: []
     type: title
     view: |-
@@ -1122,12 +1128,12 @@ tasks:
     task:
       brand: ""
       description: Returns an error if Scan Backup has not been completed.
-      id: 12a14f96-4c4e-4dc1-86c2-f0f5a09050c5
+      id: 52342b1d-95a1-4a22-8c97-11855c8f3ea4
       iscommand: false
       name: Failed
       type: condition
       version: -1
-    taskid: 12a14f96-4c4e-4dc1-86c2-f0f5a09050c5
+    taskid: 52342b1d-95a1-4a22-8c97-11855c8f3ea4
     timertriggers: []
     type: condition
     view: |-
@@ -1149,12 +1155,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: fa540bfd-5166-4bfa-830d-33b26f3fe002
+      id: de3fdf0c-5430-4fc2-87a9-0c58e7adb3b3
       iscommand: false
       name: Done
       type: title
       version: -1
-    taskid: fa540bfd-5166-4bfa-830d-33b26f3fe002
+      description: ''
+    taskid: de3fdf0c-5430-4fc2-87a9-0c58e7adb3b3
     timertriggers: []
     type: title
     view: |-
@@ -1191,12 +1198,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 1f18022f-2788-4515-8c5c-533d9d42dba1
+      description: Check Restore Point Existence.
+      id: 8d891b50-22f6-4db3-8380-4a75efda0e4b
       iscommand: false
       name: Check Restore Point Existence
       type: condition
       version: -1
-    taskid: 1f18022f-2788-4515-8c5c-533d9d42dba1
+    taskid: 8d891b50-22f6-4db3-8380-4a75efda0e4b
     timertriggers: []
     type: condition
     view: |-
@@ -1222,12 +1230,12 @@ tasks:
     task:
       brand: ""
       description: Returns an error if no restore points have been found.
-      id: 758ca371-2cdb-4e47-8094-4eb5ee223ac8
+      id: 1c2878d9-5ad6-4533-8f57-39a20deb1a0d
       iscommand: false
       name: No Restore Points Found
       type: condition
       version: -1
-    taskid: 758ca371-2cdb-4e47-8094-4eb5ee223ac8
+    taskid: 1c2878d9-5ad6-4533-8f57-39a20deb1a0d
     timertriggers: []
     type: condition
     view: |-
@@ -1264,12 +1272,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 93d0cb6f-a883-456b-8dab-fcbb4dff8802
+      description: Check Restore Point Existence.
+      id: bdcaf5b1-9790-4092-8e48-634b9560e859
       iscommand: false
       name: Check Restore Point Existence
       type: condition
       version: -1
-    taskid: 93d0cb6f-a883-456b-8dab-fcbb4dff8802
+    taskid: bdcaf5b1-9790-4092-8e48-634b9560e859
     timertriggers: []
     type: condition
     view: |-
@@ -1294,12 +1303,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8f05ab06-02f0-4ae1-8b85-da74a58fb147
+      id: 78573dce-b338-4d10-8666-3cab0ef85f91
       iscommand: false
       name: Error
       type: title
       version: -1
-    taskid: 8f05ab06-02f0-4ae1-8b85-da74a58fb147
+      description: ''
+    taskid: 78573dce-b338-4d10-8666-3cab0ef85f91
     timertriggers: []
     type: title
     view: |-
@@ -1325,12 +1335,12 @@ tasks:
     task:
       brand: ""
       description: Returns an error if a Yara scan cannot start.
-      id: ed62a85f-9424-4b53-8aee-02d5cccf75a1
+      id: da280c37-5919-4d1a-8e0e-18c480b488d4
       iscommand: false
       name: Failed to Start Yara Scan
       type: condition
       version: -1
-    taskid: ed62a85f-9424-4b53-8aee-02d5cccf75a1
+    taskid: da280c37-5919-4d1a-8e0e-18c480b488d4
     timertriggers: []
     type: condition
     view: |-
@@ -1364,13 +1374,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Returns log records for the specified session.
-      id: f572cd1b-159e-4233-8d30-7bf1d046e32a
+      id: a6f346a5-8d01-4935-850b-f12c9a209510
       iscommand: true
       name: Get Session Logs
       script: VBR REST API|||veeam-vbr-get-session-logs
       type: regular
       version: -1
-    taskid: f572cd1b-159e-4233-8d30-7bf1d046e32a
+    taskid: a6f346a5-8d01-4935-850b-f12c9a209510
     timertriggers: []
     type: regular
     view: |-
@@ -1381,7 +1391,6 @@ tasks:
         }
       }
 version: -1
-fromversion: 6.10.0
 view: |-
   {
     "linkLabelsPosition": {

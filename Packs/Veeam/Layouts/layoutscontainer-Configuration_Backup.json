@@ -549,6 +549,7 @@
     "fromVersion": "6.10.0",
     "description": "Configuration Backup",
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+		"platform"
     ]
 }

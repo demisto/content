@@ -3,7 +3,7 @@
 	"caseInsensitive": true,
 	"cliName": "veeamsessionid",
 	"closeForm": false,
-	"content": false,
+	"content": true,
 	"editForm": true,
 	"group": 0,
 	"hidden": false,
@@ -20,7 +20,7 @@
 	"threshold": 72,
 	"type": "shortText",
 	"unmapped": false,
-	"unsearchable": false,
+	"unsearchable": true,
 	"useAsKpi": false,
 	"version": -1,
     "fromVersion": "6.10.0"

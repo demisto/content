@@ -8,6 +8,7 @@ outputs:
 - contextPath: Veeam.VBR.get_entra_id_item_restore_points.data.creationTime
   description: Date and time when the restore point was created.
 starttaskid: "0"
+fromversion: "6.10.0"
 tasks:
   "0":
     continueonerrortype: ""
@@ -24,11 +25,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 409f1999-7aa0-4505-85fd-e73283b6f6f5
+      id: a5e1c097-73d9-4953-8ff0-c511e6a74922
       iscommand: false
       name: ""
       version: -1
-    taskid: 409f1999-7aa0-4505-85fd-e73283b6f6f5
+      description: ''
+    taskid: a5e1c097-73d9-4953-8ff0-c511e6a74922
     timertriggers: []
     type: start
     view: |-
@@ -62,14 +64,14 @@ tasks:
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      id: 02650dee-fb62-47d5-8a09-957a9306c2dd
+      id: b5d895a4-4a1f-409e-8197-0103fbdbf144
       iscommand: false
       name: |
         Clear Context Data
       script: DeleteContext
       type: regular
       version: -1
-    taskid: 02650dee-fb62-47d5-8a09-957a9306c2dd
+    taskid: b5d895a4-4a1f-409e-8197-0103fbdbf144
     timertriggers: []
     type: regular
     view: |-
@@ -108,13 +110,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Gets the latest restore point.
-      id: 96c9a6ab-c44a-4441-8827-7be7a0621d18
+      id: f8165165-8fe6-4037-8236-81033b0f47f4
       iscommand: true
       name: Get Latest Restore Point
       script: VBR REST API|||veeam-vbr-get-restore-points
       type: regular
       version: -1
-    taskid: 96c9a6ab-c44a-4441-8827-7be7a0621d18
+    taskid: f8165165-8fe6-4037-8236-81033b0f47f4
     timertriggers: []
     type: regular
     view: |-
@@ -134,6 +136,8 @@ tasks:
                 accessor: id
                 root: Veeam.VBR.get_restore_points.data
           operator: isNotEmpty
+          right:
+            value: {}
       label: "yes"
     continueonerrortype: ""
     id: "3"
@@ -151,13 +155,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 9566b88a-f571-46fb-8737-a5385449ac42
+      description: Check if the restore point exists.
+      id: 5ccc2f36-71f9-40f6-8912-f44eaa6dd7a4
       iscommand: false
       name: |
         Check Restore Point Existence
       type: condition
       version: -1
-    taskid: 9566b88a-f571-46fb-8737-a5385449ac42
+    taskid: 5ccc2f36-71f9-40f6-8912-f44eaa6dd7a4
     timertriggers: []
     type: condition
     view: |-
@@ -183,12 +188,12 @@ tasks:
     task:
       brand: ""
       description: Returns an error if no restore points have been found.
-      id: dfa62f8b-d8c3-4d6b-8b51-11d97275e7ab
+      id: cde717cb-7287-4979-8332-3c9beb7a8575
       iscommand: false
       name: No Restore Points Found
       type: condition
       version: -1
-    taskid: dfa62f8b-d8c3-4d6b-8b51-11d97275e7ab
+    taskid: cde717cb-7287-4979-8332-3c9beb7a8575
     timertriggers: []
     type: condition
     view: |-
@@ -224,13 +229,13 @@ tasks:
       brand: VBR REST API
       description: Mounts a Microsoft Entra ID tenant from its backup and starts a
         mount session required for restore.
-      id: 5376aa0d-41d7-443e-8c9d-912117317e5d
+      id: 6c569a8b-e6ef-4459-8ee0-a06f9f813b30
       iscommand: true
       name: Mount Entra ID Tenant
       script: VBR REST API|||veeam-vbr-mount-entra-id-tenant
       type: regular
       version: -1
-    taskid: 5376aa0d-41d7-443e-8c9d-912117317e5d
+    taskid: 6c569a8b-e6ef-4459-8ee0-a06f9f813b30
     timertriggers: []
     type: regular
     view: |-
@@ -267,13 +272,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Stops the mount session for a Microsoft Entra ID tenant.
-      id: f725f6e4-ff4c-4976-8c51-7d8aa7859cc9
+      id: 32839fb6-ffe6-4c75-8a53-7ecfa74d53df
       iscommand: true
       name: Unmount Entra ID Tenant
       script: VBR REST API|||veeam-vbr-unmount-entra-id-tenant
       type: regular
       version: -1
-    taskid: f725f6e4-ff4c-4976-8c51-7d8aa7859cc9
+    taskid: 32839fb6-ffe6-4c75-8a53-7ecfa74d53df
     timertriggers: []
     type: regular
     view: |-
@@ -318,13 +323,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Browses Microsoft Entra ID items available in a backup.
-      id: 28273fcd-53d8-4bcc-8820-c14ed9b24bc8
+      id: f76e4a13-f064-496f-829e-2bf949270f38
       iscommand: true
       name: Get Microsoft Entra ID Items
       script: VBR REST API|||veeam-vbr-get-entra-id-items
       type: regular
       version: -1
-    taskid: 28273fcd-53d8-4bcc-8820-c14ed9b24bc8
+    taskid: f76e4a13-f064-496f-829e-2bf949270f38
     timertriggers: []
     type: regular
     view: |-
@@ -344,6 +349,8 @@ tasks:
                 accessor: id
                 root: Veeam.VBR.get_entra_id_items.data
           operator: isNotEmpty
+          right:
+            value: {}
       label: "yes"
     continueonerrortype: ""
     id: "8"
@@ -361,12 +368,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 32a68b4c-200a-48b8-8354-9d0c27be435a
+      description: Check User Existence.
+      id: 06f6f83e-7669-4122-8a10-408b75b7129a
       iscommand: false
       name: Check User Existence
       type: condition
       version: -1
-    taskid: 32a68b4c-200a-48b8-8354-9d0c27be435a
+    taskid: 06f6f83e-7669-4122-8a10-408b75b7129a
     timertriggers: []
     type: condition
     view: |-
@@ -411,13 +419,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Gets restore points related to a Microsoft Entra ID item.
-      id: eaa662d7-1147-40db-8662-89f689c4cc2a
+      id: cae456a6-9ef7-4de5-897e-bbf5fad3bc19
       iscommand: true
       name: Get Restore Points of Microsoft Entra ID Item
       script: VBR REST API|||veeam-vbr-get-entra-id-item-restore-points
       type: regular
       version: -1
-    taskid: eaa662d7-1147-40db-8662-89f689c4cc2a
+    taskid: cae456a6-9ef7-4de5-897e-bbf5fad3bc19
     timertriggers: []
     type: regular
     view: |-
@@ -443,12 +451,12 @@ tasks:
     task:
       brand: ""
       description: Returns an error if a user has not been found.
-      id: 709bb9f9-b35f-4db4-8d29-f1a1428af2fa
+      id: 8ab9d0b4-045c-447c-82c1-e5032b72f531
       iscommand: false
       name: User Not Found
       type: condition
       version: -1
-    taskid: 709bb9f9-b35f-4db4-8d29-f1a1428af2fa
+    taskid: 8ab9d0b4-045c-447c-82c1-e5032b72f531
     timertriggers: []
     type: condition
     view: |-
@@ -470,12 +478,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 60bde136-5a18-44ea-8a54-91fb2dc93500
+      id: c310efb9-115b-45d1-8e32-5ee07e13b1b4
       iscommand: false
       name: Done
       type: title
       version: -1
-    taskid: 60bde136-5a18-44ea-8a54-91fb2dc93500
+      description: ''
+    taskid: c310efb9-115b-45d1-8e32-5ee07e13b1b4
     timertriggers: []
     type: title
     view: |-
@@ -566,12 +575,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 841a5415-c5ef-448d-8517-fd9d87f09151
+      description: Enter Entra ID data for search.
+      id: 0a132ce9-7db7-421d-84e5-f4164ce68f1d
       iscommand: false
       name: Enter Entra ID Data
       type: collection
       version: -1
-    taskid: 841a5415-c5ef-448d-8517-fd9d87f09151
+    taskid: 0a132ce9-7db7-421d-84e5-f4164ce68f1d
     timertriggers: []
     type: collection
     view: |-
@@ -601,13 +611,13 @@ tasks:
       brand: ""
       description: Returns integration instances configured in Cortex XSOAR. You can
         filter by instance status and/or brand name (vendor).
-      id: fb195e48-910e-466d-84c7-4c0385f24df5
+      id: 460a6dfb-a066-43e5-8a38-77925af52a0e
       iscommand: false
       name: Get VBR Instances
       script: GetInstances
       type: regular
       version: -1
-    taskid: fb195e48-910e-466d-84c7-4c0385f24df5
+    taskid: 460a6dfb-a066-43e5-8a38-77925af52a0e
     timertriggers: []
     type: regular
     view: |-
@@ -618,7 +628,6 @@ tasks:
         }
       }
 version: -1
-fromversion: 6.10.0
 view: |-
   {
     "linkLabelsPosition": {

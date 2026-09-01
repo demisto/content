@@ -1,5 +1,4 @@
 {
-	"cacheVersn": 0,
 	"close": {
 		"sections": [
 			{
@@ -60,10 +59,7 @@
 	},
 	"definitionId": "",
 	"description": "SureBackup - Backup Verification and Content Scan",
-	"detached": false,
-	"details": null,
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -299,16 +295,6 @@
 				"type": "workPlan"
 			},
 			{
-				"id": "evidenceBoard",
-				"name": "Evidence Board",
-				"type": "evidenceBoard"
-			},
-			{
-				"id": "relatedIncidents",
-				"name": "Related Incidents",
-				"type": "relatedIncidents"
-			},
-			{
 				"id": "canvas",
 				"name": "Canvas",
 				"type": "canvas"
@@ -413,17 +399,9 @@
 			}
 		]
 	},
-	"fromServerVersion": "6.10.0",
 	"group": "incident",
 	"id": "SureBackup - Backup Verification and Content Scan",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"itemVersion": "",
-	"locked": false,
-	"mobile": null,
 	"name": "SureBackup - Backup Verification and Content Scan",
-	"packID": "",
-	"packName": "",
 	"quickView": {
 		"sections": [
 			{
@@ -530,9 +508,11 @@
 			}
 		]
 	},
-	"quickViewV2": null,
 	"system": false,
-	"toServerVersion": "99.99.99",
     "fromVersion": "6.10.0",
-	"version": -1
+	"version": -1,
+    "marketplaces": [
+        "xsoar",
+		"platform"
+    ]
 }

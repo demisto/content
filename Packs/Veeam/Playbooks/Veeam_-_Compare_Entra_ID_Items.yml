@@ -1,15 +1,7 @@
 description: Compares Microsoft Entra ID item properties between a restore point and
   production.
 id: Veeam - Compare Entra ID Items
-inputs:
-- description: ""
-  key: Instance
-  playbookInputQuery: null
-  required: false
-  value:
-    complex:
-      accessor: sourceInstance
-      root: incident
+inputs: []
 name: Veeam - Compare Entra ID Items
 outputs:
 - contextPath: Veeam.VBR.get_entra_id_item_restore_points.data.id
@@ -19,6 +11,7 @@ outputs:
 quiet: true
 sourceplaybookid: Veeam - Find Entra ID User
 starttaskid: "0"
+fromversion: "6.10.0"
 tasks:
   "0":
     continueonerrortype: ""
@@ -35,11 +28,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 448d50ce-b447-4f9a-8575-fd83ffa31983
+      id: 893efded-7002-4a38-86ac-949d966270f8
       iscommand: false
       name: ""
       version: -1
-    taskid: 448d50ce-b447-4f9a-8575-fd83ffa31983
+      description: ''
+    taskid: 893efded-7002-4a38-86ac-949d966270f8
     timertriggers: []
     type: start
     view: |-
@@ -73,14 +67,14 @@ tasks:
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      id: 53c93baa-d4d1-4246-8f1e-b3ce37e7d1c6
+      id: c3616af3-fc29-4e9e-8520-3a78945a7134
       iscommand: false
       name: |
         Clear Context Data
       script: DeleteContext
       type: regular
       version: -1
-    taskid: 53c93baa-d4d1-4246-8f1e-b3ce37e7d1c6
+    taskid: c3616af3-fc29-4e9e-8520-3a78945a7134
     timertriggers: []
     type: regular
     view: |-
@@ -119,13 +113,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Gets the latest restore point.
-      id: 6a789f1b-c44a-4e67-848c-8735a15a8b7a
+      id: a7cd9526-15e4-4a28-808e-83c60100bb63
       iscommand: true
       name: Get Latest Restore Point
       script: VBR REST API|||veeam-vbr-get-restore-points
       type: regular
       version: -1
-    taskid: 6a789f1b-c44a-4e67-848c-8735a15a8b7a
+    taskid: a7cd9526-15e4-4a28-808e-83c60100bb63
     timertriggers: []
     type: regular
     view: |-
@@ -162,13 +156,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 5f49c8f0-3714-4d53-8d7c-dc42cdf83462
+      description: Check if the restore point exists.
+      id: 9d4faa98-f06e-43ff-8cfd-25d9a215c14e
       iscommand: false
       name: |
         Check Restore Point Existence
       type: condition
       version: -1
-    taskid: 5f49c8f0-3714-4d53-8d7c-dc42cdf83462
+    taskid: 9d4faa98-f06e-43ff-8cfd-25d9a215c14e
     timertriggers: []
     type: condition
     view: |-
@@ -194,12 +189,12 @@ tasks:
     task:
       brand: ""
       description: Returns an error if no restore points have been found.
-      id: c2fb8d5b-7503-4613-86f5-5b8ec53346b7
+      id: d7c18a94-475f-408e-8d12-a8318a4fe4e5
       iscommand: false
       name: No Restore Points Found
       type: condition
       version: -1
-    taskid: c2fb8d5b-7503-4613-86f5-5b8ec53346b7
+    taskid: d7c18a94-475f-408e-8d12-a8318a4fe4e5
     timertriggers: []
     type: condition
     view: |-
@@ -235,13 +230,13 @@ tasks:
       brand: VBR REST API
       description: Mounts a Microsoft Entra ID tenant from its backup and starts a
         mount session required for restore.
-      id: 1bfb409a-9bdc-48a2-8d6f-0f10f5b1796d
+      id: 05552a54-710b-4a9d-8f30-3df74519f86d
       iscommand: true
       name: Mount Entra ID Tenant
       script: VBR REST API|||veeam-vbr-mount-entra-id-tenant
       type: regular
       version: -1
-    taskid: 1bfb409a-9bdc-48a2-8d6f-0f10f5b1796d
+    taskid: 05552a54-710b-4a9d-8f30-3df74519f86d
     timertriggers: []
     type: regular
     view: |-
@@ -278,13 +273,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Stops the mount session for a Microsoft Entra ID tenant.
-      id: c43c907c-a894-4bb6-8e1e-48a90c94f07a
+      id: 8cdf81df-03e2-4f4b-82b5-3061fecb7563
       iscommand: true
       name: Unmount Entra ID Tenant
       script: VBR REST API|||veeam-vbr-unmount-entra-id-tenant
       type: regular
       version: -1
-    taskid: c43c907c-a894-4bb6-8e1e-48a90c94f07a
+    taskid: 8cdf81df-03e2-4f4b-82b5-3061fecb7563
     timertriggers: []
     type: regular
     view: |-
@@ -329,13 +324,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Browses Microsoft Entra ID items available in a backup.
-      id: d3d174ae-c02f-44de-82dc-036ebf5b56fc
+      id: 79c46825-d62e-4ba0-8d43-df49ac9365e0
       iscommand: true
       name: Get Microsoft Entra ID Items
       script: VBR REST API|||veeam-vbr-get-entra-id-items
       type: regular
       version: -1
-    taskid: d3d174ae-c02f-44de-82dc-036ebf5b56fc
+    taskid: 79c46825-d62e-4ba0-8d43-df49ac9365e0
     timertriggers: []
     type: regular
     view: |-
@@ -372,12 +367,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 294efe59-010d-47e3-8233-f8eaceee4a67
+      description: Check User Existence.
+      id: be4c6f2e-1c18-4290-889a-fb1020c3a944
       iscommand: false
       name: Check User Existence
       type: condition
       version: -1
-    taskid: 294efe59-010d-47e3-8233-f8eaceee4a67
+    taskid: be4c6f2e-1c18-4290-889a-fb1020c3a944
     timertriggers: []
     type: condition
     view: |-
@@ -425,13 +421,13 @@ tasks:
       brand: VBR REST API
       description: Compare Microsoft Entra ID item properties between restore points
         or production.
-      id: c114826e-dc92-42bc-8140-4c09d19b9959
+      id: 28be695d-b527-4638-854b-754e6f0e73a6
       iscommand: true
       name: Compare Microsoft Entra ID Item Properties
       script: VBR REST API|||veeam-vbr-compare-entra-id-item-properties
       type: regular
       version: -1
-    taskid: c114826e-dc92-42bc-8140-4c09d19b9959
+    taskid: 28be695d-b527-4638-854b-754e6f0e73a6
     timertriggers: []
     type: regular
     view: |-
@@ -457,12 +453,12 @@ tasks:
     task:
       brand: ""
       description: Returns an error if a user has not been found.
-      id: e94f6480-bfae-4f49-85a6-fd0fac631861
+      id: ed3bd3c3-4ef3-4962-80f8-781f2d9a8dd3
       iscommand: false
       name: User Not Found
       type: condition
       version: -1
-    taskid: e94f6480-bfae-4f49-85a6-fd0fac631861
+    taskid: ed3bd3c3-4ef3-4962-80f8-781f2d9a8dd3
     timertriggers: []
     type: condition
     view: |-
@@ -484,12 +480,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 1249f71c-f6d9-46ec-88fd-3365b7afa5ed
+      id: c86bf168-6870-44d9-8a77-69e56e62f57d
       iscommand: false
       name: Done
       type: title
       version: -1
-    taskid: 1249f71c-f6d9-46ec-88fd-3365b7afa5ed
+      description: ''
+    taskid: c86bf168-6870-44d9-8a77-69e56e62f57d
     timertriggers: []
     type: title
     view: |-
@@ -580,12 +577,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8e73cb0c-5d82-4ece-8c79-a593278f7608
+      description: Enter Entra ID data for comparison.
+      id: 6bf359b3-eb7b-40bb-815f-52654ded62f8
       iscommand: false
       name: Enter Entra ID Data
       type: collection
       version: -1
-    taskid: 8e73cb0c-5d82-4ece-8c79-a593278f7608
+    taskid: 6bf359b3-eb7b-40bb-815f-52654ded62f8
     timertriggers: []
     type: collection
     view: |-
@@ -615,13 +613,13 @@ tasks:
       brand: ""
       description: Returns integration instances configured in Cortex XSOAR. You can
         filter by instance status and/or brand name (vendor).
-      id: 1e692b49-db53-4e57-8a31-1b84d8779ed6
+      id: cb045282-e3c6-46bc-8710-9940ce0b2a23
       iscommand: false
       name: Get VBR Instances
       script: GetInstances
       type: regular
       version: -1
-    taskid: 1e692b49-db53-4e57-8a31-1b84d8779ed6
+    taskid: cb045282-e3c6-46bc-8710-9940ce0b2a23
     timertriggers: []
     type: regular
     view: |-
@@ -632,7 +630,6 @@ tasks:
         }
       }
 version: -1
-fromversion: 6.10.0
 view: |-
   {
     "linkLabelsPosition": {

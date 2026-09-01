@@ -523,7 +523,8 @@
 	"version": -1,
 	"fromVersion": "6.10.0",
 	"description": "Backup Repository State",
-	"marketplaces": [
-		"xsoar"
-	]
+    "marketplaces": [
+        "xsoar",
+		"platform"
+    ]
 }

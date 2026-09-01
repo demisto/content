@@ -21,6 +21,7 @@ name: Veeam - Start Instant Hyper-V VM Recovery Automatically
 outputs: []
 sourceplaybookid: Veeam - Start Instant VM Recovery Automatically
 starttaskid: "0"
+fromversion: "6.10.0"
 tasks:
   "0":
     continueonerrortype: ""
@@ -37,11 +38,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 22199c43-b597-4200-8811-b149e1eaf645
+      id: ff21d8e2-55dc-4267-8d88-ab6a3bd114e4
       iscommand: false
       name: ""
       version: -1
-    taskid: 22199c43-b597-4200-8811-b149e1eaf645
+      description: ''
+    taskid: ff21d8e2-55dc-4267-8d88-ab6a3bd114e4
     timertriggers: []
     type: start
     view: |-
@@ -83,13 +85,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Get all clean restore points (without detected malware activity).
-      id: 5253b5ba-bd8b-4ca0-8650-c319bf778088
+      id: 6a764988-5a2f-40b4-8763-00f6857c1dde
       iscommand: true
       name: Get All Restore Points
       script: VBR REST API|||veeam-vbr-get-restore-points
       type: regular
       version: -1
-    taskid: 5253b5ba-bd8b-4ca0-8650-c319bf778088
+    taskid: 6a764988-5a2f-40b4-8763-00f6857c1dde
     timertriggers: []
     type: regular
     view: |-
@@ -111,12 +113,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 1f1679b5-f928-41f5-8ce6-30a4d15477c4
+      id: 6df7cf9b-e62f-4bac-8c39-55334a40db8c
       iscommand: false
       name: Done
       type: title
       version: -1
-    taskid: 1f1679b5-f928-41f5-8ce6-30a4d15477c4
+      description: ''
+    taskid: 6df7cf9b-e62f-4bac-8c39-55334a40db8c
     timertriggers: []
     type: title
     view: |-
@@ -144,12 +147,12 @@ tasks:
     task:
       brand: ""
       description: Enables antivirus scan.
-      id: bef5cafd-7c0d-4211-8663-eac0c17f5bc5
+      id: 68e52f12-7c43-4882-80c5-52028dfdd515
       iscommand: false
       name: Use AV Scan?
       type: condition
       version: -1
-    taskid: bef5cafd-7c0d-4211-8663-eac0c17f5bc5
+    taskid: 68e52f12-7c43-4882-80c5-52028dfdd515
     timertriggers: []
     type: condition
     view: |-
@@ -211,19 +214,19 @@ tasks:
     task:
       brand: VBR REST API
       description: Gets inventory objects.
-      id: 466e05ad-6268-4dff-85a8-d0a905113d78
+      id: 6d8f61f5-d6bd-4ec9-8042-63f752966716
       iscommand: true
       name: Get Inventory Objects
       script: VBR REST API|||veeam-vbr-get-inventory-objects
       type: regular
       version: -1
-    taskid: 466e05ad-6268-4dff-85a8-d0a905113d78
+    taskid: 6d8f61f5-d6bd-4ec9-8042-63f752966716
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 60,
           "y": -1100
         }
       }
@@ -250,13 +253,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Gets a backup object.
-      id: 09d95085-9218-4a37-8add-e78789f190ce
+      id: 1e3e58a0-d706-43ea-8c8e-d033fc5df676
       iscommand: true
       name: Get Backup Object
       script: VBR REST API|||veeam-vbr-get-backup-object
       type: regular
       version: -1
-    taskid: 09d95085-9218-4a37-8add-e78789f190ce
+    taskid: 1e3e58a0-d706-43ea-8c8e-d033fc5df676
     timertriggers: []
     type: regular
     view: |-
@@ -296,12 +299,12 @@ tasks:
     task:
       brand: ""
       description: Checks if restore points exist.
-      id: 501e2662-1734-46de-8fb8-4cf1459fd9b3
+      id: 494027e0-4c87-4a38-8009-783886ffadff
       iscommand: false
       name: Check Restore Point Existence
       type: condition
       version: -1
-    taskid: 501e2662-1734-46de-8fb8-4cf1459fd9b3
+    taskid: 494027e0-4c87-4a38-8009-783886ffadff
     timertriggers: []
     type: condition
     view: |-
@@ -343,12 +346,12 @@ tasks:
     task:
       brand: ""
       description: Checks session state.
-      id: ba2eb377-b37d-47d2-88f4-98738fdc3b67
+      id: d1f7e17e-bbd1-4bc2-84a8-f37db3121f94
       iscommand: false
       name: Check Session State
       type: condition
       version: -1
-    taskid: ba2eb377-b37d-47d2-88f4-98738fdc3b67
+    taskid: d1f7e17e-bbd1-4bc2-84a8-f37db3121f94
     timertriggers: []
     type: condition
     view: |-
@@ -373,12 +376,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 23fe6522-f905-49a0-82b0-4259d9ee2292
+      id: d3190ec8-cbd7-418e-8c2a-a073d5fa09c0
       iscommand: false
       name: Success
       type: title
       version: -1
-    taskid: 23fe6522-f905-49a0-82b0-4259d9ee2292
+      description: ''
+    taskid: d3190ec8-cbd7-418e-8c2a-a073d5fa09c0
     timertriggers: []
     type: title
     view: |-
@@ -406,12 +410,12 @@ tasks:
     task:
       brand: ""
       description: Returns an error if Instant VM Recovery has not been completed.
-      id: ea082597-ebbd-47b2-89c1-a1d3fbd57c29
+      id: 1005b4a9-d469-45b1-867f-5454a73b0000
       iscommand: false
       name: Failed
       type: condition
       version: -1
-    taskid: ea082597-ebbd-47b2-89c1-a1d3fbd57c29
+    taskid: 1005b4a9-d469-45b1-867f-5454a73b0000
     timertriggers: []
     type: condition
     view: |-
@@ -452,13 +456,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Gets inventory objects.
-      id: 028064a3-28a4-466b-83f7-cabef85e4c0a
+      id: e9af2931-87c8-4df9-848c-4650e4586ab7
       iscommand: true
       name: Get Inventory Objects
       script: VBR REST API|||veeam-vbr-get-inventory-objects
       type: regular
       version: -1
-    taskid: 028064a3-28a4-466b-83f7-cabef85e4c0a
+    taskid: e9af2931-87c8-4df9-848c-4650e4586ab7
     timertriggers: []
     type: regular
     view: |-
@@ -498,12 +502,12 @@ tasks:
     task:
       brand: ""
       description: Checks if a virtual machine is available.
-      id: 5b51a0d1-4e96-4aff-8633-31948be32d07
+      id: 98a6bb5b-fe57-436d-8f13-d618c6cf581e
       iscommand: false
       name: Check VM Existence
       type: condition
       version: -1
-    taskid: 5b51a0d1-4e96-4aff-8633-31948be32d07
+    taskid: 98a6bb5b-fe57-436d-8f13-d618c6cf581e
     timertriggers: []
     type: condition
     view: |-
@@ -531,12 +535,12 @@ tasks:
     task:
       brand: ""
       description: Starts Instant VM Recovery manually.
-      id: c1d27fd1-8290-4e24-80a1-580c1065b9a0
+      id: dad2b6ff-4f72-4e52-8c02-80311ff63488
       iscommand: false
       name: Start Instant VM Recovery Manually?
       type: condition
       version: -1
-    taskid: c1d27fd1-8290-4e24-80a1-580c1065b9a0
+    taskid: dad2b6ff-4f72-4e52-8c02-80311ff63488
     timertriggers: []
     type: condition
     view: |-
@@ -563,12 +567,12 @@ tasks:
       brand: ""
       description: Go to the Veeam Backup & Replication console to finish the migration
         process.
-      id: 12791e8e-d5e7-4f10-8210-958cffdaa75e
+      id: fa8784c0-2a56-4ab3-8659-7f9ed99fd218
       iscommand: false
       name: Finish Migration
       type: condition
       version: -1
-    taskid: 12791e8e-d5e7-4f10-8210-958cffdaa75e
+    taskid: fa8784c0-2a56-4ab3-8659-7f9ed99fd218
     timertriggers: []
     type: condition
     view: |-
@@ -594,12 +598,12 @@ tasks:
     task:
       brand: ""
       description: Returns an error if no clean restore points have been found.
-      id: 0830fabe-4d43-4060-8265-3f07eb41297f
+      id: b3eb7383-f7ea-458e-8344-27ba7ff9db19
       iscommand: false
       name: No Clean Restore Points Found
       type: condition
       version: -1
-    taskid: 0830fabe-4d43-4060-8265-3f07eb41297f
+    taskid: b3eb7383-f7ea-458e-8344-27ba7ff9db19
     timertriggers: []
     type: condition
     view: |-
@@ -633,13 +637,13 @@ tasks:
         see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
         \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
         For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
-      id: 11d60bd9-3739-42c9-8285-e82664176d52
+      id: 6334cd6c-fce3-4406-8c62-07b2899eb59b
       iscommand: false
       name: Clear Context Data
       script: DeleteContext
       type: regular
       version: -1
-    taskid: 11d60bd9-3739-42c9-8285-e82664176d52
+    taskid: 6334cd6c-fce3-4406-8c62-07b2899eb59b
     timertriggers: []
     type: regular
     view: |-
@@ -699,13 +703,13 @@ tasks:
         3. (optional) Get the results of the operation.
 
         NOTE: This playbook should be run only when the playbook's context is using the "Private to sub-playbook" option.
-      id: f6c52bbb-25dc-4192-84aa-75fbbdcdb38d
+      id: a60e1532-0bd6-41e6-885c-bac1bf6a18fa
       iscommand: false
       name: GenericPolling
       playbookId: GenericPolling
       type: playbook
       version: -1
-    taskid: f6c52bbb-25dc-4192-84aa-75fbbdcdb38d
+    taskid: a60e1532-0bd6-41e6-885c-bac1bf6a18fa
     timertriggers: []
     type: playbook
     view: |-
@@ -739,13 +743,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Gets session data.
-      id: a8644e10-67dc-43c7-86cd-7e29608ceb89
+      id: 57e95744-ffa7-4237-8880-d415050c87bc
       iscommand: true
       name: Get Session
       script: VBR REST API|||veeam-vbr-get-session
       type: regular
       version: -1
-    taskid: a8644e10-67dc-43c7-86cd-7e29608ceb89
+    taskid: 57e95744-ffa7-4237-8880-d415050c87bc
     timertriggers: []
     type: regular
     view: |-
@@ -776,13 +780,13 @@ tasks:
     task:
       brand: ""
       description: Gets the name of the restored virtual machine.
-      id: fb62c2ac-2505-4b36-8ef5-c73b6c796bf2
+      id: 903ce489-2106-449e-8675-b8f704510494
       iscommand: false
       name: Get Restored VM Name
       script: GetRestoredVmName
       type: regular
       version: -1
-    taskid: fb62c2ac-2505-4b36-8ef5-c73b6c796bf2
+    taskid: 903ce489-2106-449e-8675-b8f704510494
     timertriggers: []
     type: regular
     view: |-
@@ -818,12 +822,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 30118933-5f61-47ef-8288-7212c69f90c3
+      description: Check Host Availability.
+      id: 3c9901ce-e300-44c8-8105-95fa30674436
       iscommand: false
       name: Check Host Availability
       type: condition
       version: -1
-    taskid: 30118933-5f61-47ef-8288-7212c69f90c3
+    taskid: 3c9901ce-e300-44c8-8105-95fa30674436
     timertriggers: []
     type: condition
     view: |-
@@ -848,13 +853,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: dc53d980-dd0d-4839-8fba-b70d185bb36b
+      id: b975c097-8978-468f-8fec-faea7ed96d06
       iscommand: false
       name: Veeam - Start Instant Hyper-V VM Recovery Manually
       playbookId: Veeam - Start Instant Hyper-V VM Recovery Manually
       type: playbook
       version: -1
-    taskid: dc53d980-dd0d-4839-8fba-b70d185bb36b
+      description: ''
+    taskid: b975c097-8978-468f-8fec-faea7ed96d06
     timertriggers: []
     type: playbook
     view: |-
@@ -911,13 +917,13 @@ tasks:
       brand: VBR REST API
       description: Starts Instant Recovery of Microsoft Hyper-V VM to a customized
         location.
-      id: 348f8850-f385-4f3a-8717-19599c423957
+      id: 0acfceb8-1eb6-4255-8fb0-486c987dc183
       iscommand: true
       name: Start Customized HyperV VM Instant Recovery with AV Scan
       script: VBR REST API|||veeam-vbr-start-instant-recovery-hyperv-vm-customized
       type: regular
       version: -1
-    taskid: 348f8850-f385-4f3a-8717-19599c423957
+    taskid: 0acfceb8-1eb6-4255-8fb0-486c987dc183
     timertriggers: []
     type: regular
     view: |-
@@ -972,13 +978,13 @@ tasks:
       brand: VBR REST API
       description: Starts Instant Recovery of Microsoft Hyper-V VM to a customized
         location.
-      id: 9b4f4aa4-3a92-4af7-849f-bf3db2a18013
+      id: b5846c91-5ab2-4f4b-8a20-66a5397f5cb4
       iscommand: true
       name: Start Customized HyperV VM Instant Recovery
       script: VBR REST API|||veeam-vbr-start-instant-recovery-hyperv-vm-customized
       type: regular
       version: -1
-    taskid: 9b4f4aa4-3a92-4af7-849f-bf3db2a18013
+    taskid: b5846c91-5ab2-4f4b-8a20-66a5397f5cb4
     timertriggers: []
     type: regular
     view: |-
@@ -1012,13 +1018,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Returns log records for the specified session.
-      id: 403dbb43-4ac2-47f0-8910-de527737339d
+      id: ed77cd5a-0aba-4985-8d41-cc9fe97cfc69
       iscommand: true
       name: Get Session Logs
       script: VBR REST API|||veeam-vbr-get-session-logs
       type: regular
       version: -1
-    taskid: 403dbb43-4ac2-47f0-8910-de527737339d
+    taskid: ed77cd5a-0aba-4985-8d41-cc9fe97cfc69
     timertriggers: []
     type: regular
     view: |-
@@ -1048,13 +1054,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: ac3344e1-ded7-4b3c-8ab6-3e556dbcc44e
+      description: Gets latest clean restore point from array of restore points.
+      id: 947f3e2d-4a8a-4385-8100-3be9bd91051b
       iscommand: false
       name: Get Latest Clean Restore Point
       script: GetLatestCleanRestorePoint
       type: regular
       version: -1
-    taskid: ac3344e1-ded7-4b3c-8ab6-3e556dbcc44e
+    taskid: 947f3e2d-4a8a-4385-8100-3be9bd91051b
     timertriggers: []
     type: regular
     view: |-
@@ -1065,10 +1072,10 @@ tasks:
         }
       }
 version: -1
-fromversion: 6.10.0
 view: |-
   {
     "linkLabelsPosition": {
+      "12_38_yes": 0.55,
       "28_6_No": 0.36
     },
     "paper": {

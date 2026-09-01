@@ -36,6 +36,7 @@ outputs: []
 quiet: true
 sourceplaybookid: Veeam - Start Scan Backup
 starttaskid: "0"
+fromversion: "6.10.0"
 tasks:
   "0":
     continueonerrortype: ""
@@ -52,11 +53,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 653c1677-bb20-45e8-89b3-f2badfc2c986
+      id: d479f5fb-16c1-4f05-81ee-ba9494d22336
       iscommand: false
       name: ""
       version: -1
-    taskid: 653c1677-bb20-45e8-89b3-f2badfc2c986
+      description: ''
+    taskid: d479f5fb-16c1-4f05-81ee-ba9494d22336
     timertriggers: []
     type: start
     view: |-
@@ -90,14 +92,14 @@ tasks:
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      id: 9f3c430e-405d-4884-8630-1822ba7bf006
+      id: 44fa9e2a-102e-4b66-8d3e-f67851fd746f
       iscommand: false
       name: |
         Clear Context Data
       script: DeleteContext
       type: regular
       version: -1
-    taskid: 9f3c430e-405d-4884-8630-1822ba7bf006
+    taskid: 44fa9e2a-102e-4b66-8d3e-f67851fd746f
     timertriggers: []
     type: regular
     view: |-
@@ -154,13 +156,13 @@ tasks:
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
-      id: 169916a6-e9bf-49ae-8231-be99b5270fac
+      id: eb37edb9-1c62-465a-8142-2b4acfd5551b
       iscommand: false
       name: GenericPolling
       playbookId: GenericPolling
       type: playbook
       version: -1
-    taskid: 169916a6-e9bf-49ae-8231-be99b5270fac
+    taskid: eb37edb9-1c62-465a-8142-2b4acfd5551b
     timertriggers: []
     type: playbook
     view: |-
@@ -193,13 +195,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Gets session data.
-      id: 3601d920-0582-4a25-8e17-e41f8627d0d7
+      id: 5dff1f92-539e-4f8b-82e1-941baadb9876
       iscommand: true
       name: Get Session
       script: VBR REST API|||veeam-vbr-get-session
       type: regular
       version: -1
-    taskid: 3601d920-0582-4a25-8e17-e41f8627d0d7
+    taskid: 5dff1f92-539e-4f8b-82e1-941baadb9876
     timertriggers: []
     type: regular
     view: |-
@@ -249,12 +251,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: c46beaa4-2644-4553-88f4-95cc9dfb8b10
+      description: Check Session State.
+      id: 63b63ff2-ec6f-4229-837e-ca107fb0b263
       iscommand: false
       name: Check Session State
       type: condition
       version: -1
-    taskid: c46beaa4-2644-4553-88f4-95cc9dfb8b10
+    taskid: 63b63ff2-ec6f-4229-837e-ca107fb0b263
     timertriggers: []
     type: condition
     view: |-
@@ -280,12 +283,12 @@ tasks:
     task:
       brand: ""
       description: Returns an error if disk publishing cannot be stopped.
-      id: 3752ba3d-6a0b-4ca1-8e74-6afe68006f25
+      id: 813d995e-6340-4740-8c30-945430bcd1b6
       iscommand: false
       name: Failed
       type: condition
       version: -1
-    taskid: 3752ba3d-6a0b-4ca1-8e74-6afe68006f25
+    taskid: 813d995e-6340-4740-8c30-945430bcd1b6
     timertriggers: []
     type: condition
     view: |-
@@ -307,12 +310,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: b8cecbac-ba01-4496-80ed-5b8fef35bda3
+      id: 40c266dc-79e0-4ef2-850d-0f90a24bc07d
       iscommand: false
       name: Done
       type: title
       version: -1
-    taskid: b8cecbac-ba01-4496-80ed-5b8fef35bda3
+      description: ''
+    taskid: 40c266dc-79e0-4ef2-850d-0f90a24bc07d
     timertriggers: []
     type: title
     view: |-
@@ -337,12 +341,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: f4039a23-6095-4557-8960-d0fcc9e20821
+      id: 61b60d99-fd1e-4340-8547-e215dc921455
       iscommand: false
       name: Success
       type: title
       version: -1
-    taskid: f4039a23-6095-4557-8960-d0fcc9e20821
+      description: ''
+    taskid: 61b60d99-fd1e-4340-8547-e215dc921455
     timertriggers: []
     type: title
     view: |-
@@ -375,13 +380,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Stops publishing of disk content and unmounts published disks.
-      id: 16975cd6-5e29-4398-89e4-a8f7cc598232
+      id: e224def1-db67-4263-86fd-f201421f5c06
       iscommand: true
       name: Stop Disk Publishing
       script: VBR REST API|||veeam-vbr-stop-disk-publishing
       type: regular
       version: -1
-    taskid: 16975cd6-5e29-4398-89e4-a8f7cc598232
+    taskid: e224def1-db67-4263-86fd-f201421f5c06
     timertriggers: []
     type: regular
     view: |-
@@ -392,7 +397,6 @@ tasks:
         }
       }
 version: -1
-fromversion: 6.10.0
 view: |-
   {
     "linkLabelsPosition": {

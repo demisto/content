@@ -42,9 +42,9 @@ Generic access to supported Veeam Backup & Replication REST API endpoints to ext
 
 ## Screenshots
 
-![The XSOAR Dashboard](./doc_files/Veeam_XSOAR_Dashboard.png)
+![The XSOAR Dashboard](doc_files/Veeam_XSOAR_Dashboard.png)
 
-![Veeam - Start Instant VM Recovery Automatically](./doc_files/Veeam_XSOAR_Playbooks.png)
+![Veeam - Start Instant VM Recovery Automatically](doc_files/Veeam_XSOAR_Playbooks.png)
 </~XSOAR>
 <~XSIAM>
 Security teams rarely have visibility into what is happening inside the backup environment. Malware detections, suspicious restore activity, configuration changes, and compliance gaps sit in tools owned by backup administrators, so they never reach the SOC, and analysts lose time chasing that context in the middle of an incident. 
@@ -94,7 +94,7 @@ The documentation also includes examples of correlation rules for Veeam security
 
 ## Screenshots
 
-![The Security Dashboard](./doc_files/Veeam_Security_Activities_Dashboard_image.png)
+![The Security Dashboard](doc_files/Veeam_Security_Activities_Dashboard_image.png)
 
-![The Monitoring Dashboard](./doc_files/Veeam_Data_Platform_Monitoring_Dashboard_image.png)
+![The Monitoring Dashboard](doc_files/Veeam_Data_Platform_Monitoring_Dashboard_image.png)
 </~XSIAM>

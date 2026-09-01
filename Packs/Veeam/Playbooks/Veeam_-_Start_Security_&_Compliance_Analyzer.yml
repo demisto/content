@@ -14,6 +14,7 @@ name: Veeam - Start Security & Compliance Analyzer
 outputs: []
 quiet: true
 starttaskid: "0"
+fromversion: "6.10.0"
 tasks:
   "0":
     continueonerrortype: ""
@@ -30,11 +31,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 7f718a79-ae60-4d14-82d8-f0554cd2f3bf
+      id: 46ec7841-b166-4be6-83f0-50df819243e0
       iscommand: false
       name: ""
       version: -1
-    taskid: 7f718a79-ae60-4d14-82d8-f0554cd2f3bf
+      description: ''
+    taskid: 46ec7841-b166-4be6-83f0-50df819243e0
     timertriggers: []
     type: start
     view: |-
@@ -65,13 +67,13 @@ tasks:
       brand: VBR REST API
       description: Starts the Security & Compliance Analyzer scan. The command creates
         a new session and returns its details.
-      id: d307623a-425b-4989-860d-e2debbf53754
+      id: 0cfc81ad-8920-4ee5-8eb4-2b4677aac975
       iscommand: true
       name: Start Scan Session
       script: VBR REST API|||veeam-vbr-start-security-analyzer
       type: regular
       version: -1
-    taskid: d307623a-425b-4989-860d-e2debbf53754
+    taskid: 0cfc81ad-8920-4ee5-8eb4-2b4677aac975
     timertriggers: []
     type: regular
     view: |-
@@ -105,13 +107,13 @@ tasks:
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      id: 79890fcc-3c99-4044-8eb3-3e17aacf076d
+      id: e1e3bd5a-a34f-4c02-8bdb-1d1167fb42ca
       iscommand: false
       name: Clear Context Data
       script: DeleteContext
       type: regular
       version: -1
-    taskid: 79890fcc-3c99-4044-8eb3-3e17aacf076d
+    taskid: e1e3bd5a-a34f-4c02-8bdb-1d1167fb42ca
     timertriggers: []
     type: regular
     view: |-
@@ -161,13 +163,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: d071aadb-d198-4349-864c-07f1fa36f685
+      id: 8d10047b-8cf9-4c8d-87aa-d3d6df2ed30a
       iscommand: false
       name: GenericPolling
       playbookId: GenericPolling
       type: playbook
       version: -1
-    taskid: d071aadb-d198-4349-864c-07f1fa36f685
+      description: ''
+    taskid: 8d10047b-8cf9-4c8d-87aa-d3d6df2ed30a
     timertriggers: []
     type: playbook
     view: |-
@@ -197,13 +200,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Get Security & Compliance Analyzer last run details.
-      id: 4c647109-d9b8-4e11-8924-fc251a8b98a1
+      id: 28b30cd4-c2f3-4434-8900-8dee2ebf3cb0
       iscommand: true
       name: Get Last Scan Session
       script: VBR REST API|||veeam-vbr-get-security-analyzer-last-run
       type: regular
       version: -1
-    taskid: 4c647109-d9b8-4e11-8924-fc251a8b98a1
+    taskid: 28b30cd4-c2f3-4434-8900-8dee2ebf3cb0
     timertriggers: []
     type: regular
     view: |-
@@ -253,12 +256,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 063075c0-2c8a-49f3-85b9-b51efe668944
+      description: Check Last Session State.
+      id: 415c82f9-8d53-4fd0-88ac-eaeca3487911
       iscommand: false
       name: Check Last Session State
       type: condition
       version: -1
-    taskid: 063075c0-2c8a-49f3-85b9-b51efe668944
+    taskid: 415c82f9-8d53-4fd0-88ac-eaeca3487911
     timertriggers: []
     type: condition
     view: |-
@@ -283,13 +287,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 8a272e3b-0734-4900-885a-693699e9fc92
+      id: fa2be071-96e5-47db-8b5a-d51dc19bd598
       iscommand: false
       name: |
         Success
       type: title
       version: -1
-    taskid: 8a272e3b-0734-4900-885a-693699e9fc92
+      description: ''
+    taskid: fa2be071-96e5-47db-8b5a-d51dc19bd598
     timertriggers: []
     type: title
     view: |-
@@ -316,12 +321,12 @@ tasks:
       brand: ""
       description: Returns an error if a Security & Compliance Analyzer scan session
         has not been completed.
-      id: 7d3dae4e-48c6-4a3a-8b65-6a8d846c59f8
+      id: b01d03ca-ca3d-48a6-8cc0-17d260d607ca
       iscommand: false
       name: Failed
       type: condition
       version: -1
-    taskid: 7d3dae4e-48c6-4a3a-8b65-6a8d846c59f8
+    taskid: b01d03ca-ca3d-48a6-8cc0-17d260d607ca
     timertriggers: []
     type: condition
     view: |-
@@ -351,13 +356,13 @@ tasks:
     task:
       brand: VBR REST API
       description: Gets the list of best practices and their status.
-      id: 9bcb32ec-3751-4bc6-8098-da4267ae8480
+      id: c1b13b85-d8f5-4246-82a1-5913cb29145a
       iscommand: true
       name: Get Best Practices
       script: VBR REST API|||veeam-vbr-get-security-analyzer-best-practices
       type: regular
       version: -1
-    taskid: 9bcb32ec-3751-4bc6-8098-da4267ae8480
+    taskid: c1b13b85-d8f5-4246-82a1-5913cb29145a
     timertriggers: []
     type: regular
     view: |-
@@ -379,12 +384,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 169daad6-7d99-4ddc-8312-df8e36a26ebd
+      id: e8696709-c8aa-4349-8618-f70b520c5347
       iscommand: false
       name: Done
       type: title
       version: -1
-    taskid: 169daad6-7d99-4ddc-8312-df8e36a26ebd
+      description: ''
+    taskid: e8696709-c8aa-4349-8618-f70b520c5347
     timertriggers: []
     type: title
     view: |-
@@ -395,7 +401,6 @@ tasks:
         }
       }
 version: -1
-fromversion: 6.10.0
 view: |-
   {
     "linkLabelsPosition": {

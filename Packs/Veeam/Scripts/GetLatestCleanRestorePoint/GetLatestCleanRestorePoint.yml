@@ -1,5 +1,5 @@
 args:
-- description: Array of latest restore points
+- description: Array of latest restore points.
   isArray: true
   name: data
   required: true
@@ -10,7 +10,6 @@ dockerimage: demisto/python3:3.12.13.10116658
 fromversion: 6.10.0
 enabled: true
 engineinfo: {}
-mainengineinfo: {}
 name: GetLatestCleanRestorePoint
 outputs:
 - contextPath: Veeam.LatestCleanRestorePoint.id
@@ -19,7 +18,6 @@ outputs:
 - contextPath: Veeam.LatestCleanRestorePoint.backupId
   description: Backup ID of the latest clean restore point.
   type: string
-pswd: ""
 runas: DBotWeakRole
 runonce: false
 script: ''
@@ -28,3 +26,5 @@ subtype: python3
 tags:
 - Utilities
 type: python
+tests:
+- No tests (auto formatted)

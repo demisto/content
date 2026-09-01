@@ -20,9 +20,6 @@
         "419": "Recon Threat State",
         "Incident Fetch Error": "Incident Fetch Error"
     },
-    "locked": false,
-    "logicalVersion": 2,
-    "mapping": null,
     "name": "Veeam One Incidents Classifier",
     "transformer": {
         "simple": "incident_type"

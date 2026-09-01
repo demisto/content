@@ -1,5 +1,4 @@
 {
-	"cacheVersn": 0,
 	"close": {
 		"sections": [
 			{
@@ -48,10 +47,7 @@
 	},
 	"definitionId": "",
 	"description": "Security \u0026 Compliance Analyzer",
-	"detached": false,
-	"details": null,
 	"detailsV2": {
-		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -207,15 +203,6 @@
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "veeamsecurityanalyzerbestpractice",
-								"height": 53,
-								"id": "91aad2d0-277e-11f1-880f-a3baf7dc5c86",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
 								"fieldId": "veeambestpracticedetails",
 								"height": 53,
 								"id": "9448b660-9051-11f1-80e2-41a7410e1ac0",
@@ -286,16 +273,6 @@
 				"id": "workPlan",
 				"name": "Work Plan",
 				"type": "workPlan"
-			},
-			{
-				"id": "evidenceBoard",
-				"name": "Evidence Board",
-				"type": "evidenceBoard"
-			},
-			{
-				"id": "relatedIncidents",
-				"name": "Related Incidents",
-				"type": "relatedIncidents"
 			},
 			{
 				"id": "canvas",
@@ -390,17 +367,9 @@
 			}
 		]
 	},
-	"fromServerVersion": "6.10.0",
 	"group": "incident",
 	"id": "Security \u0026 Compliance Analyzer",
-	"indicatorsDetails": null,
-	"indicatorsQuickView": null,
-	"itemVersion": "",
-	"locked": false,
-	"mobile": null,
 	"name": "Security \u0026 Compliance Analyzer",
-	"packID": "",
-	"packName": "",
 	"quickView": {
 		"sections": [
 			{
@@ -507,9 +476,11 @@
 			}
 		]
 	},
-	"quickViewV2": null,
 	"system": false,
-	"toServerVersion": "99.99.99",
     "fromVersion": "6.10.0",
-	"version": -1
+	"version": -1,
+    "marketplaces": [
+        "xsoar",
+		"platform"
+    ]
 }

@@ -115,7 +115,7 @@ configuration:
   required: false
   type: 15
 description: Veeam Backup & Replication REST API allows you to query information about Veeam Backup & Replication entities and perform operations with these entities using HTTP requests and standard HTTP methods.
-display: Veeam Backup & Replication REST API (Partner Contribution)
+display: Veeam Backup & Replication REST API
 name: VBR REST API
 script:
   commands:
@@ -125,10 +125,10 @@ script:
       required: true
     - description: Machine FQDN.
       name: machine_fqdn
-      required: true
+      required: false
     - description: Machine IPv4 address.
       name: machine_ipv4
-      required: true
+      required: false
     - description: Machine IPv6 address.
       name: machine_ipv6
     - description: 'Machine BIOS UUID in the 8-4-4-4-12 format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.'
@@ -798,6 +798,8 @@ script:
     - contextPath: Veeam.VBR.start_hv_recovery.relatedSessionId
       description: ID of the related session.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments: []
     description: Starts the Security & Compliance Analyzer scan. The command creates a new session and returns its details.
     name: veeam-vbr-start-security-analyzer
@@ -1040,6 +1042,8 @@ script:
       type: String
     - contextPath: Veeam.VBR.start_vsphere_quick_backup.result
       description: Session result.
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: Number of authorization events to skip.
       name: skip
