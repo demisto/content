@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: SecureAuthIdentityPlatform_ModelingRule
-name: SecureAuthIdentityPlatform Modeling Rule
+id: SecureAuth_IdP_ModelingRule
+name: SecureAuth IdP Modeling Rule
 rules: ''
 schema: ''
 tags: 

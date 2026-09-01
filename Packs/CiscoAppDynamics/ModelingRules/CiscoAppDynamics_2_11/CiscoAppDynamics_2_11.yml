@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: CiscoAppDynamics_ModelingRule
-name: CiscoAppDynamics Modeling Rule
+id: Cisco_AppDynamics_ModelingRule
+name: Cisco AppDynamics Modeling Rule
 rules: ''
 schema: ''
 tags: ''

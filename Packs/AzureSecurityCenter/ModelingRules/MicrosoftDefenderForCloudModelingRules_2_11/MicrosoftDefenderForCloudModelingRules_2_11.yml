@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: AzureSecurityCenter_ModelingRule
-name: AzureSecurityCenter Modeling Rule
+id: defender_for_cloud_microsoft_modeling_rule
+name: Defender For Cloud Microsoft Modeling Rule
 rules: ''
 schema: ''
 tags: defender_for_cloud
