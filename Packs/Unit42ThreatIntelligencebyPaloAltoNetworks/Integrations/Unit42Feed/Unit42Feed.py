@@ -1125,7 +1125,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
     if last_run.get("pending_units"):
         start_time = last_run.get("start_time") or default_start
     else:
-        start_time = last_run.get("last_successful_run", default_start)
+        start_time = last_run.get("last_successful_run") or default_start
 
     # Preserve the timestamp of the run that initiated the current pending cycle.
     cycle_start_time = last_run.get("cycle_start_time") or current_time.strftime(DATE_FORMAT)
