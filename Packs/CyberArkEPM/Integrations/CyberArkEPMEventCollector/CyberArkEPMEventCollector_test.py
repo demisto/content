@@ -467,6 +467,100 @@ def test_oauth_uses_server_url_as_base_url(mocker, requests_mock):
     assert client._base_url == f"{server_url}/EPM/API/26.7.0/"
 
 
+@pytest.mark.parametrize(
+    "epm_api_version, expected_version",
+    [
+        pytest.param(None, "26.7.0", id="not_configured_falls_back_to_default"),
+        pytest.param("", "26.7.0", id="empty_string_falls_back_to_default"),
+        pytest.param("26.8.0", "26.8.0", id="custom_three_segment_version"),
+        pytest.param("26.8", "26.8", id="custom_two_segment_version"),
+        pytest.param(" /26.8.0/ ", "26.8.0", id="surrounding_whitespace_and_slashes_are_trimmed"),
+    ],
+)
+def test_oauth_base_url_uses_configured_epm_api_version(mocker, requests_mock, epm_api_version, expected_version):
+    """
+    Given:
+        - An Idira OAuth configuration with the *EPM API Version* parameter set to various values,
+          including unset/empty, a three-segment version, a two-segment version, and a value
+          padded with whitespace and slashes.
+
+    When:
+        - Building the Client (which performs the OAuth authentication flow).
+
+    Then:
+        - The EPM SET API base URL embeds the configured version verbatim, apart from trimming
+          surrounding whitespace and slashes.
+        - When the parameter is unset or empty, the default version is used, so existing instances
+          keep their current behavior.
+    """
+    from CyberArkEPMEventCollector import Client
+
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    server_url = "https://example.epm.cyberark.com"
+
+    requests_mock.post(f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "TOKEN123", "expires_in": 900})
+
+    client = Client(
+        base_url="",
+        username="user",
+        password="pass",
+        application_id="1",
+        auth_method="Idira OAuth",
+        identity_url=identity_url,
+        web_app_id="web-app-1",
+        server_url=server_url,
+        epm_api_version=epm_api_version,
+    )
+
+    assert client._base_url == f"{server_url}/EPM/API/{expected_version}/"
+
+
+def test_oauth_data_call_uses_configured_epm_api_version(mocker, requests_mock):
+    """
+    Given:
+        - An Idira OAuth Client configured with a non-default EPM API version.
+
+    When:
+        - A data request is issued against the Sets endpoint.
+
+    Then:
+        - The request is sent to the versioned path built from the configured version, proving the
+          parameter reaches the wire and is not only stored on the client.
+    """
+    from CyberArkEPMEventCollector import Client
+
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    server_url = "https://example.epm.cyberark.com"
+
+    requests_mock.post(f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "TOKEN123", "expires_in": 900})
+    client = Client(
+        base_url="",
+        username="user",
+        password="pass",
+        application_id="1",
+        auth_method="Idira OAuth",
+        identity_url=identity_url,
+        web_app_id="web-app-1",
+        server_url=server_url,
+        epm_api_version="26.8",
+    )
+
+    data_matcher = requests_mock.get(f"{server_url}/EPM/API/26.8/Sets", json={"Sets": [{"Id": "id1", "Name": "set_name1"}]})
+
+    result = client.get_set_list()
+
+    assert result == {"Sets": [{"Id": "id1", "Name": "set_name1"}]}
+    assert data_matcher.call_count == 1
+
+
 def test_oauth_missing_server_url_raises(mocker, requests_mock):
     """
     Given:

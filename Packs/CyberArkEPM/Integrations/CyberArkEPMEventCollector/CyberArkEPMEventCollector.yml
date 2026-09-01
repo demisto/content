@@ -20,7 +20,7 @@ configuration:
   - EPM
   - SAML
   section: Connect
-- additionalinfo: 'The Server URL. Required for OAuth 2.0 only. For example: https://example.epm.cyberark.com/.'  
+- additionalinfo: 'The Server URL. Required for OAuth 2.0 only. For example: https://example.epm.cyberark.com/.'
   display: Server URL (only for Idira Oauth)
   name: server_url
   required: false
@@ -32,15 +32,23 @@ configuration:
   required: false
   type: 0
   section: Connect
-- additionalinfo: 'The CyberArk Identity FQDN, e.g. https://<sub-domain>.id.cyberark.cloud. Required for Idira OAuth authentication only. Used only to obtain the OAuth token; must not include a /oauth2/token suffix.'  
+- additionalinfo: 'The CyberArk Identity FQDN, e.g. https://<sub-domain>.id.cyberark.cloud. Required for Idira OAuth authentication only. Used only to obtain the OAuth token; must not include a /oauth2/token suffix.'
   display: Identity URL
   name: identity_url
   required: false
   type: 0
   section: Connect
-- additionalinfo: 'The registered OAuth2 web-app identifier in CyberArk Identity Administration, used as a URL path segment on the token endpoint (/oauth2/token/<web_app_id>). Required for Idira OAuth authentication only.'  
+- additionalinfo: 'The registered OAuth2 web-app identifier in CyberArk Identity Administration, used as a URL path segment on the token endpoint (/oauth2/token/<web_app_id>). Required for Idira OAuth authentication only.'
   display: Web App ID
   name: web_app_id
+  required: false
+  type: 0
+  section: Connect
+- additionalinfo: 'The EPM API version used as a URL path segment in the data-call paths (/EPM/API/<Version>/Sets). Applies to the Idira OAuth authentication method only. CyberArk documents the format as x.x.x.x (four dot-separated numbers); shorter forms such as 26.7.0 are also accepted. Change this only if your tenant requires a version other than the default.'
+  advanced: true
+  defaultvalue: 26.7.0
+  display: EPM API Version
+  name: epm_api_version
   required: false
   type: 0
   section: Connect

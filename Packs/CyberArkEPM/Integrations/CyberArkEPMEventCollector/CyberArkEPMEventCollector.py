@@ -40,9 +40,14 @@ class Config:
     VALID_UNTIL = "valid_until"
     DEFAULT_TOKEN_TTL_SECONDS = 6 * 60 * 60
     CACHE_BUFFER_SECONDS = 60
-    # EPM SET API version segment used in the OAuth data-call paths, e.g.
-    # https://<tenant>/EPM/API/<version>/Sets. Only applies to the Idira OAuth flow.
-    EPM_API_VERSION = "26.7.0"
+    # Default EPM API version segment used in the OAuth data-call paths, e.g.
+    # https://<EPM_Server>/EPM/API/<Version>/Sets. Only applies to the Idira OAuth flow.
+    # CyberArk documents the version format as "x.x.x.x" (four dot-separated numbers) and, when the
+    # segment is omitted, the server falls back to the latest version. See
+    # https://docs.cyberark.com/epm/latest/en/content/webservices/getsetslist.htm
+    # Overridable per instance via the *EPM API Version* parameter, so operators can follow the
+    # vendor's version cadence without waiting for a content release.
+    DEFAULT_EPM_API_VERSION = "26.7.0"
 
     # Context outputs prefix per event type. The *-get-events commands expose the parsed/normalized
     # events under these prefixes so operators can verify the normalization while debugging.
@@ -73,6 +78,7 @@ class Client(BaseClient):
         identity_url=None,
         web_app_id=None,
         server_url=None,
+        epm_api_version=None,
     ):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self._headers = {
@@ -90,6 +96,10 @@ class Client(BaseClient):
         # https://example.epm.cyberark.com/). For the EPM/SAML methods the base URL is resolved
         # from the login response within the code.
         self.server_url = server_url
+        # The version segment of the EPM API path. Passed through as-is (only surrounding
+        # whitespace/slashes are trimmed) rather than shape-validated, since CyberArk's documented
+        # "x.x.x.x" format is broader than the value we ship as the default.
+        self.epm_api_version = (epm_api_version or Config.DEFAULT_EPM_API_VERSION).strip().strip("/")
         # Resolve the authentication method. When `auth_method` is not provided (e.g. instances
         # created before the parameter existed), fall back to the legacy behavior: SAML when both
         # SAML URLs are set, otherwise EPM. This keeps existing instances backward compatible.
@@ -179,7 +189,8 @@ class Client(BaseClient):
         if not self.server_url:
             raise DemistoException("Server URL is required for Idira OAuth authentication.")
         access_token = self._get_access_token(force_refresh=force_refresh)
-        self._base_url = f"{self.server_url.rstrip('/')}/EPM/API/{Config.EPM_API_VERSION}/"
+        self._base_url = f"{self.server_url.rstrip('/')}/EPM/API/{self.epm_api_version}/"
+        demisto.debug(f"[oauth_auth_to_cyber_ark] Using EPM SET API base URL: {self._base_url}")
         self._headers["Authorization"] = f"Bearer {access_token}"
 
     def _refresh_oauth_token(self) -> None:
@@ -747,6 +758,7 @@ def main():  # pragma: no cover
     identity_url = params.get("identity_url")
     web_app_id = params.get("web_app_id")
     server_url = params.get("server_url")
+    epm_api_version = params.get("epm_api_version")
     username = params.get("credentials").get("identifier")
     password = params.get("credentials").get("password")
 
@@ -796,6 +808,7 @@ def main():  # pragma: no cover
             identity_url=identity_url,
             web_app_id=web_app_id,
             server_url=server_url,
+            epm_api_version=epm_api_version,
         )
 
         set_ids = get_set_ids_by_set_names(client, set_names)
