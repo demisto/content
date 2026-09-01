@@ -18,6 +18,11 @@ alter
     xdm.source.user.upn        = json_extract_scalar(actor, "$.session.user.email"),
     xdm.source.identity.upn        = json_extract_scalar(actor, "$.session.user.email"),
     xdm.source.user.identifier = if(type ~= "^login\.",
+        json_extract_scalar(actor, "$.session.user.id"),
+        coalesce(
+            json_extract_scalar(actor, "$.session.user.id"),
+            json_extract_scalar(actor, "$.api_key.user.id"),
+            json_extract_scalar(actor, "$.api_key.service_account.id"))),
     xdm.source.identity.identifier = if(type ~= "^login\.",
         json_extract_scalar(actor, "$.session.user.id"),
         coalesce(
@@ -25,12 +30,20 @@ alter
             json_extract_scalar(actor, "$.api_key.user.id"),
             json_extract_scalar(actor, "$.api_key.service_account.id"))),
     xdm.source.user.username   = if(type ~= "^login\.",
+        json_extract_scalar(actor, "$.session.user.email"),
+        coalesce(
+            json_extract_scalar(actor, "$.session.user.email"),
+            json_extract_scalar(actor, "$.api_key.user.email"))),
     xdm.source.identity.username   = if(type ~= "^login\.",
         json_extract_scalar(actor, "$.session.user.email"),
         coalesce(
             json_extract_scalar(actor, "$.session.user.email"),
             json_extract_scalar(actor, "$.api_key.user.email"))),
     xdm.source.user.identity_type = if(type ~= "^login\.", null,
+        if(json_extract_scalar(actor, "$.type") = "session"
+                or (json_extract_scalar(actor, "$.type") = "api_key" and json_extract_scalar(actor, "$.api_key.type") = "user"),
+            XDM_CONST.IDENTITY_TYPE_USER,
+            XDM_CONST.IDENTITY_TYPE_APPLICATION)),
     xdm.source.identity.identity_type = if(type ~= "^login\.", null,
         if(json_extract_scalar(actor, "$.type") = "session"
                 or (json_extract_scalar(actor, "$.type") = "api_key" and json_extract_scalar(actor, "$.api_key.type") = "user"),
@@ -119,6 +132,8 @@ alter
         action_result = "ERROR",   "OTHER",
         "NOT_SPECIFIED"),
     xdm.source.user.identifier = coalesce(
+        json_extract_scalar(actor, "$.user_id"),
+        json_extract_scalar(actor, "$.redacted_id")),
     xdm.source.identity.identifier = coalesce(
         json_extract_scalar(actor, "$.user_id"),
         json_extract_scalar(actor, "$.redacted_id")),
@@ -127,6 +142,9 @@ alter
     xdm.source.user.username   = json_extract_scalar(actor, "$.user_email"),
     xdm.source.identity.username   = json_extract_scalar(actor, "$.user_email"),
     xdm.source.user.user_type  = if(
+        json_extract_scalar(actor, "$.type") = "ACCOUNT_USER", XDM_CONST.USER_TYPE_REGULAR,
+        json_extract_scalar(actor, "$.type") = "API_KEY",      XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        null),
     xdm.source.identity.user_type  = if(
         json_extract_scalar(actor, "$.type") = "ACCOUNT_USER", XDM_CONST.USER_TYPE_REGULAR,
         json_extract_scalar(actor, "$.type") = "API_KEY",      XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
