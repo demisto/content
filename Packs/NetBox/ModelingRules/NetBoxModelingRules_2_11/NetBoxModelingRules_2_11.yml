@@ -1,5 +1,5 @@
 fromversion: 8.15.0
-id: NetBox_IRM_modeling_rule
+id: NetBox_IRM_ModelingRule
 name: NetBox IRM Modeling Rule
 rules: ''
 schema: ''
