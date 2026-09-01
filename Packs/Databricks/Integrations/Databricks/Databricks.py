@@ -1,14 +1,12 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from CommonServerUserPython import *  # noqa: F401
 
 import json
 import traceback
-import urllib3
-
-urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+MAX_FETCH_LIMIT = 200
 
 
 def parse_json_arg(args: dict, key: str):
@@ -20,7 +18,29 @@ def parse_json_arg(args: dict, key: str):
     return json.loads(val)
 
 
-class DatabricksClient(BaseClient):
+EPOCH_FIELDS = {
+    'start_time', 'created_time', 'creation_time', 'modification_time',
+    'expiry_time', 'terminated_time', 'last_active_time',
+    'creation_timestamp', 'last_updated_timestamp',
+}
+
+
+def convert_epoch_fields(data, fields=None):
+    """Convert epoch-ms timestamp fields to ISO 8601 strings in-place."""
+    target_fields = fields or EPOCH_FIELDS
+    if isinstance(data, list):
+        for item in data:
+            convert_epoch_fields(item, target_fields)
+        return data
+    if isinstance(data, dict):
+        for key in target_fields:
+            val = data.get(key)
+            if isinstance(val, (int, float)) and val > 0:
+                data[key] = timestamp_to_datestring(val)
+    return data
+
+
+class DatabricksClient(ContentClient):
 
     # ---- Clusters (API 2.1) ----
 
@@ -783,6 +803,7 @@ class DatabricksClient(BaseClient):
 def cluster_get_command(client: DatabricksClient, args: dict) -> CommandResults:
     cluster_id = args['cluster_id']
     result = client.get_cluster(cluster_id)
+    convert_epoch_fields(result)
     return CommandResults(
         readable_output=tableToMarkdown('Cluster', result,
             headers=['cluster_id', 'cluster_name', 'state', 'creator_user_name',
@@ -798,6 +819,7 @@ def cluster_get_command(client: DatabricksClient, args: dict) -> CommandResults:
 def cluster_list_command(client: DatabricksClient, args: dict) -> CommandResults:
     response = client.list_clusters()
     clusters = response.get('clusters', [])
+    convert_epoch_fields(clusters)
     return CommandResults(
         readable_output=tableToMarkdown('Clusters', clusters,
             headers=['cluster_id', 'cluster_name', 'state', 'creator_user_name',
@@ -1116,6 +1138,7 @@ def command_cancel_command(client: DatabricksClient, args: dict) -> CommandResul
 
 def job_get_command(client: DatabricksClient, args: dict) -> CommandResults:
     result = client.get_job(args['job_id'])
+    convert_epoch_fields(result)
     return CommandResults(
         readable_output=tableToMarkdown('Job', result,
             headers=['job_id', 'creator_user_name', 'created_time'], removeNull=True),
@@ -1126,14 +1149,24 @@ def job_get_command(client: DatabricksClient, args: dict) -> CommandResults:
 
 
 def job_list_command(client: DatabricksClient, args: dict) -> CommandResults:
+    page = arg_to_number(args.get('page'))
+    page_size = arg_to_number(args.get('page_size'))
+    limit = arg_to_number(args.get('limit'))
+    if page is not None:
+        size = page_size or 50
+        offset = page * size
+        limit = size
+    else:
+        offset = arg_to_number(args.get('offset'))
     kwargs = assign_params(
-        limit=arg_to_number(args.get('limit')),
-        offset=arg_to_number(args.get('offset')),
+        limit=limit,
+        offset=offset,
         name=args.get('name'),
         expand_tasks=argToBoolean(args['expand_tasks']) if args.get('expand_tasks') else None,
     )
     response = client.list_jobs(**kwargs)
     jobs = response.get('jobs', [])
+    convert_epoch_fields(jobs)
     return CommandResults(
         readable_output=tableToMarkdown('Jobs', jobs,
             headers=['job_id', 'creator_user_name', 'created_time'], removeNull=True),
@@ -1292,6 +1325,7 @@ def pipeline_list_updates_command(client: DatabricksClient, args: dict) -> Comma
     kwargs = assign_params(max_results=arg_to_number(args.get('max_results')))
     response = client.list_pipeline_updates(args['pipeline_id'], **kwargs)
     updates = response.get('updates', [])
+    convert_epoch_fields(updates)
     return CommandResults(
         readable_output=tableToMarkdown('Pipeline Updates', updates,
             headers=['update_id', 'state', 'creation_time'], removeNull=True),
@@ -1304,6 +1338,7 @@ def pipeline_list_updates_command(client: DatabricksClient, args: dict) -> Comma
 def pipeline_get_update_command(client: DatabricksClient, args: dict) -> CommandResults:
     result = client.get_pipeline_update(args['pipeline_id'], args['update_id'])
     update = result.get('update', result)
+    convert_epoch_fields(update)
     return CommandResults(
         readable_output=tableToMarkdown('Pipeline Update', update,
             headers=['update_id', 'state', 'creation_time'], removeNull=True),
@@ -1323,6 +1358,7 @@ def pipeline_apply_environment_command(client: DatabricksClient, args: dict) -> 
 
 def dbfs_get_status_command(client: DatabricksClient, args: dict) -> CommandResults:
     result = client.dbfs_get_status(args['path'])
+    convert_epoch_fields(result)
     return CommandResults(
         readable_output=tableToMarkdown('DBFS Status', result,
             headers=['path', 'is_dir', 'file_size', 'modification_time'], removeNull=True),
@@ -1335,6 +1371,7 @@ def dbfs_get_status_command(client: DatabricksClient, args: dict) -> CommandResu
 def dbfs_list_command(client: DatabricksClient, args: dict) -> CommandResults:
     response = client.dbfs_list(args['path'])
     files = response.get('files', [])
+    convert_epoch_fields(files)
     return CommandResults(
         readable_output=tableToMarkdown('DBFS Contents', files,
             headers=['path', 'is_dir', 'file_size', 'modification_time'], removeNull=True),
@@ -1855,6 +1892,7 @@ def sql_query_history_list_command(client: DatabricksClient, args: dict) -> Comm
 def serving_endpoint_list_command(client: DatabricksClient, args: dict) -> CommandResults:
     response = client.list_serving_endpoints()
     endpoints = response.get('endpoints', [])
+    convert_epoch_fields(endpoints)
     return CommandResults(
         readable_output=tableToMarkdown('Serving Endpoints', endpoints,
             headers=['name', 'creator', 'creation_timestamp', 'state'], removeNull=True),
@@ -1866,6 +1904,7 @@ def serving_endpoint_list_command(client: DatabricksClient, args: dict) -> Comma
 
 def serving_endpoint_get_command(client: DatabricksClient, args: dict) -> CommandResults:
     result = client.get_serving_endpoint(args['name'])
+    convert_epoch_fields(result)
     return CommandResults(
         readable_output=tableToMarkdown('Serving Endpoint', result,
             headers=['name', 'creator', 'creation_timestamp', 'state'], removeNull=True),
@@ -1995,6 +2034,7 @@ def mlflow_model_list_command(client: DatabricksClient, args: dict) -> CommandRe
     )
     response = client.list_mlflow_models(**kwargs)
     models = response.get('registered_models', [])
+    convert_epoch_fields(models)
     return CommandResults(
         readable_output=tableToMarkdown('MLflow Models', models,
             headers=['name', 'creation_timestamp', 'last_updated_timestamp',
@@ -2009,6 +2049,7 @@ def mlflow_model_list_command(client: DatabricksClient, args: dict) -> CommandRe
 def mlflow_model_get_command(client: DatabricksClient, args: dict) -> CommandResults:
     result = client.get_mlflow_model(args['name'])
     model = result.get('registered_model_databricks', result)
+    convert_epoch_fields(model)
     return CommandResults(
         readable_output=tableToMarkdown('MLflow Model', model,
             headers=['name', 'creation_timestamp', 'last_updated_timestamp',
@@ -2029,6 +2070,7 @@ def mlflow_model_version_create_command(client: DatabricksClient, args: dict) ->
     )
     result = client.create_mlflow_model_version(**kwargs)
     version = result.get('model_version', result)
+    convert_epoch_fields(version)
     return CommandResults(
         readable_output=f"Model version created: {version.get('name')} v{version.get('version')}",
         outputs_prefix='Databricks.MLflowModelVersion',
@@ -2040,6 +2082,7 @@ def mlflow_model_version_create_command(client: DatabricksClient, args: dict) ->
 def mlflow_model_version_get_command(client: DatabricksClient, args: dict) -> CommandResults:
     result = client.get_mlflow_model_version(args['name'], args['version'])
     version = result.get('model_version', result)
+    convert_epoch_fields(version)
     return CommandResults(
         readable_output=tableToMarkdown('MLflow Model Version', version,
             headers=['name', 'version', 'creation_timestamp', 'current_stage',
@@ -2060,6 +2103,7 @@ def mlflow_model_version_search_command(client: DatabricksClient, args: dict) ->
     )
     response = client.search_mlflow_model_versions(**kwargs)
     versions = response.get('model_versions', [])
+    convert_epoch_fields(versions)
     return CommandResults(
         readable_output=tableToMarkdown('MLflow Model Versions', versions,
             headers=['name', 'version', 'current_stage', 'status', 'source'],
@@ -2571,6 +2615,7 @@ def permissions_update_command(client: DatabricksClient, args: dict) -> CommandR
 def token_list_command(client: DatabricksClient, args: dict) -> CommandResults:
     response = client.list_tokens()
     tokens = response.get('token_infos', [])
+    convert_epoch_fields(tokens)
     return CommandResults(
         readable_output=tableToMarkdown('Tokens', tokens,
             headers=['token_id', 'creation_time', 'expiry_time', 'comment'], removeNull=True),
@@ -2620,6 +2665,7 @@ def secret_delete_command(client: DatabricksClient, args: dict) -> CommandResult
 def secret_list_command(client: DatabricksClient, args: dict) -> CommandResults:
     response = client.list_secrets(args['scope'])
     secrets = response.get('secrets', [])
+    convert_epoch_fields(secrets)
     return CommandResults(
         readable_output=tableToMarkdown('Secrets', secrets,
             headers=['key', 'last_updated_timestamp'], removeNull=True),
@@ -2898,26 +2944,33 @@ def ip_access_list_delete_command(client: DatabricksClient, args: dict) -> Comma
 # =====================================================================
 
 def fetch_incidents(client: DatabricksClient, params: dict, last_run: dict) -> tuple:
-    max_fetch = arg_to_number(params.get('max_fetch', 50))
+    max_fetch = min(arg_to_number(params.get('max_fetch', 50)) or 50, MAX_FETCH_LIMIT)
     first_fetch = params.get('first_fetch', '3 days')
     fetch_types = argToList(params.get('fetch_types', []))
 
     last_fetch_time = last_run.get('last_fetch_time')
+    seen_ids: list = last_run.get('seen_ids', [])
+
     if not last_fetch_time:
         first_fetch_dt = dateparser.parse(f'{first_fetch} ago')
         last_fetch_time = int(first_fetch_dt.timestamp() * 1000) if first_fetch_dt else 0
 
+    demisto.debug(f'fetch_incidents started: last_fetch_time={last_fetch_time}, max_fetch={max_fetch}, '
+                  f'seen_ids_count={len(seen_ids)}')
+
     incidents: list = []
     new_last_fetch = last_fetch_time
+    new_seen_ids: list = []
 
     if 'SQL Alerts' in fetch_types or not fetch_types:
         try:
             alerts_response = client.list_sql_alerts()
             alerts = alerts_response if isinstance(alerts_response, list) else alerts_response.get('results', [])
             for alert in alerts:
+                alert_id = alert.get('id', '')
                 alert_time = alert.get('update_time') or alert.get('create_time', '')
                 alert_ts = date_to_timestamp(alert_time, date_format='%Y-%m-%dT%H:%M:%SZ') if alert_time else 0
-                if alert_ts and alert_ts > last_fetch_time:
+                if alert_ts and alert_ts >= last_fetch_time and alert_id not in seen_ids:
                     alert_name = alert.get('display_name') or alert.get('name') or alert.get('id', 'Unknown')
                     incidents.append({
                         'name': f"Databricks SQL Alert: {alert_name}",
@@ -2925,10 +2978,11 @@ def fetch_incidents(client: DatabricksClient, params: dict, last_run: dict) -> t
                         'rawJSON': json.dumps(alert),
                         'type': params.get('incidentType', 'Databricks Alert'),
                         'severity': IncidentSeverity.MEDIUM,
+                        '_id': alert_id,
+                        '_ts': alert_ts,
                     })
-                    new_last_fetch = max(new_last_fetch, alert_ts)
         except Exception:
-            demisto.debug('Failed to fetch SQL alerts, skipping.')
+            demisto.debug(f'Failed to fetch SQL alerts: {traceback.format_exc()}')
 
     if 'Failed Jobs' in fetch_types or not fetch_types:
         try:
@@ -2936,21 +2990,41 @@ def fetch_incidents(client: DatabricksClient, params: dict, last_run: dict) -> t
             for run in runs_response.get('runs', []):
                 result_state = run.get('state', {}).get('result_state', '')
                 if result_state in ('FAILED', 'TIMEDOUT', 'CANCELED'):
+                    run_id = str(run.get('run_id', ''))
                     run_time = run.get('start_time', 0)
-                    incidents.append({
-                        'name': f"Databricks Job Failed: {run.get('run_name', run.get('run_id', 'Unknown'))}",
-                        'occurred': timestamp_to_datestring(run_time),
-                        'rawJSON': json.dumps(run),
-                        'type': params.get('incidentType', 'Databricks Job Failure'),
-                        'severity': IncidentSeverity.MEDIUM,
-                    })
-                    new_last_fetch = max(new_last_fetch, run_time)
+                    if run_time >= last_fetch_time and run_id not in seen_ids:
+                        incidents.append({
+                            'name': f"Databricks Job Failed: {run.get('run_name', run.get('run_id', 'Unknown'))}",
+                            'occurred': timestamp_to_datestring(run_time),
+                            'rawJSON': json.dumps(run),
+                            'type': params.get('incidentType', 'Databricks Job Failure'),
+                            'severity': IncidentSeverity.MEDIUM,
+                            '_id': run_id,
+                            '_ts': run_time,
+                        })
         except Exception:
-            demisto.debug('Failed to fetch job runs, skipping.')
+            demisto.debug(f'Failed to fetch job runs: {traceback.format_exc()}')
 
     incidents = sorted(incidents, key=lambda x: x.get('occurred', ''))
     incidents = incidents[:max_fetch]
-    next_run = {'last_fetch_time': new_last_fetch}
+
+    inc_meta: list = []
+    for inc in incidents:
+        ts = inc.pop('_ts', 0)
+        inc_id = inc.pop('_id', '')
+        new_last_fetch = max(new_last_fetch, ts)
+        inc_meta.append((inc_id, ts))
+
+    new_seen_ids = [mid for mid, mts in inc_meta if mid and mts == new_last_fetch]
+
+    if new_last_fetch == last_fetch_time:
+        new_seen_ids = list(set(seen_ids + new_seen_ids))
+
+    next_run = {'last_fetch_time': new_last_fetch, 'seen_ids': new_seen_ids}
+
+    demisto.info(f'fetch_incidents completed: fetched {len(incidents)} incidents, '
+                 f'new last_fetch_time={new_last_fetch}')
+
     return next_run, incidents
 
 
@@ -2976,8 +3050,8 @@ def main() -> None:
     args = demisto.args()
 
     base_url = params.get('url', '').rstrip('/')
-    api_key_param = params.get('api_key', '')
-    api_key = api_key_param.get('password', '') if isinstance(api_key_param, dict) else api_key_param
+    credentials = params.get('credentials', {})
+    api_key = credentials.get('password', '') if isinstance(credentials, dict) else credentials
     verify = not argToBoolean(params.get('insecure', 'false'))
     proxy = argToBoolean(params.get('proxy', 'false'))
 

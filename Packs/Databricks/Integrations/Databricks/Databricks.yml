@@ -13,10 +13,11 @@ configuration:
   required: true
   section: Connect
   additionalinfo: "e.g., https://dbc-xxxxx.cloud.databricks.com"
-- display: Personal Access Token
-  name: api_key
-  type: 4
+- displaypassword: Personal Access Token
+  name: credentials
+  type: 9
   required: true
+  hiddenusername: true
   section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
@@ -75,6 +76,10 @@ configuration:
 description: Comprehensive integration with Databricks workspace APIs for managing clusters, jobs, SQL, pipelines, Unity Catalog, MLflow, IAM, and more.
 display: Databricks
 name: Databricks
+supportlevelheader: community
+marketplaces:
+- xsoar
+- marketplacev2
 script:
   type: python
   subtype: python3
@@ -673,6 +678,13 @@ script:
     - name: offset
       required: false
       description: Offset for pagination.
+    - name: page
+      required: false
+      description: Page number (0-based). Used with page_size for manual pagination.
+    - name: page_size
+      required: false
+      defaultValue: '50'
+      description: Number of results per page. Used with page for manual pagination.
     - name: name
       required: false
       description: Filter jobs by name.

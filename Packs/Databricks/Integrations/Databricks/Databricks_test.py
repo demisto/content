@@ -1,8 +1,8 @@
-import json
+import copy
 import pytest
-from unittest.mock import patch, MagicMock
 from Databricks import (
     DatabricksClient,
+    convert_epoch_fields,
     cluster_get_command,
     cluster_list_command,
     cluster_create_command,
@@ -90,7 +90,7 @@ WAREHOUSE_RESPONSE = {
 
 class TestClusterCommands:
     def test_cluster_get(self, client, mocker):
-        mocker.patch.object(client, '_http_request', return_value=CLUSTER_RESPONSE)
+        mocker.patch.object(client, '_http_request', return_value=copy.deepcopy(CLUSTER_RESPONSE))
         result = cluster_get_command(client, {'cluster_id': 'abc-123'})
         assert result.outputs['cluster_id'] == 'abc-123'
         assert result.outputs['state'] == 'RUNNING'
@@ -99,7 +99,7 @@ class TestClusterCommands:
 
     def test_cluster_list(self, client, mocker):
         mocker.patch.object(client, '_http_request',
-                            return_value={'clusters': [CLUSTER_RESPONSE]})
+                            return_value={'clusters': [copy.deepcopy(CLUSTER_RESPONSE)]})
         result = cluster_list_command(client, {})
         assert len(result.outputs) == 1
         assert result.outputs[0]['cluster_name'] == 'test-cluster'
@@ -128,14 +128,14 @@ class TestClusterCommands:
 
 class TestJobCommands:
     def test_job_get(self, client, mocker):
-        mocker.patch.object(client, '_http_request', return_value=JOB_RESPONSE)
+        mocker.patch.object(client, '_http_request', return_value=copy.deepcopy(JOB_RESPONSE))
         result = job_get_command(client, {'job_id': '42'})
         assert result.outputs['job_id'] == 42
         assert result.outputs_prefix == 'Databricks.Job'
 
     def test_job_list(self, client, mocker):
         mocker.patch.object(client, '_http_request',
-                            return_value={'jobs': [JOB_RESPONSE]})
+                            return_value={'jobs': [copy.deepcopy(JOB_RESPONSE)]})
         result = job_list_command(client, {})
         assert len(result.outputs) == 1
 
@@ -386,6 +386,7 @@ class TestFetchIncidents:
         assert len(incidents) == 1
         assert 'failing-job' in incidents[0]['name']
         assert next_run['last_fetch_time'] == 1693000001000
+        assert 'seen_ids' in next_run
 
     def test_fetch_incidents_sql_alerts(self, client, mocker):
         mocker.patch.object(client, 'list_sql_alerts', return_value={
@@ -406,6 +407,7 @@ class TestFetchIncidents:
         }, {})
         assert len(incidents) == 1
         assert 'Row Count Alert' in incidents[0]['name']
+        assert 'seen_ids' in next_run
 
     def test_fetch_incidents_empty(self, client, mocker):
         mocker.patch.object(client, 'list_sql_alerts', return_value={'results': []})
@@ -415,14 +417,79 @@ class TestFetchIncidents:
             'first_fetch': '3 days',
         }, {})
         assert incidents == []
+        assert 'seen_ids' in next_run
 
     def test_fetch_incidents_with_last_run(self, client, mocker):
         mocker.patch.object(client, 'list_sql_alerts', return_value={'results': []})
         mocker.patch.object(client, 'list_job_runs', return_value={'runs': []})
         next_run, incidents = fetch_incidents(client, {
             'max_fetch': '10',
-        }, {'last_fetch_time': 1693000000000})
+        }, {'last_fetch_time': 1693000000000, 'seen_ids': ['prev-1']})
         assert next_run['last_fetch_time'] == 1693000000000
+
+    def test_fetch_incidents_dedup_seen_ids(self, client, mocker):
+        mocker.patch.object(client, 'list_sql_alerts', return_value={'results': []})
+        mocker.patch.object(client, 'list_job_runs', return_value={
+            'runs': [
+                {
+                    'run_id': 100,
+                    'run_name': 'already-seen',
+                    'start_time': 1693000001000,
+                    'state': {'result_state': 'FAILED'},
+                },
+                {
+                    'run_id': 101,
+                    'run_name': 'new-failure',
+                    'start_time': 1693000001000,
+                    'state': {'result_state': 'FAILED'},
+                },
+            ]
+        })
+        next_run, incidents = fetch_incidents(client, {
+            'max_fetch': '10',
+            'fetch_types': ['Failed Jobs'],
+        }, {'last_fetch_time': 1693000001000, 'seen_ids': ['100']})
+        assert len(incidents) == 1
+        assert 'new-failure' in incidents[0]['name']
+
+    def test_fetch_incidents_max_fetch_cap(self, client, mocker):
+        mocker.patch.object(client, 'list_sql_alerts', return_value={'results': []})
+        mocker.patch.object(client, 'list_job_runs', return_value={'runs': []})
+        next_run, incidents = fetch_incidents(client, {
+            'max_fetch': '9999',
+            'first_fetch': '3 days',
+        }, {})
+        assert incidents == []
+
+
+class TestConvertEpochFields:
+    def test_convert_dict(self):
+        data = {'start_time': 1693000000000, 'name': 'test'}
+        convert_epoch_fields(data)
+        assert isinstance(data['start_time'], str)
+        assert 'T' in data['start_time']
+        assert data['name'] == 'test'
+
+    def test_convert_list(self):
+        data = [{'created_time': 1693000000000}, {'created_time': 1693100000000}]
+        convert_epoch_fields(data)
+        assert all(isinstance(d['created_time'], str) for d in data)
+
+    def test_no_conversion_for_zero(self):
+        data = {'start_time': 0}
+        convert_epoch_fields(data)
+        assert data['start_time'] == 0
+
+    def test_no_conversion_for_non_epoch_fields(self):
+        data = {'cluster_id': 'abc', 'name': 'test'}
+        convert_epoch_fields(data)
+        assert data == {'cluster_id': 'abc', 'name': 'test'}
+
+    def test_cluster_get_converts_epochs(self, client, mocker):
+        response = {**CLUSTER_RESPONSE}
+        mocker.patch.object(client, '_http_request', return_value=response)
+        result = cluster_get_command(client, {'cluster_id': 'abc-123'})
+        assert isinstance(result.outputs['start_time'], str)
 
 
 class TestTestModule:
