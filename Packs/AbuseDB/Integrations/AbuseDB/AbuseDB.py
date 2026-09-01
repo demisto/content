@@ -20,10 +20,10 @@ if not SERVER.endswith("/"):
 API_KEY = demisto.params().get("credentials", {}).get("password") or demisto.params().get("apikey")
 ABUSECH_API_KEY = demisto.params().get("hunting_credentials", {}).get("password")
 ABUSECH_URL = demisto.params().get("abusech_hunting_url")
-DISABLE_PRIVATE_IP_LOOKUP = argToBoolean(demisto.params().get("disable_private_ip_lookup", "False"))
-MAX_AGE = demisto.params().get("days")
-THRESHOLD = demisto.params().get("threshold")
-INSECURE = demisto.params().get("insecure")
+DISABLE_PRIVATE_IP_LOOKUP = argToBoolean(demisto.params().get("disable_private_ip_lookup", False))
+MAX_AGE = demisto.params().get("days", "30")
+THRESHOLD = demisto.params().get("threshold", "80")
+INSECURE = demisto.params().get("insecure", False)
 TEST_IP = "127.0.0.2"
 BLACKLIST_SCORE = 3
 CHECK_CMD = "check"
@@ -38,7 +38,7 @@ API_QUOTA_REACHED_MESSAGE = "Too many requests (possibly bad API key). Status co
 
 HEADERS = {"Key": API_KEY, "Accept": "application/json"}
 
-PROXY = demisto.params().get("proxy")
+PROXY = demisto.params().get("proxy", False)
 if not demisto.params().get("proxy", False):
     # Remove proxy environment variables if they exist
     for proxy_var in ["HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy"]:
@@ -107,7 +107,7 @@ def http_request(method, url_suffix, params=None, headers=HEADERS, threshold=THR
         if analysis.status_code not in {200, 204, 429}:
             return_error("Bad connection attempt. Status code: " + str(analysis.status_code))
         if analysis.status_code == 429:
-            if demisto.params().get("disregard_quota"):
+            if demisto.params().get("disregard_quota", False):
                 return API_QUOTA_REACHED_MESSAGE
             else:
                 return_error(API_QUOTA_REACHED_MESSAGE)

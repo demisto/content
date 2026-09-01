@@ -167,7 +167,7 @@ Moves a message from a mailbox to the quarantine folder.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email_identifiers | List of object(s) containing `message_id` (&lt;mailMsgId&gt;), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from Trend Vision One message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name","description":"quarantine"}]. | Required |
+| email_identifiers | List of object(s) containing `message_id` (&lt;mailMsgId&gt;), `mailbox` (mailbox ID) and `description` or `unique_id` (msgUuid) and optional `description` from TrendAI Vision One™ message activity data. e.g. [{"message_id":"xasbjAgs72912-asdjnaj","mailbox":"mailbox-name","description":"quarantine"}]. | Required |
 
 #### Context Output
 

@@ -1,0 +1,25 @@
+{
+    "result": {
+        "id": "ruleset_id_new",
+        "name": "New Custom Ruleset",
+        "kind": "custom",
+        "phase": "http_request_firewall_custom",
+        "description": "A new custom ruleset",
+        "version": "1",
+        "last_updated": "2023-03-10T08:00:00Z",
+        "rules": [
+            {
+                "id": "rule_id_1",
+                "action": "block",
+                "expression": "(ip.src eq 10.0.0.1)",
+                "description": "Block internal IP",
+                "enabled": true,
+                "version": "1",
+                "ref": "ref_new_1"
+            }
+        ]
+    },
+    "success": true,
+    "errors": [],
+    "messages": []
+}

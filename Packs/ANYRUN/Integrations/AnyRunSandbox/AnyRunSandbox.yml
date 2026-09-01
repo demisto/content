@@ -21,6 +21,13 @@ configuration:
   type: 8
   section: Connect
   required: false
+- display: Root URL
+  name: root_url
+  type: 0
+  required: false
+  section: Connect
+  defaultvalue: any.run
+  additionalinfo: Base domain for the ANY.RUN connection. Enter only the domain (e.g. any.run), without a scheme or trailing slash.
 description: ANY.RUN Sandbox is an online interactive sandbox for malware analysis, a tool for detection, monitoring, and research of cyber threats in real time.
 display: ANY.RUN Cloud Sandbox
 name: ANY.RUN Cloud Sandbox
@@ -592,6 +599,7 @@ script:
       defaultValue: 'Google Chrome'
       required: false
       type: String
+      hidden: true
       predefined:
       - 'Google Chrome'
       - 'Mozilla Firefox'
@@ -1450,7 +1458,7 @@ script:
     - contextPath: ANYRUN.SandboxAnalysisReportVerdict
       description: "The analysis verdict."
       type: String
-  dockerimage: demisto/anyrun-sdk:1.0.0.8924769
+  dockerimage: demisto/anyrun-sdk:1.0.0.10440656
   subtype: python3
   runonce: false
   script: '-'

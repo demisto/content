@@ -1290,6 +1290,10 @@ def test_get_drilldown_timeframe(finding_data, raw, earliest, latest, mocker):
         ("field", {"field": "1"}, "field", "1"),
         ("field|s", {"_raw": "field=1, value=2"}, "field", "1"),
         ("x", {"y": "2"}, "", ""),
+        # A raw field that is a substring of another field must not collide
+        ("src_ip", {"src": "host1", "src_ip": "1.2.3.4"}, "src_ip", "1.2.3.4"),
+        ("src_ip|s", {"src": "host1", "src_ip": "1.2.3.4"}, "src_ip", "1.2.3.4"),
+        ("src_ip", {"_raw": "src=host1, src_ip=1.2.3.4"}, "src_ip", "1.2.3.4"),
     ],
 )
 def test_get_finding_field_and_value(raw_field, finding_data, expected_field, expected_value, mocker):
@@ -1359,6 +1363,14 @@ def test_get_finding_field_and_value(raw_field, finding_data, expected_field, ex
             'search countryA="test\\country" countryB=""',
         ),
         ({"test": "test_user"}, "search countryA=\\$this is a test\\$", {}, False, "search countryA=\\$this is a test\\$"),
+        # A field whose name is a substring of the queried field must resolve to the correct field
+        (
+            {"src": "host1", "src_ip": "1.2.3.4"},
+            "search src_ip=$src_ip$",
+            {},
+            False,
+            'search src_ip="1.2.3.4"',
+        ),
     ],
     ids=[
         "search query fields in findings data and raw data",
@@ -1371,6 +1383,7 @@ def test_get_finding_field_and_value(raw_field, finding_data, expected_field, ex
         "search query with a user field that is surrounded by quotation marks and contains a backslash",
         "search query fields in finding data more than one value, with one empty value",
         "search query with $ as part of the search - no need to replace",
+        "search query with a field name that is a substring of another field ",
     ],
 )
 def test_build_drilldown_search(finding_data, search, raw, is_query_name, expected_search, mocker):
@@ -1830,6 +1843,94 @@ def test_to_incident_finding_enrichments_status(enrichments, enrichment_type, ex
     finding.to_incident(mapper)
 
     assert finding.data[splunk.ENRICHMENT_TYPE_TO_ENRICHMENT_STATUS[enrichment_type]] == expected_stauts_result
+
+
+@pytest.mark.parametrize(
+    "spl_search, expected",
+    [
+        # Single backslashes inside a field="value" filter must be doubled
+        (
+            'eventcode IN (1, 2) field_a="\\foo\\bar\\baz" | head 1',
+            'eventcode IN (1, 2) field_a="\\\\foo\\\\bar\\\\baz" | head 1',
+        ),
+        # Already-doubled values are left unchanged (idempotent)
+        ('field_a="\\\\foo\\\\bar"', 'field_a="\\\\foo\\\\bar"'),
+        # Values without backslashes are untouched
+        ('field_a="10.0.0.1" field_b="abc"', 'field_a="10.0.0.1" field_b="abc"'),
+        # rex / free-text quoted strings (not preceded by '=') must NOT be modified
+        (
+            'index=x | rex field=field_a "value: (?<value>.*)"',
+            'index=x | rex field=field_a "value: (?<value>.*)"',
+        ),
+        # Regex literals inside SPL function calls (quote follows '(' or ',', NOT a field token)
+        # must NOT be re-escaped.
+        (
+            '| eval field_a=replace(field_a,"(\\\\)","\\\\\\\\")',
+            '| eval field_a=replace(field_a,"(\\\\)","\\\\\\\\")',
+        ),
+        # Multiple genuine field="value" filters in one query are all doubled
+        (
+            'field_a="\\foo\\bar" field_b="\\\\baz\\\\qux"',
+            'field_a="\\\\foo\\\\bar" field_b="\\\\baz\\\\qux"',
+        ),
+        # A dotted field name is still treated as a field filter
+        (
+            'parent.child="\\foo\\bar"',
+            'parent.child="\\\\foo\\\\bar"',
+        ),
+    ],
+    ids=[
+        "single backslashes are doubled",
+        "already-doubled backslashes are unchanged",
+        "no backslashes are untouched",
+        "rex regex quoted string is not modified",
+        "eval/replace regex literal is not over-escaped",
+        "multiple field filters are all doubled",
+        "dotted field name is treated as a field filter",
+    ],
+)
+def test_escape_backslashes_in_field_filters(spl_search, expected):
+    """
+    Scenario: A drilldown search arrives as JSON; after json.loads, backslashes inside field filter
+    values are collapsed to single backslashes, which Splunk SPL cannot match. We re-escape them.
+
+    Given:
+    - An SPL search with a field="value" filter value containing single backslashes.
+    - An SPL search whose field filter values are already correctly escaped.
+    - An SPL search without backslashes.
+    - An SPL search with a rex/free-text quoted string containing a backslash.
+    - An SPL search with a regex literal inside a function call (eval/replace).
+    - An SPL search with multiple field filters.
+    - An SPL search with a dotted field name.
+
+    When:
+    - escape_backslashes_in_field_filters is called.
+
+    Then:
+    - Backslashes inside genuine field="value" filters are doubled, the operation is idempotent,
+      and rex/free-text quoted strings and regex literals inside function calls are left untouched.
+    """
+    assert splunk.escape_backslashes_in_field_filters(spl_search) == expected
+
+
+def test_parse_drilldown_searches_preserves_backslashes():
+    """
+    Given:
+    - A 'drilldown_searches' JSON payload where a field="value" filter value contains backslashes.
+
+    When:
+    - Running splunk.parse_drilldown_searches.
+
+    Then:
+    - The parsed 'search' keeps the backslashes escaped (doubled) for Splunk SPL.
+    """
+    searches = [
+        '[{"name":"Show events","search":"(index=idx_a OR index=idx_b) '
+        'eventcode IN (1, 2) field_a=\\"\\\\foo\\\\bar\\\\baz\\" '
+        '| head 1","earliest_offset":"1","latest_offset":"2","disabled":false}]'
+    ]
+    parsed = splunk.parse_drilldown_searches(searches)
+    assert parsed[0]["search"] == ("(index=idx_a OR index=idx_b) eventcode IN (1, 2) " 'field_a="\\\\foo\\\\bar\\\\baz" | head 1')
 
 
 def test_parse_drilldown_searches():
@@ -8114,3 +8215,413 @@ def test_splunk_list_investigations_command_dict_response_single_investigation(m
 
     assert result.outputs == investigation
     assert "1 Investigation Found" in result.readable_output
+
+
+# ---------------------------------------------------------------------------
+# Configuration (.conf) file / stanza commands
+# ---------------------------------------------------------------------------
+
+
+def _mock_stanza(name, content=None, access=None):
+    """Builds a mock Splunk SDK Stanza object with the given name, content and access."""
+    stanza = MagicMock()
+    stanza.name = name
+    stanza.content = content or {}
+    stanza.access = access or {}
+    return stanza
+
+
+def _mock_conf_file(name, stanzas=None):
+    """Builds a mock Splunk SDK ConfigurationFile that behaves like a dict/collection of stanzas."""
+    stanzas = stanzas or {}
+    conf_file = MagicMock()
+    conf_file.name = name
+    conf_file.__contains__.side_effect = lambda key: key in stanzas
+    conf_file.__getitem__.side_effect = lambda key: stanzas[key]
+    conf_file.list.return_value = list(stanzas.values())
+    return conf_file
+
+
+def _mock_service_with_confs(conf_files):
+    """Builds a mock service whose service.confs behaves like a dict/collection of conf files."""
+    service = MagicMock()
+    service.confs.__contains__.side_effect = lambda key: key in conf_files
+    service.confs.__getitem__.side_effect = lambda key: conf_files[key] if key in conf_files else _raise_key_error(key)
+    service.confs.list.return_value = list(conf_files.values())
+    return service
+
+
+def _raise_key_error(key):
+    raise KeyError(key)
+
+
+def test_parse_key_value_pairs_valid():
+    """
+    Given: A valid JSON object string.
+    When: parse_key_value_pairs is called.
+    Then: The parsed dict is returned.
+    """
+    assert splunk.parse_key_value_pairs('{"a": "1", "b": "2"}') == {"a": "1", "b": "2"}
+
+
+def test_parse_key_value_pairs_empty():
+    """
+    Given: An empty/None key_value_pairs argument.
+    When: parse_key_value_pairs is called.
+    Then: An empty dict is returned.
+    """
+    assert splunk.parse_key_value_pairs(None) == {}
+    assert splunk.parse_key_value_pairs("") == {}
+
+
+def test_parse_key_value_pairs_invalid_json():
+    """
+    Given: A non-JSON string.
+    When: parse_key_value_pairs is called.
+    Then: A DemistoException is raised.
+    """
+    with pytest.raises(DemistoException, match="valid JSON object string"):
+        splunk.parse_key_value_pairs("not-json")
+
+
+def test_parse_key_value_pairs_not_object():
+    """
+    Given: A JSON array (not an object).
+    When: parse_key_value_pairs is called.
+    Then: A DemistoException is raised.
+    """
+    with pytest.raises(DemistoException, match="must be a JSON object"):
+        splunk.parse_key_value_pairs('["a", "b"]')
+
+
+def test_splunk_configuration_file_list():
+    """
+    Given: A service with two configuration files.
+    When: splunk_configuration_file_list is called.
+    Then: Both files are returned under Splunk.ConfigurationFile with the app name.
+    """
+    conf_files = {"transforms": _mock_conf_file("transforms"), "props": _mock_conf_file("props")}
+    service = _mock_service_with_confs(conf_files)
+
+    result = splunk.splunk_configuration_file_list(service, {"app": "search"})
+
+    assert result.outputs_prefix == "Splunk.ConfigurationFile"
+    assert {c["FileName"] for c in result.outputs} == {"transforms", "props"}
+    assert all(c["App"] == "search" for c in result.outputs)
+
+
+def test_splunk_configuration_file_create():
+    """
+    Given: A service and a new conf file name.
+    When: splunk_configuration_file_create is called.
+    Then: service.confs.create is called and a success message is returned.
+    """
+    service = MagicMock()
+
+    result = splunk.splunk_configuration_file_create(service, {"conf_file_name": "my_conf", "app": "search"})
+
+    service.confs.create.assert_called_once_with("my_conf")
+    assert "was created successfully" in result.readable_output
+
+
+def test_splunk_configuration_stanza_create_with_attributes():
+    """
+    Given: A service with a conf file and key_value_pairs.
+    When: splunk_configuration_stanza_create is called.
+    Then: The stanza is created and its attributes submitted.
+    """
+    created_stanza = MagicMock()
+    conf_file = _mock_conf_file("transforms")
+    conf_file.create.return_value = created_stanza
+    service = _mock_service_with_confs({"transforms": conf_file})
+
+    result = splunk.splunk_configuration_stanza_create(
+        service, {"conf_file": "transforms", "stanza_name": "my_stanza", "key_value_pairs": '{"external_type": "kvstore"}'}
+    )
+
+    conf_file.create.assert_called_once_with("my_stanza")
+    created_stanza.submit.assert_called_once_with({"external_type": "kvstore"})
+    assert "was created successfully" in result.readable_output
+
+
+def test_splunk_configuration_stanza_create_missing_conf_file():
+    """
+    Given: A service that does not contain the requested conf file.
+    When: splunk_configuration_stanza_create is called.
+    Then: A DemistoException is raised about the missing configuration file.
+    """
+    service = _mock_service_with_confs({})
+
+    with pytest.raises(DemistoException, match="Configuration file 'transforms' was not found"):
+        splunk.splunk_configuration_stanza_create(service, {"conf_file": "transforms", "stanza_name": "my_stanza"})
+
+
+def test_splunk_configuration_stanza_list_all():
+    """
+    Given: A conf file with two stanzas.
+    When: splunk_configuration_stanza_list is called without stanza_name.
+    Then: All stanza names are returned under Splunk.ConfigurationStanza.
+    """
+    stanzas = {
+        "s1": _mock_stanza("s1", access={"app": "search", "owner": "nobody", "sharing": "app"}),
+        "s2": _mock_stanza("s2", access={"app": "search", "owner": "nobody", "sharing": "app"}),
+    }
+    conf_file = _mock_conf_file("transforms", stanzas)
+    service = _mock_service_with_confs({"transforms": conf_file})
+
+    result = splunk.splunk_configuration_stanza_list(service, {"conf_file": "transforms"})
+
+    assert result.outputs_prefix == "Splunk.ConfigurationStanza"
+    assert {s["StanzaName"] for s in result.outputs} == {"s1", "s2"}
+
+
+def test_splunk_configuration_stanza_list_single():
+    """
+    Given: A conf file with a specific stanza that has content.
+    When: splunk_configuration_stanza_list is called with that stanza_name.
+    Then: The stanza content is returned.
+    """
+    stanzas = {"s1": _mock_stanza("s1", content={"collection": "my_col"}, access={"app": "search"})}
+    conf_file = _mock_conf_file("transforms", stanzas)
+    service = _mock_service_with_confs({"transforms": conf_file})
+
+    result = splunk.splunk_configuration_stanza_list(service, {"conf_file": "transforms", "stanza_name": "s1"})
+
+    assert result.outputs["StanzaName"] == "s1"
+    assert result.outputs["Content"] == {"collection": "my_col"}
+
+
+def test_splunk_configuration_stanza_list_single_not_found():
+    """
+    Given: A conf file that does not contain the requested stanza.
+    When: splunk_configuration_stanza_list is called with that stanza_name.
+    Then: A DemistoException is raised.
+    """
+    conf_file = _mock_conf_file("transforms", {})
+    service = _mock_service_with_confs({"transforms": conf_file})
+
+    with pytest.raises(DemistoException, match="Stanza 'missing' was not found"):
+        splunk.splunk_configuration_stanza_list(service, {"conf_file": "transforms", "stanza_name": "missing"})
+
+
+def test_splunk_configuration_stanza_update():
+    """
+    Given: A conf file with an existing stanza and key_value_pairs.
+    When: splunk_configuration_stanza_update is called.
+    Then: The stanza's submit is called with the parsed attributes.
+    """
+    stanza = _mock_stanza("s1")
+    conf_file = _mock_conf_file("transforms", {"s1": stanza})
+    service = _mock_service_with_confs({"transforms": conf_file})
+
+    result = splunk.splunk_configuration_stanza_update(
+        service, {"conf_file": "transforms", "stanza_name": "s1", "key_value_pairs": '{"attr": "new"}'}
+    )
+
+    stanza.submit.assert_called_once_with({"attr": "new"})
+    assert "was updated successfully" in result.readable_output
+
+
+def test_splunk_configuration_stanza_update_requires_key_value_pairs():
+    """
+    Given: An update request without key_value_pairs.
+    When: splunk_configuration_stanza_update is called.
+    Then: A DemistoException is raised.
+    """
+    conf_file = _mock_conf_file("transforms", {"s1": _mock_stanza("s1")})
+    service = _mock_service_with_confs({"transforms": conf_file})
+
+    with pytest.raises(DemistoException, match='"key_value_pairs" argument is required'):
+        splunk.splunk_configuration_stanza_update(service, {"conf_file": "transforms", "stanza_name": "s1"})
+
+
+def test_splunk_configuration_stanza_update_stanza_not_found():
+    """
+    Given: A conf file that does not contain the stanza to update.
+    When: splunk_configuration_stanza_update is called.
+    Then: A DemistoException is raised.
+    """
+    conf_file = _mock_conf_file("transforms", {})
+    service = _mock_service_with_confs({"transforms": conf_file})
+
+    with pytest.raises(DemistoException, match="Stanza 's1' was not found"):
+        splunk.splunk_configuration_stanza_update(
+            service, {"conf_file": "transforms", "stanza_name": "s1", "key_value_pairs": '{"a": "b"}'}
+        )
+
+
+def test_splunk_configuration_stanza_delete():
+    """
+    Given: A conf file that contains the stanza to delete.
+    When: splunk_configuration_stanza_delete is called.
+    Then: conf_file.delete is called with the stanza name and a success message is returned.
+    """
+    conf_file = _mock_conf_file("transforms", {"s1": _mock_stanza("s1")})
+    service = _mock_service_with_confs({"transforms": conf_file})
+
+    result = splunk.splunk_configuration_stanza_delete(service, {"conf_file": "transforms", "stanza_name": "s1"})
+
+    conf_file.delete.assert_called_once_with("s1")
+    assert "was deleted successfully" in result.readable_output
+
+
+def test_splunk_configuration_stanza_delete_stanza_not_found():
+    """
+    Given: A conf file that does not contain the stanza to delete.
+    When: splunk_configuration_stanza_delete is called.
+    Then: A DemistoException is raised and delete is not called.
+    """
+    conf_file = _mock_conf_file("transforms", {})
+    service = _mock_service_with_confs({"transforms": conf_file})
+
+    with pytest.raises(DemistoException, match="Stanza 's1' was not found"):
+        splunk.splunk_configuration_stanza_delete(service, {"conf_file": "transforms", "stanza_name": "s1"})
+    conf_file.delete.assert_not_called()
+
+
+def test_splunk_configuration_stanza_delete_conf_file_not_found():
+    """
+    Given: A service that does not contain the requested conf file.
+    When: splunk_configuration_stanza_delete is called.
+    Then: A DemistoException is raised about the missing configuration file.
+    """
+    service = _mock_service_with_confs({})
+
+    with pytest.raises(DemistoException, match="Configuration file 'transforms' was not found"):
+        splunk.splunk_configuration_stanza_delete(service, {"conf_file": "transforms", "stanza_name": "s1"})
+
+
+# =========== Enterprise Security version / mirror-out finding_time helpers ===========
+
+
+def _mock_service_with_es_app(version):
+    """Build a mock Splunk service whose ES app returns the given version."""
+    es_app = MagicMock()
+    es_app.content = {"version": version}
+    service = MagicMock()
+    service.apps = {splunk.ES_APP_NAME: es_app}
+    return service
+
+
+def test_get_enterprise_security_version_returns_version():
+    """
+    Given: A Splunk service whose Enterprise Security app reports version "8.2.0".
+    When: get_enterprise_security_version is called.
+    Then: The reported version string "8.2.0" is returned.
+    """
+    service = _mock_service_with_es_app("8.2.0")
+
+    result = splunk.get_enterprise_security_version(service)
+
+    assert result == "8.2.0"
+
+
+def test_get_enterprise_security_version_missing_version_key():
+    """
+    Given: A Splunk service whose Enterprise Security app content has no "version" key.
+    When: get_enterprise_security_version is called.
+    Then: "unknown" is returned.
+    """
+    es_app = MagicMock()
+    es_app.content = {}
+    service = MagicMock()
+    service.apps = {splunk.ES_APP_NAME: es_app}
+
+    result = splunk.get_enterprise_security_version(service)
+
+    assert result == "unknown"
+
+
+def test_get_enterprise_security_version_app_not_installed():
+    """
+    Given: A Splunk service whose apps lookup raises (ES app not installed).
+    When: get_enterprise_security_version is called.
+    Then: The exception is swallowed and "unknown" is returned.
+    """
+    service = MagicMock()
+    service.apps.__getitem__.side_effect = KeyError("SplunkEnterpriseSecuritySuite")
+
+    result = splunk.get_enterprise_security_version(service)
+
+    assert result == "unknown"
+
+
+@pytest.mark.parametrize(
+    "version, target_version, expected",
+    [
+        ("8.2", "8.2", True),
+        ("8.2.0", "8.2", True),
+        ("8.2.5", "8.2", True),
+        ("8.1.9", "8.2", False),
+        ("8.3.0", "8.2", False),
+        ("9.0.0", "8.2", False),
+        ("unknown", "8.2", False),
+        ("", "8.2", False),
+        ("8.3.1", "8.3", True),
+        ("8.2.5", "8.3", False),
+        ("8.2", "unknown", False),
+    ],
+)
+def test_is_es_version(version, target_version, expected):
+    """
+    Given: An Enterprise Security version string and a target version.
+    When: is_es_version is called.
+    Then: True is returned only when the major/minor match; unparseable values return False.
+    """
+    assert splunk.is_es_version(version, target_version) is expected
+
+
+def test_get_finding_time_for_es_notable_time_returns_time_on_8_2(mocker: MockerFixture):
+    """
+    Given: An ES 8.2.x service and mirrored data containing a "notable_time" value.
+    When: get_finding_time_for_es_notable_time is called.
+    Then: The notable_time value is returned as a string.
+    """
+    mocker.patch.object(splunk, "get_enterprise_security_version", return_value="8.2.0")
+    service = MagicMock()
+
+    result = splunk.get_finding_time_for_es_notable_time(service, {"notable_time": "2026-01-01T00:00:00.000Z"})
+
+    assert result == "2026-01-01T00:00:00.000Z"
+
+
+def test_get_finding_time_for_es_notable_time_none_when_not_8_2(mocker: MockerFixture):
+    """
+    Given: An ES 8.3.x service (out of the 8.2.x range) and mirrored data with a notable_time.
+    When: get_finding_time_for_es_notable_time is called.
+    Then: None is returned because finding_time is only required on 8.2.x.
+    """
+    mocker.patch.object(splunk, "get_enterprise_security_version", return_value="8.3.0")
+    service = MagicMock()
+
+    result = splunk.get_finding_time_for_es_notable_time(service, {"notable_time": "2026-01-01T00:00:00.000Z"})
+
+    assert result is None
+
+
+def test_get_finding_time_for_es_notable_time_none_when_no_time_in_data(mocker: MockerFixture):
+    """
+    Given: An ES 8.2.x service but mirrored data that has no "notable_time" field.
+    When: get_finding_time_for_es_notable_time is called.
+    Then: None is returned since there is no finding time to send.
+    """
+    mocker.patch.object(splunk, "get_enterprise_security_version", return_value="8.2.1")
+    service = MagicMock()
+
+    result = splunk.get_finding_time_for_es_notable_time(service, {"other": "value"})
+
+    assert result is None
+
+
+def test_get_finding_time_for_es_notable_time_none_when_data_is_none(mocker: MockerFixture):
+    """
+    Given: An ES 8.2.x service and data is None.
+    When: get_finding_time_for_es_notable_time is called.
+    Then: None is returned without raising.
+    """
+    mocker.patch.object(splunk, "get_enterprise_security_version", return_value="8.2.0")
+    service = MagicMock()
+
+    result = splunk.get_finding_time_for_es_notable_time(service, None)
+
+    assert result is None

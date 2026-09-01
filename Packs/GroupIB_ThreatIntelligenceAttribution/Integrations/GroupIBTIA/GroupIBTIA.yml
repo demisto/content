@@ -175,6 +175,13 @@ configuration:
   section: Collect
   required: false
   type: 13
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: Hunting Rules
   name: hunting_rules
   section: Collect
@@ -2167,7 +2174,7 @@ script:
     compliantpolicies:
     - EndPoint Isolation
     - User Hard Remediation
-  dockerimage: demisto/vendors-sdk:1.0.0.8307504
+  dockerimage: demisto/vendors-sdk:1.0.0.10120494
   feed: false
   isfetch: true
   longRunning: false

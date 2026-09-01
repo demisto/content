@@ -52,6 +52,13 @@ configuration:
   required: false
   section: Collect
   defaultvalue: PhishER
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -191,7 +198,7 @@ script:
       required: true
     description: Removes tags from a given message.
     name: phisher-tags-delete
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.10404775
   isfetch: true
   runonce: false
   script: '-'

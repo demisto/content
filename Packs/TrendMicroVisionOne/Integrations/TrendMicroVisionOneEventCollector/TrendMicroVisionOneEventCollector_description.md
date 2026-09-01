@@ -1,6 +1,6 @@
-Trend Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Vision One prevents the majority of attacks with automated protection.
+TrendAI Vision One™ is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—TrendAI Vision One™ prevents the majority of attacks with automated protection.
 
-This integration fetches the following logs/alerts from Trend Vision One and requires the following permissions:
+This integration fetches the following logs/alerts from TrendAI Vision One™ and requires the following permissions:
 
 
 | **Log Type**                    | **Action Role Permission Required** | **Api Documentation**                                                                                                     |
@@ -12,7 +12,7 @@ This integration fetches the following logs/alerts from Trend Vision One and req
 
 
 ***
-You can then create a user account and generate an API key to be used for the Cortex XSIAM integration by following these steps in Trend Vision One.
+You can then create a user account and generate an API key to be used for the Cortex XSIAM integration by following these steps in TrendAI Vision One™.
 
 1. Navigate to **Administration** > **User Accounts**.
 2. Click **Add Account**.
@@ -22,16 +22,16 @@ You can then create a user account and generate an API key to be used for the Co
 
 ***
 **Built-in Roles:**
-Trend Vision One has built-in roles with fixed permissions that Master Administrators can assign to accounts.
+TrendAI Vision One™ has built-in roles with fixed permissions that Master Administrators can assign to accounts.
 
 The following table provides a brief description of each role. 
 
 
 | **Role**                          | **Description**                                                                                               |
 |-----------------------------------|--------------------------------------------------------------------------------------------------------------- 
-| Master Administrator              | Can access all apps and Trend Vision One features.                                                            |
+| Master Administrator              | Can access all apps and TrendAI Vision One™ features.                                                            |
 | Operator (formerly Administrator) | Can configure system settings and connect products.                                                           |
-| Auditor                           | Has "View" access to specific Trend Vision One apps and features.                                             |
+| Auditor                           | Has "View" access to specific TrendAI Vision One™ apps and features.                                             |
 | Senior Analyst                    | Can investigate XDR alerts, take response actions, approve managed XDR requests, and manage detection models. |
 | Analyst                           | Can investigate XDR alerts and take response actions.                                                         |
 

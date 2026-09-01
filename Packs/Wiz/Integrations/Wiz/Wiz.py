@@ -12,7 +12,7 @@ WIZ_API_LIMIT = 500  # limit number of returned records from the Wiz API
 MAX_NOTE_LENGTH = 1400  # Hard limit for issue note text length enforced by the Wiz API
 WIZ = "wiz"
 
-WIZ_VERSION = "1.6.0"
+WIZ_VERSION = "1.7.0"
 INTEGRATION_GUID = "8864e131-72db-4928-1293-e292f0ed699f"
 NOT_DEFINED = "Not Defined"
 
@@ -2460,15 +2460,11 @@ def resolve_issue(issue_id, resolution_reason, resolution_note):
     if not is_valid_id:
         return message
 
-    issue_object = _get_issue(issue_id, is_evidence=False)
-
-    nodes = (issue_object or {}).get("data", {}).get("issues", {}).get("nodes") or []
-    if not nodes:
+    issue_type = _get_issue_type(issue_id)
+    if issue_type is None:
         return f"Issue not found: {issue_id}"
 
-    issue_type = nodes[0].get("type")
-
-    if issue_type != "THREAT_DETECTION":
+    if issue_type != WizIssueType.THREAT_DETECTION:
         msg = (
             f"Only a Threat Detection Issue can be resolved.\n"
             f"Received an Issue of type {issue_type}.\n"
@@ -2574,6 +2570,42 @@ def _get_issue(issue_id, is_evidence=False):
     issue_response = checkAPIerrors(issue_query, issue_variables)
 
     return issue_response
+
+
+def _get_issue_type(issue_id):
+    """
+    Return the Wiz Issue `type` (e.g. THREAT_DETECTION, TOXIC_COMBINATION) for an
+    issue id, or None if the issue can't be found / has no type. Used to guard
+    status mutations that are only valid for certain issue types.
+    """
+    issue_object = _get_issue(issue_id, is_evidence=False)
+    if not isinstance(issue_object, dict):
+        return None
+    nodes = issue_object.get("data", {}).get("issues", {}).get("nodes") or []
+    if not nodes:
+        return None
+    return nodes[0].get("type")
+
+
+def _can_resolve_issue(issue_id):
+    """
+    Return True only when the issue may be manually set to RESOLVED in Wiz.
+
+    Only Threat Detection issues can be manually resolved; all other types
+    (Toxic Combination, Cloud Configuration, Attack Surface) auto-resolve when
+    the underlying problem is remediated, and the backend rejects an explicit
+    RESOLVED for them. The outgoing-mirror paths use this to skip the RESOLVED
+    push for non-Threat-Detection issues (letting Wiz auto-resolve) instead of
+    firing a mutation the backend will reject and silently swallowing the error.
+    """
+    issue_type = _get_issue_type(issue_id)
+    if issue_type != WizIssueType.THREAT_DETECTION:
+        demisto.info(
+            f"Skipping RESOLVED mirror for issue {issue_id}: type {issue_type} cannot be manually resolved "
+            f"(only Threat Detection issues can; other types auto-resolve when remediated)."
+        )
+        return False
+    return True
 
 
 def truncate_note(text):
@@ -3043,6 +3075,8 @@ def _mirror_status_to_wiz(issue_id, xsoar_status, delta, data=None):
 
     try:
         if status_lower in ("resolved", "done", "closed"):
+            if not _can_resolve_issue(issue_id):
+                return
             resolution_reason = _resolve_wiz_reason(delta, data) or DEFAULT_RESOLUTION_REASON
             reject_or_resolve_issue(issue_id, resolution_reason, "Status mirrored from Cortex XSOAR", "RESOLVED")
         elif status_lower in ("rejected",):
@@ -3063,6 +3097,8 @@ def _handle_incident_closed(remote_id, resolution_reason=None):
     reason = resolution_reason or DEFAULT_RESOLUTION_REASON
     demisto.debug(f"_handle_incident_closed: resolving {remote_id} with reason={reason}")
     try:
+        if not _can_resolve_issue(remote_id):
+            return
         reject_or_resolve_issue(remote_id, reason, "Resolved from Cortex XSOAR", "RESOLVED")
     except Exception as e:
         demisto.info(f"_handle_incident_closed: failed (may already be resolved): {e}")

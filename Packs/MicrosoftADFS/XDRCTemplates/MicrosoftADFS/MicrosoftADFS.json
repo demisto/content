@@ -1,8 +1,9 @@
 {
-    "os_type": "AGENT_OS_WINDOWS",
-    "profile_type": "WINLOGBEAT",
-    "name": "MicrosoftADFS",
-    "content_global_id": "MicrosoftADFS",
-    "from_xdr_version": "3.5.0",
-    "yaml_template": ""
+  "id": "MicrosoftADFS",
+  "name": "MicrosoftADFS",
+  "os_type": "AGENT_OS_WINDOWS",
+  "profile_type": "WINLOGBEAT",
+  "content_global_id": "MicrosoftADFS",
+  "from_xdr_version": "3.5.0",
+  "yaml_template": ""
 }

@@ -1,8 +1,8 @@
 category: Network Security
 provider: STG
 sectionorder:
-  - Connect
-  - Collect
+- Connect
+- Collect
 commonfields:
   id: Skyhigh Security
   version: -1
@@ -36,6 +36,13 @@ configuration:
   type: 13
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -282,7 +289,7 @@ script:
       required: true
     description: Adds new content to an existing policy dictionary.
     name: skyhigh-security-policy-dictionary-update
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10404775
   isfetch: true
   runonce: false
   script: '-'

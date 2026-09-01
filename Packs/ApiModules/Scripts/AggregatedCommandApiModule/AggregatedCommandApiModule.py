@@ -18,6 +18,11 @@ CommandProcessResults = list[tuple[ContextResult, str, str]]
 # Calculating time interval for indicators freshness
 STATUS_FRESHNESS_WINDOW = timedelta(weeks=1)
 
+try:
+    TIM_BRAND = "Threat Intel" if demisto.caller() == "agentix" else "TIM"  # type: ignore[attr-defined]  # pylint: disable=no-member
+except Exception:
+    TIM_BRAND = "TIM"
+
 DBOT_SCORE_TO_VERDICT = {
     0: "Unknown",
     1: "Benign",
@@ -81,7 +86,7 @@ class EntryResult:
         self.message = message
 
     def to_entry(self) -> dict[str, Any]:
-        if self.brand == "TIM":
+        if self.brand == TIM_BRAND:
             return {
                 "Arguments": self.args,
                 "Brand": self.brand,
@@ -620,7 +625,7 @@ class ContextBuilder:
         """
         if not instance.tim_context:
             return None
-        return next((i for i in instance.tim_context if i.get("Brand") == "TIM"), None)
+        return next((i for i in instance.tim_context if i.get("Brand") == TIM_BRAND), None)
 
     def _get_file_hashes(self, instance: IndicatorInstance, tim_obj: dict) -> dict:
         """
@@ -1131,7 +1136,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
             mapped_indicator.update({"CVSS": indicator_score})
         mapped_indicator.update(
             {
-                "Brand": "TIM",
+                "Brand": TIM_BRAND,
                 "Status": self.get_indicator_status_from_ioc(ioc),
                 "ModifiedTime": ioc.get("modifiedTime"),
             }
@@ -1469,7 +1474,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
             entry_results.append(
                 EntryResult(
                     command_name="",
-                    brand="TIM",
+                    brand=TIM_BRAND,
                     status=indicator_instance.final_status,
                     args=indicator_instance.extracted_value or indicator_instance.raw_input,
                     score_field_name="TIM CVSS" if self.indicator_schema.type == "cve" else "TIM Score",

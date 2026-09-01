@@ -480,7 +480,7 @@ def fetch_incidents():
             last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
     incidents = []
-    limit = dict_value_to_int(demisto.params(), "fetch_limit")
+    limit = dict_value_to_int(demisto.params(), "fetch_limit") or 10
     items = search_alarms(start_time=last_fetch, direction="asc", limit=limit)
     for item in items:
         incident = item_to_incident(item)

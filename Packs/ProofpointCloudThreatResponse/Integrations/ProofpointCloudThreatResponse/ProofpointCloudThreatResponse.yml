@@ -47,6 +47,13 @@ configuration:
   type: 13
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   defaultvalue: 3 days
@@ -263,7 +270,7 @@ script:
     - contextPath: ProofPointCloud.Incident.activities
       description: The activities associated with the incident.
       type: Array
-  dockerimage: demisto/fastapi:0.125.0.9094740
+  dockerimage: demisto/fastapi:0.125.0.10158186
   isfetch: true
   runonce: false
   script: '-'
