@@ -20,6 +20,7 @@ DEFAULT_MAX_LIMIT = 1000
 DEFAULT_URL = "https://api.xdr.trendmicro.com"
 PRODUCT = "vision_one"
 VENDOR = "trend_micro"
+USER_AGENT = "TMV1CortexXSOAREventCollector/4.5.9"
 ONE_YEAR = 365
 # per the public API schema, /v3.0/oat/detections only accepts top values of 50, 100 or 200 (default 50).
 OAT_TOP_VALID_VALUES = (50, 100, 200)
@@ -212,7 +213,9 @@ class Client(BaseClient):
             headers (dict): any custom headers for the api request.
             next_link (str): the next link for the api request (used mainly for pagination)
         """
-        request_headers = headers or {"Authorization": f"Bearer {self.api_key}"}
+        request_headers = dict(headers or {})
+        request_headers.setdefault("Authorization", f"Bearer {self.api_key}")
+        request_headers["User-Agent"] = USER_AGENT
 
         url = next_link or f"{self.base_url}/{self.API_VERSION}{url_suffix}"
         demisto.info(f"Sending the http request to {url=} with {params=}")

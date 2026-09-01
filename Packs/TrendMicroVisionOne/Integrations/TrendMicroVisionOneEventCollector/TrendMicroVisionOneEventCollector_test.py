@@ -56,6 +56,49 @@ class TestHttpRequestRetryPolicy:
         assert captured["backoff_jitter"] == 1.0
 
 
+class TestUserAgent:
+    """
+    Verifies every HTTP request carries a User-Agent header identifying the collector, so Trend Vision One
+    can trace traffic back to this integration. The header must be injected even when callers provide their
+    own custom headers (e.g. Search Detections passes {"TMV1-Query": "*", "Authorization": ...}).
+    """
+
+    @pytest.mark.parametrize(
+        "custom_headers",
+        [
+            None,
+            {"TMV1-Query": "*", "Authorization": "Bearer custom-api-key"},
+        ],
+    )
+    def test_http_request_always_sends_user_agent(self, mocker, client: Client, custom_headers):
+        captured = {}
+
+        def _side_effect(**kwargs):
+            captured.update(kwargs)
+            return {"items": []}
+
+        mocker.patch.object(BaseClient, "_http_request", side_effect=_side_effect)
+
+        client.http_request(url_suffix=UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES.value, headers=custom_headers)
+
+        assert captured["headers"]["User-Agent"] == "TMV1CortexXSOAREventCollector/4.5.9"
+        assert captured["headers"]["Authorization"]  # Authorization is never lost
+
+    def test_get_search_detection_logs_keeps_custom_headers_and_user_agent(self, mocker, client: Client):
+        captured = {}
+
+        def _side_effect(**kwargs):
+            captured.update(kwargs)
+            return {"items": []}
+
+        mocker.patch.object(BaseClient, "_http_request", side_effect=_side_effect)
+
+        client.get_search_detection_logs(start_datetime="2023-01-01T00:00:00Z", top=1000)
+
+        assert captured["headers"]["TMV1-Query"] == "*"
+        assert captured["headers"]["User-Agent"] == "TMV1CortexXSOAREventCollector/4.5.9"
+
+
 def get_url_params(url: str) -> Dict[str, str]:
     parsed_url = urlparse(url)
     query_parameters = parse_qs(parsed_url.query)
