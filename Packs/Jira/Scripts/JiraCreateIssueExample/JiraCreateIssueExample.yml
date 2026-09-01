@@ -8,9 +8,9 @@ subtype: python3
 tags:
 - jira
 - example
-comment: |
-  This script is used to simplify the process of creating a new Issue in Jira. 
-  You can specify custom fields using the `customFields` argument.
+comment: 'Deprecated. Use the *jira-create-issue* command directly instead, which
+  supports all fields including custom fields via the *issue_json* argument.'
+deprecated: true
 enabled: true
 args:
 - name: summary
@@ -42,13 +42,12 @@ args:
 - name: parentIssueId
   description: Parent issue ID if you create a sub-task.
 - name: customFields
+  type: longText
   description: >-
-    Comma-separated list of field keys and values to include in the created issue.
-    Supports both standard fields and custom fields, e.g.
-    `summary=My Issue,projectKey=PROJ,issueTypeName=Task,customfield_10101=foo,customfield_10102=bar`.
+    A comma-separated list of custom field keys and values to include in the created issue,
+    e.g. customfield_10101=foo,customfield_10102=bar.
     Values may contain non-ASCII characters (Korean, Japanese, etc.), spaces, hyphens, and other special characters.
-    When this argument is used, all required fields (summary, projectKey, issueTypeName, etc.) must be
-    included here. Providing this argument alongside separate named arguments (e.g. summary) will raise an error.
+    Can be used alongside other named arguments such as summary and projectKey.
   isArray: true
 outputs:
 - contextPath: Ticket.Id

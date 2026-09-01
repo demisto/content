@@ -1,7 +1,7 @@
 from typing import Any
 
 import pytest
-from JiraCreateIssueExample import add_custom_fields, parse_custom_fields, validate_date_field, validate_no_extra_args
+from JiraCreateIssueExample import add_custom_fields, parse_custom_fields, validate_date_field
 
 
 @pytest.mark.parametrize("due_date", [("2022-01-01"), ("2023-01-31"), ("2024-02-29")])
@@ -91,6 +91,18 @@ def test_validate_date_field_time_data_doesnt_match(due_date: str):
             ["customfield_10214=\uc6d4\ub3c4\uc2dc\uac04,customfield_10226=Allowed"],
             {"customfield_10214": "\uc6d4\ub3c4\uc2dc\uac04", "customfield_10226": "Allowed"},
         ),
+        # Standard field key (non-customfield_ prefix) - supported after regex broadening
+        (["summary=My Issue"], {"summary": "My Issue"}),
+        # Mix of standard and custom fields in one string
+        (
+            ["summary=My Issue,projectKey=PROJ,customfield_10101=foo"],
+            {"summary": "My Issue", "projectKey": "PROJ", "customfield_10101": "foo"},
+        ),
+        # Leading space before key (e.g. after a comma with a space) - key is stripped
+        (
+            ["customfield_10214=\uc6d4\ub3c4\uc2dc\uac04, customfield_10226=Allowed"],
+            {"customfield_10214": "\uc6d4\ub3c4\uc2dc\uac04", "customfield_10226": "Allowed"},
+        ),
     ],
 )
 def test_parse_custom_fields(custom_fields: list[str], expected: dict[str, Any]):
@@ -112,6 +124,9 @@ def test_parse_custom_fields(custom_fields: list[str], expected: dict[str, Any])
         - Case H: Non-ASCII (Korean) value - previously silently dropped by \\w+ regex, now supported.
         - Case I: Value containing spaces.
         - Case J: Value containing hyphens and special characters.
+        - Case K: Standard field key (non-customfield_ prefix) e.g. summary=My Issue.
+        - Case L: Mix of standard and custom fields in one unsplit string.
+        - Case M: Leading space before a key after a comma - key is stripped.
 
     Then:
         - Case A: A dictionary with 1 attribute is returned.
@@ -124,6 +139,9 @@ def test_parse_custom_fields(custom_fields: list[str], expected: dict[str, Any])
         - Case H: A dictionary with the Korean value correctly parsed.
         - Case I: A dictionary with the space-containing value correctly parsed.
         - Case J: A dictionary with the special-char value correctly parsed.
+        - Case K: A dictionary with the standard field key correctly parsed.
+        - Case L: A dictionary with all three fields correctly parsed.
+        - Case M: A dictionary with the leading-space key stripped and both fields parsed.
     """
 
     actual = parse_custom_fields(custom_fields)
@@ -133,80 +151,45 @@ def test_parse_custom_fields(custom_fields: list[str], expected: dict[str, Any])
 @pytest.mark.parametrize(
     "args, custom_fields, expected",
     [
+        # Custom fields merged into existing args
         (
-            {"arg1": "val1", "arg2": 1},
+            {"summary": "My Issue", "projectKey": "PROJ"},
             {"customfield_10096": "test", "customfield_10040": 100},
-            {"arg1": "val1", "arg2": 1, "issueJson": {"fields": {"customfield_10096": "test", "customfield_10040": 100}}},
+            {"summary": "My Issue", "projectKey": "PROJ", "customfield_10096": "test", "customfield_10040": 100},
         ),
+        # Custom fields merged into empty args
         (
             {},
             {"customfield_10096": "test", "customfield_10040": 100},
-            {"issueJson": {"fields": {"customfield_10096": "test", "customfield_10040": 100}}},
+            {"customfield_10096": "test", "customfield_10040": 100},
+        ),
+        # Korean custom field value merged alongside named args (the customer's use case)
+        (
+            {"summary": "Test", "projectKey": "TEST1", "issueTypeName": "보안이벤트"},
+            {"customfield_10214": "출발시간", "customfield_10226": "Allowed"},
+            {"summary": "Test", "projectKey": "TEST1", "issueTypeName": "보안이벤트",
+             "customfield_10214": "출발시간", "customfield_10226": "Allowed"},
         ),
     ],
 )
-def test_add_custom_fields(args: dict[str, Any], custom_fields: dict[str, Any], expected):
+def test_add_custom_fields(args: dict[str, Any], custom_fields: dict[str, Any], expected: dict[str, Any]):
     """
     Given:
-        - A dictionary of arguments.
+        - A dictionary of arguments (named args like summary, projectKey).
         - A dictionary representing custom fields.
-        - An expected dictionary result.
+        - An expected merged dictionary.
 
     When:
-        - Case A: Passing a dictionary with 2 attributes and another dictionary with 2 attributes into `add_custom_fields`.
-        - Case B: Passing a empty dictionary and another one with 2 attributes into `add_custom_fields`.
+        - Case A: Named args + custom fields are merged.
+        - Case B: Empty args + custom fields are merged.
+        - Case C: Korean custom field values alongside named args (the customer's use case from XSUP-75309).
+
     Then:
-        - Case A: The resulting dictionary will have 4 attributes with `issueJson` root.
-        - Case B: The resulting dictionary will have 2 attributes with `issueJson` root.
+        - Case A: Custom fields are merged directly into args alongside named args.
+        - Case B: Custom fields are the only entries in the result.
+        - Case C: Korean values are preserved and merged correctly.
     """
 
     actual = add_custom_fields(args, custom_fields)
 
     assert actual == expected
-
-
-@pytest.mark.parametrize(
-    "args",
-    [
-        # Only customFields - no other args
-        {"customFields": "customfield_10214=출발시간"},
-    ],
-)
-def test_validate_no_extra_args_passes(args: dict):
-    """
-    Given:
-        - A dict of args containing only `customFields`.
-
-    When:
-        - Calling `validate_no_extra_args` with only `customFields`.
-
-    Then:
-        - No exception is raised.
-    """
-    validate_no_extra_args(args)
-
-
-@pytest.mark.parametrize(
-    "args, expected_in_message",
-    [
-        ({"customFields": "customfield_10214=출발시간", "summary": "Test"}, "summary"),
-        ({"customFields": "customfield_10214=출발시간", "summary": "Test", "projectKey": "PROJ"}, "projectKey"),
-    ],
-)
-def test_validate_no_extra_args_raises(args: dict, expected_in_message: str):
-    """
-    Given:
-        - A dict of args containing `customFields` alongside Jira field arguments.
-
-    When:
-        - Case A: `customFields` is provided alongside `summary`.
-        - Case B: `customFields` is provided alongside `summary` and `projectKey`.
-
-    Then:
-        - Case A: A `DemistoException` is raised mentioning the conflicting argument.
-        - Case B: A `DemistoException` is raised mentioning the conflicting arguments.
-    """
-    from CommonServerPython import DemistoException
-
-    with pytest.raises(DemistoException, match=expected_in_message):
-        validate_no_extra_args(args)
