@@ -16,7 +16,7 @@ urllib3.disable_warnings()
 VENDOR = "docusign"
 PRODUCT = "docusign"
 
-LOG_PREFIX = "[Docusignnnnnn]"
+LOG_PREFIX = "[Docusign]"
 
 # yml parameter names
 CUSTOMER_EVENTS_TYPE = "Customer events"
