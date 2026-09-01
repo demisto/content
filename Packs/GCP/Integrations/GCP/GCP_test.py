@@ -534,9 +534,46 @@ def test_compute_snapshot_labels_set_override(mocker):
 
 def test_compute_snapshot_labels_set_add_merges_existing(mocker):
     """
-    Given: add_labels set to true and a snapshot that already has labels
+    Given: add_labels set to true and a snapshot that already has labels and a fresh fingerprint
     When: compute_snapshot_labels_set is called
-    Then: The existing labels are fetched and merged with the new ones
+    Then: The existing labels are fetched and merged with the new ones, and the fingerprint of the
+          fetched snapshot is used instead of the supplied one
+    """
+    from GCP import compute_snapshot_labels_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+    mock_snapshots.get.return_value.execute.return_value = {
+        "name": "snap-1",
+        "labels": {"owner": "team-a"},
+        "labelFingerprint": "fp-fresh",
+    }
+    mock_snapshots.setLabels.return_value.execute.return_value = {"id": "op-3", "status": "RUNNING"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "p1",
+        "resource_name": "snap-1",
+        "labels": "key=env,value=prod",
+        "label_fingerprint": "fp-stale",
+        "add_labels": "true",
+    }
+    compute_snapshot_labels_set(mock_creds, args)
+
+    body = mock_snapshots.setLabels.call_args[1]["body"]
+    assert body["labels"] == {"owner": "team-a", "env": "prod"}
+    assert body["labelFingerprint"] == "fp-fresh"
+    mock_snapshots.get.assert_called_once_with(project="p1", snapshot="snap-1")
+
+
+def test_compute_snapshot_labels_set_add_falls_back_to_supplied_fingerprint(mocker):
+    """
+    Given: add_labels set to true and a snapshot response that has no labelFingerprint
+    When: compute_snapshot_labels_set is called
+    Then: The supplied fingerprint is used
     """
     from GCP import compute_snapshot_labels_set
 
@@ -558,9 +595,7 @@ def test_compute_snapshot_labels_set_add_merges_existing(mocker):
     }
     compute_snapshot_labels_set(mock_creds, args)
 
-    body = mock_snapshots.setLabels.call_args[1]["body"]
-    assert body["labels"] == {"owner": "team-a", "env": "prod"}
-    mock_snapshots.get.assert_called_once_with(project="p1", snapshot="snap-1")
+    assert mock_snapshots.setLabels.call_args[1]["body"]["labelFingerprint"] == "fp-123"
 
 
 def test_compute_snapshot_labels_set_invalid_labels(mocker):

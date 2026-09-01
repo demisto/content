@@ -1306,7 +1306,7 @@ def compute_firewall_delete(creds: Credentials, args: dict[str, Any]) -> Command
         CommandResults: Object containing the delete operation details under `GCP.Compute.Operations`.
     """
     project_id = args.get("project_id")
-    resource_name = args.get("resource_name")
+    resource_name = args["resource_name"]
 
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.firewalls().delete(project=project_id, firewall=resource_name).execute()  # pylint: disable=E1101
@@ -1440,7 +1440,7 @@ def compute_snapshot_delete(creds: Credentials, args: dict[str, Any]) -> Command
         CommandResults: Object containing the delete operation details under `GCP.Compute.Operations`.
     """
     project_id = args.get("project_id")
-    resource_name = args.get("resource_name")
+    resource_name = args["resource_name"]
 
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.snapshots().delete(project=project_id, snapshot=resource_name).execute()  # pylint: disable=E1101
@@ -1473,16 +1473,17 @@ def compute_snapshot_labels_set(creds: Credentials, args: dict[str, Any]) -> Com
             - resource_name (str): The name of the snapshot.
             - labels (str): Labels to apply, e.g., "key=abc,value=123;key=def,value=456".
             - label_fingerprint (str): The fingerprint of the previous set of labels, used to detect conflicts.
+                Ignored when add_labels is true, since the fingerprint of the fetched snapshot is used instead.
             - add_labels (bool, optional): Whether to add the labels to the existing ones or override them.
 
     Returns:
         CommandResults: Object containing the setLabels operation details under `GCP.Compute.Operations`.
     """
     project_id = args.get("project_id")
-    resource_name = args.get("resource_name")
-    label_fingerprint = args.get("label_fingerprint", "")
+    resource_name = args["resource_name"]
+    label_fingerprint = args["label_fingerprint"]
     add_labels = argToBoolean(args.get("add_labels", False))
-    labels = parse_labels(args.get("labels", ""))
+    labels = parse_labels(args["labels"])
     demisto.debug(f"The parsed {labels=}")
 
     current_labels = {}
@@ -1490,6 +1491,9 @@ def compute_snapshot_labels_set(creds: Credentials, args: dict[str, Any]) -> Com
         snapshot_info = compute_snapshot_get(creds, args).outputs
         if isinstance(snapshot_info, dict):
             current_labels = snapshot_info.get("labels", {})
+            # The snapshot was just fetched, so its fingerprint is the most up to date one. The supplied
+            # fingerprint may already be stale, which would fail the request with a conflict error.
+            label_fingerprint = snapshot_info.get("labelFingerprint") or label_fingerprint
             demisto.debug(f"Adding the new labels {labels=} to the current ones {current_labels}")
 
     body = {"labels": current_labels | labels, "labelFingerprint": label_fingerprint}
@@ -1536,7 +1540,7 @@ def compute_project_info_metadata_add(creds: Credentials, args: dict[str, Any]) 
         CommandResults: Object containing the operation details under `GCP.Compute.Operations`.
     """
     project_id = args.get("project_id")
-    items = parse_metadata_items(args.get("metadata", ""))
+    items = parse_metadata_items(args["metadata"])
     # Project-wide metadata routinely holds secrets (ssh-keys, startup scripts), so only keys are logged.
     demisto.debug(f"The parsed metadata keys: {[item['key'] for item in items]}")
 

@@ -967,7 +967,7 @@ Sets the labels on a snapshot. Required permissions: compute.snapshots.setLabels
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_name | The name of the snapshot for this request. | Required |
 | labels | A list of labels to apply for this resource. Each label key and value must comply with RFC1035. Example: key=abc,value=123;key=def,value=456. | Required |
-| label_fingerprint | The fingerprint of the previous set of labels for this resource, used to detect conflicts. Run gcp-compute-snapshot-get to retrieve the latest fingerprint. | Required |
+| label_fingerprint | The fingerprint of the previous set of labels for this resource, used to detect conflicts. Run gcp-compute-snapshot-get to retrieve the latest fingerprint. Ignored when add_labels is true, since the fingerprint of the fetched snapshot is used instead. | Required |
 | add_labels | Whether to add the new labels to the existing ones or override the previous labels with the new ones. True - add, False - override. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output

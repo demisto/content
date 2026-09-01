@@ -599,7 +599,7 @@ script:
       description: 'A list of labels to apply for this resource. Each label key and value must comply with RFC1035. Example: key=abc,value=123;key=def,value=456.'
     - name: label_fingerprint
       required: true
-      description: The fingerprint of the previous set of labels for this resource, used to detect conflicts. Run gcp-compute-snapshot-get to retrieve the latest fingerprint.
+      description: The fingerprint of the previous set of labels for this resource, used to detect conflicts. Run gcp-compute-snapshot-get to retrieve the latest fingerprint. Ignored when add_labels is true, since the fingerprint of the fetched snapshot is used instead.
     - name: add_labels
       defaultValue: 'false'
       auto: PREDEFINED
