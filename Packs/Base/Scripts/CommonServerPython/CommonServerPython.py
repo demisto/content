@@ -10180,7 +10180,8 @@ if 'requests' in sys.modules:
             cred_type = credentials.get('type')
 
             # Bug on UCP side where they return different types for the same credential type. To be fixed in July'26 version
-            if cred_type == 'oauth2_client_credentials' or cred_type == 'oauth2_authorization_code' or cred_type == 'oauth2':
+            if cred_type == 'oauth2_client_credentials' or cred_type == 'oauth2_authorization_code' \
+                    or cred_type == 'oauth2_private_key_jwt' or cred_type == 'oauth2':
                 self._apply_ucp_oauth2(credentials, ctx)
             elif cred_type == 'api_key':
                 self._apply_ucp_api_key(credentials, ctx)
