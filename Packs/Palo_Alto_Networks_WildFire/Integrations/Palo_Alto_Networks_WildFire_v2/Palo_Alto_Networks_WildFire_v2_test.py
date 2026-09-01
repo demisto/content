@@ -965,3 +965,83 @@ def test_wildfire_get_verdicts_normalizes_single_hash_response(mocker, api_respo
 
     assert isinstance(verdicts_data, list)
     assert len(verdicts_data) == expected_verdict_count
+
+
+@pytest.mark.parametrize(
+    "api_key_source, token, expected_agent, test_id",
+    [
+        # XSUP-75894: the platform-supplied XDR license token must always be sent with agent=xdr,
+        # even when "API Key Type" is left at its default of "other".
+        ("other", "a" * 64, "xdr", "explicit_other_on_platform_license_token"),
+        ("other", "a" * 32, "xdr", "explicit_other_on_platform_32_char_license_token"),
+        # An unrecognised source must not silently drop the agent on a platform tenant either.
+        ("unknown", "a" * 64, "xdr", "unknown_source_on_platform"),
+    ],
+)
+def test_get_agent_defaults_to_xdr_on_platform_for_license_token(
+    api_key_source, token, expected_agent, test_id, mocker
+):
+    """
+    Given:
+        - A Cortex platform (XSIAM / XSOAR 8+) tenant where the API key is supplied by the license,
+          and the user left "API Key Type" at its default value of "other".
+    When:
+        - get_agent() is called with is_license_token=True.
+    Then:
+        - The agent resolves to "xdr", because a license-supplied token is always an XDR key.
+          Before XSUP-75894 the explicit "other" short-circuited platform detection and returned "",
+          so the request went out with no agent and WildFire answered 401 "API key invalid".
+    """
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.is_demisto_version_ge", return_value=True)
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.is_xsiam", return_value=True)
+
+    agent = get_agent(api_key_source, token, is_license_token=True)
+
+    assert agent == expected_agent, f"Test failed for {test_id}"
+
+
+def test_get_agent_user_supplied_key_is_unaffected_by_license_fix(mocker):
+    """
+    Given:
+        - A user-supplied 32-character NGFW / WildFire portal key with "API Key Type" of "other".
+    When:
+        - get_agent() is called with is_license_token=False (the default).
+    Then:
+        - No agent is sent, preserving the pre-existing behaviour for user-entered keys.
+    """
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.is_demisto_version_ge", return_value=True)
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.is_xsiam", return_value=True)
+
+    assert get_agent("other", "a" * 32) == ""
+
+
+def test_main_sends_agent_xdr_for_license_token_when_key_type_left_default(mocker: MockerFixture):
+    """
+    Given:
+        - A ConnectUs-created instance where the API key was left blank and "API Key Type" defaults
+          to "other", so the token is taken from the license (XSUP-75894).
+    When:
+        - main() runs a command.
+    Then:
+        - The outgoing request carries agent=xdr alongside the apikey, rather than the apikey alone.
+    """
+    import Palo_Alto_Networks_WildFire_v2 as wf
+
+    license_token = "L" * 64
+
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"server": "https://test.com/", "credentials": {"password": ""}, "credentials_source": "other"},
+    )
+    mocker.patch.object(demisto, "getLicenseCustomField", return_value=license_token)
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.is_demisto_version_ge", return_value=True)
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.is_xsiam", return_value=True)
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.test_module", return_value="ok")
+    mocker.patch.object(wf, "return_results")
+
+    main()
+
+    assert wf.BODY_DICT == {"apikey": license_token, "agent": "xdr"}
+    assert wf.PARAMS_DICT == {"apikey": license_token, "agent": "xdr"}
