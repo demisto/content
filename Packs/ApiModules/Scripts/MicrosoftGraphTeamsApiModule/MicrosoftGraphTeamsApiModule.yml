@@ -13,7 +13,7 @@ system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
-dockerimage: demisto/crypto:1.0.0.8931184
+dockerimage: demisto/crypto:1.0.0.11658507
 fromversion: 6.10.0
 tests:
 - No tests
