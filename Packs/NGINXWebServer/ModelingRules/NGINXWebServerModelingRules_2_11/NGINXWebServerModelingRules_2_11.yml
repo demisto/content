@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: NGINXWebServer
-name: NGINX Web Server
-rules: ''
-schema: ''
-tags: NGINX Web Server
-supportedModules:
-- xsiam
