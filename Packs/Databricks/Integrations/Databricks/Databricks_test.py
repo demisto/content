@@ -114,6 +114,8 @@ class TestClusterCommands:
             'num_workers': '4',
         })
         assert result.outputs['cluster_id'] == 'new-123'
+        assert result.outputs_prefix == 'Databricks.Cluster'
+        assert result.outputs_key_field == 'cluster_id'
 
     def test_cluster_delete(self, client, mocker):
         mocker.patch.object(client, '_http_request', return_value={})
@@ -132,6 +134,7 @@ class TestJobCommands:
         result = job_get_command(client, {'job_id': '42'})
         assert result.outputs['job_id'] == 42
         assert result.outputs_prefix == 'Databricks.Job'
+        assert result.outputs_key_field == 'job_id'
 
     def test_job_list(self, client, mocker):
         mocker.patch.object(client, '_http_request',
@@ -175,6 +178,7 @@ class TestWarehouseCommands:
         result = warehouse_get_command(client, {'warehouse_id': 'wh-001'})
         assert result.outputs['id'] == 'wh-001'
         assert result.outputs_prefix == 'Databricks.Warehouse'
+        assert result.outputs_key_field == 'id'
 
     def test_warehouse_list(self, client, mocker):
         mocker.patch.object(client, '_http_request',
@@ -220,6 +224,7 @@ class TestUnityCatalogCommands:
         result = catalog_get_command(client, {'name': 'main'})
         assert result.outputs['name'] == 'main'
         assert result.outputs_prefix == 'Databricks.Catalog'
+        assert result.outputs_key_field == 'name'
 
     def test_catalog_list(self, client, mocker):
         mocker.patch.object(client, '_http_request',
@@ -408,6 +413,7 @@ class TestFetchIncidents:
         assert len(incidents) == 1
         assert 'Row Count Alert' in incidents[0]['name']
         assert 'seen_ids' in next_run
+        assert next_run['last_fetch_time'] > 0
 
     def test_fetch_incidents_empty(self, client, mocker):
         mocker.patch.object(client, 'list_sql_alerts', return_value={'results': []})

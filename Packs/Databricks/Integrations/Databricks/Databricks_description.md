@@ -1,8 +1,8 @@
-## Databricks Integration for Cortex XSIAM
+## Databricks
 
 ### Prerequisites
 - A Databricks workspace with a valid URL (e.g., `https://dbc-xxxxx.cloud.databricks.com`)
-- A Personal Access Token (PAT) with appropriate permissions
+- A Personal Access Token (PAT) with at minimum **Workspace User** access. Admin-level permissions are required for IAM (SCIM), IP access lists, and global init script commands
 
 ### How to Generate a Personal Access Token
 1. Log in to your Databricks workspace

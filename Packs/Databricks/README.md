@@ -4,16 +4,16 @@ Comprehensive integration with Databricks workspace APIs for managing clusters, 
 
 ## What does this pack do?
 
-This content pack enables Cortex XSIAM/XSOAR to interact with Databricks workspace APIs, providing 193 commands across 34 API groups:
+This Cortex content pack enables Cortex XSIAM, Cortex XSOAR, and Cortex Cloud to interact with Databricks workspace APIs, providing 193 commands across 34 API groups:
 
 - **Compute Management** -- Create, manage, and monitor clusters, cluster policies, instance pools, and libraries.
-- **Job Orchestration** -- Create, schedule, and monitor Databricks jobs and pipeline (DLT) workflows.
+- **Job Orchestration** -- Create, schedule, and monitor Databricks jobs and pipelines (DLT) workflows.
 - **SQL Analytics** -- Execute SQL statements, manage warehouses, saved queries, and alerts.
 - **Data Governance** -- Manage Unity Catalog resources (catalogs, schemas, tables, volumes) and access grants.
 - **ML Operations** -- Manage MLflow model registry, serving endpoints, and vector search.
 - **Identity & Access** -- Manage users, groups, service principals, permissions, and tokens via SCIM.
 - **Security** -- Manage secrets, secret scopes, IP access lists, and global init scripts.
-- **Monitoring** -- Fetch SQL alerts and failed job runs as XSIAM incidents for automated response.
+- **Monitoring** -- Fetch SQL alerts and failed job runs as Cortex incidents for automated response.
 
 ## Authentication
 

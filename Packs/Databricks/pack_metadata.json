@@ -6,6 +6,7 @@
     "author": "Jon Huebner",
     "url": "https://docs.databricks.com/api/workspace/",
     "email": "jhuebner@paloaltonetworks.com",
+    "githubUser": ["jhueby"],
     "created": "2026-08-31T00:00:00Z",
     "categories": [
         "Analytics & SIEM",
