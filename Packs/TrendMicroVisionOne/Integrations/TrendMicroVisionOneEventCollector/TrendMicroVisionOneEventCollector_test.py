@@ -24,6 +24,38 @@ def client() -> Client:
     return Client(base_url=BASE_URL, api_key="api-key", proxy=False, verify=True)
 
 
+class TestHttpRequestRetryPolicy:
+    """
+    Verifies every HTTP request goes through the retry policy configured in Client.http_request, so
+    transient Vision One errors (502/500/503/504, connection drops, read timeouts) get retried instead
+    of aborting the whole fetch round and leaving last_run unpersisted.
+    """
+
+    @pytest.mark.parametrize(
+        "url_suffix,method,next_link",
+        [
+            (UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES.value, "GET", None),
+            (UrlSuffixes.SEARCH_DETECTIONS.value, "GET", None),
+            (UrlSuffixes.AUDIT.value, "GET", f"{BASE_URL}/v3.0{UrlSuffixes.AUDIT.value}?next=token"),
+        ],
+    )
+    def test_http_request_forwards_retry_policy(self, mocker, client: Client, url_suffix, method, next_link):
+        captured = {}
+
+        def _side_effect(**kwargs):
+            captured.update(kwargs)
+            return {"items": []}
+
+        mocker.patch.object(BaseClient, "_http_request", side_effect=_side_effect)
+
+        client.http_request(url_suffix=url_suffix, method=method, next_link=next_link)
+
+        assert captured["retries"] == 3
+        assert captured["status_list_to_retry"] == (500, 502, 503, 504)
+        assert captured["backoff_factor"] == 2
+        assert captured["backoff_jitter"] == 1.0
+
+
 def get_url_params(url: str) -> Dict[str, str]:
     parsed_url = urlparse(url)
     query_parameters = parse_qs(parsed_url.query)
@@ -177,6 +209,64 @@ def start_freeze_time(timestamp):
     _start_freeze_time.start()
 
 
+class TestTopClamping:
+    """
+    The OAT (top enum: 50/100/200) and Search Detections (ase-top enum: 50/100/500/1000/5000) endpoints only
+    accept a fixed set of 'top' (page size) values per the public API schema. Since the fetch-events timeout
+    backoff logic (see `fetch_events`) repeatedly halves the fetch limit on timeout, and that limit is used
+    directly to build the 'top' request parameter, it can end up computing a value the API rejects. These tests
+    make sure the client always sends a schema-valid 'top', regardless of what was requested.
+    """
+
+    @pytest.mark.parametrize(
+        "requested_top,expected_top",
+        [
+            (1000, 200),  # above the max valid value -> clamped down to the max
+            (200, 200),  # already valid -> unchanged
+            (150, 100),  # between valid values -> clamped down to the closest lower valid value
+            (10, 50),  # below the min valid value -> clamped up to the min
+        ],
+    )
+    def test_get_observed_attack_techniques_logs_clamps_top(self, mocker, client: Client, requested_top, expected_top):
+        captured_params = {}
+
+        def _side_effect(**kwargs):
+            captured_params.update(kwargs.get("params") or {})
+            return {"items": []}
+
+        mocker.patch.object(BaseClient, "_http_request", side_effect=_side_effect)
+
+        client.get_observed_attack_techniques_logs(
+            detected_start_datetime="2023-01-01T00:00:00Z",
+            detected_end_datetime="2023-01-02T00:00:00Z",
+            top=requested_top,
+        )
+
+        assert captured_params["top"] == expected_top
+
+    @pytest.mark.parametrize(
+        "requested_top,expected_top",
+        [
+            (1000, 1000),  # already valid -> unchanged
+            (250, 100),  # e.g. a fetch limit of 1000 halved twice by the timeout backoff logic -> not a valid enum value
+            (5000000, 5000),  # above the max valid value -> clamped down to the max
+            (10, 50),  # below the min valid value -> clamped up to the min
+        ],
+    )
+    def test_get_search_detection_logs_clamps_top(self, mocker, client: Client, requested_top, expected_top):
+        captured_params = {}
+
+        def _side_effect(**kwargs):
+            captured_params.update(kwargs.get("params") or {})
+            return {"items": []}
+
+        mocker.patch.object(BaseClient, "_http_request", side_effect=_side_effect)
+
+        client.get_search_detection_logs(start_datetime="2023-01-01T00:00:00Z", top=requested_top)
+
+        assert captured_params["top"] == expected_top
+
+
 class TestFetchEvents:
     def test_fetch_events_main_flow_no_new_logs(self, mocker):
         """
@@ -248,21 +338,22 @@ class TestFetchEvents:
         assert set_last_run_mocker.call_args.args[0] == {
             "workbench_start_time": "2023-01-01T14:00:01Z",
             "found_workbench_logs": [],
-            "oat_detection_start_time": "2023-01-01T14:00:01Z",
+            "oat_detection_start_time": "2023-01-01T15:00:00Z",
             "dedup_found_oat_logs": [],
             "pagination_found_oat_logs": [],
             "oat_detection_next_link": "",
-            "search_detection_start_time": "2023-01-01T14:00:01Z",
+            "oat_detection_window_end_time": "",
+            "search_detection_start_time": "2023-01-01T15:00:00Z",
             "dedup_found_search_detection_logs": [],
             "pagination_found_search_detection_logs": [],
             "search_detection_next_link": "",
+            "search_detection_window_end_time": "",
             "audit_start_time": "2023-01-01T14:00:01Z",
             "found_audit_logs": [],
         }
 
-        assert send_events_to_xsiam_mocker.call_count == 1
-        # 1000 workbench + 1000 oat + 500 search detections + 500 audit logs
-        assert len(send_events_to_xsiam_mocker.call_args.kwargs["events"]) == 0
+        assert send_events_to_xsiam_mocker.call_count == 0  # no events fetched -> nothing pushed
+        assert not send_events_to_xsiam_mocker.called
 
     def test_fetch_events_main_flow_no_last_run(self, mocker):
         """
@@ -306,21 +397,24 @@ class TestFetchEvents:
         assert set_last_run_mocker.call_args.args[0] == {
             "workbench_start_time": "2023-01-01T14:16:40Z",
             "found_workbench_logs": [1000],
-            "oat_detection_start_time": "2023-01-01T14:59:59Z",
-            "dedup_found_oat_logs": [1000],
-            "pagination_found_oat_logs": [1000],
-            "oat_detection_next_link": "https://api.xdr.trendmicro.com/v3.0/oat/detections?top=1000&fetchedAmountOfEvents=1000",
-            "search_detection_start_time": "2023-01-01T14:59:59Z",
+            "oat_detection_start_time": "2022-12-29T15:00:00Z",
+            "dedup_found_oat_logs": [200],
+            "pagination_found_oat_logs": [200],
+            "oat_detection_next_link": "https://api.xdr.trendmicro.com/v3.0/oat/detections?top=200&fetchedAmountOfEvents=1000",
+            "oat_detection_window_end_time": "2023-01-01T15:00:00Z",
+            "search_detection_start_time": "2023-01-01T15:00:00Z",
             "dedup_found_search_detection_logs": [500],
             "pagination_found_search_detection_logs": [],
             "search_detection_next_link": "",
+            "search_detection_window_end_time": "",
             "audit_start_time": "2023-01-01T14:08:20Z",
             "found_audit_logs": ["77b363584231085e7909d48e0e103a07b6c10127e00da6e4739f07248eee7682"],
         }
 
-        assert send_events_to_xsiam_mocker.call_count == 1
+        assert send_events_to_xsiam_mocker.call_count == 4  # one push per log type
+        total_sent = sum(len(call.kwargs["events"]) for call in send_events_to_xsiam_mocker.call_args_list)
         # 1000 workbench + 1000 oat + 500 search detections + 500 audit logs
-        assert len(send_events_to_xsiam_mocker.call_args.kwargs["events"]) == 3000
+        assert total_sent == 3000
 
     def test_fetch_events_main_flow_timeout(self, mocker):
         """
@@ -358,8 +452,61 @@ class TestFetchEvents:
 
         assert set_last_run_mocker.call_args.args[0] == {**last_run, "max_fetch": 500, "nextTrigger": "30"}
 
-        assert send_events_to_xsiam_mocker.call_count == 1
-        assert send_events_to_xsiam_mocker.call_args.kwargs["events"] == []
+        assert send_events_to_xsiam_mocker.call_count == 0  # timeout -> nothing pushed
+        assert not send_events_to_xsiam_mocker.called
+
+    def test_fetch_events_one_type_failure_keeps_other_checkpoints(self, mocker):
+        """
+        Given:
+         - multiple log types configured; the Observed Attack Techniques fetch raises an HTTP error
+           (non-timeout), simulating a Vision One API failure that survives retries.
+
+        When:
+         - running fetch-events through the main flow
+
+        Then:
+         - the failing type's checkpoint stays unchanged (not advanced, not lost)
+         - the other types still fetch and commit their own checkpoints
+         - setLastRun is called (fetch does not abort entirely)
+        """
+        from TrendMicroVisionOneEventCollector import main
+
+        mocker.patch.object(demisto, "command", return_value="fetch-events")
+        mocker.patch.object(
+            demisto, "params", return_value={"max_fetch": 1000, "log_types": ["Workbench", "Observed Attack Techniques"]}
+        )
+
+        last_run = {
+            "workbench_start_time": "2023-01-01T10:00:00Z",
+            "found_workbench_logs": [],
+            "oat_detection_start_time": "2023-01-01T09:00:00Z",
+            "dedup_found_oat_logs": [],
+            "pagination_found_oat_logs": [],
+            "oat_detection_next_link": "",
+        }
+        mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+
+        # Workbench succeeds; OAT fails with a transient HTTP error (retries exhausted).
+        mocker.patch(
+            "TrendMicroVisionOneEventCollector.get_workbench_logs",
+            return_value=([{}], {"workbench_start_time": "2023-01-01T11:00:00Z", "found_workbench_logs": [1]}),
+        )
+        mocker.patch.object(demisto, "error")  # swallow the expected failure log (stdout check in conftest)
+        mocker.patch(
+            "TrendMicroVisionOneEventCollector.get_observed_attack_techniques_logs",
+            side_effect=DemistoException("Error in API call [502]"),
+        )
+
+        set_last_run_mocker = mocker.patch.object(demisto, "setLastRun")
+        mocker.patch("TrendMicroVisionOneEventCollector.send_events_to_xsiam")
+
+        main()
+
+        saved = set_last_run_mocker.call_args.args[0]
+        # Workbench advanced, OAT kept its previous checkpoint.
+        assert saved["workbench_start_time"] == "2023-01-01T11:00:00Z"
+        assert saved["oat_detection_start_time"] == "2023-01-01T09:00:00Z"
+        assert "oat_detection_next_link" in saved
 
     def test_get_workbench_logs_no_last_run(self, mocker, client: Client):
         """
@@ -447,8 +594,11 @@ class TestFetchEvents:
          - running get_observed_attack_techniques_logs function
 
         Then:
-         - make sure only 500 events are returned
-         - make sure latest observed attack technique event is saved in the oat_detection_logs_time without adding 1 second to it.
+         - make sure the pagination chain is not truncated to `limit` mid-way (since the API returns events
+           newest-first, truncating an in-progress chain would risk skipping backlog), so more than 500
+           events are returned once the fetched page boundary (multiples of 200, the max valid `top`) exceeds it.
+         - make sure the checkpoint stays pinned to the window's own start_time while pagination is still
+           in progress (next_link is non-empty), instead of jumping ahead based on already-fetched log timestamps.
         """
         from TrendMicroVisionOneEventCollector import get_observed_attack_techniques_logs
 
@@ -460,12 +610,13 @@ class TestFetchEvents:
             client=client, first_fetch="1 month ago", last_run={}, limit=500
         )
 
-        assert len(observed_attack_techniques_logs) == 500
+        assert len(observed_attack_techniques_logs) == 600
         assert updated_last_run == {
-            "oat_detection_start_time": "2023-01-01T14:59:59Z",
-            "dedup_found_oat_logs": [1000],
-            "pagination_found_oat_logs": [],
-            "oat_detection_next_link": "",
+            "oat_detection_start_time": "2022-12-01T15:00:00Z",
+            "dedup_found_oat_logs": [200],
+            "pagination_found_oat_logs": [200],
+            "oat_detection_next_link": "https://api.xdr.trendmicro.com/v3.0/oat/detections?top=200&fetchedAmountOfEvents=600",
+            "oat_detection_window_end_time": "2023-01-01T15:00:00Z",
         }
 
     def test_get_observed_attack_techniques_logs_with_last_run(self, mocker, client: Client):
@@ -517,7 +668,69 @@ class TestFetchEvents:
             "dedup_found_oat_logs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
             "pagination_found_oat_logs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
             "oat_detection_next_link": "",
+            "oat_detection_window_end_time": "",
         }
+
+    def test_get_observed_attack_techniques_logs_expired_token_mid_pagination_does_not_skip_backlog(self, mocker, client: Client):
+        """
+        Given:
+         - a pagination chain that started long ago (window is [02:00:00, 07:00:00]) is mid-way through
+           (last_run_next_link points at a token that has now expired), so the connector must restart
+           the query using the ORIGINAL start_time (a checkpoint that must never be skipped forward).
+         - the current time (when the restart happens) is much later (2023-01-02T09:00:00Z), simulating a
+           connector that has fallen far behind real time.
+
+        When:
+         - running get_observed_attack_techniques_logs and getting a "request token expired" error on the
+           very first request (the one using the stale next_link)
+
+        Then:
+         - the new query must be issued with detectedStartDateTime == the ORIGINAL start time (02:00:00),
+           not some later time derived from already-processed log timestamps - otherwise, any backlog
+           between the original start and "now" that hasn't been fetched yet would be silently skipped.
+        """
+        from TrendMicroVisionOneEventCollector import get_observed_attack_techniques_logs
+
+        start_freeze_time("2023-01-02T09:00:00Z")
+
+        original_start_time = "2023-01-01T02:00:00Z"
+        expired_next_link = f"{BASE_URL}/v3.0{UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES.value}?top=1000&fetchedAmountOfEvents=100"
+
+        requested_params: list[dict] = []
+
+        def _side_effect(**kwargs):
+            full_url = kwargs.get("full_url") or ""
+            if full_url == expired_next_link:
+                raise DemistoException("Request token expired")
+            requested_params.append(kwargs.get("params") or {})
+            return create_logs_mocks(
+                url=full_url,
+                num_of_events=5000,
+                url_suffix=UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES.value,
+                created_time_field="detectedDateTime",
+                id_field_name="uuid",
+                top=1000,
+                last_event_fetch_time="2023-01-01T06:00:00Z",
+            )
+
+        mocker.patch.object(BaseClient, "_http_request", side_effect=_side_effect)
+
+        _, updated_last_run = get_observed_attack_techniques_logs(
+            client=client,
+            first_fetch="1 month ago",
+            last_run={
+                "oat_detection_start_time": original_start_time,
+                "dedup_found_oat_logs": [],
+                "pagination_found_oat_logs": [1, 2, 3],
+                "oat_detection_next_link": expired_next_link,
+            },
+            limit=500,
+        )
+
+        # the restarted query must have used the original (not-yet-fully-covered) start time
+        assert requested_params[0]["detectedStartDateTime"] == original_start_time
+        # the checkpoint must not have jumped ahead past events that were never actually fetched
+        assert updated_last_run["oat_detection_start_time"] == original_start_time
 
     def test_get_search_detection_logs_no_last_run(self, mocker, client: Client):
         """
@@ -548,11 +761,12 @@ class TestFetchEvents:
 
         assert len(search_detection_logs) == 500
         assert updated_last_run == {
-            "search_detection_start_time": "2023-01-01T14:59:59Z",
+            "search_detection_start_time": "2022-12-01T15:00:00Z",
             "dedup_found_search_detection_logs": [500],
             "pagination_found_search_detection_logs": [500],
             "search_detection_next_link": "https://api.xdr.trendmicro.com/v3.0/search/detections?top=500"
             "&fetchedAmountOfEvents=500",
+            "search_detection_window_end_time": "2023-01-01T15:00:00Z",
         }
 
     def test_get_search_detection_logs_with_last_run(self, mocker, client: Client):
@@ -607,6 +821,7 @@ class TestFetchEvents:
             "dedup_found_search_detection_logs": [1, 2, 3, 4, 5, 6, 7],
             "pagination_found_search_detection_logs": [1, 2, 3, 4, 5, 6, 7],
             "search_detection_next_link": "",
+            "search_detection_window_end_time": "",
         }
 
     def test_get_audit_logs_no_last_run(self, mocker, client: Client):

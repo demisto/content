@@ -21,9 +21,23 @@ DEFAULT_URL = "https://api.xdr.trendmicro.com"
 PRODUCT = "vision_one"
 VENDOR = "trend_micro"
 ONE_YEAR = 365
+# per the public API schema, /v3.0/oat/detections only accepts top values of 50, 100 or 200 (default 50).
+OAT_TOP_VALID_VALUES = (50, 100, 200)
+OAT_MAX_TOP = max(OAT_TOP_VALID_VALUES)
+# per the public API schema, /v3.0/search/detections (ase-top) only accepts 50, 100, 500, 1000 or 5000 (default 500).
+SEARCH_DETECTIONS_TOP_VALID_VALUES = (50, 100, 500, 1000, 5000)
 
 
 FETCH_EVENTS_TIMEOUT = 180  # 3 minutes
+
+# Retry policy for transient Vision One API failures (502/500/503/504 gateway & internal errors,
+# connection drops and read timeouts) that would otherwise abort the whole fetch and leave last_run
+# unpersisted, causing the next round to re-scan the same window. Values follow the XSIAM/urllib3
+# backoff convention: delay = backoff_factor * (2 ** (attempt - 1)), capped by Retry.BACKOFF_MAX (120s).
+API_RETRIES = 3
+API_BACKOFF_FACTOR = 2
+BACKOFF_JITTER = 1.0
+RETRY_STATUS_CODE_LIST = (500, 502, 503, 504)
 
 
 class LastRunLogsStartTimeFields(Enum):
@@ -36,6 +50,18 @@ class LastRunLogsStartTimeFields(Enum):
 class LastRunLogsNextLink(Enum):
     OBSERVED_ATTACK_TECHNIQUES = "oat_detection_next_link"
     SEARCH_DETECTIONS = "search_detection_next_link"
+
+
+class LastRunLogsWindowEndTime(Enum):
+    """
+    Stores the `detectedEndDateTime`/`endDateTime` that was fixed when a pagination chain (nextLink) was
+    started, for log types returned in descending order (OAT, Search Detections). Since the API returns
+    newest-first, the retrieval time range only becomes fully covered once the whole chain is drained
+    (nextLink is exhausted). This value is what the start-time checkpoint should advance to on completion.
+    """
+
+    OBSERVED_ATTACK_TECHNIQUES = "oat_detection_window_end_time"
+    SEARCH_DETECTIONS = "search_detection_window_end_time"
 
 
 class LastRunTimeCacheTimeFieldNames(Enum):
@@ -112,8 +138,51 @@ URL_SUFFIX_TO_EVENT_TYPE_AND_CREATED_TIME_FIELD = {
     ),
 }
 
+# last_run fields owned by each log type. When a type's fetch raises, these fields keep their previous
+# values so its checkpoint is neither advanced nor lost, while the other types still commit their progress.
+LOG_TYPE_LAST_RUN_FIELDS = {
+    LogTypes.WORKBENCH.value: (
+        "workbench_start_time",
+        "found_workbench_logs",
+    ),
+    LogTypes.OBSERVED_ATTACK_TECHNIQUES.value: (
+        "oat_detection_start_time",
+        "dedup_found_oat_logs",
+        "pagination_found_oat_logs",
+        "oat_detection_next_link",
+        "oat_detection_window_end_time",
+    ),
+    LogTypes.SEARCH_DETECTIONS.value: (
+        "search_detection_start_time",
+        "dedup_found_search_detection_logs",
+        "pagination_found_search_detection_logs",
+        "search_detection_next_link",
+        "search_detection_window_end_time",
+    ),
+    LogTypes.AUDIT.value: (
+        "audit_start_time",
+        "found_audit_logs",
+    ),
+}
 
 """ CLIENT CLASS """
+
+
+def clamp_to_valid_top(top: int, valid_values: tuple) -> int:
+    """
+    Clamps a requested 'top' (page size) value to the closest value in valid_values that does not exceed it.
+    This is needed since some endpoints only accept a fixed enum of 'top' values, and callers (e.g. the fetch
+    timeout backoff logic, which repeatedly halves the fetch limit) may otherwise compute an invalid one.
+
+    Args:
+        top (int): the requested top value.
+        valid_values (tuple): the API-accepted values for top, per the public API schema.
+
+    Returns:
+        int: the closest valid value not exceeding top, or the smallest valid value if top is below all of them.
+    """
+    valid_values_at_or_below_requested = [value for value in valid_values if value <= top]
+    return max(valid_values_at_or_below_requested) if valid_values_at_or_below_requested else min(valid_values)
 
 
 class Client(BaseClient):
@@ -153,6 +222,11 @@ class Client(BaseClient):
             full_url=url,
             params=params,
             headers=request_headers,
+            retries=API_RETRIES,
+            status_list_to_retry=RETRY_STATUS_CODE_LIST,
+            backoff_factor=API_BACKOFF_FACTOR,
+            backoff_jitter=BACKOFF_JITTER,
+            raise_on_status=False,
         )
 
     def get_logs(
@@ -197,13 +271,13 @@ class Client(BaseClient):
             response = self.http_request(url_suffix=url_suffix, method=method, params=params, headers=headers)
 
         current_items = response.get("items") or []
-        demisto.info(f"Received {current_items=} with {url_suffix=} and {params=}")
+        demisto.debug(f"Received {len(current_items)} items with {url_suffix=} and {params=}")
         logs.extend(current_items)
 
         while (new_next_link := response.get("nextLink")) and len(logs) < limit:
             response = self.http_request(method=method, headers=headers, next_link=new_next_link)
             current_items = response.get("items") or []
-            demisto.info(f"Received {current_items=} with {new_next_link=}")
+            demisto.debug(f"Received {len(current_items)} items via {new_next_link=}")
             logs.extend(current_items)
 
         log_type, created_time_field = URL_SUFFIX_TO_EVENT_TYPE_AND_CREATED_TIME_FIELD[url_suffix]
@@ -264,7 +338,7 @@ class Client(BaseClient):
         self,
         detected_start_datetime: str = "",
         detected_end_datetime: str = "",
-        top: int = 1000,
+        top: int = OAT_MAX_TOP,
         limit: int = DEFAULT_MAX_LIMIT,
         next_link: str | None = None,
     ) -> tuple[List[dict], str | None, bool]:
@@ -283,13 +357,17 @@ class Client(BaseClient):
             detected_end_datetime (str): Timestamp in ISO 8601 format that indicates the end of the event
                                          detection data retrieval time range. If no value is specified,
                                          detectedEndDateTime defaults to the time the request is made.
-            top (int): Number of records displayed on a single page.
+            top (int): Number of records displayed on a single page. Per the API schema, only 50, 100 or 200
+                       are accepted; values outside this set are clamped to the closest valid value.
             limit (int): the maximum number of observed attack techniques logs to retrieve.
             next_link (str): the next link for the api request (used mainly for pagination).
 
         Returns:
             tuple[List[dict], str | None, bool]: List of logs, next pagination link, boolean to indicate if new query.
         """
+        # the API only accepts top values of 50/100/200 (see OAT_TOP_VALID_VALUES) - any other value is rejected,
+        # so clamp it to the closest valid value that does not exceed the requested one (never below the minimum).
+        top = clamp_to_valid_top(top, OAT_TOP_VALID_VALUES)
         # will retrieve all the events that are more or equal to detected_start_datetime, does not support milliseconds
         # returns in descending order by default and cannot be changed
         # will retrieve all the events that are less than detected_end_datetime and not less equal
@@ -319,13 +397,18 @@ class Client(BaseClient):
             start_datetime (str): Timestamp in ISO 8601 format that indicates the start of the data retrieval range.
             end_datetime (str): Timestamp in ISO 8601 format that indicates the end of the data retrieval time range.
                                 If no value is specified, 'endDateTime' defaults to the time the request is made.
-            top (int): Number of records displayed on a page.
+            top (int): Number of records displayed on a page. Per the API schema (ase-top), only 50, 100, 500,
+                       1000 or 5000 are accepted; values outside this set are clamped to the closest valid value.
             limit (int): the maximum number of search detection logs to retrieve.
             next_link (str): the next link for the api request (used mainly for pagination).
 
         Returns:
             tuple[List[dict], str | None, bool]: List of logs, next pagination link, boolean to indicate if new query.
         """
+        # the API only accepts specific top values (see SEARCH_DETECTIONS_TOP_VALID_VALUES) - any other value is
+        # rejected. `top` here is derived from the fetch limit, which can end up as an arbitrary value (e.g. after
+        # the fetch timeout backoff logic halves it repeatedly), so clamp it to stay schema-compliant.
+        top = clamp_to_valid_top(top, SEARCH_DETECTIONS_TOP_VALID_VALUES)
         # will retrieve all the events that are more or equal to detected_start_datetime, does not support miliseconds
         # will retrieve all the events that are less or equal to end_datetime
         params = {"startDateTime": start_datetime, "top": top}
@@ -508,10 +591,10 @@ def get_all_latest_logs_ids(
 
     for log in logs:
         if log.get(log_created_time_field_name) == latest_occurred_time_log and (log_id := log.get(log_id_field_name)):
-            demisto.info(f"adding log with ID {log_id} to latest occurred time logs")
+            demisto.debug(f"adding log with ID {log_id} to latest occurred time logs")
             latest_occurred_time_log_ids.add(log_id)
 
-    demisto.info(f"{latest_occurred_time_log_ids=} for {log_type=}")
+    demisto.debug(f"{latest_occurred_time_log_ids=} for {log_type=}")
     return list(latest_occurred_time_log_ids), latest_occurred_time_log
 
 
@@ -537,12 +620,12 @@ def dedup_fetched_logs(
     for log in logs:
         log_id = log.get(log_id_field_name)
         if log_id not in last_run_found_logs:
-            demisto.info(f"log with ID {log_id} for {log_type=} has not been fetched.")
+            demisto.debug(f"log with ID {log_id} for {log_type=} has not been fetched.")
             un_fetched_logs.append(log)
         else:
-            demisto.info(f"log with ID {log_id} for {log_type=} has been fetched")
+            demisto.debug(f"log with ID {log_id} for {log_type=} has been fetched")
 
-    demisto.info(f"{un_fetched_logs=}")
+    demisto.debug(f"{len(un_fetched_logs)=} of {len(logs)} for {log_type=}")
     return un_fetched_logs
 
 
@@ -658,7 +741,7 @@ def get_workbench_logs(
 
     fetched_workbench_log_ids = [(_log.get("id"), _log.get("_time")) for _log in workbench_logs if _log.get("id")]
 
-    demisto.info(f"{fetched_workbench_log_ids=}")
+    demisto.debug(f"{len(fetched_workbench_log_ids)=}")
     demisto.info(f"{workbench_updated_last_run=}")
     return workbench_logs, workbench_updated_last_run
 
@@ -696,11 +779,13 @@ def get_observed_attack_techniques_logs(
     observed_attack_technique_log_type = LogTypes.OBSERVED_ATTACK_TECHNIQUES.value
     observed_attack_technique_start_run_time = LastRunLogsStartTimeFields.OBSERVED_ATTACK_TECHNIQUES.value
     observed_attack_technique_next_link = LastRunLogsNextLink.OBSERVED_ATTACK_TECHNIQUES.value
+    observed_attack_technique_window_end_time = LastRunLogsWindowEndTime.OBSERVED_ATTACK_TECHNIQUES.value
     observed_attack_technique_dedup = LastRunTimeCacheTimeFieldNames.OBSERVED_ATTACK_TECHNIQUES_DEDUP.value
     observed_attack_technique_pagination = LastRunTimeCacheTimeFieldNames.OBSERVED_ATTACK_TECHNIQUES_PAGINATION.value
 
     last_run_next_link = last_run.get(observed_attack_technique_next_link)
     last_run_start_time = last_run.get(observed_attack_technique_start_run_time)
+    last_run_window_end_time = last_run.get(observed_attack_technique_window_end_time)
     dedup_log_ids = last_run.get(observed_attack_technique_dedup) or []
     pagination_log_ids = last_run.get(observed_attack_technique_pagination) or []
 
@@ -721,9 +806,14 @@ def get_observed_attack_techniques_logs(
         f"Got {len(observed_attack_techniques_logs)} {observed_attack_technique_log_type} logs before deduplication. "
         f"{is_new_query=}, {new_next_link=}"
     )
-    if last_run_next_link and not is_new_query:
+    # the API returns OAT events newest-first, so the [detected_start_datetime, detected_end_datetime] window is only
+    # fully covered once its nextLink chain is completely drained. `is_pagination_continuation` distinguishes an
+    # in-progress chain from a brand new (or expired-token-restarted) query.
+    is_pagination_continuation = bool(last_run_next_link) and not is_new_query
+
+    if is_pagination_continuation:
         demisto.debug(f"Running deduplication in pagination mode on {observed_attack_technique_log_type} logs")
-        observed_attack_techniques_logs, subsequent_pagination_log_ids, latest_log_time = get_dedup_logs(
+        observed_attack_techniques_logs, subsequent_pagination_log_ids, _ = get_dedup_logs(
             logs=observed_attack_techniques_logs,
             last_run=last_run,
             log_cache_last_run_name_field_name=observed_attack_technique_pagination,
@@ -735,21 +825,27 @@ def get_observed_attack_techniques_logs(
         # handle cases where the amount of logs that happened at the same time is larger than the page size
         if subsequent_pagination_log_ids:
             pagination_log_ids.extend(subsequent_pagination_log_ids)
+        # keep the window end time anchored to when this pagination chain originally started.
+        # if it wasn't tracked yet (e.g. right after upgrading mid-chain), leave it unknown rather than
+        # falling back to the freshly recomputed "now" - doing so would reintroduce the very bug being fixed
+        window_end_time = last_run_window_end_time
+        demisto.debug(
+            f"Pagination continuation for {observed_attack_technique_log_type}: " f"carrying window_end_time={window_end_time!r}"
+        )
 
     else:
         demisto.debug(f"Running deduplication in new query mode on {observed_attack_technique_log_type} logs")
-        observed_attack_techniques_logs, dedup_log_ids, latest_log_time = get_dedup_logs(
+        observed_attack_techniques_logs, dedup_log_ids, _ = get_dedup_logs(
             logs=observed_attack_techniques_logs,
             last_run=last_run,
             log_cache_last_run_name_field_name=observed_attack_technique_dedup,
             log_type=observed_attack_technique_log_type,
             date_format=date_format,
         )
-
-    # Last run start time needs to be updated all the time to allow for new queries if pagination token is expired
-    last_run_start_time = latest_log_time or (
-        dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
-    ).strftime(DATE_FORMAT)  # type: ignore
+        # (re)starting a new query (fresh window, or restarted after an expired pagination token):
+        # anchor the window end time to the end time used for this fresh query
+        window_end_time = end_time
+        demisto.debug(f"New query for {observed_attack_technique_log_type}: anchoring window_end_time={window_end_time!r}")
 
     fetched_observed_attack_technique_logs_ids = [
         (_log.get("uuid"), _log.get("_time")) for _log in observed_attack_techniques_logs if _log.get("uuid")
@@ -761,6 +857,14 @@ def get_observed_attack_techniques_logs(
             pagination_log_ids = dedup_log_ids
         # always update the next link
         last_run_next_link = new_next_link
+        # pagination not finished yet: pin the checkpoint to this (possibly just-started) window's own
+        # start time. Do NOT advance it based on a log timestamp - an interrupted or expired-token-restarted
+        # continuation could otherwise skip over older, not-yet-fetched backlog events.
+        last_run_start_time = start_time
+        demisto.debug(
+            f"Pagination unfinished for {observed_attack_technique_log_type}: "
+            f"keeping checkpoint at start_time={last_run_start_time!r}"
+        )
     else:
         if last_run_next_link:
             # pagination is over
@@ -770,6 +874,18 @@ def get_observed_attack_techniques_logs(
                 f"the following log ids: {fetched_observed_attack_technique_logs_ids}"
             )
         last_run_next_link = ""
+        if window_end_time:
+            # the whole [start_time, window_end_time] range has now been fully fetched, safe to advance the
+            # checkpoint to the window's real end time (rather than to a log timestamp, which is unreliable
+            # since the log source is returned newest-first)
+            last_run_start_time = window_end_time
+        # else: the window's true end time is unknown (e.g. right after upgrading mid-chain) - keep the
+        # checkpoint frozen; it will safely advance once a window's end time is tracked end-to-end
+        demisto.debug(
+            f"Pagination finished for {observed_attack_technique_log_type}: "
+            f"advancing checkpoint to window_end_time={window_end_time!r} -> {last_run_start_time!r}"
+        )
+        window_end_time = ""
 
     parse_observed_attack_techniques_logs(observed_attack_techniques_logs)
 
@@ -778,9 +894,10 @@ def get_observed_attack_techniques_logs(
         observed_attack_technique_dedup: dedup_log_ids,
         observed_attack_technique_pagination: pagination_log_ids,
         observed_attack_technique_next_link: last_run_next_link,
+        observed_attack_technique_window_end_time: window_end_time,
     }
 
-    demisto.info(f"{fetched_observed_attack_technique_logs_ids=}")
+    demisto.debug(f"{len(fetched_observed_attack_technique_logs_ids)=}")
     demisto.info(f"{observed_attack_techniques_updated_last_run=}")
     return observed_attack_techniques_logs, observed_attack_techniques_updated_last_run
 
@@ -848,15 +965,17 @@ def get_search_detection_logs(
     search_detections_log_type = LogTypes.SEARCH_DETECTIONS.value
     search_detection_start_run_time = LastRunLogsStartTimeFields.SEARCH_DETECTIONS.value
     search_detection_next_link = LastRunLogsNextLink.SEARCH_DETECTIONS.value
+    search_detection_window_end_time = LastRunLogsWindowEndTime.SEARCH_DETECTIONS.value
     search_detection_dedup = LastRunTimeCacheTimeFieldNames.SEARCH_DETECTIONS_DEDUP.value
     search_detection_pagination = LastRunTimeCacheTimeFieldNames.SEARCH_DETECTIONS_PAGINATION.value
 
     last_run_next_link = last_run.get(search_detection_next_link)
     last_run_start_time = last_run.get(search_detection_start_run_time)
+    last_run_window_end_time = last_run.get(search_detection_window_end_time)
     dedup_log_ids = last_run.get(search_detection_dedup) or []
     pagination_log_ids = last_run.get(search_detection_pagination) or []
 
-    start_time, _ = get_datetime_range(
+    start_time, end_time = get_datetime_range(
         last_run_time=last_run_start_time,
         first_fetch=first_fetch,
         log_type_time_field_name=LastRunLogsStartTimeFields.SEARCH_DETECTIONS.value,
@@ -873,9 +992,14 @@ def get_search_detection_logs(
         f"Got {len(search_detection_logs)} {search_detections_log_type} logs before deduplication. "
         f"{is_new_query=}, {new_next_link=}"
     )
-    if last_run_next_link and not is_new_query:
+    # the API returns detections newest-first, so the retrieval window is only fully covered once its
+    # nextLink chain is completely drained. `is_pagination_continuation` distinguishes an in-progress
+    # chain from a brand new (or expired-token-restarted) query.
+    is_pagination_continuation = bool(last_run_next_link) and not is_new_query
+
+    if is_pagination_continuation:
         demisto.debug(f"Running deduplication in pagination mode on {search_detections_log_type} logs")
-        search_detection_logs, subsequent_pagination_log_ids, latest_log_time = get_dedup_logs(
+        search_detection_logs, subsequent_pagination_log_ids, _ = get_dedup_logs(
             logs=search_detection_logs,
             last_run=last_run,
             log_cache_last_run_name_field_name=search_detection_pagination,
@@ -886,21 +1010,27 @@ def get_search_detection_logs(
         # save in cache logs for subsequent pagination(s) in case they have the latest log time
         if subsequent_pagination_log_ids:
             pagination_log_ids.extend(subsequent_pagination_log_ids)
+        # keep the window end time anchored to when this pagination chain originally started.
+        # if it wasn't tracked yet (e.g. right after upgrading mid-chain), leave it unknown rather than
+        # falling back to the freshly recomputed "now" - doing so would reintroduce the very bug being fixed
+        window_end_time = last_run_window_end_time
+        demisto.debug(
+            f"Pagination continuation for {search_detections_log_type}: " f"carrying window_end_time={window_end_time!r}"
+        )
 
     else:
         demisto.debug(f"Running deduplication in new query mode on {search_detections_log_type} logs")
-        search_detection_logs, dedup_log_ids, latest_log_time = get_dedup_logs(
+        search_detection_logs, dedup_log_ids, _ = get_dedup_logs(
             logs=search_detection_logs,
             last_run=last_run,
             log_cache_last_run_name_field_name=search_detection_dedup,
             log_type=search_detections_log_type,
             date_format=date_format,
         )
-
-    # Last run start time needs to be updated all the time to allow for new queries if pagination token is expired
-    last_run_start_time = latest_log_time or (
-        dateparser.parse(start_time) + timedelta(seconds=1)  # type: ignore
-    ).strftime(DATE_FORMAT)  # type: ignore
+        # (re)starting a new query (fresh window, or restarted after an expired pagination token):
+        # anchor the window end time to the end time used for this fresh query
+        window_end_time = end_time
+        demisto.debug(f"New query for {search_detections_log_type}: anchoring window_end_time={window_end_time!r}")
 
     fetched_search_detection_logs_ids = [
         (_log.get("uuid"), _log.get("_time")) for _log in search_detection_logs if _log.get("uuid")
@@ -912,6 +1042,14 @@ def get_search_detection_logs(
             pagination_log_ids = dedup_log_ids
         # always update the next link
         last_run_next_link = new_next_link
+        # pagination not finished yet: pin the checkpoint to this (possibly just-started) window's own
+        # start time. Do NOT advance it based on a log timestamp - an interrupted or expired-token-restarted
+        # continuation could otherwise skip over older, not-yet-fetched backlog events.
+        last_run_start_time = start_time
+        demisto.debug(
+            f"Pagination unfinished for {search_detections_log_type}: "
+            f"keeping checkpoint at start_time={last_run_start_time!r}"
+        )
     else:
         if last_run_next_link:
             # pagination is over
@@ -920,6 +1058,18 @@ def get_search_detection_logs(
                 f"pagination is over, received in the last page the following log ids: {fetched_search_detection_logs_ids}"
             )
         last_run_next_link = ""
+        if window_end_time:
+            # the whole [start_time, window_end_time] range has now been fully fetched, safe to advance the
+            # checkpoint to the window's real end time (rather than to a log timestamp, which is unreliable
+            # since the log source is returned newest-first)
+            last_run_start_time = window_end_time
+        # else: the window's true end time is unknown (e.g. right after upgrading mid-chain) - keep the
+        # checkpoint frozen; it will safely advance once a window's end time is tracked end-to-end
+        demisto.debug(
+            f"Pagination finished for {search_detections_log_type}: "
+            f"advancing checkpoint to window_end_time={window_end_time!r} -> {last_run_start_time!r}"
+        )
+        window_end_time = ""
 
     parse_search_detection_logs(search_detection_logs)
 
@@ -928,9 +1078,10 @@ def get_search_detection_logs(
         search_detection_dedup: dedup_log_ids,
         search_detection_pagination: pagination_log_ids,
         search_detection_next_link: last_run_next_link,
+        search_detection_window_end_time: window_end_time,
     }
 
-    demisto.info(f"{fetched_search_detection_logs_ids=}")
+    demisto.debug(f"{len(fetched_search_detection_logs_ids)=}")
     demisto.info(f"{search_detections_updated_last_run=}")
     return search_detection_logs, search_detections_updated_last_run
 
@@ -996,7 +1147,7 @@ def get_audit_logs(
 
     audit_updated_last_run = {audit_log_last_run_time: latest_audit_log_time, audit_cache_time_field_name: latest_audit_log_ids}
 
-    demisto.info(f"{fetched_audit_logs_ids=}")
+    demisto.debug(f"{len(fetched_audit_logs_ids)=}")
     demisto.info(f"{audit_updated_last_run=}")
     return audit_logs, audit_updated_last_run
 
@@ -1004,11 +1155,26 @@ def get_audit_logs(
 """ COMMAND FUNCTIONS """
 
 
+def _commit_log_type(logs: list[dict], updated_last_run: dict, last_run: dict, log_type: str, push_to_xsiam: bool) -> None:
+    """
+    Push a fetched log type to XSIAM and immediately persist its checkpoint. Doing this per log type
+    (instead of merging all types and sending once at the end) gives true partial progress: if one type
+    fails, the others are already sent and their checkpoints saved, and memory only ever holds one type's
+    events at a time (send_events_to_xsiam chunks internally).
+    """
+    if logs and push_to_xsiam:
+        send_events_to_xsiam(events=logs, vendor=VENDOR, product=PRODUCT)
+        demisto.info(f"Pushed {len(logs)} {log_type} events to XSIAM")
+    last_run.update(updated_last_run)
+    demisto.setLastRun(last_run)
+
+
 def fetch_events(
     client: Client,
     first_fetch: str,
     limit: int = DEFAULT_MAX_LIMIT,
     log_types: list[str] = LogTypes.values(),
+    push_to_xsiam: bool = True,
 ) -> tuple[List[dict], dict]:
     """
     Get all the logs.
@@ -1018,6 +1184,7 @@ def fetch_events(
         first_fetch (str): The first fetch time.
         limit (int): The maximum number of logs to fetch from each type.
         log_types (list[str]): The list of supported log types to fetch.
+        push_to_xsiam (bool): Whether to send fetched events to XSIAM. False for test-module.
 
     Returns:
         Tuple[List[Dict], Dict]: events & updated last run for all the log types.
@@ -1025,7 +1192,9 @@ def fetch_events(
     last_run = demisto.getLastRun()
     demisto.info(f"Last run in the start of the fetch: {last_run}")
 
+    had_degraded_fetch_limit = "max_fetch" in last_run
     fetch_limit = last_run.pop("max_fetch", limit)
+    demisto.debug(f"Using {'degraded' if had_degraded_fetch_limit else 'configured'} fetch_limit={fetch_limit}")
     is_finished = False
 
     with ExecutionTimeout(seconds=FETCH_EVENTS_TIMEOUT):
@@ -1036,59 +1205,96 @@ def fetch_events(
         updated_workbench_last_run: dict = {}
         if LogTypes.WORKBENCH.value in log_types:
             demisto.info(f"Starting to fetch {LogTypes.WORKBENCH} logs")
-            workbench_logs, updated_workbench_last_run = get_workbench_logs(
-                **get_logs_kwargs,
-            )
+            try:
+                workbench_logs, updated_workbench_last_run = get_workbench_logs(
+                    **get_logs_kwargs,
+                )
+                _commit_log_type(workbench_logs, updated_workbench_last_run, last_run, LogTypes.WORKBENCH.value, push_to_xsiam)
+            except SignalTimeoutError:
+                raise
+            except Exception as e:
+                demisto.error(f"Failed fetching {LogTypes.WORKBENCH} logs, keeping checkpoint: {e}")
             demisto.info(f"Fetched amount of {LogTypes.WORKBENCH} logs: {len(workbench_logs)}")
 
         observed_attack_techniques_logs: list[dict] = []
         updated_observed_attack_technique_last_run: dict = {}
         if LogTypes.OBSERVED_ATTACK_TECHNIQUES.value in log_types:
             demisto.info(f"Starting to fetch {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs")
-            observed_attack_techniques_logs, updated_observed_attack_technique_last_run = get_observed_attack_techniques_logs(
-                **get_logs_kwargs,
-            )
+            try:
+                observed_attack_techniques_logs, updated_observed_attack_technique_last_run = get_observed_attack_techniques_logs(
+                    **get_logs_kwargs,
+                )
+                _commit_log_type(
+                    observed_attack_techniques_logs,
+                    updated_observed_attack_technique_last_run,
+                    last_run,
+                    LogTypes.OBSERVED_ATTACK_TECHNIQUES.value,
+                    push_to_xsiam,
+                )
+            except SignalTimeoutError:
+                raise
+            except Exception as e:
+                demisto.error(f"Failed fetching {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs, keeping checkpoint: {e}")
             demisto.info(f"Fetched amount of {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs: {len(observed_attack_techniques_logs)}")
 
         search_detection_logs: list[dict] = []
         updated_search_detection_last_run: dict = {}
         if LogTypes.SEARCH_DETECTIONS.value in log_types:
             demisto.info(f"Starting to fetch {LogTypes.SEARCH_DETECTIONS} logs")
-            search_detection_logs, updated_search_detection_last_run = get_search_detection_logs(
-                **get_logs_kwargs,
-            )
+            try:
+                search_detection_logs, updated_search_detection_last_run = get_search_detection_logs(
+                    **get_logs_kwargs,
+                )
+                _commit_log_type(
+                    search_detection_logs,
+                    updated_search_detection_last_run,
+                    last_run,
+                    LogTypes.SEARCH_DETECTIONS.value,
+                    push_to_xsiam,
+                )
+            except SignalTimeoutError:
+                raise
+            except Exception as e:
+                demisto.error(f"Failed fetching {LogTypes.SEARCH_DETECTIONS} logs, keeping checkpoint: {e}")
             demisto.info(f"Fetched amount of {LogTypes.SEARCH_DETECTIONS} logs: {len(search_detection_logs)}")
 
         audit_logs: list[dict] = []
         updated_audit_last_run: dict = {}
         if LogTypes.AUDIT.value in log_types:
             demisto.info(f"Starting to fetch {LogTypes.AUDIT} logs")
-            audit_logs, updated_audit_last_run = get_audit_logs(
-                **get_logs_kwargs,
-            )
+            try:
+                audit_logs, updated_audit_last_run = get_audit_logs(
+                    **get_logs_kwargs,
+                )
+                _commit_log_type(audit_logs, updated_audit_last_run, last_run, LogTypes.AUDIT.value, push_to_xsiam)
+            except SignalTimeoutError:
+                raise
+            except Exception as e:
+                demisto.error(f"Failed fetching {LogTypes.AUDIT} logs, keeping checkpoint: {e}")
             demisto.info(f"Fetched amount of {LogTypes.AUDIT} logs: {len(audit_logs)}")
 
         is_finished = True  # Indicates code block inside `ExecutionTimeout` context manager finished executing in time
 
     if is_finished:
-        demisto.debug(f"Completed fetching up to {fetch_limit} events. Updating last run")
-        events = workbench_logs + observed_attack_techniques_logs + search_detection_logs + audit_logs
-
-        for logs_last_run in [
-            updated_workbench_last_run,
-            updated_observed_attack_technique_last_run,
-            updated_search_detection_last_run,
-            updated_audit_last_run,
-        ]:
-            last_run.update(logs_last_run)
+        demisto.debug(
+            f"Completed fetching up to {fetch_limit} events within timeout. "
+            f"fetch_limit will reset to configured value on the next round."
+        )
+        demisto.setLastRun(last_run)  # ensure final state persisted (each type already committed)
 
     else:
-        demisto.debug(f"Timed out fetching up to {fetch_limit} events. Halving limit in last run")
-        events = []  # No events sent to XSIAM
+        demisto.debug(
+            f"Timed out fetching up to {fetch_limit} events. Halving to {max(fetch_limit // 2, 1)} for next round. "
+            f"partial: workbench={len(locals().get('workbench_logs', []))}, "
+            f"oat={len(locals().get('observed_attack_techniques_logs', []))}, "
+            f"search={len(locals().get('search_detection_logs', []))}, "
+            f"audit={len(locals().get('audit_logs', []))}"
+        )
         last_run.update({"max_fetch": max(fetch_limit // 2, 1), "nextTrigger": "30"})  # Reduce size of API calls in next fetch
+        demisto.setLastRun(last_run)
 
     demisto.info(f"Last run after fetching all logs: {last_run}")
-    return events, last_run
+    return [], last_run
 
 
 def test_module(client: Client, first_fetch: str, log_types: list[str]) -> str:
@@ -1103,7 +1309,7 @@ def test_module(client: Client, first_fetch: str, log_types: list[str]) -> str:
     Returns:
         str: 'ok' in case of success, exception in case of an error.
     """
-    fetch_events(client=client, first_fetch=first_fetch, limit=1, log_types=log_types)
+    fetch_events(client=client, first_fetch=first_fetch, limit=1, log_types=log_types, push_to_xsiam=False)
     return "ok"
 
 
@@ -1227,7 +1433,6 @@ def main() -> None:
             return_results(test_module(client=client, first_fetch=first_fetch, log_types=log_types))
         elif command == "fetch-events":
             events, updated_last_run = fetch_events(client=client, first_fetch=first_fetch, limit=limit, log_types=log_types)
-            send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(updated_last_run)
         elif command == "trend-micro-vision-one-get-events":
             return_results(get_events_command(client=client, args=demisto.args()))
