@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: orca_modeling_rules
-name: Orca Modeling Rules
+id: orca_ModelingRule
+name: orca Modeling Rule
 rules: ''
 schema: ''
 tags: Orca
