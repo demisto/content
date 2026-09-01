@@ -5276,7 +5276,7 @@ class TestGCPComputeRegionsList:
     def test_gcp_compute_regions_list_with_all_parameters(self, mocker):
         """
         Given: A mocked Compute API returning a region item along with a next page token.
-        When: gcp_compute_regions_list is called with limit, filters, order_by and page_token.
+        When: gcp_compute_regions_list is called with limit, filters, order_by and next_token.
         Then: The API is called with all the provided parameters and the next token is returned in the outputs.
         """
         from GCP import GCPServices, gcp_compute_regions_list
@@ -5299,7 +5299,7 @@ class TestGCPComputeRegionsList:
             "limit": "25",
             "filters": "name=europe*",
             "order_by": "name",
-            "page_token": "prev-token",
+            "next_token": "prev-token",
         }
         result = gcp_compute_regions_list(mock_creds, args)
 
@@ -5307,7 +5307,6 @@ class TestGCPComputeRegionsList:
             project="test-project", maxResults=25, filter="name=europe*", orderBy="name", pageToken="prev-token"
         )
         assert result.outputs["GCP.Compute(true)"]["RegionsNextToken"] == "next-token-123"
-        assert "next-token-123" in result.readable_output
 
     def test_gcp_compute_regions_list_empty_response(self, mocker):
         """
@@ -5353,7 +5352,6 @@ class TestGCPComputeRegionsList:
         result = gcp_compute_regions_list(mock_creds, {"project_id": "test-project"})
 
         assert result.outputs == {"GCP.Compute(true)": {"RegionsNextToken": "next-token-789"}}
-        assert "next-token-789" in result.readable_output
 
     @pytest.mark.parametrize("limit", ["", "0"])
     def test_gcp_compute_regions_list_falsy_limit_falls_back_to_default(self, mocker, limit):
@@ -5459,7 +5457,7 @@ class TestGCPComputeZonesList:
     def test_gcp_compute_zones_list_with_all_parameters(self, mocker):
         """
         Given: A mocked Compute API returning a zone item along with a next page token.
-        When: gcp_compute_zones_list is called with limit, filters, order_by and page_token.
+        When: gcp_compute_zones_list is called with limit, filters, order_by and next_token.
         Then: The API is called with all the provided parameters and the next token is returned in the outputs.
         """
         from GCP import GCPServices, gcp_compute_zones_list
@@ -5482,7 +5480,7 @@ class TestGCPComputeZonesList:
             "limit": "10",
             "filters": "name=europe*",
             "order_by": "name",
-            "page_token": "prev-token",
+            "next_token": "prev-token",
         }
         result = gcp_compute_zones_list(mock_creds, args)
 
@@ -5490,7 +5488,6 @@ class TestGCPComputeZonesList:
             project="test-project", maxResults=10, filter="name=europe*", orderBy="name", pageToken="prev-token"
         )
         assert result.outputs["GCP.Compute(true)"]["ZonesNextToken"] == "next-token-456"
-        assert "next-token-456" in result.readable_output
 
     def test_gcp_compute_zones_list_empty_response(self, mocker):
         """
@@ -5536,7 +5533,6 @@ class TestGCPComputeZonesList:
         result = gcp_compute_zones_list(mock_creds, {"project_id": "test-project"})
 
         assert result.outputs == {"GCP.Compute(true)": {"ZonesNextToken": "next-token-abc"}}
-        assert "next-token-abc" in result.readable_output
 
     @pytest.mark.parametrize("limit", ["", "0"])
     def test_gcp_compute_zones_list_falsy_limit_falls_back_to_default(self, mocker, limit):

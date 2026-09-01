@@ -1305,7 +1305,7 @@ Retrieves the list of region resources available to the specified project. Requi
 | limit | The maximum number of results per page that should be returned. If the number of available results is larger than the limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
 | filters | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, you can exclude a region named example-region by specifying name != example-region. | Optional |
 | order_by | The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first). | Optional |
-| page_token | The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+| next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
 
 #### Context Output
 
@@ -1377,9 +1377,6 @@ Retrieves the list of region resources available to the specified project. Requi
 
 >### GCP Compute Regions
 >
->Run the following command to retrieve the next batch of regions:
->!gcp-compute-regions-list project_id=project-id page_token=CAIQAA==
->
 >|Id|Name|Status|Creation Timestamp|
 >|---|---|---|---|
 >| 1220 | us-central1 | UP | 1969-12-31T16:00:00.000-08:00 |
@@ -1438,7 +1435,7 @@ Retrieves the list of zone resources available to the specified project. Require
 | limit | The maximum number of results per page that should be returned. If the number of available results is larger than the limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
 | filters | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, you can exclude a zone named example-zone by specifying name != example-zone. | Optional |
 | order_by | The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first). | Optional |
-| page_token | The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+| next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
 
 #### Context Output
 
@@ -1507,9 +1504,6 @@ Retrieves the list of zone resources available to the specified project. Require
 #### Human Readable Output
 
 >### GCP Compute Zones
->
->Run the following command to retrieve the next batch of zones:
->!gcp-compute-zones-list project_id=project-id page_token=CAIQAA==
 >
 >|Id|Name|Status|Region|Creation Timestamp|
 >|---|---|---|---|---|

@@ -2737,7 +2737,7 @@ def gcp_compute_regions_list(creds: Credentials, args: dict[str, Any]) -> Comman
             - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
             - filters (str, optional): Expression for filtering the listed resources.
             - order_by (str, optional): Sorts list results by a certain order.
-            - page_token (str, optional): Token to retrieve the next page of results.
+            - next_token (str, optional): Token to retrieve the next page of results.
 
     Returns:
         CommandResults: Object containing the list of regions under `GCP.Compute.Regions`
@@ -2752,7 +2752,7 @@ def gcp_compute_regions_list(creds: Credentials, args: dict[str, Any]) -> Comman
         "maxResults": limit,
         "filter": args.get("filters"),
         "orderBy": args.get("order_by"),
-        "pageToken": args.get("page_token"),
+        "pageToken": args.get("next_token"),
     }
     remove_nulls_from_dictionary(params)
     demisto.debug(f"[GCP: gcp_compute_regions_list] Request params: {params}")
@@ -2765,19 +2765,12 @@ def gcp_compute_regions_list(creds: Credentials, args: dict[str, Any]) -> Comman
     if not items and not next_token:
         return CommandResults(readable_output=f"No regions were found in project '{project}'.", raw_response=response)
 
-    metadata = (
-        "Run the following command to retrieve the next batch of regions:\n"
-        f"!gcp-compute-regions-list project_id={project} page_token={next_token}"
-        if next_token
-        else None
-    )
     headers = ["id", "name", "status", "creationTimestamp"]
     readable_output = tableToMarkdown(
         "GCP Compute Regions",
         items,
         headers=headers,
         removeNull=True,
-        metadata=metadata,
         headerTransform=pascalToSpace,
     )
 
@@ -2875,7 +2868,7 @@ def gcp_compute_zones_list(creds: Credentials, args: dict[str, Any]) -> CommandR
             - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
             - filters (str, optional): Expression for filtering the listed resources.
             - order_by (str, optional): Sorts list results by a certain order.
-            - page_token (str, optional): Token to retrieve the next page of results.
+            - next_token (str, optional): Token to retrieve the next page of results.
 
     Returns:
         CommandResults: Object containing the list of zones under `GCP.Compute.Zones`
@@ -2890,7 +2883,7 @@ def gcp_compute_zones_list(creds: Credentials, args: dict[str, Any]) -> CommandR
         "maxResults": limit,
         "filter": args.get("filters"),
         "orderBy": args.get("order_by"),
-        "pageToken": args.get("page_token"),
+        "pageToken": args.get("next_token"),
     }
     remove_nulls_from_dictionary(params)
     demisto.debug(f"[GCP: gcp_compute_zones_list] Request params: {params}")
@@ -2903,19 +2896,12 @@ def gcp_compute_zones_list(creds: Credentials, args: dict[str, Any]) -> CommandR
     if not items and not next_token:
         return CommandResults(readable_output=f"No zones were found in project '{project}'.", raw_response=response)
 
-    metadata = (
-        "Run the following command to retrieve the next batch of zones:\n"
-        f"!gcp-compute-zones-list project_id={project} page_token={next_token}"
-        if next_token
-        else None
-    )
     headers = ["id", "name", "status", "region", "creationTimestamp"]
     readable_output = tableToMarkdown(
         "GCP Compute Zones",
         items,
         headers=headers,
         removeNull=True,
-        metadata=metadata,
         headerTransform=pascalToSpace,
     )
 

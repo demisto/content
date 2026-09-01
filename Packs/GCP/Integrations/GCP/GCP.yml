@@ -2698,8 +2698,8 @@ script:
       description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, you can exclude a region named example-region by specifying name != example-region.
     - name: order_by
       description: The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
-    - name: page_token
-      description: The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+    - name: next_token
+      description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results.
     outputs:
     - contextPath: GCP.Compute.Regions.id
       description: The unique identifier for the resource. This identifier is defined by the server.
@@ -2896,8 +2896,8 @@ script:
       description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, you can exclude a zone named example-zone by specifying name != example-zone.
     - name: order_by
       description: The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
-    - name: page_token
-      description: The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+    - name: next_token
+      description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results.
     outputs:
     - contextPath: GCP.Compute.Zones.id
       description: The unique identifier for the resource. This identifier is defined by the server.
