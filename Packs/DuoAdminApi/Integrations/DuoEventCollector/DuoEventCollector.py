@@ -432,6 +432,7 @@ def main():
             DemistoException(f"We found invalid values for logs_type_array, the values are {unvalid_log_type}")
 
         demisto.debug(f"The request order is : {request_order}")
+        demisto.debug(f"The last run is : {last_run}")
 
         if "after" not in last_run:
             after = dateparser.parse(demisto_params["after"].strip())
