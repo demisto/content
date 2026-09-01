@@ -1,60 +1,44 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-THRESHOLDS = {
-    "relatedIndicatorCount": 1000,
-}
+RELATED_INC_COUNT_THRESHOLD = 500
 
 
-def build_body(tenant_name):
-    query = f"account:{tenant_name}" if tenant_name != "" else ""
-    body = {
+def build_body(query: str = "") -> dict:
+    """Build the request body used to search indicators."""
+    return {
         "page": 0,
         "size": 10,
-        "query": f"{query}",
-        "sort": [
-            {
-                "field": "relatedIncCount",
-                "asc": False,
-            }
-        ],
-        "period": {
-            "by": "day",
-            "fromValue": 90,
-        },
+        "query": query,
+        "sort": [{"field": "relatedIncCount", "asc": False}],
+        "period": {"by": "day", "fromValue": 90},
     }
-    return body
 
 
-def main(args):
+def main(args: dict) -> CommandResults:
     incident = demisto.incidents()[0]
-    tenant_name = incident.get("account")
-    account_name = f"acc_{tenant_name}/" if tenant_name != "" else ""
-    body = build_body(tenant_name)
 
-    indicator_thresholds = args.get("Thresholds", THRESHOLDS)
-    indicator_res = execute_command(
-        "core-api-post",
-        {
-            "uri": f"{account_name}indicators/search",
-            "body": body,
-        },
-    )
-
-    # `execute_command` collapses a single result entry to a dict but returns a
-    # list when multiple entries are present.
-    if isinstance(indicator_res, list):
-        demisto.debug(f"indicator_res is a list of length {len(indicator_res)}")
-        response = indicator_res[0].get("response", {}) if indicator_res else {}
+    if is_demisto_version_ge("8.0.0"):
+        # XSOAR 8 / XSIAM
+        uri = "xsoar/public/v1/indicators/search"
+        body = build_body()
     else:
-        demisto.debug("indicator_res is a dict")
-        response = indicator_res.get("response", {})
+        # XSOAR 6 — multi-tenant requires account-prefixed URI and query
+        account_name = incident.get("account", "")
+        uri = f"acc_{account_name}/indicators/search" if account_name else "indicators/search"
+        body = build_body(f"account:{account_name}" if account_name else "")
 
-    indicators = response.get("iocObjects", [])
+    indicator_res = execute_command("core-api-post", {"uri": uri, "body": body})
+
+    # `execute_command` returns a list in multi-tenant environments, a dict otherwise.
+    if isinstance(indicator_res, list):
+        indicator_res = indicator_res[0] if indicator_res else {}
+
+    indicators = indicator_res.get("response", {}).get("iocObjects", [])
 
     res = []
     for indicator in indicators:
-        if indicator.get("relatedIncCount", 0) > indicator_thresholds["relatedIndicatorCount"]:
+        if indicator.get("relatedIncCount", 0) > RELATED_INC_COUNT_THRESHOLD:
             res.append(
                 {
                     "category": "Indicators",
@@ -64,11 +48,11 @@ def main(args):
                 }
             )
 
-    results = CommandResults(
-        readable_output="HealthCheckCommonIndicators Done", outputs_prefix="HealthCheck.ActionableItems", outputs=res
+    return CommandResults(
+        readable_output="HealthCheckCommonIndicators Done",
+        outputs_prefix="HealthCheck.ActionableItems",
+        outputs=res,
     )
-
-    return results
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
