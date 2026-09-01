@@ -2972,8 +2972,8 @@ def compute_address_get(creds: Credentials, args: dict[str, Any]) -> CommandResu
     address = args.get("address")
 
     compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_address_get] Request params: {project_id=}, {region=}, {address=}")
     response = compute.addresses().get(project=project_id, region=region, address=address).execute()  # pylint: disable=E1101
-    demisto.debug(f"Address get response for {address} in project {project_id}: \n{response}")
 
     hr = tableToMarkdown(
         f"GCP Compute Address: {address}",
@@ -3000,8 +3000,8 @@ def compute_address_list(creds: Credentials, args: dict[str, Any]) -> CommandRes
             - project_id (str): The GCP project ID.
             - region (str): Name of the region for this request.
             - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
-            - page_token (str, optional): Token to retrieve the next page of results.
-            - filters (str, optional): Expression for filtering the listed resources.
+            - next_token (str, optional): Token to retrieve the next page of results.
+            - filter (str, optional): Expression for filtering the listed resources.
             - order_by (str, optional): Sorts list results by a certain order.
 
     Returns:
@@ -3011,8 +3011,8 @@ def compute_address_list(creds: Credentials, args: dict[str, Any]) -> CommandRes
     project_id = args.get("project_id")
     region = args.get("region")
     limit = arg_to_number(args.get("limit")) or 50
-    page_token = args.get("page_token")
-    filters = args.get("filters")
+    next_token_arg = args.get("next_token")
+    filter_expression = args.get("filter")
     order_by = args.get("order_by")
     validate_limit(limit)
 
@@ -3020,13 +3020,14 @@ def compute_address_list(creds: Credentials, args: dict[str, Any]) -> CommandRes
         "project": project_id,
         "region": region,
         "maxResults": limit,
-        "pageToken": page_token,
-        "filter": filters,
+        "pageToken": next_token_arg,
+        "filter": filter_expression,
         "orderBy": order_by,
     }
     remove_nulls_from_dictionary(params)
 
     compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_address_list] Request params: {params}")
     response = compute.addresses().list(**params).execute()  # pylint: disable=E1101
     items = response.get("items", [])
     next_token = response.get("nextPageToken")
@@ -3035,19 +3036,12 @@ def compute_address_list(creds: Credentials, args: dict[str, Any]) -> CommandRes
         return CommandResults(readable_output="No addresses found.", raw_response=response)
 
     headers = ["name", "id", "address", "addressType", "status", "region", "creationTimestamp"]
-    metadata = (
-        "Run the following command to retrieve the next batch of addresses:\n"
-        f"!gcp-compute-address-list project_id={project_id} region={region} page_token={next_token}"
-        if next_token
-        else None
-    )
     readable_output = tableToMarkdown(
         "GCP Compute Addresses",
         items,
         headers=headers,
         headerTransform=pascalToSpace,
         removeNull=True,
-        metadata=metadata,
     )
 
     outputs = {
@@ -3056,7 +3050,7 @@ def compute_address_list(creds: Credentials, args: dict[str, Any]) -> CommandRes
     }
     return CommandResults(
         readable_output=readable_output,
-        outputs=remove_empty_elements(outputs),
+        outputs=outputs,
         raw_response=response,
     )
 
@@ -3070,64 +3064,59 @@ def compute_address_aggregated_list(creds: Credentials, args: dict[str, Any]) ->
         args (dict): Command arguments including:
             - project_id (str): The GCP project ID.
             - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
-            - page_token (str, optional): Token to retrieve the next page of results.
-            - filters (str, optional): Expression for filtering the listed resources.
+            - next_token (str, optional): Token to retrieve the next page of results.
+            - filter (str, optional): Expression for filtering the listed resources.
             - order_by (str, optional): Sorts list results by a certain order.
 
     Returns:
         CommandResults: Object containing the aggregated list of addresses,
-        with `GCP.Compute.Addresses` and `GCP.Compute.AddressesAggregatedNextToken` context outputs.
+        with `GCP.Compute.Addresses` and `GCP.Compute.AggregatedAddressesNextToken` context outputs.
     """
     project_id = args.get("project_id")
     limit = arg_to_number(args.get("limit")) or 50
-    page_token = args.get("page_token")
-    filters = args.get("filters")
+    next_token_arg = args.get("next_token")
+    filter_expression = args.get("filter")
     order_by = args.get("order_by")
     validate_limit(limit)
 
     params: dict[str, Any] = {
         "project": project_id,
         "maxResults": limit,
-        "pageToken": page_token,
-        "filter": filters,
+        "pageToken": next_token_arg,
+        "filter": filter_expression,
         "orderBy": order_by,
     }
     remove_nulls_from_dictionary(params)
 
     compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_address_aggregated_list] Request params: {params}")
     response = compute.addresses().aggregatedList(**params).execute()  # pylint: disable=E1101
     next_token = response.get("nextPageToken")
 
     items: list[dict[str, Any]] = []
-    for scope in response.get("items", {}).values():
-        items.extend(scope.get("addresses", []) or [])
+    for addresses_scoped_list in response.get("items", {}).values():
+        if "warning" not in addresses_scoped_list:
+            items.extend(addresses_scoped_list.get("addresses", []) or [])
 
     if not items:
         return CommandResults(readable_output="No addresses found.", raw_response=response)
 
     headers = ["name", "id", "address", "addressType", "status", "region", "creationTimestamp"]
-    metadata = (
-        "Run the following command to retrieve the next batch of addresses:\n"
-        f"!gcp-compute-address-aggregated-list project_id={project_id} page_token={next_token}"
-        if next_token
-        else None
-    )
     readable_output = tableToMarkdown(
         "GCP Compute Addresses",
         items,
         headers=headers,
         headerTransform=pascalToSpace,
         removeNull=True,
-        metadata=metadata,
     )
 
     outputs = {
         "GCP.Compute.Addresses(val.id && val.id == obj.id)": items,
-        "GCP.Compute(true)": {"AddressesAggregatedNextToken": next_token},
+        "GCP.Compute(true)": {"AggregatedAddressesNextToken": next_token},
     }
     return CommandResults(
         readable_output=readable_output,
-        outputs=remove_empty_elements(outputs),
+        outputs=outputs,
         raw_response=response,
     )
 
@@ -3212,6 +3201,7 @@ def compute_address_delete(creds: Credentials, args: dict[str, Any]) -> CommandR
     address = args.get("address")
 
     compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_address_delete] Request params: {project_id=}, {region=}, {address=}")
     response = compute.addresses().delete(project=project_id, region=region, address=address).execute()  # pylint: disable=E1101
 
     hr = tableToMarkdown(
@@ -3247,8 +3237,8 @@ def compute_global_address_get(creds: Credentials, args: dict[str, Any]) -> Comm
     address = args.get("address")
 
     compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_global_address_get] Request params: {project_id=}, {address=}")
     response = compute.globalAddresses().get(project=project_id, address=address).execute()  # pylint: disable=E1101
-    demisto.debug(f"Global address get response for {address} in project {project_id}: \n{response}")
 
     hr = tableToMarkdown(
         f"GCP Compute Global Address: {address}",
@@ -3274,8 +3264,8 @@ def compute_global_address_list(creds: Credentials, args: dict[str, Any]) -> Com
         args (dict): Command arguments including:
             - project_id (str): The GCP project ID.
             - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
-            - page_token (str, optional): Token to retrieve the next page of results.
-            - filters (str, optional): Expression for filtering the listed resources.
+            - next_token (str, optional): Token to retrieve the next page of results.
+            - filter (str, optional): Expression for filtering the listed resources.
             - order_by (str, optional): Sorts list results by a certain order.
 
     Returns:
@@ -3284,21 +3274,22 @@ def compute_global_address_list(creds: Credentials, args: dict[str, Any]) -> Com
     """
     project_id = args.get("project_id")
     limit = arg_to_number(args.get("limit")) or 50
-    page_token = args.get("page_token")
-    filters = args.get("filters")
+    next_token_arg = args.get("next_token")
+    filter_expression = args.get("filter")
     order_by = args.get("order_by")
     validate_limit(limit)
 
     params: dict[str, Any] = {
         "project": project_id,
         "maxResults": limit,
-        "pageToken": page_token,
-        "filter": filters,
+        "pageToken": next_token_arg,
+        "filter": filter_expression,
         "orderBy": order_by,
     }
     remove_nulls_from_dictionary(params)
 
     compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_global_address_list] Request params: {params}")
     response = compute.globalAddresses().list(**params).execute()  # pylint: disable=E1101
     items = response.get("items", [])
     next_token = response.get("nextPageToken")
@@ -3307,19 +3298,12 @@ def compute_global_address_list(creds: Credentials, args: dict[str, Any]) -> Com
         return CommandResults(readable_output="No global addresses found.", raw_response=response)
 
     headers = ["name", "id", "address", "addressType", "status", "creationTimestamp"]
-    metadata = (
-        "Run the following command to retrieve the next batch of global addresses:\n"
-        f"!gcp-compute-global-address-list project_id={project_id} page_token={next_token}"
-        if next_token
-        else None
-    )
     readable_output = tableToMarkdown(
         "GCP Compute Global Addresses",
         items,
         headers=headers,
         headerTransform=pascalToSpace,
         removeNull=True,
-        metadata=metadata,
     )
 
     outputs = {
@@ -3328,7 +3312,7 @@ def compute_global_address_list(creds: Credentials, args: dict[str, Any]) -> Com
     }
     return CommandResults(
         readable_output=readable_output,
-        outputs=remove_empty_elements(outputs),
+        outputs=outputs,
         raw_response=response,
     )
 
@@ -3411,6 +3395,7 @@ def compute_global_address_delete(creds: Credentials, args: dict[str, Any]) -> C
     address = args.get("address")
 
     compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_global_address_delete] Request params: {project_id=}, {address=}")
     response = compute.globalAddresses().delete(project=project_id, address=address).execute()  # pylint: disable=E1101
 
     hr = tableToMarkdown(

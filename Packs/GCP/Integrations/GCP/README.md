@@ -1710,6 +1710,9 @@ Returns the specified regional address resource. Required permission: compute.ad
 | GCP.Compute.Addresses.addressType | string | The type of address to reserve, either INTERNAL or EXTERNAL. |
 | GCP.Compute.Addresses.purpose | string | The purpose of this resource, which can be used for network load balancing or other purposes. |
 | GCP.Compute.Addresses.subnetwork | string | The URL of the subnetwork in which to reserve the address. |
+| GCP.Compute.Addresses.ipv6EndpointType | string | The endpoint type of this address, which can be VM or NETLB. Used to decide which type of endpoint this address can be used for after the external IPv6 address reservation. |
+| GCP.Compute.Addresses.labels | Unknown | The labels applied to this resource. These can only be added or modified by the setLabels method. |
+| GCP.Compute.Addresses.labelFingerprint | string | A fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels. |
 | GCP.Compute.Addresses.network | string | The URL of the network in which to reserve the address. |
 | GCP.Compute.Addresses.ipVersion | string | The IP version that will be used by this address. |
 | GCP.Compute.Addresses.selfLink | string | The server-defined URL for the resource. |
@@ -1731,9 +1734,9 @@ Retrieves the list of regional address resources in the specified region. Requir
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | region | The name of the region for this request. | Required |
 | limit | The maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
-| filters | A filter expression that filters resources listed in the response. | Optional |
+| filter | A filter expression that filters resources listed in the response. | Optional |
 | order_by | The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name. | Optional |
-| page_token | The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+| next_token | The token for the next set of items to return, used for pagination. Set this to the value of GCP.Compute.AddressesNextToken returned by a previous list request. | Optional |
 
 #### Context Output
 
@@ -1752,6 +1755,10 @@ Retrieves the list of regional address resources in the specified region. Requir
 | GCP.Compute.Addresses.addressType | string | The type of address to reserve, either INTERNAL or EXTERNAL. |
 | GCP.Compute.Addresses.purpose | string | The purpose of this resource, which can be used for network load balancing or other purposes. |
 | GCP.Compute.Addresses.subnetwork | string | The URL of the subnetwork in which to reserve the address. |
+| GCP.Compute.Addresses.ipVersion | string | The IP version used by this address. Can be IPV4 or IPV6. |
+| GCP.Compute.Addresses.ipv6EndpointType | string | The endpoint type of this address, which can be VM or NETLB. Used to decide which type of endpoint this address can be used for after the external IPv6 address reservation. |
+| GCP.Compute.Addresses.labels | Unknown | The labels applied to this resource. These can only be added or modified by the setLabels method. |
+| GCP.Compute.Addresses.labelFingerprint | string | A fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels. |
 | GCP.Compute.Addresses.network | string | The URL of the network in which to reserve the address. |
 | GCP.Compute.Addresses.selfLink | string | The server-defined URL for the resource. |
 | GCP.Compute.Addresses.kind | string | The type of the resource. Always compute\#address for addresses. |
@@ -1772,9 +1779,9 @@ Retrieves an aggregated list of regional address resources across all regions. R
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | The maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
-| filters | A filter expression that filters resources listed in the response. | Optional |
+| filter | A filter expression that filters resources listed in the response. | Optional |
 | order_by | The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name. | Optional |
-| page_token | The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+| next_token | The token for the next set of items to return, used for pagination. Set this to the value of GCP.Compute.AggregatedAddressesNextToken returned by a previous list request. | Optional |
 
 #### Context Output
 
@@ -1793,10 +1800,14 @@ Retrieves an aggregated list of regional address resources across all regions. R
 | GCP.Compute.Addresses.addressType | string | The type of address to reserve, either INTERNAL or EXTERNAL. |
 | GCP.Compute.Addresses.purpose | string | The purpose of this resource, which can be used for network load balancing or other purposes. |
 | GCP.Compute.Addresses.subnetwork | string | The URL of the subnetwork in which to reserve the address. |
+| GCP.Compute.Addresses.ipVersion | string | The IP version used by this address. Can be IPV4 or IPV6. |
+| GCP.Compute.Addresses.ipv6EndpointType | string | The endpoint type of this address, which can be VM or NETLB. Used to decide which type of endpoint this address can be used for after the external IPv6 address reservation. |
+| GCP.Compute.Addresses.labels | Unknown | The labels applied to this resource. These can only be added or modified by the setLabels method. |
+| GCP.Compute.Addresses.labelFingerprint | string | A fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels. |
 | GCP.Compute.Addresses.network | string | The URL of the network in which to reserve the address. |
 | GCP.Compute.Addresses.selfLink | string | The server-defined URL for the resource. |
 | GCP.Compute.Addresses.kind | string | The type of the resource. Always compute\#address for addresses. |
-| GCP.Compute.AddressesAggregatedNextToken | string | The token used to retrieve the next page of results for list requests. |
+| GCP.Compute.AggregatedAddressesNextToken | string | The token used to retrieve the next page of results for list requests. |
 
 ### gcp-compute-address-insert
 
@@ -1902,6 +1913,9 @@ Returns the specified global address resource. Required permission: compute.glob
 | GCP.Compute.Addresses.addressType | string | The type of address to reserve, either INTERNAL or EXTERNAL. |
 | GCP.Compute.Addresses.purpose | string | The purpose of this resource, which can be used for network load balancing or other purposes. |
 | GCP.Compute.Addresses.subnetwork | string | The URL of the subnetwork in which to reserve the address. |
+| GCP.Compute.Addresses.ipv6EndpointType | string | The endpoint type of this address, which can be VM or NETLB. Used to decide which type of endpoint this address can be used for after the external IPv6 address reservation. |
+| GCP.Compute.Addresses.labels | Unknown | The labels applied to this resource. These can only be added or modified by the setLabels method. |
+| GCP.Compute.Addresses.labelFingerprint | string | A fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels. |
 | GCP.Compute.Addresses.network | string | The URL of the network in which to reserve the address. |
 | GCP.Compute.Addresses.ipVersion | string | The IP version that will be used by this address. |
 | GCP.Compute.Addresses.selfLink | string | The server-defined URL for the resource. |
@@ -1922,9 +1936,9 @@ Retrieves the list of global address resources. Required permission: compute.glo
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | The maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
-| filters | A filter expression that filters resources listed in the response. | Optional |
+| filter | A filter expression that filters resources listed in the response. | Optional |
 | order_by | The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name. | Optional |
-| page_token | The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+| next_token | The token for the next set of items to return, used for pagination. Set this to the value of GCP.Compute.GlobalAddressesNextToken returned by a previous list request. | Optional |
 
 #### Context Output
 
@@ -1942,6 +1956,10 @@ Retrieves the list of global address resources. Required permission: compute.glo
 | GCP.Compute.Addresses.addressType | string | The type of address to reserve, either INTERNAL or EXTERNAL. |
 | GCP.Compute.Addresses.purpose | string | The purpose of this resource, which can be used for network load balancing or other purposes. |
 | GCP.Compute.Addresses.subnetwork | string | The URL of the subnetwork in which to reserve the address. |
+| GCP.Compute.Addresses.ipVersion | string | The IP version used by this address. Can be IPV4 or IPV6. |
+| GCP.Compute.Addresses.ipv6EndpointType | string | The endpoint type of this address, which can be VM or NETLB. Used to decide which type of endpoint this address can be used for after the external IPv6 address reservation. |
+| GCP.Compute.Addresses.labels | Unknown | The labels applied to this resource. These can only be added or modified by the setLabels method. |
+| GCP.Compute.Addresses.labelFingerprint | string | A fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels. |
 | GCP.Compute.Addresses.network | string | The URL of the network in which to reserve the address. |
 | GCP.Compute.Addresses.selfLink | string | The server-defined URL for the resource. |
 | GCP.Compute.Addresses.kind | string | The type of the resource. Always compute\#address for addresses. |

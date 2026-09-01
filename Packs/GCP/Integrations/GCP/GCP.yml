@@ -3578,6 +3578,15 @@ script:
     - contextPath: GCP.Compute.Addresses.subnetwork
       description: The URL of the subnetwork in which to reserve the address.
       type: string
+    - contextPath: GCP.Compute.Addresses.ipv6EndpointType
+      description: The endpoint type of this address, which can be VM or NETLB. Used to decide which type of endpoint this address can be used for after the external IPv6 address reservation.
+      type: string
+    - contextPath: GCP.Compute.Addresses.labels
+      description: The labels applied to this resource. These can only be added or modified by the setLabels method.
+      type: Unknown
+    - contextPath: GCP.Compute.Addresses.labelFingerprint
+      description: A fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels.
+      type: string
     - contextPath: GCP.Compute.Addresses.network
       description: The URL of the network in which to reserve the address.
       type: string
@@ -3603,12 +3612,12 @@ script:
     - name: limit
       description: 'The maximum number of results to return. Acceptable values are 1 to 500, inclusive.'
       defaultValue: '50'
-    - name: filters
+    - name: filter
       description: A filter expression that filters resources listed in the response.
     - name: order_by
       description: The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name.
-    - name: page_token
-      description: The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+    - name: next_token
+      description: The token for the next set of items to return, used for pagination. Set this to the value of GCP.Compute.AddressesNextToken returned by a previous list request.
     outputs:
     - contextPath: GCP.Compute.Addresses.id
       description: The unique identifier for the resource. This identifier is defined by the server.
@@ -3648,6 +3657,18 @@ script:
       type: string
     - contextPath: GCP.Compute.Addresses.subnetwork
       description: The URL of the subnetwork in which to reserve the address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.ipVersion
+      description: The IP version used by this address. Can be IPV4 or IPV6.
+      type: string
+    - contextPath: GCP.Compute.Addresses.ipv6EndpointType
+      description: The endpoint type of this address, which can be VM or NETLB. Used to decide which type of endpoint this address can be used for after the external IPv6 address reservation.
+      type: string
+    - contextPath: GCP.Compute.Addresses.labels
+      description: The labels applied to this resource. These can only be added or modified by the setLabels method.
+      type: Unknown
+    - contextPath: GCP.Compute.Addresses.labelFingerprint
+      description: A fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels.
       type: string
     - contextPath: GCP.Compute.Addresses.network
       description: The URL of the network in which to reserve the address.
@@ -3671,12 +3692,12 @@ script:
     - name: limit
       description: 'The maximum number of results to return. Acceptable values are 1 to 500, inclusive.'
       defaultValue: '50'
-    - name: filters
+    - name: filter
       description: A filter expression that filters resources listed in the response.
     - name: order_by
       description: The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name.
-    - name: page_token
-      description: The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+    - name: next_token
+      description: The token for the next set of items to return, used for pagination. Set this to the value of GCP.Compute.AggregatedAddressesNextToken returned by a previous list request.
     outputs:
     - contextPath: GCP.Compute.Addresses.id
       description: The unique identifier for the resource. This identifier is defined by the server.
@@ -3717,6 +3738,18 @@ script:
     - contextPath: GCP.Compute.Addresses.subnetwork
       description: The URL of the subnetwork in which to reserve the address.
       type: string
+    - contextPath: GCP.Compute.Addresses.ipVersion
+      description: The IP version used by this address. Can be IPV4 or IPV6.
+      type: string
+    - contextPath: GCP.Compute.Addresses.ipv6EndpointType
+      description: The endpoint type of this address, which can be VM or NETLB. Used to decide which type of endpoint this address can be used for after the external IPv6 address reservation.
+      type: string
+    - contextPath: GCP.Compute.Addresses.labels
+      description: The labels applied to this resource. These can only be added or modified by the setLabels method.
+      type: Unknown
+    - contextPath: GCP.Compute.Addresses.labelFingerprint
+      description: A fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels.
+      type: string
     - contextPath: GCP.Compute.Addresses.network
       description: The URL of the network in which to reserve the address.
       type: string
@@ -3726,7 +3759,7 @@ script:
     - contextPath: GCP.Compute.Addresses.kind
       description: The type of the resource. Always compute#address for addresses.
       type: string
-    - contextPath: GCP.Compute.AddressesAggregatedNextToken
+    - contextPath: GCP.Compute.AggregatedAddressesNextToken
       description: The token used to retrieve the next page of results for list requests.
       type: string
   - name: gcp-compute-address-insert
@@ -3889,6 +3922,15 @@ script:
     - contextPath: GCP.Compute.Addresses.subnetwork
       description: The URL of the subnetwork in which to reserve the address.
       type: string
+    - contextPath: GCP.Compute.Addresses.ipv6EndpointType
+      description: The endpoint type of this address, which can be VM or NETLB. Used to decide which type of endpoint this address can be used for after the external IPv6 address reservation.
+      type: string
+    - contextPath: GCP.Compute.Addresses.labels
+      description: The labels applied to this resource. These can only be added or modified by the setLabels method.
+      type: Unknown
+    - contextPath: GCP.Compute.Addresses.labelFingerprint
+      description: A fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels.
+      type: string
     - contextPath: GCP.Compute.Addresses.network
       description: The URL of the network in which to reserve the address.
       type: string
@@ -3911,12 +3953,12 @@ script:
     - name: limit
       description: 'The maximum number of results to return. Acceptable values are 1 to 500, inclusive.'
       defaultValue: '50'
-    - name: filters
+    - name: filter
       description: A filter expression that filters resources listed in the response.
     - name: order_by
       description: The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name.
-    - name: page_token
-      description: The page token to use. Set page_token to the nextPageToken returned by a previous list request to get the next page of results.
+    - name: next_token
+      description: The token for the next set of items to return, used for pagination. Set this to the value of GCP.Compute.GlobalAddressesNextToken returned by a previous list request.
     outputs:
     - contextPath: GCP.Compute.Addresses.id
       description: The unique identifier for the resource. This identifier is defined by the server.
@@ -3953,6 +3995,18 @@ script:
       type: string
     - contextPath: GCP.Compute.Addresses.subnetwork
       description: The URL of the subnetwork in which to reserve the address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.ipVersion
+      description: The IP version used by this address. Can be IPV4 or IPV6.
+      type: string
+    - contextPath: GCP.Compute.Addresses.ipv6EndpointType
+      description: The endpoint type of this address, which can be VM or NETLB. Used to decide which type of endpoint this address can be used for after the external IPv6 address reservation.
+      type: string
+    - contextPath: GCP.Compute.Addresses.labels
+      description: The labels applied to this resource. These can only be added or modified by the setLabels method.
+      type: Unknown
+    - contextPath: GCP.Compute.Addresses.labelFingerprint
+      description: A fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels.
       type: string
     - contextPath: GCP.Compute.Addresses.network
       description: The URL of the network in which to reserve the address.

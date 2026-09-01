@@ -6697,8 +6697,8 @@ def test_compute_address_list_with_pagination_and_filter(mocker):
         "project_id": "p1",
         "region": "us-central1",
         "limit": "2",
-        "page_token": "t0",
-        "filters": "name eq addr-*",
+        "next_token": "t0",
+        "filter": "name eq addr-*",
         "order_by": "creationTimestamp desc",
     }
 
@@ -6789,7 +6789,7 @@ def test_compute_address_aggregated_list_success(mocker):
 
     addresses = res.outputs["GCP.Compute.Addresses(val.id && val.id == obj.id)"]
     assert {a["id"] for a in addresses} == {"1", "2"}
-    assert res.outputs["GCP.Compute(true)"]["AddressesAggregatedNextToken"] == "t1"
+    assert res.outputs["GCP.Compute(true)"]["AggregatedAddressesNextToken"] == "t1"
 
 
 def test_compute_address_insert_full_body(mocker):
@@ -6918,7 +6918,7 @@ def test_compute_global_address_list_with_pagination(mocker):
     """
     from GCP import compute_global_address_list
 
-    args = {"project_id": "p1", "limit": "5", "page_token": "a", "filters": "name eq gaddr-*"}
+    args = {"project_id": "p1", "limit": "5", "next_token": "a", "filter": "name eq gaddr-*"}
 
     mock_creds = mocker.Mock(spec=Credentials)
     mock_compute = mocker.Mock()
