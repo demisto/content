@@ -6225,7 +6225,7 @@ def test_compute_disks_list_with_pagination_and_filter(mocker):
         "project_id": "p1",
         "zone": "us-central1-a",
         "limit": "2",
-        "page_token": "t0",
+        "next_token": "t0",
         "filter": "name != disk-2",
         "order_by": "creationTimestamp desc",
     }
@@ -6792,7 +6792,7 @@ def test_compute_disk_types_list_with_pagination(mocker):
 
     mocker.patch("GCP.build", return_value=mock_compute)
 
-    res = compute_disk_types_list(mock_creds, {"project_id": "p1", "zone": "us-central1-a", "limit": "5", "page_token": "t0"})
+    res = compute_disk_types_list(mock_creds, {"project_id": "p1", "zone": "us-central1-a", "limit": "5", "next_token": "t0"})
 
     called_kwargs = mock_disk_types.list.call_args[1]
     assert called_kwargs["zone"] == "us-central1-a"

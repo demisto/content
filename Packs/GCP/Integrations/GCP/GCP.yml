@@ -503,7 +503,7 @@ script:
     - name: limit
       defaultValue: '50'
       description: "Maximum number of results to return. Acceptable values are 1 to 500, inclusive."
-    - name: page_token
+    - name: next_token
       description: Token for pagination. Set it to the value of GCP.Compute.DisksNextToken returned by a previous request to get the next page of results.
     - name: filter
       description: "A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a disk named example-disk, use name != example-disk."
@@ -594,6 +594,69 @@ script:
     - contextPath: GCP.Compute.Disks.selfLink
       description: Server-defined URL for the disk resource.
       type: String
+    - contextPath: GCP.Compute.Disks.accessMode
+      description: The access mode of the disk, such as READ_WRITE_SINGLE, READ_WRITE_MANY, or READ_ONLY_MANY.
+      type: String
+    - contextPath: GCP.Compute.Disks.architecture
+      description: The architecture of the disk. Valid values are ARM64 or X86_64.
+      type: String
+    - contextPath: GCP.Compute.Disks.asyncPrimaryDisk
+      description: The disk asynchronously replicated into this disk, containing the consistencyGroupPolicy and disk fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.asyncSecondaryDisks
+      description: A list of disks this disk is asynchronously replicated to.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.enableConfidentialCompute
+      description: Whether this disk is using confidential compute mode.
+      type: Boolean
+    - contextPath: GCP.Compute.Disks.locationHint
+      description: An opaque location hint used to place the disk close to other resources.
+      type: String
+    - contextPath: GCP.Compute.Disks.options
+      description: Internal use only.
+      type: String
+    - contextPath: GCP.Compute.Disks.provisionedIops
+      description: The number of I/O operations per second provisioned for the disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.provisionedThroughput
+      description: The throughput in MB per second provisioned for the disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.resourcePolicies
+      description: Resource policies applied to this disk for automatic snapshot creations.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.resourceStatus
+      description: Status information for the disk resource.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.satisfiesPzi
+      description: Whether the disk satisfies physical zone isolation. Reserved for future use.
+      type: Boolean
+    - contextPath: GCP.Compute.Disks.satisfiesPzs
+      description: Whether the disk satisfies physical zone separation. Reserved for future use.
+      type: Boolean
+    - contextPath: GCP.Compute.Disks.sourceConsistencyGroupPolicy
+      description: URL of the DiskConsistencyGroupPolicy for a secondary disk that was created using a consistency group.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceConsistencyGroupPolicyId
+      description: ID of the DiskConsistencyGroupPolicy for a secondary disk that was created using a consistency group.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceDisk
+      description: The source disk used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceDiskId
+      description: The unique ID of the disk used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceInstantSnapshot
+      description: The source instant snapshot used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceInstantSnapshotId
+      description: The unique ID of the instant snapshot used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceStorageObject
+      description: The full Google Cloud Storage URI where the disk image is stored.
+      type: String
+    - contextPath: GCP.Compute.Disks.storagePool
+      description: The storage pool in which the disk is created.
+      type: String
     - contextPath: GCP.Compute.DisksNextToken
       description: Next page token for pagination.
       type: String
@@ -607,7 +670,7 @@ script:
     - name: limit
       defaultValue: '50'
       description: "Maximum number of results to return. Acceptable values are 1 to 500, inclusive."
-    - name: page_token
+    - name: next_token
       description: Token for pagination. Set it to the value of GCP.Compute.DisksAggregatedNextToken returned by a previous request to get the next page of results.
     - name: filter
       description: "A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a disk named example-disk, use name != example-disk."
@@ -697,6 +760,69 @@ script:
       type: String
     - contextPath: GCP.Compute.Disks.selfLink
       description: Server-defined URL for the disk resource.
+      type: String
+    - contextPath: GCP.Compute.Disks.accessMode
+      description: The access mode of the disk, such as READ_WRITE_SINGLE, READ_WRITE_MANY, or READ_ONLY_MANY.
+      type: String
+    - contextPath: GCP.Compute.Disks.architecture
+      description: The architecture of the disk. Valid values are ARM64 or X86_64.
+      type: String
+    - contextPath: GCP.Compute.Disks.asyncPrimaryDisk
+      description: The disk asynchronously replicated into this disk, containing the consistencyGroupPolicy and disk fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.asyncSecondaryDisks
+      description: A list of disks this disk is asynchronously replicated to.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.enableConfidentialCompute
+      description: Whether this disk is using confidential compute mode.
+      type: Boolean
+    - contextPath: GCP.Compute.Disks.locationHint
+      description: An opaque location hint used to place the disk close to other resources.
+      type: String
+    - contextPath: GCP.Compute.Disks.options
+      description: Internal use only.
+      type: String
+    - contextPath: GCP.Compute.Disks.provisionedIops
+      description: The number of I/O operations per second provisioned for the disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.provisionedThroughput
+      description: The throughput in MB per second provisioned for the disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.resourcePolicies
+      description: Resource policies applied to this disk for automatic snapshot creations.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.resourceStatus
+      description: Status information for the disk resource.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.satisfiesPzi
+      description: Whether the disk satisfies physical zone isolation. Reserved for future use.
+      type: Boolean
+    - contextPath: GCP.Compute.Disks.satisfiesPzs
+      description: Whether the disk satisfies physical zone separation. Reserved for future use.
+      type: Boolean
+    - contextPath: GCP.Compute.Disks.sourceConsistencyGroupPolicy
+      description: URL of the DiskConsistencyGroupPolicy for a secondary disk that was created using a consistency group.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceConsistencyGroupPolicyId
+      description: ID of the DiskConsistencyGroupPolicy for a secondary disk that was created using a consistency group.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceDisk
+      description: The source disk used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceDiskId
+      description: The unique ID of the disk used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceInstantSnapshot
+      description: The source instant snapshot used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceInstantSnapshotId
+      description: The unique ID of the instant snapshot used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceStorageObject
+      description: The full Google Cloud Storage URI where the disk image is stored.
+      type: String
+    - contextPath: GCP.Compute.Disks.storagePool
+      description: The storage pool in which the disk is created.
       type: String
     - contextPath: GCP.Compute.DisksAggregatedNextToken
       description: Next page token for pagination.
@@ -799,6 +925,69 @@ script:
     - contextPath: GCP.Compute.Disks.selfLink
       description: Server-defined URL for the disk resource.
       type: String
+    - contextPath: GCP.Compute.Disks.accessMode
+      description: The access mode of the disk, such as READ_WRITE_SINGLE, READ_WRITE_MANY, or READ_ONLY_MANY.
+      type: String
+    - contextPath: GCP.Compute.Disks.architecture
+      description: The architecture of the disk. Valid values are ARM64 or X86_64.
+      type: String
+    - contextPath: GCP.Compute.Disks.asyncPrimaryDisk
+      description: The disk asynchronously replicated into this disk, containing the consistencyGroupPolicy and disk fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.asyncSecondaryDisks
+      description: A list of disks this disk is asynchronously replicated to.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.enableConfidentialCompute
+      description: Whether this disk is using confidential compute mode.
+      type: Boolean
+    - contextPath: GCP.Compute.Disks.locationHint
+      description: An opaque location hint used to place the disk close to other resources.
+      type: String
+    - contextPath: GCP.Compute.Disks.options
+      description: Internal use only.
+      type: String
+    - contextPath: GCP.Compute.Disks.provisionedIops
+      description: The number of I/O operations per second provisioned for the disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.provisionedThroughput
+      description: The throughput in MB per second provisioned for the disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.resourcePolicies
+      description: Resource policies applied to this disk for automatic snapshot creations.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.resourceStatus
+      description: Status information for the disk resource.
+      type: Unknown
+    - contextPath: GCP.Compute.Disks.satisfiesPzi
+      description: Whether the disk satisfies physical zone isolation. Reserved for future use.
+      type: Boolean
+    - contextPath: GCP.Compute.Disks.satisfiesPzs
+      description: Whether the disk satisfies physical zone separation. Reserved for future use.
+      type: Boolean
+    - contextPath: GCP.Compute.Disks.sourceConsistencyGroupPolicy
+      description: URL of the DiskConsistencyGroupPolicy for a secondary disk that was created using a consistency group.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceConsistencyGroupPolicyId
+      description: ID of the DiskConsistencyGroupPolicy for a secondary disk that was created using a consistency group.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceDisk
+      description: The source disk used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceDiskId
+      description: The unique ID of the disk used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceInstantSnapshot
+      description: The source instant snapshot used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceInstantSnapshotId
+      description: The unique ID of the instant snapshot used to create this disk.
+      type: String
+    - contextPath: GCP.Compute.Disks.sourceStorageObject
+      description: The full Google Cloud Storage URI where the disk image is stored.
+      type: String
+    - contextPath: GCP.Compute.Disks.storagePool
+      description: The storage pool in which the disk is created.
+      type: String
   - name: gcp-compute-disk-insert
     description: "Creates a persistent disk in the specified project and zone. A disk can be created from a source image, from a source snapshot, or as an empty disk by omitting both. Required permission: compute.disks.create."
     arguments:
@@ -898,6 +1087,30 @@ script:
     - contextPath: GCP.Compute.Operations.warnings
       description: The warnings generated during processing of the operation, each containing the code, message, and data fields.
       type: Unknown
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the request ID if one was provided in the request. Not present otherwise.
+      type: String
+    - contextPath: GCP.Compute.Operations.description
+      description: A textual description of the operation, which is set when the operation is created.
+      type: String
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: If the operation fails, the HTTP error message that was returned, such as NOT FOUND.
+      type: String
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: If the operation fails, the HTTP error status code that was returned, for example 404 when the resource was not found.
+      type: Number
+    - contextPath: GCP.Compute.Operations.operationGroupId
+      description: An ID that represents a group of operations, such as when a group of operations results from a bulk request.
+      type: String
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides. Only applicable when performing regional operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: An optional textual description of the current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example user@example.com.
+      type: String
   - name: gcp-compute-disk-delete
     description: "Deletes the specified persistent disk. Deleting a disk removes its data permanently and is irreversible. Snapshots previously created from the disk are not deleted and must be deleted separately. Required permission: compute.disks.delete."
     execution: true
@@ -958,6 +1171,30 @@ script:
     - contextPath: GCP.Compute.Operations.warnings
       description: The warnings generated during processing of the operation, each containing the code, message, and data fields.
       type: Unknown
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the request ID if one was provided in the request. Not present otherwise.
+      type: String
+    - contextPath: GCP.Compute.Operations.description
+      description: A textual description of the operation, which is set when the operation is created.
+      type: String
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: If the operation fails, the HTTP error message that was returned, such as NOT FOUND.
+      type: String
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: If the operation fails, the HTTP error status code that was returned, for example 404 when the resource was not found.
+      type: Number
+    - contextPath: GCP.Compute.Operations.operationGroupId
+      description: An ID that represents a group of operations, such as when a group of operations results from a bulk request.
+      type: String
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides. Only applicable when performing regional operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: An optional textual description of the current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example user@example.com.
+      type: String
   - name: gcp-compute-disk-resize
     description: "Resizes the specified persistent disk. The disk size can only be increased. Required permission: compute.disks.resize."
     arguments:
@@ -1020,6 +1257,30 @@ script:
     - contextPath: GCP.Compute.Operations.warnings
       description: The warnings generated during processing of the operation, each containing the code, message, and data fields.
       type: Unknown
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the request ID if one was provided in the request. Not present otherwise.
+      type: String
+    - contextPath: GCP.Compute.Operations.description
+      description: A textual description of the operation, which is set when the operation is created.
+      type: String
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: If the operation fails, the HTTP error message that was returned, such as NOT FOUND.
+      type: String
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: If the operation fails, the HTTP error status code that was returned, for example 404 when the resource was not found.
+      type: Number
+    - contextPath: GCP.Compute.Operations.operationGroupId
+      description: An ID that represents a group of operations, such as when a group of operations results from a bulk request.
+      type: String
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides. Only applicable when performing regional operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: An optional textual description of the current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example user@example.com.
+      type: String
   - name: gcp-compute-disk-labels-set
     description: "Sets the labels on a persistent disk. Required permission: compute.disks.setLabels."
     arguments:
@@ -1084,6 +1345,30 @@ script:
     - contextPath: GCP.Compute.Operations.warnings
       description: The warnings generated during processing of the operation, each containing the code, message, and data fields.
       type: Unknown
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the request ID if one was provided in the request. Not present otherwise.
+      type: String
+    - contextPath: GCP.Compute.Operations.description
+      description: A textual description of the operation, which is set when the operation is created.
+      type: String
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: If the operation fails, the HTTP error message that was returned, such as NOT FOUND.
+      type: String
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: If the operation fails, the HTTP error status code that was returned, for example 404 when the resource was not found.
+      type: Number
+    - contextPath: GCP.Compute.Operations.operationGroupId
+      description: An ID that represents a group of operations, such as when a group of operations results from a bulk request.
+      type: String
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides. Only applicable when performing regional operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: An optional textual description of the current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example user@example.com.
+      type: String
   - name: gcp-compute-disk-snapshot-create
     description: "Creates a snapshot of a specified persistent disk. Required permissions: compute.disks.createSnapshot, compute.snapshots.create."
     arguments:
@@ -1160,6 +1445,30 @@ script:
     - contextPath: GCP.Compute.Operations.warnings
       description: The warnings generated during processing of the operation, each containing the code, message, and data fields.
       type: Unknown
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the request ID if one was provided in the request. Not present otherwise.
+      type: String
+    - contextPath: GCP.Compute.Operations.description
+      description: A textual description of the operation, which is set when the operation is created.
+      type: String
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: If the operation fails, the HTTP error message that was returned, such as NOT FOUND.
+      type: String
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: If the operation fails, the HTTP error status code that was returned, for example 404 when the resource was not found.
+      type: Number
+    - contextPath: GCP.Compute.Operations.operationGroupId
+      description: An ID that represents a group of operations, such as when a group of operations results from a bulk request.
+      type: String
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides. Only applicable when performing regional operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: An optional textual description of the current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example user@example.com.
+      type: String
   - name: gcp-compute-disk-types-list
     description: "Retrieves a list of disk types available in the specified zone. Required permission: compute.diskTypes.list."
     arguments:
@@ -1173,7 +1482,7 @@ script:
     - name: limit
       defaultValue: '50'
       description: "Maximum number of results to return. Acceptable values are 1 to 500, inclusive."
-    - name: page_token
+    - name: next_token
       description: Token for pagination. Set it to the value of GCP.Compute.DiskTypesNextToken returned by a previous request to get the next page of results.
     - name: filter
       description: "A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a disk type named pd-standard, use name != pd-standard."
@@ -1226,7 +1535,7 @@ script:
     - name: limit
       defaultValue: '50'
       description: "Maximum number of results to return. Acceptable values are 1 to 500, inclusive."
-    - name: page_token
+    - name: next_token
       description: Token for pagination. Set it to the value of GCP.Compute.DiskTypesAggregatedNextToken returned by a previous request to get the next page of results.
     - name: filter
       description: "A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a disk type named pd-standard, use name != pd-standard."

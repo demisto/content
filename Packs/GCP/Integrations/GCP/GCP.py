@@ -1384,7 +1384,7 @@ def compute_disks_list(creds: Credentials, args: dict[str, Any]) -> CommandResul
     Args:
         creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
         args (dict): Command arguments including 'project_id', 'zone', 'limit', 'filter',
-            'order_by' and 'page_token'.
+            'order_by' and 'next_token'.
 
     Returns:
         CommandResults: Object containing the list of disks under `GCP.Compute.Disks`
@@ -1402,16 +1402,16 @@ def compute_disks_list(creds: Credentials, args: dict[str, Any]) -> CommandResul
         "maxResults": limit,
         "filter": args.get("filter"),
         "orderBy": args.get("order_by"),
-        "pageToken": args.get("page_token"),
+        "pageToken": args.get("next_token"),
     }
     remove_nulls_from_dictionary(params)
 
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.disks().list(**params).execute()  # pylint: disable=E1101
-    demisto.debug(f"GCP Compute Disks list response for project {project_id}, zone {zone}: \n{response}")
 
     items = response.get("items", [])
     next_token = response.get("nextPageToken")
+    demisto.debug(f"[GCP] Disks list for project {project_id}, zone {zone}: {len(items)} disks, {bool(next_token)=}")
     readable_output = tableToMarkdown(
         "GCP Compute Disks",
         items,
@@ -1438,7 +1438,7 @@ def compute_disks_aggregated_list(creds: Credentials, args: dict[str, Any]) -> C
     Args:
         creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
         args (dict): Command arguments including 'project_id', 'limit', 'filter', 'order_by'
-            and 'page_token'.
+            and 'next_token'.
 
     Returns:
         CommandResults: Object containing the aggregated list of disks under `GCP.Compute.Disks`
@@ -1454,19 +1454,19 @@ def compute_disks_aggregated_list(creds: Credentials, args: dict[str, Any]) -> C
         "maxResults": limit,
         "filter": args.get("filter"),
         "orderBy": args.get("order_by"),
-        "pageToken": args.get("page_token"),
+        "pageToken": args.get("next_token"),
     }
     remove_nulls_from_dictionary(params)
 
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.disks().aggregatedList(**params).execute()  # pylint: disable=E1101
-    demisto.debug(f"GCP Compute Disks aggregated list response for project {project_id}: \n{response}")
 
     items: list[dict[str, Any]] = []
     for scoped_list in response.get("items", {}).values():
         items.extend(scoped_list.get("disks", []) or [])
 
     next_token = response.get("nextPageToken")
+    demisto.debug(f"[GCP] Disks aggregated list for project {project_id}: {len(items)} disks, {bool(next_token)=}")
     readable_output = tableToMarkdown(
         "GCP Compute Disks",
         items,
@@ -1509,7 +1509,7 @@ def compute_disk_get(creds: Credentials, args: dict[str, Any]) -> CommandResults
         if e.resp.status == 404 and "was not found" in e._get_reason():
             return CommandResults(readable_output=f"Disk '{resource_name}' not found in project '{project_id}', zone '{zone}'")
         raise
-    demisto.debug(f"GCP Compute Disk get response for {resource_name}: \n{response}")
+    demisto.debug(f"[GCP] Disk get {resource_name}: {response.get('id')=}, {response.get('status')=}")
 
     readable_output = tableToMarkdown(
         f"GCP Compute Disk: {resource_name}",
@@ -1575,7 +1575,7 @@ def compute_disk_insert(creds: Credentials, args: dict[str, Any]) -> CommandResu
     body = remove_empty_elements(body)
 
     compute = GCPServices.COMPUTE.build(creds)
-    demisto.debug(f"Disk insert body keys for {resource_name} in project {project_id}: {list(body.keys())}")
+    demisto.debug(f"[GCP] Disk insert {resource_name} in project {project_id}, body keys: {list(body.keys())}")
     response = compute.disks().insert(project=project_id, zone=zone, body=body).execute()  # pylint: disable=E1101
 
     readable_output = tableToMarkdown(
@@ -1648,7 +1648,7 @@ def compute_disk_resize(creds: Credentials, args: dict[str, Any]) -> CommandResu
     body = {"sizeGb": arg_to_number(args.get("size_gb"))}
 
     compute = GCPServices.COMPUTE.build(creds)
-    demisto.debug(f"Disk resize body for {resource_name} in project {project_id}: {body}")
+    demisto.debug(f"[GCP] Disk resize {resource_name} in project {project_id}: {body.get('sizeGb')=}")
     response = (
         compute.disks()  # pylint: disable=E1101
         .resize(project=project_id, zone=zone, disk=resource_name, body=body)
@@ -1695,7 +1695,7 @@ def compute_disk_labels_set(creds: Credentials, args: dict[str, Any]) -> Command
     remove_nulls_from_dictionary(body)
 
     compute = GCPServices.COMPUTE.build(creds)
-    demisto.debug(f"Disk set labels body for {resource_name} in project {project_id}: {body}")
+    demisto.debug(f"[GCP] Disk set labels {resource_name} in project {project_id}, body keys: {list(body.keys())}")
     response = (
         compute.disks()  # pylint: disable=E1101
         .setLabels(project=project_id, zone=zone, resource=resource_name, body=body)
@@ -1753,7 +1753,7 @@ def compute_disk_snapshot_create(creds: Credentials, args: dict[str, Any]) -> Co
     body = remove_empty_elements(body)
 
     compute = GCPServices.COMPUTE.build(creds)
-    demisto.debug(f"Disk create snapshot body keys for {resource_name} in project {project_id}: {list(body.keys())}")
+    demisto.debug(f"[GCP] Disk create snapshot {resource_name} in project {project_id}, body keys: {list(body.keys())}")
     response = (
         compute.disks()  # pylint: disable=E1101
         .createSnapshot(project=project_id, zone=zone, disk=resource_name, body=body)
@@ -1783,7 +1783,7 @@ def compute_disk_types_list(creds: Credentials, args: dict[str, Any]) -> Command
     Args:
         creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
         args (dict): Command arguments including 'project_id', 'zone', 'limit', 'filter',
-            'order_by' and 'page_token'.
+            'order_by' and 'next_token'.
 
     Returns:
         CommandResults: Object containing the list of disk types under `GCP.Compute.DiskTypes`
@@ -1801,16 +1801,16 @@ def compute_disk_types_list(creds: Credentials, args: dict[str, Any]) -> Command
         "maxResults": limit,
         "filter": args.get("filter"),
         "orderBy": args.get("order_by"),
-        "pageToken": args.get("page_token"),
+        "pageToken": args.get("next_token"),
     }
     remove_nulls_from_dictionary(params)
 
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.diskTypes().list(**params).execute()  # pylint: disable=E1101
-    demisto.debug(f"GCP Compute Disk Types list response for project {project_id}, zone {zone}: \n{response}")
 
     items = response.get("items", [])
     next_token = response.get("nextPageToken")
+    demisto.debug(f"[GCP] Disk types list for project {project_id}, zone {zone}: {len(items)} disk types, {bool(next_token)=}")
     readable_output = tableToMarkdown(
         "GCP Compute Disk Types",
         items,
@@ -1837,7 +1837,7 @@ def compute_disk_types_aggregated_list(creds: Credentials, args: dict[str, Any])
     Args:
         creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
         args (dict): Command arguments including 'project_id', 'limit', 'filter', 'order_by'
-            and 'page_token'.
+            and 'next_token'.
 
     Returns:
         CommandResults: Object containing the aggregated list of disk types under
@@ -1853,19 +1853,19 @@ def compute_disk_types_aggregated_list(creds: Credentials, args: dict[str, Any])
         "maxResults": limit,
         "filter": args.get("filter"),
         "orderBy": args.get("order_by"),
-        "pageToken": args.get("page_token"),
+        "pageToken": args.get("next_token"),
     }
     remove_nulls_from_dictionary(params)
 
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.diskTypes().aggregatedList(**params).execute()  # pylint: disable=E1101
-    demisto.debug(f"GCP Compute Disk Types aggregated list response for project {project_id}: \n{response}")
 
     items: list[dict[str, Any]] = []
     for scoped_list in response.get("items", {}).values():
         items.extend(scoped_list.get("diskTypes", []) or [])
 
     next_token = response.get("nextPageToken")
+    demisto.debug(f"[GCP] Disk types aggregated list for project {project_id}: {len(items)} disk types, {bool(next_token)=}")
     readable_output = tableToMarkdown(
         "GCP Compute Disk Types",
         items,
@@ -1914,7 +1914,7 @@ def compute_disk_type_get(creds: Credentials, args: dict[str, Any]) -> CommandRe
                 readable_output=f"Disk type '{resource_name}' not found in project '{project_id}', zone '{zone}'"
             )
         raise
-    demisto.debug(f"GCP Compute Disk Type get response for {resource_name}: \n{response}")
+    demisto.debug(f"[GCP] Disk type get {resource_name}: {response.get('id')=}, {response.get('validDiskSize')=}")
 
     readable_output = tableToMarkdown(
         f"GCP Compute Disk Type: {resource_name}",
