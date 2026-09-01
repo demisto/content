@@ -1698,9 +1698,7 @@ class TestGetKibanaBaseUrl:
         Then:
             - Return the URL with ".es." replaced by ".kb."
         """
-        import Elasticsearch_v2
-
-        mocker.patch("Elasticsearch_v2.KIBANA_SERVER", "")
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": ""})
         mocker.patch("Elasticsearch_v2.SERVER", "https://my-deployment-af38b6.es.us-central1.gcp.cloud.es.io")
 
         result = Elasticsearch_v2.get_kibana_base_url()
@@ -1716,9 +1714,23 @@ class TestGetKibanaBaseUrl:
         Then:
             - Return the configured Kibana Server URL as-is, without attempting any derivation
         """
-        import Elasticsearch_v2
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": "https://kibana.example.com:5601"})
+        mocker.patch("Elasticsearch_v2.SERVER", "https://on-prem-elastic.example.com:9200")
 
-        mocker.patch("Elasticsearch_v2.KIBANA_SERVER", "https://kibana.example.com:5601")
+        result = Elasticsearch_v2.get_kibana_base_url()
+
+        assert result == "https://kibana.example.com:5601"
+
+    def test_get_kibana_base_url_configured_param_strips_trailing_slash(self, mocker):
+        """
+        Given:
+            - A configured Kibana Server URL that ends with a trailing slash
+        When:
+            - Calling get_kibana_base_url
+        Then:
+            - Return the URL without the trailing slash, so paths are joined correctly
+        """
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": "https://kibana.example.com:5601/"})
         mocker.patch("Elasticsearch_v2.SERVER", "https://on-prem-elastic.example.com:9200")
 
         result = Elasticsearch_v2.get_kibana_base_url()
@@ -1734,9 +1746,7 @@ class TestGetKibanaBaseUrl:
         Then:
             - Return the configured Kibana Server URL, which takes precedence over the derivation
         """
-        import Elasticsearch_v2
-
-        mocker.patch("Elasticsearch_v2.KIBANA_SERVER", "https://custom-kibana.example.com")
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": "https://custom-kibana.example.com"})
         mocker.patch("Elasticsearch_v2.SERVER", "https://my-deployment-af38b6.es.us-central1.gcp.cloud.es.io")
 
         result = Elasticsearch_v2.get_kibana_base_url()
@@ -1752,10 +1762,9 @@ class TestGetKibanaBaseUrl:
         Then:
             - Raise a DemistoException instructing the user to configure the Kibana Server URL
         """
-        import Elasticsearch_v2
         from CommonServerPython import DemistoException
 
-        mocker.patch("Elasticsearch_v2.KIBANA_SERVER", "")
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": ""})
         mocker.patch("Elasticsearch_v2.SERVER", "https://on-prem-elastic.example.com:9200")
 
         with pytest.raises(DemistoException) as exc_info:

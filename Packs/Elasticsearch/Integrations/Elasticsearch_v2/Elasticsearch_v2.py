@@ -189,7 +189,7 @@ def is_incident_closing(inc_status: Optional[int], delta: Optional[Dict[str, Any
 
 
 """VARIABLES FOR KIBANA COMMANDS (es-kibana-*)"""
-KIBANA_SERVER = (PARAMS.get("kibana_url") or "").rstrip("/")
+KIBANA_LOG_PREFIX = "[ES-KIBANA]"
 DEFAULT_SPACE_ID = PARAMS.get("space_id", "")
 KIBANA_XSRF_HEADER = {"kbn-xsrf": "true"}
 # Kibana write operations (POST/PUT/PATCH/DELETE) require the kbn-xsrf header.
@@ -446,13 +446,14 @@ def get_kibana_base_url() -> str:
         DemistoException: If no Kibana Server URL is configured and the Server URL does not contain
             the ".es." segment, so a Kibana URL cannot be derived from it.
     """
-    if KIBANA_SERVER:
-        demisto.debug(f"Using the configured Kibana Server URL: {KIBANA_SERVER}")
-        return KIBANA_SERVER
+    kibana_server = (PARAMS.get("kibana_url") or "").rstrip("/")
+    if kibana_server:
+        demisto.debug(f"{KIBANA_LOG_PREFIX} Using the configured Kibana Server URL: {kibana_server}")
+        return kibana_server
 
     if ".es." in SERVER:
         derived_url = SERVER.replace(".es.", ".kb.", 1)
-        demisto.debug(f"Derived the Kibana URL from the Elastic Cloud Server URL: {derived_url}")
+        demisto.debug(f"{KIBANA_LOG_PREFIX} Derived the Kibana URL from the Elastic Cloud Server URL: {derived_url}")
         return derived_url
 
     raise DemistoException(
