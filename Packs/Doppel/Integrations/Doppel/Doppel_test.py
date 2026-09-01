@@ -1586,6 +1586,12 @@ def test_v2_mints_token_and_sends_bearer(mocker, requests_mock):
     }
     assert alert_mock.last_request.headers["Authorization"] == "Bearer tok-1"
     assert store["ctx"]["oauth_token"]["access_token"] == "tok-1"
+    # Attribution headers ride along on both the token mint and the API request.
+    from Doppel import CLIENT_ATTRIBUTION
+
+    assert token_mock.last_request.headers["x-doppel-client"] == CLIENT_ATTRIBUTION
+    assert alert_mock.last_request.headers["x-doppel-client"] == CLIENT_ATTRIBUTION
+    assert alert_mock.last_request.headers["User-Agent"] == f"doppel-{CLIENT_ATTRIBUTION}"
 
 
 def test_v2_reuses_cached_token(mocker, requests_mock):
