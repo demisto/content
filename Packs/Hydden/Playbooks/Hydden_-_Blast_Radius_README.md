@@ -1,5 +1,7 @@
 # Hydden - Blast Radius
 
+![Hydden - Blast Radius](../doc_files/Hydden_-_Blast_Radius.png)
+
 Runs when a Cortex issue flags an account. Takes the account ID from the issue and calls `hydden-blast-radius`.
 
 Requires a **Hydden Control** integration instance.

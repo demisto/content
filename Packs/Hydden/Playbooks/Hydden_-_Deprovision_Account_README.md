@@ -1,5 +1,7 @@
 # Hydden - Deprovision Account
 
+![Hydden - Deprovision Account](../doc_files/Hydden_-_Deprovision_Account.png)
+
 Runs when a Cortex issue indicates a compromised or otherwise high-risk account. Takes the account ID from the issue and calls `hydden-deprovision-account`.
 
 Requires a **Hydden Control** integration instance.
