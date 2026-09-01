@@ -1843,9 +1843,11 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
     )
 
     command_name = demisto.command()
-    prefix = "GCP.Container.Operations" if command_name == "gcp-container-cluster-security-update" else "GCP.GKE.Operations"
+    outputs_prefix = (
+        "GCP.Container.Operations" if command_name == "gcp-container-cluster-security-update" else "GCP.GKE.Operations"
+    )
 
-    return CommandResults(readable_output=hr, outputs_prefix=prefix, outputs=response)
+    return CommandResults(readable_output=hr, outputs_prefix=outputs_prefix, outputs=response)
 
 
 def storage_bucket_metadata_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
