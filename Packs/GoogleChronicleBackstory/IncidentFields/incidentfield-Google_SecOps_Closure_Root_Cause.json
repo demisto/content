@@ -1,0 +1,31 @@
+{
+    "id": "incident_googlesecopsclosurerootcause",
+    "version": -1,
+    "name": "Google SecOps Closure Root Cause",
+    "ownerOnly": false,
+    "description": "The root cause identified at incident closure.",
+    "cliName": "googlesecopsclosurerootcause",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Google SecOps Case"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
