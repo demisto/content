@@ -47,6 +47,12 @@ SEVERITY_MAP = {"low": 1, "medium": 2, "high": 3, "critical": 4}
 # or actioned; needs_confirmation is included because it also requires customer action.
 ACTIVE_QUEUE_STATES = {"doppel_review", "actioned", "needs_confirmation"}
 
+# Client attribution sent with every Doppel API request (usage attribution only; the header
+# is optional server-side and never affects request handling). The version is the pack
+# version and must be bumped on each release (pack_metadata.json is not readable at runtime).
+PACK_VERSION = "1.2.0"
+CLIENT_ATTRIBUTION = f"xsoar/{PACK_VERSION}"
+
 
 """ CLIENT CLASS """
 
@@ -75,7 +81,12 @@ class Client(BaseClient):
     ):
         super().__init__(base_url, verify=verify, proxy=proxy)
 
-        self._headers = {"accept": "application/json", "x-api-key": api_key}
+        self._headers = {
+            "accept": "application/json",
+            "x-api-key": api_key,
+            "x-doppel-client": CLIENT_ATTRIBUTION,
+            "User-Agent": f"doppel-{CLIENT_ATTRIBUTION}",
+        }
         if user_api_key:
             self._headers["x-user-api-key"] = user_api_key
         if organization_code:

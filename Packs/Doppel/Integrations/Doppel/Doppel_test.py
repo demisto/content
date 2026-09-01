@@ -1282,6 +1282,22 @@ def test_client_initialization_proxy_default_none(mocker):
     assert call_kwargs["proxy"] is None
 
 
+def test_client_sends_attribution_headers(requests_mock):
+    """Every Doppel API request carries the x-doppel-client attribution header and User-Agent."""
+    from Doppel import CLIENT_ATTRIBUTION, PACK_VERSION
+
+    client = Client(base_url="https://api.doppel.com/v1", api_key="test-api-key", verify=True)
+    alert_mock = requests_mock.get("https://api.doppel.com/v1/alert", json={"id": "TET-1"})
+
+    client.get_alert(id="TET-1", entity="")
+
+    assert f"xsoar/{PACK_VERSION}" == CLIENT_ATTRIBUTION
+    assert alert_mock.last_request.headers["x-doppel-client"] == CLIENT_ATTRIBUTION
+    assert alert_mock.last_request.headers["User-Agent"] == f"doppel-{CLIENT_ATTRIBUTION}"
+    # Attribution never replaces auth headers.
+    assert alert_mock.last_request.headers["x-api-key"] == "test-api-key"
+
+
 def test_main_function_with_proxy_enabled(mocker):
     """Test main function when proxy is enabled in params."""
     # Mock demisto functions
