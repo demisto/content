@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: InfobloxBloxOne_ModelingRule
-name: InfobloxBloxOne Modeling Rule
+id: infoblox_blox_one_threat_defense
+name: Infoblox Blox One Threat Defense Modeling Rule
 rules: ""
 schema: ""
 tags: Infoblox

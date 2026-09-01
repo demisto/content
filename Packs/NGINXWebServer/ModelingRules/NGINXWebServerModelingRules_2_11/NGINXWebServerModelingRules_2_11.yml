@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: NGINXWebServer_ModelingRule
-name: NGINXWebServer Modeling Rule
+id: NGINXWebServer
+name: NGINX Web Server
 rules: ''
 schema: ''
 tags: NGINX Web Server

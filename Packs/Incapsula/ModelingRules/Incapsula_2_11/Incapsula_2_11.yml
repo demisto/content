@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: Incapsula_ModelingRule
-name: Incapsula Modeling Rule
+id: Imperva_Incapsula_ModelingRule
+name: Imperva Incapsula Modeling Rule
 rules: ''
 schema: ''
 tags: ''
