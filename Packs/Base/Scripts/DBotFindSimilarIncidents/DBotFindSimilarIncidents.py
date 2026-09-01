@@ -665,6 +665,17 @@ def get_incident_by_id(incident_id: str, populate_fields: list[str], from_date: 
     return incidents[0] if incidents else None
 
 
+def escape_query_value(value: Any) -> str:
+    """
+    Escape special characters in a field value so it can be safely embedded inside a
+    double-quoted getIncidents query.
+
+    :param value: The raw field value to escape.
+    :return: The escaped value as a string.
+    """
+    return str(value).replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n").replace("\r", "\\r")
+
+
 def get_all_incidents_for_time_window_and_exact_match(
     exact_match_fields: list[str],
     populate_fields: list[str],
@@ -691,7 +702,8 @@ def get_all_incidents_for_time_window_and_exact_match(
         if exact_match_field not in incident:
             msg += f"{MESSAGE_NO_FIELD % exact_match_field} \n"
         else:
-            exact_match_fields_list.append(f'{exact_match_field}: "{incident[exact_match_field]}"')
+            escaped_value = escape_query_value(incident[exact_match_field])
+            exact_match_fields_list.append(f'{exact_match_field}: "{escaped_value}"')
     query = " AND ".join(exact_match_fields_list)
     query += f" AND -id:{incident['id']} "
     if query_sup:

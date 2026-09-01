@@ -328,7 +328,8 @@ Requires `Write All Properties` and `Read All Properties` permission from `User 
 | --- | --- | --- |
 | username | The username of the account to update (sAMAccountName). | Required |
 | attribute-name | The name of the attribute to modify. For example, sn, displayName, mail, and so on. | Required |
-| attribute-value | The value to change the attribute to. | Required |
+| attribute-value | The value to change the attribute to. When attribute-type is "byte", provide a comma-separated list of decimal integers (0-255), e.g. "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" for logonHours. | Required |
+| attribute-type | The type of the attribute value. Set to "byte" for binary/Octet String attributes such as logonHours, objectSID, or objectGUID. When set, attribute-value must be a comma-separated list of decimal integers (0-255). Possible values are: byte. | Optional |
 | base-dn | Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance is used. | Optional |
 
 #### Context Output
@@ -442,7 +443,8 @@ Requires `Write All Properties` and `Read All Properties` permission from `Conta
 | --- | --- | --- |
 | contact-dn | The contact DN. | Required |
 | attribute-name | The attribute name to update. | Required |
-| attribute-value | The attribute value to update. | Required |
+| attribute-value | The attribute value to update. When attribute-type is "byte", provide a comma-separated list of decimal integers (0-255). | Required |
+| attribute-type | The type of the attribute value. Set to "byte" for binary/Octet String attributes. When set, attribute-value must be a comma-separated list of decimal integers (0-255). Possible values are: byte. | Optional |
 
 #### Context Output
 
@@ -979,7 +981,8 @@ Requires `Create, delete, and manage groups` permissions.
 | --- | --- | --- |
 | groupname | The group name of the group to update (sAMAccountName). | Optional |
 | attributename | The name of the attribute to modify. For example, Description and displayName. | Required |
-| attributevalue | The value of the attribute to change. | Required |
+| attributevalue | The value of the attribute to change. When attribute-type is "byte", provide a comma-separated list of decimal integers (0-255). | Required |
+| attribute-type | The type of the attribute value. Set to "byte" for binary/Octet String attributes. When set, attributevalue must be a comma-separated list of decimal integers (0-255). Possible values are: byte. | Optional |
 | basedn | Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance is used. | Optional |
 
 #### Context Output
