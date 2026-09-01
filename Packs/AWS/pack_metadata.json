@@ -25,6 +25,5 @@
         "marketplacev2",
         "platform"
     ],
-    "source": "cooc",
-    "managed": true
+    "derived_source": "cooc"
 }
