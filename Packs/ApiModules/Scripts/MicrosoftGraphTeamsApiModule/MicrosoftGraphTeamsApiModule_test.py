@@ -228,17 +228,18 @@ class TestTestFunctionEndpointSelection:
     platform injects an app-only token, so the probe must target `teams` instead.
     """
 
-    def _run(self, mocker, *, ucp_enabled, params=None):
+    def _run(self, mocker, *, ucp_enabled, command="test-module", params=None):
         mocker.patch("MicrosoftGraphTeamsApiModule.should_use_ucp_auth", return_value=ucp_enabled)
         mocker.patch.object(demisto, "params", return_value=params or {})
-        mocker.patch("MicrosoftGraphTeamsApiModule.return_results")
+        mocker.patch.object(demisto, "command", return_value=command)
+        results_mock = mocker.patch("MicrosoftGraphTeamsApiModule.return_results")
         dummy = _DummyMsClient(response="ok")
         client = _make_client_with_stubbed_ms_client(dummy)
         run_test_function(client, {})
-        return dummy
+        return dummy, results_mock
 
     def test_ucp_mode_probes_app_only_endpoint(self, mocker):
-        dummy = self._run(mocker, ucp_enabled=True)
+        dummy, _ = self._run(mocker, ucp_enabled=True)
 
         assert len(dummy.calls) == 1
         assert dummy.calls[0]["url_suffix"] == "teams"
@@ -246,16 +247,48 @@ class TestTestFunctionEndpointSelection:
 
     def test_non_ucp_mode_keeps_delegated_endpoint(self, mocker):
         # The community pack authenticates as a delegated user, for which `chats` is correct.
-        dummy = self._run(mocker, ucp_enabled=False)
+        dummy, _ = self._run(mocker, ucp_enabled=False)
 
         assert len(dummy.calls) == 1
         assert dummy.calls[0]["url_suffix"] == "chats"
 
     def test_ucp_mode_unaffected_by_self_deployed_param(self, mocker):
         # UCP never sets `self_deployed`, but pin that a stray value cannot redirect the probe.
-        dummy = self._run(mocker, ucp_enabled=True, params={"self_deployed": False})
+        dummy, _ = self._run(mocker, ucp_enabled=True, params={"self_deployed": False})
 
         assert dummy.calls[0]["url_suffix"] == "teams"
+
+
+class TestTestFunctionResultContract:
+    """`test-module` must emit exactly the string "ok"; any other payload is reported to the
+    user as a failed connection test even when the underlying API call succeeded.
+    """
+
+    def _run(self, mocker, *, command, ucp_enabled=True):
+        mocker.patch("MicrosoftGraphTeamsApiModule.should_use_ucp_auth", return_value=ucp_enabled)
+        mocker.patch.object(demisto, "params", return_value={})
+        mocker.patch.object(demisto, "command", return_value=command)
+        results_mock = mocker.patch("MicrosoftGraphTeamsApiModule.return_results")
+        client = _make_client_with_stubbed_ms_client(_DummyMsClient(response="ok"))
+        run_test_function(client, {})
+        return results_mock
+
+    def test_test_module_emits_bare_ok(self, mocker):
+        results_mock = self._run(mocker, command="test-module")
+
+        results_mock.assert_called_once_with("ok")
+
+    def test_explicit_test_command_keeps_rich_output(self, mocker):
+        # `msgraph-teams-test` is a regular command, so it is free to return a decorated result.
+        results_mock = self._run(mocker, command="msgraph-teams-test")
+
+        assert results_mock.call_count == 1
+        assert results_mock.call_args[0][0].readable_output == "✅ Success!"
+
+    def test_test_module_emits_bare_ok_in_legacy_mode(self, mocker):
+        results_mock = self._run(mocker, command="test-module", ucp_enabled=False)
+
+        results_mock.assert_called_once_with("ok")
 
 
 # ---------------------------------------------------------------------------

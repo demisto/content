@@ -579,7 +579,16 @@ def test_function(client, _):
     # app-only equivalent that stays closest to this integration's Teams scope.
     url_suffix = "teams" if should_use_ucp_auth() else "chats"
     client.ms_client.http_request(method="GET", url_suffix=url_suffix)
-    return_results(CommandResults(readable_output="✅ Success!"))
+    # `test-module` is a platform contract: the entry content must be exactly "ok" for the
+    # connection test to be reported as successful. Any other payload - including a decorated
+    # CommandResults - is surfaced to the user as a failure even when the API call succeeded.
+    # `run_command` discards this function's return value, so the result has to be emitted here.
+    # The richer message is kept for the explicit `!msgraph-teams-test` command, which is a
+    # regular command and carries no such constraint.
+    if demisto.command() == "test-module":
+        return_results("ok")
+    else:
+        return_results(CommandResults(readable_output="✅ Success!"))
     return response, None, None
 
 
