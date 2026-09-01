@@ -560,13 +560,6 @@ def test_function(client, _):
     """
     Performs a basic GET request to check if the API is reachable and authentication is successful.
     Returns ok if successful.
-
-    `GET /chats` requires delegated (signed-in user) context. Under UCP the integration
-    always authenticates with the client_credentials (application-only) grant, and Graph
-    rejects that endpoint in application-only context with 400 "Requested API is not
-    supported in application-only context". `$metadata` only requires a valid access
-    token (no specific delegated/application permission), so it is used as the
-    connectivity check when running under UCP instead.
     """
     response = "ok"
     if demisto.params().get("self_deployed", False):
@@ -579,10 +572,7 @@ def test_function(client, _):
                 "Please enable the integration and run the !msgraph-teams-test command in order to test it"
             )
 
-    if should_use_ucp_auth():
-        client.ms_client.http_request(method="GET", url_suffix="$metadata", resp_type="text")
-    else:
-        client.ms_client.http_request(method="GET", url_suffix="chats")
+    client.ms_client.http_request(method="GET", url_suffix="chats")
     return_results(CommandResults(readable_output="✅ Success!"))
     return response, None, None
 
