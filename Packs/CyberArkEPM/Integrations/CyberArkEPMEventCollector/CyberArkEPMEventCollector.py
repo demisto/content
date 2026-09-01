@@ -99,7 +99,9 @@ class Client(BaseClient):
         # The version segment of the EPM API path. Passed through as-is (only surrounding
         # whitespace/slashes are trimmed) rather than shape-validated, since CyberArk's documented
         # "x.x.x.x" format is broader than the value we ship as the default.
-        self.epm_api_version = (epm_api_version or Config.DEFAULT_EPM_API_VERSION).strip().strip("/")
+        # Trim before testing for emptiness: a whitespace/slash-only value is truthy but would
+        # otherwise collapse to "" and build a malformed "/EPM/API//" path.
+        self.epm_api_version = (epm_api_version or "").strip().strip("/").strip() or Config.DEFAULT_EPM_API_VERSION
         # Resolve the authentication method. When `auth_method` is not provided (e.g. instances
         # created before the parameter existed), fall back to the legacy behavior: SAML when both
         # SAML URLs are set, otherwise EPM. This keeps existing instances backward compatible.
