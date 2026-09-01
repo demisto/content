@@ -71,6 +71,189 @@ ALL_LOG_TYPES = list(LOG_TYPE_MAP.keys())
 DEFAULT_LOG_TYPES = ALL_LOG_TYPES
 
 
+# ============================================================================================
+# BENCHMARK DIAG - TEMPORARY memory/time measurement scaffolding. REMOVE BEFORE MERGE.
+# Generates fake events and sends them via one of three send "arms" so we can compare peak
+# memory + wall time of: stream-only, old multithread, new multithread+stream. Flag-gated:
+# does nothing unless the "benchmark_send_arm" param is set, so production is never affected.
+# ============================================================================================
+BENCHMARK_BUILD_TAG = "CIAC-17212-multithread-streaming-v2"  # bump per upload to confirm the tenant runs new code
+
+# Send arms selectable via the "benchmark_send_arm" instance parameter.
+BENCH_ARM_STREAM_ONLY = "stream_only"  # single thread + use_streaming_send=True
+BENCH_ARM_OLD_MULTITHREAD = "old_multithread"  # multiple_threads=True, no streaming (legacy path)
+BENCH_ARM_NEW_MULTITHREAD_STREAM = "new_multithread_stream"  # multiple_threads=True + use_streaming_send=True
+
+
+def _bench_rss_mb() -> float:
+    """Current process resident set size (MB) from /proc/self/statm; 0.0 if unreadable."""
+    try:
+        with open("/proc/self/statm") as f:
+            return int(f.read().split()[1]) * 4096 / 1024 / 1024
+    except Exception:
+        return 0.0
+
+
+def _bench_cgroup_mb() -> tuple[float, float, float]:
+    """(current, peak, limit) whole-cgroup memory in MB (what the OOM-killer counts); 0.0s if unreadable."""
+
+    def _read(path: str) -> float:
+        try:
+            with open(path) as f:
+                return int(f.read().strip()) / 1024 / 1024
+        except Exception:
+            return 0.0
+
+    # cgroup v2 first, then v1 fallback.
+    cur = _read("/sys/fs/cgroup/memory.current") or _read("/sys/fs/cgroup/memory/memory.usage_in_bytes")
+    peak = _read("/sys/fs/cgroup/memory.peak") or _read("/sys/fs/cgroup/memory/memory.max_usage_in_bytes")
+    limit = _read("/sys/fs/cgroup/memory.max") or _read("/sys/fs/cgroup/memory/memory.limit_in_bytes")
+    return cur, peak, limit
+
+
+def _bench_reset_cgroup_peak() -> None:
+    """Reset cgroup v2 memory.peak so the per-run high-water is meaningful (not a stale cold-start value)."""
+    try:
+        with open("/sys/fs/cgroup/memory.peak", "w") as f:
+            f.write("0")
+    except Exception as e:
+        demisto.info(f"[BENCH] could not reset cgroup memory.peak ({e}); cgroup_peak may be stale")
+
+
+def _bench_log_mem(label: str, t0: float) -> None:
+    """Emit one [BENCH][MEM] line with process RSS + whole-cgroup + elapsed seconds."""
+    cur, peak, limit = _bench_cgroup_mb()
+    demisto.info(
+        f"[BENCH][MEM] {label} rss={_bench_rss_mb():.1f}MB "
+        f"cgroup_cur={cur:.1f}MB cgroup_peak={peak:.1f}MB cgroup_limit={limit:.1f}MB t=+{time.monotonic() - t0:.2f}s"
+    )
+
+
+class _BenchPeakSampler:
+    """Background thread that samples RSS + cgroup_cur every `interval` s to capture the TRUE transient peak.
+
+    Point-in-time _bench_log_mem() calls can miss a sub-second spike during gzip/send; this samples
+    continuously so we record the real high-water for RSS and whole-cgroup usage.
+    """
+
+    def __init__(self, interval: float = 0.05) -> None:
+        self._interval = interval
+        self._stop = threading.Event()
+        self._thread = threading.Thread(target=self._run, name="bench-peak-sampler", daemon=True)
+        self.rss_peak = 0.0
+        self.cgroup_cur_peak = 0.0
+
+    def _run(self) -> None:
+        while not self._stop.is_set():
+            self.rss_peak = max(self.rss_peak, _bench_rss_mb())
+            cur, _, _ = _bench_cgroup_mb()
+            self.cgroup_cur_peak = max(self.cgroup_cur_peak, cur)
+            self._stop.wait(self._interval)
+
+    def __enter__(self) -> "_BenchPeakSampler":
+        self._thread.start()
+        return self
+
+    def __exit__(self, *exc: Any) -> None:
+        self._stop.set()
+        self._thread.join(timeout=2)
+
+
+def _bench_generate_events(total: int) -> list[dict]:
+    """Build `total` fake events roughly resembling a Menlo web log record (~hundreds of bytes each)."""
+    events = []
+    now = epoch_to_timestamp(int(time.time()))
+    for i in range(total):
+        events.append(
+            {
+                "eventId": i,
+                "_time": now,
+                "userId": f"user_{i % 1000}@example.com",
+                "url": f"https://example.com/path/{i}/resource?q={i}&session=abc{i}",
+                "action": "allow" if i % 2 else "block",
+                "category": "benchmark",
+                "bytesIn": 1234 + (i % 500),
+                "bytesOut": 5678 + (i % 500),
+                "userAgent": "Mozilla/5.0 (benchmark) AppleWebKit/537.36 Chrome/120 Safari/537.36",
+                "src_ip": f"10.{i % 255}.{(i // 255) % 255}.{i % 255}",
+                "dst_ip": f"93.184.{i % 255}.{(i // 7) % 255}",
+                "message": f"benchmark event number {i} - padding to make the record a realistic size xxxxxxxxxxxx",
+            }
+        )
+    return events
+
+
+def run_send_benchmark(arm: str, total_events: int) -> None:
+    """Generate `total_events` fake events and send them via the chosen arm, logging memory + time.
+
+    BENCHMARK DIAG - remove before merge. Does not persist state and returns after one send.
+    """
+    demisto.info(f"[BENCH] BUILD={BENCHMARK_BUILD_TAG} arm={arm} total_events={total_events}")
+    t0 = time.monotonic()
+    _bench_reset_cgroup_peak()  # so cgroup_peak reflects THIS run, not a stale cold-start high-water
+    _bench_log_mem("start", t0)
+
+    events = _bench_generate_events(total_events)
+    _bench_log_mem(f"after_generate ({len(events)} events)", t0)
+
+    # Reset the peak again right before the send so the sampled peak isolates the SEND transient
+    # (the generated list is already resident and is the same fixed cost for every arm).
+    _bench_reset_cgroup_peak()
+    baseline_rss = _bench_rss_mb()
+    send_start = time.monotonic()
+    with _BenchPeakSampler() as sampler:
+        if arm == BENCH_ARM_STREAM_ONLY:
+            demisto.info("[BENCH] arm=stream_only -> send_events_to_xsiam(use_streaming_send=True)")
+            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT, use_streaming_send=True)
+            futures = None
+        elif arm == BENCH_ARM_OLD_MULTITHREAD:
+            demisto.info("[BENCH] arm=old_multithread -> send_events_to_xsiam(multiple_threads=True)")
+            futures = send_events_to_xsiam(
+                events, vendor=VENDOR, product=PRODUCT, multiple_threads=True, should_update_health_module=False
+            )
+        elif arm == BENCH_ARM_NEW_MULTITHREAD_STREAM:
+            demisto.info(
+                "[BENCH] arm=new_multithread_stream -> " "send_events_to_xsiam(multiple_threads=True, use_streaming_send=True)"
+            )
+            futures = send_events_to_xsiam(
+                events,
+                vendor=VENDOR,
+                product=PRODUCT,
+                multiple_threads=True,
+                use_streaming_send=True,
+                should_update_health_module=False,
+            )
+        else:
+            raise ValueError(f"[BENCH] unknown benchmark_send_arm={arm!r}")
+
+        # For threaded arms, await the futures INSIDE the sampler so the peak covers the real uploads.
+        if futures:
+            sent = 0
+            futures_list = list(futures)
+            for future in as_completed(futures_list):
+                sent += future.result() or 0
+            demisto.info(f"[BENCH] threaded arm awaited {len(futures_list)} futures, events_sent={sent}")
+
+    send_elapsed = time.monotonic() - send_start
+    _bench_log_mem("after_send", t0)
+    cur, peak, limit = _bench_cgroup_mb()
+    demisto.info(
+        f"[BENCH] RESULT arm={arm} total_events={total_events} send_time={send_elapsed:.2f}s "
+        f"rss_baseline={baseline_rss:.1f}MB rss_peak={sampler.rss_peak:.1f}MB "
+        f"rss_send_delta={sampler.rss_peak - baseline_rss:.1f}MB "
+        f"cgroup_cur_peak={sampler.cgroup_cur_peak:.1f}MB cgroup_peak_reg={peak:.1f}MB cgroup_limit={limit:.1f}MB"
+    )
+    demisto.info(
+        f"[BENCH] DONE BUILD={BENCHMARK_BUILD_TAG} arm={arm} total_events={total_events} "
+        f"send_time={send_elapsed:.2f}s total_time={time.monotonic() - t0:.2f}s"
+    )
+
+
+# ============================================================================================
+# END BENCHMARK DIAG
+# ============================================================================================
+
+
 """ CLIENT CLASS """
 
 
@@ -801,6 +984,13 @@ def main() -> None:
             return_results(test_module(client, log_types))
 
         elif command == "fetch-events":
+            # BENCHMARK DIAG - remove before merge. When benchmark_send_arm is set, run the send
+            # benchmark instead of the real fetch so we can measure memory/time per send arm.
+            benchmark_arm = params.get("benchmark_send_arm")
+            if benchmark_arm:
+                benchmark_total_events = arg_to_number(params.get("benchmark_total_events")) or 200000
+                run_send_benchmark(arm=benchmark_arm, total_events=benchmark_total_events)
+                return
             fetch_events_command(
                 client=client,
                 log_types=log_types,

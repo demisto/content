@@ -1,8 +1,8 @@
 commonfields:
-  id: Menlo Security
+  id: Menlo Security Dev
   version: -1
-name: Menlo Security
-display: Menlo Security
+name: Menlo Security Dev
+display: Menlo Security Dev
 category: Network Security
 provider: Menlo Security
 sectionorder:
@@ -73,6 +73,23 @@ configuration:
   required: false
   section: Collect
   additionalinfo: "The maximum number of events to fetch per log type per fetch cycle."
+# BENCHMARK DIAG - remove before merge. When set, the fetch-events command runs the send benchmark.
+- display: '[BENCHMARK] Send arm'
+  name: benchmark_send_arm
+  type: 0
+  required: false
+  section: Collect
+  advanced: true
+  additionalinfo: "DIAGNOSTIC. Leave empty for normal operation. Set to stream_only / old_multithread / new_multithread_stream to run the send benchmark instead of a real fetch."
+# BENCHMARK DIAG - remove before merge.
+- display: '[BENCHMARK] Total fake events'
+  name: benchmark_total_events
+  type: 0
+  defaultvalue: "200000"
+  required: false
+  section: Collect
+  advanced: true
+  additionalinfo: "DIAGNOSTIC. Number of fake events generated when the benchmark send arm is set."
 script:
   script: ""
   type: python
