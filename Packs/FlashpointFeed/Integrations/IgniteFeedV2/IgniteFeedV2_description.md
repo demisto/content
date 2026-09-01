@@ -6,7 +6,7 @@
 - Enter the required details (i.e., Token Name, Ignite Username) and click on **Generate Token** button.
 - Click on the **Copy Token to Clipboard** button and paste it into the integration, code, or API call. Then, click on the **Save & Close** button to save the generated token and close the token generation page.
 
-## Indicator Reputation
+### Indicator Reputation
 
 All the fetched indicators are marked with the reputation selected in the **Indicator Reputation** parameter.
 
