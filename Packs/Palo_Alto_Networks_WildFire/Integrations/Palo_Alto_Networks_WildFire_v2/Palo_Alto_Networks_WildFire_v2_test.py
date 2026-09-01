@@ -970,7 +970,7 @@ def test_wildfire_get_verdicts_normalizes_single_hash_response(mocker, api_respo
 @pytest.mark.parametrize(
     "api_key_source, token, expected_agent, test_id",
     [
-        # XSUP-75894: the platform-supplied XDR license token must always be sent with agent=xdr,
+        # The platform-supplied XDR license token must always be sent with agent=xdr,
         # even when "API Key Type" is left at its default of "other".
         ("other", "a" * 64, "xdr", "explicit_other_on_platform_license_token"),
         ("other", "a" * 32, "xdr", "explicit_other_on_platform_32_char_license_token"),
@@ -989,8 +989,6 @@ def test_get_agent_defaults_to_xdr_on_platform_for_license_token(
         - get_agent() is called with is_license_token=True.
     Then:
         - The agent resolves to "xdr", because a license-supplied token is always an XDR key.
-          Before XSUP-75894 the explicit "other" short-circuited platform detection and returned "",
-          so the request went out with no agent and WildFire answered 401 "API key invalid".
     """
     mocker.patch("Palo_Alto_Networks_WildFire_v2.is_demisto_version_ge", return_value=True)
     mocker.patch("Palo_Alto_Networks_WildFire_v2.is_xsiam", return_value=True)
@@ -1019,7 +1017,7 @@ def test_main_sends_agent_xdr_for_license_token_when_key_type_left_default(mocke
     """
     Given:
         - A ConnectUs-created instance where the API key was left blank and "API Key Type" defaults
-          to "other", so the token is taken from the license (XSUP-75894).
+          to "other", so the token is taken from the license.
     When:
         - main() runs a command.
     Then:
