@@ -1,0 +1,348 @@
+{
+  "netskope_netskope_raw": {
+    "action": {
+      "type": "string",
+      "is_array": false    
+    },
+    "device": {
+      "type": "string",
+      "is_array": false
+    },
+    "dsthost": {
+      "type": "string",
+      "is_array": false
+    },
+    "dstip": {
+      "type": "string",
+      "is_array": false
+    },
+    "request_id": {
+      "type": "int",
+      "is_array": false
+    },
+    "dstport": {
+      "type": "int",
+      "is_array": false
+    },
+    "hostname": {
+      "type": "string",
+      "is_array": false
+    },
+    "ip_protocol": {
+      "type": "string",
+      "is_array": false
+    },
+    "os": {
+      "type": "string",
+      "is_array": false
+    },
+    "protocol": {
+      "type": "string",
+      "is_array": false
+    },
+    "session_duration": {
+      "type": "int",
+      "is_array": false
+    },
+    "conn_duration": {
+      "type": "int",
+      "is_array": false
+    },
+    "srcip": {
+      "type": "string",
+      "is_array": false
+    },
+    "srcport": {
+      "type": "int",
+      "is_array": false
+    },
+    "timestamp": {
+      "type": "int",
+      "is_array": false
+    },
+    "total_packets": {
+      "type": "int",
+      "is_array": false
+    },
+    "client_bytes": {
+      "type": "int",
+      "is_array": false
+    },
+    "user": {
+      "type": "string",
+      "is_array": false
+    },
+    "userkey": {
+      "type": "string",
+      "is_array": false
+    },
+    "severity_level": {
+      "type": "int",
+      "is_array": false
+    },
+    "audit_log_event": {
+      "type": "string",
+      "is_array": false
+    },
+    "activity": {
+      "type": "string",
+      "is_array": false
+    },
+    "type": {
+      "type": "string",
+      "is_array": false
+    },
+    "alert": {
+      "type": "string",
+      "is_array": false
+    },
+    "incident_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "src_location": {
+      "type": "string",
+      "is_array": false
+    },
+    "src_country": {
+      "type": "string",
+      "is_array": false
+    },
+    "src_region": {
+      "type": "string",
+      "is_array": false
+    },
+    "access_method": {
+      "type": "string",
+      "is_array": false
+    },
+    "app": {
+      "type": "string",
+      "is_array": false
+    },
+    "file_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "managed_app": {
+      "type": "string",
+      "is_array": false
+    },
+    "md5": {
+      "type": "string",
+      "is_array": false
+    },
+    "useragent": {
+      "type": "string",
+      "is_array": false
+    },
+    "url": {
+      "type": "string",
+      "is_array": false
+    },
+    "sha256": {
+      "type": "string",
+      "is_array": false
+    },
+    "malware_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "malware_name": {
+      "type": "string",
+      "is_array": false
+    },
+    "severity": {
+      "type": "string",
+      "is_array": false
+    },
+    "malware_severity": {
+      "type": "string",
+      "is_array": false
+    },
+    "risk_level": {
+      "type": "string",
+      "is_array": false
+    },
+    "region_name": {
+      "type": "string",
+      "is_array": false
+    },
+    "activity_status": {
+      "type": "string",
+      "is_array": false
+    },
+    "details": {
+      "type": "string",
+      "is_array": false
+    },
+    "domain": {
+      "type": "string",
+      "is_array": false
+    },
+    "web_url": {
+      "type": "string",
+      "is_array": false
+    },
+    "supporting_data": {
+      "type": "string",
+      "is_array": false
+    },
+    "local_md5": {
+      "type": "string",
+      "is_array": false
+    },
+    "local_sha256": {
+      "type": "string",
+      "is_array": false
+    },
+    "object": {
+      "type": "string",
+      "is_array": false
+    },
+    "ur_normalized": {
+      "type": "string",
+      "is_array": false
+    },
+    "user_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "event_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "activity_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "account_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "file_path": {
+      "type": "string",
+      "is_array": false
+    },
+    "title": {
+      "type": "string",
+      "is_array": false
+    },
+    "filename": {
+      "type": "string",
+      "is_array": false
+    },
+    "source_log_event": {
+      "type": "string",
+      "is_array": false
+    },
+    "page": {
+      "type": "string",
+      "is_array": false
+    },
+    "traffic_type": {
+      "type": "string",
+      "is_array": false
+    },
+    "category": {
+      "type": "string",
+      "is_array": false 
+    }, 
+    "ccl": {
+      "type": "string",
+      "is_array": false
+    },   
+    "browser": {
+      "type": "string",
+      "is_array": false
+    },      
+    "browser_session_id": {
+      "type": "int",
+        "is_array": false
+    },      
+    "app_session_id": {
+      "type": "string",
+      "is_array": false   
+    },      
+    "os_version": {
+      "type": "string",
+      "is_array": false
+    },      
+    "userip": {
+      "type": "string",
+      "is_array": false
+    },
+      "src_latitude": {
+        "type": "string",
+        "is_array": false        
+    },
+      "src_longitude": {
+        "type": "string",
+        "is_array": false
+    },
+      "src_timezone": {
+        "type": "string",
+        "is_array": false
+    },
+      "organization_unit": {
+        "type": "string",
+        "is_array": false      
+    },
+      "dst_location": {
+        "type": "string",
+        "is_array": false
+    },
+      "dst_country": {
+        "type": "string",
+        "is_array": false
+    },
+      "dst_latitude": {
+        "type": "string",
+        "is_array": false
+    },
+      "dst_longitude": {
+          "type": "string",
+          "is_array": false
+    },
+        "dst_region": {
+          "type": "string",
+          "is_array": false
+    },
+        "dst_timezone": {
+          "type": "string",
+          "is_array": false
+    },
+        "server_bytes": {
+          "type": "int",
+          "is_array": false
+    },
+        "dom": {
+          "type": "string",
+          "is_array": false
+    },
+        "alert_type": {
+          "type": "string",
+          "is_array": false
+    },
+        "alert_name": {
+          "type": "string",
+          "is_array": false
+    },
+        "referer": {
+          "type": "string",
+          "is_array": false
+    },
+        "instance_id": {
+          "type": "string",
+          "is_array": false
+    },
+        "object_type": {
+          "type": "string",
+          "is_array": false  
+    },
+        "site": {
+          "type": "string",
+          "is_array": false
+    }
+  }
+}
