@@ -2232,7 +2232,7 @@ script:
     - description: 'One of the following: user email address, alias email address, or the unique user ID.'
       name: user_key
       required: true
-    description: Indicates if the user is forced to change their password at next login.
+    description: Forces the user to change their password at next login.
     name: gsuite-user-reset-password
     outputs:
     - contextPath: GSuite.User.id

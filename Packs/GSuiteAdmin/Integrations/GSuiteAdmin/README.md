@@ -1945,7 +1945,7 @@ There is no context output for this command.
 ### gsuite-user-reset-password
 
 ***
-Retreive a group's details given a group key.
+Forces the user to change their password at next login.
 
 ##### Required Permissions
 
