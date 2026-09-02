@@ -360,6 +360,24 @@ def test_get_incidents_first_page_without_regions(requests_mock):
     assert "filter" not in requests_mock.last_request.json()
 
 
+def test_get_incidents_first_page_with_regions_as_list(requests_mock):
+    """
+    Given:
+        - The regions value as the *DLP Regions* multi-select parameter supplies it, a list.
+    When:
+        - Calling get_incidents_first_page.
+    Then:
+        - Ensure the region filter is built from the list, so a configured multi-select
+          does not break the fetch.
+    """
+    requests_mock.post(V4_INCIDENTS_URL, json={"rows": [], "status": "READY"})
+
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+    client.get_incidents_first_page(start_time_ms=1000, end_time_ms=2000, regions=["US", "EU"])
+
+    assert requests_mock.last_request.json()["filter"] == "Region in ('US', 'EU')"
+
+
 def test_get_incidents_next_page(requests_mock):
     """
     Given:
@@ -407,12 +425,16 @@ def test_v4_url_ignores_custom_base_path(requests_mock):
         pytest.param("", "", id="empty_string"),
         pytest.param("us,'; DROP TABLE--", "Region in ('US')", id="injection_token_dropped"),
         pytest.param("!!!", "", id="all_tokens_invalid"),
+        pytest.param(["us", "eu"], "Region in ('US', 'EU')", id="list_as_sent_by_multiselect_param"),
+        pytest.param([], "", id="empty_list"),
+        pytest.param(None, "", id="unset"),
     ],
 )
 def test_build_region_filter(regions, expected):
     """
     Given:
-        - A comma-separated region configuration value.
+        - A region configuration value, either as the list the *DLP Regions* multi-select
+          parameter produces or as a comma-separated string.
     When:
         - Calling build_region_filter.
     Then:

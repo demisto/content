@@ -251,7 +251,7 @@ class Client(BaseClient):
         self,
         start_time_ms: int,
         end_time_ms: int,
-        regions: str = "",
+        regions: str | list[str] | None = None,
         page_size: int = V4_PAGE_SIZE,
     ) -> tuple[dict[str, Any], int]:
         """Start a v4 incident inventory query and fetch its first page.
@@ -259,7 +259,7 @@ class Client(BaseClient):
         Args:
             start_time_ms: Start time in epoch milliseconds (inclusive).
             end_time_ms: End time in epoch milliseconds (inclusive).
-            regions: Comma-separated DLP regions. Empty = all regions.
+            regions: DLP regions, as a list or a comma-separated string. Empty = all regions.
             page_size: Rows per page.
 
         Returns:
@@ -546,7 +546,7 @@ def parse_incident_details(compressed_details: str):
     return details_obj
 
 
-def build_region_filter(regions: str) -> str:
+def build_region_filter(regions: str | list[str] | None) -> str:
     """
     Build the v4 server-side filter expression for the configured regions.
 
@@ -554,12 +554,14 @@ def build_region_filter(regions: str) -> str:
     cannot alter the filter expression.
 
     Args:
-        regions: Comma-separated DLP regions (e.g. "us,eu").
+        regions: DLP regions, either as a list (the *DLP Regions* multi-select
+            parameter is handed to the integration as a list) or as a
+            comma-separated string.
 
     Returns:
         str: Filter expression, or an empty string when no valid region is configured.
     """
-    tokens = [region.strip().upper() for region in regions.split(",")] if regions else []
+    tokens = [str(region).strip().upper() for region in argToList(regions)]
     tokens = [region for region in tokens if re.fullmatch(r"[A-Z0-9_]+", region)]
     if not tokens:
         return ""
@@ -761,7 +763,7 @@ def _migrate_last_run(last_run: dict[str, Any], start_timestamp: int) -> dict[st
 
 def fetch_notifications(
     client: Client,
-    regions: str,
+    regions: str | list[str] | None,
     first_fetch_timestamp: int,
     incident_type: str = "Data Loss Prevention",
     max_fetch: int = DEFAULT_MAX_FETCH,
@@ -772,7 +774,7 @@ def fetch_notifications(
 
     Args:
         client (Client): DLP API client.
-        regions (str): Comma-separated DLP regions to fetch from.
+        regions (str | list[str] | None): DLP regions to fetch from, as a list or a comma-separated string.
         first_fetch_timestamp (int): Timestamp to use for first fetch (unix epoch seconds).
         incident_type (str): Type of incident to create (default: "Data Loss Prevention").
         max_fetch (int): Maximum number of incidents to fetch (default: DEFAULT_MAX_FETCH).
