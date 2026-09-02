@@ -49,7 +49,7 @@ configuration:
   required: false
   type: 0
   section: Connect
-  additionalinfo: 'The EPM API version used as a URL path segment in the data-call paths (/EPM/API/<Version>/Sets). Applies to the Idira OAuth authentication method only. The value must be four dot-separated numbers (x.x.x.x), for example 26.8.0.0. Change this only if your tenant requires a version other than the default.'
+  additionalinfo: 'The EPM API version used as a URL path segment in the data-call paths (/EPM/API/<Version>/Sets). Applies to the Idira OAuth authentication method only. Must be four dot-separated numbers (x.x.x.x). The default value is 26.8.0.0. Change this only if your tenant requires a non-default version.'
   advanced: true
   defaultvalue: '26.8.0.0'
 - display: Username
