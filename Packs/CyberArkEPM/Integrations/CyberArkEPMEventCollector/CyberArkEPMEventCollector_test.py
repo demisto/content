@@ -622,12 +622,12 @@ def test_client_configuration_debug_log_reports_missing_credentials(requests_moc
 @pytest.mark.parametrize(
     "raw_value, expected_version",
     [
-        pytest.param(None, "26.8.0.0", id="not_configured_falls_back_to_default"),
-        pytest.param("", "26.8.0.0", id="empty_string_falls_back_to_default"),
-        pytest.param("   ", "26.8.0.0", id="whitespace_only_falls_back_to_default"),
-        pytest.param("/", "26.8.0.0", id="slash_only_falls_back_to_default"),
-        pytest.param("///", "26.8.0.0", id="multiple_slashes_only_fall_back_to_default"),
-        pytest.param(" / ", "26.8.0.0", id="mixed_whitespace_and_slash_only_falls_back_to_default"),
+        pytest.param(None, "", id="not_configured_selects_the_version_less_path"),
+        pytest.param("", "", id="empty_string_selects_the_version_less_path"),
+        pytest.param("   ", "", id="whitespace_only_selects_the_version_less_path"),
+        pytest.param("/", "", id="slash_only_selects_the_version_less_path"),
+        pytest.param("///", "", id="multiple_slashes_only_select_the_version_less_path"),
+        pytest.param(" / ", "", id="mixed_whitespace_and_slash_only_selects_the_version_less_path"),
         pytest.param("26.8.0.900", "26.8.0.900", id="custom_four_segment_version"),
         pytest.param("11.5.0.1", "11.5.0.1", id="older_four_segment_release"),
         pytest.param(" /26.8.0.0/ ", "26.8.0.0", id="surrounding_whitespace_and_slashes_are_trimmed"),
@@ -636,19 +636,19 @@ def test_client_configuration_debug_log_reports_missing_credentials(requests_moc
 def test_normalize_epm_api_version(raw_value, expected_version):
     """
     Given:
-        - A well-formed *EPM API Version* parameter value: unset/empty, consisting only of
-          whitespace and/or slashes, a four-segment version, or a four-segment version padded
-          with whitespace and slashes.
+        - An *EPM API Version* parameter value: unset/empty, consisting only of whitespace and/or
+          slashes, a four-segment version, or a four-segment version padded with whitespace
+          and slashes.
 
     When:
         - Normalizing the raw parameter at the parameter-parsing layer.
 
     Then:
-        - The version is returned verbatim, apart from trimming surrounding whitespace and slashes.
-        - Any value that is empty once trimmed falls back to the default, so a stray space or slash
-          can never produce a malformed "/EPM/API//" path.
-        - When the parameter is unset or empty, the four-segment default is used, so existing
-          instances that never configured the parameter get a value the EPM API accepts.
+        - A supplied version is returned verbatim, apart from trimming whitespace and slashes.
+        - Any value that is empty once trimmed yields an empty string, which selects the
+          version-less path. A stray space or slash therefore can never produce a malformed
+          "/EPM/API//" path, and an operator who leaves the field blank gets whichever version the
+          tenant currently runs rather than a pin that will eventually go stale.
     """
     normalized = normalize_epm_api_version(raw_value)
 
@@ -692,10 +692,37 @@ def test_normalize_epm_api_version_rejects_malformed_values(raw_value):
     assert "four" in str(raised.value)
 
 
+OAUTH_IDENTITY_URL = "https://tenant.id.cyberark.cloud"
+OAUTH_SERVER_URL = "https://example.epm.cyberark.com"
+
+
+def _mock_oauth_token(mocker, requests_mock):
+    """Patch the integration context and stub the OAuth token endpoint."""
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+    requests_mock.post(f"{OAUTH_IDENTITY_URL}/oauth2/token/web-app-1", json={"access_token": "TOKEN123", "expires_in": 900})
+
+
+def _build_oauth_client_with_version(mocker, requests_mock, epm_api_version: str) -> Client:
+    """Build an Idira OAuth Client with an explicit `epm_api_version`."""
+    _mock_oauth_token(mocker, requests_mock)
+    return Client(
+        base_url="",
+        username="user",
+        password="pass",
+        application_id="1",
+        auth_method="Idira OAuth",
+        identity_url=OAUTH_IDENTITY_URL,
+        web_app_id="web-app-1",
+        server_url=OAUTH_SERVER_URL,
+        epm_api_version=epm_api_version,
+    )
+
+
 @pytest.mark.parametrize(
     "epm_api_version, expected_version",
     [
-        pytest.param(None, "26.8.0.0", id="not_provided_falls_back_to_default"),
         pytest.param("26.9.0", "26.9.0", id="custom_three_segment_version"),
         pytest.param("26.8", "26.8", id="custom_two_segment_version"),
         pytest.param("26.8.0.900", "26.8.0.900", id="custom_four_segment_version_per_vendor_docs"),
@@ -704,40 +731,69 @@ def test_normalize_epm_api_version_rejects_malformed_values(raw_value):
 def test_oauth_base_url_uses_configured_epm_api_version(mocker, requests_mock, epm_api_version, expected_version):
     """
     Given:
-        - An Idira OAuth configuration receiving an already-normalized *EPM API Version*, including
-          the case where it is not provided at all.
+        - An Idira OAuth configuration receiving an already-normalized *EPM API Version*.
 
     When:
         - Building the Client (which performs the OAuth authentication flow).
 
     Then:
-        - The EPM SET API base URL embeds the given version verbatim.
-        - When no version is provided, the default is used, so existing instances and direct callers
-          keep their current behavior.
+        - The EPM SET API base URL embeds the given version verbatim, so an operator who needs to
+          pin a specific version still gets exactly that version.
     """
-    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
-    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
-    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+    client = _build_oauth_client_with_version(mocker, requests_mock, epm_api_version)
 
-    identity_url = "https://tenant.id.cyberark.cloud"
-    server_url = "https://example.epm.cyberark.com"
+    assert client._base_url == f"{OAUTH_SERVER_URL}/EPM/API/{expected_version}/"
+    assert "//" not in client._base_url.removeprefix("https://")
 
-    requests_mock.post(f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "TOKEN123", "expires_in": 900})
 
+def test_oauth_base_url_omits_the_version_segment_when_none_is_configured(mocker, requests_mock):
+    """
+    Given:
+        - An Idira OAuth configuration whose *EPM API Version* was left empty, which
+          `normalize_epm_api_version` turns into an empty string.
+
+    When:
+        - Building the Client.
+
+    Then:
+        - The base URL is the version-less form `/EPM/API/`, which CyberArk resolves to the latest
+          version deployed on the tenant. Confirmed against a live tenant with a valid token:
+          `GET /EPM/API/Sets` returned 200.
+        - Crucially there is no empty segment: interpolating "" into the versioned template would
+          produce "/EPM/API//" and the EPM router answers that with a 404.
+    """
+    client = _build_oauth_client_with_version(mocker, requests_mock, "")
+
+    assert client._base_url == f"{OAUTH_SERVER_URL}/EPM/API/"
+    assert "//" not in client._base_url.removeprefix("https://")
+
+
+def test_oauth_base_url_keeps_the_default_when_the_argument_is_omitted(mocker, requests_mock):
+    """
+    Given:
+        - A Client constructed without passing `epm_api_version` at all, as older direct callers do.
+
+    When:
+        - Building the Client.
+
+    Then:
+        - The four-segment default is used. Omitting the argument (None) is distinct from
+          configuring an empty value (""): the former means "unspecified", the latter is a
+          deliberate request for the version-less path.
+    """
+    _mock_oauth_token(mocker, requests_mock)
     client = Client(
         base_url="",
         username="user",
         password="pass",
         application_id="1",
         auth_method="Idira OAuth",
-        identity_url=identity_url,
+        identity_url=OAUTH_IDENTITY_URL,
         web_app_id="web-app-1",
-        server_url=server_url,
-        epm_api_version=epm_api_version,
+        server_url=OAUTH_SERVER_URL,
     )
 
-    assert client._base_url == f"{server_url}/EPM/API/{expected_version}/"
-    assert "//" not in client._base_url.removeprefix("https://")
+    assert client._base_url == f"{OAUTH_SERVER_URL}/EPM/API/26.8.0.0/"
 
 
 @pytest.mark.parametrize(
@@ -1094,6 +1150,77 @@ def test_probe_does_not_run_for_non_oauth_auth_methods(mocker, requests_mock):
 
     assert run_test_module(client=client, last_run={}) == "ok"
     probe.assert_not_called()
+
+
+def test_test_module_succeeds_against_the_version_less_path(mocker, requests_mock):
+    """
+    Given:
+        - An Idira OAuth instance configured with no *EPM API Version*, so the data-plane URL is the
+          version-less `/EPM/API/` form.
+        - A tenant that serves that path, as confirmed in production:
+          `[VersionlessProbe] SUCCEEDED: GET .../EPM/API/Sets -> status=200`.
+
+    When:
+        - Running test-module, which performs a real 5-event fetch before calling `get_set_list`.
+
+    Then:
+        - It returns "ok", and every request went to the version-less URL. No request carries a
+          version segment, and none contains the "//" that an empty segment would produce.
+    """
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+
+    client = _build_oauth_client_with_version(mocker, requests_mock, "")
+    sets_matcher = requests_mock.get(f"{OAUTH_SERVER_URL}/EPM/API/Sets", json={"Sets": []})
+
+    assert run_test_module(client=client, last_run={}) == "ok"
+
+    assert sets_matcher.called
+    requested = [request.url for request in requests_mock.request_history if "/EPM/API/" in request.url]
+    assert requested, "expected at least one EPM data call"
+    for url in requested:
+        assert "/EPM/API/Sets" in url
+        assert "26.8.0.0" not in url
+        assert "//" not in url.removeprefix("https://")
+
+
+def test_fetch_events_uses_the_version_less_path(mocker, requests_mock):
+    """
+    Given:
+        - An Idira OAuth instance with no configured *EPM API Version*.
+        - A tenant that resolves a set name and returns events on the version-less path.
+
+    When:
+        - Resolving the set names and running a fetch, which is the same chain test-module drives.
+
+    Then:
+        - The set is resolved and the fetch completes, so the version-less path works for the data
+          calls too - not only for the single `Sets` call the probe measured.
+    """
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+    mocker.patch("CyberArkEPMEventCollector.demisto.info")
+
+    client = _build_oauth_client_with_version(mocker, requests_mock, "")
+
+    set_name = "Contoso, Ltd. - Workstations"
+    requests_mock.get(f"{OAUTH_SERVER_URL}/EPM/API/Sets", json={"Sets": [{"Name": set_name, "Id": "set-id-1"}]})
+    requests_mock.post(f"{OAUTH_SERVER_URL}/EPM/API/Sets/set-id-1/policyaudits/search", json={"PolicyAudits": []})
+    requests_mock.post(f"{OAUTH_SERVER_URL}/EPM/API/Sets/set-id-1/Events/Search", json={"events": []})
+
+    set_ids = get_set_ids_by_set_names(client, [set_name])
+    assert set_ids == ["set-id-1"]
+
+    last_run = create_last_run(set_ids, "2026-09-02T00:00:00Z")
+    events, next_run = fetch_events(client=client, last_run=last_run, max_fetch=5)
+
+    assert events == []
+    assert list(next_run.keys()) == ["set-id-1"]
+    for url in [request.url for request in requests_mock.request_history if "/EPM/API/" in request.url]:
+        assert "26.8.0.0" not in url
+        assert "//" not in url.removeprefix("https://")
 
 
 def _build_oauth_client(requests_mock, identity_url, server_url):

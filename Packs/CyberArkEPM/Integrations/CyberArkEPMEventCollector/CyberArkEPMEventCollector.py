@@ -40,19 +40,28 @@ class Config:
     VALID_UNTIL = "valid_until"
     DEFAULT_TOKEN_TTL_SECONDS = 6 * 60 * 60
     CACHE_BUFFER_SECONDS = 60
-    # Default EPM API version segment used in the OAuth data-call paths, e.g.
+    # The EPM API version segment used in the OAuth data-call paths, e.g.
     # https://<EPM_Server>/EPM/API/<Version>/Sets. Only applies to the Idira OAuth flow.
     #
-    # The version MUST be four dot-separated numbers ("x.x.x.x"). The EPM router matches the
-    # segment on that shape alone: a three-part value such as "26.8.0" matches no route and the
-    # request is rejected with a bare 404 before it reaches the application. Verified against a
-    # live tenant - "26.8.0.0", "11.5.0.1" and even "1.1.1.1" route (401 without a token), while
-    # "26.8", "26.8.0" and "26.8.0.0.0" all return 404. See
+    # When a version IS supplied it MUST be four dot-separated numbers ("x.x.x.x"). The EPM router
+    # matches the segment on that shape alone: a three-part value such as "26.8.0" matches no route
+    # and the request is rejected with a bare 404 before it reaches the application. Verified
+    # against a live tenant - "26.8.0.0", "11.5.0.1" and even "1.1.1.1" route (401 without a
+    # token), while "26.8", "26.8.0" and "26.8.0.0.0" all return 404. See
     # https://docs.cyberark.com/epm/latest/en/content/webservices/webservicesintro.htm
     #
-    # Overridable per instance via the *EPM API Version* parameter, so operators can follow the
-    # vendor's version cadence without waiting for a content release.
+    # Leaving the *EPM API Version* parameter empty now selects the version-less path
+    # (`/EPM/API/Sets`), which CyberArk documents as resolving to the latest version deployed on
+    # the tenant. That shape was confirmed against a live tenant with a valid token:
+    #   [VersionlessProbe] SUCCEEDED: GET https://api-na.epm.cyberark.cloud/EPM/API/Sets -> status=200
+    # It is preferred because a pinned version can only ever go stale, and a stale pin fails as an
+    # opaque 404. An explicit value is still honored for operators who need to pin.
     DEFAULT_EPM_API_VERSION = "26.8.0.0"
+
+    # Sentinel for "send no version segment at all". Distinct from None, which means "not
+    # specified" and still resolves to DEFAULT_EPM_API_VERSION for callers that construct a
+    # Client directly.
+    NO_EPM_API_VERSION = ""
 
     # A well-formed version segment: exactly four dot-separated groups of digits.
     EPM_API_VERSION_PATTERN = re.compile(r"^\d+\.\d+\.\d+\.\d+$")
@@ -106,9 +115,10 @@ class Client(BaseClient):
         # at the parameter-parsing layer.
         self.server_url = server_url
         # The version segment of the EPM API path, already normalized by `normalize_epm_api_version`
-        # at the parameter-parsing layer. Callers that construct a Client directly must pass a
-        # usable value; only the None default is resolved here.
-        self.epm_api_version = epm_api_version or Config.DEFAULT_EPM_API_VERSION
+        # at the parameter-parsing layer. An empty string is a deliberate choice - it selects the
+        # version-less path - so only None (never specified) falls back to the default. Callers
+        # that construct a Client directly and omit the argument keep the historical behavior.
+        self.epm_api_version = Config.DEFAULT_EPM_API_VERSION if epm_api_version is None else epm_api_version
         # Resolve the authentication method. When `auth_method` is not provided (e.g. instances
         # created before the parameter existed), fall back to the legacy behavior: SAML when both
         # SAML URLs are set, otherwise EPM. This keeps existing instances backward compatible.
@@ -227,8 +237,18 @@ class Client(BaseClient):
         if not self.server_url:
             raise DemistoException("Server URL is required for Idira OAuth authentication.")
         access_token = self._get_access_token(force_refresh=force_refresh)
-        self._base_url = f"{self.server_url}/EPM/API/{self.epm_api_version}/"
-        demisto.debug(f"[oauth_auth_to_cyber_ark] Using EPM SET API base URL: {self._base_url}")
+        # An empty version selects the version-less path, which the tenant resolves to its latest
+        # deployed version. Interpolating an empty segment would produce a double slash
+        # ("/EPM/API//Sets") and 404, so the two shapes are built separately rather than by
+        # formatting "" into the middle of the path.
+        if self.epm_api_version:
+            self._base_url = f"{self.server_url}/EPM/API/{self.epm_api_version}/"
+        else:
+            self._base_url = f"{self.server_url}/EPM/API/"
+        demisto.debug(
+            f"[oauth_auth_to_cyber_ark] Using EPM SET API base URL: {self._base_url} "
+            f"(version={self.epm_api_version or 'none - tenant default'})"
+        )
         self._headers["Authorization"] = f"Bearer {access_token}"
 
     def _refresh_oauth_token(self) -> None:
@@ -333,24 +353,38 @@ class Client(BaseClient):
         self._base_url = urljoin(result.get("ManagerURL"), "/EPM/API/")
         self._headers["Authorization"] = f"basic {result.get('EPMAuthenticationResult')}"
 
+    def _log_request_url(self, caller: str, url_suffix: str) -> None:
+        """Log the fully-resolved request URL for a data-plane call.
+
+        The version segment is chosen once, in `oauth_auth_to_cyber_ark`, and then lives inside
+        `self._base_url` where no per-call log ever showed it. That is precisely how the malformed
+        version segment stayed invisible in a customer's debug log for as long as it did. Logging
+        the resolved URL on every data call means the path shape actually used - version-pinned or
+        version-less - is provable from the logs for *every* endpoint, not just for `Sets`.
+
+        Args:
+            caller: The calling method, used as the log prefix.
+            url_suffix: The suffix appended to the base URL for this call.
+        """
+        demisto.debug(
+            f"[{caller}] Request URL: {self._base_url}{url_suffix} "
+            f"(epm_api_version={self.epm_api_version or 'none - version-less path'})"
+        )
+
     def get_set_list(self) -> dict:
-        # TODO: TEMPORARY DIAGNOSTIC - REMOVE BEFORE GA.
-        # The extra detail below (full URL, and the set names the tenant actually returned) is here
-        # only while we chase the 404 and the set-name resolution failures. It is deliberately
-        # verbose: the previous log printed a count alone, which is why neither the malformed
-        # version segment nor the set-name mismatch was visible in a customer's debug log. Once
-        # both are settled, delete the two lines marked TEMPORARY and keep the count line.
-        demisto.debug(f"[Client.get_set_list] TEMPORARY: requesting {self._base_url}Sets")  # TEMPORARY
+        self._log_request_url("Client.get_set_list", "Sets")
         result = self._http_request("GET", url_suffix="Sets")
         sets = result.get("Sets", [])
         demisto.debug(f"[Client.get_set_list] Retrieved {len(sets)} sets from API")
-        demisto.debug(  # TEMPORARY
-            f"[Client.get_set_list] TEMPORARY: set names returned by the tenant: " f"{[entry.get('Name') for entry in sets]}"
-        )
+        # The tenant's own set names are logged in full because name resolution is an exact string
+        # match: when it fails, the only way to see why is to compare what was configured against
+        # what the tenant actually returned, character for character.
+        demisto.debug(f"[Client.get_set_list] Set names returned by the tenant: {[entry.get('Name') for entry in sets]}")
         return result
 
     def get_admin_audits(self, set_id: str, from_date: str = "", limit: int = ADMIN_AUDITS_MAX_LIMIT) -> dict:
         url_suffix = f"Sets/{set_id}/AdminAudit?dateFrom={from_date}&limit={min(limit, ADMIN_AUDITS_MAX_LIMIT)}"
+        self._log_request_url("Client.get_admin_audits", url_suffix)
         return self._http_request("GET", url_suffix=url_suffix)
 
     def get_policy_audits(self, set_id: str, from_date: str = "", limit: int = MAX_LIMIT, next_cursor: str = "start") -> dict:
@@ -358,6 +392,8 @@ class Client(BaseClient):
         filter_params = f"arrivalTime GE {from_date}"
         if self.policy_audits_event_type:
             filter_params += f' AND eventType IN {",".join(self.policy_audits_event_type)}'
+        self._log_request_url("Client.get_policy_audits", url_suffix)
+        demisto.debug(f"[Client.get_policy_audits] filter={filter_params}")
         data = assign_params(
             filter=filter_params,
         )
@@ -372,7 +408,8 @@ class Client(BaseClient):
             f"[Client.get_events] set_id={set_id}, from_date={from_date}, limit={limit}, next_cursor={next_cursor}, "
             f"raw_events_event_type={self.raw_events_event_type}"
         )
-        demisto.debug(f"[Client.get_events] url_suffix={url_suffix} filter={filter_params}")
+        self._log_request_url("Client.get_events", url_suffix)
+        demisto.debug(f"[Client.get_events] filter={filter_params}")
         data = assign_params(
             filter=filter_params,
         )
@@ -545,9 +582,16 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
         demisto.info(f"[get_set_ids_by_set_names] Resolved set_name -> set_id mapping: {context_set_items}")
 
         if unresolved_set_names:
+            # Both sides of the comparison are logged together. Resolution is an exact string
+            # match, so an unresolved name is only ever explicable by seeing it next to the names
+            # the tenant actually returned - a fragment ending mid-word is the signature of a name
+            # that was split on its own comma.
             demisto.error(
                 f"[get_set_ids_by_set_names] Could not resolve the following set names to set IDs: "
-                f"{unresolved_set_names}. These sets will not be fetched."
+                f"{unresolved_set_names}. These sets will not be fetched. "
+                f"Names available on the tenant: {all_set_names_from_api}. "
+                f"A configured name that looks truncated mid-word was split on a comma - "
+                f"configure the *Set name* parameter as a JSON array instead."
             )
 
         # Merge into the existing context instead of overwriting it, so we don't clobber
@@ -690,6 +734,13 @@ def fetch_events(
     demisto.info(f"[fetch_events] Start fetching, {last_run=}")
     demisto.info(f"[fetch_events] Set IDs to process: {set_ids_to_process}")
     demisto.debug(f"[fetch_events] params: {max_fetch=}, {enable_admin_audits=}")
+    # Restate the URL shape at the start of every fetch. The client is built once and its base URL
+    # logged once, but a fetch is what runs every cycle - so on a tenant using the version-less
+    # path this is the line that proves, per cycle, which shape the event calls actually used.
+    demisto.info(
+        f"[fetch_events] Using base_url={client._base_url!r} "
+        f"(epm_api_version={client.epm_api_version or 'none - version-less path'})"
+    )
 
     if enable_admin_audits:
         for set_id, admin_audits in get_admin_audits(client, last_run, max_fetch).items():
@@ -781,13 +832,19 @@ def test_module(client: Client, last_run: dict) -> str:
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-    demisto.debug("[test_module] starting test fetch with max_fetch=5")
+    demisto.info(
+        f"[test_module] Starting test fetch with max_fetch=5 using base_url={client._base_url!r} "
+        f"(epm_api_version={client.epm_api_version or 'none - version-less path'})"
+    )
     fetch_events(client=client, last_run=last_run, max_fetch=5)
     client.get_set_list()
     # TEMPORARY: runs after the real test so it can never influence its outcome.
     if client.auth_method == Config.AUTH_METHOD_OAUTH:
         probe_versionless_api_path(client)
-    demisto.debug("[test_module] test fetch completed successfully")
+    demisto.info(
+        f"[test_module] PASSED: test fetch and set list both succeeded against base_url={client._base_url!r} "
+        f"(epm_api_version={client.epm_api_version or 'none - version-less path'})"
+    )
     return "ok"
 
 
@@ -840,11 +897,21 @@ def parse_set_names(raw_set_names: Any) -> list[str]:
 
         # `parsed` is necessarily a list: json.loads only reaches here for input starting with "[".
         set_names = [str(name).strip() for name in parsed if str(name).strip()]
-        demisto.debug(f"[parse_set_names] Parsed {len(set_names)} set name(s) from a JSON array.")
+        # The names themselves are logged, not just a count. A count cannot answer the only
+        # question that matters on a tenant with comma-bearing names - did each name survive
+        # whole, or was it split? Seeing the parsed list settles that from the log alone.
+        demisto.debug(
+            f"[parse_set_names] mode=json-array: parsed {len(set_names)} set name(s) from a JSON array. "
+            f"Commas within a name are preserved. names={set_names}"
+        )
         return set_names
 
     set_names = argToList(raw)
-    demisto.debug(f"[parse_set_names] Parsed {len(set_names)} set name(s) from a comma-separated list.")
+    demisto.debug(
+        f"[parse_set_names] mode=comma-separated: parsed {len(set_names)} set name(s) using the legacy comma split. "
+        f"Any name that itself contains a comma has been split here and will fail to resolve - "
+        f"use a JSON array instead. names={set_names}"
+    )
     return set_names
 
 
@@ -866,30 +933,40 @@ def normalize_server_url(server_url: str | None) -> str | None:
 def normalize_epm_api_version(epm_api_version: str | None) -> str:
     """Normalize and validate the *EPM API Version* parameter into a usable URL path segment.
 
-    CyberArk's EPM router matches the version segment on shape, not on the release actually
-    deployed: it accepts exactly four dot-separated numbers ("x.x.x.x") and nothing else. A
-    three-part value such as "26.8.0" matches no route, so the request is rejected with a bare
-    404 that gives the operator no clue what is wrong. We therefore fail fast here, at the
-    parameter-parsing layer, with a message that names the problem. See
+    Leaving the parameter empty selects the version-less path (`/EPM/API/Sets`), which CyberArk
+    resolves to the latest version deployed on the tenant. That is the preferred configuration: a
+    pinned version can only go stale, and a stale pin fails as an opaque 404. Confirmed against a
+    live tenant with a valid token - `GET /EPM/API/Sets` returned 200.
+
+    When a value IS supplied, CyberArk's EPM router matches the version segment on shape rather
+    than on the release actually deployed: it accepts exactly four dot-separated numbers
+    ("x.x.x.x") and nothing else. A three-part value such as "26.8.0" matches no route, so the
+    request is rejected with a bare 404 that gives the operator no clue what is wrong. We therefore
+    fail fast here, at the parameter-parsing layer, with a message that names the problem. See
     https://docs.cyberark.com/epm/latest/en/content/webservices/webservicesintro.htm
 
     Args:
         epm_api_version: The raw parameter value, which may be None, empty, or padded.
 
     Returns:
-        The trimmed version segment, or the default when the value is empty once trimmed. Trimming
-        happens before the emptiness check because a whitespace/slash-only value is truthy but would
-        otherwise collapse to "" and build a malformed "/EPM/API//" path.
+        The trimmed version segment, or `Config.NO_EPM_API_VERSION` (an empty string) when nothing
+        was configured, meaning "send no version segment". Trimming happens before the emptiness
+        check so that a whitespace- or slash-only value is treated as empty rather than collapsing
+        into a malformed "/EPM/API//" path.
 
     Raises:
         DemistoException: If a value was supplied but is not four dot-separated numbers.
     """
-    normalized = (epm_api_version or "").strip().strip("/").strip() or Config.DEFAULT_EPM_API_VERSION
+    normalized = (epm_api_version or "").strip().strip("/").strip()
+    if not normalized:
+        return Config.NO_EPM_API_VERSION
+
     if not Config.EPM_API_VERSION_PATTERN.match(normalized):
         raise DemistoException(
             f'Invalid EPM API Version "{normalized}". The CyberArk EPM API requires four '
             f'dot-separated numbers, for example "{Config.DEFAULT_EPM_API_VERSION}". '
-            f"A value with a different number of parts is rejected by the server with a 404."
+            f"A value with a different number of parts is rejected by the server with a 404. "
+            f"Leave this parameter empty to use the latest version deployed on the tenant."
         )
     return normalized
 
