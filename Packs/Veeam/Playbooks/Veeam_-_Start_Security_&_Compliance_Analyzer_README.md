@@ -39,4 +39,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Veeam - Start Security & Compliance Analyzer](../doc_files/Veeam_-_Start_Security_&_Compliance_Analyzer.png)
+![Veeam - Start Security & Compliance Analyzer](../doc_files/Veeam_-_Start_Security_and_Compliance_Analyzer.png)

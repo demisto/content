@@ -1,4 +1,7 @@
 category: Vulnerability Management
+sectionorder:
+- Connect
+- Collect
 provider: Veeam
 commonfields:
   id: VBR REST API
@@ -8,99 +11,31 @@ configuration:
   displaypassword: Password
   name: credentials
   required: true
+  section: Connect
   type: 9
 - defaultvalue: https://<fqdn>:9419
   display: Resource URL
   name: url
   required: true
+  section: Connect
   type: 0
 - defaultvalue: "false"
   display: Trust any certificate (not secure)
   name: insecure
   required: false
+  section: Connect
   type: 8
 - defaultvalue: "false"
   display: Use system proxy settings
   name: proxy
   required: false
+  section: Connect
   type: 8
-- display: Fetch incidents
-  name: isFetch
-  required: false
-  type: 8
-- defaultvalue: 3 days
-  display: First Fetch Time
-  name: first_fetch
-  required: false
-  type: 0
-- defaultvalue: "true"
-  display: Fetch configuration backup events
-  name: fetch_configuration_backup_events
-  required: false
-  type: 8
-- additionalinfo: An incident will be created If the last successful configuration backup is older than the specified value.
-  defaultvalue: "30"
-  display: Days Since Last Configuration Backup
-  name: days_since_last_configuration_backup
-  required: false
-  type: 0
-- defaultvalue: "true"
-  display: Fetch backup repository events
-  name: fetch_backup_repository_events
-  required: false
-  type: 8
-- additionalinfo: An incident will be created If the backup repository free space is less than the specified value.
-  defaultvalue: "200"
-  display: Backup Repository Free Space (GB)
-  name: backup_repository_free_space
-  required: false
-  type: 0
-- additionalinfo: The maximum number of backup repository events that can be fetched during command execution.
-  defaultvalue: "39"
-  display: Backup Repository Events Per Request
-  name: backup_repository_events_per_request
-  required: false
-  type: 0
-- defaultvalue: "true"
-  display: Fetch malware events
-  name: fetch_malware_events
-  required: false
-  type: 8
-- additionalinfo: The maximum number of malware events that can be fetched during command execution.
-  defaultvalue: "160"
-  display: Malware Events Per Request
-  name: malware_events_per_request
-  required: false
-  type: 0
 - defaultvalue: "120"
   display: API Request Timeout (Seconds)
   name: http_request_timeout_sec
   required: false
-  type: 0
-- defaultvalue: "true"
-  display: Fetch Security & Compliance Analyzer events
-  name: fetch_security_analyzer_events
-  required: false
-  type: 8
-- defaultvalue: "true"
-  display: Fetch SureBackup job events
-  name: fetch_sure_backup_events
-  required: false
-  type: 8
-- defaultvalue: "10"
-  display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  required: false
-  type: 19
-- display: Incident type
-  name: incidentType
-  required: false
-  type: 13
-- defaultvalue: "200"
-  display: ""
-  hidden: true
-  name: max_fetch
-  required: false
+  section: Connect
   type: 0
 - additionalinfo: 'API version and revision used by the Veeam Backup & Replication instance. Supported values for version 12: 1.2-rev0, 1.2-rev1. Supported values for version 13: 1.3-rev0, 1.3-rev1.'
   defaultvalue: 1.3-rev1
@@ -113,7 +48,95 @@ configuration:
   - 1.3-rev1
   - 1.3-rev2
   required: false
+  section: Connect
   type: 15
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  section: Collect
+  type: 8
+- defaultvalue: 3 days
+  display: First Fetch Time
+  name: first_fetch
+  required: false
+  section: Collect
+  type: 0
+- defaultvalue: "true"
+  display: Fetch configuration backup events
+  name: fetch_configuration_backup_events
+  required: false
+  section: Collect
+  type: 8
+- additionalinfo: An incident will be created If the last successful configuration backup is older than the specified value.
+  defaultvalue: "30"
+  display: Days Since Last Configuration Backup
+  name: days_since_last_configuration_backup
+  required: false
+  section: Collect
+  type: 0
+- defaultvalue: "true"
+  display: Fetch backup repository events
+  name: fetch_backup_repository_events
+  required: false
+  section: Collect
+  type: 8
+- additionalinfo: An incident will be created If the backup repository free space is less than the specified value.
+  defaultvalue: "200"
+  display: Backup Repository Free Space (GB)
+  name: backup_repository_free_space
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: The maximum number of backup repository events that can be fetched during command execution.
+  defaultvalue: "39"
+  display: Backup Repository Events Per Request
+  name: backup_repository_events_per_request
+  required: false
+  section: Collect
+  type: 0
+- defaultvalue: "true"
+  display: Fetch malware events
+  name: fetch_malware_events
+  required: false
+  section: Collect
+  type: 8
+- additionalinfo: The maximum number of malware events that can be fetched during command execution.
+  defaultvalue: "160"
+  display: Malware Events Per Request
+  name: malware_events_per_request
+  required: false
+  section: Collect
+  type: 0
+- defaultvalue: "true"
+  display: Fetch Security & Compliance Analyzer events
+  name: fetch_security_analyzer_events
+  required: false
+  section: Collect
+  type: 8
+- defaultvalue: "true"
+  display: Fetch SureBackup job events
+  name: fetch_sure_backup_events
+  required: false
+  section: Collect
+  type: 8
+- defaultvalue: "10"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  section: Collect
+  type: 19
+- display: Incident type
+  name: incidentType
+  required: false
+  section: Collect
+  type: 13
+- defaultvalue: "200"
+  display: ""
+  hidden: true
+  name: max_fetch
+  required: false
+  section: Collect
+  type: 0
 description: Veeam Backup & Replication REST API allows you to query information about Veeam Backup & Replication entities and perform operations with these entities using HTTP requests and standard HTTP methods.
 display: Veeam Backup & Replication REST API
 name: VBR REST API
