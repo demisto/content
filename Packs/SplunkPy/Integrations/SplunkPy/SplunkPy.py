@@ -1188,7 +1188,7 @@ def escape_invalid_backslashes_in_drilldown_json(drilldown_search):
     """Escapes backslashes that are not part of a valid JSON escape sequence.
 
     Splunk may place placeholder values that contain a single backslash directly into the
-    drilldown search JSON payload (e.g. ``object="VORDEFINIERT\\Administratoren"`` or
+    drilldown search JSON payload (e.g. ``object="PRE\\Admin"`` or
     ``user="NT SERVICE\\WinCollect"``). Such a lone backslash followed by a character that is
     not a valid JSON escape (``"``, ``\\``, ``/``, ``b``, ``f``, ``n``, ``r``, ``t`` or ``u``)
     makes the whole payload invalid JSON, so ``json.loads`` raises ``Invalid \\escape`` before any
@@ -1220,7 +1220,7 @@ def escape_invalid_chars_in_drilldown_json(drilldown_search):
         str: The escaped drilldown search.
     """
     # escape lone backslashes (invalid JSON escapes) coming from placeholder values such as
-    # 'object="VORDEFINIERT\Administratoren"' so json.loads can parse the payload (XSUP-75731)
+    # 'object="PRE\Admin"' so json.loads can parse the payload (XSUP-75731)
     drilldown_search = escape_invalid_backslashes_in_drilldown_json(drilldown_search)
 
     # escape the " of string from the form of 'some_key="value"' which the " char are invalid in json value
