@@ -8,11 +8,16 @@ from freezegun import freeze_time
 
 from CommonServerPython import DemistoException
 from MicrosoftDefenderEventCollector import (
+    ALL_EVENT_FILTERS,
     AUTH_ERROR_MSG,
     DEFAULT_LIMIT,
+    UI_NAME_TO_EVENT_FILTERS,
     DefenderClient,
     DefenderGetEvents,
+    DefenderHTTPRequest,
     IntegrationOptions,
+    load_json,
+    main,
     module_test,
 )
 
@@ -368,3 +373,229 @@ class TestModuleTest:
 
         with pytest.raises(DemistoException):
             module_test(get_events)
+
+
+class TestLoadJson:
+    """Coverage for the load_json validator helper."""
+
+    def test_passthrough_dict(self):
+        assert load_json({"a": 1}) == {"a": 1}
+
+    def test_parses_json_string(self):
+        assert load_json('{"a": 1}') == {"a": 1}
+
+    def test_invalid_json_string_raises(self):
+        with pytest.raises(ValueError, match="not valid Json"):
+            load_json("{not-json")
+
+    def test_json_string_not_a_dict_raises(self):
+        with pytest.raises(ValueError, match="not from dict type"):
+            load_json("[1, 2, 3]")
+
+    def test_non_dict_non_str_raises(self):
+        with pytest.raises(ValueError, match="not dict or a valid json"):
+            load_json(123)
+
+
+class TestDefenderHTTPRequest:
+    """Coverage for DefenderHTTPRequest: URL normalization and GET defaults."""
+
+    def test_url_is_normalized_with_api_suffix(self):
+        request = DefenderHTTPRequest.parse_obj({"url": "https://tenant.portal.cloudappsecurity.com"})
+        # The validator appends the API path to the base URL.
+        assert str(request.url).rstrip("/").endswith("/api/v1")
+
+    def test_default_method_is_get_and_sort_ascending(self):
+        request = DefenderHTTPRequest.parse_obj({"url": "https://tenant.portal.cloudappsecurity.com"})
+        assert request.method == "GET"
+        assert request.params["sortDirection"] == "asc"
+
+
+class TestClientCall:
+    """Coverage for IntegrationEventsClient.call: success returns the response, errors wrap."""
+
+    def test_call_returns_response_on_success(self, mocker):
+        mocker.patch.object(demisto, "debug")
+        client = DefenderClient.__new__(DefenderClient)
+        response = mocker.Mock()
+        response.raise_for_status = mocker.Mock()
+        session = mocker.Mock()
+        session.request = mocker.Mock(return_value=response)
+        client.session = session
+        request = DefenderHTTPRequest.parse_obj({"url": "https://tenant.portal.cloudappsecurity.com"})
+
+        assert client.call(request) is response
+        response.raise_for_status.assert_called_once()
+
+    def test_call_wraps_errors_in_demisto_exception(self, mocker):
+        mocker.patch.object(demisto, "debug")
+        client = DefenderClient.__new__(DefenderClient)
+        session = mocker.Mock()
+        session.request = mocker.Mock(side_effect=ValueError("boom"))
+        client.session = session
+        request = DefenderHTTPRequest.parse_obj({"url": "https://tenant.portal.cloudappsecurity.com"})
+
+        with pytest.raises(DemistoException, match="something went wrong with the http call"):
+            client.call(request)
+
+
+class TestIterEventsClientAfterFallback:
+    """Coverage for _iter_events when no per-type watermark exists: it falls back to client.after."""
+
+    def test_uses_client_after_when_no_last_run(self, mocker):
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mocker.patch.object(demisto, "debug")
+        payload = {"data": [{"timestamp": 1}], "hasNext": False}
+        get_events = _make_defender_get_events_with_client([payload], mocker)  # client.after == 1000
+
+        list(get_events._iter_events("alerts", {"type": "alerts", "filters": {}}))
+
+        sent_filters = json.loads(get_events.client.request.params["filters"])
+        # No watermark in last run -> the initial client.after (1000) is used as the start window.
+        assert sent_filters["date"] == {"gte": 1000}
+        get_events.client.authenticate.assert_called_once()
+
+    def test_no_date_filter_when_after_is_zero(self, mocker):
+        """If neither a watermark nor client.after is set, no date filter is added."""
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mocker.patch.object(demisto, "debug")
+        payload = {"data": [], "hasNext": False}
+        get_events = _make_defender_get_events_with_client([payload], mocker)
+        get_events.client.after = 0  # falsy -> no date filter
+
+        list(get_events._iter_events("alerts", {"type": "alerts", "filters": {}}))
+
+        sent_filters = json.loads(get_events.client.request.params["filters"])
+        assert "date" not in sent_filters
+
+
+class TestEventFilterSelection:
+    """Coverage for the UI-name -> EventFilter mapping used by main() to scope fetches."""
+
+    def test_ui_name_mapping_covers_all_filters(self):
+        assert set(UI_NAME_TO_EVENT_FILTERS) == {"Alerts", "Admin activities", "Login activities"}
+        assert len(ALL_EVENT_FILTERS) == 3
+
+    def test_selecting_subset_of_event_types(self):
+        selected = [
+            event_filter
+            for ui_name, event_filter in UI_NAME_TO_EVENT_FILTERS.items()
+            if ui_name in ["Alerts", "Login activities"]
+        ]
+        names = {event_filter.name for event_filter in selected}
+        assert names == {"alerts", "activities_login"}
+
+
+def _base_params(**overrides) -> dict:
+    """Build a minimal, valid demisto_params dict for main()."""
+    params = {
+        "credentials": {"identifier": "client-id", "password": "secret"},
+        "url": "https://tenant.portal.cloudappsecurity.com",
+        "tenant_id": "tenant",
+        "client_id": "client-id",
+        "scope": "scope/.default",
+        "endpoint_type": "Worldwide",
+        "verify": True,
+        "proxy": False,
+    }
+    params.update(overrides)
+    return params
+
+
+class TestMainCommandDispatch:
+    """Coverage for main(): command routing, event-type scoping, after parsing, and error handling."""
+
+    def _patch_common(self, mocker):
+        mocker.patch.object(demisto, "debug")
+        mocker.patch.object(demisto, "error")
+        # Avoid real auth / HTTP by stubbing the authenticator and client construction side effects.
+        mocker.patch("MicrosoftDefenderEventCollector.DefenderAuthenticator.set_authorization")
+
+    def test_test_module_command_returns_ok(self, mocker):
+        self._patch_common(mocker)
+        return_results = mocker.patch("MicrosoftDefenderEventCollector.return_results")
+        mocker.patch.object(DefenderGetEvents, "run", return_value=[])
+
+        main("test-module", _base_params())
+
+        return_results.assert_called_once_with("ok")
+
+    def test_fetch_events_sets_last_run_and_pushes(self, mocker):
+        self._patch_common(mocker)
+        events = [{"timestamp": 10, "event_type_name": "alerts"}]
+        mocker.patch.object(DefenderGetEvents, "run", return_value=events)
+        send = mocker.patch("MicrosoftDefenderEventCollector.send_events_to_xsiam")
+        set_last_run = mocker.patch.object(demisto, "setLastRun")
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+
+        main("fetch-events", _base_params())
+
+        send.assert_called_once()
+        set_last_run.assert_called_once()
+        # The alerts watermark advances to max timestamp + 1.
+        assert set_last_run.call_args[0][0]["alerts"] == 11
+
+    def test_get_events_command_returns_results_without_push_by_default(self, mocker):
+        self._patch_common(mocker)
+        events = [{"timestamp": 10, "event_type_name": "alerts", "_id": "a1"}]
+        mocker.patch.object(DefenderGetEvents, "run", return_value=events)
+        return_results = mocker.patch("MicrosoftDefenderEventCollector.return_results")
+        send = mocker.patch("MicrosoftDefenderEventCollector.send_events_to_xsiam")
+
+        main("microsoft-defender-cloud-apps-get-events", _base_params())
+
+        return_results.assert_called_once()
+        # should_push_events defaults to false -> no push for the manual command.
+        send.assert_not_called()
+
+    def test_get_events_command_pushes_when_requested(self, mocker):
+        self._patch_common(mocker)
+        events = [{"timestamp": 10, "event_type_name": "alerts", "_id": "a1"}]
+        mocker.patch.object(DefenderGetEvents, "run", return_value=events)
+        mocker.patch("MicrosoftDefenderEventCollector.return_results")
+        send = mocker.patch("MicrosoftDefenderEventCollector.send_events_to_xsiam")
+
+        main("microsoft-defender-cloud-apps-get-events", _base_params(should_push_events="true"))
+
+        send.assert_called_once()
+
+    def test_event_types_to_fetch_scopes_the_fetch(self, mocker):
+        """When event_types_to_fetch is provided, only those filters are passed to DefenderGetEvents."""
+        self._patch_common(mocker)
+        mocker.patch.object(DefenderGetEvents, "run", return_value=[])
+        mocker.patch("MicrosoftDefenderEventCollector.send_events_to_xsiam")
+        mocker.patch.object(demisto, "setLastRun")
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        init_spy = mocker.spy(DefenderGetEvents, "__init__")
+
+        main("fetch-events", _base_params(event_types_to_fetch=["Alerts"]))
+
+        # The event_filters kwarg passed to DefenderGetEvents must contain only the Alerts filter.
+        passed_filters = init_spy.call_args.kwargs["event_filters"]
+        assert [event_filter.name for event_filter in passed_filters] == ["alerts"]
+
+    def test_after_string_is_parsed_to_epoch_ms(self, mocker):
+        """A human 'after' string is parsed into an int epoch-ms and passed to the client."""
+        self._patch_common(mocker)
+        mocker.patch.object(DefenderGetEvents, "run", return_value=[])
+        mocker.patch("MicrosoftDefenderEventCollector.send_events_to_xsiam")
+        mocker.patch.object(demisto, "setLastRun")
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        client_init = mocker.spy(DefenderClient, "__init__")
+
+        main("fetch-events", _base_params(after="1 day"))
+
+        after_value = client_init.call_args.kwargs["after"]
+        assert isinstance(after_value, int)
+        assert after_value > 0
+
+    def test_exception_is_caught_and_returns_error(self, mocker):
+        self._patch_common(mocker)
+        mocker.patch.object(DefenderGetEvents, "run", side_effect=RuntimeError("kaboom"))
+        return_error = mocker.patch("MicrosoftDefenderEventCollector.return_error")
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+
+        main("fetch-events", _base_params())
+
+        return_error.assert_called_once()
+        assert "Failed to execute fetch-events" in return_error.call_args[0][0]
