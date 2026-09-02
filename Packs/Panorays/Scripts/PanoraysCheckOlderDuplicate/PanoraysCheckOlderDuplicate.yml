@@ -25,7 +25,7 @@ outputs:
   description: Whether an older open/pending duplicate incident exists for this Finding ID.
   type: Boolean
 scripttarget: 0
-dockerimage: demisto/python3:3.12.13.8319994
+dockerimage: demisto/python3:3.12.14.12343672
 fromversion: 6.10.0
 tests:
 - No tests
