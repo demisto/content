@@ -162,10 +162,10 @@ script:
     arguments:
     - name: engine
       required: true
-      description: KV V2 engine path, e.g., "secret/" or "kv/".
+      description: The KV V2 engine path, e.g., "secret/" or "kv/".
     - name: secret_path
       required: true
-      description: Secret path, e.g., "my-secret" or "folder/my-secret".
+      description: The secret path, e.g., "my-secret" or "folder/my-secret".
     - name: max_versions
       description: The number of versions to keep per key.
       type: number
@@ -176,9 +176,9 @@ script:
       - "false"
       description: If true, the key will require the cas parameter to be set on all write requests. If false, the backend's configuration will be used.
     - name: delete_version_after
-      description: Set the delete_version_after value to a duration to specify the deletion_time for all new versions written to this key, e.g., "3h25m19s".
+      description: The duration to specify the deletion_time for all new versions written to this key, e.g., "3h25m19s".
     - name: custom_metadata
-      description: 'A map of arbitrary string to string valued user-provided metadata meant to describe the secret. The format example: {"foo": "abc", "bar": "123"}.'
+      description: 'The map of arbitrary string to string valued user-provided metadata meant to describe the secret. The format example: {"foo": "abc", "bar": "123"}.'
     description: Creates or replaces the metadata of a secret at the specified location in a KV V2 engine. Fields that are not supplied are reset to their server defaults.
     execution: true
   - name: hashicorp-delete-secret
