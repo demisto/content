@@ -1692,38 +1692,86 @@ class TestGetKibanaBaseUrl:
     def test_get_kibana_base_url_success(self, mocker):
         """
         Given:
-            - A Server URL containing the ".es." Elastic Cloud subdomain segment
+            - No configured Kibana Server URL, and a Server URL containing the ".es." Elastic Cloud subdomain segment
         When:
             - Calling get_kibana_base_url
         Then:
             - Return the URL with ".es." replaced by ".kb."
         """
-        import Elasticsearch_v2
-
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": ""})
         mocker.patch("Elasticsearch_v2.SERVER", "https://my-deployment-af38b6.es.us-central1.gcp.cloud.es.io")
 
         result = Elasticsearch_v2.get_kibana_base_url()
 
         assert result == "https://my-deployment-af38b6.kb.us-central1.gcp.cloud.es.io"
 
-    def test_get_kibana_base_url_missing_es_segment(self, mocker):
+    def test_get_kibana_base_url_from_configured_param(self, mocker):
         """
         Given:
-            - A Server URL that does not contain the ".es." segment
+            - A configured Kibana Server URL of an on-premises deployment, and a Server URL without ".es."
         When:
             - Calling get_kibana_base_url
         Then:
-            - Raise a DemistoException explaining the Kibana URL could not be derived
+            - Return the configured Kibana Server URL as-is, without attempting any derivation
         """
-        import Elasticsearch_v2
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": "https://kibana.example.com:5601"})
+        mocker.patch("Elasticsearch_v2.SERVER", "https://on-prem-elastic.example.com:9200")
+
+        result = Elasticsearch_v2.get_kibana_base_url()
+
+        assert result == "https://kibana.example.com:5601"
+
+    def test_get_kibana_base_url_configured_param_strips_trailing_slash(self, mocker):
+        """
+        Given:
+            - A configured Kibana Server URL that ends with a trailing slash
+        When:
+            - Calling get_kibana_base_url
+        Then:
+            - Return the URL without the trailing slash, so paths are joined correctly
+        """
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": "https://kibana.example.com:5601/"})
+        mocker.patch("Elasticsearch_v2.SERVER", "https://on-prem-elastic.example.com:9200")
+
+        result = Elasticsearch_v2.get_kibana_base_url()
+
+        assert result == "https://kibana.example.com:5601"
+
+    def test_get_kibana_base_url_configured_param_takes_precedence(self, mocker):
+        """
+        Given:
+            - Both a configured Kibana Server URL and an Elastic Cloud Server URL containing ".es."
+        When:
+            - Calling get_kibana_base_url
+        Then:
+            - Return the configured Kibana Server URL, which takes precedence over the derivation
+        """
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": "https://custom-kibana.example.com"})
+        mocker.patch("Elasticsearch_v2.SERVER", "https://my-deployment-af38b6.es.us-central1.gcp.cloud.es.io")
+
+        result = Elasticsearch_v2.get_kibana_base_url()
+
+        assert result == "https://custom-kibana.example.com"
+
+    def test_get_kibana_base_url_missing_es_segment(self, mocker):
+        """
+        Given:
+            - No configured Kibana Server URL, and a Server URL that does not contain the ".es." segment
+        When:
+            - Calling get_kibana_base_url
+        Then:
+            - Raise a DemistoException instructing the user to configure the Kibana Server URL
+        """
         from CommonServerPython import DemistoException
 
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": ""})
         mocker.patch("Elasticsearch_v2.SERVER", "https://on-prem-elastic.example.com:9200")
 
         with pytest.raises(DemistoException) as exc_info:
             Elasticsearch_v2.get_kibana_base_url()
 
-        assert "Could not derive the Kibana URL" in str(exc_info.value)
+        assert "Could not determine the Kibana URL" in str(exc_info.value)
+        assert "Kibana Server URL" in str(exc_info.value)
 
 
 class TestGetKibanaAuthHeaders:
