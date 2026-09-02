@@ -59,5 +59,5 @@ Every method needs different parameters as show in the following:
     * Admin audits.
     * Events.
 
-* The **set name** parameter contains a list of names to which the events are related.
+* The **Set name** parameter contains a list of names to which the events are related.
 * The **Maximum number of events per fetch** parameter applies to each event type and each name in the **Set name** parameter. For example, if **Maximum number of events per fetch** is set to 1000, the total maximum events fetched is equal to 3000 multiplied by the total number of names specified in the **Set name** parameter.
