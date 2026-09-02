@@ -539,6 +539,14 @@ Creates or replaces the metadata of a secret at the specified location in a KV V
 
 There is no context output for this command.
 
+#### Command Example
+
+```!hashicorp-create-update-secret-metadata engine="secret" secret_path="demo-secret" custom_metadata={"some_key": "some_value"}```
+
+#### Human Readable Output
+
+>Secret "demo-secret" was successfully written to engine "secret"
+
 ## Additional Information
 
 - In order to fetch credentials from HashiCorp Vault, the relevant secrets engines must be configured with the integration so it can pull the data from them. To configure an engine with the integration, use the ***configure-engine*** command.
