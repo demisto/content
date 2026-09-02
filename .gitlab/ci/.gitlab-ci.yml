@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: connectus-split-packs-routing
+  CURRENT_BRANCH_NAME: merge-connectus-split-packs-routing-with-rn-branch
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: connectus-split-packs-routing
+    ref: merge-connectus-split-packs-routing-with-rn-branch
     project: "${CI_PROJECT_NAMESPACE}/infra"
