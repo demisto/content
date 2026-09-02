@@ -1002,7 +1002,7 @@ script:
       required: true
       description: Name of the disk to create. The name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])?, meaning the first character must be a lowercase letter and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
     - name: disk_type
-      description: "URL of the disk type resource describing which disk type to use to create the disk. For example: projects/project/zones/zone/diskTypes/pd-standard or pd-ssd."
+      description: "The full or partial URL of the disk type resource describing which disk type to use to create the disk. A bare disk type name is not accepted. For example: projects/project/zones/zone/diskTypes/pd-standard or zones/zone/diskTypes/pd-ssd. If not provided, the project default disk type is used."
     - name: size_gb
       description: Size of the persistent disk, specified in GB. Acceptable values are 1 to 65536, inclusive. When specified together with source_image or source_snapshot, the value must not be less than the size of the source.
     - name: description

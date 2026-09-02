@@ -1912,7 +1912,7 @@ Creates a persistent disk in the specified project and zone. A disk can be creat
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | Name of the disk to create. The name must be 1-63 characters long and match the regular expression \[a-z\](\[-a-z0-9\]\*\[a-z0-9\])?, meaning the first character must be a lowercase letter and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required |
-| disk_type | URL of the disk type resource describing which disk type to use to create the disk. For example: projects/project/zones/zone/diskTypes/pd-standard or pd-ssd. | Optional |
+| disk_type | The full or partial URL of the disk type resource describing which disk type to use to create the disk. A bare disk type name is not accepted. For example: projects/project/zones/zone/diskTypes/pd-standard or zones/zone/diskTypes/pd-ssd. If not provided, the project default disk type is used. | Optional |
 | size_gb | Size of the persistent disk, specified in GB. Acceptable values are 1 to 65536, inclusive. When specified together with source_image or source_snapshot, the value must not be less than the size of the source. | Optional |
 | description | An optional description of the disk. | Optional |
 | source_snapshot | The source snapshot used to create this disk, provided as a partial or full URL to the resource. | Optional |
