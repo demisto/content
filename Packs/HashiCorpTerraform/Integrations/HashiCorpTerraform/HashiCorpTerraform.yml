@@ -51,6 +51,17 @@ configuration:
   - xsoar
   supportedModules:
   - xsiam
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  defaultvalue: '1'
+  advanced: true
+  section: Collect
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
 - display: Maximum Number of Audit Events Per Fetch
   name: max_fetch  # for fetch-events on XSIAM 
   defaultvalue: 10000
