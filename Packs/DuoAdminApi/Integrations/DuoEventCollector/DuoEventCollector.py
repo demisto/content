@@ -264,10 +264,7 @@ class GetEvents:
             tuple[list[dict], bool]: The list of events, bool represents whether we reached the end of the fetch window.
         """
         # if 1
-        if (
-            self.client.params.fetch_delay == 0
-            or datetime.fromtimestamp(events[-1]["timestamp"]) < self.client.params.end_window
-        ):
+        if self.client.params.fetch_delay == 0 or datetime.fromtimestamp(events[-1]["timestamp"]) < self.client.params.end_window:
             demisto.debug(
                 f"events_in_window, all events in the fetch window {events[-1]['timestamp']=} < "
                 f"{self.client.params.end_window.timestamp()=}"
