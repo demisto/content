@@ -1,6 +1,6 @@
 # SpyCloud Enterprise Protection Feed
 
-Integrate the SpyCloud Enterprise Protection API to create breach and malware incidents in Cortex® XSOAR™ using the SpyCloud Enterprise Protection API. Data for malware-infected
+Integrate the SpyCloud Enterprise Protection API to create breach, malware and access incidents in Cortex® XSOAR™ using the SpyCloud Enterprise Protection API. Data for malware-infected
 devices and exposed corporate applications are available for SpyCloud Compass users. 
 
 # How to get a SpyCloud Enterprise Protection API Key
