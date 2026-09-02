@@ -334,7 +334,7 @@ class Client(BaseClient):
         self._headers["Authorization"] = f"basic {result.get('EPMAuthenticationResult')}"
 
     def get_set_list(self) -> dict:
-        # TODO: TEMPORARY DIAGNOSTIC (XSUP-74944) - REMOVE BEFORE GA.
+        # TODO: TEMPORARY DIAGNOSTIC - REMOVE BEFORE GA.
         # The extra detail below (full URL, and the set names the tenant actually returned) is here
         # only while we chase the 404 and the set-name resolution failures. It is deliberately
         # verbose: the previous log printed a count alone, which is why neither the malformed
@@ -733,7 +733,7 @@ def fetch_events(
 
 
 # TODO: TEMPORARY DIAGNOSTIC - REMOVE BEFORE GA.
-# Added under XSUP-74944 to learn, from real tenants, whether the version-less path shape
+# Added to learn, from real tenants, whether the version-less path shape
 # (`/EPM/API/Sets`, which CyberArk documents as "defaults to the latest version on the tenant")
 # is served as reliably as the explicit four-part version the integration sends. If field data
 # says yes, we can drop the *EPM API Version* parameter altogether and stop asking operators for
@@ -784,7 +784,7 @@ def test_module(client: Client, last_run: dict) -> str:
     demisto.debug("[test_module] starting test fetch with max_fetch=5")
     fetch_events(client=client, last_run=last_run, max_fetch=5)
     client.get_set_list()
-    # TEMPORARY (XSUP-74944): runs after the real test so it can never influence its outcome.
+    # TEMPORARY: runs after the real test so it can never influence its outcome.
     if client.auth_method == Config.AUTH_METHOD_OAUTH:
         probe_versionless_api_path(client)
     demisto.debug("[test_module] test fetch completed successfully")
@@ -792,6 +792,60 @@ def test_module(client: Client, last_run: dict) -> str:
 
 
 """ MAIN FUNCTION """
+
+
+def parse_set_names(raw_set_names: Any) -> list[str]:
+    """Parse the *Set name* parameter into a list of set names.
+
+    The parameter has always been a comma-separated list, which silently breaks for any set whose
+    name contains a comma. That is not an edge case: CyberArk EPM appends the account name to every
+    set on a tenant, so an account registered as "Example Corp, Inc." yields set names such as
+    "ExWorld-Windows(example corp, inc._11)" - and EPM offers no way to rename them. On such a
+    tenant `argToList` turns one set into two fragments that match nothing, and no combination of
+    sets can be configured at all.
+
+    A JSON array is therefore accepted as an unambiguous alternative, since JSON quotes each element
+    and a comma inside quotes is just a character:
+
+        ["ExWorld-Windows(example corp, inc._11)", "ExWorld-Linux(example corp, inc._11)"]
+
+    Anything that is not a JSON array falls through to the historical comma-separated behavior, so
+    every existing instance keeps working untouched.
+
+    Args:
+        raw_set_names: The raw parameter value, as configured on the instance.
+
+    Returns:
+        The configured set names. Empty when nothing was configured.
+    """
+    if isinstance(raw_set_names, list):  # already a list (e.g. multi-select), nothing to parse
+        return [str(name).strip() for name in raw_set_names if str(name).strip()]
+
+    raw = str(raw_set_names or "").strip()
+    if not raw:
+        return []
+
+    if raw.startswith("["):
+        try:
+            parsed = json.loads(raw)
+        except json.JSONDecodeError as json_error:
+            # A value that opens with "[" was clearly meant to be JSON, so a silent fall back to the
+            # comma split would hand back fragments and a baffling "set not found" later on. This
+            # also catches a valid array followed by trailing junk, e.g. '["a"], "b"'.
+            raise DemistoException(
+                f'The "Set name" parameter looks like a JSON array but could not be parsed: {json_error}. '
+                f'Provide a valid JSON array, for example ["Set One", "Set Two"], or a comma-separated '
+                f"list of names that do not themselves contain commas."
+            ) from json_error
+
+        # `parsed` is necessarily a list: json.loads only reaches here for input starting with "[".
+        set_names = [str(name).strip() for name in parsed if str(name).strip()]
+        demisto.debug(f"[parse_set_names] Parsed {len(set_names)} set name(s) from a JSON array.")
+        return set_names
+
+    set_names = argToList(raw)
+    demisto.debug(f"[parse_set_names] Parsed {len(set_names)} set name(s) from a comma-separated list.")
+    return set_names
 
 
 def normalize_server_url(server_url: str | None) -> str | None:
@@ -910,7 +964,7 @@ def main():  # pragma: no cover
         server_url=server_url,
     )
 
-    set_names = argToList(params.get("set_name"))
+    set_names = parse_set_names(params.get("set_name"))
     enable_admin_audits = argToBoolean(params.get("enable_admin_audits", False))
     policy_audits_event_type = argToList(params.get("policy_audits_event_type"))
     raw_events_event_type = argToList(params.get("raw_events_event_type"))

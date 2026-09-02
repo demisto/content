@@ -1,0 +1,32 @@
+{
+    "_comment": "Set names whose text contains commas. CyberArk EPM appends the account name to every set on a tenant, so an account registered as 'Northwind Traders, Inc.' produces a comma in every single set name, and the names cannot be changed from within EPM. These fixtures reproduce that shape.",
+    "tenant_sets": [
+        "Northwind Traders, Inc./tenant-admin(northwind traders, inc._11)",
+        "NwtWorld-Windows(northwind traders, inc._11)",
+        "NwtWorld-QuickStart(northwind traders, inc._11)",
+        "NwtWorld-Linux(northwind traders, inc._11)",
+        "NwtWorld-macOS(northwind traders, inc._11)"
+    ],
+    "awkward_names": [
+        "Contoso, Ltd. - Workstations",
+        "Fabrikam, Inc./admin@fabrikam.example(fabrikam, inc._42)",
+        "EMEA - Servers, Laptops & Tablets",
+        "Site \"HQ\", Floor 3",
+        "R&D / QA, Staging (pre-prod)",
+        "Grupo Bimbo, S.A.B. de C.V. - Produccion",
+        "Backslash\\Path, With Comma",
+        "Trailing comma name,",
+        "  Padded, Name  "
+    ],
+    "multiple_awkward_names": [
+        "Contoso, Ltd. - Workstations",
+        "Fabrikam, Inc. - Servers",
+        "Northwind Traders, LLC (EMEA, Production)"
+    ],
+    "malformed_json_values": [
+        "[\"Set One\", \"Set Two\"",
+        "['Set One']",
+        "[\"Set One\",]",
+        "[\"nested\"], \"trailing\""
+    ]
+}
