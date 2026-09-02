@@ -1945,7 +1945,7 @@ There is no context output for this command.
 ### gsuite-user-reset-password
 
 ***
-Forces the user to change their password at next login.
+Forces the user to change their password at next login, and optionally sets a temporary password for the user.
 
 ##### Required Permissions
 
@@ -1960,6 +1960,7 @@ Forces the user to change their password at next login.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_key | One of the following: user email address, alias email address, or the unique user ID. | Required |
+| password | A temporary password to set for the user. A password can contain any combination of ASCII characters. A minimum of 8 characters is required. The maximum length is 100 characters. The password will be sent in MD5 hash format. If not provided, the user's password remains unchanged and only the "change password at next login" flag is set. | Optional |
 
 #### Context Output
 

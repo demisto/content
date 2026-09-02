@@ -2232,7 +2232,10 @@ script:
     - description: 'One of the following: user email address, alias email address, or the unique user ID.'
       name: user_key
       required: true
-    description: Forces the user to change their password at next login.
+    - description: A temporary password to set for the user. A password can contain any combination of ASCII characters. A minimum of 8 characters is required. The maximum length is 100 characters. The password will be sent in MD5 hash format. If not provided, the user's password remains unchanged and only the "change password at next login" flag is set.
+      name: password
+      secret: true
+    description: Forces the user to change their password at next login, and optionally sets a temporary password for the user.
     name: gsuite-user-reset-password
     outputs:
     - contextPath: GSuite.User.id

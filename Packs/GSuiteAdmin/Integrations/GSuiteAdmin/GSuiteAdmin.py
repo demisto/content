@@ -1678,7 +1678,11 @@ def user_reset_password_command(client: Client, args: dict[str, str]) -> Command
     client.set_authorized_http(scopes=SCOPES["DIRECTORY_USER"])
     user_key = args.get("user_key", "")
     url_suffix = urljoin(URL_SUFFIX["USER"], urllib.parse.quote(user_key))
-    body = {"changePasswordAtNextLogin": True}
+    body: dict[str, Any] = {"changePasswordAtNextLogin": True}
+    if password := args.get("password"):
+        body["password"] = hashlib.md5(password.encode()).hexdigest()  # nosec
+        body["hashFunction"] = "MD5"
+    demisto.debug(f"gsuite-user-reset-password: updating {user_key!r}, temporary password provided: {bool(password)}")
     response = client.http_request(url_suffix=url_suffix, method="PUT", body=body)
 
     # Context
