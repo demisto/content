@@ -2113,6 +2113,24 @@ def disable_user_command():
     result = CommandResults(readable_output=human_readable, outputs_prefix="CBP.UserDisable", outputs=user_data)
 
     return_results(result)
+   
+    
+def delete_user_command():
+    """
+    Sends request to delete user account
+    :param user_id: ID of user to delete - retrieved from cbp-retrieve-user-data
+    :return: Result of the request
+    """
+    args = demisto.args()
+    user_id = args.get("user_id")
+
+    user_data = http_request("DELETE", f"/user/{user_id}")
+
+    human_readable = tableToMarkdown("User Data", user_data, headers=[])
+
+    result = CommandResults(readable_output=human_readable, outputs_prefix="CBP.UserDelete", outputs=user_data)
+
+    return_results(result)
 
 
 def fetch_incidents():
@@ -2217,6 +2235,8 @@ def main():
                 resolve_approval_request_command()
             elif command == "cbp-user-disable":
                 disable_user_command()
+            elif command == "cbp-user-delete":
+                delete_user_command()
             elif command == "cbp-user-data-get":
                 get_user_data()
             else:
