@@ -2908,9 +2908,9 @@ script:
     - contextPath: GCP.Compute.MachineTypes.memoryMb
       description: The amount of physical memory available to the instance, defined in MB.
       type: number
-    - contextPath: GCP.Compute.MachineTypes.imageSpaceGb
-      description: The image space in GB. This property is deprecated and will never be populated with any relevant values.
-      type: number
+    - contextPath: GCP.Compute.MachineTypes.accelerators
+      description: The list of accelerator configurations assigned to this machine type, containing the guestAcceleratorCount and guestAcceleratorType fields.
+      type: Unknown
     - contextPath: GCP.Compute.MachineTypes.scratchDisks
       description: The list of extended scratch disks assigned to the instance, containing the diskGb field.
       type: Unknown
@@ -2950,12 +2950,12 @@ script:
     - name: limit
       defaultValue: '50'
       description: 'The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
-    - name: filters
+    - name: filter
       description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, to exclude the machine type named example-machine-type, specify name != example-machine-type.
     - name: order_by
       description: The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
     - name: next_token
-      description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results.
+      description: The page token to use. Set next_token to the value of GCP.Compute.MachineTypesNextToken returned by a previous list request to get the next page of results.
     outputs:
     - contextPath: GCP.Compute.MachineTypes.id
       description: The unique identifier for the resource. This identifier is defined by the server.
@@ -2975,9 +2975,9 @@ script:
     - contextPath: GCP.Compute.MachineTypes.memoryMb
       description: The amount of physical memory available to the instance, defined in MB.
       type: number
-    - contextPath: GCP.Compute.MachineTypes.imageSpaceGb
-      description: The image space in GB. This property is deprecated and will never be populated with any relevant values.
-      type: number
+    - contextPath: GCP.Compute.MachineTypes.accelerators
+      description: The list of accelerator configurations assigned to this machine type, containing the guestAcceleratorCount and guestAcceleratorType fields.
+      type: Unknown
     - contextPath: GCP.Compute.MachineTypes.scratchDisks
       description: The list of extended scratch disks assigned to the instance, containing the diskGb field.
       type: Unknown
@@ -3002,7 +3002,7 @@ script:
     - contextPath: GCP.Compute.MachineTypes.kind
       description: The type of the resource. Always compute#machineType for machine types.
       type: string
-    - contextPath: GCP.Compute.MachineTypesNextPageToken
+    - contextPath: GCP.Compute.MachineTypesNextToken
       description: The token to use when requesting the next set of machine types.
       type: string
 
@@ -3017,12 +3017,12 @@ script:
     - name: limit
       defaultValue: '50'
       description: 'The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
-    - name: filters
+    - name: filter
       description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, to exclude the machine type named example-machine-type, specify name != example-machine-type.
     - name: order_by
       description: The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
     - name: next_token
-      description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results.
+      description: The page token to use. Set next_token to the value of GCP.Compute.AggregatedMachineTypesNextToken returned by a previous list request to get the next page of results.
     outputs:
     - contextPath: GCP.Compute.MachineTypes.id
       description: The unique identifier for the resource. This identifier is defined by the server.
@@ -3042,9 +3042,9 @@ script:
     - contextPath: GCP.Compute.MachineTypes.memoryMb
       description: The amount of physical memory available to the instance, defined in MB.
       type: number
-    - contextPath: GCP.Compute.MachineTypes.imageSpaceGb
-      description: The image space in GB. This property is deprecated and will never be populated with any relevant values.
-      type: number
+    - contextPath: GCP.Compute.MachineTypes.accelerators
+      description: The list of accelerator configurations assigned to this machine type, containing the guestAcceleratorCount and guestAcceleratorType fields.
+      type: Unknown
     - contextPath: GCP.Compute.MachineTypes.scratchDisks
       description: The list of extended scratch disks assigned to the instance, containing the diskGb field.
       type: Unknown
@@ -3069,7 +3069,7 @@ script:
     - contextPath: GCP.Compute.MachineTypes.kind
       description: The type of the resource. Always compute#machineType for machine types.
       type: string
-    - contextPath: GCP.Compute.MachineTypesAggregatedNextPageToken
+    - contextPath: GCP.Compute.AggregatedMachineTypesNextToken
       description: The token to use when requesting the next set of aggregated machine types.
       type: string
 

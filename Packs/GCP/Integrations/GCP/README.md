@@ -1691,9 +1691,9 @@ Retrieves an aggregated list of machine types across all zones of the specified 
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
-| filters | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, to exclude the machine type named example-machine-type, specify name != example-machine-type. | Optional |
+| filter | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, to exclude the machine type named example-machine-type, specify name != example-machine-type. | Optional |
 | order_by | The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). | Optional |
-| next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+| next_token | The page token to use. Set next_token to the value of GCP.Compute.AggregatedMachineTypesNextToken returned by a previous list request to get the next page of results. | Optional |
 
 #### Context Output
 
@@ -1705,7 +1705,7 @@ Retrieves an aggregated list of machine types across all zones of the specified 
 | GCP.Compute.MachineTypes.description | string | The optional textual description of the resource. |
 | GCP.Compute.MachineTypes.guestCpus | number | The number of virtual CPUs that are available to the instance. |
 | GCP.Compute.MachineTypes.memoryMb | number | The amount of physical memory available to the instance, defined in MB. |
-| GCP.Compute.MachineTypes.imageSpaceGb | number | The image space in GB. This property is deprecated and will never be populated with any relevant values. |
+| GCP.Compute.MachineTypes.accelerators | Unknown | The list of accelerator configurations assigned to this machine type, containing the guestAcceleratorCount and guestAcceleratorType fields. |
 | GCP.Compute.MachineTypes.scratchDisks | Unknown | The list of extended scratch disks assigned to the instance, containing the diskGb field. |
 | GCP.Compute.MachineTypes.maximumPersistentDisks | number | The maximum persistent disks allowed. |
 | GCP.Compute.MachineTypes.maximumPersistentDisksSizeGb | string | The maximum total persistent disks size \(GB\) allowed. |
@@ -1714,7 +1714,7 @@ Retrieves an aggregated list of machine types across all zones of the specified 
 | GCP.Compute.MachineTypes.selfLink | string | The server-defined URL for the resource. |
 | GCP.Compute.MachineTypes.isSharedCpu | boolean | Whether this machine type has a shared CPU. See Shared-core machine types for more information. |
 | GCP.Compute.MachineTypes.kind | string | The type of the resource. Always compute\#machineType for machine types. |
-| GCP.Compute.MachineTypesAggregatedNextPageToken | string | The token to use when requesting the next set of aggregated machine types. |
+| GCP.Compute.AggregatedMachineTypesNextToken | string | The token to use when requesting the next set of aggregated machine types. |
 
 ### gcp-compute-machine-types-list
 
@@ -1732,9 +1732,9 @@ Retrieves a list of machine types available in the specified zone. Required perm
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | limit | The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
-| filters | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, to exclude the machine type named example-machine-type, specify name != example-machine-type. | Optional |
+| filter | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, to exclude the machine type named example-machine-type, specify name != example-machine-type. | Optional |
 | order_by | The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first). | Optional |
-| next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+| next_token | The page token to use. Set next_token to the value of GCP.Compute.MachineTypesNextToken returned by a previous list request to get the next page of results. | Optional |
 
 #### Context Output
 
@@ -1746,7 +1746,7 @@ Retrieves a list of machine types available in the specified zone. Required perm
 | GCP.Compute.MachineTypes.description | string | The optional textual description of the resource. |
 | GCP.Compute.MachineTypes.guestCpus | number | The number of virtual CPUs that are available to the instance. |
 | GCP.Compute.MachineTypes.memoryMb | number | The amount of physical memory available to the instance, defined in MB. |
-| GCP.Compute.MachineTypes.imageSpaceGb | number | The image space in GB. This property is deprecated and will never be populated with any relevant values. |
+| GCP.Compute.MachineTypes.accelerators | Unknown | The list of accelerator configurations assigned to this machine type, containing the guestAcceleratorCount and guestAcceleratorType fields. |
 | GCP.Compute.MachineTypes.scratchDisks | Unknown | The list of extended scratch disks assigned to the instance, containing the diskGb field. |
 | GCP.Compute.MachineTypes.maximumPersistentDisks | number | The maximum persistent disks allowed. |
 | GCP.Compute.MachineTypes.maximumPersistentDisksSizeGb | string | The maximum total persistent disks size \(GB\) allowed. |
@@ -1755,7 +1755,7 @@ Retrieves a list of machine types available in the specified zone. Required perm
 | GCP.Compute.MachineTypes.selfLink | string | The server-defined URL for the resource. |
 | GCP.Compute.MachineTypes.isSharedCpu | boolean | Whether this machine type has a shared CPU. See Shared-core machine types for more information. |
 | GCP.Compute.MachineTypes.kind | string | The type of the resource. Always compute\#machineType for machine types. |
-| GCP.Compute.MachineTypesNextPageToken | string | The token to use when requesting the next set of machine types. |
+| GCP.Compute.MachineTypesNextToken | string | The token to use when requesting the next set of machine types. |
 
 ### gcp-compute-machine-type-get
 
@@ -1784,7 +1784,7 @@ Returns the specified machine type. Required permission: compute.machineTypes.ge
 | GCP.Compute.MachineTypes.description | string | The optional textual description of the resource. |
 | GCP.Compute.MachineTypes.guestCpus | number | The number of virtual CPUs that are available to the instance. |
 | GCP.Compute.MachineTypes.memoryMb | number | The amount of physical memory available to the instance, defined in MB. |
-| GCP.Compute.MachineTypes.imageSpaceGb | number | The image space in GB. This property is deprecated and will never be populated with any relevant values. |
+| GCP.Compute.MachineTypes.accelerators | Unknown | The list of accelerator configurations assigned to this machine type, containing the guestAcceleratorCount and guestAcceleratorType fields. |
 | GCP.Compute.MachineTypes.scratchDisks | Unknown | The list of extended scratch disks assigned to the instance, containing the diskGb field. |
 | GCP.Compute.MachineTypes.maximumPersistentDisks | number | The maximum persistent disks allowed. |
 | GCP.Compute.MachineTypes.maximumPersistentDisksSizeGb | string | The maximum total persistent disks size \(GB\) allowed. |

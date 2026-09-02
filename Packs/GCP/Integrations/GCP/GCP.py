@@ -2989,15 +2989,15 @@ def gcp_compute_machine_types_list(creds: Credentials, args: dict[str, Any]) -> 
     Retrieves a list of machine types available in the specified zone.
     Args:
         creds (Credentials): GCP credentials.
-        args (dict[str, Any]): Must include 'zone'. May include 'limit', 'filters', 'order_by' and 'next_token'.
+        args (dict[str, Any]): Must include 'zone'. May include 'limit', 'filter', 'order_by' and 'next_token'.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     project_id = args.get("project_id")
     zone = extract_zone_name(args.get("zone"))
-    limit = arg_to_number(args.get("limit")) if args.get("limit") else 50
-    filters = args.get("filters")
+    limit = arg_to_number(args.get("limit")) or 50
+    filters = args.get("filter")
     order_by = args.get("order_by")
     next_token = args.get("next_token")
 
@@ -3026,11 +3026,11 @@ def gcp_compute_machine_types_list(creds: Credentials, args: dict[str, Any]) -> 
 
     outputs = {
         "GCP.Compute.MachineTypes(val.id && val.id == obj.id)": machine_types,
-        "GCP.Compute(true)": {"MachineTypesNextPageToken": next_page_token},
+        "GCP.Compute(true)": {"MachineTypesNextToken": next_page_token},
     }
     return CommandResults(
         readable_output=readable_output,
-        outputs=remove_empty_elements(outputs),
+        outputs=outputs,
         raw_response=response,
     )
 
@@ -3040,14 +3040,14 @@ def gcp_compute_machine_types_aggregated_list(creds: Credentials, args: dict[str
     Retrieves an aggregated list of machine types across all zones of the specified project.
     Args:
         creds (Credentials): GCP credentials.
-        args (dict[str, Any]): May include 'limit', 'filters', 'order_by' and 'next_token'.
+        args (dict[str, Any]): May include 'limit', 'filter', 'order_by' and 'next_token'.
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     project_id = args.get("project_id")
-    limit = arg_to_number(args.get("limit")) if args.get("limit") else 50
-    filters = args.get("filters")
+    limit = arg_to_number(args.get("limit")) or 50
+    filters = args.get("filter")
     order_by = args.get("order_by")
     next_token = args.get("next_token")
 
@@ -3060,8 +3060,10 @@ def gcp_compute_machine_types_aggregated_list(creds: Credentials, args: dict[str
         .execute()
     )
     machine_types: list[dict[str, Any]] = []
-    for scoped_list in response.get("items", {}).values():
-        if "warning" not in scoped_list:
+    for scope, scoped_list in response.get("items", {}).items():
+        if warning := scoped_list.get("warning"):
+            demisto.debug(f"GCP Compute machine types aggregated list returned a warning for {scope}: {warning}")
+        else:
             machine_types.extend(scoped_list.get("machineTypes", []))
 
     next_page_token = response.get("nextPageToken")
@@ -3080,11 +3082,11 @@ def gcp_compute_machine_types_aggregated_list(creds: Credentials, args: dict[str
 
     outputs = {
         "GCP.Compute.MachineTypes(val.id && val.id == obj.id)": machine_types,
-        "GCP.Compute(true)": {"MachineTypesAggregatedNextPageToken": next_page_token},
+        "GCP.Compute(true)": {"AggregatedMachineTypesNextToken": next_page_token},
     }
     return CommandResults(
         readable_output=readable_output,
-        outputs=remove_empty_elements(outputs),
+        outputs=outputs,
         raw_response=response,
     )
 

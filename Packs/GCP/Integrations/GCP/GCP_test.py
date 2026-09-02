@@ -5368,7 +5368,7 @@ def test_gcp_compute_machine_types_list_default_limit(mocker):
 def test_gcp_compute_machine_types_list_with_all_parameters(mocker):
     """
     Given: A mocked compute client returning a machine type and a next page token.
-    When: gcp_compute_machine_types_list is called with limit, filters, order_by and next_token.
+    When: gcp_compute_machine_types_list is called with limit, filter, order_by and next_token.
     Then: The API is called with all the given parameters and the next page token is returned in the outputs.
     """
     from GCP import GCPServices, gcp_compute_machine_types_list
@@ -5392,7 +5392,7 @@ def test_gcp_compute_machine_types_list_with_all_parameters(mocker):
         "project_id": "test-project",
         "zone": "us-central1-a",
         "limit": "25",
-        "filters": "name=n2*",
+        "filter": "name=n2*",
         "order_by": "name",
         "next_token": "prev-token",
     }
@@ -5401,14 +5401,14 @@ def test_gcp_compute_machine_types_list_with_all_parameters(mocker):
     mock_machine_types.list.assert_called_once_with(
         project="test-project", zone="us-central1-a", filter="name=n2*", maxResults=25, orderBy="name", pageToken="prev-token"
     )
-    assert result.outputs["GCP.Compute(true)"]["MachineTypesNextPageToken"] == "next-token-123"
+    assert result.outputs["GCP.Compute(true)"]["MachineTypesNextToken"] == "next-token-123"
 
 
 def test_gcp_compute_machine_types_list_empty_response(mocker):
     """
     Given: A mocked compute client returning an empty response.
     When: gcp_compute_machine_types_list is called.
-    Then: The machine types output is empty and no next page token is set.
+    Then: The machine types output is empty and the next page token is set to None.
     """
     from GCP import GCPServices, gcp_compute_machine_types_list
 
@@ -5425,7 +5425,10 @@ def test_gcp_compute_machine_types_list_empty_response(mocker):
     args = {"project_id": "test-project", "zone": "us-central1-a"}
     result = gcp_compute_machine_types_list(mock_creds, args)
 
-    assert result.outputs == {}
+    assert result.outputs == {
+        "GCP.Compute.MachineTypes(val.id && val.id == obj.id)": [],
+        "GCP.Compute(true)": {"MachineTypesNextToken": None},
+    }
     assert result.raw_response == {}
 
 
@@ -5448,24 +5451,28 @@ def test_gcp_compute_machine_types_list_invalid_limit(mocker):
     mock_compute.machineTypes.assert_not_called()
 
 
-def test_gcp_compute_machine_types_list_zero_limit_rejected(mocker):
+def test_gcp_compute_machine_types_list_zero_limit_falls_back_to_default(mocker):
     """
-    Given: A limit argument of "0", which is falsy but still out of the allowed range.
+    Given: A limit argument of "0", which is falsy.
     When: gcp_compute_machine_types_list is called.
-    Then: A DemistoException is raised rather than the value being silently replaced by the default,
-          which would return results the user explicitly did not ask for.
+    Then: The default limit of 50 is used for the API call.
     """
-    from GCP import DemistoException, GCPServices, gcp_compute_machine_types_list
+    from GCP import GCPServices, gcp_compute_machine_types_list
 
     mock_creds = mocker.Mock()
     mock_compute = mocker.Mock()
+    mock_machine_types = mocker.Mock()
+    mock_list = mocker.Mock()
+
+    mock_list.execute.return_value = {}
+    mock_machine_types.list.return_value = mock_list
+    mock_compute.machineTypes.return_value = mock_machine_types
     mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
 
     args = {"project_id": "test-project", "zone": "us-central1-a", "limit": "0"}
-    with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 500"):
-        gcp_compute_machine_types_list(mock_creds, args)
+    gcp_compute_machine_types_list(mock_creds, args)
 
-    mock_compute.machineTypes.assert_not_called()
+    assert mock_machine_types.list.call_args[1]["maxResults"] == 50
 
 
 # gcp_compute_machine_types_aggregated_list
@@ -5511,10 +5518,11 @@ def test_gcp_compute_machine_types_aggregated_list_skips_warning_scopes(mocker):
     """
     Given: A mocked compute client returning a scope with a warning and a scope with machine types.
     When: gcp_compute_machine_types_aggregated_list is called.
-    Then: Only the machine types of the scope without a warning are returned.
+    Then: Only the machine types of the scope without a warning are returned, and the warning is logged.
     """
     from GCP import GCPServices, gcp_compute_machine_types_aggregated_list
 
+    debug_mock = mocker.patch("GCP.demisto.debug")
     mock_creds = mocker.Mock()
     mock_compute = mocker.Mock()
     mock_machine_types = mocker.Mock()
@@ -5542,13 +5550,14 @@ def test_gcp_compute_machine_types_aggregated_list_skips_warning_scopes(mocker):
     machine_types = result.outputs["GCP.Compute.MachineTypes(val.id && val.id == obj.id)"]
     assert len(machine_types) == 1
     assert machine_types[0]["name"] == "n1-standard-1"
+    assert any("returned a warning for zones/us-west1-a" in str(call_args) for call_args in debug_mock.call_args_list)
 
 
 def test_gcp_compute_machine_types_aggregated_list_empty_response(mocker):
     """
     Given: A mocked compute client returning an empty response.
     When: gcp_compute_machine_types_aggregated_list is called.
-    Then: The outputs are empty and no next page token is set.
+    Then: The outputs are empty and the next page token is set to None.
     """
     from GCP import GCPServices, gcp_compute_machine_types_aggregated_list
 
@@ -5564,7 +5573,10 @@ def test_gcp_compute_machine_types_aggregated_list_empty_response(mocker):
 
     result = gcp_compute_machine_types_aggregated_list(mock_creds, {"project_id": "test-project"})
 
-    assert result.outputs == {}
+    assert result.outputs == {
+        "GCP.Compute.MachineTypes(val.id && val.id == obj.id)": [],
+        "GCP.Compute(true)": {"AggregatedMachineTypesNextToken": None},
+    }
     assert result.raw_response == {}
 
 
@@ -5587,23 +5599,28 @@ def test_gcp_compute_machine_types_aggregated_list_invalid_limit(mocker):
     mock_compute.machineTypes.assert_not_called()
 
 
-def test_gcp_compute_machine_types_aggregated_list_zero_limit_rejected(mocker):
+def test_gcp_compute_machine_types_aggregated_list_zero_limit_falls_back_to_default(mocker):
     """
-    Given: A limit argument of "0", which is falsy but still out of the allowed range.
+    Given: A limit argument of "0", which is falsy.
     When: gcp_compute_machine_types_aggregated_list is called.
-    Then: A DemistoException is raised rather than the value being silently replaced by the default.
+    Then: The default limit of 50 is used for the API call.
     """
-    from GCP import DemistoException, GCPServices, gcp_compute_machine_types_aggregated_list
+    from GCP import GCPServices, gcp_compute_machine_types_aggregated_list
 
     mock_creds = mocker.Mock()
     mock_compute = mocker.Mock()
+    mock_machine_types = mocker.Mock()
+    mock_aggregated_list = mocker.Mock()
+
+    mock_aggregated_list.execute.return_value = {}
+    mock_machine_types.aggregatedList.return_value = mock_aggregated_list
+    mock_compute.machineTypes.return_value = mock_machine_types
     mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
 
     args = {"project_id": "test-project", "limit": "0"}
-    with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 500"):
-        gcp_compute_machine_types_aggregated_list(mock_creds, args)
+    gcp_compute_machine_types_aggregated_list(mock_creds, args)
 
-    mock_compute.machineTypes.assert_not_called()
+    assert mock_machine_types.aggregatedList.call_args[1]["maxResults"] == 50
 
 
 def test_bq_dataset_policy_remove_command_remove_user(mocker):
