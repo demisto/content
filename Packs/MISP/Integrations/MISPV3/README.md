@@ -1653,6 +1653,10 @@ Checks the reputation of an IP address.
 
 ```!ip ip=1.2.3.4```
 
+To check the reputation of an IPv6 address, set `accept_v6_ips` to `true`:
+
+```!ip ip=2001:0db8:85a3:0000:0000:8a2e:0370:7334 accept_v6_ips=true```
+
 #### Context Example
 
 ```json
