@@ -1076,7 +1076,8 @@ script:
       name: handle_inline_image
     description: Replies to an email using EWS.
     name: reply-mail
-  dockerimage: demisto/py-ews:5.6.0.12072219
+  # TODO: Update the dockerimage tag to the final production tag once the demisto/dockerfiles PR is merged (XSUP-76118)
+  dockerimage: demisto/py-ews:TODO_FINAL_TAG
   isfetch: true
   runonce: false
   script: '-'
