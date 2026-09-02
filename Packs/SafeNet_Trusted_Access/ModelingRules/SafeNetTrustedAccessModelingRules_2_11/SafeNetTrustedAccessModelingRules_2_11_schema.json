@@ -1,0 +1,20 @@
+{
+  "safenet_trusted_access_raw": {
+    "id": {
+      "type": "string",
+      "is_array": false
+    },
+    "timeStamp": {
+      "type": "string",
+      "is_array": false
+    },
+    "context": {
+      "type": "string",
+      "is_array": false
+    },
+    "details": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}
