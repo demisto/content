@@ -1,5 +1,5 @@
 import json
-from datetime import UTC
+from datetime import UTC, datetime
 
 import demistomock as demisto
 import pytest
@@ -8,15 +8,16 @@ from Palo_Alto_Networks_Enterprise_DLP import (
     DEFAULT_BASE_URL as DLP_URL,
     DEFAULT_AUTH_URL as AUTH_URL,
     Client,
+    build_region_filter,
     exemption_eligible_command,
     fetch_notifications,
     main,
+    parse_created_date,
     parse_dlp_report,
     parse_incident_details,
     slack_bot_message_command,
     update_incident_command,
     create_incident,
-    arg_to_datetime,
     compute_next_run,
     get_start_end_time_intervals,
     _migrate_last_run,
@@ -248,12 +249,147 @@ def test_parse_dlp_report(mocker):
     assert data_profiles[0]["DataPatterns"][1]["OccurrenceHigh"] == 10
 
 
-def test_get_dlp_incidents(requests_mock):
-    requests_mock.get(f"{DLP_URL}public/incident-notifications?regions=us", json={"us": []})
+V4_INCIDENTS_URL = "https://api.dlp.paloaltonetworks.com/v4/api/incidents"
+
+
+def test_get_incidents_first_page(requests_mock):
+    """
+    Given:
+        - A client configured with the default base URL.
+    When:
+        - Calling get_incidents_first_page.
+    Then:
+        - Ensure a POST is issued to the v4 incidents URL with a CUSTOM time range in
+          milliseconds, ascending creation-date sort and a region filter expression.
+    """
+    mock_resp = {"rows": [], "status": "READY", "query_token": "tok-1", "total_rows": 0}
+    requests_mock.post(V4_INCIDENTS_URL, json=mock_resp)
+
     client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
-    result, status_code = client.get_dlp_incidents(regions="us")
-    assert result == {"us": []}
+    result, status_code = client.get_incidents_first_page(start_time_ms=1000, end_time_ms=2000, regions="us,eu")
+
+    assert result == mock_resp
     assert status_code == 200
+    assert requests_mock.last_request.url == V4_INCIDENTS_URL
+    assert requests_mock.last_request.json() == {
+        "time_range": "CUSTOM",
+        "start_time": 1000,
+        "end_time": 2000,
+        "sort_by": "IncidentCreatedDate",
+        "sort_order": "ASC",
+        "page_size": 1000,
+        "filter": "Region in ('US', 'EU')",
+    }
+
+
+def test_get_incidents_first_page_without_regions(requests_mock):
+    """
+    Given:
+        - A client and no configured regions.
+    When:
+        - Calling get_incidents_first_page.
+    Then:
+        - Ensure no filter is sent, so the query covers every region the tenant can see.
+    """
+    requests_mock.post(V4_INCIDENTS_URL, json={"rows": [], "status": "READY"})
+
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+    client.get_incidents_first_page(start_time_ms=1000, end_time_ms=2000, regions="")
+
+    assert "filter" not in requests_mock.last_request.json()
+
+
+def test_get_incidents_next_page(requests_mock):
+    """
+    Given:
+        - A query token minted by a previous first-page call.
+    When:
+        - Calling get_incidents_next_page.
+    Then:
+        - Ensure a GET is issued with token, offset and pageSize on the query string.
+    """
+    mock_resp = {"rows": [{"incident_id": "id-1"}], "status": "READY", "total_rows": 5}
+    requests_mock.get(V4_INCIDENTS_URL, json=mock_resp)
+
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+    result, status_code = client.get_incidents_next_page("tok-1", 100, page_size=50)
+
+    assert result == mock_resp
+    assert status_code == 200
+    assert requests_mock.last_request.qs == {"token": ["tok-1"], "offset": ["100"], "pagesize": ["50"]}
+
+
+def test_v4_url_ignores_custom_base_path(requests_mock):
+    """
+    Given:
+        - A base URL that is not versioned under /v1/.
+    When:
+        - Calling get_incidents_first_page.
+    Then:
+        - Ensure the v4 path is still appended to the configured host, rather than being
+          derived by string replacement (which would silently no-op and fetch nothing).
+    """
+    requests_mock.post("https://dlp.customer.example/v4/api/incidents", json={"rows": [], "status": "READY"})
+
+    client = Client("https://dlp.customer.example/api/", AUTH_URL, CREDENTIALS, True, False)
+    client.get_incidents_first_page(start_time_ms=1000, end_time_ms=2000)
+
+    assert requests_mock.last_request.url == "https://dlp.customer.example/v4/api/incidents"
+
+
+@pytest.mark.parametrize(
+    "regions, expected",
+    [
+        pytest.param("us", "Region in ('US')", id="single_region_uppercased"),
+        pytest.param("us, eu ,ap", "Region in ('US', 'EU', 'AP')", id="multiple_regions_trimmed"),
+        pytest.param("US_STG", "Region in ('US_STG')", id="underscore_allowed"),
+        pytest.param("", "", id="empty_string"),
+        pytest.param("us,'; DROP TABLE--", "Region in ('US')", id="injection_token_dropped"),
+        pytest.param("!!!", "", id="all_tokens_invalid"),
+    ],
+)
+def test_build_region_filter(regions, expected):
+    """
+    Given:
+        - A comma-separated region configuration value.
+    When:
+        - Calling build_region_filter.
+    Then:
+        - Ensure valid tokens are uppercased into a filter expression and anything outside
+          [A-Z0-9_] is discarded, so an operator value cannot alter the expression.
+    """
+    assert build_region_filter(regions) == expected
+
+
+@pytest.mark.parametrize(
+    "value, expected_epoch",
+    [
+        pytest.param(1648844510, 1648844510, id="seconds"),
+        pytest.param(1648844510000, 1648844510, id="milliseconds"),
+        pytest.param(1648844510000000, 1648844510, id="microseconds"),
+        pytest.param("1648844510000", 1648844510, id="numeric_string"),
+        pytest.param("2022-04-01 20:21:50 UTC", 1648844510, id="date_string"),
+        pytest.param(None, None, id="none"),
+        pytest.param("", None, id="empty_string"),
+        pytest.param("not a date", None, id="unparsable"),
+    ],
+)
+def test_parse_created_date(value, expected_epoch):
+    """
+    Given:
+        - A created_date value in any of the units and formats the v4 API may return.
+    When:
+        - Calling parse_created_date.
+    Then:
+        - Ensure numeric values are normalized by magnitude, strings are parsed, and
+          unparsable input returns None rather than raising.
+    """
+    result = parse_created_date(value)
+
+    if expected_epoch is None:
+        assert result is None
+    else:
+        assert int(result.timestamp()) == expected_epoch
 
 
 @pytest.mark.parametrize(
@@ -402,6 +538,25 @@ def test_query_sleep_time(requests_mock):
     assert time == 10
 
 
+V4_ROW = {
+    "incident_id": "1fd24b1e-05ff-46c1-b638-a79d284dc727",
+    "report_id": "2573778324",
+    "created_date": 1648844510000,
+    "action": "block",
+    "control_point": "NGFW",
+    "asset_name": "Test_file.txt",
+    "source": "test-user@example.com",
+    "source_region": "US",
+    "severity": "HIGH",
+    "feedback_status": "PENDING_RESPONSE",
+    "data_profile_id": 11995149,
+    "data_profiles": [
+        {"id": 11995148, "name": "Parent Profile", "version": 2, "is_parent": True},
+        {"id": 11995149, "name": "Credit Card Match 2", "version": 1, "is_parent": False},
+    ],
+}
+
+
 @pytest.mark.parametrize(
     "incident_type_input, expected_type",
     [
@@ -412,43 +567,74 @@ def test_query_sleep_time(requests_mock):
 def test_create_incident(incident_type_input, expected_type):
     """
     Given:
-        - A DLP notification containing an incident.
+        - A v4 incident inventory row.
     When:
         - Calling `create_incident` with or without specifying an incident type.
     Then:
-        - Ensure no errors due to the lack of `userId` in `INCIDENT_JSON`.
-        - Ensure the incident is created with the correct type.
+        - Ensure the incident is created with the correct type and that rawJSON keeps the
+          v1 key names, including the nested previousNotification and incidentDetails
+          shapes the incoming mapper reads.
     """
-    import copy
+    created_at = parse_created_date(V4_ROW["created_date"])
 
-    # Inputs
-    notification = {"incident": copy.deepcopy(INCIDENT_JSON), "previous_notifications": []}
-    region = "us"
-
-    # Prepare
-    parsed_details = parse_incident_details(INCIDENT_JSON["incidentDetails"])
-    occurred_time = arg_to_datetime(INCIDENT_JSON["createdAt"]).isoformat()
-    user_id = parsed_details["headers"][0]["attribute_value"]  # Take `attribute_value` where `attribute_name` = "username"
-    raw_data = {
-        **INCIDENT_JSON,
-        "userId": user_id,
-        "incidentDetails": parsed_details,
-        "region": region,
-        "previousNotification": None,
+    expected_raw = {
+        "incidentId": V4_ROW["incident_id"],
+        "userId": V4_ROW["source"],
+        "tenantId": None,
+        "reportId": V4_ROW["report_id"],
+        "dataProfileId": V4_ROW["data_profile_id"],
+        # The server derives data_profile_id from the last element, so name/version follow it.
+        "dataProfileName": "Credit Card Match 2",
+        "dataProfileVersion": 1,
+        "action": V4_ROW["action"],
+        "channel": "ngfw",
+        "filename": V4_ROW["asset_name"],
+        "checksum": None,
+        "fileType": None,
+        "source": V4_ROW["control_point"],
+        "appId": None,
+        "appName": None,
+        "createdAt": created_at.isoformat(),
+        "region": V4_ROW["source_region"],
+        "previousNotification": {"feedback_status": V4_ROW["feedback_status"]},
+        "incidentDetails": {"headers": [{"attribute_name": "severity", "attribute_value": V4_ROW["severity"]}]},
     }
 
     # Act
     if incident_type_input is None:
-        result = create_incident(notification, region=region)
+        result = create_incident(V4_ROW, created_at)
     else:
-        result = create_incident(notification, region=region, incident_type=incident_type_input)
+        result = create_incident(V4_ROW, created_at, incident_type=incident_type_input)
 
-    # Assert - check standard fields
-    assert result["name"] == f"Palo Alto Networks DLP Incident {INCIDENT_JSON['incidentId']}"
+    # Assert
+    assert result["name"] == f"Palo Alto Networks DLP Incident {V4_ROW['incident_id']}"
     assert result["type"] == expected_type
-    assert result["occurred"] == occurred_time
-    assert result["rawJSON"] == json.dumps(raw_data)
-    assert result["details"] == json.dumps(raw_data)
+    assert result["occurred"] == created_at.isoformat()
+    assert result["rawJSON"] == json.dumps(expected_raw)
+    assert result["details"] == json.dumps(expected_raw)
+
+
+def test_create_incident_normalizes_channel_and_tolerates_missing_fields():
+    """
+    Given:
+        - A sparse row whose control_point uses the underscored server form and which
+          carries no data profiles.
+    When:
+        - Calling create_incident.
+    Then:
+        - Ensure the channel is normalized to the hyphenated v1 form and the profile keys
+          are present but empty rather than raising.
+    """
+    row = {"incident_id": "id-1", "control_point": "SAAS_API"}
+    created_at = parse_created_date(1648844510)
+
+    raw = json.loads(create_incident(row, created_at)["rawJSON"])
+
+    assert raw["channel"] == "saas-api"
+    assert raw["source"] == "SAAS_API"
+    assert raw["dataProfileName"] is None
+    assert raw["dataProfileVersion"] is None
+    assert raw["previousNotification"] == {"feedback_status": None}
 
 
 @pytest.mark.parametrize(
@@ -571,52 +757,40 @@ def test_get_start_end_time_intervals(start, end, delta, expected_intervals):
     assert result == expected_intervals
 
 
+def _mock_fetch_env(mocker, last_run=None):
+    """Patch the demisto side effects fetch_notifications performs."""
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run if last_run is not None else {})
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+
 @freeze_time("2022-04-01 20:25:00 UTC")
 def test_fetch_notifications_basic(requests_mock, mocker):
     """
     Given:
-        - A client and basic parameters with frozen time.
+        - A single-page v4 inventory response with no previous last_run.
     When:
-        - Calling fetch_notifications with no previous last_run.
+        - Calling fetch_notifications.
     Then:
-        - Ensure incidents are created and last_run is updated.
+        - Ensure an incident is created from the row and last_run carries the created_date
+          watermark plus the ID for deduplication.
     """
-    import re
-    from datetime import datetime
-    from Palo_Alto_Networks_Enterprise_DLP import LOCAL_LAST_RUN
+    mock_resp = {"rows": [V4_ROW], "status": "READY", "query_token": "tok-1", "total_rows": 1}
+    requests_mock.post(V4_INCIDENTS_URL, json=mock_resp)
 
-    LOCAL_LAST_RUN.clear()
-
-    # Mock API response
-    mock_notification = {
-        "incident": {
-            "incidentId": "test-id-1",
-            "committedAt": "2022-Apr-01 20:21:50 UTC",
-            "createdAt": "2022-Apr-01 20:21:50 UTC",
-            "incidentDetails": INCIDENT_JSON["incidentDetails"],
-            "tenantId": "1128505801991063552",
-            "reportId": "2573778324",
-        },
-        "previous_notifications": [],
-    }
-
-    requests_mock.get(re.compile(f"{DLP_URL}public/incident-notifications.*"), json={"us": [mock_notification]})
-
-    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
-    mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch.object(demisto, "createIncidents")
-    mocker.patch.object(demisto, "setIntegrationContext")
+    _mock_fetch_env(mocker)
 
     client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
-    # Use timestamp very close to frozen time (just 2 minutes before to minimize intervals)
     first_fetch_timestamp = int(datetime(2022, 4, 1, 20, 23, 0, tzinfo=UTC).timestamp())
 
     next_run, incidents = fetch_notifications(client, "us", first_fetch_timestamp)
 
     assert len(incidents) == 1
-    assert "test-id-1" in incidents[0]["name"]
-
-    assert next_run == {"start_timestamp": 1648844510, LAST_IDS_TIMESTAMPS_KEY: {"test-id-1": 1648844510}}
+    assert V4_ROW["incident_id"] in incidents[0]["name"]
+    assert next_run == {
+        START_TIMESTAMP_KEY: 1648844510,
+        LAST_IDS_TIMESTAMPS_KEY: {V4_ROW["incident_id"]: 1648844510},
+    }
 
 
 @freeze_time("2026-04-01 20:25:00 UTC")
@@ -627,58 +801,183 @@ def test_fetch_notifications_lookback(requests_mock, mocker):
     When:
         - Calling fetch_notifications.
     Then:
-        - The first API interval starts at T - 5*60 (i.e. lookback is applied).
+        - The POST body uses start_time = (T - 5*60) * 1000, so late-indexed incidents
+          created before the watermark are re-queried.
     """
-    import re
-    from datetime import datetime
-
     start_timestamp = int(datetime(2026, 4, 1, 20, 23, 0, tzinfo=UTC).timestamp())  # T
-    look_back_seconds = 5 * 60
-    expected_effective_start = start_timestamp - look_back_seconds
+    expected_effective_start_ms = (start_timestamp - 5 * 60) * 1000
 
-    requests_mock.get(re.compile(f"{DLP_URL}public/incident-notifications.*"), json={})
+    requests_mock.post(V4_INCIDENTS_URL, json={"rows": [], "status": "READY", "total_rows": 0})
 
-    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
-    mocker.patch.object(demisto, "getLastRun", return_value={START_TIMESTAMP_KEY: start_timestamp})
-    mocker.patch.object(demisto, "setIntegrationContext")
+    _mock_fetch_env(mocker, {START_TIMESTAMP_KEY: start_timestamp})
 
     client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
     fetch_notifications(client, "us", first_fetch_timestamp=start_timestamp, look_back_minutes=5)
 
-    # The very first request must use start_timestamp=expected_effective_start
-    first_request_url = requests_mock.request_history[0].url
-    assert f"start_timestamp={expected_effective_start}" in first_request_url
+    assert requests_mock.request_history[0].json()["start_time"] == expected_effective_start_ms
 
 
 @freeze_time("2026-04-01 20:25:00 UTC")
 def test_fetch_notifications_advances_start_timestamp_when_no_new_incidents(requests_mock, mocker):
     """
     Given:
-        - A last_run with a stale start_timestamp and all API responses returning empty results.
+        - A last_run with a stale start_timestamp and an empty result set.
     When:
         - Calling fetch_notifications.
     Then:
-        - Ensure start_timestamp in next_run is advanced to the end_time of the last queried interval,
+        - Ensure start_timestamp in next_run is advanced to end_timestamp (now - buffer),
           preventing the query window from growing unboundedly on subsequent fetches.
     """
-    import re
-    from datetime import datetime
-
     start_timestamp = int(datetime(2026, 4, 1, 20, 23, 0, tzinfo=UTC).timestamp())
 
-    requests_mock.get(re.compile(f"{DLP_URL}public/incident-notifications.*"), json={})
+    requests_mock.post(V4_INCIDENTS_URL, json={"rows": [], "status": "READY", "total_rows": 0})
 
-    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
-    mocker.patch.object(demisto, "getLastRun", return_value={START_TIMESTAMP_KEY: start_timestamp, LAST_IDS_TIMESTAMPS_KEY: {}})
-    mocker.patch.object(demisto, "setIntegrationContext")
+    _mock_fetch_env(mocker, {START_TIMESTAMP_KEY: start_timestamp, LAST_IDS_TIMESTAMPS_KEY: {}})
 
     client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
     next_run, incidents = fetch_notifications(client, "us", first_fetch_timestamp=start_timestamp)
 
     assert incidents == []
-    # start_timestamp must advance beyond the stale value — it should equal the end_time of the
-    # last queried interval (start_timestamp + MAX_API_CALLS_PER_FETCH * 180s), not remain frozen.
+    # start_timestamp must advance beyond the stale value — it should equal end_timestamp (now - buffer).
     assert next_run[START_TIMESTAMP_KEY] > start_timestamp
+
+
+@freeze_time("2022-04-01 20:25:00 UTC")
+def test_fetch_notifications_covers_all_regions_in_one_query(requests_mock, mocker):
+    """
+    Given:
+        - Two configured regions and one incident in each.
+    When:
+        - Calling fetch_notifications.
+    Then:
+        - Ensure a single query covers both regions, so the watermark is derived from all of
+          them rather than from whichever region happened to be queried last.
+    """
+    us_row = {**V4_ROW, "incident_id": "us-1", "source_region": "US", "created_date": 1648844510000}
+    eu_row = {**V4_ROW, "incident_id": "eu-1", "source_region": "EU", "created_date": 1648844400000}
+    requests_mock.post(
+        V4_INCIDENTS_URL, json={"rows": [eu_row, us_row], "status": "READY", "query_token": "tok-1", "total_rows": 2}
+    )
+
+    _mock_fetch_env(mocker)
+
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+    next_run, incidents = fetch_notifications(client, "us,eu", first_fetch_timestamp=1648844000)
+
+    assert len(requests_mock.request_history) == 1
+    assert requests_mock.request_history[0].json()["filter"] == "Region in ('US', 'EU')"
+    assert {json.loads(incident["rawJSON"])["region"] for incident in incidents} == {"US", "EU"}
+    # The watermark is the max across both regions, not whichever happened to be queried last.
+    assert next_run[START_TIMESTAMP_KEY] == 1648844510
+
+
+@freeze_time("2022-04-01 20:25:00 UTC")
+def test_fetch_notifications_pages_until_empty_when_total_rows_missing(requests_mock, mocker):
+    """
+    Given:
+        - A response whose total_rows is null, which the server may return.
+    When:
+        - Calling fetch_notifications.
+    Then:
+        - Ensure the walk degrades to paging until an empty page rather than raising or
+          stopping after the first page.
+    """
+    page_1 = {**V4_ROW, "incident_id": "id-1"}
+    page_2 = {**V4_ROW, "incident_id": "id-2"}
+    requests_mock.post(V4_INCIDENTS_URL, json={"rows": [page_1], "status": "READY", "query_token": "tok-1", "total_rows": None})
+    requests_mock.get(
+        V4_INCIDENTS_URL,
+        [
+            {"json": {"rows": [page_2], "status": "READY"}},
+            {"json": {"rows": [], "status": "READY"}},
+        ],
+    )
+
+    _mock_fetch_env(mocker)
+
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+    _, incidents = fetch_notifications(client, "us", first_fetch_timestamp=1648844000)
+
+    assert [json.loads(incident["rawJSON"])["incidentId"] for incident in incidents] == ["id-1", "id-2"]
+
+
+@freeze_time("2022-04-01 20:25:00 UTC")
+def test_fetch_notifications_repolls_pending_query(requests_mock, mocker):
+    """
+    Given:
+        - A first page that is acknowledged as PENDING with no rows.
+    When:
+        - Calling fetch_notifications.
+    Then:
+        - Ensure the query token is re-polled until rows are ready, rather than treating the
+          empty PENDING page as an empty result set.
+    """
+    mocker.patch("Palo_Alto_Networks_Enterprise_DLP.time.sleep")
+    requests_mock.post(V4_INCIDENTS_URL, json={"rows": [], "status": "PENDING", "query_token": "tok-1"})
+    requests_mock.get(
+        V4_INCIDENTS_URL,
+        [
+            {"json": {"rows": [], "status": "PENDING"}},
+            {"json": {"rows": [V4_ROW], "status": "READY", "total_rows": 1}},
+        ],
+    )
+
+    _mock_fetch_env(mocker)
+
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+    _, incidents = fetch_notifications(client, "us", first_fetch_timestamp=1648844000)
+
+    assert len(incidents) == 1
+    assert V4_ROW["incident_id"] in incidents[0]["name"]
+
+
+@freeze_time("2022-04-01 20:25:00 UTC")
+def test_fetch_notifications_skips_duplicates_and_unparsable_rows(requests_mock, mocker):
+    """
+    Given:
+        - A page containing an already-seen incident and one with an unparsable created_date.
+    When:
+        - Calling fetch_notifications.
+    Then:
+        - Ensure both are skipped and the fetch completes, rather than re-creating the
+          duplicate or dying on the bad timestamp.
+    """
+    seen_row = {**V4_ROW, "incident_id": "seen-1"}
+    bad_row = {**V4_ROW, "incident_id": "bad-1", "created_date": "not a date"}
+    good_row = {**V4_ROW, "incident_id": "good-1"}
+    requests_mock.post(
+        V4_INCIDENTS_URL,
+        json={"rows": [seen_row, bad_row, good_row], "status": "READY", "query_token": "tok-1", "total_rows": 3},
+    )
+
+    _mock_fetch_env(mocker, {START_TIMESTAMP_KEY: 1648844000, LAST_IDS_TIMESTAMPS_KEY: {"seen-1": 1648844000}})
+
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+    _, incidents = fetch_notifications(client, "us", first_fetch_timestamp=1648844000)
+
+    assert [json.loads(incident["rawJSON"])["incidentId"] for incident in incidents] == ["good-1"]
+
+
+@freeze_time("2022-04-01 20:25:00 UTC")
+def test_fetch_notifications_stops_at_max_fetch(requests_mock, mocker):
+    """
+    Given:
+        - A result set larger than max_fetch.
+    When:
+        - Calling fetch_notifications.
+    Then:
+        - Ensure the walk stops at the limit and does not request a further page.
+    """
+    rows = [{**V4_ROW, "incident_id": f"id-{i}"} for i in range(5)]
+    requests_mock.post(V4_INCIDENTS_URL, json={"rows": rows, "status": "READY", "query_token": "tok-1", "total_rows": 50})
+
+    _mock_fetch_env(mocker)
+
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+    _, incidents = fetch_notifications(client, "us", first_fetch_timestamp=1648844000, max_fetch=2)
+
+    assert len(incidents) == 2
+    assert len(requests_mock.request_history) == 1
 
 
 @pytest.mark.parametrize(
