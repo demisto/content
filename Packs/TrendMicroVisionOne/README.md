@@ -1,7 +1,5 @@
 # TrendAI Vision One™
 
-**Important:** This integration is supported by Palo Alto Networks.
-
 ## Overview
 
 TrendAI Vision One™ is a cybersecurity platform that provides one central place to see, detect, and respond to threats across your organization's IT environment.  
