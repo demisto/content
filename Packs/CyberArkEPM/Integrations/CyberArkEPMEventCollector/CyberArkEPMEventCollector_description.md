@@ -60,4 +60,4 @@ Every method needs different parameters as show in the following:
     * Events.
 
 * The **set name** parameter contains a list of names to which the events are related.
-* The **max fetch** parameter is for every event type and for every name in the **set name** parameter which means that for **max fetch** that equals 1000 the actually max events fetched will be 3000 * sum of names in the **set name** parameter.
+* The **Maximum number of events per fetch** parameter applies to each event type and each name in the **Set name** parameter. For example, if **Maximum number of events per fetch** is set to 1000, the total maximum events fetched is equal to 3000 multiplied by the total number of names specified in the **Set name** parameter.
