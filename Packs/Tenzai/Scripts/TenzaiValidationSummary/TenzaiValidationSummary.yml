@@ -1,0 +1,25 @@
+comment: |-
+  Renders the Tenzai validation summary panel for the Validate tab: a TENZAI wordmark + status
+  line, a serif verdict hero (exploitable / not exploitable), a monospace telemetry grid (verdict,
+  exploit, finding count, credit usage, reference link), a per-severity meter, and a per-finding
+  overview (a color-coded severity chip + the finding title + a one-line summary). Reads the
+  persisted Tenzai result fields. The overview is a summary — each finding's full detail renders
+  in the Tenzai Findings grid directly below, where a row opens it in a Cortex popup.
+commonfields:
+  id: TenzaiValidationSummary
+  version: -1
+name: TenzaiValidationSummary
+script: ''
+type: python
+subtype: python3
+tags:
+- dynamic-section
+timeout: '0'
+scripttarget: 0
+runas: DBotWeakRole
+dockerimage: demisto/python3:3.12.8.3296088
+enabled: true
+runonce: false
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
