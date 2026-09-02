@@ -201,6 +201,41 @@ def test_extract_text_indicators():
     assert res_indicators == util_load_json("test_data/iocs-res.json")
 
 
+@pytest.mark.parametrize(
+    "cidr, expected_value",
+    [
+        # Two-digit prefix lengths must not be truncated to one digit
+        ("1.1.1.1/12", "1.1.1.1/12"),
+        ("192.168.0.0/16", "192.168.0.0/16"),
+        ("10.0.0.0/24", "10.0.0.0/24"),
+        ("172.16.0.0/32", "172.16.0.0/32"),
+        # Single-digit prefix lengths must still match
+        ("10.0.0.0/8", "10.0.0.0/8"),
+        ("1.1.1.1/1", "1.1.1.1/1"),
+        ("1.1.1.1/2", "1.1.1.1/2"),
+    ],
+)
+def test_ipv4_cidr_regex_full_prefix_length(cidr: str, expected_value: str):
+    """
+    Given:
+     - An IPv4 CIDR string with a multi-digit prefix length (e.g. /12, /16, /24, /32).
+    When:
+     - The ipv4cidrRegex is applied via re.search.
+    Then:
+     - The full CIDR value including the complete prefix length is matched,
+       not a truncated single-digit prefix (regression for XSUP-75295).
+    """
+    import re
+
+    from FeedGitHub import ipv4cidrRegex
+
+    match = re.search(ipv4cidrRegex, cidr)
+    assert match is not None, f"Expected a match for {cidr!r}"
+    assert match.group(0) == expected_value, (
+        f"For input {cidr!r}: expected {expected_value!r} but got {match.group(0)!r}"
+    )
+
+
 def test_get_stix_indicators():
     """
     Given:
