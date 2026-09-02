@@ -515,6 +515,30 @@ Retrieves the AppRole ID for a specified role.
 |---|---|
 |role_id|role_name|
 
+### hashicorp-create-update-secret-metadata
+
+***
+Creates or replaces the metadata of a secret at the specified location in a KV V2 engine. Fields that are not supplied are reset to their server defaults.
+
+#### Base Command
+
+`hashicorp-create-update-secret-metadata`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| engine | KV V2 engine path, e.g., "secret/" or "kv/". | Required |
+| secret_path | Secret path, e.g., "my-secret" or "folder/my-secret". | Required |
+| max_versions | The number of versions to keep per key. | Optional |
+| cas_required | If true, the key will require the cas parameter to be set on all write requests. If false, the backend's configuration will be used. Possible values are: true, false. | Optional |
+| delete_version_after | Set the delete_version_after value to a duration to specify the deletion_time for all new versions written to this key, e.g., "3h25m19s". | Optional |
+| custom_metadata | A map of arbitrary string to string valued user-provided metadata meant to describe the secret. The format example: {"foo": "abc", "bar": "123"}. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
 ## Additional Information
 
 - In order to fetch credentials from HashiCorp Vault, the relevant secrets engines must be configured with the integration so it can pull the data from them. To configure an engine with the integration, use the ***configure-engine*** command.
