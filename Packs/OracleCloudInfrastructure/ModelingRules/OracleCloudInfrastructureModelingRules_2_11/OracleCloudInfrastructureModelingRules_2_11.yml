@@ -1,5 +1,5 @@
 fromversion: 8.15.0
-id: oracle_cloud_infrastructure_modeling_rule
+id: oracle_cloud_infrastructure_ModelingRule
 name: OracleCloudInfrastructure Modeling Rule
 rules: ''
 schema: ''

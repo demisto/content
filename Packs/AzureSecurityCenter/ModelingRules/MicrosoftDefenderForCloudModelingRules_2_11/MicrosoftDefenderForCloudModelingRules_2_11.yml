@@ -1,5 +1,5 @@
 fromversion: 8.15.0
-id: defender_for_cloud_microsoft_modeling_rule
+id: defender_for_cloud_microsoft_ModelingRule
 name: Defender For Cloud Microsoft Modeling Rule
 rules: ''
 schema: ''
