@@ -19,6 +19,11 @@ from CommonServerUserPython import *  # noqa
 
 DEFAULT_LIMIT = 1000
 DEFAULT_FROM_FETCH_PARAMETER = "3 days"
+# When a fetched event type returns 0 events and has no existing watermark, seed its watermark to
+# (now - this buffer) instead of exactly "now". The small step-back covers the vendor's ingestion
+# lag (~2-3 min) so events that occurred just before "now" but were not yet available are not
+# skipped, while the watermark still advances every cycle (so an empty type never loops).
+WATERMARK_SAFETY_BUFFER_MS = 5 * 60 * 1000  # 5 minutes
 
 
 class EventFilter(NamedTuple):
@@ -369,15 +374,20 @@ class DefenderGetEvents(IntegrationGetEvents):
         if fetched_types is not None:
             types_in_play |= set(fetched_types)
 
+        # Seed to (now - safety buffer) rather than exactly "now": the step-back covers the vendor's
+        # ingestion lag so events that occurred just before now (but were not yet available) are not
+        # skipped, while the watermark still advances every cycle so an empty type never loops.
         now_ms = int(datetime.now(timezone.utc).timestamp() * 1000)
+        seed_ms = now_ms - WATERMARK_SAFETY_BUFFER_MS
         for event_type in types_in_play:
             latest = latest_per_type.get(event_type, 0)
             if latest:
                 last_run[event_type] = latest + 1
             elif event_type not in last_run:
-                # No events and no existing watermark: move forward so we don't loop.
-                demisto.debug(f"MD: seeding forward watermark for {event_type=} to {now_ms}")
-                last_run[event_type] = now_ms
+                # No events and no existing watermark: seed forward (minus the buffer) so we advance
+                # without looping and without skipping recent, not-yet-available events.
+                demisto.debug(f"MD: seeding forward watermark for {event_type=} to {seed_ms}")
+                last_run[event_type] = seed_ms
 
         return last_run
 

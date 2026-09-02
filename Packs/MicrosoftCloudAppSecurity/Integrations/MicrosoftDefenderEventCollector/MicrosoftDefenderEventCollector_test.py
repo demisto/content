@@ -12,6 +12,7 @@ from MicrosoftDefenderEventCollector import (
     AUTH_ERROR_MSG,
     DEFAULT_LIMIT,
     UI_NAME_TO_EVENT_FILTERS,
+    WATERMARK_SAFETY_BUFFER_MS,
     DefenderClient,
     DefenderGetEvents,
     DefenderHTTPRequest,
@@ -188,15 +189,22 @@ class TestGetLastRunWatermark:
         mocker.patch.object(demisto, "debug")
 
     def test_empty_type_with_no_watermark_is_seeded_forward(self, mocker):
-        """login/admin return 0 events and have no prior watermark -> seeded to 'now'."""
+        """login/admin return 0 events and have no prior watermark -> seeded to (now - safety buffer).
+
+        The small step-back (WATERMARK_SAFETY_BUFFER_MS) covers the vendor ingestion lag so recent,
+        not-yet-available events are not skipped, while the watermark still advances (no loop).
+        """
         self._patch_env(mocker, stored_last_run={})
         events = [{"timestamp": 111, "event_type_name": "alerts"}]
 
         last_run = DefenderGetEvents.get_last_run(events, fetched_types=["alerts", "activities_login", "activities_admin"])
 
+        seeded = NOW_MS - WATERMARK_SAFETY_BUFFER_MS
         assert last_run["alerts"] == 112  # type with events advances to max+1
-        assert last_run["activities_login"] == NOW_MS  # 0-event type seeded forward
-        assert last_run["activities_admin"] == NOW_MS  # 0-event type seeded forward
+        assert last_run["activities_login"] == seeded  # 0-event type seeded to now - buffer
+        assert last_run["activities_admin"] == seeded  # 0-event type seeded to now - buffer
+        # The seed is in the past relative to now, guaranteeing no recent events are skipped.
+        assert last_run["activities_login"] < NOW_MS
 
     def test_empty_type_with_existing_watermark_is_preserved(self, mocker):
         """A 0-event type that already has a watermark must keep it (no data skipped)."""
