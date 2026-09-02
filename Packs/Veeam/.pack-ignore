@@ -1,13 +1,40 @@
-[file:Veeam_Resolve_Triggered_Alarms.yml]
+[file:Veeam_-_Resolve_Triggered_Alarms.yml]
 ignore=PB106
 
-[file:Veeam_Start_Configuration_Backup.yml]
+[file:Veeam_-_Start_Configuration_Backup.yml]
 ignore=PB106
 
-[file:Veeam_Start_Instant_VM_Recovery_Automatically.yml]
+[file:Veeam_-_Start_Instant_VM_Recovery_Automatically.yml]
 ignore=PB106
 
-[file:Veeam_Start_Instant_VM_Recovery_Manually.yml]
+[file:Veeam_-_Start_Instant_VM_Recovery_Manually.yml]
+ignore=PB106
+
+[file:Veeam_-_Compare_Entra_ID_Items.yml]
+ignore=PB106
+
+[file:Veeam_-_Start_Scan_Backup.yml]
+ignore=PB106
+
+[file:Veeam_-_Start_Instant_Hyper-V_VM_Recovery_Automatically.yml]
+ignore=PB106
+
+[file:Veeam_-_Start_Quick_Backup.yml]
+ignore=PB106
+
+[file:Veeam_-_Stop_Disk_Publishing.yml]
+ignore=PB106
+
+[file:Veeam_-_Find_Entra_ID_User.yml]
+ignore=PB106
+
+[file:Veeam_-_Start_Security_&_Compliance_Analyzer.yml]
+ignore=PB106
+
+[file:Veeam_-_Start_Instant_Hyper-V_VM_Recovery_Manually.yml]
+ignore=PB106
+
+[file:Veeam_-_Start_Disk_Publishing.yml]
 ignore=PB106
 
 [file:incidentfield-Veeam_Affected_Machine.json]
@@ -83,6 +110,30 @@ ignore=IF113
 ignore=IF113
 
 [file:incidentfield-Veeam_Event_Source_Description.json]
+ignore=IF113
+
+[file:incidentfield-Veeam_Best_Practice_ID.json]
+ignore=IF113
+
+[file:incidentfield-Veeam_Best_Practice_Name.json]
+ignore=IF113
+
+[file:incidentfield-Veeam_Number_of_Objects.json]
+ignore=IF113
+
+[file:incidentfield-Veeam_Best_Practice_Details.json]
+ignore=IF113
+
+[file:incidentfield-Veeam_Session_ID.json]
+ignore=IF113
+
+[file:incidentfield-Veeam_Next_Run.json]
+ignore=IF113
+
+[file:incidentfield-Veeam_Last_Run.json]
+ignore=IF113
+
+[file:incidentfield-Veeam_Best_Practice_Status.json]
 ignore=IF113
 
 [file:README.md]

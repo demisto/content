@@ -1,0 +1,417 @@
+description: Starts a Security & Compliance Analyzer scan session for the Veeam Backup
+  & Replication instance.
+id: Veeam - Start Security & Compliance Analyzer
+inputs:
+- description: ""
+  key: Instance
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      accessor: sourceInstance
+      root: incident
+name: Veeam - Start Security & Compliance Analyzer
+outputs: []
+quiet: true
+starttaskid: "0"
+fromversion: "6.10.0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 46ec7841-b166-4be6-83f0-50df819243e0
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 46ec7841-b166-4be6-83f0-50df819243e0
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Starts the Security & Compliance Analyzer scan. The command creates
+        a new session and returns its details.
+      id: 0cfc81ad-8920-4ee5-8eb4-2b4677aac975
+      iscommand: true
+      name: Start Scan Session
+      script: VBR REST API|||veeam-vbr-start-security-analyzer
+      type: regular
+      version: -1
+    taskid: 0cfc81ad-8920-4ee5-8eb4-2b4677aac975
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: e1e3bd5a-a34f-4c02-8bdb-1d1167fb42ca
+      iscommand: false
+      name: Clear Context Data
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: e1e3bd5a-a34f-4c02-8bdb-1d1167fb42ca
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: using
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: inputs.Instance
+      Ids:
+        complex:
+          accessor: id
+          root: Veeam.VBR.start_security_analyzer
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: id_
+      PollingCommandName:
+        simple: veeam-vbr-get-session
+      Timeout:
+        simple: "120"
+      dt:
+        simple: Veeam.VBR.get_session(val.state != 'Stopped').id
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8d10047b-8cf9-4c8d-87aa-d3d6df2ed30a
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+      description: ''
+    taskid: 8d10047b-8cf9-4c8d-87aa-d3d6df2ed30a
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 550
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Get Security & Compliance Analyzer last run details.
+      id: 28b30cd4-c2f3-4434-8900-8dee2ebf3cb0
+      iscommand: true
+      name: Get Last Scan Session
+      script: VBR REST API|||veeam-vbr-get-security-analyzer-last-run
+      type: regular
+      version: -1
+    taskid: 28b30cd4-c2f3-4434-8900-8dee2ebf3cb0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 730
+        }
+      }
+  "5":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: result
+                root: Veeam.VBR.security_analyzer_last_run.result
+          operator: isEqualString
+          right:
+            value:
+              simple: Success
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: result
+                root: Veeam.VBR.security_analyzer_last_run.result
+          operator: isEqualString
+          right:
+            value:
+              simple: Warning
+      label: "yes"
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check Last Session State.
+      id: 415c82f9-8d53-4fd0-88ac-eaeca3487911
+      iscommand: false
+      name: Check Last Session State
+      type: condition
+      version: -1
+    taskid: 415c82f9-8d53-4fd0-88ac-eaeca3487911
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 910
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fa2be071-96e5-47db-8b5a-d51dc19bd598
+      iscommand: false
+      name: |
+        Success
+      type: title
+      version: -1
+      description: ''
+    taskid: fa2be071-96e5-47db-8b5a-d51dc19bd598
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1130
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Finish:
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns an error if a Security & Compliance Analyzer scan session
+        has not been completed.
+      id: b01d03ca-ca3d-48a6-8cc0-17d260d607ca
+      iscommand: false
+      name: Failed
+      type: condition
+      version: -1
+    taskid: b01d03ca-ca3d-48a6-8cc0-17d260d607ca
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 1280
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Gets the list of best practices and their status.
+      id: c1b13b85-d8f5-4246-82a1-5913cb29145a
+      iscommand: true
+      name: Get Best Practices
+      script: VBR REST API|||veeam-vbr-get-security-analyzer-best-practices
+      type: regular
+      version: -1
+    taskid: c1b13b85-d8f5-4246-82a1-5913cb29145a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1280
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e8696709-c8aa-4349-8618-f70b520c5347
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: e8696709-c8aa-4349-8618-f70b520c5347
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1560
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "7_9_Finish": 0.26
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1575,
+        "width": 890,
+        "x": -450,
+        "y": 50
+      }
+    }
+  }

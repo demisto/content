@@ -29,7 +29,7 @@ configuration:
   required: false
   type: 8
 - defaultvalue: 3 days
-  display: First fetch time
+  display: First Fetch Time
   name: first_fetch
   required: false
   type: 0
@@ -77,6 +77,16 @@ configuration:
   name: http_request_timeout_sec
   required: false
   type: 0
+- defaultvalue: "true"
+  display: Fetch Security & Compliance Analyzer events
+  name: fetch_security_analyzer_events
+  required: false
+  type: 8
+- defaultvalue: "true"
+  display: Fetch SureBackup job events
+  name: fetch_sure_backup_events
+  required: false
+  type: 8
 - defaultvalue: "10"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
@@ -86,256 +96,282 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- name: max_fetch
-  type: 0
-  defaultvalue: "200"
+- defaultvalue: "200"
+  display: ""
   hidden: true
-description: 'Veeam Backup & Replication REST API allows you to query information about Veeam Backup & Replication entities and perform operations with these entities using HTTP requests and standard HTTP methods.'
-display: 'Veeam Backup & Replication REST API'
+  name: max_fetch
+  required: false
+  type: 0
+- additionalinfo: 'API version and revision used by the Veeam Backup & Replication instance. Supported values for version 12: 1.2-rev0, 1.2-rev1. Supported values for version 13: 1.3-rev0, 1.3-rev1.'
+  defaultvalue: 1.3-rev1
+  display: API Version
+  name: api-version
+  options:
+  - 1.2-rev0
+  - 1.2-rev1
+  - 1.3-rev0
+  - 1.3-rev1
+  - 1.3-rev2
+  required: false
+  type: 15
+description: Veeam Backup & Replication REST API allows you to query information about Veeam Backup & Replication entities and perform operations with these entities using HTTP requests and standard HTTP methods.
+display: Veeam Backup & Replication REST API
 name: VBR REST API
 script:
   commands:
   - arguments:
-    - description: 'Detection date and time, in UTC.'
+    - description: Detection date and time, in UTC.
       name: detectiontimeutc
       required: true
-    - description: 'Machine FQDN.'
+    - description: Machine FQDN.
       name: machine_fqdn
-    - description: 'Machine IPv4 address.'
+      required: false
+    - description: Machine IPv4 address.
       name: machine_ipv4
-    - description: 'Machine IPv6 address.'
+      required: false
+    - description: Machine IPv6 address.
       name: machine_ipv6
     - description: 'Machine BIOS UUID in the 8-4-4-4-12 format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.'
       name: machine_uuid
-    - description: 'Event description.'
+    - description: Event description.
       name: details
       required: true
-    - description: 'Detection engine.'
+    - description: Detection engine.
       name: engine
       required: true
-    description: 'Create Malware Event.'
+    description: Create Malware Event.
     name: veeam-vbr-create-malware-event
   - arguments:
-    - description: 'Number of events to skip.'
+    - description: Number of events to skip.
       name: skip
-    - description: 'Maximum number of events to return.'
+    - defaultValue: "100"
+      description: Maximum number of events to return.
       name: limit
-      defaultValue: "100"
-    - description: 'Sorts events by event meter.'
+    - description: Sorts events by event meter.
       name: orderColumn
-    - description: 'Sorts events in the ascending order by the `orderColumn` meter.'
+    - description: Sorts events in the ascending order by the `orderColumn` meter.
       name: orderAsc
-    - description: 'Filters events by event type.'
+    - description: Filters events by event type.
       name: typeFilter
-    - description: 'Returns events created after the specified time, in UTC.'
+    - description: Returns events created after the specified time, in UTC.
       name: detectedAfterTimeUtcFilter
-    - description: 'Returns events created before the specified time, in UTC.'
+    - description: Returns events created before the specified time, in UTC.
       name: detectedBeforeTimeUtcFilter
-    - description: 'Filters events by backup object ID.'
+    - description: Filters events by backup object ID.
       name: backupObjectIdFilter
-    - description: 'Filters events by state.'
+    - description: Filters events by state.
       name: stateFilter
-    - description: 'Filters events by source type.'
+    - description: Filters events by source type.
       name: sourceFilter
-    - description: 'Filters events by severity.'
+    - description: Filters events by severity.
       name: severityFilter
-    - description: 'Filters events by the `createdBy` pattern. To substitute one or more characters, use the asterisk (*) character at the beginning, at the end, or both.'
+    - description: Filters events by the `createdBy` pattern. To substitute one or more characters, use the asterisk (*) character at the beginning, at the end, or both.
       name: createdByFilter
-    - description: 'Filters events by the `engine` pattern. To substitute one or more characters, use the asterisk (*) character at the beginning, at the end, or both.'
+    - description: Filters events by the `engine` pattern. To substitute one or more characters, use the asterisk (*) character at the beginning, at the end, or both.
       name: engineFilter
-    description: 'Get All Malware Events.'
+    description: Get All Malware Events.
     name: veeam-vbr-get-malware-events
     outputs:
     - contextPath: Veeam.VBR.get_malware_events.data.id
-      description: "Event ID."
+      description: Event ID.
       type: String
     - contextPath: Veeam.VBR.get_malware_events.data.type
-      description: "Event type."
+      description: Event type.
       type: String
     - contextPath: Veeam.VBR.get_malware_events.data.detectionTimeUtc
-      description: "Detection date and time, in UTC."
+      description: Detection date and time, in UTC.
       type: String
     - contextPath: Veeam.VBR.get_malware_events.data.state
-      description: "Event state."
+      description: Event state.
       type: String
     - contextPath: Veeam.VBR.get_malware_events.data.details
-      description: "Event description."
+      description: Event description.
       type: String
     - contextPath: Veeam.VBR.get_malware_events.data.source
-      description: "Event source type."
+      description: Event source type.
       type: String
     - contextPath: Veeam.VBR.get_malware_events.data.severity
-      description: "Malware status."
+      description: Malware status.
       type: String
     - contextPath: Veeam.VBR.get_malware_events.data.createdBy
-      description: "User account created the event."
+      description: User account created the event.
       type: String
     - contextPath: Veeam.VBR.get_malware_events.data.engine
-      description: "Detection engine."
+      description: Detection engine.
+      type: String
+  - arguments: []
+    description: Get All YARA Rules.
+    name: veeam-vbr-get-yara-rules
+    outputs:
+    - contextPath: Veeam.VBR.get_yara_rules.data.fileName
+      description: YARA rule file name.
       type: String
   - arguments:
-    - description: 'Number of repository states to skip.'
+    - description: Number of repository states to skip.
       name: skip
-    - description: 'Maximum number of repository states to return.'
+    - defaultValue: "100"
+      description: Maximum number of repository states to return.
       name: limit
-      defaultValue: "100"
-    - description: 'Sorts repository states by state meter.'
+    - description: Sorts repository states by state meter.
       name: orderColumn
-    - description: 'Sorts repository states in the ascending order by the `orderColumn` meter.'
+    - description: Sorts repository states in the ascending order by the `orderColumn` meter.
       name: orderAsc
-    - description: 'Filters repository states by repository ID.'
+    - description: Filters repository states by repository ID.
       name: idFilter
-    - description: 'Filters repository states by the `nameFilter` pattern. The pattern can match any repository state meter. To substitute one or more characters, use the asterisk (*) character at the beginning, at the end, or both.'
+    - description: Filters repository states by the `nameFilter` pattern. The pattern can match any repository state meter. To substitute one or more characters, use the asterisk (*) character at the beginning, at the end, or both.
       name: nameFilter
-    - description: 'Filters repository states by repository type.'
+    - description: Filters repository states by repository type.
       name: typeFilter
-    - description: 'Filters repository states by repository capacity.'
+    - description: Filters repository states by repository capacity.
       name: capacityFilter
-    - description: 'Filters repository states by repository free space.'
+    - description: Filters repository states by repository free space.
       name: freeSpaceFilter
-    - description: 'Filters repository states by repository used space.'
+    - description: Filters repository states by repository used space.
       name: usedSpaceFilter
-    description: 'Get All Repository States.'
+    description: Get All Repository States.
     name: veeam-vbr-get-repository-states
     outputs:
     - contextPath: Veeam.VBR.get_repository_states.data.id
-      description: "Backup repository ID."
+      description: Backup repository ID.
       type: String
     - contextPath: Veeam.VBR.get_repository_states.data.name
-      description: "Backup repository name."
+      description: Backup repository name.
       type: String
     - contextPath: Veeam.VBR.get_repository_states.data.type
-      description: "Backup repository type."
+      description: Backup repository type.
       type: String
     - contextPath: Veeam.VBR.get_repository_states.data.description
-      description: "Description of the backup repository."
+      description: Description of the backup repository.
       type: String
     - contextPath: Veeam.VBR.get_repository_states.data.capacityGB
-      description: "Repository capacity in GB."
+      description: Repository capacity in GB.
       type: String
     - contextPath: Veeam.VBR.get_repository_states.data.freeGB
-      description: "Repository free space in GB."
+      description: Repository free space in GB.
       type: String
     - contextPath: Veeam.VBR.get_repository_states.data.usedSpaceGB
-      description: "Repository used space in GB."
+      description: Repository used space in GB.
       type: String
     - contextPath: Veeam.VBR.get_repository_states.data.hostId
-      description: "ID of the server that is used as a backup repository."
+      description: ID of the server that is used as a backup repository.
       type: String
     - contextPath: Veeam.VBR.get_repository_states.data.hostName
-      description: "Name of the server that is used as a backup repository."
+      description: Name of the server that is used as a backup repository.
       type: String
     - contextPath: Veeam.VBR.get_repository_states.data.path
-      description: "Path to the folder where backup files are stored."
+      description: Path to the folder where backup files are stored.
       type: String
   - arguments:
-    - description: 'Number of restore points to skip.'
+    - description: Number of restore points to skip.
       name: skip
-    - description: 'Maximum number of restore points to return.'
+    - defaultValue: "100"
+      description: Maximum number of restore points to return.
       name: limit
-      defaultValue: "100"
-    - description: 'Sorts restore points by restore point meter.'
+    - description: Sorts restore points by restore point meter.
       name: orderColumn
-    - description: 'Sorts restore points in the ascending order by the `orderColumn` meter.'
+    - description: Sorts restore points in the ascending order by the `orderColumn` meter.
       name: orderAsc
-    - description: 'Returns restore points created after the specified date and time.'
+    - description: Returns restore points created after the specified date and time.
       name: createdAfterFilter
-    - description: 'Returns restore points created before the specified date and time.'
+    - description: Returns restore points created before the specified date and time.
       name: createdBeforeFilter
-    - description: 'Filters restore points by the `nameFilter` pattern. The pattern can match any restore point meter. To substitute one or more characters, use the asterisk (*) character at the beginning and/or at the end.'
+    - description: Filters restore points by the `nameFilter` pattern. The pattern can match any restore point meter. To substitute one or more characters, use the asterisk (*) character at the beginning and/or at the end.
       name: nameFilter
-    - description: 'Filters restore points by name of the backup object platform.'
+    - description: Filters restore points by name of the backup object platform.
       name: platformNameFilter
-    - description: 'Filters restore points by ID of the backup object platform.'
+    - description: Filters restore points by ID of the backup object platform.
       name: platformIdFilter
-    - description: 'Filters restore points by backup ID.'
+    - description: Filters restore points by backup ID.
       name: backupIdFilter
-    - description: 'Filters restore points by backup object ID.'
+    - description: Filters restore points by backup object ID.
       name: backupObjectIdFilter
-    - description: 'Filters restore points by malware status.'
+    - description: Filters restore points by malware status.
       name: malwareStatusFilter
-    description: 'Get All Restore Points.'
+    description: Get All Restore Points.
     name: veeam-vbr-get-restore-points
     outputs:
     - contextPath: Veeam.VBR.get_restore_points.data.id
-      description: "Restore point ID."
+      description: Restore point ID.
       type: String
     - contextPath: Veeam.VBR.get_restore_points.data.name
-      description: "Object name."
+      description: Object name.
       type: String
     - contextPath: Veeam.VBR.get_restore_points.data.platformId
-      description: "ID of a platform where the object was created."
+      description: ID of a platform where the object was created.
       type: String
     - contextPath: Veeam.VBR.get_restore_points.data.creationTime
-      description: "Date and time when the restore point was created."
+      description: Date and time when the restore point was created.
       type: String
     - contextPath: Veeam.VBR.get_restore_points.data.backupId
-      description: "ID of a backup that contains the restore point."
+      description: ID of a backup that contains the restore point.
       type: String
     - contextPath: Veeam.VBR.get_restore_points.data.platformName
-      description: "Platform name."
+      description: Platform name.
       type: String
     - contextPath: Veeam.VBR.get_restore_points.data.malwareStatus
-      description: "Malware status."
+      description: Malware status.
       type: String
   - arguments:
-    - description: 'ID of the backup object.'
+    - description: ID of the backup object.
       name: id_
       required: true
-    description: 'Get Backup Object.'
+    description: Get Backup Object.
     name: veeam-vbr-get-backup-object
     outputs:
     - contextPath: Veeam.VBR.backup_object.objectId
-      description: "ID of the virtual infrastructure object (mo-ref or ID, depending on the virtualization platform)."
+      description: ID of the virtual infrastructure object (mo-ref or ID, depending on the virtualization platform).
       type: String
     - contextPath: Veeam.VBR.backup_object.viType
-      description: "Type of the VMware vSphere object."
+      description: Type of the VMware vSphere object.
       type: String
     - contextPath: Veeam.VBR.backup_object.path
-      description: "Path to the object."
+      description: Path to the object.
       type: String
     - contextPath: Veeam.VBR.backup_object.id
-      description: "Object ID."
+      description: Object ID.
       type: String
     - contextPath: Veeam.VBR.backup_object.name
-      description: "Object name."
+      description: Object name.
       type: String
     - contextPath: Veeam.VBR.backup_object.type
-      description: "Object type."
+      description: Object type.
       type: String
     - contextPath: Veeam.VBR.backup_object.vcenter_name
-      description: "Name of the vCenter Server."
+      description: Name of the vCenter Server.
+      type: string
+    - contextPath: Veeam.VBR.backup_object.platformName
+      description: Platform type.
       type: string
   - arguments: []
-    description: 'Get Configuration Backup.'
+    description: Get Configuration Backup.
     name: veeam-vbr-get-configuration-backup
     outputs:
     - contextPath: Veeam.VBR.get_configuration_backup.isEnabled
-      description: "If `true`, configuration backup is enabled."
+      description: If `true`, configuration backup is enabled.
       type: String
     - contextPath: Veeam.VBR.get_configuration_backup.backupRepositoryId
-      description: "ID of the backup repository on which the configuration backup is stored."
+      description: ID of the backup repository on which the configuration backup is stored.
       type: String
     - contextPath: Veeam.VBR.get_configuration_backup.restorePointsToKeep
-      description: "Number of restore points to keep in the backup repository."
+      description: Number of restore points to keep in the backup repository.
       type: number
     - contextPath: Veeam.VBR.get_configuration_backup.Schedule
-      description: "Scheduling settings."
+      description: Scheduling settings.
     - contextPath: Veeam.VBR.get_configuration_backup.Encryption
-      description: "Encryption settings."
+      description: Encryption settings.
     - contextPath: Veeam.VBR.get_configuration_backup.LastSuccessfulBackup
-      description: "Last successful backup."
+      description: Last successful backup.
   - arguments:
-    - description: 'If `true`, the cache will be reset for this request. Resetting the cache slows down request processing but allows you to get up-to-date data.'
+    - description: If `true`, the cache will be reset for this request. Resetting the cache slows down request processing but allows you to get up-to-date data.
       name: resetCache
     - description: Server name.
       name: hostname
       required: true
     - description: Number of objects to skip.
       name: skip
-    - description: Maximum number of objects to return.
+    - defaultValue: "100"
+      description: Maximum number of objects to return.
       name: limit
-      defaultValue: "100"
     - description: Filter settings.
       name: filter
     - description: Sorting settings.
@@ -346,131 +382,162 @@ script:
       name: objectName
     - description: Type of the VMware vSphere object.
       name: viType
-    description: 'Get Inventory Objects.'
+    description: Get Inventory Objects.
     name: veeam-vbr-get-inventory-objects
     outputs:
     - contextPath: Veeam.VBR.get_inventory_objects.data.name
-      description: "Name of the VMware vSphere object."
+      description: Name of the VMware vSphere object.
       type: String
     - contextPath: Veeam.VBR.get_inventory_objects.data.type
-      description: "Type of the VMware vSphere object."
+      description: Type of the VMware vSphere object.
       type: String
     - contextPath: Veeam.VBR.get_inventory_objects.data.hostName
-      description: "Name of the VMware vSphere server that hosts the object."
+      description: Name of the VMware vSphere server that hosts the object.
       type: String
     - contextPath: Veeam.VBR.get_inventory_objects.data.objectId
-      description: "ID of the VMware vSphere object. The parameter is required for all VMware vSphere objects except vCenter Servers and standalone ESXi hosts."
+      description: ID of the VMware vSphere object. The parameter is required for all VMware vSphere objects except vCenter Servers and standalone ESXi hosts.
       type: String
     - contextPath: Veeam.VBR.get_inventory_objects.data.urn
-      description: "Object URN."
+      description: Object URN.
       type: String
     - contextPath: Veeam.VBR.get_inventory_objects.data.platform
-      description: "Platform name."
+      description: Platform name.
       type: String
     - contextPath: Veeam.VBR.get_inventory_objects.data.size
-      description: "Object size."
+      description: Object size.
       type: String
   - arguments:
-    - description: 'Session ID.'
+    - description: Session ID.
       name: id_
       required: true
-    description: 'Get Session.'
+    description: Get Session.
     name: veeam-vbr-get-session
     outputs:
     - contextPath: Veeam.VBR.get_session.jobId
-      description: "ID of the job or job related activity."
+      description: ID of the job or job related activity.
       type: String
     - contextPath: Veeam.VBR.get_session.creationTime
-      description: "Date and time when the session was created."
+      description: Date and time when the session was created.
       type: String
     - contextPath: Veeam.VBR.get_session.id
-      description: "Session ID."
+      description: Session ID.
       type: String
     - contextPath: Veeam.VBR.get_session.name
-      description: "Session name."
+      description: Session name.
       type: String
     - contextPath: Veeam.VBR.get_session.sessionType
-      description: "Session type."
+      description: Session type.
       type: String
     - contextPath: Veeam.VBR.get_session.state
-      description: "Session state."
+      description: Session state.
       type: String
     - contextPath: Veeam.VBR.get_session.usn
-      description: "Update sequence number."
+      description: Update sequence number.
       type: String
     - contextPath: Veeam.VBR.get_session.endTime
-      description: "Date and time when the session was ended."
+      description: Date and time when the session was ended.
       type: String
     - contextPath: Veeam.VBR.get_session.progressPercent
-      description: "Progress percentage of the session."
+      description: Progress percentage of the session.
       type: String
     - contextPath: Veeam.VBR.get_session.result
-      description: "Session result."
+      description: Session result.
     - contextPath: Veeam.VBR.get_session.resourceId
-      description: "Resource ID."
+      description: Resource ID.
       type: String
     - contextPath: Veeam.VBR.get_session.resourceReference
-      description: "URI of the resource."
+      description: URI of the resource.
       type: String
     - contextPath: Veeam.VBR.get_session.parentSessionId
-      description: "Parent session ID."
+      description: Parent session ID.
+      type: String
+  - arguments:
+    - description: Session ID.
+      name: id_
+      required: true
+    description: Get Session Logs. Returns log records for the specified session.
+    name: veeam-vbr-get-session-logs
+    outputs:
+    - contextPath: Veeam.VBR.get_session_logs.totalRecords
+      description: Total number of log records.
+      type: Number
+    - contextPath: Veeam.VBR.get_session_logs.records.id
+      description: ID of the log record.
+      type: Number
+    - contextPath: Veeam.VBR.get_session_logs.records.status
+      description: Status of the log record.
+      type: String
+    - contextPath: Veeam.VBR.get_session_logs.records.startTime
+      description: Date and time when the operation was started.
+      type: String
+    - contextPath: Veeam.VBR.get_session_logs.records.updateTime
+      description: Date and time when the log record was updated.
+      type: String
+    - contextPath: Veeam.VBR.get_session_logs.records.title
+      description: Title of the log record.
+      type: String
+    - contextPath: Veeam.VBR.get_session_logs.records.description
+      description: Description of the log record.
+      type: String
+    - contextPath: Veeam.VBR.get_session_logs.records.additionalInfo
+      description: Additional information of the log record.
       type: String
   - arguments: []
-    description: 'Start Configuration Backup.'
+    description: Start Configuration Backup.
     name: veeam-vbr-start-configuration-backup
     outputs:
     - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.jobId
-      description: "ID of the job or job related activity."
+      description: ID of the job or job related activity.
       type: String
     - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.creationTime
-      description: "Date and time when the session was created."
+      description: Date and time when the session was created.
       type: String
     - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.id
-      description: "Session ID."
+      description: Session ID.
       type: String
     - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.name
-      description: "Session name."
+      description: Session name.
       type: String
     - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.sessionType
-      description: "Session type."
+      description: Session type.
       type: String
     - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.state
-      description: "Session state."
+      description: Session state.
       type: String
     - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.usn
-      description: "Update sequence number."
+      description: Update sequence number.
       type: String
     - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.endTime
-      description: "Date and time when the session was ended."
+      description: Date and time when the session was ended.
       type: String
     - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.progressPercent
-      description: "Progress percentage of the session."
+      description: Progress percentage of the session.
       type: String
     - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.resourceId
-      description: "Resource ID."
+      description: Resource ID.
       type: String
     - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.resourceReference
-      description: "URI of the resource."
+      description: URI of the resource.
       type: String
     - contextPath: Veeam.VBR.Configurationbackuphasbeenstarted.parentSessionId
-      description: "Parent session ID."
+      description: Parent session ID.
       type: String
   - arguments:
     - description: Restore point ID.
       name: restorePointId
       required: true
-    - description: 'If `true`, Veeam Backup & Replication restores tags that were assigned to the original VM, and assign them to the restored VM.'
+    - description: If `true`, Veeam Backup & Replication restores tags that were assigned to the original VM, and assign them to the restored VM.
       name: vmTagsRestoreEnabled
-    - description: 'If `true`, Veeam Backup & Replication scans machine data with antivirus software before restoring the machine to the production environment.'
+    - description: If `true`, Veeam Backup & Replication scans machine data with antivirus software before restoring the machine to the production environment.
       name: antivirusScanEnabled
       required: true
-    - description: 'Action that Veeam Backup & Replication takes if the antivirus software finds a threat.'
+    - description: Action that Veeam Backup & Replication takes if the antivirus software finds a threat.
       name: virusDetectionAction
-    - description: 'If `true`, the antivirus continues machine scan after the first malware is found.'
+    - description: If `true`, the antivirus continues machine scan after the first malware is found.
       name: entireVolumeScanEnabled
-    - description: 'If `true`, the restored VM is connected to the network.'
+    - description: If `true`, the restored VM is connected to the network.
       name: nicsEnabled
-    - description: 'If `true`, Veeam Backup & Replication powers on the restored VM on the target host.'
+    - description: If `true`, Veeam Backup & Replication powers on the restored VM on the target host.
       name: powerUp
     - description: Reason for restoring the VM.
       name: reason
@@ -493,84 +560,1041 @@ script:
     - description: BIOS UUID policy for the restored VM.
       name: biosUuidPolicy
       required: true
-    - description: 'If `true`, redo logs are redirected to `cacheDatastore`.'
+    - description: If `true`, redo logs are redirected to `cacheDatastore`.
       name: redirectEnabled
       required: true
-    - description: 'If `true`, Veeam Backup & Replication overwrites the existing VM that has the same name.'
+    - description: If `true`, Veeam Backup & Replication overwrites the existing VM that has the same name.
       name: overwrite
-    description: 'Start Customized VM Instant Recovery.'
+    description: Start Customized VM Instant Recovery.
     name: veeam-vbr-start-instant-recovery-customized
     outputs:
     - contextPath: Veeam.VBR.start_recovery.id
-      description: "Session ID."
+      description: Session ID.
       type: string
     - contextPath: Veeam.VBR.start_recovery.name
-      description: "Session name."
+      description: Session name.
       type: string
     - contextPath: Veeam.VBR.start_recovery.jobId
-      description: "ID of the job or job related activity."
+      description: ID of the job or job related activity.
       type: string
     - contextPath: Veeam.VBR.start_recovery.sessionType
-      description: "Session type."
+      description: Session type.
       type: string
     - contextPath: Veeam.VBR.start_recovery.creationTime
-      description: "Date and time when the session was created."
+      description: Date and time when the session was created.
       type: string
     - contextPath: Veeam.VBR.start_recovery.state
-      description: "Session state."
+      description: Session state.
       type: string
     - contextPath: Veeam.VBR.start_recovery.endTime
-      description: "Date and time when the session was ended."
+      description: Date and time when the session was ended.
       type: string
     - contextPath: Veeam.VBR.start_recovery.usn
-      description: "Update sequence number."
+      description: Update sequence number.
       type: string
   - arguments:
     - description: Restore point ID.
       name: restorePointId
       required: true
-    - description: 'If `true`, Veeam Backup & Replication restores tags that were assigned to the original VM, and assign them to the restored VM.'
+    - description: If `true`, Veeam Backup & Replication restores tags that were assigned to the original VM, and assign them to the restored VM.
       name: vmTagsRestoreEnabled
-    - description: 'If `true`, Veeam Backup & Replication scans machine data with antivirus software before restoring the machine to the production environment.'
+    - description: If `true`, Veeam Backup & Replication scans machine data with antivirus software before restoring the machine to the production environment.
       name: antivirusScanEnabled
       required: true
-    - description: 'Action that Veeam Backup & Replication takes if the antivirus software finds a threat.'
+    - description: Action that Veeam Backup & Replication takes if the antivirus software finds a threat.
       name: virusDetectionAction
-    - description: 'If `true`, the antivirus continues machine scan after the first malware is found.'
+    - description: If `true`, the antivirus continues machine scan after the first malware is found.
       name: entireVolumeScanEnabled
-    - description: 'If `true`, the restored VM is connected to the network.'
+    - description: If `true`, the restored VM is connected to the network.
       name: nicsEnabled
-    - description: 'If `true`, Veeam Backup & Replication powers on the restored VM on the target host.'
+    - description: If `true`, Veeam Backup & Replication powers on the restored VM on the target host.
       name: powerUp
     - description: Reason for restoring the VM.
       name: reason
-    description: 'Start VM Instant Recovery to Original Location.'
+    description: Start VM Instant Recovery to Original Location.
     name: veeam-vbr-start-instant-recovery
     outputs:
     - contextPath: Veeam.VBR.start_recovery.id
-      description: "Session ID."
+      description: Session ID.
       type: string
     - contextPath: Veeam.VBR.start_recovery.name
-      description: "Session name."
+      description: Session name.
       type: string
     - contextPath: Veeam.VBR.start_recovery.jobId
-      description: "ID of the job or job related activity."
+      description: ID of the job or job related activity.
       type: string
     - contextPath: Veeam.VBR.start_recovery.sessionType
-      description: "Session type."
+      description: Session type.
       type: string
     - contextPath: Veeam.VBR.start_recovery.creationTime
-      description: "Date and time when the session was created."
+      description: Date and time when the session was created.
       type: string
     - contextPath: Veeam.VBR.start_recovery.state
-      description: "Session state."
+      description: Session state.
       type: string
     - contextPath: Veeam.VBR.start_recovery.endTime
-      description: "Date and time when the session was ended."
+      description: Date and time when the session was ended.
       type: string
     - contextPath: Veeam.VBR.start_recovery.usn
-      description: "Update sequence number."
+      description: Update sequence number.
       type: string
+  - arguments:
+    - description: Restore point ID.
+      name: restorePointId
+      required: true
+    - description: If `true`, Veeam Backup & Replication scans machine data with antivirus software before restoring the machine to the production environment.
+      name: antivirusScanEnabled
+      required: true
+    - auto: PREDEFINED
+      description: Action that Veeam Backup & Replication takes if the antivirus software finds a threat.
+      name: virusDetectionAction
+      predefined:
+      - DisableNetwork
+      - AbortRecovery
+      - Ignore
+    - description: If `true`, the antivirus continues machine scan after the first malware is found.
+      name: entireVolumeScanEnabled
+    - description: If `true`, Veeam Backup & Replication powers on the restored VM on the target host.
+      name: powerUp
+    - description: Reason for restoring the VM.
+      name: reason
+    description: Start Instant Recovery of Microsoft Hyper-V VM to original location.
+    name: veeam-vbr-start-instant-recovery-hyperv-vm
+    outputs:
+    - contextPath: Veeam.VBR.start_hv_recovery.id
+      description: Session ID.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.name
+      description: Session name.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.jobId
+      description: ID of the job or job related activity.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.sessionType
+      description: Session type.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.creationTime
+      description: Date and time when the session was created.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.endTime
+      description: Date and time when the session was ended.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.state
+      description: Session state.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.progressPercent
+      description: Progress percentage of the session.
+      type: Number
+    - contextPath: Veeam.VBR.start_hv_recovery.result
+      description: Session result.
+    - contextPath: Veeam.VBR.start_hv_recovery.resourceId
+      description: ID of the resource.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.resourceReference
+      description: URI of the resource.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.parentSessionId
+      description: ID of the parent session.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.usn
+      description: Update sequence number.
+      type: Number
+    - contextPath: Veeam.VBR.start_hv_recovery.platformName
+      description: Platform type.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.platformId
+      description: ID of the resource platform.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.initiatedBy
+      description: Name of the user who initiated the session.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.relatedSessionId
+      description: ID of the related session.
+      type: String
+  - arguments:
+    - description: Restore point ID.
+      name: restorePointId
+      required: true
+    - description: If `true`, Veeam Backup & Replication scans machine data with antivirus software before restoring the machine to the production environment.
+      name: antivirusScanEnabled
+      required: true
+    - auto: PREDEFINED
+      description: Action that Veeam Backup & Replication takes if the antivirus software finds a threat.
+      name: virusDetectionAction
+      predefined:
+      - DisableNetwork
+      - AbortRecovery
+      - Ignore
+    - description: If `true`, the antivirus continues machine scan after the first malware is found.
+      name: entireVolumeScanEnabled
+    - description: If `true`, Veeam Backup & Replication powers on the restored VM on the target host.
+      name: powerUp
+    - description: Reason for restoring the VM.
+      name: reason
+    - description: Name of the Microsoft Hyper-V host.
+      name: hostName
+    - description: ID of the Microsoft Hyper-V host object.
+      name: hostObjectId
+    - description: Name of the restored VM.
+      name: vmName
+    - description: If `true`, the BIOS UUID of the source VM is used.
+      name: preserveUUID
+    - description: If `true`, the restored VM is configured as a cluster resource.
+      name: registerAsClusterResource
+    - description: If `true`, the existing VM with the same name is overwritten.
+      name: overwriteExistingVm
+    - description: If `true`, the existing VM disks with the same names are overwritten.
+      name: overwriteExistingDisks
+    description: Start Instant Recovery of Microsoft Hyper-V VM to a customized location.
+    name: veeam-vbr-start-instant-recovery-hyperv-vm-customized
+    outputs:
+    - contextPath: Veeam.VBR.start_hv_recovery.id
+      description: Session ID.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.name
+      description: Session name.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.jobId
+      description: ID of the job or job related activity.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.sessionType
+      description: Session type.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.creationTime
+      description: Date and time when the session was created.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.endTime
+      description: Date and time when the session was ended.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.state
+      description: Session state.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.progressPercent
+      description: Progress percentage of the session.
+      type: Number
+    - contextPath: Veeam.VBR.start_hv_recovery.result
+      description: Session result.
+    - contextPath: Veeam.VBR.start_hv_recovery.resourceId
+      description: ID of the resource.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.resourceReference
+      description: URI of the resource.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.parentSessionId
+      description: ID of the parent session.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.usn
+      description: Update sequence number.
+      type: Number
+    - contextPath: Veeam.VBR.start_hv_recovery.platformName
+      description: Platform type.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.platformId
+      description: ID of the resource platform.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.initiatedBy
+      description: Name of the user who initiated the session.
+      type: String
+    - contextPath: Veeam.VBR.start_hv_recovery.relatedSessionId
+      description: ID of the related session.
+      type: String
+    compliantpolicies:
+    - EndPoint Isolation
+  - arguments: []
+    description: Starts the Security & Compliance Analyzer scan. The command creates a new session and returns its details.
+    name: veeam-vbr-start-security-analyzer
+    outputs:
+    - contextPath: Veeam.VBR.start_security_analyzer.id
+      description: ID of the session.
+      type: String
+    - contextPath: Veeam.VBR.start_security_analyzer.name
+      description: Name of the session.
+      type: String
+    - contextPath: Veeam.VBR.start_security_analyzer.jobId
+      description: ID of the job or job related activity.
+      type: String
+    - contextPath: Veeam.VBR.start_security_analyzer.sessionType
+      description: Type of the session.
+      type: String
+    - contextPath: Veeam.VBR.start_security_analyzer.creationTime
+      description: Date and time when the session was created.
+      type: String
+    - contextPath: Veeam.VBR.start_security_analyzer.endTime
+      description: Date and time when the session was ended.
+      type: String
+    - contextPath: Veeam.VBR.start_security_analyzer.state
+      description: State of the session.
+      type: String
+    - contextPath: Veeam.VBR.start_security_analyzer.progressPercent
+      description: Progress percentage of the session.
+      type: Number
+    - contextPath: Veeam.VBR.start_security_analyzer.result
+      description: Session result.
+    - contextPath: Veeam.VBR.start_security_analyzer.usn
+      description: Update sequence number.
+      type: Number
+    - contextPath: Veeam.VBR.start_security_analyzer.initiatedBy
+      description: Name of the user who initiated the session.
+      type: String
+  - arguments: []
+    description: Get Security & Compliance Analyzer Results.
+    name: veeam-vbr-get-security-analyzer-best-practices
+    outputs:
+    - contextPath: Veeam.VBR.security_analyzer_best_practices.items.id
+      description: Best practice ID.
+      type: string
+    - contextPath: Veeam.VBR.security_analyzer_best_practices.items.status
+      description: Best practice status.
+      type: string
+    - contextPath: Veeam.VBR.security_analyzer_best_practices.items.bestPractice
+      description: Best practice name.
+      type: string
+    - contextPath: Veeam.VBR.security_analyzer_best_practices.items.note
+      description: Note that specifies the reason for suppressing the best practice compliance status (excluding it from the analyzer checklist).
+      type: string
+  - arguments: []
+    description: Get Security & Compliance Analyzer last run details.
+    name: veeam-vbr-get-security-analyzer-last-run
+    outputs:
+    - contextPath: Veeam.VBR.security_analyzer_last_run.id
+      description: ID of the session.
+      type: String
+    - contextPath: Veeam.VBR.security_analyzer_last_run.name
+      description: Name of the session.
+      type: String
+    - contextPath: Veeam.VBR.security_analyzer_last_run.jobId
+      description: ID of the job or job related activity.
+      type: String
+    - contextPath: Veeam.VBR.security_analyzer_last_run.sessionType
+      description: Type of the session.
+      type: String
+    - contextPath: Veeam.VBR.security_analyzer_last_run.creationTime
+      description: Date and time when the session was created.
+      type: String
+    - contextPath: Veeam.VBR.security_analyzer_last_run.endTime
+      description: Date and time when the session was ended.
+      type: String
+    - contextPath: Veeam.VBR.security_analyzer_last_run.state
+      description: State of the session.
+      type: String
+    - contextPath: Veeam.VBR.security_analyzer_last_run.progressPercent
+      description: Progress percentage of the session.
+      type: Number
+    - contextPath: Veeam.VBR.security_analyzer_last_run.result
+      description: Session result.
+    - contextPath: Veeam.VBR.security_analyzer_last_run.usn
+      description: Update sequence number.
+      type: Number
+    - contextPath: Veeam.VBR.security_analyzer_last_run.initiatedBy
+      description: Name of the user who initiated the session.
+      type: String
+  - arguments:
+    - description: Number of job states to skip.
+      name: skip
+    - defaultValue: "100"
+      description: Maximum number of job states to return.
+      name: limit
+    - description: Sorts job states by one of the state parameters.
+      name: orderColumn
+    - description: Sorts job states in the ascending order by the `orderColumn` parameter.
+      name: orderAsc
+    - description: Filters job states by the job name pattern. To substitute one or more characters, use the asterisk (*) character at the beginning, at the end, or both.
+      name: nameFilter
+    - description: Filters job states by the job type (e.g., SureBackup).
+      name: typeFilter
+    - description: Filters job states by the job status.
+      name: statusFilter
+    - description: Filters job states by the last job result.
+      name: lastResultFilter
+    - description: Filters job states by the job ID.
+      name: idFilter
+    description: Get All Job States.
+    name: veeam-vbr-get-job-states
+    outputs:
+    - contextPath: Veeam.VBR.get_job_states.data.id
+      description: Job ID.
+      type: String
+    - contextPath: Veeam.VBR.get_job_states.data.name
+      description: Name of the job.
+      type: String
+    - contextPath: Veeam.VBR.get_job_states.data.type
+      description: Type of the job.
+      type: String
+    - contextPath: Veeam.VBR.get_job_states.data.status
+      description: Current status of the job.
+      type: String
+    - contextPath: Veeam.VBR.get_job_states.data.lastResult
+      description: Result status.
+      type: String
+    - contextPath: Veeam.VBR.get_job_states.data.lastRun
+      description: Date and time of the last run of the job.
+      type: String
+    - contextPath: Veeam.VBR.get_job_states.data.nextRun
+      description: Date and time of the next run of the job.
+      type: String
+    - contextPath: Veeam.VBR.get_job_states.data.description
+      description: Description of the job.
+      type: String
+    - contextPath: Veeam.VBR.get_job_states.data.workload
+      description: Workload which the job must process.
+      type: String
+    - contextPath: Veeam.VBR.get_job_states.data.objectsCount
+      description: Number of objects processed by the job.
+      type: String
+    - contextPath: Veeam.VBR.get_job_states.data.highPriority
+      description: If true, the resource scheduler prioritized this job higher than other similar jobs and allocated resources to it in the first place.
+      type: String
+    - contextPath: Veeam.VBR.get_job_states.data.progressPercent
+      description: Progress percentage of the session.
+      type: String
+    - contextPath: Veeam.VBR.get_job_states.data.nextRunPolicy
+      description: Note in case the job is disabled, not scheduled, or configured to run after another job.
+      type: String
+    - contextPath: Veeam.VBR.get_job_states.data.repositoryId
+      description: Backup repository ID.
+      type: String
+    - contextPath: Veeam.VBR.get_job_states.data.repositoryName
+      description: Name of the backup repository.
+      type: String
+    - contextPath: Veeam.VBR.get_job_states.data.sessionId
+      description: ID of the last job session.
+      type: String
+    - contextPath: Veeam.VBR.get_job_states.data.sessionProgress
+      description: Details on the progress of the session.
+      type: String
+    - contextPath: Veeam.VBR.get_job_states.data.runAfterJob
+      description: Specifies that the job will run after another job.
+      type: String
+    - contextPath: Veeam.VBR.get_job_states.data.backupCopyMode
+      description: Copy mode of backup copy job.
+      type: String
+    - contextPath: Veeam.VBR.get_job_states.data.isStorageSnapshot
+      description: If true, the target for the job is snapshot storage.
+      type: String
+  - arguments:
+    - description: Name of the VMware vSphere object.
+      name: name
+      required: true
+    - description: Platform type.
+      name: platform
+      required: true
+    - description: Type of the VMware vSphere object.
+      name: type
+      required: true
+    - description: Name of the VMware vSphere server that hosts the object.
+      name: hostName
+      required: true
+    - description: ID of the VMware vSphere object. Required for all VMware vSphere objects except vCenter Servers and standalone ESXi hosts.
+      name: objectId
+    - description: Uniform Resource Name (URN) of the object.
+      name: urn
+    - description: Object size.
+      name: size
+    - description: Indicates whether the VMware vSphere object is enabled or disabled.
+      name: isEnabled
+    description: Start vSphere Quick Backup.
+    name: veeam-vbr-start-vsphere-quick-backup
+    outputs:
+    - contextPath: Veeam.VBR.start_vsphere_quick_backup.id
+      description: ID of the session.
+      type: String
+    - contextPath: Veeam.VBR.start_vsphere_quick_backup.name
+      description: Name of the session.
+      type: String
+    - contextPath: Veeam.VBR.start_vsphere_quick_backup.sessionType
+      description: Type of the session.
+      type: String
+    - contextPath: Veeam.VBR.start_vsphere_quick_backup.state
+      description: State of the session.
+      type: String
+    - contextPath: Veeam.VBR.start_vsphere_quick_backup.jobId
+      description: ID of the job or job related activity.
+      type: String
+    - contextPath: Veeam.VBR.start_vsphere_quick_backup.creationTime
+      description: Date and time when the session was created.
+      type: String
+    - contextPath: Veeam.VBR.start_vsphere_quick_backup.endTime
+      description: Date and time when the session was ended.
+      type: String
+    - contextPath: Veeam.VBR.start_vsphere_quick_backup.progressPercent
+      description: Progress percentage of the session.
+      type: String
+    - contextPath: Veeam.VBR.start_vsphere_quick_backup.usn
+      description: Update sequence number.
+      type: String
+    - contextPath: Veeam.VBR.start_vsphere_quick_backup.resourceId
+      description: ID of the resource.
+      type: String
+    - contextPath: Veeam.VBR.start_vsphere_quick_backup.resourceReference
+      description: URI of the resource.
+      type: String
+    - contextPath: Veeam.VBR.start_vsphere_quick_backup.parentSessionId
+      description: ID of the parent session.
+      type: String
+    - contextPath: Veeam.VBR.start_vsphere_quick_backup.platformName
+      description: Platform type.
+      type: String
+    - contextPath: Veeam.VBR.start_vsphere_quick_backup.platformId
+      description: ID of the resource platform.
+      type: String
+    - contextPath: Veeam.VBR.start_vsphere_quick_backup.initiatedBy
+      description: Name of the user that initiated the session.
+      type: String
+    - contextPath: Veeam.VBR.start_vsphere_quick_backup.result
+      description: Session result.
+    compliantpolicies:
+    - EndPoint Isolation
+  - arguments:
+    - description: Number of authorization events to skip.
+      name: skip
+    - defaultValue: "100"
+      description: Maximum number of authorization events to return.
+      name: limit
+    - description: Sorts authorization events by one of the authorization events parameters.
+      name: orderColumn
+    - description: If true, sorts authorization events in the ascending order by the `orderColumn` parameter.
+      name: orderAsc
+    - description: Filters authorization events by the `nameFilter` pattern. To substitute one or more characters, use the asterisk (*) character at the beginning, at the end, or both.
+      name: nameFilter
+    - description: Returns authorization events that are created after the specified date and time.
+      name: createdAfterFilter
+    - description: Returns authorization events that are created before the specified date and time.
+      name: createdBeforeFilter
+    - description: Returns authorization events that are processed after the specified date and time.
+      name: processedAfterFilter
+    - description: Returns authorization events that are processed before the specified date and time.
+      name: processedBeforeFilter
+    - description: Filters authorization events by state.
+      name: stateFilter
+    - description: Filters authorization events created by the specified user.
+      name: createdByFilter
+    - description: Filters authorization events processed by the specified user.
+      name: processedByFilter
+    - description: Returns authorization events that expire before the specified date and time.
+      name: expireBeforeFilter
+    - description: Returns authorization events that expire after the specified date and time.
+      name: expireAfterFilter
+    description: Get All Authorization Events.
+    name: veeam-vbr-get-authorization-events
+    outputs:
+    - contextPath: Veeam.VBR.get_authorization_events.data.id
+      description: Event ID.
+      type: String
+    - contextPath: Veeam.VBR.get_authorization_events.data.name
+      description: Event name.
+      type: String
+    - contextPath: Veeam.VBR.get_authorization_events.data.state
+      description: Event state.
+      type: String
+    - contextPath: Veeam.VBR.get_authorization_events.data.creationTime
+      description: Date and time when the event was created.
+      type: String
+    - contextPath: Veeam.VBR.get_authorization_events.data.processedTime
+      description: Date and time when the event was processed.
+      type: String
+    - contextPath: Veeam.VBR.get_authorization_events.data.expirationTime
+      description: Date and time when the event expires.
+      type: String
+    - contextPath: Veeam.VBR.get_authorization_events.data.createdBy
+      description: User that initiated the event.
+      type: String
+    - contextPath: Veeam.VBR.get_authorization_events.data.processedBy
+      description: User that processed the event.
+      type: String
+    - contextPath: Veeam.VBR.get_authorization_events.data.description
+      description: Event description.
+      type: String
+  - arguments:
+    - description: ID of the backup.
+      name: backupId
+      required: true
+    - description: ID of the backup object.
+      name: backupObjectId
+      required: true
+    - auto: PREDEFINED
+      description: Backup scan mode.
+      name: scanMode
+      predefined:
+      - MostRecent
+      - AllInInterval
+      - FirstInInterval
+      required: true
+    - description: If true, the selected backup is scanned with antivirus software.
+      name: useAntivirusEngine
+      required: true
+    - description: If true, the selected backup is scanned with the specified YARA rule.
+      name: useYaraRule
+      required: true
+    - description: YARA rule file name.
+      name: yaraRule
+    - description: If true, the backup scan will process restore points until the most recent one.
+      name: useMostRecentPoint
+      required: true
+    - description: The backup scan will process restore points that were created starting from this date and time.
+      name: startDate
+    - description: If true, the backup scan will process restore points until the oldest one.
+      name: useOldestPoint
+      required: true
+    - description: The backup scan will proces restore points that were created by this date and time.
+      name: endDate
+    - description: If true, the backup scan will continue even after it finds affected restore points.
+      name: continueScan
+    description: Starts a Scan Backup session.
+    name: veeam-vbr-start-malware-backup-scan
+    outputs:
+    - contextPath: Veeam.VBR.start_malware_backup_scan.id
+      description: ID of the session.
+      type: String
+    - contextPath: Veeam.VBR.start_malware_backup_scan.name
+      description: Name of the session.
+      type: String
+    - contextPath: Veeam.VBR.start_malware_backup_scan.jobId
+      description: ID of the job or job related activity.
+      type: String
+    - contextPath: Veeam.VBR.start_malware_backup_scan.sessionType
+      description: Type of the session.
+      type: String
+    - contextPath: Veeam.VBR.start_malware_backup_scan.state
+      description: State of the session.
+      type: String
+    - contextPath: Veeam.VBR.start_malware_backup_scan.creationTime
+      description: Date and time when the session was created.
+      type: String
+    - contextPath: Veeam.VBR.start_malware_backup_scan.endTime
+      description: Date and time when the session was ended.
+      type: String
+    - contextPath: Veeam.VBR.start_malware_backup_scan.progressPercent
+      description: Progress percentage of the session.
+      type: String
+    - contextPath: Veeam.VBR.start_malware_backup_scan.result
+      description: Session result.
+    - contextPath: Veeam.VBR.start_malware_backup_scan.resourceId
+      description: ID of the resource.
+      type: String
+    - contextPath: Veeam.VBR.start_malware_backup_scan.resourceReference
+      description: URI of the resource.
+      type: String
+    - contextPath: Veeam.VBR.start_malware_backup_scan.parentSessionId
+      description: ID of the parent session.
+      type: String
+    - contextPath: Veeam.VBR.start_malware_backup_scan.usn
+      description: Update sequence number.
+      type: String
+    - contextPath: Veeam.VBR.start_malware_backup_scan.platformName
+      description: Platform type.
+      type: String
+    - contextPath: Veeam.VBR.start_malware_backup_scan.platformId
+      description: ID of the resource platform.
+      type: String
+  - arguments:
+    - description: ID of a Microsoft Entra ID tenant backup.
+      name: backupId
+      required: true
+    description: Mounts a Microsoft Entra ID tenant from its backup and starts a mount session required for restore.
+    name: veeam-vbr-mount-entra-id-tenant
+    outputs:
+    - contextPath: Veeam.VBR.mount_entra_id_tenant.sessionId
+      description: Mount session ID.
+      type: String
+    - contextPath: Veeam.VBR.mount_entra_id_tenant.sourceProperties.backupId
+      description: ID of a Microsoft Entra ID tenant backup.
+      type: String
+    - contextPath: Veeam.VBR.mount_entra_id_tenant.sourceProperties.tenantId
+      description: Tenant ID assigned by Microsoft Entra ID.
+      type: String
+    - contextPath: Veeam.VBR.mount_entra_id_tenant.sourceProperties.tenantName
+      description: Microsoft Entra ID tenant name.
+      type: String
+  - arguments:
+    - description: Mount session ID.
+      name: sessionId
+      required: true
+    - description: If true, Veeam Backup & Replication will produce a new restore point for those VMs that have already been processed and for VMs that are being processed at the moment.
+      name: gracefulStop
+    description: Stops the mount session for a Microsoft Entra ID tenant.
+    name: veeam-vbr-unmount-entra-id-tenant
+    outputs:
+    - contextPath: Veeam.VBR.unmount_entra_id_tenant.id
+      description: ID of the session.
+      type: String
+    - contextPath: Veeam.VBR.unmount_entra_id_tenant.name
+      description: Name of the session.
+      type: String
+    - contextPath: Veeam.VBR.unmount_entra_id_tenant.jobId
+      description: ID of the job or job related activity.
+      type: String
+    - contextPath: Veeam.VBR.unmount_entra_id_tenant.sessionType
+      description: Type of the session.
+      type: String
+    - contextPath: Veeam.VBR.unmount_entra_id_tenant.state
+      description: State of the session.
+      type: String
+    - contextPath: Veeam.VBR.unmount_entra_id_tenant.creationTime
+      description: Date and time when the session was created.
+      type: String
+    - contextPath: Veeam.VBR.unmount_entra_id_tenant.endTime
+      description: Date and time when the session was ended.
+      type: String
+    - contextPath: Veeam.VBR.unmount_entra_id_tenant.progressPercent
+      description: Progress percentage of the session.
+      type: String
+    - contextPath: Veeam.VBR.unmount_entra_id_tenant.result
+      description: Session result.
+    - contextPath: Veeam.VBR.unmount_entra_id_tenant.resourceId
+      description: ID of the resource.
+      type: String
+    - contextPath: Veeam.VBR.unmount_entra_id_tenant.resourceReference
+      description: URI of the resource.
+      type: String
+    - contextPath: Veeam.VBR.unmount_entra_id_tenant.parentSessionId
+      description: ID of the parent session.
+      type: String
+    - contextPath: Veeam.VBR.unmount_entra_id_tenant.usn
+      description: Update sequence number.
+      type: String
+    - contextPath: Veeam.VBR.unmount_entra_id_tenant.platformName
+      description: Platform type.
+      type: String
+    - contextPath: Veeam.VBR.unmount_entra_id_tenant.platformId
+      description: ID of the resource platform.
+      type: String
+  - arguments:
+    - description: Backup ID.
+      name: backupId
+      required: true
+    - auto: PREDEFINED
+      description: Item type.
+      name: type
+      predefined:
+      - User
+      - Group
+      - AdministrativeUnit
+      - Role
+      - Application
+      required: true
+    - description: Number of items to skip.
+      name: skip
+    - defaultValue: "100"
+      description: Maximum number of items to return.
+      name: limit
+    - description: Filter by user display name.
+      name: displayName
+    - description: Filter by user email address.
+      name: mailAddress
+    - description: JSON object specifying sorting options. Must include "property" and "direction" fields.
+      name: sorting
+    description: Get Microsoft Entra ID Items. Browses Microsoft Entra ID items available in a backup.
+    name: veeam-vbr-get-entra-id-items
+    outputs:
+    - contextPath: Veeam.VBR.get_entra_id_items.data.id
+      description: Item ID.
+      type: String
+    - contextPath: Veeam.VBR.get_entra_id_items.data.displayName
+      description: Item display name.
+      type: String
+    - contextPath: Veeam.VBR.get_entra_id_items.data.restorePointId
+      description: Restore point ID.
+      type: String
+    - contextPath: Veeam.VBR.get_entra_id_items.data.restorePointDate
+      description: Restore point date and time.
+      type: String
+    - contextPath: Veeam.VBR.get_entra_id_items.data.type
+      description: Item type.
+      type: String
+    - contextPath: Veeam.VBR.get_entra_id_items.data.mailAddress
+      description: User email address.
+      type: String
+    - contextPath: Veeam.VBR.get_entra_id_items.data.userName
+      description: User principal name.
+      type: String
+    - contextPath: Veeam.VBR.get_entra_id_items.data.userType
+      description: User type.
+      type: String
+    - contextPath: Veeam.VBR.get_entra_id_items.data.employeeType
+      description: Employee type.
+      type: String
+    - contextPath: Veeam.VBR.get_entra_id_items.data.accountEnabled
+      description: If true, the user account is enabled.
+      type: Boolean
+    - contextPath: Veeam.VBR.get_entra_id_items.data.companyName
+      description: Company name.
+      type: String
+    - contextPath: Veeam.VBR.get_entra_id_items.data.creationType
+      description: Creation type.
+      type: String
+    - contextPath: Veeam.VBR.get_entra_id_items.data.department
+      description: Company department.
+      type: String
+    - contextPath: Veeam.VBR.get_entra_id_items.data.country
+      description: Country or region.
+      type: String
+    - contextPath: Veeam.VBR.get_entra_id_items.data.jobTitle
+      description: Job title.
+      type: String
+    - contextPath: Veeam.VBR.get_entra_id_items.data.officeLocation
+      description: Office location.
+      type: String
+  - arguments:
+    - description: Backup ID.
+      name: backupId
+      required: true
+    - description: Item ID.
+      name: itemId
+      required: true
+    - description: Number of restore points to skip.
+      name: skip
+    - defaultValue: "100"
+      description: Maximum number of restore points to return.
+      name: limit
+    - description: JSON object specifying sorting options. "property" must be "creationTime". "direction" can be "ascending" or "descending".
+      name: sorting
+    description: Get Restore Points of Microsoft Entra ID Item.
+    name: veeam-vbr-get-entra-id-item-restore-points
+    outputs:
+    - contextPath: Veeam.VBR.get_entra_id_item_restore_points.data.id
+      description: Restore point ID.
+      type: String
+    - contextPath: Veeam.VBR.get_entra_id_item_restore_points.data.creationTime
+      description: Date and time when the restore point was created.
+      type: String
+  - arguments:
+    - description: Mount session ID.
+      name: sessionId
+      required: true
+    - description: ID of Microsoft Entra ID item.
+      name: itemId
+      required: true
+    - auto: PREDEFINED
+      description: Item type.
+      name: itemType
+      predefined:
+      - User
+      - Group
+      - AdminUnit
+      - Role
+      - Application
+      required: true
+    - description: ID of an earlier restore point.
+      name: oldRestorePointId
+      required: true
+    - description: ID of a later restore point. If not specified, the item from the earlier restore point will be compared to the item in production.
+      name: newRestorePointId
+    - description: If true, both changed and unchanged item properties are returned. Otherwise, only changed ones.
+      name: showUnchangedAttributes
+    - description: If true, the mount session cache will be reset and new data will be obtained from Microsoft Entra ID. Only used when comparing to production (newRestorePointId not specified).
+      name: reloadCache
+    description: Compare Microsoft Entra ID Item Properties between restore points or production.
+    name: veeam-vbr-compare-entra-id-item-properties
+    outputs:
+    - contextPath: Veeam.VBR.compare_entra_id_item_properties.existsInOldRestorePoint
+      description: If true, the item exists in the earlier restore point.
+      type: Boolean
+    - contextPath: Veeam.VBR.compare_entra_id_item_properties.existsInNewRestorePoint
+      description: If true, the item exists in the later restore point.
+      type: Boolean
+    - contextPath: Veeam.VBR.compare_entra_id_item_properties.properties.propertyName
+      description: Property name.
+      type: String
+    - contextPath: Veeam.VBR.compare_entra_id_item_properties.properties.oldValue
+      description: Property value from the earlier restore point.
+      type: String
+    - contextPath: Veeam.VBR.compare_entra_id_item_properties.properties.newValue
+      description: Property value from the later restore point.
+      type: String
+    - contextPath: Veeam.VBR.compare_entra_id_item_properties.properties.readOnly
+      description: If true, the value is read-only.
+      type: Boolean
+    - contextPath: Veeam.VBR.compare_entra_id_item_properties.references.referenceType
+      description: Reference type.
+      type: String
+    - contextPath: Veeam.VBR.compare_entra_id_item_properties.references.referenceTypeDisplayName
+      description: Display name of the reference type.
+      type: String
+    - contextPath: Veeam.VBR.compare_entra_id_item_properties.references.values
+      description: Array of values.
+    - contextPath: Veeam.VBR.compare_entra_id_item_properties.cacheTimestamp
+      description: Date and time the mount session cache was last updated.
+      type: String
+  - arguments:
+    - description: Restore point ID. You can use restore points from backups and snapshot replicas.
+      name: restorePointId
+      required: true
+    - description: Comma-separated list of IP addresses of target servers that are allowed to access the iSCSI target server (mount server).
+      name: allowedIps
+      required: true
+    - description: Comma-separated list of disk names.
+      name: diskNames
+    - description: Mount server ID.
+      name: mountHostId
+    description: Start Disk Publishing. Publishes disk content from a restore point via the Data Integration API using ISCSITarget mount mode.
+    name: veeam-vbr-start-disk-publishing
+    outputs:
+    - contextPath: Veeam.VBR.start_disk_publishing.id
+      description: Session ID.
+      type: String
+    - contextPath: Veeam.VBR.start_disk_publishing.name
+      description: Session name.
+      type: String
+    - contextPath: Veeam.VBR.start_disk_publishing.sessionType
+      description: Session type.
+      type: String
+    - contextPath: Veeam.VBR.start_disk_publishing.state
+      description: Session state.
+      type: String
+    - contextPath: Veeam.VBR.start_disk_publishing.jobId
+      description: ID of the job or job related activity.
+      type: String
+    - contextPath: Veeam.VBR.start_disk_publishing.creationTime
+      description: Date and time when the session was created.
+      type: String
+    - contextPath: Veeam.VBR.start_disk_publishing.endTime
+      description: Date and time when the session was ended.
+      type: String
+    - contextPath: Veeam.VBR.start_disk_publishing.progressPercent
+      description: Progress percentage of the session.
+      type: Number
+    - contextPath: Veeam.VBR.start_disk_publishing.result
+      description: Session result.
+    - contextPath: Veeam.VBR.start_disk_publishing.resourceId
+      description: ID of the resource.
+      type: String
+    - contextPath: Veeam.VBR.start_disk_publishing.resourceReference
+      description: URI of the resource.
+      type: String
+    - contextPath: Veeam.VBR.start_disk_publishing.parentSessionId
+      description: ID of the parent session.
+      type: String
+    - contextPath: Veeam.VBR.start_disk_publishing.usn
+      description: Update sequence number.
+      type: Number
+    - contextPath: Veeam.VBR.start_disk_publishing.platformName
+      description: Platform type.
+      type: String
+    - contextPath: Veeam.VBR.start_disk_publishing.platformId
+      description: ID of the resource platform.
+      type: String
+  - arguments:
+    - description: Mount point ID.
+      name: mountId
+      required: true
+    description: Stops publishing of disk content and unmounts the published disks.
+    name: veeam-vbr-stop-disk-publishing
+    outputs:
+    - contextPath: Veeam.VBR.stop_disk_publishing.id
+      description: Session ID.
+      type: String
+    - contextPath: Veeam.VBR.stop_disk_publishing.name
+      description: Session name.
+      type: String
+    - contextPath: Veeam.VBR.stop_disk_publishing.sessionType
+      description: Session type.
+      type: String
+    - contextPath: Veeam.VBR.stop_disk_publishing.state
+      description: Session state.
+      type: String
+    - contextPath: Veeam.VBR.stop_disk_publishing.jobId
+      description: ID of the job or job related activity.
+      type: String
+    - contextPath: Veeam.VBR.stop_disk_publishing.creationTime
+      description: Date and time when the session was created.
+      type: String
+    - contextPath: Veeam.VBR.stop_disk_publishing.endTime
+      description: Date and time when the session was ended.
+      type: String
+    - contextPath: Veeam.VBR.stop_disk_publishing.progressPercent
+      description: Progress percentage of the session.
+      type: Number
+    - contextPath: Veeam.VBR.stop_disk_publishing.result
+      description: Session result.
+    - contextPath: Veeam.VBR.stop_disk_publishing.resourceId
+      description: ID of the resource.
+      type: String
+    - contextPath: Veeam.VBR.stop_disk_publishing.resourceReference
+      description: URI of the resource.
+      type: String
+    - contextPath: Veeam.VBR.stop_disk_publishing.parentSessionId
+      description: ID of the parent session.
+      type: String
+    - contextPath: Veeam.VBR.stop_disk_publishing.usn
+      description: Update sequence number.
+      type: Number
+    - contextPath: Veeam.VBR.stop_disk_publishing.platformName
+      description: Platform type.
+      type: String
+    - contextPath: Veeam.VBR.stop_disk_publishing.platformId
+      description: ID of the resource platform.
+      type: String
+  - arguments:
+    - description: Mount point ID.
+      name: mountId
+      required: true
+    description: Gets information on a disk publishing mount point.
+    name: veeam-vbr-get-disk-publishing-mount-point
+    outputs:
+    - contextPath: Veeam.VBR.get_disk_publishing_mount_point.id
+      description: Mount point ID.
+      type: String
+    - contextPath: Veeam.VBR.get_disk_publishing_mount_point.initiatorName
+      description: Account used to publish the disks.
+      type: String
+    - contextPath: Veeam.VBR.get_disk_publishing_mount_point.backupId
+      description: Backup ID.
+      type: String
+    - contextPath: Veeam.VBR.get_disk_publishing_mount_point.backupName
+      description: Backup name.
+      type: String
+    - contextPath: Veeam.VBR.get_disk_publishing_mount_point.restorePointId
+      description: Restore point ID.
+      type: String
+    - contextPath: Veeam.VBR.get_disk_publishing_mount_point.restorePointName
+      description: Restore point name.
+      type: String
+    - contextPath: Veeam.VBR.get_disk_publishing_mount_point.mountState
+      description: Mount state.
+      type: String
+    - contextPath: Veeam.VBR.get_disk_publishing_mount_point.info.mode
+      description: Disk publishing mount mode.
+      type: String
+    - contextPath: Veeam.VBR.get_disk_publishing_mount_point.info.serverPort
+      description: Port used by the mount point.
+      type: Number
+    - contextPath: Veeam.VBR.get_disk_publishing_mount_point.info.serverIps
+      description: Array of target server IP addresses.
+    - contextPath: Veeam.VBR.get_disk_publishing_mount_point.info.disks.diskId
+      description: Disk ID.
+      type: String
+    - contextPath: Veeam.VBR.get_disk_publishing_mount_point.info.disks.diskName
+      description: The path of the published disk.
+      type: String
+    - contextPath: Veeam.VBR.get_disk_publishing_mount_point.info.disks.accessLink
+      description: iSCSI Qualified Name (IQN) of the disk. Only available for the iSCSI mount mode.
+      type: String
+    - contextPath: Veeam.VBR.get_disk_publishing_mount_point.info.disks.mountPoints
+      description: Array of mount point paths.
+  - arguments:
+    - description: API endpoint path (for example, api/v1/jobs).
+      name: path
+      required: true
+    - auto: PREDEFINED
+      defaultValue: get
+      description: Used HTTP method.
+      name: method
+      predefined:
+      - get
+      - post
+      - put
+      - patch
+      - delete
+      required: true
+    - description: JSON body. Required for POST/PUT/PATCH requests.
+      name: data
+    - description: Query parameters.
+      name: params
+    description: Sends a generic HTTP request to any VBR REST API endpoint.
+    name: veeam-vbr-general-api-request
+    outputs:
+    - contextPath: Veeam.VBR.general_api_request
+      description: API response.
   dockerimage: demisto/python3:3.12.13.10116658
   isFetchSamples: true
   isfetch: true

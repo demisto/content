@@ -1,4 +1,4 @@
-Resolves Veeam ONE triggered alarms
+Resolves Veeam ONE triggered alarms.
 
 ## Dependencies
 
@@ -18,8 +18,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* veeam-vone-resolve-triggered-alarms
 * closeInvestigation
+* veeam-vone-resolve-triggered-alarms
 
 ## Playbook Inputs
 
@@ -39,4 +39,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Veeam - Resolve Triggered Alarms](../doc_files/Veeam_Resolve_Triggered_Alarms.png)
+![Veeam - Resolve Triggered Alarms](../doc_files/Veeam_-_Resolve_Triggered_Alarms.png)
