@@ -27,7 +27,7 @@ configuration:
   type: 0
   section: Connect
 - display: SAML/EPM Logon URL
-  additionalinfo: 'The SAML/EPM Logon URL. Required for EPM and SAML authentication methods only. SAML example: https://login.epm.cyberark.com/SAML/Logon.'
+  additionalinfo: 'The SAML/EPM login URL. Required for EPM and SAML authentication methods only. SAML example: https://login.epm.cyberark.com/SAML/Logon.'
   name: url
   required: false
   type: 0
