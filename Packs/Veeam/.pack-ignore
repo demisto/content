@@ -28,7 +28,7 @@ ignore=PB106
 [file:Veeam_-_Find_Entra_ID_User.yml]
 ignore=PB106
 
-[file:Veeam_-_Start_Security_&_Compliance_Analyzer.yml]
+[file:Veeam_-_Start_Security_and_Compliance_Analyzer.yml]
 ignore=PB106
 
 [file:Veeam_-_Start_Instant_Hyper-V_VM_Recovery_Manually.yml]
