@@ -1890,7 +1890,7 @@ Retrieves an aggregated list of all Compute Engine VM instances across every zon
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| filters | The filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance. | Optional |
+| filter | The filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance. | Optional |
 | limit | The maximum number of results per page that should be returned. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
 | order_by | The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". | Optional |
 | next_token | The page token. Set next_token to the AggregatedInstancesNextToken returned by a previous request to get the next page of results. | Optional |

@@ -3561,7 +3561,7 @@ script:
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
-    - name: filters
+    - name: filter
       description: The filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.
     - name: limit
       description: 'The maximum number of results per page that should be returned. Acceptable values are 1 to 500, inclusive.'

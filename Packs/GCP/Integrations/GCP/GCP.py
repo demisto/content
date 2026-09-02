@@ -2390,7 +2390,7 @@ def compute_instances_aggregated_list(creds: Credentials, args: dict[str, Any]) 
 
     Args:
         creds (Credentials): GCP credentials.
-        args (dict[str, Any]): Must include 'project_id'. Supports 'filters', 'order_by',
+        args (dict[str, Any]): Must include 'project_id'. Supports 'filter', 'order_by',
             'limit' (1-500, defaults to 50), and 'next_token'.
 
     Returns:
@@ -2399,14 +2399,14 @@ def compute_instances_aggregated_list(creds: Credentials, args: dict[str, Any]) 
     project_id = args.get("project_id")
     # A missing limit - or an explicit 0, which would request zero results - falls back to 50.
     limit = arg_to_number(args.get("limit")) or 50
-    filters = args.get("filters")
+    filter_expression = args.get("filter")
     order_by = args.get("order_by")
     next_token = args.get("next_token")
     validate_limit(limit)
 
     request_params: dict[str, Any] = {
         "project": project_id,
-        "filter": filters,
+        "filter": filter_expression,
         "maxResults": limit,
         "orderBy": order_by,
         "pageToken": next_token,

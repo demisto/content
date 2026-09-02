@@ -7297,9 +7297,9 @@ def test_compute_instances_aggregated_list_success(mocker):
     assert "next_token=token-xyz" in result.readable_output
 
 
-def test_compute_instances_aggregated_list_with_filters_and_pagination(mocker):
+def test_compute_instances_aggregated_list_with_filter_and_pagination(mocker):
     """
-    Given: filters, order_by, limit and next_token arguments.
+    Given: filter, order_by, limit and next_token arguments.
     When: compute_instances_aggregated_list is called.
     Then: All request params are forwarded and null params are omitted.
     """
@@ -7307,7 +7307,7 @@ def test_compute_instances_aggregated_list_with_filters_and_pagination(mocker):
 
     args = {
         "project_id": "test-project",
-        "filters": "status=RUNNING",
+        "filter": "status=RUNNING",
         "order_by": "creationTimestamp desc",
         "limit": "10",
         "next_token": "page-1",
