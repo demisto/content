@@ -2798,7 +2798,7 @@ def gcp_compute_instance_groups_list(creds: Credentials, args: dict[str, Any]) -
 
     Args:
         creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
-        args (dict[str, Any]): Command arguments including project_id, zone, limit, filters, order_by and next_token.
+        args (dict[str, Any]): Command arguments including project_id, zone, limit, filter, order_by and next_token.
 
     Returns:
         CommandResults: The instance groups located in the specified zone.
@@ -2806,7 +2806,7 @@ def gcp_compute_instance_groups_list(creds: Credentials, args: dict[str, Any]) -
     project_id = args.get("project_id")
     zone = extract_zone_name(args["zone"])
     limit = (arg_to_number(args.get("limit")) or 50) if args.get("limit", "50") != "0" else 0
-    filters = args.get("filters")
+    flt = args.get("filter")
     order_by = args.get("order_by")
     next_token = args.get("next_token")
 
@@ -2815,7 +2815,7 @@ def gcp_compute_instance_groups_list(creds: Credentials, args: dict[str, Any]) -
     compute = GCPServices.COMPUTE.build(creds)
     response = (
         compute.instanceGroups()  # pylint: disable=E1101
-        .list(project=project_id, zone=zone, filter=filters, maxResults=limit, orderBy=order_by, pageToken=next_token)
+        .list(project=project_id, zone=zone, filter=flt, maxResults=limit, orderBy=order_by, pageToken=next_token)
         .execute()
     )
 
@@ -2851,14 +2851,14 @@ def gcp_compute_instance_groups_aggregated_list(creds: Credentials, args: dict[s
 
     Args:
         creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
-        args (dict[str, Any]): Command arguments including project_id, limit, filters, order_by and next_token.
+        args (dict[str, Any]): Command arguments including project_id, limit, filter, order_by and next_token.
 
     Returns:
         CommandResults: The instance groups aggregated by zone.
     """
     project_id = args.get("project_id")
     limit = (arg_to_number(args.get("limit")) or 50) if args.get("limit", "50") != "0" else 0
-    filters = args.get("filters")
+    flt = args.get("filter")
     order_by = args.get("order_by")
     next_token = args.get("next_token")
 
@@ -2867,7 +2867,7 @@ def gcp_compute_instance_groups_aggregated_list(creds: Credentials, args: dict[s
     compute = GCPServices.COMPUTE.build(creds)
     response = (
         compute.instanceGroups()  # pylint: disable=E1101
-        .aggregatedList(project=project_id, filter=filters, maxResults=limit, orderBy=order_by, pageToken=next_token)
+        .aggregatedList(project=project_id, filter=flt, maxResults=limit, orderBy=order_by, pageToken=next_token)
         .execute()
     )
 
@@ -2907,7 +2907,7 @@ def gcp_compute_instance_group_instances_list(creds: Credentials, args: dict[str
     Args:
         creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
         args (dict[str, Any]): Command arguments including project_id, zone, instance_group, instance_state, limit,
-            filters, order_by and next_token.
+            filter, order_by and next_token.
 
     Returns:
         CommandResults: The instances that belong to the specified instance group.
@@ -2916,7 +2916,7 @@ def gcp_compute_instance_group_instances_list(creds: Credentials, args: dict[str
     zone = extract_zone_name(args["zone"])
     instance_group = args["instance_group"]
     limit = (arg_to_number(args.get("limit")) or 50) if args.get("limit", "50") != "0" else 0
-    filters = args.get("filters")
+    flt = args.get("filter")
     order_by = args.get("order_by")
     next_token = args.get("next_token")
 
@@ -2931,7 +2931,7 @@ def gcp_compute_instance_group_instances_list(creds: Credentials, args: dict[str
             project=project_id,
             zone=zone,
             instanceGroup=instance_group,
-            filter=filters,
+            filter=flt,
             maxResults=limit,
             orderBy=order_by,
             pageToken=next_token,
