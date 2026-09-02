@@ -1532,7 +1532,7 @@ script:
     - contextPath: CBP.UserDisable.Name
       description: The name of the user account.
       type: String 
-    name: cbp-user-delete
+  - name: cbp-user-delete
     arguments:
     - name: user_id
       required: true

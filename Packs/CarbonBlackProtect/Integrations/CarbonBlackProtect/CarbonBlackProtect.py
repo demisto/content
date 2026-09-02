@@ -2113,8 +2113,8 @@ def disable_user_command():
     result = CommandResults(readable_output=human_readable, outputs_prefix="CBP.UserDisable", outputs=user_data)
 
     return_results(result)
-   
-    
+
+
 def delete_user_command():
     """
     Sends request to delete user account
