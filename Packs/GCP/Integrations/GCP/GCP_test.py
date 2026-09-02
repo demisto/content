@@ -5276,7 +5276,7 @@ class TestGCPComputeRegionsList:
     def test_gcp_compute_regions_list_with_all_parameters(self, mocker):
         """
         Given: A mocked Compute API returning a region item along with a next page token.
-        When: gcp_compute_regions_list is called with limit, filters, order_by and next_token.
+        When: gcp_compute_regions_list is called with limit, filter, order_by and next_token.
         Then: The API is called with all the provided parameters and the next token is returned in the outputs.
         """
         from GCP import GCPServices, gcp_compute_regions_list
@@ -5297,7 +5297,7 @@ class TestGCPComputeRegionsList:
         args = {
             "project_id": "test-project",
             "limit": "25",
-            "filters": "name=europe*",
+            "filter": "name=europe*",
             "order_by": "name",
             "next_token": "prev-token",
         }
@@ -5335,7 +5335,7 @@ class TestGCPComputeRegionsList:
         """
         Given: A mocked Compute API returning no items but a next page token.
         When: gcp_compute_regions_list is called with the project ID.
-        Then: The next token is still returned in the outputs so pagination can continue.
+        Then: A no-results message is returned and no context outputs are set.
         """
         from GCP import GCPServices, gcp_compute_regions_list
 
@@ -5351,7 +5351,8 @@ class TestGCPComputeRegionsList:
 
         result = gcp_compute_regions_list(mock_creds, {"project_id": "test-project"})
 
-        assert result.outputs == {"GCP.Compute(true)": {"RegionsNextToken": "next-token-789"}}
+        assert result.readable_output == "No regions were found in project 'test-project'."
+        assert not result.outputs
 
     @pytest.mark.parametrize("limit", ["", "0"])
     def test_gcp_compute_regions_list_falsy_limit_falls_back_to_default(self, mocker, limit):
@@ -5457,7 +5458,7 @@ class TestGCPComputeZonesList:
     def test_gcp_compute_zones_list_with_all_parameters(self, mocker):
         """
         Given: A mocked Compute API returning a zone item along with a next page token.
-        When: gcp_compute_zones_list is called with limit, filters, order_by and next_token.
+        When: gcp_compute_zones_list is called with limit, filter, order_by and next_token.
         Then: The API is called with all the provided parameters and the next token is returned in the outputs.
         """
         from GCP import GCPServices, gcp_compute_zones_list
@@ -5478,7 +5479,7 @@ class TestGCPComputeZonesList:
         args = {
             "project_id": "test-project",
             "limit": "10",
-            "filters": "name=europe*",
+            "filter": "name=europe*",
             "order_by": "name",
             "next_token": "prev-token",
         }
@@ -5516,7 +5517,7 @@ class TestGCPComputeZonesList:
         """
         Given: A mocked Compute API returning no items but a next page token.
         When: gcp_compute_zones_list is called with the project ID.
-        Then: The next token is still returned in the outputs so pagination can continue.
+        Then: A no-results message is returned and no context outputs are set.
         """
         from GCP import GCPServices, gcp_compute_zones_list
 
@@ -5532,7 +5533,8 @@ class TestGCPComputeZonesList:
 
         result = gcp_compute_zones_list(mock_creds, {"project_id": "test-project"})
 
-        assert result.outputs == {"GCP.Compute(true)": {"ZonesNextToken": "next-token-abc"}}
+        assert result.readable_output == "No zones were found in project 'test-project'."
+        assert not result.outputs
 
     @pytest.mark.parametrize("limit", ["", "0"])
     def test_gcp_compute_zones_list_falsy_limit_falls_back_to_default(self, mocker, limit):

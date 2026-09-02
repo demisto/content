@@ -2735,7 +2735,7 @@ def gcp_compute_regions_list(creds: Credentials, args: dict[str, Any]) -> Comman
         args (dict): Command arguments including:
             - project_id (str): The GCP project ID.
             - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
-            - filters (str, optional): Expression for filtering the listed resources.
+            - filter (str, optional): Expression for filtering the listed resources.
             - order_by (str, optional): Sorts list results by a certain order.
             - next_token (str, optional): Token to retrieve the next page of results.
 
@@ -2750,7 +2750,7 @@ def gcp_compute_regions_list(creds: Credentials, args: dict[str, Any]) -> Comman
     params: dict[str, Any] = {
         "project": project,
         "maxResults": limit,
-        "filter": args.get("filters"),
+        "filter": args.get("filter"),
         "orderBy": args.get("order_by"),
         "pageToken": args.get("next_token"),
     }
@@ -2762,8 +2762,8 @@ def gcp_compute_regions_list(creds: Credentials, args: dict[str, Any]) -> Comman
 
     items = response.get("items", [])
     next_token = response.get("nextPageToken")
-    if not items and not next_token:
-        return CommandResults(readable_output=f"No regions were found in project '{project}'.", raw_response=response)
+    if not items:
+        return CommandResults(readable_output=f"No regions were found in project '{project}'.")
 
     headers = ["id", "name", "status", "creationTimestamp"]
     readable_output = tableToMarkdown(
@@ -2866,7 +2866,7 @@ def gcp_compute_zones_list(creds: Credentials, args: dict[str, Any]) -> CommandR
         args (dict): Command arguments including:
             - project_id (str): The GCP project ID.
             - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
-            - filters (str, optional): Expression for filtering the listed resources.
+            - filter (str, optional): Expression for filtering the listed resources.
             - order_by (str, optional): Sorts list results by a certain order.
             - next_token (str, optional): Token to retrieve the next page of results.
 
@@ -2881,7 +2881,7 @@ def gcp_compute_zones_list(creds: Credentials, args: dict[str, Any]) -> CommandR
     params: dict[str, Any] = {
         "project": project,
         "maxResults": limit,
-        "filter": args.get("filters"),
+        "filter": args.get("filter"),
         "orderBy": args.get("order_by"),
         "pageToken": args.get("next_token"),
     }
@@ -2893,8 +2893,8 @@ def gcp_compute_zones_list(creds: Credentials, args: dict[str, Any]) -> CommandR
 
     items = response.get("items", [])
     next_token = response.get("nextPageToken")
-    if not items and not next_token:
-        return CommandResults(readable_output=f"No zones were found in project '{project}'.", raw_response=response)
+    if not items:
+        return CommandResults(readable_output=f"No zones were found in project '{project}'.")
 
     headers = ["id", "name", "status", "region", "creationTimestamp"]
     readable_output = tableToMarkdown(

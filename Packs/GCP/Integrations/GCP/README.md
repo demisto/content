@@ -1303,7 +1303,7 @@ Retrieves the list of region resources available to the specified project. Requi
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | The maximum number of results per page that should be returned. If the number of available results is larger than the limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
-| filters | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, you can exclude a region named example-region by specifying name != example-region. | Optional |
+| filter | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, you can exclude a region named example-region by specifying name != example-region. | Optional |
 | order_by | The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first). | Optional |
 | next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
 
@@ -1319,8 +1319,8 @@ Retrieves the list of region resources available to the specified project. Requi
 | GCP.Compute.Regions.zones | string | The list of zones available in this region, in the form of resource URLs. |
 | GCP.Compute.Regions.quotas | string | The quotas assigned to this region. |
 | GCP.Compute.Regions.quotas.metric | string | The name of the quota metric. |
-| GCP.Compute.Regions.quotas.limit | string | The quota limit for this metric. |
-| GCP.Compute.Regions.quotas.usage | string | The current usage of this metric. |
+| GCP.Compute.Regions.quotas.limit | number | The quota limit for this metric. |
+| GCP.Compute.Regions.quotas.usage | number | The current usage of this metric. |
 | GCP.Compute.Regions.quotas.owner | string | The owning resource, meaning the resource to which this quota applies. |
 | GCP.Compute.Regions.deprecated | string | The deprecation status associated with this region. |
 | GCP.Compute.Regions.deprecated.state | string | The deprecation state of this resource. This can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image, can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error. |
@@ -1329,6 +1329,13 @@ Retrieves the list of region resources available to the specified project. Requi
 | GCP.Compute.Regions.deprecated.obsolete | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
 | GCP.Compute.Regions.deprecated.deleted | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
 | GCP.Compute.Regions.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Regions.supportsPzs | boolean | Whether the region supports physical zone separation. Reserved for future use. |
+| GCP.Compute.Regions.quotaStatusWarning | string | The warning raised while fetching the quotas field for this region. This field is populated only if fetching of the quotas field fails. |
+| GCP.Compute.Regions.quotaStatusWarning.code | string | The warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response. |
+| GCP.Compute.Regions.quotaStatusWarning.message | string | The human-readable description of the warning code. |
+| GCP.Compute.Regions.quotaStatusWarning.data | string | The metadata about this warning, in key-value format. |
+| GCP.Compute.Regions.quotaStatusWarning.data.key | string | The key that provides more detail on the warning being returned. |
+| GCP.Compute.Regions.quotaStatusWarning.data.value | string | The value for the key. |
 | GCP.Compute.Regions.kind | string | The type of the resource. Always compute\#region for regions. |
 | GCP.Compute.RegionsNextToken | string | The next page token to use for retrieving the next page of regions. |
 
@@ -1433,7 +1440,7 @@ Retrieves the list of zone resources available to the specified project. Require
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | The maximum number of results per page that should be returned. If the number of available results is larger than the limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
-| filters | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, you can exclude a zone named example-zone by specifying name != example-zone. | Optional |
+| filter | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, you can exclude a zone named example-zone by specifying name != example-zone. | Optional |
 | order_by | The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first). | Optional |
 | next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
 
@@ -1455,6 +1462,14 @@ Retrieves the list of zone resources available to the specified project. Require
 | GCP.Compute.Zones.region | string | The full URL reference to the region which hosts the zone. |
 | GCP.Compute.Zones.selfLink | string | The server-defined URL for the resource. |
 | GCP.Compute.Zones.availableCpuPlatforms | string | The available CPU platform selections for the zone. |
+| GCP.Compute.Zones.supportsPzs | boolean | Whether the zone supports physical zone separation. Reserved for future use. |
+| GCP.Compute.Zones.resourceStatus | Unknown | The additional status details of the zone. |
+| GCP.Compute.Zones.resourceStatus.upcomingMaintenances | Unknown | The list of upcoming maintenances scheduled for this zone. |
+| GCP.Compute.Zones.resourceStatus.upcomingMaintenances.type | string | The type of the upcoming maintenance, for example SCHEDULED or UNSCHEDULED. |
+| GCP.Compute.Zones.resourceStatus.upcomingMaintenances.subType | string | The subtype of the upcoming maintenance, for example SCHEDULED_MAINTENANCE_OPT_IN. |
+| GCP.Compute.Zones.resourceStatus.upcomingMaintenances.targetResource | string | The resource that the upcoming maintenance applies to. |
+| GCP.Compute.Zones.resourceStatus.upcomingMaintenances.windowStartTime | Unknown | The start time of the upcoming maintenance window. |
+| GCP.Compute.Zones.resourceStatus.upcomingMaintenances.windowEndTime | Unknown | The end time of the upcoming maintenance window. |
 | GCP.Compute.Zones.kind | string | The type of the resource. Always compute\#zone for zones. |
 | GCP.Compute.ZonesNextToken | string | The next page token to use for retrieving the next page of zones. |
 

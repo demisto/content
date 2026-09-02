@@ -2694,7 +2694,7 @@ script:
     - name: limit
       description: 'The maximum number of results per page that should be returned. If the number of available results is larger than the limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
       defaultValue: '50'
-    - name: filters
+    - name: filter
       description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, you can exclude a region named example-region by specifying name != example-region.
     - name: order_by
       description: The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
@@ -2727,10 +2727,10 @@ script:
       type: string
     - contextPath: GCP.Compute.Regions.quotas.limit
       description: The quota limit for this metric.
-      type: string
+      type: number
     - contextPath: GCP.Compute.Regions.quotas.usage
       description: The current usage of this metric.
-      type: string
+      type: number
     - contextPath: GCP.Compute.Regions.quotas.owner
       description: The owning resource, meaning the resource to which this quota applies.
       type: string
@@ -2754,6 +2754,27 @@ script:
       type: string
     - contextPath: GCP.Compute.Regions.selfLink
       description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Regions.supportsPzs
+      description: Whether the region supports physical zone separation. Reserved for future use.
+      type: boolean
+    - contextPath: GCP.Compute.Regions.quotaStatusWarning
+      description: The warning raised while fetching the quotas field for this region. This field is populated only if fetching of the quotas field fails.
+      type: string
+    - contextPath: GCP.Compute.Regions.quotaStatusWarning.code
+      description: The warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.
+      type: string
+    - contextPath: GCP.Compute.Regions.quotaStatusWarning.message
+      description: The human-readable description of the warning code.
+      type: string
+    - contextPath: GCP.Compute.Regions.quotaStatusWarning.data
+      description: The metadata about this warning, in key-value format.
+      type: string
+    - contextPath: GCP.Compute.Regions.quotaStatusWarning.data.key
+      description: The key that provides more detail on the warning being returned.
+      type: string
+    - contextPath: GCP.Compute.Regions.quotaStatusWarning.data.value
+      description: The value for the key.
       type: string
     - contextPath: GCP.Compute.Regions.kind
       description: The type of the resource. Always compute#region for regions.
@@ -2892,7 +2913,7 @@ script:
     - name: limit
       description: 'The maximum number of results per page that should be returned. If the number of available results is larger than the limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
       defaultValue: '50'
-    - name: filters
+    - name: filter
       description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, you can exclude a zone named example-zone by specifying name != example-zone.
     - name: order_by
       description: The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
@@ -2941,6 +2962,30 @@ script:
     - contextPath: GCP.Compute.Zones.availableCpuPlatforms
       description: The available CPU platform selections for the zone.
       type: string
+    - contextPath: GCP.Compute.Zones.supportsPzs
+      description: Whether the zone supports physical zone separation. Reserved for future use.
+      type: boolean
+    - contextPath: GCP.Compute.Zones.resourceStatus
+      description: The additional status details of the zone.
+      type: Unknown
+    - contextPath: GCP.Compute.Zones.resourceStatus.upcomingMaintenances
+      description: The list of upcoming maintenances scheduled for this zone.
+      type: Unknown
+    - contextPath: GCP.Compute.Zones.resourceStatus.upcomingMaintenances.type
+      description: The type of the upcoming maintenance, for example SCHEDULED or UNSCHEDULED.
+      type: string
+    - contextPath: GCP.Compute.Zones.resourceStatus.upcomingMaintenances.subType
+      description: The subtype of the upcoming maintenance, for example SCHEDULED_MAINTENANCE_OPT_IN.
+      type: string
+    - contextPath: GCP.Compute.Zones.resourceStatus.upcomingMaintenances.targetResource
+      description: The resource that the upcoming maintenance applies to.
+      type: string
+    - contextPath: GCP.Compute.Zones.resourceStatus.upcomingMaintenances.windowStartTime
+      description: The start time of the upcoming maintenance window.
+      type: Unknown
+    - contextPath: GCP.Compute.Zones.resourceStatus.upcomingMaintenances.windowEndTime
+      description: The end time of the upcoming maintenance window.
+      type: Unknown
     - contextPath: GCP.Compute.Zones.kind
       description: The type of the resource. Always compute#zone for zones.
       type: string
