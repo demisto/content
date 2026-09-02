@@ -75,6 +75,9 @@ configuration:
   type: 8
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: stateNOT IN6,7
   display: The query to use when fetching incidents
   name: sysparm_query
@@ -112,6 +115,9 @@ configuration:
   type: 13
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Get incident attachments
   name: get_attachments
   type: 8
@@ -349,6 +355,9 @@ configuration:
   type: 19
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 0
   display: 'Advanced: Minutes to look back when fetching'
   additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
