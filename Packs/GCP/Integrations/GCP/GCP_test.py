@@ -436,8 +436,8 @@ def test_compute_instances_aggregated_list_by_ip_internal(mocker):
     res = compute_instances_aggregated_list_by_ip(mock_creds, {"project_id": "p1", "ip_address": "10.0.0.6", "limit": "10"})
 
     # Expect only i-2
-    assert len(res.outputs["GCP.Compute.AggregatedByIPInstances(val.id && val.id == obj.id)"]) == 1
-    assert res.outputs["GCP.Compute.AggregatedByIPInstances(val.id && val.id == obj.id)"][0]["name"] == "i-2"
+    assert len(res.outputs["GCP.Compute.Instances(val.id && val.id == obj.id)"]) == 1
+    assert res.outputs["GCP.Compute.Instances(val.id && val.id == obj.id)"][0]["name"] == "i-2"
 
 
 def test_compute_instances_aggregated_list_by_ip_external(mocker):
@@ -485,8 +485,8 @@ def test_compute_instances_aggregated_list_by_ip_external(mocker):
     )
 
     # Expect only i-2
-    assert len(res.outputs["GCP.Compute.AggregatedByIPInstances(val.id && val.id == obj.id)"]) == 1
-    assert res.outputs["GCP.Compute.AggregatedByIPInstances(val.id && val.id == obj.id)"][0]["name"] == "i-2"
+    assert len(res.outputs["GCP.Compute.Instances(val.id && val.id == obj.id)"]) == 1
+    assert res.outputs["GCP.Compute.Instances(val.id && val.id == obj.id)"][0]["name"] == "i-2"
 
 
 def test__collect_instance_ips_basic():

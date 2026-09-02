@@ -203,7 +203,7 @@ Updates Google Cloud Storage (GCS) bucket metadata, including settings such as v
 | GCP.Storage.Buckets.id | String | The ID of the GCP bucket. |
 | GCP.Storage.Buckets.location | String | The location of the bucket. |
 | GCP.Storage.Buckets.storageClass | String | The storage class of the bucket \(e.g., STANDARD, NEARLINE\). |
-| GCP.Storage.Buckets.created | Date | The creation timestamp of the bucket. |
+| GCP.Storage.Buckets.created | Date | The creation timestamp of the bucket \(e.g., 2024-01-15T12:34:56Z\). |
 | GCP.Storage.Buckets.updated | Date | The last update timestamp of the bucket. |
 | GCP.Storage.Buckets.metageneration | Number | The metadata generation of the bucket. |
 | GCP.Storage.Buckets.labels | Unknown | The labels attached to the bucket. |
@@ -691,7 +691,7 @@ Retrieves information about a specific bucket. Required permission: storage.buck
 | GCP.Storage.Buckets.etag | String | The HTTP entity tag of the bucket. |
 | GCP.Storage.Buckets.generation | String | The generation number of the bucket. |
 | GCP.Storage.Buckets.metageneration | String | The metageneration number of the bucket. |
-| GCP.Storage.Buckets.timeCreated | Date | The time the bucket was created. |
+| GCP.Storage.Buckets.timeCreated | Date | The time the bucket was created \(e.g., 2024-01-15T12:34:56Z\). |
 | GCP.Storage.Buckets.timeUpdated | Date | The time the bucket was last updated. |
 | GCP.Storage.Buckets.selfLink | String | The link to the bucket resource on the GCP API. |
 
@@ -713,7 +713,7 @@ Retrieves the list of objects in a bucket. Required permission: storage.objects.
 | prefix | Filter results to objects whose names begin with this prefix. | Optional |
 | delimiter | Delimiter to use for grouping objects. For example delimiter="/" Returns results in a directory-like mode, with / being a common value for the delimiter. | Optional |
 | limit | Maximum number of objects to return. | Optional |
-| page_token | Token for pagination. | Optional |
+| page_token | The token for pagination. | Optional |
 
 #### Context Output
 
@@ -910,17 +910,17 @@ Returns an aggregated list of instances across all zones that can be filtered by
 | ip_address | The IP address to search for. | Required |
 | match_external | If true, match against external NAT IPs; otherwise internal NIC IPs. Possible values are: true, false. | Optional |
 | limit | The maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
-| page_token | Token for pagination. | Optional |
+| page_token | The token for pagination. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.AggregatedByIPInstances.name | string | Instance name. |
-| GCP.Compute.AggregatedByIPInstances.id | string | Instance ID. |
-| GCP.Compute.AggregatedByIPInstances.zone | string | Instance zone URL. |
-| GCP.Compute.AggregatedByIPInstances.status | string | Instance status. |
-| GCP.Compute.AggregatedByIPInstances.networkInterfaces | Unknown | Network interfaces of the instance. |
+| GCP.Compute.Instances.name | string | Instance name. |
+| GCP.Compute.Instances.id | string | Instance ID. |
+| GCP.Compute.Instances.zone | string | Instance zone URL. |
+| GCP.Compute.Instances.status | string | Instance status. |
+| GCP.Compute.Instances.networkInterfaces | Unknown | Network interfaces of the instance. |
 | GCP.Compute.AggregatedByIPInstancesNextToken | string | This token allows you to get the next page of results for list requests. If the number of results is larger than limit, use the next_token as a value for the query parameter page_token in the next list request. |
 
 ### gcp-compute-network-tag-set
@@ -1563,7 +1563,7 @@ Lists snapshots in a specific project. Required permission: compute.snapshots.li
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | The maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
-| page_token | Token for pagination. | Optional |
+| page_token | The token for pagination. | Optional |
 | filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/snapshots/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
 
 #### Context Output
@@ -1667,7 +1667,7 @@ Lists the firewall rules in a specific project. Required permission: compute.fir
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | The maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
-| page_token | Token for pagination. | Optional |
+| page_token | The token for pagination. | Optional |
 | filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/firewalls/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
 
 #### Context Output
@@ -1683,7 +1683,7 @@ Lists the firewall rules in a specific project. Required permission: compute.fir
 | GCP.Compute.Firewalls.priority | Number | Priority value of the firewall rule. |
 | GCP.Compute.Firewalls.network | String | The network URL this firewall rule applies to. |
 | GCP.Compute.Firewalls.selfLink | String | Server-defined URL for the resource. |
-| GCP.Compute.Firewalls.creationTimestamp | Date | The creation timestamp of the firewall rule in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\).. |
+| GCP.Compute.Firewalls.creationTimestamp | Date | The creation timestamp of the firewall rule in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
 | GCP.Compute.Firewalls.logConfig.enable | Boolean | Indicates whether logging is enabled for the firewall rule. |
 | GCP.Compute.Firewalls.sourceRanges | Unknown | List of source IP ranges that the rule applies to. |
 | GCP.Compute.Firewalls.targetTags | Unknown | List of target instance tags to which the rule applies. |
@@ -1705,7 +1705,7 @@ Retrieves the list of buckets in the project associated with the client. Require
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | Maximum number of buckets to return. | Optional |
 | prefix | Filter results to buckets whose names begin with this prefix. | Optional |
-| page_token | Token for pagination. | Optional |
+| page_token | The token for pagination. | Optional |
 
 #### Context Output
 
@@ -1741,7 +1741,7 @@ Retrieves the IAM policy for a bucket. Required permissions: storage.buckets.get
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| bucket_name | Name of the bucket to retrieve IAM policy from. | Required |
+| bucket_name | The name of the bucket to retrieve IAM policy from. | Required |
 | requested_policy_version | The IAM policy version to be returned. If the optionsRequestedPolicyVersion is for an older version that doesn't support part of the requested IAM policy, the request fails. Required to be 3 or greater for buckets with IAM Conditions. | Optional |
 
 #### Context Output
@@ -1767,7 +1767,7 @@ Retrieves the IAM policy for a specific object in a bucket. Required permission:
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| bucket_name | Name of the bucket containing the object. | Required |
+| bucket_name | The name of the bucket containing the object. | Required |
 | object_name | Name of the object to retrieve IAM policy from. | Required |
 | generation | The generation of the object (e.g., a positive integer). | Optional |
 
@@ -1775,7 +1775,7 @@ Retrieves the IAM policy for a specific object in a bucket. Required permission:
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Storage.BucketObjectPolicies.bucketName | String | Name of the bucket containing the object. |
+| GCP.Storage.BucketObjectPolicies.bucketName | String | The name of the bucket containing the object. |
 | GCP.Storage.BucketObjectPolicies.objectName | String | Name of the object. |
 | GCP.Storage.BucketObjectPolicies.bindings | Unknown | List of role bindings for the object. |
 
@@ -1793,11 +1793,11 @@ Configures security settings for GKE clusters, including access controls and vis
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| region | GCP region. | Required |
+| region | The GCP region. | Required |
 | resource_name | Name of the GKE cluster. | Required |
-| enable_intra_node_visibility | Enable intra-node visibility. Possible values are: true, false. | Optional |
-| enable_master_authorized_networks | Enable Master Authorized Networks. Possible values are: true, false. | Optional |
-| cidrs | Comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.<br/>If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.<br/>. | Optional |
+| enable_intra_node_visibility | Whether to enable intra-node visibility. Possible values are: true, false. | Optional |
+| enable_master_authorized_networks | Whether to enable Master Authorized Networks. Possible values are: true, false. | Optional |
+| cidrs | A comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.<br/>If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.<br/>. | Optional |
 
 #### Context Output
 

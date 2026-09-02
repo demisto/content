@@ -309,7 +309,7 @@ script:
       defaultValue: '50'
       description: "The maximum number of results to return. Acceptable values are 0 to 500, inclusive."
     - name: page_token
-      description: Token for pagination.
+      description: The token for pagination.
       required: false
     - name: filter
       description: "A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.\nFor more options and details, see:\nhttps://cloud.google.com/compute/docs/reference/rest/v1/firewalls/list#:~:text=page%20of%20results.-,filter,-string."
@@ -342,7 +342,7 @@ script:
       description: Server-defined URL for the resource.
       type: String
     - contextPath: GCP.Compute.Firewalls.creationTimestamp
-      description: The creation timestamp of the firewall rule in ISO 8601 format (e.g., 2024-01-15T12:34:56Z)..
+      description: The creation timestamp of the firewall rule in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: GCP.Compute.Firewalls.logConfig.enable
       description: Indicates whether logging is enabled for the firewall rule.
@@ -399,7 +399,7 @@ script:
       defaultValue: '50'
       description: "The maximum number of results to return. Acceptable values are 0 to 500, inclusive."
     - name: page_token
-      description: Token for pagination.
+      description: The token for pagination.
     - name: filter
       description: "A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.\nFor more options and details, see:\nhttps://cloud.google.com/compute/docs/reference/rest/v1/snapshots/list#:~:text=page%20of%20results.-,filter,-string."
     outputs:
@@ -569,21 +569,21 @@ script:
       defaultValue: '50'
       description: "The maximum number of results to return. Acceptable values are 0 to 500, inclusive."
     - name: page_token
-      description: Token for pagination.
+      description: The token for pagination.
     outputs:
-    - contextPath: GCP.Compute.AggregatedByIPInstances.name
+    - contextPath: GCP.Compute.Instances.name
       description: Instance name.
       type: string
-    - contextPath: GCP.Compute.AggregatedByIPInstances.id
+    - contextPath: GCP.Compute.Instances.id
       description: Instance ID.
       type: string
-    - contextPath: GCP.Compute.AggregatedByIPInstances.zone
+    - contextPath: GCP.Compute.Instances.zone
       description: Instance zone URL.
       type: string
-    - contextPath: GCP.Compute.AggregatedByIPInstances.status
+    - contextPath: GCP.Compute.Instances.status
       description: Instance status.
       type: string
-    - contextPath: GCP.Compute.AggregatedByIPInstances.networkInterfaces
+    - contextPath: GCP.Compute.Instances.networkInterfaces
       description: Network interfaces of the instance.
       type: Unknown
     - contextPath: GCP.Compute.AggregatedByIPInstancesNextToken
@@ -1083,7 +1083,7 @@ script:
       description: Enable Master Authorized Networks.
     - name: cidrs
       description: |
-        Comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.
+        A comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.
         If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.
       isArray: true
     outputs:
@@ -1169,7 +1169,7 @@ script:
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: region
       required: true
-      description: GCP region.
+      description: The GCP region.
     - name: resource_name
       required: true
       description: Name of the GKE cluster.
@@ -1179,17 +1179,17 @@ script:
       predefined:
         - "true"
         - "false"
-      description: Enable intra-node visibility.
+      description: Whether to enable intra-node visibility.
     - name: enable_master_authorized_networks
       required: false
       auto: PREDEFINED
       predefined:
         - "true"
         - "false"
-      description: Enable Master Authorized Networks.
+      description: Whether to enable Master Authorized Networks.
     - name: cidrs
       description: |
-        Comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.
+        A comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.
         If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.
       isArray: true
     outputs:
@@ -1281,7 +1281,7 @@ script:
           GCP Project ID: ${asset.xdm.asset.realm}
       - name: region
         required: true
-        description: GCP region.
+        description: The GCP region.
         prettyname: Region
         defaultValue: Region
         prettypredefined:
@@ -1301,7 +1301,7 @@ script:
           - "false"
         defaultValue: "true"
         hidden: true
-        description: Enable intra-node visibility.
+        description: Whether to enable intra-node visibility.
     outputs:
       - contextPath: GCP.GKE.Operations.name
         description: The name of the GKE cluster.
@@ -1391,7 +1391,7 @@ script:
           GCP Project ID: ${asset.xdm.asset.realm}
       - name: region
         required: true
-        description: GCP region.
+        description: The GCP region.
         prettyname: Region
         defaultValue: Region
         prettypredefined:
@@ -1407,7 +1407,7 @@ script:
         required: false
         defaultValue: "true"
         hidden: true
-        description: Enable Master Authorized Networks.
+        description: Whether to enable Master Authorized Networks.
     outputs:
       - contextPath: GCP.GKE.Operations.name
         description: The name of the GKE cluster.
@@ -1520,7 +1520,7 @@ script:
       description: The storage class of the bucket (e.g., STANDARD, NEARLINE).
       type: String
     - contextPath: GCP.Storage.Buckets.created
-      description: The creation timestamp of the bucket.
+      description: The creation timestamp of the bucket (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: GCP.Storage.Buckets.updated
       description: The last update timestamp of the bucket.
@@ -1847,7 +1847,7 @@ script:
       description: Filter results to buckets whose names begin with this prefix.
     - name: page_token
       required: false
-      description: Token for pagination.
+      description: The token for pagination.
     outputs:
     - contextPath: GCP.Storage.Buckets.id
       description: The unique identifier for the bucket.
@@ -1939,7 +1939,7 @@ script:
         description: The metageneration number of the bucket.
         type: String
       - contextPath: GCP.Storage.Buckets.timeCreated
-        description: The time the bucket was created.
+        description: The time the bucket was created (e.g., 2024-01-15T12:34:56Z).
         type: Date
       - contextPath: GCP.Storage.Buckets.timeUpdated
         description: The time the bucket was last updated.
@@ -1968,7 +1968,7 @@ script:
       description: Maximum number of objects to return.
     - name: page_token
       required: false
-      description: Token for pagination.
+      description: The token for pagination.
     outputs:
     - contextPath: GCP.Storage.Buckets.Objects.id
       description: The unique identifier for the object.
@@ -2067,7 +2067,7 @@ script:
         description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       - name: bucket_name
         required: true
-        description: Name of the bucket to retrieve IAM policy from.
+        description: The name of the bucket to retrieve IAM policy from.
       - name: requested_policy_version
         required: false
         description: The IAM policy version to be returned. If the optionsRequestedPolicyVersion is for an older version that doesn't support part of the requested IAM policy, the request fails. Required to be 3 or greater for buckets with IAM Conditions.
@@ -2152,7 +2152,7 @@ script:
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
-      description: Name of the bucket containing the object.
+      description: The name of the bucket containing the object.
     - name: object_name
       required: true
       description: Name of the object to retrieve IAM policy from.
@@ -2161,7 +2161,7 @@ script:
       description: The generation of the object (e.g., a positive integer).
     outputs:
     - contextPath: GCP.Storage.BucketObjectPolicies.bucketName
-      description: Name of the bucket containing the object.
+      description: The name of the bucket containing the object.
       type: String
     - contextPath: GCP.Storage.BucketObjectPolicies.objectName
       description: Name of the object.
