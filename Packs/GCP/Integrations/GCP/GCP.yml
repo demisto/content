@@ -3590,6 +3590,9 @@ script:
     - contextPath: GCP.Compute.Addresses.network
       description: The URL of the network in which to reserve the address.
       type: string
+    - contextPath: GCP.Compute.Addresses.ipCollection
+      description: The URL of the source of external IPv4 addresses, such as a public delegated prefix (PDP) used for bring your own IP (BYOIP).
+      type: string
     - contextPath: GCP.Compute.Addresses.ipVersion
       description: The IP version that will be used by this address.
       type: string
@@ -3673,6 +3676,9 @@ script:
     - contextPath: GCP.Compute.Addresses.network
       description: The URL of the network in which to reserve the address.
       type: string
+    - contextPath: GCP.Compute.Addresses.ipCollection
+      description: The URL of the source of external IPv4 addresses, such as a public delegated prefix (PDP) used for bring your own IP (BYOIP).
+      type: string
     - contextPath: GCP.Compute.Addresses.selfLink
       description: The server-defined URL for the resource.
       type: string
@@ -3753,6 +3759,9 @@ script:
     - contextPath: GCP.Compute.Addresses.network
       description: The URL of the network in which to reserve the address.
       type: string
+    - contextPath: GCP.Compute.Addresses.ipCollection
+      description: The URL of the source of external IPv4 addresses, such as a public delegated prefix (PDP) used for bring your own IP (BYOIP).
+      type: string
     - contextPath: GCP.Compute.Addresses.selfLink
       description: The server-defined URL for the resource.
       type: string
@@ -3806,6 +3815,9 @@ script:
     - contextPath: GCP.Compute.Operations.name
       description: The name of the resource.
       type: string
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the request ID if provided in the request. Not present otherwise.
+      type: string
     - contextPath: GCP.Compute.Operations.operationType
       description: The type of operation, such as insert, update, or delete.
       type: string
@@ -3818,14 +3830,44 @@ script:
     - contextPath: GCP.Compute.Operations.status
       description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
       type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: An optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, EMAILADDRESS.
+      type: string
     - contextPath: GCP.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100.
       type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time the operation was requested, in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time the operation was started by the server, in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time the operation was completed, in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during processing of the operation, if any.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during processing of the operation, if any.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails. For example, 404 means the resource was not found.
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails, such as NOT FOUND.
+      type: string
     - contextPath: GCP.Compute.Operations.region
       description: The URL of the region where the operation resides. Only available when performing regional operations.
       type: string
     - contextPath: GCP.Compute.Operations.selfLink
       description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.description
+      description: A textual description of the operation, which is set when the operation is created.
       type: string
     - contextPath: GCP.Compute.Operations.kind
       description: The type of the resource. Always compute#operation for Operation resources.
@@ -3851,6 +3893,9 @@ script:
     - contextPath: GCP.Compute.Operations.name
       description: The name of the resource.
       type: string
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the request ID if provided in the request. Not present otherwise.
+      type: string
     - contextPath: GCP.Compute.Operations.operationType
       description: The type of operation, such as insert, update, or delete.
       type: string
@@ -3863,14 +3908,44 @@ script:
     - contextPath: GCP.Compute.Operations.status
       description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
       type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: An optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, EMAILADDRESS.
+      type: string
     - contextPath: GCP.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100.
       type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time the operation was requested, in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time the operation was started by the server, in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time the operation was completed, in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during processing of the operation, if any.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during processing of the operation, if any.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails. For example, 404 means the resource was not found.
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails, such as NOT FOUND.
+      type: string
     - contextPath: GCP.Compute.Operations.region
       description: The URL of the region where the operation resides. Only available when performing regional operations.
       type: string
     - contextPath: GCP.Compute.Operations.selfLink
       description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.description
+      description: A textual description of the operation, which is set when the operation is created.
       type: string
     - contextPath: GCP.Compute.Operations.kind
       description: The type of the resource. Always compute#operation for Operation resources.
@@ -3933,6 +4008,9 @@ script:
       type: string
     - contextPath: GCP.Compute.Addresses.network
       description: The URL of the network in which to reserve the address.
+      type: string
+    - contextPath: GCP.Compute.Addresses.ipCollection
+      description: The URL of the source of external IPv4 addresses, such as a public delegated prefix (PDP) used for bring your own IP (BYOIP).
       type: string
     - contextPath: GCP.Compute.Addresses.ipVersion
       description: The IP version that will be used by this address.
@@ -4011,6 +4089,9 @@ script:
     - contextPath: GCP.Compute.Addresses.network
       description: The URL of the network in which to reserve the address.
       type: string
+    - contextPath: GCP.Compute.Addresses.ipCollection
+      description: The URL of the source of external IPv4 addresses, such as a public delegated prefix (PDP) used for bring your own IP (BYOIP).
+      type: string
     - contextPath: GCP.Compute.Addresses.selfLink
       description: The server-defined URL for the resource.
       type: string
@@ -4067,6 +4148,9 @@ script:
     - contextPath: GCP.Compute.Operations.name
       description: The name of the resource.
       type: string
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the request ID if provided in the request. Not present otherwise.
+      type: string
     - contextPath: GCP.Compute.Operations.operationType
       description: The type of operation, such as insert, update, or delete.
       type: string
@@ -4079,11 +4163,41 @@ script:
     - contextPath: GCP.Compute.Operations.status
       description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
       type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: An optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, EMAILADDRESS.
+      type: string
     - contextPath: GCP.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100.
       type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time the operation was requested, in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time the operation was started by the server, in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time the operation was completed, in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during processing of the operation, if any.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during processing of the operation, if any.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails. For example, 404 means the resource was not found.
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails, such as NOT FOUND.
+      type: string
     - contextPath: GCP.Compute.Operations.selfLink
       description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.description
+      description: A textual description of the operation, which is set when the operation is created.
       type: string
     - contextPath: GCP.Compute.Operations.kind
       description: The type of the resource. Always compute#operation for Operation resources.
@@ -4106,6 +4220,9 @@ script:
     - contextPath: GCP.Compute.Operations.name
       description: The name of the resource.
       type: string
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the request ID if provided in the request. Not present otherwise.
+      type: string
     - contextPath: GCP.Compute.Operations.operationType
       description: The type of operation, such as insert, update, or delete.
       type: string
@@ -4118,11 +4235,41 @@ script:
     - contextPath: GCP.Compute.Operations.status
       description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
       type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: An optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, EMAILADDRESS.
+      type: string
     - contextPath: GCP.Compute.Operations.progress
       description: An optional progress indicator that ranges from 0 to 100.
       type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time the operation was requested, in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time the operation was started by the server, in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time the operation was completed, in RFC3339 text format.
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during processing of the operation, if any.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during processing of the operation, if any.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails. For example, 404 means the resource was not found.
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails, such as NOT FOUND.
+      type: string
     - contextPath: GCP.Compute.Operations.selfLink
       description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.description
+      description: A textual description of the operation, which is set when the operation is created.
       type: string
     - contextPath: GCP.Compute.Operations.kind
       description: The type of the resource. Always compute#operation for Operation resources.

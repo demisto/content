@@ -6747,6 +6747,86 @@ def test_compute_address_list_empty_response(mocker):
     assert not res.outputs
 
 
+def test_compute_address_list_logs_response_warning(mocker):
+    """
+    Given: A regional address list response containing a top-level 'warning' block.
+    When: compute_address_list is called.
+    Then: The warning is written to the debug log and the returned items are unaffected.
+    """
+    from GCP import compute_address_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_addresses = mocker.Mock()
+    mock_compute.addresses.return_value = mock_addresses
+    mock_addresses.list.return_value.execute.return_value = {
+        "items": [{"name": "addr-1", "id": "1"}],
+        "warning": {"code": "NO_RESULTS_ON_PAGE", "message": "There are no results for scope."},
+    }
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    debug_mock = mocker.patch("GCP.demisto.debug")
+
+    res = compute_address_list(mock_creds, {"project_id": "p1", "region": "us-central1"})
+
+    assert res.outputs["GCP.Compute.Addresses(val.id && val.id == obj.id)"] == [{"name": "addr-1", "id": "1"}]
+    assert any("NO_RESULTS_ON_PAGE" in str(call) for call in debug_mock.call_args_list)
+
+
+def test_compute_global_address_list_logs_response_warning(mocker):
+    """
+    Given: A global address list response containing a top-level 'warning' block.
+    When: compute_global_address_list is called.
+    Then: The warning is written to the debug log and the returned items are unaffected.
+    """
+    from GCP import compute_global_address_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_global_addresses = mocker.Mock()
+    mock_compute.globalAddresses.return_value = mock_global_addresses
+    mock_global_addresses.list.return_value.execute.return_value = {
+        "items": [{"name": "global-addr-1", "id": "1"}],
+        "warning": {"code": "NO_RESULTS_ON_PAGE", "message": "There are no results for scope."},
+    }
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    debug_mock = mocker.patch("GCP.demisto.debug")
+
+    res = compute_global_address_list(mock_creds, {"project_id": "p1"})
+
+    assert res.outputs["GCP.Compute.Addresses(val.id && val.id == obj.id)"] == [{"name": "global-addr-1", "id": "1"}]
+    assert any("NO_RESULTS_ON_PAGE" in str(call) for call in debug_mock.call_args_list)
+
+
+def test_compute_address_aggregated_list_logs_scope_warning(mocker):
+    """
+    Given: An aggregated address response where one scope holds a warning and another holds addresses.
+    When: compute_address_aggregated_list is called.
+    Then: The warning scope is logged and skipped, and only the real addresses are returned.
+    """
+    from GCP import compute_address_aggregated_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_addresses = mocker.Mock()
+    mock_compute.addresses.return_value = mock_addresses
+    mock_addresses.aggregatedList.return_value.execute.return_value = {
+        "items": {
+            "regions/us-central1": {"addresses": [{"name": "addr-1", "id": "1"}]},
+            "regions/us-east1": {"warning": {"code": "NO_RESULTS_ON_PAGE"}},
+        }
+    }
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    debug_mock = mocker.patch("GCP.demisto.debug")
+
+    res = compute_address_aggregated_list(mock_creds, {"project_id": "p1"})
+
+    assert res.outputs["GCP.Compute.Addresses(val.id && val.id == obj.id)"] == [{"name": "addr-1", "id": "1"}]
+    assert any("regions/us-east1" in str(call) for call in debug_mock.call_args_list)
+
+
 def test_compute_address_list_invalid_limit(mocker):
     """
     Given: A limit above the allowed maximum.

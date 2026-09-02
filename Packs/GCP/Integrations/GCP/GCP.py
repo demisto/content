@@ -3032,6 +3032,9 @@ def compute_address_list(creds: Credentials, args: dict[str, Any]) -> CommandRes
     items = response.get("items", [])
     next_token = response.get("nextPageToken")
 
+    if warning := response.get("warning"):
+        demisto.debug(f"[GCP: compute_address_list] Warning: {warning}")
+
     if not items:
         return CommandResults(readable_output="No addresses found.", raw_response=response)
 
@@ -3094,9 +3097,11 @@ def compute_address_aggregated_list(creds: Credentials, args: dict[str, Any]) ->
     next_token = response.get("nextPageToken")
 
     items: list[dict[str, Any]] = []
-    for addresses_scoped_list in response.get("items", {}).values():
-        if "warning" not in addresses_scoped_list:
-            items.extend(addresses_scoped_list.get("addresses", []) or [])
+    for scope_name, addresses_scoped_list in response.get("items", {}).items():
+        if warning := addresses_scoped_list.get("warning"):
+            demisto.debug(f"[GCP: compute_address_aggregated_list] Warning for scope {scope_name}: {warning}")
+            continue
+        items.extend(addresses_scoped_list.get("addresses", []) or [])
 
     if not items:
         return CommandResults(readable_output="No addresses found.", raw_response=response)
@@ -3293,6 +3298,9 @@ def compute_global_address_list(creds: Credentials, args: dict[str, Any]) -> Com
     response = compute.globalAddresses().list(**params).execute()  # pylint: disable=E1101
     items = response.get("items", [])
     next_token = response.get("nextPageToken")
+
+    if warning := response.get("warning"):
+        demisto.debug(f"[GCP: compute_global_address_list] Warning: {warning}")
 
     if not items:
         return CommandResults(readable_output="No global addresses found.", raw_response=response)
