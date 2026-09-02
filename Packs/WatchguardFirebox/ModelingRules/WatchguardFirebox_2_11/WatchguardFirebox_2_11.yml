@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: WatchguardFirebox_ModelingRule
-name: WatchguardFirebox Modeling Rule
-rules: ''
-schema: ''
-tags: Watchguard Firebox
-supportedModules:
-- xsiam
