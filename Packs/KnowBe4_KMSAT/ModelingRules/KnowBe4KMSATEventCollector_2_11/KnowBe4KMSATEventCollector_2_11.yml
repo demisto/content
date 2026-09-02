@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: KnowBe4_KMSAT_ModelingRule
-name: KnowBe4_KMSAT Modeling Rule
-rules: ''
-schema: ''
-tags: KnowBe4KMSAT
-supportedModules:
-- xsiam
