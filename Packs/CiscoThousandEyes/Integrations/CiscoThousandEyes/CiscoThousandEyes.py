@@ -355,7 +355,7 @@ def fetch_events(
     next_run: Dict[str, Any] = {ALERTS: alert_next_run, AUDIT: audit_next_run}
     if any(d.get("next_page") for d in (alert_next_run, audit_next_run)):
         next_run["nextTrigger"] = "0"
-    demisto.debug(
+    demisto.info(
         f"{FETCH_LOG_PREFIX} fetch_events finished. total fetched: {len(events)} "
         f"(alerts: {len(alert_events)}, audits: {len(audit_events)}). Setting next run: {next_run}."
     )
