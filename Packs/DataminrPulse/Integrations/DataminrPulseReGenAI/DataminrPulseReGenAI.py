@@ -65,6 +65,45 @@ OUTPUT_PREFIX_WATCHLISTS = "DataminrPulse.WatchLists"
 # Output prefix for the cursor.
 OUTPUT_PREFIX_CURSOR = "DataminrPulse.Cursor"
 
+IOC_FEED_NAME = "Dataminr Pulse"
+
+IOC_TYPE_IP = "IP"
+IOC_TYPE_URL = "URL"
+IOC_TYPE_FILE = "File"
+
+IOC_TYPE_TO_INDICATOR_TYPE = {
+    IOC_TYPE_IP: FeedIndicatorType.IP,
+    IOC_TYPE_URL: FeedIndicatorType.URL,
+    IOC_TYPE_FILE: FeedIndicatorType.File,
+}
+
+# Mapping of the IOC type with the DBot score type used while calculating the reputation of the IOC.
+IOC_TYPE_TO_DBOT_SCORE_TYPE = {
+    IOC_TYPE_IP: DBotScoreType.IP,
+    IOC_TYPE_URL: DBotScoreType.URL,
+    IOC_TYPE_FILE: DBotScoreType.FILE,
+}
+
+# Mapping of the Dataminr alert type with the verdict of the IOC.
+ALERT_TYPE_TO_DBOT_SCORE = {
+    "flash": Common.DBotScore.BAD,
+    "urgent": Common.DBotScore.BAD,
+    "alert": Common.DBotScore.SUSPICIOUS,
+}
+
+# Mapping of the DBot score with its human readable verdict.
+DBOT_SCORE_TO_VERDICT = {
+    Common.DBotScore.BAD: "Malicious",
+    Common.DBotScore.SUSPICIOUS: "Suspicious",
+    Common.DBotScore.GOOD: "Benign",
+    Common.DBotScore.NONE: "Unknown",
+}
+
+# Mapping of the hash length with the hash type, used when the source doesn't provide the type of the hash.
+HASH_LENGTH_TO_TYPE = {32: "md5", 40: "sha1", 64: "sha256"}
+# Supported hash types with the argument name of the "Common.File" indicator.
+SUPPORTED_HASH_TYPES = ("md5", "sha1", "sha256")
+
 """ CLIENT CLASS """
 
 
@@ -750,6 +789,455 @@ def create_threat_actors_indicators(alert: dict) -> list:
     return list(merged.values())
 
 
+def to_datetime(timestamp: Any) -> datetime | None:
+    """
+    Convert the given time stamp into a datetime object.
+
+    The returned datetime object is always offset-aware and in the UTC time zone, so the comparison of the time stamps
+    of two different alerts never mixes the offset-naive and the offset-aware datetime objects. The time stamps without
+    a time zone are considered to be in the UTC time zone, as the source reports them in the UTC time zone.
+
+    :type timestamp: ``Any``
+    :param timestamp: Time stamp to convert. Either an ISO 8601 date time string or an epoch time stamp.
+
+    :rtype: ``Optional[datetime]``
+    :return: Datetime object of the given time stamp, None if it can not be parsed.
+    """
+    if check_empty(timestamp) or isinstance(timestamp, bool) or not isinstance(timestamp, str | int | float):
+        return None
+    try:
+        parsed_timestamp = arg_to_datetime(timestamp)
+    except Exception:
+        demisto.debug(f"Failed to parse the '{timestamp}' time stamp.")
+        return None
+
+    if not parsed_timestamp:
+        return None
+    if parsed_timestamp.tzinfo is None:
+        return parsed_timestamp.replace(tzinfo=timezone.utc)
+    return parsed_timestamp.astimezone(timezone.utc)
+
+
+def get_hash_type_of_ioc(hash_type: str, value: str) -> str:
+    """
+    Get the normalized hash type of the given hash value.
+
+    The type provided by the source is used when it is supported, otherwise it is derived from the length of the hash.
+
+    :type hash_type: ``str``
+    :param hash_type: Type of the hash provided by the source.
+
+    :type value: ``str``
+    :param value: Hash value.
+
+    :rtype: ``str``
+    :return: One of the "md5", "sha1" or "sha256" hash types, empty string if the hash type is not supported.
+    """
+    normalized_hash_type = hash_type.strip().lower().replace("-", "").replace(" ", "") if hash_type else ""
+    if normalized_hash_type not in SUPPORTED_HASH_TYPES:
+        # The type is either missing or not supported, so derive it from the length of the hash value.
+        normalized_hash_type = HASH_LENGTH_TO_TYPE.get(len(value), "")
+    # Make sure the hash value matches the length of the resolved hash type.
+    if normalized_hash_type and HASH_LENGTH_TO_TYPE.get(len(value)) != normalized_hash_type:
+        return ""
+    return normalized_hash_type
+
+
+def get_related_entity_names(alert: dict, entity_type: str) -> list:
+    """
+    Get the names of the malware or the threat actors of the alert, as they are set on their custom indicators.
+
+    :type alert: ``dict``
+    :param alert: Alert data.
+
+    :type entity_type: ``str``
+    :param entity_type: Type of the entity. One of the "malware" or "threatActor".
+
+    :rtype: ``list``
+    :return: Names of the entities of the given type.
+    """
+    prefix = "Malware: [" if entity_type == "malware" else "Threat Actor: ["
+    metadata_key = "malware" if entity_type == "malware" else "threatActors"
+
+    entities = list(demisto.get(alert, f"metadata.cyber.{metadata_key}", []) or [])
+    for intel_agent in alert.get("intelAgents") or []:
+        if not isinstance(intel_agent, dict):
+            continue
+        entities.extend(
+            entity
+            for entity in (intel_agent.get("discoveredEntities") or [])
+            if isinstance(entity, dict) and entity.get("type", "") == entity_type
+        )
+
+    names = []
+    for entity in entities:
+        if not isinstance(entity, dict):
+            continue
+        name = entity.get("name", "")
+        if not name or not isinstance(name, str):
+            continue
+        # The name is already prefixed when the custom indicators of the alert were created before the IOCs.
+        formatted_name = name if name.startswith(prefix) else f"{prefix}{name}]"
+        if formatted_name not in names:
+            names.append(formatted_name)
+
+    return names
+
+
+def create_relationships_for_ioc(ioc: dict) -> list:
+    """
+    Create a list of relationships objects between the IOC and the malware and the threat actors of the alert.
+
+    :type ioc: ``dict``
+    :param ioc: IOC data.
+
+    :return: List of EntityRelationship objects containing all the relationships.
+    :rtype: ``List``
+    """
+    relationships: list = []
+    integration_reliability = demisto.params().get("integrationReliability", DEFAULT_RELIABILITY)
+    entity_a_type = IOC_TYPE_TO_INDICATOR_TYPE.get(ioc.get("type", ""), "")
+
+    if not entity_a_type:
+        # The IOC can not be mapped to an XSOAR indicator type, so the relationships would point to nothing.
+        return relationships
+
+    related_entities = [(name, "Dataminr Pulse Malware Indicator") for name in ioc.get("relatedMalware") or []]
+    related_entities += [(name, "Dataminr Pulse Threat Actor Indicator") for name in ioc.get("relatedThreatActors") or []]
+
+    for entity_b, entity_b_type in related_entities:
+        relationships.append(
+            EntityRelationship(
+                name=EntityRelationship.Relationships.INDICATOR_OF,
+                entity_a=ioc.get("value", ""),
+                entity_a_type=entity_a_type,
+                entity_b=entity_b,
+                entity_b_type=entity_b_type,
+                source_reliability=integration_reliability,
+                brand=VENDOR_NAME,
+            )
+        )
+
+    return relationships
+
+
+def add_ioc(iocs: dict, ioc_type: str, value: Any, alert_context: dict, extra_data: dict | None = None) -> None:
+    """
+    Validate the given IOC value and add it into the dictionary of the IOCs.
+
+    The already existing IOCs are updated instead of duplicating them, which keeps the first seen time stamp of the
+    earliest alert, the last seen time stamp of the latest alert, the highest verdict and the IDs of all the alerts
+    the IOC was extracted from.
+
+    :type iocs: ``dict``
+    :param iocs: Dictionary of the IOCs collected so far, keyed by the type and the value of the IOC.
+
+    :type ioc_type: ``str``
+    :param ioc_type: Type of the IOC. One of the "IP", "URL" or "File".
+
+    :type value: ``Any``
+    :param value: Value of the IOC.
+
+    :type alert_context: ``dict``
+    :param alert_context: Contains the ID, the type and the time stamp of the alert the IOC was extracted from.
+
+    :type extra_data: ``Optional[dict]``
+    :param extra_data: Additional data of the IOC, such as the port of an IP address or the type of a hash.
+
+    :rtype: ``None``
+    :return: None
+    """
+    if not isinstance(value, str):
+        return
+    value = value.strip()
+    if not value:
+        return
+    # The source can report the defanged values, so they are converted back into their original form.
+    value = value.replace("[.]", ".")
+    if ioc_type == IOC_TYPE_FILE:
+        # The hash values are stored in the lower case, as expected by the threat intelligence data store.
+        value = value.lower()
+
+    # Only the valid IP addresses are collected, as the source reports the place holder values as well. The IPv6
+    # addresses are accepted too, as the "is_ip_valid" method only allows the IPv4 ones by default.
+    if ioc_type == IOC_TYPE_IP and not is_ip_valid(value, accept_v6_ips=True):
+        demisto.debug(f"Skipping the invalid '{value}' IP address.")
+        return
+
+    alert_id = str(alert_context.get("alertId") or "")
+    alert_type_name = str(alert_context.get("alertType") or "")
+    timestamp = alert_context.get("alertTimestamp", "")
+    score = ALERT_TYPE_TO_DBOT_SCORE.get(alert_type_name.strip().lower(), Common.DBotScore.NONE)
+
+    ioc = iocs.get((ioc_type, value.lower()))
+    if not ioc:
+        ioc = {
+            "type": ioc_type,
+            "value": value,
+            "verdict": DBOT_SCORE_TO_VERDICT.get(score, "Unknown"),
+            "score": score,
+            "firstSeen": timestamp,
+            "lastSeen": timestamp,
+            "sourceTimeStamp": timestamp,
+            "feed": IOC_FEED_NAME,
+            "alertIds": [],
+            "alertTypes": [],
+            "relatedMalware": [],
+            "relatedThreatActors": [],
+        }
+        iocs[(ioc_type, value.lower())] = ioc
+
+    if score > ioc["score"]:
+        ioc["score"] = score
+        ioc["verdict"] = DBOT_SCORE_TO_VERDICT.get(score, "Unknown")
+
+    first_seen, last_seen = to_datetime(ioc["firstSeen"]), to_datetime(ioc["lastSeen"])
+    current = to_datetime(timestamp)
+    if current and (not first_seen or current < first_seen):
+        ioc["firstSeen"] = timestamp
+    if current and (not last_seen or current > last_seen):
+        # The last seen and the source time stamp always point to the latest alert the IOC was seen in.
+        ioc["lastSeen"] = timestamp
+        ioc["sourceTimeStamp"] = timestamp
+
+    if alert_id and alert_id not in ioc["alertIds"]:
+        ioc["alertIds"].append(alert_id)
+    if alert_type_name and alert_type_name not in ioc["alertTypes"]:
+        ioc["alertTypes"].append(alert_type_name)
+
+    for key in ("relatedMalware", "relatedThreatActors"):
+        for name in alert_context.get(key, []):
+            if name not in ioc[key]:
+                ioc[key].append(name)
+
+    for key, extra_value in (extra_data or {}).items():
+        if not check_empty(extra_value) and check_empty(ioc.get(key)):
+            ioc[key] = extra_value
+
+
+def create_ioc_indicators(alert: dict) -> list:
+    """
+    Create the IP, URL and File IOCs for the alert.
+
+    The IOCs are extracted from the "metadata.cyber" object and from the summaries of the intel agents of the alert.
+
+    :type alert: ``dict``
+    :param alert: Alert data.
+
+    :rtype: ``list``
+    :return: List of the IOCs of the alert.
+    """
+    iocs: dict = {}
+    alert_context = {
+        "alertId": alert.get("alertId", ""),
+        "alertType": demisto.get(alert, "alertType.name", ""),
+        "alertTimestamp": alert.get("alertTimestamp", ""),
+        "relatedMalware": get_related_entity_names(alert, "malware"),
+        "relatedThreatActors": get_related_entity_names(alert, "threatActor"),
+    }
+    for address in demisto.get(alert, "metadata.cyber.addresses", []) or []:
+        if not isinstance(address, dict):
+            continue
+        add_ioc(iocs, IOC_TYPE_IP, address.get("ip"), alert_context, {"port": address.get("port")})
+
+    for url in demisto.get(alert, "metadata.cyber.URL", []) or []:
+        if not isinstance(url, dict):
+            continue
+        add_ioc(iocs, IOC_TYPE_URL, url.get("name"), alert_context)
+
+    for hash_value in demisto.get(alert, "metadata.cyber.hashValues", []) or []:
+        if not isinstance(hash_value, dict):
+            continue
+        value = hash_value.get("value", "")
+        value = value.strip() if isinstance(value, str) else ""
+        hash_type = get_hash_type_of_ioc(hash_value.get("type", ""), value)
+        if not hash_type:
+            # The hash type can not be resolved, so the value is not a valid hash and must not become an IOC.
+            demisto.debug(f"Skipping the '{value}' hash value, as its type can not be resolved.")
+            continue
+        add_ioc(iocs, IOC_TYPE_FILE, value, alert_context, {"hashType": hash_type})
+
+    for intel_agent in alert.get("intelAgents") or []:
+        if not isinstance(intel_agent, dict):
+            continue
+        for summary in intel_agent.get("summary") or []:
+            if not isinstance(summary, dict):
+                continue
+            summary_data = summary.get("data") or {}
+            for data in summary_data if isinstance(summary_data, list) else [summary_data]:
+                if not isinstance(data, dict):
+                    continue
+                for ip_address in argToList(data.get("ipAddress")):
+                    add_ioc(iocs, IOC_TYPE_IP, ip_address, alert_context)
+                for url in argToList(data.get("url") or data.get("URL")):
+                    add_ioc(iocs, IOC_TYPE_URL, url, alert_context)
+
+    return list(iocs.values())
+
+
+def merge_iocs(existing_ioc: dict, new_ioc: dict) -> dict:
+    """
+    Merge two occurrences of the same IOC into a single one.
+
+    The earliest first seen time stamp, the latest last seen time stamp, the highest verdict and the IDs of all the
+    alerts the IOC was seen in are kept.
+
+    :type existing_ioc: ``dict``
+    :param existing_ioc: IOC collected from the alerts processed so far.
+
+    :type new_ioc: ``dict``
+    :param new_ioc: IOC to merge into the existing one.
+
+    :rtype: ``dict``
+    :return: Merged IOC.
+    """
+    merged_ioc = deepcopy(existing_ioc)
+
+    if new_ioc.get("score", Common.DBotScore.NONE) > merged_ioc.get("score", Common.DBotScore.NONE):
+        merged_ioc["score"] = new_ioc.get("score", Common.DBotScore.NONE)
+        merged_ioc["verdict"] = new_ioc.get("verdict", "Unknown")
+
+    first_seen, new_first_seen = to_datetime(merged_ioc.get("firstSeen")), to_datetime(new_ioc.get("firstSeen"))
+    if new_first_seen and (not first_seen or new_first_seen < first_seen):
+        merged_ioc["firstSeen"] = new_ioc.get("firstSeen")
+
+    last_seen, new_last_seen = to_datetime(merged_ioc.get("lastSeen")), to_datetime(new_ioc.get("lastSeen"))
+    if new_last_seen and (not last_seen or new_last_seen > last_seen):
+        # The last seen and the source time stamp always point to the latest alert the IOC was seen in.
+        merged_ioc["lastSeen"] = new_ioc.get("lastSeen")
+        merged_ioc["sourceTimeStamp"] = new_ioc.get("sourceTimeStamp") or new_ioc.get("lastSeen")
+
+    for key in ("alertIds", "alertTypes", "relatedMalware", "relatedThreatActors"):
+        merged_values = merged_ioc.get(key, [])
+        for value in new_ioc.get(key, []):
+            if value not in merged_values:
+                merged_values.append(value)
+        merged_ioc[key] = merged_values
+
+    for key, value in new_ioc.items():
+        if not check_empty(value) and check_empty(merged_ioc.get(key)):
+            merged_ioc[key] = value
+
+    # The verdict always reflects the highest score of the merged IOC, as the verdict of the IOC holding the lower score
+    # would contradict it.
+    merged_ioc["verdict"] = DBOT_SCORE_TO_VERDICT.get(merged_ioc.get("score", Common.DBotScore.NONE), "Unknown")
+
+    return merged_ioc
+
+
+def build_ioc_indicator(ioc: dict, relationships: list | None = None) -> Any:
+    """
+    Build the standard XSOAR indicator object of the given IOC.
+
+    :type ioc: ``dict``
+    :param ioc: IOC data.
+
+    :type relationships: ``Optional[list]``
+    :param relationships: List of EntityRelationship objects of the IOC.
+
+    :rtype: ``Any``
+    :return: One of the "Common.IP", "Common.URL" or "Common.File" indicator objects, None for an unsupported IOC.
+    """
+    ioc_type = ioc.get("type", "")
+    value = str(ioc.get("value") or "")
+
+    if ioc_type not in IOC_TYPE_TO_INDICATOR_TYPE or not value:
+        return None
+
+    # The hash type must be resolvable, otherwise the value is not a valid hash and must not be reported as an indicator.
+    hash_type = get_hash_type_of_ioc(str(ioc.get("hashType") or ""), value)
+    if ioc_type == IOC_TYPE_FILE and hash_type not in SUPPORTED_HASH_TYPES:
+        demisto.debug(f"Skipping the '{value}' File IOC, as its hash type can not be resolved.")
+        return None
+
+    dbot_score = Common.DBotScore(
+        indicator=value,
+        indicator_type=IOC_TYPE_TO_DBOT_SCORE_TYPE.get(ioc_type, DBotScoreType.CUSTOM),
+        integration_name=VENDOR_NAME,
+        score=ioc.get("score", Common.DBotScore.NONE),
+        reliability=demisto.params().get("integrationReliability", DEFAULT_RELIABILITY),
+    )
+
+    common_arguments = {
+        "dbot_score": dbot_score,
+        "first_seen_by_source": ioc.get("firstSeen"),
+        "last_seen_by_source": ioc.get("lastSeen"),
+        "relationships": relationships,
+    }
+
+    if ioc_type == IOC_TYPE_IP:
+        return Common.IP(ip=value, port=ioc.get("port"), **common_arguments)
+    if ioc_type == IOC_TYPE_URL:
+        return Common.URL(url=value, **common_arguments)
+    hash_argument: Dict[str, Any] = {hash_type: value}
+    return Common.File(**hash_argument, **common_arguments)
+
+
+def prepare_ioc_for_creation(ioc: dict) -> dict:
+    """
+    Prepare the IOC to be created in the threat intelligence data store.
+
+    :type ioc: ``dict``
+    :param ioc: IOC data.
+
+    :rtype: ``dict``
+    :return: IOC in the format expected by the "demisto.createIndicators" method.
+    """
+    return {
+        "value": ioc.get("value", ""),
+        "type": IOC_TYPE_TO_INDICATOR_TYPE.get(ioc.get("type", ""), ""),
+        "score": ioc.get("score", Common.DBotScore.NONE),
+        "rawJSON": ioc,
+        "fields": remove_empty_elements(
+            {
+                "firstseenbysource": ioc.get("firstSeen", ""),
+                "lastseenbysource": ioc.get("lastSeen", ""),
+                "source": IOC_FEED_NAME,
+                "tags": [IOC_FEED_NAME],
+            }
+        ),
+    }
+
+
+def prepare_hr_for_ioc(ioc: dict) -> str:
+    """
+    Prepare the human readable output of the given IOC.
+
+    :type ioc: ``dict``
+    :param ioc: IOC data.
+
+    :rtype: ``str``
+    :return: Human readable output.
+    """
+    hr_output = {
+        "Type": ioc.get("type", ""),
+        "Value": ioc.get("value", ""),
+        "Verdict": ioc.get("verdict", ""),
+        "First Seen": ioc.get("firstSeen", ""),
+        "Last Seen": ioc.get("lastSeen", ""),
+        "Source Time Stamp": ioc.get("sourceTimeStamp", ""),
+        "Alert IDs": ", ".join(str(alert_id) for alert_id in ioc.get("alertIds") or []),
+        "Alert Types": ", ".join(str(alert_type) for alert_type in ioc.get("alertTypes") or []),
+        "Feed": ioc.get("feed", ""),
+        "Related Malware": ", ".join(str(name) for name in ioc.get("relatedMalware") or []),
+        "Related Threat Actors": ", ".join(str(name) for name in ioc.get("relatedThreatActors") or []),
+    }
+    headers = [
+        "Type",
+        "Value",
+        "Verdict",
+        "First Seen",
+        "Last Seen",
+        "Source Time Stamp",
+        "Alert IDs",
+        "Alert Types",
+        "Feed",
+        "Related Malware",
+        "Related Threat Actors",
+    ]
+    return tableToMarkdown("IOC", hr_output, headers, removeNull=True)
+
+
 def create_flight_data(alert: dict) -> dict:
     """
     Create flight data for the alert.
@@ -976,6 +1464,9 @@ def fetch_incidents(
 
         threat_actors_indicators = create_threat_actors_indicators(alert)
         alert["threat_actors_indicators"] = threat_actors_indicators
+
+        ioc_indicators = create_ioc_indicators(alert)
+        alert["ioc_indicators"] = ioc_indicators
 
         flight_data = create_flight_data(alert)
         alert["flight_data"] = flight_data
@@ -1303,6 +1794,97 @@ def dataminrpulse_threat_actor_enrich_command(client: DataminrPulseReGenAIClient
     return results
 
 
+def dataminrpulse_ioc_enrich_command(client: DataminrPulseReGenAIClient, args: Dict[str, Any]) -> list[CommandResults]:
+    """
+    Enrich the "IP", "URL" and "File" indicators with relevant data.
+
+    The IOCs are extracted from the "metadata.cyber" object and from the summaries of the intel agents of the alerts,
+    validated, de-duplicated and then created in the native threat intelligence data store.
+
+    :type client: ``DataminrPulseReGenAIClient``
+    :param client: DataminrPulseReGenAIClient to be used.
+
+    :type args: ``Dict[str, Any]``
+    :param args: Arguments provided by user.
+
+    :rtype: ``list[CommandResults]``
+    :return: Standard command results.
+    """
+    ioc_json_data: Any = args.get("ioc_json_data")
+
+    if not ioc_json_data:
+        raise ValueError(ERRORS["REQUIRED_ARG"].format("ioc_json_data"))
+
+    try:
+        alerts = json.loads(ioc_json_data)
+    except json.JSONDecodeError:
+        raise ValueError(ERRORS["JSON_DECODE"].format("ioc_json_data"))
+
+    if isinstance(alerts, dict):
+        alerts = [alerts]
+    elif not isinstance(alerts, list):
+        raise ValueError(ERRORS["JSON_DECODE"].format("ioc_json_data"))
+
+    iocs: dict = {}
+    for alert in alerts:
+        if not isinstance(alert, dict):
+            continue
+        # Support both the raw alerts and the IOCs already extracted from the alerts by the fetch-incidents mechanism.
+        is_extracted_ioc = alert.get("type") in IOC_TYPE_TO_INDICATOR_TYPE and isinstance(alert.get("value"), str)
+        extracted_iocs = [alert] if is_extracted_ioc else create_ioc_indicators(alert)
+        for ioc in extracted_iocs:
+            key = (ioc.get("type", ""), str(ioc.get("value") or "").lower())
+            if key in iocs:
+                # The same IOC was seen in an earlier alert, so merge both of them instead of duplicating it.
+                iocs[key] = merge_iocs(iocs[key], ioc)
+            else:
+                iocs[key] = ioc
+
+    ioc_list = list(iocs.values())
+    if not ioc_list:
+        return CommandResults(readable_output="No IOCs found.")  # type: ignore
+
+    results = []
+    indicators_to_create = []
+
+    for ioc in ioc_list:
+        if not IOC_TYPE_TO_INDICATOR_TYPE.get(ioc.get("type", "")):
+            # The IOC can not be mapped to an XSOAR indicator type, so it would be rejected by the data store.
+            demisto.debug(f"Skipping the IOC with the unsupported '{ioc.get('type', '')}' type.")
+            continue
+
+        relationships = []
+        if demisto.params().get("create_relationships", True):
+            relationships = create_relationships_for_ioc(ioc)
+
+        indicator = build_ioc_indicator(ioc, relationships)
+        if not indicator:
+            # The IOC can not be represented as an XSOAR indicator, so it must not be created in the data store either.
+            continue
+
+        indicators_to_create.append(prepare_ioc_for_creation(ioc))
+
+        results.append(
+            CommandResults(
+                outputs=remove_empty_elements(ioc),
+                outputs_prefix=CUSTOM_OUTPUT_PREFIX.format("IOC"),
+                # The same value can be reported as more than one type of the IOC, so both of them form the key.
+                outputs_key_field=["type", "value"],
+                indicator=indicator,
+                raw_response=ioc,
+                readable_output=prepare_hr_for_ioc(ioc),
+            )
+        )
+
+    if not indicators_to_create:
+        return CommandResults(readable_output="No IOCs found.")  # type: ignore
+
+    demisto.debug(f"Creating {len(indicators_to_create)} IOCs in the threat intelligence data store.")
+    demisto.createIndicators(indicators_to_create)
+
+    return results
+
+
 def main():
     """main function, parses params and runs command functions"""
 
@@ -1331,6 +1913,7 @@ def main():
         "dataminrpulse-vulnerability-enrich": dataminrpulse_vulnerability_enrich_command,
         "dataminrpulse-malware-enrich": dataminrpulse_malware_enrich_command,
         "dataminrpulse-threat-actor-enrich": dataminrpulse_threat_actor_enrich_command,
+        "dataminrpulse-ioc-enrich": dataminrpulse_ioc_enrich_command,
     }
 
     try:

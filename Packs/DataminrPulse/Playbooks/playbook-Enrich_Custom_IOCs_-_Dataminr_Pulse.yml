@@ -24,8 +24,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 40
+          "x": 500,
+          "y": 30
         }
       }
     note: false
@@ -52,8 +52,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 1423
+          "x": 500,
+          "y": 1463
         }
       }
     note: false
@@ -87,8 +87,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -550,
-          "y": 535
+          "x": 30,
+          "y": 430
         }
       }
     note: false
@@ -142,8 +142,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 205
+          "x": 500,
+          "y": 215
         }
       }
     note: false
@@ -176,6 +176,7 @@ tasks:
       - "69"
       - "68"
       - "70"
+      - "78"
     scriptarguments:
       key:
         simple: DataminrPulseThreatActorIndicator,DataminrPulseMalwareIndicator,DataminrPulseVulnerabilityIndicator
@@ -186,7 +187,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
+          "x": 500,
           "y": 430
         }
       }
@@ -224,7 +225,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1195
+          "y": 1215
         }
       }
     note: false
@@ -260,7 +261,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 690,
+          "x": 720,
           "y": 1030
         }
       }
@@ -297,7 +298,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -170,
+          "x": -200,
           "y": 1030
         }
       }
@@ -328,7 +329,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -170,
+          "x": -200,
           "y": 630
         }
       }
@@ -403,10 +404,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: a8bd2513-746f-4e43-879c-6ef6966ec5fb
+    taskid: 9808ef7d-7c39-41a3-b3bd-0685a8518b36
     type: condition
     task:
-      id: a8bd2513-746f-4e43-879c-6ef6966ec5fb
+      id: 9808ef7d-7c39-41a3-b3bd-0685a8518b36
       version: -1
       name: Is Malware Data Present?
       description: Checking for the Malware data.
@@ -443,7 +444,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 690,
+          "x": 720,
           "y": 780
         }
       }
@@ -549,7 +550,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -170,
+          "x": -200,
           "y": 780
         }
       }
@@ -627,8 +628,129 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1070,
-          "y": 535
+          "x": 960,
+          "y": 430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: 0b160343-4a44-4acc-bdd0-dbae2564a76a
+    type: condition
+    task:
+      id: 0b160343-4a44-4acc-bdd0-dbae2564a76a
+      version: -1
+      name: Is IOC Data Present?
+      description: Checking for the IOC data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident.labels.ioc_indicators
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: incident.labels.ioc_indicators
+                      iscontext: true
+                    right:
+                      value:
+                        simple: '[]'
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: 13e9594d-4360-496d-840f-2a7a3807eb0c
+    type: regular
+    task:
+      id: 13e9594d-4360-496d-840f-2a7a3807eb0c
+      version: -1
+      name: dataminrpulse-ioc-enrich
+      description: Enrich the "IP", "URL", and "File" indicators with relevant data.
+      script: '|||dataminrpulse-ioc-enrich'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      ioc_json_data:
+        complex:
+          root: inputs.ioc_indicators
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 94464c07-9805-40f8-85a4-c67f8212c0c5
+    type: title
+    task:
+      id: 94464c07-9805-40f8-85a4-c67f8212c0c5
+      version: -1
+      name: Enrich IP, File, URL IOC
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "76"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1170,
+          "y": 630
         }
       }
     note: false
@@ -641,21 +763,23 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "5_4_#default#": 0.57,
+      "5_4_#default#": 0.5,
       "5_61_yes": 0.59,
-      "71_2_#default#": 0.15,
+      "71_2_#default#": 0.18,
       "71_66_yes": 0.55,
-      "72_2_#default#": 0.15,
+      "72_2_#default#": 0.18,
       "72_74_yes": 0.52,
-      "73_2_#default#": 0.16,
-      "73_67_yes": 0.53
+      "73_2_#default#": 0.12,
+      "73_67_yes": 0.53,
+      "76_2_#default#": 0.14,
+      "76_77_yes": 0.55
     },
     "paper": {
       "dimensions": {
-        "height": 1448,
-        "width": 2000,
-        "x": -550,
-        "y": 40
+        "height": 1493,
+        "width": 1750,
+        "x": -200,
+        "y": 30
       }
     }
   }
@@ -684,9 +808,15 @@ inputs:
   required: false
   description: List of threat actor indicators.
   playbookInputQuery:
+- key: ioc_indicators
+  value:
+    complex:
+      root: incident.labels
+      accessor: ioc_indicators
+  required: false
+  description: List of IP, URL and File indicators.
+  playbookInputQuery:
 outputs: []
 tests:
 - DataminrPulse-Test
 fromversion: 6.10.0
-marketplaces:
-- xsoar
