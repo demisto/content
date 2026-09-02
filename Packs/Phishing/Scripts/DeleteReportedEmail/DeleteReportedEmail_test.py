@@ -120,28 +120,6 @@ def test_extract_graph_objects():
     assert DeleteReportedEmail._extract_graph_objects(None) == []
 
 
-def execute_command_search_and_compliance_not_deleted_yet(command, args):
-    if command == "o365-sc-get-search" and args:  # noqa: RET503
-        return [{"Status": "Completed"}]
-    elif command == "o365-sc-list-search-action":
-        return []
-    elif command == "o365-sc-new-search-action":
-        return None
-    elif command == "o365-sc-get-search-action":
-        return {"Status": "Starting"}
-
-
-def execute_command_search_and_compliance_deleted_successfully(command, args):
-    if command == "o365-sc-get-search" and args:  # noqa: RET503
-        return [{"Status": "Completed"}]
-    elif command == "o365-sc-list-search-action":
-        return [{"Name": "search_name_Purge"}]
-    elif command == "o365-sc-new-search-action":
-        return None
-    elif command == "o365-sc-get-search-action":
-        return {"Status": "Completed"}
-
-
 class TestMicrosoftGraphSecurityDeleteMail:
     @pytest.fixture(autouse=True)
     def setup(self, mocker):
@@ -294,8 +272,6 @@ ADDED_SEARCH_ARGS = {
         "user_id": "reportedemailto",
         "odata": "$filter=internetMessageId eq '%3Creportedemail%40messageid%3E'",
     },
-    "SecurityAndCompliance": {"to_user_id": "reportedemailto", "from_user_id": "reportedemailfrom"},
-    "SecurityAndComplianceV2": {"to_user_id": "reportedemailto", "from_user_id": "reportedemailfrom"},
     "Microsoft Graph": {"to_user_id": "reportedemailto"},
 }
 
@@ -308,8 +284,6 @@ ADDED_SEARCH_ARGS = {
         "EWS v2",
         "Agari Phishing Defense",
         "MicrosoftGraphMail",
-        "SecurityAndCompliance",
-        "SecurityAndComplianceV2",
         "Microsoft Graph",
     ],
 )
@@ -380,7 +354,7 @@ def test_schedule_next_command(mocker):
     Given:
         Script args
     When:
-        Initiating a delete using security and compliance
+        Initiating a delete using the Microsoft Graph eDiscovery polling flow
     Then:
         Return a ScheduledCommand object
 

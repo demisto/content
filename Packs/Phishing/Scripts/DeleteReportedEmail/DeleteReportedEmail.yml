@@ -1,5 +1,5 @@
 args:
-- description: 'The type of deletion - soft allows restoring, hard does not. Not relevant for O365.'
+- description: 'The type of deletion - soft allows restoring, hard does not.'
   name: delete_type
   auto: PREDEFINED
   predefined:
@@ -7,8 +7,6 @@ args:
   - hard
 - description: 'The brand from which to delete this email. The default value is the incident using brand.'
   name: delete_from_brand
-- description: 'Argument used for the generic polling flow within the security and compliance search.'
-  name: search_name
 - description: 'Argument used for the MS Graph eDiscovery polling flow to hold the case ID. Should not be set by the user.'
   name: case_id
   hidden: true

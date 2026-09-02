@@ -14,8 +14,6 @@ EMAIL_INTEGRATIONS = [
     "EWS v2",
     "Agari Phishing Defense",
     "MicrosoftGraphMail",
-    "SecurityAndCompliance",
-    "SecurityAndComplianceV2",
     "Microsoft Graph",
 ]
 # RFC 5322 msg-id is <id-left@id-right> with a constrained charset
@@ -125,7 +123,7 @@ def check_demisto_version():
     """
     if not is_demisto_version_ge("6.2.0"):
         raise DemistoException(
-            "Deleting an email using this script for Security And Compliance integration is not "
+            "Deleting an email using this script with the Microsoft Graph eDiscovery flow is not "
             "supported by this Cortex XSOAR server version. Please update your server version to 6.2.0 "
             "or later."
         )
@@ -143,11 +141,12 @@ def schedule_next_command(args: dict):
         "polling": True,
         **args,
     }
+    # The timeout was increased to 300 sec due to the slowness of the Microsoft eDiscovery process.
     return ScheduledCommand(
         command="DeleteReportedEmail",
         next_run_in_seconds=60,
         args=polling_args,
-        timeout_in_seconds=600,
+        timeout_in_seconds=300,
     )
 
 
@@ -487,7 +486,6 @@ def get_search_args(args: dict):
         raise DemistoException(f"Refusing suspicious Message-ID: {message_id!r}")
     user_id = custom_fields.get("reportedemailto")
     email_subject = custom_fields.get("reportedemailsubject")
-    from_user_id = custom_fields.get("reportedemailfrom")
     email_origin = custom_fields.get("reportedemailorigin")
     delete_type = args.get("delete_type", custom_fields.get("emaildeletetype", "soft"))
     delete_from_brand = delete_from_brand_handler(incident_info, args)
@@ -525,8 +523,6 @@ def get_search_args(args: dict):
             "user_id": user_id,
             "odata": "$filter=internetMessageId eq '{}'".format(quote(unquote(message_id).replace("'", "''"), safe="")),
         },
-        "SecurityAndCompliance": {"to_user_id": user_id, "from_user_id": from_user_id},
-        "SecurityAndComplianceV2": {"to_user_id": user_id, "from_user_id": from_user_id},
         "Microsoft Graph": {"to_user_id": user_id},
     }
 
@@ -570,9 +566,8 @@ def main():
     delete_from_brand = search_args["using-brand"]
 
     try:
-        if delete_from_brand in ["SecurityAndCompliance", "SecurityAndComplianceV2", "Microsoft Graph"]:
+        if delete_from_brand == "Microsoft Graph":
             demisto.debug("Routing to Microsoft Graph Security eDiscovery flow.")
-            search_args["using-brand"] = "Microsoft Graph"
             graph_security_args = {k.replace("-", "_"): v for k, v in search_args.items()}
             result, scheduled_command = microsoft_graph_security_delete_mail(args, **graph_security_args)
 
