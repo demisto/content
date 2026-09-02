@@ -44,13 +44,6 @@ configuration:
   required: false
   type: 0
   section: Connect
-- display: EPM API Version
-  name: epm_api_version
-  required: false
-  type: 0
-  section: Connect
-  additionalinfo: 'The EPM API version used as a URL path segment in the data-call paths (/EPM/API/<Version>/Sets). Applies to the Idira OAuth authentication method only. Leave empty (recommended) to use the latest version deployed on your tenant. If you do set a value, it must be four dot-separated numbers (x.x.x.x).'
-  advanced: true
 - display: Username
   name: credentials
   required: true

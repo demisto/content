@@ -1,9 +1,7 @@
 import json
 
 import pytest
-import requests
 
-import demistomock as demisto
 from CommonServerPython import *  # noqa: F403
 from CyberArkEPMEventCollector import (
     Client,
@@ -14,13 +12,12 @@ from CyberArkEPMEventCollector import (
     fetch_events,
     get_events_command,
     get_set_ids_by_set_names,
-    normalize_epm_api_version,
     normalize_server_url,
     parse_set_names,
     prepare_datetime,
     prepare_next_run,
-    probe_versionless_api_path,
     reconcile_last_run_with_current_sets,
+    reconcile_split_set_names,
     # Aliased: pytest would otherwise collect the integration's `test_module` command as a test case
     # and fail it on a missing `client` fixture.
     test_module as run_test_module,
@@ -463,7 +460,7 @@ def test_oauth_uses_server_url_as_base_url(mocker, requests_mock):
     assert requests_mock.call_count == 1
     assert client._headers["Authorization"] == "Bearer TOKEN123"
     # Data calls must use the uppercase, versioned EPM SET API path (matches CyberArk Postman).
-    assert client._base_url == f"{server_url}/EPM/API/26.8.0.0/"
+    assert client._base_url == f"{server_url}/EPM/API/"
 
 
 def test_client_configuration_debug_log_for_oauth(mocker, requests_mock):
@@ -495,13 +492,12 @@ def test_client_configuration_debug_log_for_oauth(mocker, requests_mock):
         identity_url=identity_url,
         web_app_id="web-app-1",
         server_url=server_url,
-        epm_api_version="26.8.0.0",
     )
 
     config_logs = [call.args[0] for call in debug.call_args_list if call.args[0].startswith("[Client] Configuration:")]
     assert len(config_logs) == 1
     config_log = config_logs[0]
-    for expected in ("Idira OAuth", identity_url, server_url, "web-app-1", "26.8.0", "has_username=True", "has_password=True"):
+    for expected in ("Idira OAuth", identity_url, server_url, "web-app-1", "has_username=True", "has_password=True"):
         assert expected in config_log
 
     all_logs = " ".join(call.args[0] for call in debug.call_args_list)
@@ -619,79 +615,6 @@ def test_client_configuration_debug_log_reports_missing_credentials(requests_moc
     assert "has_password=False" in config_log
 
 
-@pytest.mark.parametrize(
-    "raw_value, expected_version",
-    [
-        pytest.param(None, "", id="not_configured_selects_the_version_less_path"),
-        pytest.param("", "", id="empty_string_selects_the_version_less_path"),
-        pytest.param("   ", "", id="whitespace_only_selects_the_version_less_path"),
-        pytest.param("/", "", id="slash_only_selects_the_version_less_path"),
-        pytest.param("///", "", id="multiple_slashes_only_select_the_version_less_path"),
-        pytest.param(" / ", "", id="mixed_whitespace_and_slash_only_selects_the_version_less_path"),
-        pytest.param("26.8.0.900", "26.8.0.900", id="custom_four_segment_version"),
-        pytest.param("11.5.0.1", "11.5.0.1", id="older_four_segment_release"),
-        pytest.param(" /26.8.0.0/ ", "26.8.0.0", id="surrounding_whitespace_and_slashes_are_trimmed"),
-    ],
-)
-def test_normalize_epm_api_version(raw_value, expected_version):
-    """
-    Given:
-        - An *EPM API Version* parameter value: unset/empty, consisting only of whitespace and/or
-          slashes, a four-segment version, or a four-segment version padded with whitespace
-          and slashes.
-
-    When:
-        - Normalizing the raw parameter at the parameter-parsing layer.
-
-    Then:
-        - A supplied version is returned verbatim, apart from trimming whitespace and slashes.
-        - Any value that is empty once trimmed yields an empty string, which selects the
-          version-less path. A stray space or slash therefore can never produce a malformed
-          "/EPM/API//" path, and an operator who leaves the field blank gets whichever version the
-          tenant currently runs rather than a pin that will eventually go stale.
-    """
-    normalized = normalize_epm_api_version(raw_value)
-
-    assert normalized == expected_version
-    assert normalized.strip().strip("/") == normalized
-
-
-@pytest.mark.parametrize(
-    "raw_value",
-    [
-        pytest.param("26.8.0", id="three_segments_the_reported_defect"),
-        pytest.param("26.8", id="two_segments"),
-        pytest.param("26", id="one_segment"),
-        pytest.param("26.8.0.0.0", id="five_segments"),
-        pytest.param("v26.8.0.0", id="leading_v_prefix"),
-        pytest.param("abc.d.e.f", id="four_non_numeric_segments"),
-        pytest.param("26.8.0.x", id="trailing_non_numeric_segment"),
-        pytest.param("latest", id="the_word_latest"),
-    ],
-)
-def test_normalize_epm_api_version_rejects_malformed_values(raw_value):
-    """
-    Given:
-        - An *EPM API Version* value that is not four dot-separated numbers.
-
-    When:
-        - Normalizing the raw parameter at the parameter-parsing layer.
-
-    Then:
-        - A DemistoException is raised naming the offending value and the required format, rather
-          than letting the malformed segment reach the API. The EPM router matches the
-          version segment on shape alone, so anything other than "x.x.x.x" produces a bare 404 that
-          tells the operator nothing. Failing here converts that into an actionable message.
-    """
-    with pytest.raises(DemistoException, match="Invalid EPM API Version") as raised:
-        normalize_epm_api_version(raw_value)
-
-    # The message must name the offending value and the required format - a bare "invalid input"
-    # would leave the operator exactly as stuck as the 404 it replaces.
-    assert raw_value.strip() in str(raised.value)
-    assert "four" in str(raised.value)
-
-
 OAUTH_IDENTITY_URL = "https://tenant.id.cyberark.cloud"
 OAUTH_SERVER_URL = "https://example.epm.cyberark.com"
 
@@ -704,8 +627,8 @@ def _mock_oauth_token(mocker, requests_mock):
     requests_mock.post(f"{OAUTH_IDENTITY_URL}/oauth2/token/web-app-1", json={"access_token": "TOKEN123", "expires_in": 900})
 
 
-def _build_oauth_client_with_version(mocker, requests_mock, epm_api_version: str) -> Client:
-    """Build an Idira OAuth Client with an explicit `epm_api_version`."""
+def _build_oauth_client_versionless(mocker, requests_mock) -> Client:
+    """Build an authenticated Idira OAuth Client, with the token endpoint stubbed."""
     _mock_oauth_token(mocker, requests_mock)
     return Client(
         base_url="",
@@ -716,84 +639,29 @@ def _build_oauth_client_with_version(mocker, requests_mock, epm_api_version: str
         identity_url=OAUTH_IDENTITY_URL,
         web_app_id="web-app-1",
         server_url=OAUTH_SERVER_URL,
-        epm_api_version=epm_api_version,
     )
 
 
-@pytest.mark.parametrize(
-    "epm_api_version, expected_version",
-    [
-        pytest.param("26.9.0", "26.9.0", id="custom_three_segment_version"),
-        pytest.param("26.8", "26.8", id="custom_two_segment_version"),
-        pytest.param("26.8.0.900", "26.8.0.900", id="custom_four_segment_version_per_vendor_docs"),
-    ],
-)
-def test_oauth_base_url_uses_configured_epm_api_version(mocker, requests_mock, epm_api_version, expected_version):
+def test_oauth_base_url_is_always_version_less(mocker, requests_mock):
     """
     Given:
-        - An Idira OAuth configuration receiving an already-normalized *EPM API Version*.
+        - An Idira OAuth configuration.
 
     When:
         - Building the Client (which performs the OAuth authentication flow).
 
     Then:
-        - The EPM SET API base URL embeds the given version verbatim, so an operator who needs to
-          pin a specific version still gets exactly that version.
+        - The data-plane base URL is the version-less form `/EPM/API/`, which CyberArk resolves to
+          whichever version the tenant currently runs. A pinned version segment is only ever a
+          routing token that can go stale, and when it does the request fails as a bare 404 with
+          nothing to explain it. Confirmed against a live tenant: `GET /EPM/API/Sets` returned 200.
+        - There is no empty path segment, which is what a "/EPM/API//" form would produce and which
+          the EPM router answers with a 404.
     """
-    client = _build_oauth_client_with_version(mocker, requests_mock, epm_api_version)
-
-    assert client._base_url == f"{OAUTH_SERVER_URL}/EPM/API/{expected_version}/"
-    assert "//" not in client._base_url.removeprefix("https://")
-
-
-def test_oauth_base_url_omits_the_version_segment_when_none_is_configured(mocker, requests_mock):
-    """
-    Given:
-        - An Idira OAuth configuration whose *EPM API Version* was left empty, which
-          `normalize_epm_api_version` turns into an empty string.
-
-    When:
-        - Building the Client.
-
-    Then:
-        - The base URL is the version-less form `/EPM/API/`, which CyberArk resolves to the latest
-          version deployed on the tenant. Confirmed against a live tenant with a valid token:
-          `GET /EPM/API/Sets` returned 200.
-        - Crucially there is no empty segment: interpolating "" into the versioned template would
-          produce "/EPM/API//" and the EPM router answers that with a 404.
-    """
-    client = _build_oauth_client_with_version(mocker, requests_mock, "")
+    client = _build_oauth_client_versionless(mocker, requests_mock)
 
     assert client._base_url == f"{OAUTH_SERVER_URL}/EPM/API/"
     assert "//" not in client._base_url.removeprefix("https://")
-
-
-def test_oauth_base_url_keeps_the_default_when_the_argument_is_omitted(mocker, requests_mock):
-    """
-    Given:
-        - A Client constructed without passing `epm_api_version` at all, as older direct callers do.
-
-    When:
-        - Building the Client.
-
-    Then:
-        - The four-segment default is used. Omitting the argument (None) is distinct from
-          configuring an empty value (""): the former means "unspecified", the latter is a
-          deliberate request for the version-less path.
-    """
-    _mock_oauth_token(mocker, requests_mock)
-    client = Client(
-        base_url="",
-        username="user",
-        password="pass",
-        application_id="1",
-        auth_method="Idira OAuth",
-        identity_url=OAUTH_IDENTITY_URL,
-        web_app_id="web-app-1",
-        server_url=OAUTH_SERVER_URL,
-    )
-
-    assert client._base_url == f"{OAUTH_SERVER_URL}/EPM/API/26.8.0.0/"
 
 
 @pytest.mark.parametrize(
@@ -847,42 +715,25 @@ def test_oauth_base_url_has_no_double_slash_in_path(mocker, requests_mock):
         - Building the Client.
 
     Then:
-        - The server URL and the version segment are joined without duplicated slashes in the path.
+        - The server URL and the EPM SET API path are joined without duplicated slashes.
     """
-    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
-    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
-    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+    client = _build_oauth_client_versionless(mocker, requests_mock)
 
-    identity_url = "https://tenant.id.cyberark.cloud"
-    requests_mock.post(f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "TOKEN123", "expires_in": 900})
-
-    client = Client(
-        base_url="",
-        username="user",
-        password="pass",
-        application_id="1",
-        auth_method="Idira OAuth",
-        identity_url=identity_url,
-        web_app_id="web-app-1",
-        server_url="https://example.epm.cyberark.com",
-        epm_api_version="26.8.0.0",
-    )
-
-    assert client._base_url == "https://example.epm.cyberark.com/EPM/API/26.8.0.0/"
+    assert client._base_url == f"{OAUTH_SERVER_URL}/EPM/API/"
     assert "//" not in client._base_url.removeprefix("https://")
 
 
-def test_epm_api_version_is_ignored_for_epm_auth_method(requests_mock):
+def test_epm_auth_method_base_url_comes_from_the_logon_response(requests_mock):
     """
     Given:
-        - An EPM (non-OAuth) configuration that nevertheless supplies an *EPM API Version*.
+        - An EPM (non-OAuth) configuration.
 
     When:
         - Building the Client.
 
     Then:
-        - The base URL is still resolved from the logon response and stays unversioned, proving the
-          new parameter is scoped to the Idira OAuth flow and cannot break the other methods.
+        - The base URL is resolved from the logon response's ManagerURL and is untouched by the
+          version-less change, which is scoped to the Idira OAuth flow.
     """
     requests_mock.post(
         "https://example.epm.cyberark.com/EPM/API/Auth/EPM/Logon",
@@ -895,47 +746,28 @@ def test_epm_api_version_is_ignored_for_epm_auth_method(requests_mock):
         password="pass",
         application_id="1",
         auth_method="EPM",
-        epm_api_version="26.9.0",
     )
 
-    assert "26.9.0" not in client._base_url
+    assert client._base_url.startswith("https://example.manager.cyberark.com")
 
 
-def test_oauth_token_refresh_preserves_configured_epm_api_version(mocker, requests_mock):
+def test_oauth_token_refresh_keeps_the_version_less_base_url(mocker, requests_mock):
     """
     Given:
-        - An Idira OAuth Client configured with a non-default EPM API version.
+        - An authenticated Idira OAuth Client.
 
     When:
         - A data request returns 401, triggering the token refresh which re-runs the OAuth flow and
           therefore rebuilds the base URL.
 
     Then:
-        - The rebuilt base URL keeps the configured version rather than reverting to the default,
-          and the retried request is sent to the versioned path.
+        - The rebuilt base URL is still the version-less form, and the retried request succeeds
+          against it. A refresh must not quietly reintroduce a version segment.
     """
-    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
-    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
-    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
-
-    identity_url = "https://tenant.id.cyberark.cloud"
-    server_url = "https://example.epm.cyberark.com"
-
-    requests_mock.post(f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "TOKEN123", "expires_in": 900})
-    client = Client(
-        base_url="",
-        username="user",
-        password="pass",
-        application_id="1",
-        auth_method="Idira OAuth",
-        identity_url=identity_url,
-        web_app_id="web-app-1",
-        server_url=server_url,
-        epm_api_version="26.8",
-    )
+    client = _build_oauth_client_versionless(mocker, requests_mock)
 
     data_matcher = requests_mock.get(
-        f"{server_url}/EPM/API/26.8/Sets",
+        f"{OAUTH_SERVER_URL}/EPM/API/Sets",
         [
             {"status_code": 401, "json": {"error": "unauthorized"}},
             {"status_code": 200, "json": {"Sets": [{"Id": "id1", "Name": "set_name1"}]}},
@@ -946,42 +778,24 @@ def test_oauth_token_refresh_preserves_configured_epm_api_version(mocker, reques
 
     assert result == {"Sets": [{"Id": "id1", "Name": "set_name1"}]}
     assert data_matcher.call_count == 2
-    assert client._base_url == f"{server_url}/EPM/API/26.8/"
+    assert client._base_url == f"{OAUTH_SERVER_URL}/EPM/API/"
 
 
-def test_oauth_data_call_uses_configured_epm_api_version(mocker, requests_mock):
+def test_oauth_data_call_uses_the_version_less_path(mocker, requests_mock):
     """
     Given:
-        - An Idira OAuth Client configured with a non-default EPM API version.
+        - An authenticated Idira OAuth Client.
 
     When:
         - A data request is issued against the Sets endpoint.
 
     Then:
-        - The request is sent to the versioned path built from the configured version, proving the
-          parameter reaches the wire and is not only stored on the client.
+        - The request reaches the version-less URL on the wire, proving the base URL is not merely
+          stored on the client but is what the request actually uses.
     """
-    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
-    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
-    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+    client = _build_oauth_client_versionless(mocker, requests_mock)
 
-    identity_url = "https://tenant.id.cyberark.cloud"
-    server_url = "https://example.epm.cyberark.com"
-
-    requests_mock.post(f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "TOKEN123", "expires_in": 900})
-    client = Client(
-        base_url="",
-        username="user",
-        password="pass",
-        application_id="1",
-        auth_method="Idira OAuth",
-        identity_url=identity_url,
-        web_app_id="web-app-1",
-        server_url=server_url,
-        epm_api_version="26.8",
-    )
-
-    data_matcher = requests_mock.get(f"{server_url}/EPM/API/26.8/Sets", json={"Sets": [{"Id": "id1", "Name": "set_name1"}]})
+    data_matcher = requests_mock.get(f"{OAUTH_SERVER_URL}/EPM/API/Sets", json={"Sets": [{"Id": "id1", "Name": "set_name1"}]})
 
     result = client.get_set_list()
 
@@ -1024,141 +838,12 @@ def test_oauth_missing_server_url_raises(mocker, requests_mock):
     assert token_matcher.call_count == 0
 
 
-@pytest.mark.parametrize(
-    "probe_status, expected_outcome",
-    [
-        pytest.param(200, "SUCCEEDED", id="versionless_path_is_served"),
-        pytest.param(404, "FAILED", id="versionless_path_is_not_served"),
-        pytest.param(401, "FAILED", id="versionless_path_rejects_the_token"),
-        pytest.param(500, "FAILED", id="versionless_path_server_error"),
-    ],
-)
-def test_probe_versionless_api_path_logs_outcome(mocker, requests_mock, probe_status, expected_outcome):
-    """
-    Given:
-        - An authenticated Idira OAuth client, and a version-less `/EPM/API/Sets` endpoint that
-          responds with success, not-found, unauthorized, or a server error.
-
-    When:
-        - Running the temporary diagnostic probe.
-
-    Then:
-        - The outcome and the HTTP status are written to the debug log, so we can learn from real
-          tenants whether the version-less path is viable.
-        - The probe returns normally in every case - it reports, it never judges.
-    """
-    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
-    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
-    debug_log = mocker.patch.object(demisto, "debug")
-
-    identity_url = "https://tenant.id.cyberark.cloud"
-    server_url = "https://example.epm.cyberark.com"
-    client, _ = _build_oauth_client(requests_mock, identity_url, server_url)
-    probe_matcher = requests_mock.get(f"{server_url}/EPM/API/Sets", status_code=probe_status, json={})
-
-    probe_versionless_api_path(client)
-
-    assert probe_matcher.called
-    probe_logs = [call.args[0] for call in debug_log.call_args_list if "[VersionlessProbe]" in str(call.args[0])]
-    assert len(probe_logs) == 1, "the probe must log its outcome exactly once"
-    assert expected_outcome in probe_logs[0]
-    assert str(probe_status) in probe_logs[0]
-    # The versioned base URL stays in force regardless of what the probe found.
-    assert client._base_url == f"{server_url}/EPM/API/26.8.0.0/"
-
-
-def test_probe_versionless_api_path_swallows_exceptions(mocker, requests_mock):
-    """
-    Given:
-        - An authenticated client, and a version-less endpoint that raises a transport-level error
-          (connection failure, DNS failure, timeout) rather than returning a response.
-
-    When:
-        - Running the temporary diagnostic probe.
-
-    Then:
-        - No exception escapes. This is the whole contract of the probe: a diagnostic must never be
-          able to fail the flow it is measuring, so a broken probe can never fail test-module.
-        - The failure is still recorded in the debug log, naming the exception type.
-    """
-    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
-    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
-    debug_log = mocker.patch.object(demisto, "debug")
-
-    identity_url = "https://tenant.id.cyberark.cloud"
-    server_url = "https://example.epm.cyberark.com"
-    client, _ = _build_oauth_client(requests_mock, identity_url, server_url)
-    requests_mock.get(f"{server_url}/EPM/API/Sets", exc=requests.exceptions.ConnectTimeout)
-
-    # Must not raise.
-    probe_versionless_api_path(client)
-
-    probe_logs = [call.args[0] for call in debug_log.call_args_list if "[VersionlessProbe]" in str(call.args[0])]
-    assert len(probe_logs) == 1
-    assert "FAILED" in probe_logs[0]
-    # BaseClient wraps transport errors in DemistoException, so assert on the underlying cause
-    # that the message carries rather than on the raw requests exception class.
-    assert "Connection Time" in probe_logs[0]
-
-
-def test_test_module_still_passes_when_probe_fails(mocker, requests_mock):
-    """
-    Given:
-        - A working Idira OAuth instance whose real test fetch succeeds, and a version-less probe
-          endpoint that blows up.
-
-    When:
-        - Running test-module.
-
-    Then:
-        - test-module still returns 'ok'. The probe runs after the real test and its result is
-          discarded, so the customer's Test button reflects only genuine connectivity.
-    """
-    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
-    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
-    debug_log = mocker.patch.object(demisto, "debug")
-
-    identity_url = "https://tenant.id.cyberark.cloud"
-    server_url = "https://example.epm.cyberark.com"
-    client, _ = _build_oauth_client(requests_mock, identity_url, server_url)
-
-    # The real test fetch succeeds (no sets configured -> nothing to collect)...
-    requests_mock.get(f"{server_url}/EPM/API/26.8.0.0/Sets", json={"Sets": []})
-    # ...while the probe's version-less endpoint fails outright.
-    requests_mock.get(f"{server_url}/EPM/API/Sets", status_code=500, json={})
-
-    assert run_test_module(client=client, last_run={}) == "ok"
-    assert any("[VersionlessProbe]" in str(call.args[0]) for call in debug_log.call_args_list)
-
-
-def test_probe_does_not_run_for_non_oauth_auth_methods(mocker, requests_mock):
-    """
-    Given:
-        - An EPM (non-OAuth) instance, for which the version-less path question does not apply.
-
-    When:
-        - Running test-module.
-
-    Then:
-        - The probe is not invoked, so EPM and SAML instances pay no extra request for a
-          diagnostic that only concerns the Idira OAuth flow.
-    """
-    mocker.patch("CyberArkEPMEventCollector.fetch_events", return_value=([], {}))
-    probe = mocker.patch("CyberArkEPMEventCollector.probe_versionless_api_path")
-
-    client = mocked_client(requests_mock)
-
-    assert run_test_module(client=client, last_run={}) == "ok"
-    probe.assert_not_called()
-
-
 def test_test_module_succeeds_against_the_version_less_path(mocker, requests_mock):
     """
     Given:
-        - An Idira OAuth instance configured with no *EPM API Version*, so the data-plane URL is the
-          version-less `/EPM/API/` form.
-        - A tenant that serves that path, as confirmed in production:
-          `[VersionlessProbe] SUCCEEDED: GET .../EPM/API/Sets -> status=200`.
+        - An Idira OAuth instance, whose data-plane URL is the version-less `/EPM/API/` form.
+        - A tenant that serves that path, as confirmed in production against a live tenant:
+          `GET /EPM/API/Sets` returned 200.
 
     When:
         - Running test-module, which performs a real 5-event fetch before calling `get_set_list`.
@@ -1167,11 +852,7 @@ def test_test_module_succeeds_against_the_version_less_path(mocker, requests_moc
         - It returns "ok", and every request went to the version-less URL. No request carries a
           version segment, and none contains the "//" that an empty segment would produce.
     """
-    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
-    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
-    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
-
-    client = _build_oauth_client_with_version(mocker, requests_mock, "")
+    client = _build_oauth_client_versionless(mocker, requests_mock)
     sets_matcher = requests_mock.get(f"{OAUTH_SERVER_URL}/EPM/API/Sets", json={"Sets": []})
 
     assert run_test_module(client=client, last_run={}) == "ok"
@@ -1181,29 +862,27 @@ def test_test_module_succeeds_against_the_version_less_path(mocker, requests_moc
     assert requested, "expected at least one EPM data call"
     for url in requested:
         assert "/EPM/API/Sets" in url
-        assert "26.8.0.0" not in url
         assert "//" not in url.removeprefix("https://")
 
 
 def test_fetch_events_uses_the_version_less_path(mocker, requests_mock):
     """
     Given:
-        - An Idira OAuth instance with no configured *EPM API Version*.
+        - An Idira OAuth instance.
         - A tenant that resolves a set name and returns events on the version-less path.
 
     When:
         - Resolving the set names and running a fetch, which is the same chain test-module drives.
 
     Then:
-        - The set is resolved and the fetch completes, so the version-less path works for the data
-          calls too - not only for the single `Sets` call the probe measured.
+        - The set is resolved and the fetch completes, so the version-less path works for the
+          event endpoints too - not only for the single `Sets` call. The version segment lived
+          inside the base URL and was never logged per call, which is exactly how a stale pin
+          hid for so long.
     """
-    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
-    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
-    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
     mocker.patch("CyberArkEPMEventCollector.demisto.info")
 
-    client = _build_oauth_client_with_version(mocker, requests_mock, "")
+    client = _build_oauth_client_versionless(mocker, requests_mock)
 
     set_name = "Contoso, Ltd. - Workstations"
     requests_mock.get(f"{OAUTH_SERVER_URL}/EPM/API/Sets", json={"Sets": [{"Name": set_name, "Id": "set-id-1"}]})
@@ -1218,8 +897,9 @@ def test_fetch_events_uses_the_version_less_path(mocker, requests_mock):
 
     assert events == []
     assert list(next_run.keys()) == ["set-id-1"]
-    for url in [request.url for request in requests_mock.request_history if "/EPM/API/" in request.url]:
-        assert "26.8.0.0" not in url
+    requested = [request.url for request in requests_mock.request_history if "/EPM/API/" in request.url]
+    assert len(requested) >= 3, "expected the Sets call plus both event endpoints"
+    for url in requested:
         assert "//" not in url.removeprefix("https://")
 
 
@@ -1310,7 +990,7 @@ def test_oauth_data_call_401_refreshes_and_retries_once(mocker, requests_mock):
     client, token_matcher = _build_oauth_client(requests_mock, identity_url, server_url)
 
     data_matcher = requests_mock.get(
-        f"{server_url}/EPM/API/26.8.0.0/Sets",
+        f"{server_url}/EPM/API/Sets",
         [
             {"status_code": 401, "json": {"error": "unauthorized"}},
             {"status_code": 200, "json": {"Sets": [{"Id": "id1", "Name": "set_name1"}]}},
@@ -1603,7 +1283,7 @@ def test_oauth_data_call_non_401_error_propagates_without_refresh(mocker, reques
 
     client, token_matcher = _build_oauth_client(requests_mock, identity_url, server_url)
 
-    data_matcher = requests_mock.get(f"{server_url}/EPM/API/26.8.0.0/Sets", status_code=500, json={"error": "server error"})
+    data_matcher = requests_mock.get(f"{server_url}/EPM/API/Sets", status_code=500, json={"error": "server error"})
 
     with pytest.raises(DemistoException):
         client._http_request("GET", url_suffix="Sets")
@@ -1853,7 +1533,7 @@ def test_get_set_ids_resolves_tenant_set_names_from_json(mocker, requests_mock):
 
     requests_mock.post(f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "TOKEN123", "expires_in": 900})
     requests_mock.get(
-        f"{server_url}/EPM/API/26.8.0.0/Sets",
+        f"{server_url}/EPM/API/Sets",
         json={"Sets": [{"Name": name, "Id": f"id-{index}"} for index, name in enumerate(TENANT_SETS)]},
     )
 
@@ -1873,3 +1553,185 @@ def test_get_set_ids_resolves_tenant_set_names_from_json(mocker, requests_mock):
 
     # Both names survived the JSON parse whole and matched the tenant's real set list.
     assert sorted(set_ids) == ["id-1", "id-3"]
+
+
+""" TEST COMMA-SPLIT REPAIR AGAINST THE TENANT SET LIST """
+
+
+def test_reconcile_rejoins_the_customers_actual_configuration():
+    """
+    Given: A single comma-bearing set name entered as plain text, exactly as the customer has it
+           configured, which `argToList` has already torn into two fragments.
+    When:  Reconciling those fragments against the tenant's real set list.
+    Then:  The original name is restored. This is the reported failure, reproduced from the
+           production log line
+           `names=['CybrWorld-Windows(cyberark software', 'inc._11)']` and then repaired.
+    """
+    fragments = argToList(TENANT_SET_WINDOWS)
+    assert len(fragments) == 2, "the comma split must break this name, or the test proves nothing"
+
+    assert reconcile_split_set_names(fragments, TENANT_SETS) == [TENANT_SET_WINDOWS]
+
+
+def test_reconcile_rejoins_several_comma_bearing_names_at_once():
+    """
+    Given: Two comma-bearing set names configured together, which the comma split reduces to four
+           meaningless fragments.
+    When:  Reconciling against the tenant's set list.
+    Then:  Both names are restored, in order. Configuring more than one such set was impossible
+           before this repair - the fragments of one name ran into the next.
+    """
+    fragments = argToList(f"{TENANT_SET_WINDOWS},{TENANT_SET_LINUX}")
+    assert len(fragments) == 4
+
+    assert reconcile_split_set_names(fragments, TENANT_SETS) == [TENANT_SET_WINDOWS, TENANT_SET_LINUX]
+
+
+def test_reconcile_rejoins_every_set_on_the_tenant():
+    """
+    Given: All five of the tenant's sets configured at once as plain comma-separated text.
+    When:  Reconciling against the tenant's set list.
+    Then:  All five are restored from the eleven fragments the split produced, proving the repair
+           scales past two names and does not mis-pair adjacent ones.
+    """
+    fragments = argToList(",".join(TENANT_SETS))
+    assert len(fragments) == 11
+
+    assert reconcile_split_set_names(fragments, TENANT_SETS) == TENANT_SETS
+
+
+@pytest.mark.parametrize(
+    "configured, tenant, expected",
+    [
+        pytest.param(["Alpha", "Beta"], ["Alpha", "Beta"], ["Alpha", "Beta"], id="plain_names_are_untouched"),
+        pytest.param(["Alpha"], ["Alpha", "Beta"], ["Alpha"], id="single_plain_name"),
+        pytest.param([], ["Alpha"], [], id="nothing_configured"),
+        pytest.param(["Alpha"], [], ["Alpha"], id="empty_tenant_list_is_a_no_op"),
+        pytest.param(["ALPHA"], ["Alpha"], ["Alpha"], id="match_is_case_insensitive_and_returns_the_tenant_spelling"),
+    ],
+)
+def test_reconcile_leaves_unambiguous_input_alone(configured, tenant, expected):
+    """
+    Given: Configurations that contain no comma-split damage, plus the degenerate empty cases.
+    When:  Reconciling against the tenant's set list.
+    Then:  The names pass through unchanged. Every existing instance without comma-bearing names
+           must behave exactly as it did before, and an empty tenant list must never discard the
+           operator's input.
+    """
+    assert reconcile_split_set_names(configured, tenant) == expected
+
+
+def test_reconcile_prefers_the_longest_matching_name():
+    """
+    Given: A tenant that has BOTH "Alpha" and "Alpha, Inc." as set names, and a configuration
+           naming only the longer one.
+    When:  Reconciling the two fragments the split produced.
+    Then:  The longer name wins. Matching the shortest run first would let "Alpha" swallow the
+           first fragment and strand ", Inc." - silently collecting events from the wrong set,
+           which is worse than failing outright.
+    """
+    tenant = ["Alpha", "Alpha, Inc.", "Beta"]
+
+    assert reconcile_split_set_names(["Alpha", "Inc."], tenant) == ["Alpha, Inc."]
+
+
+def test_reconcile_preserves_a_genuine_typo_instead_of_absorbing_it():
+    """
+    Given: A misspelled set name that matches nothing on the tenant.
+    When:  Reconciling against the tenant's set list.
+    Then:  The fragments are returned untouched, so the existing "could not resolve" error still
+           fires and names them. A repair that quietly attached a typo to some neighbouring set
+           would turn a clear configuration error into silent, wrong data collection.
+    """
+    typo = "CybrWorld-Windwos(cyberark software, inc._11)"
+    fragments = argToList(typo)
+
+    assert reconcile_split_set_names(fragments, TENANT_SETS) == fragments
+
+
+def test_reconcile_handles_names_joined_without_a_space():
+    """
+    Given: Fragments from a value written without a space after the comma ("a,b" rather than
+           "a, b"). `argToList` strips whitespace, so the original spacing is unrecoverable.
+    When:  Reconciling against a tenant whose real name has no space after its comma.
+    Then:  The name is still restored, because both join forms are tried.
+    """
+    tenant = ["Contoso,Ltd. - Workstations"]
+
+    assert reconcile_split_set_names(["Contoso", "Ltd. - Workstations"], tenant) == tenant
+
+
+def test_get_set_ids_resolves_comma_bearing_names_entered_as_plain_text(mocker, requests_mock):
+    """
+    Given: A tenant whose set names all contain commas, configured the way the customer configures
+           them - a plain comma-separated list, with no JSON and no awareness that anything is
+           being repaired.
+    When:  The full resolution path runs, from the raw parameter through to the set IDs.
+    Then:  The IDs resolve. This is the end-to-end proof of the customer-visible fix: the input
+           format never changed, only what we do with it after the tenant list arrives.
+    """
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+    mocker.patch("CyberArkEPMEventCollector.demisto.info")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    server_url = "https://example.epm.cyberark.com"
+
+    requests_mock.post(f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "TOKEN123", "expires_in": 900})
+    requests_mock.get(
+        f"{server_url}/EPM/API/Sets",
+        json={"Sets": [{"Name": name, "Id": f"id-{index}"} for index, name in enumerate(TENANT_SETS)]},
+    )
+
+    client = Client(
+        base_url="",
+        username="user",
+        password="pass",
+        application_id="1",
+        auth_method="Idira OAuth",
+        identity_url=identity_url,
+        web_app_id="web-app-1",
+        server_url=server_url,
+    )
+
+    # Plain text, exactly as typed into the *Set name* field - no JSON.
+    set_names = parse_set_names(f"{TENANT_SET_WINDOWS},{TENANT_SET_LINUX}")
+    assert len(set_names) == 4, "the parameter arrives at the resolver already split into fragments"
+
+    assert sorted(get_set_ids_by_set_names(client, set_names)) == ["id-1", "id-3"]
+
+
+def test_get_set_ids_cache_hits_on_the_second_fetch_for_comma_bearing_names(mocker, requests_mock):
+    """
+    Given: A comma-bearing set name, and an integration context already holding the resolved
+           mapping from a previous fetch - keyed, necessarily, by the REPAIRED name.
+    When:  A second fetch resolves the same configured value, which still arrives as fragments.
+    Then:  The cache is used and no second `GET /Sets` is issued. The cache is keyed by the
+           repaired name while the parameter yields fragments, so comparing the two directly could
+           never match and every fetch cycle would re-request the full set list forever.
+    """
+    mocker.patch("CyberArkEPMEventCollector.demisto.info")
+    cached = {TENANT_SET_WINDOWS: "id-1"}
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={"set_items": cached})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    server_url = "https://example.epm.cyberark.com"
+    requests_mock.post(f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "TOKEN123", "expires_in": 900})
+    sets_matcher = requests_mock.get(f"{server_url}/EPM/API/Sets", json={"Sets": []})
+
+    client = Client(
+        base_url="",
+        username="user",
+        password="pass",
+        application_id="1",
+        auth_method="Idira OAuth",
+        identity_url=identity_url,
+        web_app_id="web-app-1",
+        server_url=server_url,
+    )
+
+    set_ids = get_set_ids_by_set_names(client, argToList(TENANT_SET_WINDOWS))
+
+    assert set_ids == ["id-1"]
+    assert not sets_matcher.called, "the cached mapping must be reused instead of re-fetching the set list"

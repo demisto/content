@@ -28,7 +28,6 @@ Every method needs different parameters as show in the following:
     - **Username** (the service-user login, used as the Client ID)
     - **Password** (the service-user password, used as the Client Secret)
     - **Set name** (comma separated value)
-    - **EPM API Version** (optional, advanced): the version segment in `/EPM/API/<Version>/Sets`. Must be four dot-separated numbers (x.x.x.x). Default is `26.8.0.0`.
 
 #### Vendor-side setup for the Idira OAuth (CyberArk Identity / ISPSS) method
 
@@ -60,4 +59,5 @@ Every method needs different parameters as show in the following:
     * Events.
 
 * The **Set name** parameter contains a list of names to which the events are related.
+* The **Maximum number of events per fetch** parameter applies to each event type and each name in the **Set name** parameter. For example, if **Maximum number of events per fetch** is set to 1000, the total maximum events fetched is equal to 3000 multiplied by the total number of names specified in the **Set name** parameter.
 * The **Maximum number of events per fetch** parameter applies to each event type and each name in the **Set name** parameter. For example, if **Maximum number of events per fetch** is set to 1000, the total maximum events fetched is equal to 3000 multiplied by the total number of names specified in the **Set name** parameter.
