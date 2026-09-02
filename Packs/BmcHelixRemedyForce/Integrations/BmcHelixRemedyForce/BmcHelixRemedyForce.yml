@@ -1,4 +1,7 @@
 category: Utilities
+sectionorder:
+- Connect
+- Collect
 provider: BMC Software
 commonfields:
   id: BMCHelixRemedyforce
@@ -8,26 +11,31 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: BMC Remedyforce Login URL
   name: auth_url
   type: 0
   defaultvalue: https://login.salesforce.com
   required: false
+  section: Connect
 - display: Username
   name: username
   type: 0
   hidden: true
   required: false
+  section: Connect
 - display: Password
   name: password
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: Username
   name: username_creds
   type: 9
   displaypassword: Password
   required: false
+  section: Connect
 - additionalinfo: Incidents will be fetched based on selected type.
   display: Type
   name: type
@@ -37,75 +45,97 @@ configuration:
   - BMC Remedyforce Incident
   - BMC Remedyforce Service Request
   required: false
+  section: Collect
 - additionalinfo: Incidents will be fetched having this category.
   display: Category
   name: category
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Incidents will be fetched having this impact.
   display: Impact
   name: impact
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Incidents will be fetched having this urgency.
   display: Urgency
   name: urgency
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Incidents will be fetched having this status.
   display: Status
   name: status
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Incidents will be fetched having this queue.
   display: Queue
   name: queue
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Maximum numbers of ServiceRequests or Incidents to retrieve per fetch.
   display: Max Incidents
   name: max_fetch
   type: 0
   defaultvalue: '10'
   required: false
+  section: Collect
 - additionalinfo: Fetch notes of the BMC Remedyforce Service Request or BMC Remedyforce Incident.
   display: Fetch Note(s)
   name: fetch_note
   type: 8
   required: false
+  section: Collect
 - display: Query (If provided other filtering parameters will be ignored) e.g. select Name, LastModifiedDate from BMCServiceDesk__Incident__c where BMCServiceDesk__Impact_Id__c = 'High'
   name: query
   type: 12
   additionalinfo: Incidents will be fetched based on the query. Name and LastModifiedDate fields are mandatory to be present inside the select clause of the query. Multiple 'where' clauses are not supported.
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  advanced: true
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: HTTP(S) Request Timeout (in seconds)
   name: request_timeout
   required: true
   type: 0
   additionalinfo: Specify the time interval in seconds. All the RemedyForce API calls would timeout if the response is not returned within the configured time interval.
   defaultvalue: '60'
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - defaultvalue: 10 minutes
   display: First Fetch Timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch
   type: 0
 
   required: false
+  section: Collect
 description: BMC Helix Remedyforce integration enables customers to create/update service requests and incidents, update statuses, and resolve service requests and incidents with customer notes. This integration exposes standard ticketing capabilities that can be utilized as part of automation & orchestration.
 display: BMC Helix Remedyforce
 name: BMCHelixRemedyforce

@@ -4882,3 +4882,13 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Page with ID "12345" was deleted successfully.
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require the **Cortex XSIAM** license:
+
+- Fetch Events
+
+</~PLATFORM>
