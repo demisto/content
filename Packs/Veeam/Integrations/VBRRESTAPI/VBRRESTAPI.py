@@ -58,19 +58,18 @@ DESIRED_TYPES = {
     "DeletedUsefulFiles": "Deleted files",
     "Unknown": "Unknown",
     "IndicatorOfCompromise": "Indicator of compromise",
-    "All": "Unknown"
+    "All": "Unknown",
 }
 
 DESIRED_SOURCE = {
     "External": "Third-party malware detection software",
     "Manual": "Added manually",
-    "InternalVeeamDetector": "Veeam malware detection"
+    "InternalVeeamDetector": "Veeam malware detection",
 }
 
 SEVERITY_MAP = {
     "Suspicious": IncidentSeverity.HIGH,
     "Infected": IncidentSeverity.CRITICAL,
-
 }
 
 
@@ -78,7 +77,6 @@ ERROR_COUNT_MAP = {
     2: IncidentSeverity.LOW,
     6: IncidentSeverity.MEDIUM,
     48: IncidentSeverity.CRITICAL,
-
 }
 
 ACCEPTABLE_LICENSES = [
@@ -281,7 +279,7 @@ class Client(BaseClient):
             scanEngine=scanEngine,
             scanRange=scanRange,
             continueScan=continueScan,
-            type=type_
+            type=type_,
         )
         headers = self._headers.copy()
 
@@ -289,9 +287,7 @@ class Client(BaseClient):
 
         return response
 
-    def start_disk_publishing_request(
-        self, restorePointId, allowedIps, diskNames=None, mountHostId=None
-    ):
+    def start_disk_publishing_request(self, restorePointId, allowedIps, diskNames=None, mountHostId=None):
         """
         Starts disk publishing via the Data Integration API.
 
@@ -413,20 +409,11 @@ class Client(BaseClient):
         Returns:
             dict: The response from the server.
         """
-        data = assign_params(
-            type=type_,
-            skip=skip,
-            limit=limit,
-            filter=filter,
-            sorting=sorting
-        )
+        data = assign_params(type=type_, skip=skip, limit=limit, filter=filter, sorting=sorting)
         headers = self._headers.copy()
 
         response = self._http_request(
-            "post",
-            f"api/v1/backupBrowser/entraIdTenant/{backupId}/browse",
-            json_data=data,
-            headers=headers
+            "post", f"api/v1/backupBrowser/entraIdTenant/{backupId}/browse", json_data=data, headers=headers
         )
 
         return response
@@ -452,14 +439,20 @@ class Client(BaseClient):
             "post",
             f"api/v1/backupBrowser/entraIdTenant/{backupId}/browse/{itemId}/restorePoints",
             json_data=data,
-            headers=headers
+            headers=headers,
         )
 
         return response
 
     def compare_entra_id_item_properties_request(
-        self, sessionId, itemId, itemType, oldRestorePointId,
-        newRestorePointId=None, showUnchangedAttributes=None, reloadCache=None
+        self,
+        sessionId,
+        itemId,
+        itemType,
+        oldRestorePointId,
+        newRestorePointId=None,
+        showUnchangedAttributes=None,
+        reloadCache=None,
     ):
         """
         Compares Microsoft Entra ID item properties between restore points or production.
@@ -482,24 +475,32 @@ class Client(BaseClient):
             oldRestorePointId=oldRestorePointId,
             newRestorePointId=newRestorePointId,
             showUnchangedAttributes=showUnchangedAttributes,
-            reloadCache=reloadCache
+            reloadCache=reloadCache,
         )
         headers = self._headers.copy()
 
         response = self._http_request(
-            "post",
-            f"api/v1/backupBrowser/entraIdTenant/{sessionId}/compare",
-            json_data=data,
-            headers=headers
+            "post", f"api/v1/backupBrowser/entraIdTenant/{sessionId}/compare", json_data=data, headers=headers
         )
 
         return response
 
     def get_authorization_events_request(
-        self, skip=None, limit=None, orderColumn=None, orderAsc=None, nameFilter=None,
-        createdAfterFilter=None, createdBeforeFilter=None, processedAfterFilter=None,
-        processedBeforeFilter=None, stateFilter=None, createdByFilter=None,
-        processedByFilter=None, expireBeforeFilter=None, expireAfterFilter=None
+        self,
+        skip=None,
+        limit=None,
+        orderColumn=None,
+        orderAsc=None,
+        nameFilter=None,
+        createdAfterFilter=None,
+        createdBeforeFilter=None,
+        processedAfterFilter=None,
+        processedBeforeFilter=None,
+        stateFilter=None,
+        createdByFilter=None,
+        processedByFilter=None,
+        expireBeforeFilter=None,
+        expireAfterFilter=None,
     ):
         """
         Gets all authorization events.
@@ -537,7 +538,7 @@ class Client(BaseClient):
             createdByFilter=createdByFilter,
             processedByFilter=processedByFilter,
             expireBeforeFilter=expireBeforeFilter,
-            expireAfterFilter=expireAfterFilter
+            expireAfterFilter=expireAfterFilter,
         )
         headers = self._headers.copy()
 
@@ -546,9 +547,17 @@ class Client(BaseClient):
         return response
 
     def get_all_repository_states_request(
-        self, skip=None, limit=None, orderColumn=None, orderAsc=None, idFilter=None,
-        nameFilter=None, typeFilter=None, capacityFilter=None, freeSpaceFilter=None,
-        usedSpaceFilter=None
+        self,
+        skip=None,
+        limit=None,
+        orderColumn=None,
+        orderAsc=None,
+        idFilter=None,
+        nameFilter=None,
+        typeFilter=None,
+        capacityFilter=None,
+        freeSpaceFilter=None,
+        usedSpaceFilter=None,
     ):
         """
         Gets all repository states.
@@ -778,8 +787,16 @@ class Client(BaseClient):
         return response
 
     def get_job_states_request(
-        self, skip=None, limit=None, orderColumn=None, orderAsc=None, nameFilter=None,
-        typeFilter=None, statusFilter=None, lastResultFilter=None, idFilter=None
+        self,
+        skip=None,
+        limit=None,
+        orderColumn=None,
+        orderAsc=None,
+        nameFilter=None,
+        typeFilter=None,
+        statusFilter=None,
+        lastResultFilter=None,
+        idFilter=None,
     ):
         """
         Gets all job states.
@@ -807,7 +824,7 @@ class Client(BaseClient):
             typeFilter=typeFilter,
             statusFilter=statusFilter,
             lastResultFilter=lastResultFilter,
-            idFilter=idFilter
+            idFilter=idFilter,
         )
         headers = self._headers.copy()
 
@@ -841,7 +858,7 @@ class Client(BaseClient):
             objectId=objectId,
             urn=urn,
             size=size,
-            isEnabled=isEnabled
+            isEnabled=isEnabled,
         )
         headers = self._headers.copy()
 
@@ -888,7 +905,7 @@ class Client(BaseClient):
             secureRestore=secureRestore,
             nicsEnabled=nicsEnabled,
             powerUp=powerUp,
-            reason=reason
+            reason=reason,
         )
         headers = self._headers.copy()
 
@@ -896,9 +913,7 @@ class Client(BaseClient):
 
         return response
 
-    def start_instant_recovery_hyperv_vm_request(
-        self, restorePointId, restore_type, secureRestore, powerUp, reason
-    ):
+    def start_instant_recovery_hyperv_vm_request(self, restorePointId, restore_type, secureRestore, powerUp, reason):
         """
         Starts Instant Recovery of a Microsoft Hyper-V VM.
 
@@ -913,11 +928,7 @@ class Client(BaseClient):
             dict: The response from the server.
         """
         data = assign_params(
-            restorePointId=restorePointId,
-            type=restore_type,
-            secureRestore=secureRestore,
-            powerUp=powerUp,
-            reason=reason
+            restorePointId=restorePointId, type=restore_type, secureRestore=secureRestore, powerUp=powerUp, reason=reason
         )
         headers = self._headers.copy()
 
@@ -926,8 +937,17 @@ class Client(BaseClient):
         return response
 
     def start_instant_recovery_customized_request(
-        self, restorePointId, restore_type, vmTagsRestoreEnabled, secureRestore, nicsEnabled, powerUp, reason,
-        destination, datastore, overwrite
+        self,
+        restorePointId,
+        restore_type,
+        vmTagsRestoreEnabled,
+        secureRestore,
+        nicsEnabled,
+        powerUp,
+        reason,
+        destination,
+        datastore,
+        overwrite,
     ):
         """
         Starts customized instant VM recovery.
@@ -958,7 +978,7 @@ class Client(BaseClient):
             reason=reason,
             destination=destination,
             datastore=datastore,
-            overwrite=overwrite
+            overwrite=overwrite,
         )
 
         headers = self._headers.copy()
@@ -968,8 +988,7 @@ class Client(BaseClient):
         return response
 
     def start_instant_recovery_hyperv_vm_customized_request(
-        self, restorePointId, restore_type, secureRestore, powerUp, reason,
-        destinationHost, target
+        self, restorePointId, restore_type, secureRestore, powerUp, reason, destinationHost, target
     ):
         """
         Starts customized Instant Recovery of a Microsoft Hyper-V VM.
@@ -993,7 +1012,7 @@ class Client(BaseClient):
             powerUp=powerUp,
             reason=reason,
             destinationHost=destinationHost,
-            target=target
+            target=target,
         )
         headers = self._headers.copy()
 
@@ -1067,7 +1086,7 @@ def get_job_states_command(client: Client, args: dict[str, Any]) -> CommandResul
         outputs_prefix="Veeam.VBR.get_job_states.data",
         outputs_key_field="",
         outputs=response.get("data"),
-        raw_response=response.get("data")
+        raw_response=response.get("data"),
     )
 
     return command_results
@@ -1099,10 +1118,7 @@ def create_malware_event_command(client: Client, args: dict[str, Any]) -> Comman
     demisto.setIntegrationContext(context)
 
     command_results = CommandResults(
-        outputs_prefix="Veeam.VBR",
-        outputs_key_field="",
-        outputs=response.get("data"),
-        raw_response=response.get("data")
+        outputs_prefix="Veeam.VBR", outputs_key_field="", outputs=response.get("data"), raw_response=response.get("data")
     )
 
     return command_results
@@ -1130,16 +1146,26 @@ def get_all_malware_events_command(client: Client, args: dict[str, Any]) -> Comm
     engineFilter = str(args.get("engineFilter", ""))
 
     response = client.get_all_malware_events_request(
-        skip, limit, orderColumn, orderAsc, typeFilter, detectedAfterTimeUtcFilter,
-        detectedBeforeTimeUtcFilter, backupObjectIdFilter, stateFilter, sourceFilter,
-        severityFilter, createdByFilter, engineFilter
+        skip,
+        limit,
+        orderColumn,
+        orderAsc,
+        typeFilter,
+        detectedAfterTimeUtcFilter,
+        detectedBeforeTimeUtcFilter,
+        backupObjectIdFilter,
+        stateFilter,
+        sourceFilter,
+        severityFilter,
+        createdByFilter,
+        engineFilter,
     )
 
     command_results = CommandResults(
         outputs_prefix="Veeam.VBR.get_malware_events.data",
         outputs_key_field="",
         outputs=response.get("data"),
-        raw_response=response.get("data")
+        raw_response=response.get("data"),
     )
 
     return command_results
@@ -1152,7 +1178,7 @@ def get_yara_rules_command(client: Client, args: dict[str, Any]) -> CommandResul
         outputs_prefix="Veeam.VBR.get_yara_rules.data",
         outputs_key_field="",
         outputs=response.get("data"),
-        raw_response=response.get("data")
+        raw_response=response.get("data"),
     )
 
     return command_results
@@ -1185,20 +1211,15 @@ def start_malware_backup_scan_command(client: Client, args: dict[str, Any]) -> C
     scanRange = {"from": from_, "to": to_}
     continueScan = str(args.get("continueScan", ""))
     validate_bool(continueScan)
-    if is_api_version_higher_or_equal_than(client._headers["x-api-version"],"1.3-rev2"):
+    if is_api_version_higher_or_equal_than(client._headers["x-api-version"], "1.3-rev2"):
         type_ = "Backup"
     else:
         type_ = None
 
-    response = client.start_malware_backup_scan_request(
-        backup_object_pair, scanMode, scanEngine, scanRange, continueScan, type_
-    )
+    response = client.start_malware_backup_scan_request(backup_object_pair, scanMode, scanEngine, scanRange, continueScan, type_)
 
     command_results = CommandResults(
-        outputs_prefix="Veeam.VBR.start_malware_backup_scan",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response
+        outputs_prefix="Veeam.VBR.start_malware_backup_scan", outputs_key_field="", outputs=response, raw_response=response
     )
 
     return command_results
@@ -1214,15 +1235,10 @@ def start_disk_publishing_command(client: Client, args: dict[str, Any]) -> Comma
     mountHostId = str(args.get("mountHostId", ""))
     validate_uuid(mountHostId)
 
-    response = client.start_disk_publishing_request(
-        restorePointId, allowedIps, diskNames, mountHostId
-    )
+    response = client.start_disk_publishing_request(restorePointId, allowedIps, diskNames, mountHostId)
 
     command_results = CommandResults(
-        outputs_prefix="Veeam.VBR.start_disk_publishing",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response
+        outputs_prefix="Veeam.VBR.start_disk_publishing", outputs_key_field="", outputs=response, raw_response=response
     )
 
     return command_results
@@ -1235,10 +1251,7 @@ def stop_disk_publishing_command(client: Client, args: dict[str, Any]) -> Comman
     response = client.stop_disk_publishing_request(mountId)
 
     command_results = CommandResults(
-        outputs_prefix="Veeam.VBR.stop_disk_publishing",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response
+        outputs_prefix="Veeam.VBR.stop_disk_publishing", outputs_key_field="", outputs=response, raw_response=response
     )
 
     return command_results
@@ -1255,10 +1268,7 @@ def general_api_request_command(client: Client, args: dict[str, Any]) -> Command
     response = client.general_api_request(path, method, data, params)
 
     command_results = CommandResults(
-        outputs_prefix="Veeam.VBR.general_api_request",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response
+        outputs_prefix="Veeam.VBR.general_api_request", outputs_key_field="", outputs=response, raw_response=response
     )
 
     return command_results
@@ -1271,10 +1281,7 @@ def get_disk_publishing_mount_point_command(client: Client, args: dict[str, Any]
     response = client.get_disk_publishing_mount_point_request(mountId)
 
     command_results = CommandResults(
-        outputs_prefix="Veeam.VBR.get_disk_publishing_mount_point",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response
+        outputs_prefix="Veeam.VBR.get_disk_publishing_mount_point", outputs_key_field="", outputs=response, raw_response=response
     )
 
     return command_results
@@ -1287,10 +1294,7 @@ def mount_entra_id_tenant_command(client: Client, args: dict[str, Any]) -> Comma
     response = client.mount_entra_id_tenant_request(backupId)
 
     command_results = CommandResults(
-        outputs_prefix="Veeam.VBR.mount_entra_id_tenant",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response
+        outputs_prefix="Veeam.VBR.mount_entra_id_tenant", outputs_key_field="", outputs=response, raw_response=response
     )
 
     return command_results
@@ -1305,10 +1309,7 @@ def unmount_entra_id_tenant_command(client: Client, args: dict[str, Any]) -> Com
     response = client.unmount_entra_id_tenant_request(sessionId, gracefulStop)
 
     command_results = CommandResults(
-        outputs_prefix="Veeam.VBR.unmount_entra_id_tenant",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response
+        outputs_prefix="Veeam.VBR.unmount_entra_id_tenant", outputs_key_field="", outputs=response, raw_response=response
     )
 
     return command_results
@@ -1336,7 +1337,7 @@ def get_entra_id_items_command(client: Client, args: dict[str, Any]) -> CommandR
         outputs_prefix="Veeam.VBR.get_entra_id_items.data",
         outputs_key_field="",
         outputs=response.get("data"),
-        raw_response=response.get("data")
+        raw_response=response.get("data"),
     )
 
     return command_results
@@ -1359,7 +1360,7 @@ def get_entra_id_item_restore_points_command(client: Client, args: dict[str, Any
         outputs_prefix="Veeam.VBR.get_entra_id_item_restore_points.data",
         outputs_key_field="",
         outputs=response.get("data"),
-        raw_response=response.get("data")
+        raw_response=response.get("data"),
     )
 
     return command_results
@@ -1380,15 +1381,11 @@ def compare_entra_id_item_properties_command(client: Client, args: dict[str, Any
     validate_bool(reloadCache)
 
     response = client.compare_entra_id_item_properties_request(
-        sessionId, itemId, itemType, oldRestorePointId, newRestorePointId,
-        showUnchangedAttributes, reloadCache
+        sessionId, itemId, itemType, oldRestorePointId, newRestorePointId, showUnchangedAttributes, reloadCache
     )
 
     command_results = CommandResults(
-        outputs_prefix="Veeam.VBR.compare_entra_id_item_properties",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response
+        outputs_prefix="Veeam.VBR.compare_entra_id_item_properties", outputs_key_field="", outputs=response, raw_response=response
     )
 
     return command_results
@@ -1420,16 +1417,27 @@ def get_authorization_events_command(client: Client, args: dict[str, Any]) -> Co
     validate_time(expireAfterFilter)
 
     response = client.get_authorization_events_request(
-        skip, limit, orderColumn, orderAsc, nameFilter, createdAfterFilter,
-        createdBeforeFilter, processedAfterFilter, processedBeforeFilter,
-        stateFilter, createdByFilter, processedByFilter, expireBeforeFilter, expireAfterFilter
+        skip,
+        limit,
+        orderColumn,
+        orderAsc,
+        nameFilter,
+        createdAfterFilter,
+        createdBeforeFilter,
+        processedAfterFilter,
+        processedBeforeFilter,
+        stateFilter,
+        createdByFilter,
+        processedByFilter,
+        expireBeforeFilter,
+        expireAfterFilter,
     )
 
     command_results = CommandResults(
         outputs_prefix="Veeam.VBR.get_authorization_events.data",
         outputs_key_field="",
         outputs=response.get("data"),
-        raw_response=response.get("data")
+        raw_response=response.get("data"),
     )
 
     return command_results
@@ -1462,7 +1470,7 @@ def get_all_repository_states_command(client: Client, args: dict[str, Any]) -> C
         outputs_prefix="Veeam.VBR.get_repository_states.data",
         outputs_key_field="",
         outputs=response.get("data"),
-        raw_response=response.get("data")
+        raw_response=response.get("data"),
     )
 
     return command_results
@@ -1491,16 +1499,25 @@ def get_all_restore_points_command(client: Client, args: dict[str, Any]) -> Comm
     malwareStatusFilter = str(args.get("malwareStatusFilter", ""))
 
     response = client.get_all_restore_points_request(
-        skip, limit, orderColumn, orderAsc, createdAfterFilter, createdBeforeFilter,
-        nameFilter, platformNameFilter, platformIdFilter, backupIdFilter,
-        backupObjectIdFilter, malwareStatusFilter
+        skip,
+        limit,
+        orderColumn,
+        orderAsc,
+        createdAfterFilter,
+        createdBeforeFilter,
+        nameFilter,
+        platformNameFilter,
+        platformIdFilter,
+        backupIdFilter,
+        backupObjectIdFilter,
+        malwareStatusFilter,
     )
 
     command_results = CommandResults(
         outputs_prefix="Veeam.VBR.get_restore_points.data",
         outputs_key_field="",
         outputs=response.get("data"),
-        raw_response=response.get("data")
+        raw_response=response.get("data"),
     )
 
     return command_results
@@ -1516,23 +1533,16 @@ def get_backup_object_command(client: Client, args: dict[str, Any]) -> CommandRe
     response["vcenter_name"] = vcenter_name
 
     command_results = CommandResults(
-        outputs_prefix="Veeam.VBR.backup_object",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response
+        outputs_prefix="Veeam.VBR.backup_object", outputs_key_field="", outputs=response, raw_response=response
     )
 
     return command_results
 
 
 def get_configuration_backup_command(client: Client, args: dict[str, Any]) -> CommandResults:
-
     response = client.get_configuration_backup_request()
     command_results = CommandResults(
-        outputs_prefix="Veeam.VBR.get_configuration_backup",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response
+        outputs_prefix="Veeam.VBR.get_configuration_backup", outputs_key_field="", outputs=response, raw_response=response
     )
 
     return command_results
@@ -1557,19 +1567,9 @@ def get_inventory_objects_command(client: Client, args: dict[str, Any]) -> Comma
             "type": "GroupExpression",
             "operation": "and",
             "items": [
-                {
-                    "type": "PredicateExpression",
-                    "operation": "equals",
-                    "property": "Name",
-                    "value": object_name
-                },
-                {
-                    "type": "PredicateExpression",
-                    "operation": "in",
-                    "property": "Type",
-                    "value": vi_type
-                }
-            ]
+                {"type": "PredicateExpression", "operation": "equals", "property": "Name", "value": object_name},
+                {"type": "PredicateExpression", "operation": "in", "property": "Type", "value": vi_type},
+            ],
         }
 
     sorting_str = str(args.get("sorting", ""))
@@ -1582,7 +1582,7 @@ def get_inventory_objects_command(client: Client, args: dict[str, Any]) -> Comma
         outputs_prefix="Veeam.VBR.get_inventory_objects.data",
         outputs_key_field="",
         outputs=response.get("data"),
-        raw_response=response.get("data")
+        raw_response=response.get("data"),
     )
 
     return command_results
@@ -1598,7 +1598,7 @@ def get_session_command(client: Client, args: dict[str, Any]) -> CommandResults:
         outputs_key_field="",
         outputs=response,
         raw_response=response,
-        replace_existing=True
+        replace_existing=True,
     )
 
     return command_results
@@ -1610,23 +1610,19 @@ def get_session_logs_command(client: Client, args: dict[str, Any]) -> CommandRes
 
     response = client.get_session_logs_request(id_)
     command_results = CommandResults(
-        outputs_prefix="Veeam.VBR.get_session_logs",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response
+        outputs_prefix="Veeam.VBR.get_session_logs", outputs_key_field="", outputs=response, raw_response=response
     )
 
     return command_results
 
 
 def start_configuration_backup_command(client: Client, args: dict[str, Any]) -> CommandResults:
-
     response = client.start_configuration_backup_request()
     command_results = CommandResults(
         outputs_prefix="Veeam.VBR.Configurationbackuphasbeenstarted",
         outputs_key_field="",
         outputs=response,
-        raw_response=response
+        raw_response=response,
     )
 
     return command_results
@@ -1643,15 +1639,10 @@ def start_vsphere_quick_backup_command(client: Client, args: dict[str, Any]) -> 
     isEnabled = str(args.get("isEnabled", ""))
     validate_bool(isEnabled)
 
-    response = client.start_vsphere_quick_backup_request(
-        platform, name, type_, hostName, objectId, urn, size, isEnabled
-    )
+    response = client.start_vsphere_quick_backup_request(platform, name, type_, hostName, objectId, urn, size, isEnabled)
 
     command_results = CommandResults(
-        outputs_prefix="Veeam.VBR.start_vsphere_quick_backup",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response
+        outputs_prefix="Veeam.VBR.start_vsphere_quick_backup", outputs_key_field="", outputs=response, raw_response=response
     )
 
     return command_results
@@ -1671,7 +1662,7 @@ def start_instant_recovery_command(client: Client, args: dict[str, Any]) -> Comm
     secureRestore = assign_params(
         antivirusScanEnabled=antivirusScanEnabled,
         virusDetectionAction=virusDetectionAction,
-        entireVolumeScanEnabled=entireVolumeScanEnabled
+        entireVolumeScanEnabled=entireVolumeScanEnabled,
     )
     nicsEnabled = str(args.get("nicsEnabled", ""))
     validate_bool(nicsEnabled)
@@ -1684,10 +1675,7 @@ def start_instant_recovery_command(client: Client, args: dict[str, Any]) -> Comm
     )
 
     command_results = CommandResults(
-        outputs_prefix="Veeam.VBR.start_recovery",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response
+        outputs_prefix="Veeam.VBR.start_recovery", outputs_key_field="", outputs=response, raw_response=response
     )
 
     return command_results
@@ -1705,21 +1693,16 @@ def start_instant_recovery_hyperv_vm_command(client: Client, args: dict[str, Any
     secureRestore = assign_params(
         antivirusScanEnabled=antivirusScanEnabled,
         virusDetectionAction=virusDetectionAction,
-        entireVolumeScanEnabled=entireVolumeScanEnabled
+        entireVolumeScanEnabled=entireVolumeScanEnabled,
     )
     powerUp = str(args.get("powerUp", ""))
     validate_bool(powerUp)
     reason = str(args.get("reason", ""))
 
-    response = client.start_instant_recovery_hyperv_vm_request(
-        restorePointId, restore_type, secureRestore, powerUp, reason
-    )
+    response = client.start_instant_recovery_hyperv_vm_request(restorePointId, restore_type, secureRestore, powerUp, reason)
 
     command_results = CommandResults(
-        outputs_prefix="Veeam.VBR.start_hv_recovery",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response
+        outputs_prefix="Veeam.VBR.start_hv_recovery", outputs_key_field="", outputs=response, raw_response=response
     )
 
     return command_results
@@ -1737,7 +1720,7 @@ def start_instant_recovery_hyperv_vm_customized_command(client: Client, args: di
     secureRestore = assign_params(
         antivirusScanEnabled=antivirusScanEnabled,
         virusDetectionAction=virusDetectionAction,
-        entireVolumeScanEnabled=entireVolumeScanEnabled
+        entireVolumeScanEnabled=entireVolumeScanEnabled,
     )
     powerUp = str(args.get("powerUp", ""))
     validate_bool(powerUp)
@@ -1745,13 +1728,7 @@ def start_instant_recovery_hyperv_vm_customized_command(client: Client, args: di
 
     hostName = str(args.get("hostName", ""))
     hostObjectId = str(args.get("hostObjectId", ""))
-    destinationHost = assign_params(
-        platform="HyperV",
-        name=hostName,
-        type="Host",
-        hostName=hostName,
-        objectId=hostObjectId
-    )
+    destinationHost = assign_params(platform="HyperV", name=hostName, type="Host", hostName=hostName, objectId=hostObjectId)
 
     vmName = str(args.get("vmName", ""))
     preserveUUID = str(args.get("preserveUUID", ""))
@@ -1767,7 +1744,7 @@ def start_instant_recovery_hyperv_vm_customized_command(client: Client, args: di
         preserveUUID=preserveUUID,
         registerAsClusterResource=registerAsClusterResource,
         overwriteExistingVm=overwriteExistingVm,
-        overwriteExistingDisks=overwriteExistingDisks
+        overwriteExistingDisks=overwriteExistingDisks,
     )
 
     response = client.start_instant_recovery_hyperv_vm_customized_request(
@@ -1775,10 +1752,7 @@ def start_instant_recovery_hyperv_vm_customized_command(client: Client, args: di
     )
 
     command_results = CommandResults(
-        outputs_prefix="Veeam.VBR.start_hv_recovery",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response
+        outputs_prefix="Veeam.VBR.start_hv_recovery", outputs_key_field="", outputs=response, raw_response=response
     )
 
     return command_results
@@ -1798,7 +1772,7 @@ def start_instant_recovery_customized_command(client: Client, args: dict[str, An
     secureRestore = assign_params(
         antivirusScanEnabled=antivirusScanEnabled,
         virusDetectionAction=virusDetectionAction,
-        entireVolumeScanEnabled=entireVolumeScanEnabled
+        entireVolumeScanEnabled=entireVolumeScanEnabled,
     )
     nicsEnabled = str(args.get("nicsEnabled", ""))
     validate_bool(nicsEnabled)
@@ -1833,15 +1807,20 @@ def start_instant_recovery_customized_command(client: Client, args: dict[str, An
     validate_bool(overwrite)
 
     response = client.start_instant_recovery_customized_request(
-        restorePointId, restore_type, vmTagsRestoreEnabled, secureRestore, nicsEnabled, powerUp, reason,
-        destination, datastore, overwrite
+        restorePointId,
+        restore_type,
+        vmTagsRestoreEnabled,
+        secureRestore,
+        nicsEnabled,
+        powerUp,
+        reason,
+        destination,
+        datastore,
+        overwrite,
     )
 
     command_results = CommandResults(
-        outputs_prefix="Veeam.VBR.start_recovery",
-        outputs_key_field="",
-        outputs=response,
-        raw_response=response
+        outputs_prefix="Veeam.VBR.start_recovery", outputs_key_field="", outputs=response, raw_response=response
     )
 
     return command_results
@@ -1868,6 +1847,7 @@ def convert_to_json(string: str) -> dict:
 
     return data
 
+
 def is_api_version_higher_or_equal_than(current_version: str, comp_version: str) -> bool:
     def parse_version(version: str):
         base, rev_part = version.split("-rev")
@@ -1875,6 +1855,7 @@ def is_api_version_higher_or_equal_than(current_version: str, comp_version: str)
         return int(major), int(minor), int(rev_part)
 
     return parse_version(current_version) >= parse_version(comp_version)
+
 
 def validate_uuid(uuid_: str) -> None:
     if uuid_:
@@ -1926,9 +1907,8 @@ def validate_int(value: str) -> None:
 
 
 def validate_bool(value: str) -> None:
-    if value:
-        if value.strip().lower() not in ("true", "false"):
-            raise ValueError(f"Invalid boolean value: '{value}'")
+    if value and value.strip().lower() not in ("true", "false"):
+        raise ValueError(f"Invalid boolean value: '{value}'")
 
 
 def validate_float(value: str) -> None:
@@ -1959,7 +1939,7 @@ def test_module(client: Client) -> str:
         if "forbidden" in exception_text or "authorization" in exception_text:
             return "Authentication Error: Invalid API Key"
         elif "license" in exception_text:
-            return "Valid Veeam license required" 
+            return "Valid Veeam license required"
         else:
             raise e
     return "ok"
@@ -1972,12 +1952,8 @@ def get_access_token(client: Client, username: str, password: str) -> str:
 
 
 def search_with_paging(
-    method: Callable[..., Any],
-    args: dict[str, Any] = None,
-    page_size=DEFAULT_PAGE_SIZE,
-    size_limit=DEFAULT_SIZE_LIMIT
+    method: Callable[..., Any], args: dict[str, Any] = None, page_size=DEFAULT_PAGE_SIZE, size_limit=DEFAULT_SIZE_LIMIT
 ) -> list[dict]:
-
     if args is None:
         args = {}
     else:
@@ -2004,7 +1980,7 @@ def search_with_paging(
         items_to_fetch -= response_len
         skip_items += page_size
 
-        if (size_limit and items_to_fetch <= 0):
+        if size_limit and items_to_fetch <= 0:
             items = items[:size_limit]
             break
 
@@ -2032,7 +2008,7 @@ def process_error(error_count: int, error_message: str) -> tuple[dict, int]:
             "name": incident_name,
             "occurred": datetime.now().strftime(DATE_FORMAT),
             "rawJSON": json.dumps({"incident_type": "Incident Fetch Error", "details": error_message}),
-            "severity": ERROR_COUNT_MAP[error_count]
+            "severity": ERROR_COUNT_MAP[error_count],
         }
 
     return incident, error_count
@@ -2051,13 +2027,10 @@ class FetchClient:
             "security_ids": last_run.get("security_ids", []),
             "sure_backup_ids": last_run.get("sure_backup_ids", []),
             "backup_date": last_run.get("backup_date", ""),
-            "errors_by_command": self.errors_by_command
+            "errors_by_command": self.errors_by_command,
         }
 
-    def get_malware_incidents(
-        self, start_time: datetime, existed_ids: set, max_results: int
-    ) -> tuple[list[dict], set[str], str]:
-
+    def get_malware_incidents(self, start_time: datetime, existed_ids: set, max_results: int) -> tuple[list[dict], set[str], str]:
         last_fetch_time = start_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
 
         def _paged_malware_method(**kwargs):
@@ -2066,7 +2039,7 @@ class FetchClient:
         response = search_with_paging(
             method=_paged_malware_method,
             args={"detectedAfterTimeUtcFilter": last_fetch_time, "orderColumn": "detectionTimeUtc", "orderAsc": "true"},
-            page_size=MALWARE_EVENTS_PAGE_SIZE
+            page_size=MALWARE_EVENTS_PAGE_SIZE,
         )
         incidents: list[dict] = []
         new_ids = set()
@@ -2086,7 +2059,7 @@ class FetchClient:
 
             if source_exist and type_exist and severity and event_id not in existed_ids:
                 hostname = event["machine"].get("displayName")
-                details = f"{event["details"]}; Hostname: {hostname}"
+                details = f"{event['details']}; Hostname: {hostname}"
                 incident_name = f"Veeam - Malware activity detected on {hostname}"
                 event["description"] = details
                 event["incident_type"] = type_
@@ -2096,7 +2069,7 @@ class FetchClient:
                     "name": incident_name,
                     "occurred": event["detectionTimeUtc"],
                     "rawJSON": json.dumps(event),
-                    "severity": severity
+                    "severity": severity,
                 }
                 new_ids.add(event_id)
                 incidents.append(incident)
@@ -2110,7 +2083,6 @@ class FetchClient:
     def get_configuration_backup_incident(
         self, last_successful_backup_date: str, backup_older_then_days: int
     ) -> tuple[dict, str]:
-
         last_successful_backup_date = last_successful_backup_date if last_successful_backup_date else ""
         if last_successful_backup_date:
             last_successful_backup_datetime = parser.isoparse(last_successful_backup_date)
@@ -2132,29 +2104,29 @@ class FetchClient:
 
         incident: dict = {}
         last_backup_datetime = parser.isoparse(last_time_backup)
-        if difference is None or difference >= backup_older_then_days:
-            if not last_successful_backup_date or (last_successful_backup_datetime is not None
-                                                   and last_backup_datetime > last_successful_backup_datetime):
-                time_ = NOT_APPLICABLE if last_time_backup == EARLIEST_TIME else last_time_backup
-                details = f"Last successful backup: {time_}"
-                integration_instance = demisto.callingContext.get("context", {}).get("IntegrationInstance", "")
-                incident_name = f"Veeam - {integration_instance} has no configuration backups"
-                response["details"] = details
-                response["incident_type"] = CONFIGURATION_BACKUP_INCIDENT_TYPE
-                incident = {
-                    "name": incident_name,
-                    "occurred": last_fetch_time,
-                    "rawJSON": json.dumps(response),
-                    "severity": IncidentSeverity.MEDIUM
-                }
+        if (difference is None or difference >= backup_older_then_days) and (
+            not last_successful_backup_date
+            or (last_successful_backup_datetime is not None and last_backup_datetime > last_successful_backup_datetime)
+        ):
+            time_ = NOT_APPLICABLE if last_time_backup == EARLIEST_TIME else last_time_backup
+            details = f"Last successful backup: {time_}"
+            integration_instance = demisto.callingContext.get("context", {}).get("IntegrationInstance", "")
+            incident_name = f"Veeam - {integration_instance} has no configuration backups"
+            response["details"] = details
+            response["incident_type"] = CONFIGURATION_BACKUP_INCIDENT_TYPE
+            incident = {
+                "name": incident_name,
+                "occurred": last_fetch_time,
+                "rawJSON": json.dumps(response),
+                "severity": IncidentSeverity.MEDIUM,
+            }
 
-                last_successful_backup_date = last_time_backup
+            last_successful_backup_date = last_time_backup
         return incident, last_successful_backup_date
 
     def get_repository_space_incidents(
         self, existed_ids: set, max_results: int, free_space_less_then: int
     ) -> tuple[list[dict], set[str]]:
-
         last_fetch_time = datetime.now().strftime(DATE_FORMAT)
 
         def _paged_repo_method(**kwargs):
@@ -2163,7 +2135,7 @@ class FetchClient:
         response = search_with_paging(
             method=_paged_repo_method,
             args={"orderColumn": "FreeGB", "orderAsc": "true"},
-            page_size=REPOSITORY_STATE_REQUEST_PAGE_SIZE
+            page_size=REPOSITORY_STATE_REQUEST_PAGE_SIZE,
         )
 
         incidents: list[dict] = []
@@ -2179,25 +2151,24 @@ class FetchClient:
             repository_id = str(repository.get("id"))
 
             if repository["freeGB"] < free_space_less_then and repository["capacityGB"] > 0:
-
                 hostname = repository.get("hostName", "")
                 hostname = hostname if hostname else NOT_APPLICABLE
 
                 if repository_id not in incident_repository_ids:
                     details = (
-                        f"{repository["description"]}; Repository Name: {repository["name"]}; "
-                        f"Free Space (GB): {repository["freeGB"]}; Hostname: {hostname}"
+                        f"{repository['description']}; Repository Name: {repository['name']}; "
+                        f"Free Space (GB): {repository['freeGB']}; Hostname: {hostname}"
                     )
-                    incident_name = (
-                        f"Veeam - Repository {repository["name"]} is running low on disk space. Free space: {repository["freeGB"]}"
-                    )
+                    repo_name = repository["name"]
+                    repo_free = repository["freeGB"]
+                    incident_name = f"Veeam - Repository {repo_name} is running low on disk space. " f"Free space: {repo_free}"
                     repository["details"] = details
                     repository["incident_type"] = REPOSITORY_STATE_INCIDENT_TYPE
                     incident = {
                         "name": incident_name,
                         "occurred": last_fetch_time,
                         "rawJSON": json.dumps(repository),
-                        "severity": IncidentSeverity.HIGH
+                        "severity": IncidentSeverity.HIGH,
                     }
 
                     incident_repository_ids.add(repository_id)
@@ -2205,10 +2176,7 @@ class FetchClient:
 
         return incidents, incident_repository_ids
 
-    def get_security_analyzer_incidents(
-        self, existed_ids: set
-    ) -> tuple[list[dict], set[str]]:
-
+    def get_security_analyzer_incidents(self, existed_ids: set) -> tuple[list[dict], set[str]]:
         last_fetch_time = datetime.now().strftime(DATE_FORMAT)
         response = handle_command_with_token_refresh(self.client.get_security_analyzer_best_practices_request, {}, self.client)
         items = response.get("items", [])
@@ -2220,21 +2188,19 @@ class FetchClient:
         incident_security_ids.intersection_update(security_ids)
 
         for security_result in items:
-
             security_result_id = str(security_result.get("id"))
 
             if security_result["status"] == "Violation":
-
                 note = security_result.get("note", "")
                 note = note if note else NOT_APPLICABLE
 
                 if security_result_id not in incident_security_ids:
-                    details = (
-                        f"{security_result["bestPractice"]}; Status: {security_result["status"]}; "
-                        f"Note: {note}"
-                    )
+                    best_practice = security_result["bestPractice"]
+                    status = security_result["status"]
+                    details = f"{best_practice}; Status: {status}; Note: {note}"
                     incident_name = (
-                        f"Veeam - Configuration is not compliant with security best practices. Affected parameter: {security_result["bestPractice"]}"
+                        "Veeam - Configuration is not compliant with security best practices. "
+                        f"Affected parameter: {best_practice}"
                     )
                     security_result["details"] = details
                     security_result["incident_type"] = SECURITY_ANALYZER_INCIDENT_TYPE
@@ -2242,7 +2208,7 @@ class FetchClient:
                         "name": incident_name,
                         "occurred": last_fetch_time,
                         "rawJSON": json.dumps(security_result),
-                        "severity": IncidentSeverity.CRITICAL
+                        "severity": IncidentSeverity.CRITICAL,
                     }
 
                     incident_security_ids.add(security_result_id)
@@ -2250,10 +2216,7 @@ class FetchClient:
 
         return incidents, incident_security_ids
 
-    def get_sure_backup_incidents(
-        self, existed_ids: set
-    ) -> tuple[list[dict], set[str]]:
-
+    def get_sure_backup_incidents(self, existed_ids: set) -> tuple[list[dict], set[str]]:
         last_fetch_time = datetime.now().strftime(DATE_FORMAT)
 
         def _paged_job_method(**kwargs):
@@ -2262,7 +2225,7 @@ class FetchClient:
         response = search_with_paging(
             method=_paged_job_method,
             args={"typeFilter": "SureBackupContentScan", "statusFilter": "Stopped"},
-            page_size=JOB_STATES_REQUEST_PAGE_SIZE
+            page_size=JOB_STATES_REQUEST_PAGE_SIZE,
         )
 
         incidents: list[dict] = []
@@ -2275,25 +2238,23 @@ class FetchClient:
             sure_backup_id = str(sure_backup.get("id"))
 
             if sure_backup["lastResult"] == "Failed":
-
                 last_run = sure_backup.get("lastRun", "")
                 last_run = last_run if last_run else NOT_APPLICABLE
 
                 if sure_backup_id not in incident_sure_backup_ids:
+                    sb_name = sure_backup["name"]
                     details = (
-                        f"{sure_backup["description"]}; Job Name: {sure_backup["name"]}; "
-                        f"Object Count: {sure_backup["objectsCount"]}; Last Run: {last_run}"
+                        f"{sure_backup['description']}; Job Name: {sb_name}; "
+                        f"Object Count: {sure_backup['objectsCount']}; Last Run: {last_run}"
                     )
-                    incident_name = (
-                        f"Veeam - SureBackup job {sure_backup["name"]} (backup verification and content scan only) has failed"
-                    )
+                    incident_name = f"Veeam - SureBackup job {sb_name} " "(backup verification and content scan only) has failed"
                     sure_backup["details"] = details
                     sure_backup["incident_type"] = SURE_BACKUP_INCIDENT_TYPE
                     incident = {
                         "name": incident_name,
                         "occurred": last_fetch_time,
                         "rawJSON": json.dumps(sure_backup),
-                        "severity": IncidentSeverity.CRITICAL
+                        "severity": IncidentSeverity.CRITICAL,
                     }
 
                     incident_sure_backup_ids.add(sure_backup_id)
@@ -2353,9 +2314,7 @@ class FetchClient:
         backupDate: str = self.last_run.get("backup_date", None)
         error_count: int = self.errors_by_command.get(ERROR_COUNT_IN_CONFIGURATION_BACKUP_INCIDENTS, 0)
         try:
-            backup_incident, backupDate = self.get_configuration_backup_incident(
-                backupDate, backup_older_then_days
-            )
+            backup_incident, backupDate = self.get_configuration_backup_incident(backupDate, backup_older_then_days)
             if backup_incident:
                 self.incidents.append(backup_incident)
             self.next_run["backup_date"] = backupDate
@@ -2373,9 +2332,7 @@ class FetchClient:
         error_count: int = self.errors_by_command.get(ERROR_COUNT_IN_SECURITY_ANALYZER_INCIDENTS, 0)
         try:
             security_ids = set(self.last_run.get("security_ids", []))
-            security_analyzer_incidents, security_ids = self.get_security_analyzer_incidents(
-                security_ids
-            )
+            security_analyzer_incidents, security_ids = self.get_security_analyzer_incidents(security_ids)
             self.incidents.extend(security_analyzer_incidents)
             self.next_run["security_ids"] = list(security_ids)
             error_count = 0
@@ -2392,9 +2349,7 @@ class FetchClient:
         error_count: int = self.errors_by_command.get(ERROR_COUNT_IN_SURE_BACKUP_INCIDENTS, 0)
         try:
             sure_backup_ids = set(self.last_run.get("sure_backup_ids", []))
-            sure_backup_incidents, sure_backup_ids = self.get_sure_backup_incidents(
-                sure_backup_ids
-            )
+            sure_backup_incidents, sure_backup_ids = self.get_sure_backup_incidents(sure_backup_ids)
             self.incidents.extend(sure_backup_incidents)
             self.next_run["sure_backup_ids"] = list(sure_backup_ids)
             error_count = 0
@@ -2408,13 +2363,18 @@ class FetchClient:
             self.errors_by_command[ERROR_COUNT_IN_SURE_BACKUP_INCIDENTS] = error_count
 
     def fetch_incidents(
-        self, first_fetch_time: str, max_malware_events_for_fetch: int,
-        max_repos_space_events_for_fetch: int, backup_older_then_days: int, free_space_less_then: int,
-        fetch_malware_incidents: bool, fetch_backup_repository_events: bool,
-        fetch_configuration_backup_events: bool, fetch_security_analyzer_events: bool,
-        fetch_sure_backup_events: bool
+        self,
+        first_fetch_time: str,
+        max_malware_events_for_fetch: int,
+        max_repos_space_events_for_fetch: int,
+        backup_older_then_days: int,
+        free_space_less_then: int,
+        fetch_malware_incidents: bool,
+        fetch_backup_repository_events: bool,
+        fetch_configuration_backup_events: bool,
+        fetch_security_analyzer_events: bool,
+        fetch_sure_backup_events: bool,
     ) -> tuple[dict, list[dict]]:
-
         demisto.debug(f"Last run: {json.dumps(self.last_run)}")
 
         if max_malware_events_for_fetch > 0 and fetch_malware_incidents is True:
@@ -2441,76 +2401,47 @@ class FetchClient:
 
 def validate_filter_parameter(value: int) -> None:
     if value < 0 or value > MAX_INT:
-        raise ValueError(f"Invalid input parameter value: {value}. "
-                         f"Parameter value must be non-negative and less than maximum integer value")
+        raise ValueError(
+            f"Invalid input parameter value: {value}. "
+            f"Parameter value must be non-negative and less than maximum integer value"
+        )
 
 
-def process_command(command: Any, client: Client, first_fetch_time: datetime,
-                    params: dict, args: dict, max_attempts: int = MAX_ATTEMPTS):
+def process_command(
+    command: Any, client: Client, first_fetch_time: datetime, params: dict, args: dict, max_attempts: int = MAX_ATTEMPTS
+):
     commands = {
-
         "veeam-vbr-create-malware-event": create_malware_event_command,
-
         "veeam-vbr-get-malware-events": get_all_malware_events_command,
-
         "veeam-vbr-get-authorization-events": get_authorization_events_command,
-
         "veeam-vbr-get-yara-rules": get_yara_rules_command,
-
         "veeam-vbr-get-repository-states": get_all_repository_states_command,
-
         "veeam-vbr-get-restore-points": get_all_restore_points_command,
-
         "veeam-vbr-get-backup-object": get_backup_object_command,
-
         "veeam-vbr-get-configuration-backup": get_configuration_backup_command,
-
         "veeam-vbr-get-inventory-objects": get_inventory_objects_command,
-
         "veeam-vbr-get-session": get_session_command,
-
         "veeam-vbr-get-session-logs": get_session_logs_command,
-
         "veeam-vbr-start-configuration-backup": start_configuration_backup_command,
-
         "veeam-vbr-start-instant-recovery": start_instant_recovery_command,
-
         "veeam-vbr-start-instant-recovery-customized": start_instant_recovery_customized_command,
-
         "veeam-vbr-start-instant-recovery-hyperv-vm": start_instant_recovery_hyperv_vm_command,
-
         "veeam-vbr-start-instant-recovery-hyperv-vm-customized": start_instant_recovery_hyperv_vm_customized_command,
-
         "veeam-vbr-start-security-analyzer": start_security_analyzer_command,
-
         "veeam-vbr-get-security-analyzer-best-practices": get_security_analyzer_best_practices_command,
-
         "veeam-vbr-get-security-analyzer-last-run": get_security_analyzer_last_run_command,
-
         "veeam-vbr-get-job-states": get_job_states_command,
-
         "veeam-vbr-start-vsphere-quick-backup": start_vsphere_quick_backup_command,
-
         "veeam-vbr-start-malware-backup-scan": start_malware_backup_scan_command,
-
         "veeam-vbr-mount-entra-id-tenant": mount_entra_id_tenant_command,
-
         "veeam-vbr-unmount-entra-id-tenant": unmount_entra_id_tenant_command,
-
         "veeam-vbr-get-entra-id-items": get_entra_id_items_command,
-
         "veeam-vbr-get-entra-id-item-restore-points": get_entra_id_item_restore_points_command,
-
         "veeam-vbr-compare-entra-id-item-properties": compare_entra_id_item_properties_command,
-
         "veeam-vbr-start-disk-publishing": start_disk_publishing_command,
-
         "veeam-vbr-stop-disk-publishing": stop_disk_publishing_command,
-
         "veeam-vbr-get-disk-publishing-mount-point": get_disk_publishing_mount_point_command,
-
         "veeam-vbr-general-api-request": general_api_request_command,
-
     }
 
     if command == "test-module":
@@ -2577,9 +2508,9 @@ def check_license(license_response: dict) -> None:
     instanceLicenseSummary = license_response.get("instanceLicenseSummary", {})
     license_dict = {**license_response, **instanceLicenseSummary}
     for license in ACCEPTABLE_LICENSES:
-        if all(license_dict.get(key) == license.get(key) for key in license.keys()):
+        if all(license_dict.get(key) == license.get(key) for key in license):
             return
-    raise ValueError(f"Valid Veeam license required")
+    raise ValueError("Valid Veeam license required")
 
 
 def handle_command_with_token_refresh(command: Callable, command_params: dict, client: Client, max_attempts: int = MAX_ATTEMPTS):
@@ -2618,18 +2549,13 @@ def handle_command_with_token_refresh(command: Callable, command_params: dict, c
 
 
 def main() -> None:
-
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
     url: str = params.get("url", "")
     verify_certificate: bool = not params.get("insecure", False)
     proxy: bool = params.get("proxy", False)
 
-    first_fetch_time = arg_to_datetime(
-        arg=params.get("first_fetch", "3 days"),
-        arg_name="First fetch time",
-        required=False
-    )
+    first_fetch_time = arg_to_datetime(arg=params.get("first_fetch", "3 days"), arg_name="First fetch time", required=False)
 
     if not first_fetch_time:
         first_fetch_time = datetime.now()
@@ -2645,12 +2571,7 @@ def main() -> None:
 
     try:
         client: Client = Client(
-            urljoin(url, "/"),
-            verify_certificate,
-            proxy,
-            headers=headers,
-            auth=None,
-            timeout=http_request_timeout_sec
+            urljoin(url, "/"), verify_certificate, proxy, headers=headers, auth=None, timeout=http_request_timeout_sec
         )
         result = process_command(command, client, first_fetch_time, params, args)
         return_results(result)

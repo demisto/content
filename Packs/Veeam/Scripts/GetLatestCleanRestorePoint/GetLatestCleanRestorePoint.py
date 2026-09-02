@@ -23,9 +23,9 @@ def main():
         elif isinstance(data_arg, list):
             data.extend(data_arg)
 
-        data = find_latest_restore(data)
+        result: dict = find_latest_restore(data)
 
-        command_results = CommandResults(outputs_prefix="Veeam.LatestCleanRestorePoint", outputs=data)
+        command_results = CommandResults(outputs_prefix="Veeam.LatestCleanRestorePoint", outputs=result)
         return_results(command_results)
 
     except Exception as e:

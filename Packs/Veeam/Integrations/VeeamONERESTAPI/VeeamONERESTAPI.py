@@ -403,7 +403,7 @@ def convert_triggered_alarms_to_incidents(
 
         if alarm_id not in existed_ids:
             object_name = alarm.get("alarmAssignment", {}).get("objectName", NOT_APPLICABLE)
-            incident_name = f"Veeam - {alarm["name"]} ({object_name})"
+            incident_name = f"Veeam - {alarm['name']} ({object_name})"
             alarm["incident_type"] = alarm["predefinedAlarmId"]
             incident = {
                 "name": incident_name,
