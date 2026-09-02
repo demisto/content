@@ -12,5 +12,5 @@ Set **Hydden API URL** to the public API root: https://control.hydden.ai/api/pub
 
 ### Commands
 
-- `hydden-blast-radius` — blast radius information string for an account (`GET /blast-radius?account_id=`). Output: `Hydden.Identity.blast_radius`.
+- `hydden-blast-radius` — blast radius information string for an account (`GET /blast-radius?ref=<account_id>&type=account`). Output: `Hydden.Identity.blast_radius`.
 - `hydden-deprovision-account` — deprovision the account (`POST /account-actions/deprovision?account_id=`). Marked potentially harmful. Output: `Hydden.Identity.deprovisioned`.

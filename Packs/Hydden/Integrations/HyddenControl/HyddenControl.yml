@@ -16,6 +16,15 @@ configuration:
   type: 9
   required: true
   section: Connect
+- display: HTTP request timeout (seconds)
+  additionalinfo: A cold blast-radius call builds the tenant reachability graph and can take
+    several minutes; later calls are sub-second. Defaults to 300.
+  name: timeout
+  defaultvalue: "300"
+  type: 0
+  required: false
+  section: Connect
+  advanced: true
 description: Calculate account blast radius and deprovision accounts from Cortex using Hydden Control.
 display: Hydden Control
 name: Hydden Control
@@ -24,15 +33,47 @@ sectionorder:
 script:
   commands:
   - name: hydden-blast-radius
-    description: Return the account's blast radius information as a string from Hydden Control using GET /blast-radius?account_id=.
+    description: Return the account's blast radius information as a string from Hydden Control using GET /blast-radius?ref=&type=.
     arguments:
     - name: account_id
       required: true
-      description: The Cortex account ID. Sent to Hydden as the account_id query parameter.
+      description: The Cortex account ID. Sent to Hydden as the ref query parameter.
+    - name: type
+      required: false
+      description: The subject the ref names. Sent to Hydden as the type query parameter.
+      defaultValue: account
+      predefined:
+      - account
+      - group
+      auto: PREDEFINED
     outputs:
     - contextPath: Hydden.Identity.blast_radius
-      description: The account's blast radius information.
+      description: The subject's blast radius score, as a string.
       type: String
+    - contextPath: Hydden.Identity.score
+      description: The reach score for the subject.
+      type: Number
+    - contextPath: Hydden.Identity.reachable_resources
+      description: Number of resources the subject can reach.
+      type: Number
+    - contextPath: Hydden.Identity.tenant_resources
+      description: Total resources in the tenant, the denominator for share_of_tenant.
+      type: Number
+    - contextPath: Hydden.Identity.share_of_tenant
+      description: Fraction of tenant resources the subject reaches.
+      type: Number
+    - contextPath: Hydden.Identity.denied_resources
+      description: Resources reachable by grant but blocked by a deny rule.
+      type: Number
+    - contextPath: Hydden.Identity.subject_ref
+      description: The ref the score was computed for.
+      type: String
+    - contextPath: Hydden.Identity.subject_type
+      description: The subject type the score was computed for.
+      type: String
+    - contextPath: Hydden.Identity.computed_at
+      description: When the score was computed.
+      type: Date
   - name: hydden-deprovision-account
     description: Deprovision an account across the Hydden identity fabric using POST /account-actions/deprovision?account_id=.
     execution: true

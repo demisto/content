@@ -1,2 +1,2 @@
-!hydden-blast-radius account_id="00000000-0000-0000-0000-000000000000"
+!hydden-blast-radius account_id="00000000-0000-0000-0000-000000000000" type="account"
 !hydden-deprovision-account account_id="00000000-0000-0000-0000-000000000000"
