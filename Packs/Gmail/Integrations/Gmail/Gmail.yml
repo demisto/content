@@ -7,7 +7,7 @@ commonfields:
   id: Gmail
   version: -1
 configuration:
-- display: Email of user with admin privileges
+- display: Email  of user with admin privileges
   displaypassword: Service account private key file contents (JSON)
   additionalinfo: See the Help tab for details on creating a Service Account file.
   name: adminEmail
