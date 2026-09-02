@@ -291,10 +291,14 @@ class TestIterEventsPagination:
         ]
         get_events = _make_defender_get_events_with_client(pages_payload, mocker)
 
-        pages = list(get_events._iter_events("activities_login", {"type": "activities", "filters": {}}))
+        # Measure each page's length as it is yielded. _iter_events pops the last event off the
+        # previously-yielded page to advance pagination; run() consumes (extends) each page before
+        # the generator resumes and pops, so lengths must be read during iteration - not from an
+        # eagerly-collected list, which would observe the post-pop mutation.
+        page_lengths = [len(page) for page in get_events._iter_events("activities_login", {"type": "activities", "filters": {}})]
 
         # All three pages are yielded and the client was called three times.
-        assert [len(p) for p in pages] == [2, 2, 1]
+        assert page_lengths == [2, 2, 1]
         assert get_events.client.call.call_count == 3
         # set_request_filter is called once per continuation (2 times for 3 pages).
         assert get_events.client.set_request_filter.call_count == 2

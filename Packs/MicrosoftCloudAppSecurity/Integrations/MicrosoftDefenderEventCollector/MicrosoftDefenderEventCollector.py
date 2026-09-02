@@ -439,9 +439,6 @@ def main(command: str, demisto_params: dict):
             demisto.debug(f"MD: Parsed the after arg: {after}")
 
         options = IntegrationOptions.parse_obj(demisto_params)
-        # TEMPORARY: hardcode the per-cycle limit to 5000 for fetch-events for this client. Remove this line to restore the configured limit.
-        if command == "fetch-events":
-            options.limit = 5000
         request = DefenderHTTPRequest.parse_obj(demisto_params)
         authenticator = DefenderAuthenticator.parse_obj(demisto_params)
 
