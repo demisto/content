@@ -102,7 +102,7 @@ filter source_log_type = "outbound_http_log"
     xdm.target.host.hostname = hostname;
 
 // Audit Logs
-filter source_log_type not in ("syslog transactions", "case")
+filter source_log_type not in ("syslog transactions", "case","outbound_http_log")
 |alter // sys_audit: https://docs.servicenow.com/bundle/vancouver-platform-security/page/administer/time/concept/exploring-auditing.html#d227507e148
     xdm.database.tables = arraycreate(tablename), // Table that the audit record is for (for example, "incident")
     xdm.event.type = "AUDIT", 
