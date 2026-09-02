@@ -8,6 +8,7 @@ import demistomock as demisto  # noqa: F401
 import requests
 import urllib3
 from CommonServerPython import *  # noqa: F401
+from markdownify import markdownify
 
 MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
@@ -2364,15 +2365,19 @@ def confluence_cloud_generic_file_get_command(client: Client, args: dict[str, st
 
     content_id = _extract_content_id_from_url(url)
 
+    # Request the body in storage format (XHTML/HTML), then convert it to Markdown for readability.
     params = {"expand": "body.storage"}
     request_url = urljoin(URL_SUFFIX.get("CONTENT"), content_id)
     response = client.http_request(method="GET", url_suffix=request_url, params=params)
     response_json = response.json()
 
     title = response_json.get("title", "")
-    body_content = response_json.get("body", {}).get("storage", {}).get("value", "")
+    html_content = response_json.get("body", {}).get("storage", {}).get("value", "")
 
-    # Check size of body_content (limit to 5MB = 5 * 1024 * 1024 bytes)
+    # Convert the Confluence storage-format HTML/XHTML into Markdown.
+    body_content = markdownify(html_content).strip() if html_content else ""
+
+    # Check size of the body content (limit to 5MB = 5 * 1024 * 1024 bytes).
     if body_content:
         size_bytes = len(body_content.encode("utf-8"))
         if size_bytes > MAX_FILE_SIZE:
@@ -2382,11 +2387,11 @@ def confluence_cloud_generic_file_get_command(client: Client, args: dict[str, st
                 f"The file '{title}' is {size_mb:.2f} MB, which exceeds the maximum allowed size of {limit_mb:.0f} MB."
             )
 
-    # Confluence returns the page body as HTML/XHTML (storage format), so the content MIME type is text/html.
+    # The body is converted from Confluence storage-format HTML to Markdown, so the MIME type is text/markdown.
     generic_output = remove_empty_elements(
         {
             "Title": title,
-            "Type": "text/html",
+            "Type": "text/markdown",
             "Name": title,
             "Content": body_content,
             "Url": url,

@@ -2302,7 +2302,7 @@ def test_pack_metadata_present_and_valid():
         assert k in data, f"pack_metadata.json missing '{k}'"
     assert data["support"] == "developer"
     assert "certification" not in data, "'certification' is reserved for Cortex XSOAR; developer-supported packs must omit it"
-    assert data["currentVersion"] == "1.0.0"
+    assert data["currentVersion"] == "1.0.1"
 
 
 def test_yaml_script_body_is_empty(yml):
