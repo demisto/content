@@ -82,7 +82,7 @@ configuration:
   required: false
   type: 0
   section: Connect
-  additionalinfo: 'Required for SAML authentication only, Example for OKTA: https://[COMPANY_NAME].okta.com/home/[APP_NAME]/[APP_ID].'
+  additionalinfo: 'The authentication URL for SAML authentication. For Okta, use the format  https://[COMPANY_NAME].okta.com/home/[APP_NAME]/[APP_ID].'
 - display: Trust any certificate (not secure)
   advanced: true
   name: insecure
