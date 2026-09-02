@@ -174,7 +174,7 @@ script:
       predefined:
       - "true"
       - "false"
-      description: If true, the key will require the cas parameter to be set on all write requests. If false, the backend's configuration will be used.
+      description: Whether the key will require the cas parameter to be set on all write requests. If false, the backend's configuration will be used.
     - name: delete_version_after
       description: The duration to specify the deletion_time for all new versions written to this key, e.g., "3h25m19s".
     - name: custom_metadata

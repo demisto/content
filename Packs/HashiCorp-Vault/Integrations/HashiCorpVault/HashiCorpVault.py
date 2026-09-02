@@ -365,6 +365,11 @@ def create_update_secret_metadata_command():
     engine_path = args.get("engine")
     secret_path = args.get("secret_path")
 
+    if not engine_path:
+        raise DemistoException('The "engine" argument must be provided.')
+    if not secret_path:
+        raise DemistoException('The "secret_path" argument must be provided.')
+
     path = build_kv2_path(engine_path, "metadata", secret_path)
     body = build_secret_metadata_body(args)
 
