@@ -405,6 +405,22 @@ def parse_dlp_report(report_json) -> CommandResults:
     )
 
 
+def get_dlp_report_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves a DLP report and parses it for display.
+    Args:
+        client: DLP client
+        args: Command arguments
+
+    Returns: DLP report results
+    """
+    report_id = args.get("report_id")
+    fetch_snippets = argToBoolean(args.get("fetch_snippets"))
+    service_name = args.get("service_name")
+    report_json, _ = client.get_dlp_report(report_id, fetch_snippets, service_name)
+    return parse_dlp_report(report_json)
+
+
 def test(client: Client, params: dict):
     """Test Function to test validity of access and refresh tokens"""
     dlp_regions = params.get("dlp_regions", "")
@@ -807,11 +823,7 @@ def main():
         client = Client(base_url, auth_url, credentials, verify, proxy)
 
         if command == "pan-dlp-get-report":
-            report_id = args.get("report_id")
-            fetch_snippets = argToBoolean(args.get("fetch_snippets"))
-            service_name = args.get("service_name")
-            report_json, _ = client.get_dlp_report(report_id, fetch_snippets, service_name)
-            return_results(parse_dlp_report(report_json))
+            return_results(get_dlp_report_command(client, args))
         elif command == "fetch-incidents":
             next_run, new_incidents = fetch_incidents(client, params)
             demisto.incidents(new_incidents)
