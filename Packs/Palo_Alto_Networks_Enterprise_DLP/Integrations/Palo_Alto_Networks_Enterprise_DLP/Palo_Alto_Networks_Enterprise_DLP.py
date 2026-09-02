@@ -414,7 +414,7 @@ def get_dlp_report_command(client: Client, args: dict) -> CommandResults:
 
     Returns: DLP report results
     """
-    report_id = args.get("report_id")
+    report_id = args.get("report_id", "")
     fetch_snippets = argToBoolean(args.get("fetch_snippets"))
     service_name = args.get("service_name")
     report_json, _ = client.get_dlp_report(report_id, fetch_snippets, service_name)
