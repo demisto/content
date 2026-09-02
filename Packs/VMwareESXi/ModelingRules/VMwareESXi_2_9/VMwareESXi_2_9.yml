@@ -7,3 +7,5 @@ schema: ''
 tags: VMwareESXi
 supportedModules:
 - xsiam
+supportedFeatures:
+- supported_feature_d

@@ -58,7 +58,7 @@ select = [
     "VC100", "VC101",
     "AS101", "AS102", "AS103", "AS104", "AS105", "AS107", "AS108", "AS109"
 ]
-warning = ["PB130", "PB131", "RN116", "GR101","PA133", "AS106", "MC101", "BC117", "BA135"]
+warning = ["PB130", "PB131", "RN116", "GR101","PA133", "AS106", "MC101", "BC117"]
 
 
 [path_based_validations]
@@ -93,7 +93,7 @@ select = [
     "VC100", "VC101",
     "AS101", "AS102", "AS104", "AS105", "AS107", "AS108"
 ]
-warning = ["RM108", "PB130", "PB131", "GR107", "GR110", "GR101","PA133", "AS106", "MC101", "GR113", "GR103", "GR109", "BA131", "BA132", "BA133", "BA135"]
+warning = ["RM108", "PB130", "PB131", "GR107", "GR110", "GR101","PA133", "AS106", "MC101", "GR113", "GR103", "GR109", "BA131", "BA132", "BA133"]
 
 [connectors_path_based_validations]
 select = [
