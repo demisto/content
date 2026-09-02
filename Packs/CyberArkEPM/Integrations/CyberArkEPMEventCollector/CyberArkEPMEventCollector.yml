@@ -33,7 +33,7 @@ configuration:
   type: 0
   section: Connect
 - display: Identity URL
-  additionalinfo: 'The CyberArk Identity FQDN, e.g. https://<sub-domain>.id.cyberark.cloud. Required for Idira OAuth authentication only. Used only to obtain the OAuth token; must not include a /oauth2/token suffix.'
+  additionalinfo: 'The CyberArk Identity FQDN, for example https://<sub-domain>.id.cyberark.cloud. Required for Idira OAuth authentication only. Used only to obtain the OAuth token; must not include a /oauth2/token suffix.'
   name: identity_url
   required: false
   type: 0
