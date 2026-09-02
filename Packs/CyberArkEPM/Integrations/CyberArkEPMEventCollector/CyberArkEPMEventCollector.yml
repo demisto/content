@@ -70,7 +70,7 @@ configuration:
   type: 0
   section: Connect
 - display: Authentication URL
-  additionalinfo: 'Required for SAML authentication only, Example for OKTA: https://[COMPANY_NAME].okta.com/api/v1/authn. See how to get the Authentication URL https://developer.okta.com/docs/reference/api/authn/#authentication-operations'
+  additionalinfo: 'The authentication URL for SAML authentication. For Okta, use the format https://[COMPANY_NAME].okta.com/api/v1/authn. For information on how to obtain the authentication URL, see https://developer.okta.com/docs/reference/api/authn/#authentication-operations'
   advanced: true
   name: authentication_url
   required: false
