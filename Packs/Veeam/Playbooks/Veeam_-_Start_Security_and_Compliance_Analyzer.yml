@@ -1,6 +1,6 @@
 description: Starts a Security & Compliance Analyzer scan session for the Veeam Backup
   & Replication instance.
-id: Veeam - Start Security & Compliance Analyzer
+id: Veeam - Start Security and Compliance Analyzer
 inputs:
 - description: ""
   key: Instance
@@ -10,7 +10,7 @@ inputs:
     complex:
       accessor: sourceInstance
       root: incident
-name: Veeam - Start Security & Compliance Analyzer
+name: Veeam - Start Security and Compliance Analyzer
 outputs: []
 quiet: true
 starttaskid: "0"
