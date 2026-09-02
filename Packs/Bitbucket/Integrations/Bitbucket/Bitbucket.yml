@@ -2353,6 +2353,6 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.12.13.11753038
 tests:
-- Test_Bitbucket
+- no tests
 sectionorder:
 - Connect
