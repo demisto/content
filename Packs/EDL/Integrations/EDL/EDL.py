@@ -1514,7 +1514,7 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
 """ COMMAND FUNCTIONS """
 
 
-def is_port_in_use(port: int, host: str = "0.0.0.0") -> bool:
+def is_port_in_use(port: int, host: str = "127.0.0.1") -> bool:
     """Check whether a TCP port is already bound (i.e. in use) on the given host.
 
     We try to bind to the port ourselves: if the bind fails with an "address already
@@ -1523,7 +1523,7 @@ def is_port_in_use(port: int, host: str = "0.0.0.0") -> bool:
 
     Args:
         port (int): The TCP port to check.
-        host (str): The host/interface to check the port on. Defaults to "0.0.0.0".
+        host (str): The host/interface to check the port on. Defaults to "127.0.0.1".
 
     Returns:
         bool: True if the port is already in use, False otherwise.
