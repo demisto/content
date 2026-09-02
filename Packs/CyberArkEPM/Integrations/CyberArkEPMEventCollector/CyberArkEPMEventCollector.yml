@@ -133,7 +133,7 @@ configuration:
 - display: Detailed Events
   defaultvalue: 'AttackAttempt,AttackBlock,SuspiciousActivityAttempt,SuspiciousActivityblock'
   name: raw_events_event_type
-  additionalinfo: A comma-separated list of detailed events event type to fetch
+  additionalinfo: A comma-separated list of detailed event types to fetch.
   type: 16
   required: false
   section: Collect
