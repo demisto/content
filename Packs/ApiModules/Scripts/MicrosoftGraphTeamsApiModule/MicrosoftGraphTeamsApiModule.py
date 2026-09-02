@@ -574,10 +574,12 @@ def test_function(client, _):
 
     # `chats` resolves the chats of the *signed-in user*, so it is delegated-only: Microsoft Graph
     # rejects it with 400 "Requested API is not supported in application-only context" whenever no
-    # user is present. Under UCP the platform injects an app-only (client credentials) token, so the
-    # connectivity probe has to target a resource that is addressable without a user. `teams` is the
-    # app-only equivalent that stays closest to this integration's Teams scope.
-    url_suffix = "teams" if should_use_ucp_auth() else "chats"
+    # user is present. `delegated_user` is precisely the configured user to act as - it is required
+    # by the community pack and absent from the UCP-driven satellite pack, which is served an
+    # app-only (client credentials) token. So its presence is what decides whether a user-scoped
+    # probe can resolve at all. Without one, fall back to `teams`, the app-only addressable resource
+    # closest to this integration's Teams scope.
+    url_suffix = "chats" if demisto.params().get("delegated_user") else "teams"
     client.ms_client.http_request(method="GET", url_suffix=url_suffix)
     # `test-module` is a platform contract: the entry content must be exactly "ok" for the
     # connection test to be reported as successful. Any other payload - including a decorated
