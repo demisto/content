@@ -83,7 +83,11 @@ If you use [Kibana Spaces](https://www.elastic.co/docs/deploy-manage/manage-spac
 
 ## Additional Configuration Parameters Details
 
-Fetch incidents requires:
+Use the **Fetch incident types** parameter to select what to fetch from Elasticsearch: the default **Elasticsearch Entity**, **Elasticsearch Security Alert**, or **Elasticsearch Case**.
+
+Mirroring is only available for Elasticsearch Security Alerts and Cases.
+
+Fetching security alerts requires:
     - Index
     - Index time field
     - Query String or Raw Query
@@ -95,6 +99,14 @@ Query String is queried using the Lucene syntax. For more information about the 
 
 **Raw Query**
 Allows raw DSL queries. For more information about Query DSL see [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html).
+
+### Fetch Security Alerts
+
+To fetch security alerts, use the **Raw Query** field (DSL query). The index must follow one of these patterns: `.internal.alerts-security.alerts-*` or `.siem-signals-*`.
+
+### Fetch Cases
+
+Use the **Fetch cases by Severity** parameter to filter cases by the required severity and the **Fetch cases by Status** parameter to filter cases by the required status.
 
 **Time field type**
 3 formats supported:

@@ -38,6 +38,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: First fetch timestamp (e.g., 7 days)
   name: first_fetch
   defaultvalue: 7 days
@@ -49,16 +52,32 @@ configuration:
   type: 13
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.13.8319994
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   commands:
   - name: panorays-finding-list

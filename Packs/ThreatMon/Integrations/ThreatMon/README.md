@@ -55,6 +55,7 @@ This integration is designed to help security teams streamline incident enrichme
 | `threatmon_request_takedown` | Submits a takedown request for a specific Threatmon finding. Eligible finding types include Phishing Domain Detected, Rogue Mobile App Detected, Fake SM Account Detected, and similar alarm types. |
 | `threatmon_list_cves` | Retrieves a paginated list of all CVEs monitored by ThreatMon. |
 | `threatmon_list_subscribed_cves` | Retrieves a paginated list of CVEs affecting products that the authenticated company (or a specified child customer) is actively subscribed to. |
+| `threatmon_request_data_removal` | Submits a Black Market Monitoring data removal request for a specific ThreatMon finding. Requires the company to have remaining Black Market Data Removal credits. |
 
 > **Note:** Full command usage details and argument structures are available within the integration settings in XSOAR.
 
@@ -81,3 +82,13 @@ This is a **community-supported integration**. For issues or feature requests:
 ThreatMon Security Intelligence Team  
 Website: [https://www.threatmon.io](https://www.threatmon.io)  
 Support: [integration@threatmonit.io](mailto:integration@threatmonit.io)
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
+
+- Fetch incidents
+
+</~PLATFORM>

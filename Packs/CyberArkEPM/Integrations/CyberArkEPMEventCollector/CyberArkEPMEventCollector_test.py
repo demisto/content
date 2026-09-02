@@ -280,6 +280,43 @@ def test_get_set_ids_by_set_names(mocker, requests_mock):
     assert get_set_ids_by_set_names(client, set_names) == ["id1", "id2"]
 
 
+def test_get_set_ids_by_set_names_preserves_token_in_context(mocker, requests_mock):
+    """
+    Given:
+        - An integration context that already holds a cached OAuth token
+          (access_token / valid_until) alongside no cached set_items.
+
+    When:
+        - get_set_ids_by_set_names resolves and persists set_items to the context.
+
+    Then:
+        - The cached token keys are preserved (not clobbered) and set_items is added,
+          proving the set-name write and the token write can coexist in the context.
+    """
+    from CyberArkEPMEventCollector import get_set_ids_by_set_names
+
+    # Stateful fake integration context shared by the get/set mocks.
+    fake_context = {"access_token": "cached-token", "valid_until": "9999999999"}
+
+    mocker.patch(
+        "CyberArkEPMEventCollector.get_integration_context",
+        side_effect=lambda: dict(fake_context),
+    )
+    mocker.patch(
+        "CyberArkEPMEventCollector.set_integration_context",
+        side_effect=lambda ctx: fake_context.update(ctx),
+    )
+
+    set_names = ["set_name1", "set_name2"]
+    client = mocked_client(requests_mock)
+
+    assert get_set_ids_by_set_names(client, set_names) == ["id1", "id2"]
+    # Token keys must survive the set_items write.
+    assert fake_context["access_token"] == "cached-token"
+    assert fake_context["valid_until"] == "9999999999"
+    assert fake_context["set_items"] == {"set_name1": "id1", "set_name2": "id2"}
+
+
 """ TEST COMMAND FUNCTION """
 
 
@@ -298,7 +335,7 @@ def test_get_events_command(requests_mock, event_type):
     Then:
         - Validates that the function works as expected.
     """
-    from CyberArkEPMEventCollector import create_last_run, get_events_command
+    from CyberArkEPMEventCollector import Config, create_last_run, get_events_command
 
     from CommonServerPython import string_to_table_header
 
@@ -309,6 +346,8 @@ def test_get_events_command(requests_mock, event_type):
 
     assert len(events) == 6
     assert string_to_table_header(event_type) in command_results.readable_output
+    assert command_results.outputs == events
+    assert command_results.outputs_prefix == Config.OUTPUTS_PREFIX[event_type]
 
 
 def test_fetch_events(requests_mock):
@@ -378,3 +417,574 @@ def test_prepare_next_run_with_zero_events(event_type, last_fetch, expected_next
 
     assert last_run["set123"][event_type]["next_cursor"] == expected_next_cursor
     assert last_run["set123"][event_type]["from_date"] == expected_from_date
+
+
+""" TEST OAUTH (IDIRA) AUTHENTICATION """
+
+
+def test_oauth_uses_server_url_as_base_url(mocker, requests_mock):
+    """
+    Given:
+        - An Idira OAuth configuration with a Server URL, Identity URL, and Web App ID.
+
+    When:
+        - Building the Client (which performs the OAuth authentication flow).
+
+    Then:
+        - The token is requested from the Identity URL token endpoint.
+        - No tenant-URL discovery call is made; the Server URL is used directly.
+        - The base URL is built from the Server URL with the versioned EPM SET API path,
+          and the Bearer header is set from the token response.
+    """
+    from CyberArkEPMEventCollector import Client
+
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    server_url = "https://example.epm.cyberark.com"
+
+    token_matcher = requests_mock.post(
+        f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "TOKEN123", "expires_in": 900}
+    )
+
+    client = Client(
+        base_url="",
+        username="user",
+        password="pass",
+        application_id="1",
+        auth_method="Idira OAuth",
+        identity_url=identity_url,
+        web_app_id="web-app-1",
+        server_url=server_url,
+    )
+
+    assert token_matcher.called
+    # Only the token endpoint should have been called (no tenant-URL discovery).
+    assert requests_mock.call_count == 1
+    assert client._headers["Authorization"] == "Bearer TOKEN123"
+    # Data calls must use the uppercase, versioned EPM SET API path (matches CyberArk Postman).
+    assert client._base_url == f"{server_url}/EPM/API/26.7.0/"
+
+
+def test_oauth_missing_server_url_raises(mocker, requests_mock):
+    """
+    Given:
+        - An Idira OAuth configuration WITHOUT a Server URL.
+
+    When:
+        - Building the Client (which performs the OAuth authentication flow).
+
+    Then:
+        - A DemistoException is raised indicating the Server URL is required.
+    """
+    from CyberArkEPMEventCollector import Client
+    from CommonServerPython import DemistoException
+
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    token_matcher = requests_mock.post(
+        f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "TOKEN123", "expires_in": 900}
+    )
+
+    with pytest.raises(DemistoException, match="Server URL is required"):
+        Client(
+            base_url="",
+            username="user",
+            password="pass",
+            application_id="1",
+            auth_method="Idira OAuth",
+            identity_url=identity_url,
+            web_app_id="web-app-1",
+            server_url="",
+        )
+
+    # The Server URL guard runs before any token request, so the token endpoint must never be hit.
+    assert token_matcher.call_count == 0
+
+
+def _build_oauth_client(requests_mock, identity_url, server_url):
+    """Helper: build an Idira OAuth Client with the token endpoint mocked.
+
+    Returns a tuple of (client, token_matcher) so callers can assert on the token
+    endpoint call count using the same matcher that actually served the requests.
+    """
+    from CyberArkEPMEventCollector import Client
+
+    token_matcher = requests_mock.post(
+        f"{identity_url}/oauth2/token/web-app-1",
+        json={"access_token": "TOKEN123", "expires_in": 900},
+    )
+    client = Client(
+        base_url="",
+        username="user",
+        password="pass",
+        application_id="1",
+        auth_method="Idira OAuth",
+        identity_url=identity_url,
+        web_app_id="web-app-1",
+        server_url=server_url,
+    )
+    return client, token_matcher
+
+
+def test_oauth_token_endpoint_401_raises_without_retry(mocker, requests_mock):
+    """
+    Given:
+        - An Idira OAuth configuration whose token endpoint returns 401 (bad credentials).
+
+    When:
+        - Building the Client (which performs the initial OAuth token request).
+
+    Then:
+        - The failure surfaces as a clean "Failed to obtain access token" error.
+        - The token endpoint is called exactly once (the token request must NOT enter the
+          401 refresh-and-retry logic).
+    """
+    from CyberArkEPMEventCollector import Client
+    from CommonServerPython import DemistoException
+
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+    # Avoid writing to stdout (the XSOAR test harness fails tests that leave stdout output).
+    mocker.patch("CyberArkEPMEventCollector.demisto.error")
+    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    token_matcher = requests_mock.post(f"{identity_url}/oauth2/token/web-app-1", status_code=401, json={"error": "unauthorized"})
+
+    with pytest.raises(DemistoException, match="Failed to obtain access token"):
+        Client(
+            base_url="",
+            username="user",
+            password="pass",
+            application_id="1",
+            auth_method="Idira OAuth",
+            identity_url=identity_url,
+            web_app_id="web-app-1",
+            server_url="https://example.epm.cyberark.com",
+        )
+
+    # Exactly one token call: no refresh-and-retry for the token request itself.
+    assert token_matcher.call_count == 1
+
+
+def test_oauth_data_call_401_refreshes_and_retries_once(mocker, requests_mock):
+    """
+    Given:
+        - A valid Idira OAuth Client.
+        - A data endpoint that returns 401 on the first call and 200 on the second.
+
+    When:
+        - A data request is made through the overridden `_http_request`.
+
+    Then:
+        - The client refreshes the token once and retries the data request exactly once,
+          ultimately returning the successful response.
+        - The token endpoint is called twice (initial auth + reactive refresh).
+    """
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+    # Avoid writing to stdout (the XSOAR test harness fails tests that leave stdout output).
+    mocker.patch("CyberArkEPMEventCollector.demisto.error")
+    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    server_url = "https://example.epm.cyberark.com"
+
+    client, token_matcher = _build_oauth_client(requests_mock, identity_url, server_url)
+
+    data_matcher = requests_mock.get(
+        f"{server_url}/EPM/API/26.7.0/Sets",
+        [
+            {"status_code": 401, "json": {"error": "unauthorized"}},
+            {"status_code": 200, "json": {"Sets": [{"Id": "id1", "Name": "set_name1"}]}},
+        ],
+    )
+
+    result = client._http_request("GET", url_suffix="Sets")
+
+    assert result == {"Sets": [{"Id": "id1", "Name": "set_name1"}]}
+    # First auth token call + one reactive refresh after the 401.
+    assert token_matcher.call_count == 2
+    # Data endpoint hit twice: original 401 + single retry.
+    assert data_matcher.call_count == 2
+
+
+def test_oauth_token_expires_in_as_string_is_handled(mocker, requests_mock):
+    """
+    Given:
+        - An Idira OAuth token response whose `expires_in` value is a string (e.g. "900").
+
+    When:
+        - Building the Client (which requests and caches the token).
+
+    Then:
+        - No TypeError is raised when computing `valid_until`.
+        - The cached `valid_until` is a numeric string derived from the integer TTL.
+    """
+    from CyberArkEPMEventCollector import Client, Config
+
+    saved_context: dict = {}
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", side_effect=lambda: dict(saved_context))
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context", side_effect=lambda ctx: saved_context.update(ctx))
+    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+    mocker.patch("CyberArkEPMEventCollector.time.time", return_value=1000)
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    server_url = "https://example.epm.cyberark.com"
+    # `expires_in` returned as a string.
+    requests_mock.post(f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "TOKEN123", "expires_in": "900"})
+
+    client = Client(
+        base_url="",
+        username="user",
+        password="pass",
+        application_id="1",
+        auth_method="Idira OAuth",
+        identity_url=identity_url,
+        web_app_id="web-app-1",
+        server_url=server_url,
+    )
+
+    assert client._headers["Authorization"] == "Bearer TOKEN123"
+    # valid_until = current_time (1000) + 900 - Config.CACHE_BUFFER_SECONDS.
+    assert saved_context["valid_until"] == str(1000 + 900 - Config.CACHE_BUFFER_SECONDS)
+
+
+def test_oauth_valid_cached_token_skips_token_endpoint(mocker, requests_mock):
+    """
+    Given:
+        - An Idira OAuth Client with a still-valid token cached in the integration context.
+
+    When:
+        - Building the Client (which resolves the access token via `_get_access_token`).
+
+    Then:
+        - The cached token is used directly.
+        - The token endpoint is never called (zero token requests).
+        - The Authorization header reflects the cached token.
+    """
+    from CyberArkEPMEventCollector import Client, Config
+
+    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+    # `time.time()` = 1000; cached token valid until 5000 -> still valid.
+    mocker.patch("CyberArkEPMEventCollector.time.time", return_value=1000)
+    mocker.patch(
+        "CyberArkEPMEventCollector.get_integration_context",
+        return_value={Config.ACCESS_TOKEN: "CACHED_TOKEN", Config.VALID_UNTIL: "5000"},
+    )
+    set_context = mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    server_url = "https://example.epm.cyberark.com"
+    token_matcher = requests_mock.post(
+        f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "FRESH_TOKEN", "expires_in": 900}
+    )
+
+    client = Client(
+        base_url="",
+        username="user",
+        password="pass",
+        application_id="1",
+        auth_method="Idira OAuth",
+        identity_url=identity_url,
+        web_app_id="web-app-1",
+        server_url=server_url,
+    )
+
+    assert client._headers["Authorization"] == "Bearer CACHED_TOKEN"
+    # A valid cache means no token endpoint call and no context rewrite.
+    assert token_matcher.call_count == 0
+    assert set_context.call_count == 0
+
+
+def test_oauth_expired_cached_token_requests_new_token(mocker, requests_mock):
+    """
+    Given:
+        - An Idira OAuth Client with an EXPIRED token cached in the integration context.
+
+    When:
+        - Building the Client (which resolves the access token via `_get_access_token`).
+
+    Then:
+        - Exactly one token request is issued to refresh the expired token.
+        - The integration context is rewritten with the new token and validity.
+        - The Authorization header reflects the new token.
+    """
+    from CyberArkEPMEventCollector import Client, Config
+
+    saved_context: dict = {Config.ACCESS_TOKEN: "OLD_TOKEN", Config.VALID_UNTIL: "500"}
+    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+    # `time.time()` = 1000; cached token valid only until 500 -> expired.
+    mocker.patch("CyberArkEPMEventCollector.time.time", return_value=1000)
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", side_effect=lambda: dict(saved_context))
+    set_context = mocker.patch(
+        "CyberArkEPMEventCollector.set_integration_context", side_effect=lambda ctx: saved_context.update(ctx)
+    )
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    server_url = "https://example.epm.cyberark.com"
+    token_matcher = requests_mock.post(
+        f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "NEW_TOKEN", "expires_in": 900}
+    )
+
+    client = Client(
+        base_url="",
+        username="user",
+        password="pass",
+        application_id="1",
+        auth_method="Idira OAuth",
+        identity_url=identity_url,
+        web_app_id="web-app-1",
+        server_url=server_url,
+    )
+
+    assert client._headers["Authorization"] == "Bearer NEW_TOKEN"
+    # Exactly one token request for the expired cache, and the context was rewritten.
+    assert token_matcher.call_count == 1
+    assert set_context.call_count == 1
+    assert saved_context[Config.ACCESS_TOKEN] == "NEW_TOKEN"
+    assert saved_context[Config.VALID_UNTIL] == str(1000 + 900 - Config.CACHE_BUFFER_SECONDS)
+
+
+def test_oauth_corrupt_valid_until_falls_through_to_fresh_token(mocker, requests_mock):
+    """
+    Given:
+        - An Idira OAuth Client whose cached `valid_until` is not a number (e.g. "not-a-number").
+
+    When:
+        - Building the Client (which resolves the access token via `_get_access_token`).
+
+    Then:
+        - No exception is raised while parsing the corrupt cache.
+        - The client falls through to a fresh token request (exactly one).
+        - The Authorization header reflects the freshly requested token.
+    """
+    from CyberArkEPMEventCollector import Client, Config
+
+    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+    mocker.patch("CyberArkEPMEventCollector.time.time", return_value=1000)
+    mocker.patch(
+        "CyberArkEPMEventCollector.get_integration_context",
+        return_value={Config.ACCESS_TOKEN: "CACHED_TOKEN", Config.VALID_UNTIL: "not-a-number"},
+    )
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    server_url = "https://example.epm.cyberark.com"
+    token_matcher = requests_mock.post(
+        f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "FRESH_TOKEN", "expires_in": 900}
+    )
+
+    client = Client(
+        base_url="",
+        username="user",
+        password="pass",
+        application_id="1",
+        auth_method="Idira OAuth",
+        identity_url=identity_url,
+        web_app_id="web-app-1",
+        server_url=server_url,
+    )
+
+    assert client._headers["Authorization"] == "Bearer FRESH_TOKEN"
+    # The corrupt cache is ignored and a single fresh token request is made.
+    assert token_matcher.call_count == 1
+
+
+def test_oauth_force_refresh_bypasses_valid_cache(mocker, requests_mock):
+    """
+    Given:
+        - An Idira OAuth Client with a still-valid cached token.
+
+    When:
+        - `_get_access_token(force_refresh=True)` is called explicitly.
+
+    Then:
+        - The valid cache is ignored and a fresh token is requested.
+        - The freshly requested token (not the cached one) is returned.
+    """
+    from CyberArkEPMEventCollector import Client, Config
+
+    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+    mocker.patch("CyberArkEPMEventCollector.time.time", return_value=1000)
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    server_url = "https://example.epm.cyberark.com"
+
+    # Initial build: empty cache -> one token request returning CACHED_TOKEN.
+    mocker.patch(
+        "CyberArkEPMEventCollector.get_integration_context",
+        return_value={Config.ACCESS_TOKEN: "CACHED_TOKEN", Config.VALID_UNTIL: "5000"},
+    )
+    token_matcher = requests_mock.post(
+        f"{identity_url}/oauth2/token/web-app-1", json={"access_token": "FRESH_TOKEN", "expires_in": 900}
+    )
+
+    client = Client(
+        base_url="",
+        username="user",
+        password="pass",
+        application_id="1",
+        auth_method="Idira OAuth",
+        identity_url=identity_url,
+        web_app_id="web-app-1",
+        server_url=server_url,
+    )
+    # Build used the valid cache -> no token request yet.
+    assert token_matcher.call_count == 0
+
+    token = client._get_access_token(force_refresh=True)
+
+    assert token == "FRESH_TOKEN"
+    # force_refresh must bypass the valid cache and issue exactly one token request.
+    assert token_matcher.call_count == 1
+
+
+def test_oauth_missing_access_token_in_response_raises(mocker, requests_mock):
+    """
+    Given:
+        - An Idira OAuth token endpoint that returns HTTP 200 but omits `access_token`.
+
+    When:
+        - Building the Client (which requests the token).
+
+    Then:
+        - A DemistoException is raised indicating the response is missing the access token.
+    """
+    from CyberArkEPMEventCollector import Client
+    from CommonServerPython import DemistoException
+
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    requests_mock.post(f"{identity_url}/oauth2/token/web-app-1", json={"expires_in": 900})
+
+    with pytest.raises(DemistoException, match="missing access_token"):
+        Client(
+            base_url="",
+            username="user",
+            password="pass",
+            application_id="1",
+            auth_method="Idira OAuth",
+            identity_url=identity_url,
+            web_app_id="web-app-1",
+            server_url="https://example.epm.cyberark.com",
+        )
+
+
+def test_oauth_data_call_non_401_error_propagates_without_refresh(mocker, requests_mock):
+    """
+    Given:
+        - A valid Idira OAuth Client.
+        - A data endpoint that fails with a NON-401 error (e.g. 500 Server Error).
+
+    When:
+        - A data request is made through the overridden `_http_request`.
+
+    Then:
+        - The original exception propagates unchanged.
+        - No token refresh occurs (the token endpoint is called only once, for initial auth).
+        - The data endpoint is called only once (no retry).
+    """
+    from CommonServerPython import DemistoException
+
+    mocker.patch("CyberArkEPMEventCollector.get_integration_context", return_value={})
+    mocker.patch("CyberArkEPMEventCollector.set_integration_context")
+    mocker.patch("CyberArkEPMEventCollector.demisto.error")
+    mocker.patch("CyberArkEPMEventCollector.demisto.debug")
+
+    identity_url = "https://tenant.id.cyberark.cloud"
+    server_url = "https://example.epm.cyberark.com"
+
+    client, token_matcher = _build_oauth_client(requests_mock, identity_url, server_url)
+
+    data_matcher = requests_mock.get(f"{server_url}/EPM/API/26.7.0/Sets", status_code=500, json={"error": "server error"})
+
+    with pytest.raises(DemistoException):
+        client._http_request("GET", url_suffix="Sets")
+
+    # Only the initial auth token request; no reactive refresh for a non-401 error.
+    assert token_matcher.call_count == 1
+    # The data endpoint is hit once and NOT retried.
+    assert data_matcher.call_count == 1
+
+
+def test_is_unauthorized_error_incidental_401_not_treated_as_unauthorized():
+    """
+    Given:
+        - A DemistoException with no response object, whose message merely contains "401"
+          incidentally (e.g. as part of a set ID) rather than as an HTTP status.
+
+    When:
+        - `Client._is_unauthorized_error` inspects the exception.
+
+    Then:
+        - A message whose "401" is a standalone HTTP status token IS treated as unauthorized.
+        - A message where "401" is embedded inside another token (e.g. "S40199") is NOT.
+    """
+    from CyberArkEPMEventCollector import Client
+    from CommonServerPython import DemistoException
+
+    # A genuine 401 status token in the message is still recognized (fallback path).
+    assert Client._is_unauthorized_error(DemistoException("Error in API call [401] - Unauthorized")) is True
+    # "401" embedded inside an unrelated identifier must NOT be treated as unauthorized.
+    assert Client._is_unauthorized_error(DemistoException("No events for set S40199")) is False
+
+
+def test_client_defaults_to_epm_when_auth_method_missing(requests_mock):
+    """
+    Given:
+        - A Client configuration WITHOUT an explicit `auth_method` and WITHOUT SAML URLs.
+
+    When:
+        - Building the Client.
+
+    Then:
+        - The legacy inference selects the EPM authentication method (no error raised).
+    """
+    from CyberArkEPMEventCollector import Client, Config
+
+    requests_mock.post(
+        "https://url.com/EPM/API/Auth/EPM/Logon",
+        json={"ManagerURL": "https://mock.com", "EPMAuthenticationResult": "123"},
+    )
+
+    client = Client("https://url.com", "test", "123456", "1")
+
+    assert client.auth_method == Config.AUTH_METHOD_EPM
+
+
+def test_client_defaults_to_saml_when_saml_urls_present(requests_mock, mocker):
+    """
+    Given:
+        - A Client configuration WITHOUT an explicit `auth_method` but WITH both SAML URLs set.
+
+    When:
+        - Building the Client.
+
+    Then:
+        - The legacy inference selects the SAML authentication method (no error raised).
+    """
+    from CyberArkEPMEventCollector import Client, Config
+
+    # SAML flow performs its own multi-step auth; stub it so we only assert the inference result.
+    saml_auth = mocker.patch("CyberArkEPMEventCollector.Client.saml_auth_to_cyber_ark")
+
+    client = Client(
+        "https://url.com",
+        "test",
+        "123456",
+        "1",
+        authentication_url="https://auth.example.com",
+        application_url="https://app.example.com",
+    )
+
+    assert client.auth_method == Config.AUTH_METHOD_SAML
+    assert saml_auth.call_count == 1

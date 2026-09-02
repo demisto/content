@@ -1,3 +1,4 @@
+import traceback
 from abc import ABC
 from collections.abc import Callable
 from enum import Enum
@@ -15,7 +16,9 @@ from requests.auth import HTTPBasicAuth
 # pylint: disable=no-self-argument
 from CommonServerUserPython import *  # noqa
 
-MAX_FETCH = 100
+
+DEFAULT_LIMIT = 1000
+MAX_LIMIT = 1000
 DEFAULT_FROM_FETCH_PARAMETER = "3 days"
 
 
@@ -110,7 +113,10 @@ class IntegrationOptions(BaseModel):
     """Add here any option you need to add to the logic"""
 
     proxy: bool | None = False
-    limit: int | None = Field(None, ge=1, le=MAX_FETCH)
+    # limit is the maximum number of events to fetch per event type per fetch cycle.
+    # Defaults to DEFAULT_LIMIT so fetch-events pagination is always bounded, and is
+    # capped at MAX_LIMIT. Pagination loops in pages (~100, the API default page size).
+    limit: int = Field(DEFAULT_LIMIT, ge=1, le=MAX_LIMIT)
 
 
 class IntegrationEventsClient(ABC):
@@ -175,19 +181,29 @@ class IntegrationGetEvents(ABC):
         # - activities with filter to get the admin events
         # - activities with different filter to get the login events
         # - alerts with no filter
+        # Each event type is fetched independently: a failure in one type is caught
+        # and logged so the remaining types can still be collected in the same cycle.
         for event_type_name, endpoint_details in self.filter_name_to_attributes.items():
-            stored_per_type = []
-            for logs in self._iter_events(event_type_name, endpoint_details):
-                stored_per_type.extend(logs)
-                if self.options.limit:
-                    demisto.debug(
-                        f"MD: {self.options.limit=} reached. slicing from {len(logs)=}."
-                        " limit must be presented ONLY in commands and not in fetch-events."
-                    )
+            stored_per_type: list = []
+            try:
+                for logs in self._iter_events(event_type_name, endpoint_details):
+                    stored_per_type.extend(logs)
                     if len(stored_per_type) >= self.options.limit:
-                        final_stored_all_types.extend(stored_per_type[: self.options.limit])
+                        demisto.debug(f"[Slicing Events] reached {self.options.limit=} for {event_type_name=}, slicing per type.")
+                        stored_per_type = stored_per_type[: self.options.limit]
                         break
-        demisto.debug(f"MD: Sliced events, keeping {len(final_stored_all_types)} events from all event types")
+            except Exception as e:
+                # Discard this type's partial batch so its watermark is NOT advanced past
+                # unfetched events (no data loss); it will be retried on the next cycle.
+                # Other event types continue unaffected.
+                demisto.error(
+                    f"[Fetch Events] failed fetching {event_type_name=}, skipping it this cycle. "
+                    f"Error: {e!s}\n{traceback.format_exc()}"
+                )
+                continue
+            final_stored_all_types.extend(stored_per_type)
+            demisto.debug(f"[MicrosoftDefender] kept {len(stored_per_type)} events for {event_type_name=}")
+        demisto.debug(f"[MicrosoftDefender] keeping {len(final_stored_all_types)} events from all event types")
         return final_stored_all_types
 
     def call(self) -> requests.Response:

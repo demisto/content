@@ -11,10 +11,14 @@ import pytest
 from Vega import (
     ALERT_EVENTS_NOT_AVAILABLE_MARKDOWN,
     _alert_events_command_results,
+    _enrich_alert_event,
+    _enrich_alert_events,
     _event_has_bad_alert_events_shape,
     _events_have_bad_alert_events_shape,
+    _expand_flat_raw_fields,
     _format_alert_events_markdown,
     _format_mitre_attack,
+    _promote_raw_into_alert_event_fields,
     Client,
     GET_ALERT_MIRROR_QUERY,
     GET_INCIDENT_MIRROR_QUERY,
@@ -27,6 +31,8 @@ from Vega import (
     _format_bullet_list,
     _format_key_findings_html,
     _format_raw_entity_for_xsoar,
+    _format_recommended_actions_for_grid,
+    VEGA_NO_RECOMMENDED_ACTIONS_DISPLAY,
     _format_timeline_events_html,
     _format_vega_comments_html,
     _is_empty_vega_comment_text,
@@ -1098,6 +1104,32 @@ def test_format_bullet_list():
     assert _format_bullet_list("already formatted") == "already formatted"
 
 
+def test_format_recommended_actions_for_grid_empty_shows_placeholder():
+    assert _format_recommended_actions_for_grid([]) == [{"name": VEGA_NO_RECOMMENDED_ACTIONS_DISPLAY}]
+    assert _format_recommended_actions_for_grid(None) == [{"name": VEGA_NO_RECOMMENDED_ACTIONS_DISPLAY}]
+
+
+def test_format_recommended_actions_for_grid_adds_description_newline():
+    actions = [
+        {"name": "Revoke sessions", "description": "Revoke active sessions", "actionKey": "revoke_user_sessions"},
+        {"name": "Reset password", "description": "Reset the user password\n", "actionKey": "reset_user_password"},
+    ]
+    formatted = _format_recommended_actions_for_grid(actions)
+
+    assert formatted[0]["description"] == "Revoke active sessions\n"
+    assert formatted[1]["description"] == "Reset the user password\n"
+
+
+def test_format_raw_entity_for_xsoar_empty_recommended_actions():
+    incident = {
+        "vegaEntityType": "Vega Incident",
+        "recommendedActions": [],
+    }
+    _format_raw_entity_for_xsoar(incident)
+
+    assert incident["recommendedActions"] == [{"name": VEGA_NO_RECOMMENDED_ACTIONS_DISPLAY}]
+
+
 def test_format_key_findings_html_dark_theme_layout():
     findings = [
         "Suspicious activity from 10.0.0.1",
@@ -1784,6 +1816,229 @@ def test_format_alert_events_markdown_handles_dynamic_eks_shape():
     assert "eks-prod-cluster" in formatted
     assert "aws-iam-authenticator:890123456789:AIDASDRANJTZJUR47VREC" in formatted
     assert "raw" in formatted
+
+
+def test_expand_flat_raw_fields_expands_dotted_and_array_keys():
+    expanded = _expand_flat_raw_fields(
+        {
+            "date_year": "2026",
+            "vendorInformation.provider": "ASC",
+            "securityResources{}.resourceType": "attacked",
+            "userStates{}.logonIp": "10.0.0.1",
+            "userStates{}.userPrincipalName": "user@example.com",
+        }
+    )
+
+    assert expanded["date_year"] == "2026"
+    assert expanded["vendorInformation"] == {"provider": "ASC"}
+    assert expanded["securityResources"] == [{"resourceType": "attacked"}]
+    assert expanded["userStates"] == [{"logonIp": "10.0.0.1", "userPrincipalName": "user@example.com"}]
+
+
+def test_promote_raw_into_fields_keeps_schema_and_promotes_splunk_raw():
+    fields = {
+        "app_uid": None,
+        "http_response": {"code": None},
+        "request": {"uri": None},
+        "auth_type": None,
+        "risk_score": "medium",
+        "_raw": json.dumps(
+            {
+                "date_year": "2026",
+                "createdDateTime": "2026-07-21T14:23:19.063Z",
+                "vendorInformation.provider": "ASC",
+                "securityResources{}.resourceType": "attacked",
+                "userStates{}.logonIp": "10.0.0.1",
+                "userStates{}.userPrincipalName": "user@example.com",
+                "splunk_server": "idx-example.splunkcloud.com",
+                "risk_score": "should-not-overwrite",
+            }
+        ),
+    }
+
+    promoted = _promote_raw_into_alert_event_fields(fields)
+
+    assert promoted["risk_score"] == "medium"
+    assert promoted["app_uid"] is None
+    assert promoted["date_year"] == "2026"
+    assert promoted["createdDateTime"] == "2026-07-21T14:23:19.063Z"
+    assert promoted["vendorInformation"] == {"provider": "ASC"}
+    assert promoted["securityResources"] == [{"resourceType": "attacked"}]
+    assert promoted["userStates"] == [{"logonIp": "10.0.0.1", "userPrincipalName": "user@example.com"}]
+    assert promoted["splunk_server"] == "idx-example.splunkcloud.com"
+    assert isinstance(promoted["_raw"], str)
+    assert "date_year" in promoted["_raw"]
+
+
+def test_enrich_alert_event_promotes_nested_eks_raw_object():
+    raw_event = {
+        "_index_timestamp": 1774447926000,
+        "account_id": "890123456789",
+        "auditID": "c6dcb49b-90fd-4ec8-ac88-a58990cf7dc4",
+        "cluster_name": "eks-prod-cluster",
+        "verb": "get",
+        "user": {
+            "uid": "8a75b43c-5278-4abb-91e1-eea07ad04ea6",
+            "username": "system:serviceaccount:stratus-red-team-np-name-fatnmkvw:stratus-red-team-np-sa",
+        },
+        "sourceIPs": ["10.0.0.1"],
+    }
+    fields_payload = {
+        "container": {"uid": None, "name": None},
+        "cluster": {"name": "eks-prod-cluster"},
+        "request": {
+            "data": None,
+            "uri": "/api/v1/nodes/ip-192-168-20-125.ec2.internal/proxy/runningpods/",
+        },
+        "status_code": "200",
+        "operation": "get",
+        "account": {"uid": "890123456789"},
+        "_raw": raw_event,
+    }
+    event = {
+        "catalog": "amazoneksaudit",
+        "class": "Network Activity",
+        "data_source": "amazon_eks_events",
+        "fields": json.dumps(fields_payload),
+        "raw": json.dumps(raw_event),
+        "source": "EKS",
+        "storage": "AWS S3",
+        "timestamp": "2026-03-24 17:26:20.000",
+    }
+
+    enriched = _enrich_alert_event(event)
+    fields = enriched["fields"]
+
+    assert isinstance(fields, dict)
+    assert fields["cluster"] == {"name": "eks-prod-cluster"}
+    assert fields["status_code"] == "200"
+    assert fields["auditID"] == "c6dcb49b-90fd-4ec8-ac88-a58990cf7dc4"
+    assert fields["verb"] == "get"
+    assert fields["account_id"] == "890123456789"
+    assert fields["user"]["username"].startswith("system:serviceaccount:")
+    assert fields["sourceIPs"] == ["10.0.0.1"]
+    assert fields["_raw"] == raw_event
+    assert enriched["raw"] == json.dumps(raw_event)
+
+
+def test_enrich_alert_event_noop_without_fields_or_raw():
+    event = {
+        "actor.user.uid": "arn:aws:iam::890123456789:root",
+        "event_count": "23",
+        "timeframe": "2026-05-12 00:40:00.000",
+    }
+    assert _enrich_alert_event(event) == event
+
+
+def test_enrich_alert_events_leaves_summary_rows_unchanged():
+    events = [
+        {
+            "actor.user.uid": "arn:aws:iam::890123456789:root",
+            "event_count": "23",
+            "unique_events_count": "6",
+        }
+    ]
+    assert _enrich_alert_events(events) == events
+
+
+def test_fetch_alert_events_page_enriches_fields_from_raw(mocker):
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_alert_events.return_value = {
+        "total": 1,
+        "results": [
+            {
+                "catalog": "splunk_cloud__sandbox",
+                "data_source": "microsoft_graph_events",
+                "fields": json.dumps(
+                    {
+                        "app_uid": None,
+                        "risk_score": "medium",
+                        "_raw": {
+                            "date_year": "2026",
+                            "vendorInformation.provider": "ASC",
+                            "securityResources{}.resourceType": "attacked",
+                        },
+                    }
+                ),
+                "raw": '{"date_year":"2026"}',
+                "source": "Graph",
+                "timestamp": "2026-07-21 14:23:55.887",
+            }
+        ],
+    }
+
+    events, total = fetch_alert_events_page(mock_client, "alert-1")
+
+    assert total == 1
+    assert events[0]["fields"]["date_year"] == "2026"
+    assert events[0]["fields"]["vendorInformation"] == {"provider": "ASC"}
+    assert events[0]["fields"]["securityResources"] == [{"resourceType": "attacked"}]
+    assert events[0]["fields"]["risk_score"] == "medium"
+    assert events[0]["fields"]["app_uid"] is None
+
+
+def test_fetch_alert_events_command_outputs_enriched_events(mocker):
+    mocker.patch(
+        "Vega.load_current_incident",
+        return_value={"CustomFields": {"vegaalertid": "alert-1"}},
+    )
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_alert_events.return_value = {
+        "total": 1,
+        "results": [
+            {
+                "catalog": "amazoneksaudit",
+                "fields": json.dumps(
+                    {
+                        "operation": "get",
+                        "_raw": {"auditID": "abc-123", "verb": "get"},
+                    }
+                ),
+                "source": "EKS",
+                "timestamp": "2026-03-24 17:26:20.000",
+            }
+        ],
+    }
+
+    result = fetch_alert_events_command(mock_client, {"alert_id": "alert-1"})
+
+    assert result.outputs["Count"] == 1
+    assert result.outputs["Events"][0]["fields"]["auditID"] == "abc-123"
+    assert result.outputs["Events"][0]["fields"]["operation"] == "get"
+    assert "auditID" in result.readable_output or "operation" in result.readable_output
+
+
+def test_alert_to_incident_stores_enriched_alert_events(mocker):
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.get_alert_events.return_value = {
+        "total": 1,
+        "results": [
+            {
+                "catalog": "splunk_cloud__sandbox",
+                "fields": json.dumps(
+                    {
+                        "risk_score": "medium",
+                        "_raw": '{"createdDateTime":"2026-07-21T14:23:19.063Z","vendorInformation.provider":"ASC"}',
+                    }
+                ),
+                "source": "Graph",
+            }
+        ],
+    }
+    alert = {
+        "id": "alert-1",
+        "name": "Test Alert",
+        "severity": "HIGH",
+        "createdAt": TIMESTAMP_T1,
+    }
+
+    xsoar_incident = alert_to_incident(alert, client=mock_client)
+    raw = json.loads(xsoar_incident["rawJSON"])
+    fields = raw["alertEvents"][0]["fields"]
+
+    assert fields["createdDateTime"] == "2026-07-21T14:23:19.063Z"
+    assert fields["vendorInformation"] == {"provider": "ASC"}
+    assert fields["risk_score"] == "medium"
 
 
 def test_build_alert_events_custom_fields():

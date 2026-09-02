@@ -182,6 +182,94 @@ def test_parse_to_rich_text_elements_empty():
     assert result[0]["text"] == " "
 
 
+def test_parse_md_empty_style_delimiters_kept_as_literal_text():
+    """
+    Given:
+        Text containing markdown delimiters that wrap no content (e.g. a bare "__"
+        segment, which the italic pattern matches with empty inner content).
+    When:
+        Parsing to rich text elements.
+    Then:
+        The delimiters are preserved as literal, unstyled text (no element is
+        dropped and no element is emitted with an empty "text"). This prevents the
+        Slack `invalid_blocks` error "missing required field: text", which occurs
+        because the Slack SDK strips falsy fields (e.g. "text": "") on
+        serialization, leaving an element with only "type"/"style".
+    """
+    result = parse_md_to_rich_text_elements("Action: Action__UpdateIssueFields")
+
+    # No element may have an empty/missing text field.
+    for element in result:
+        assert element.get("text")
+
+    # The literal underscores are preserved and carry no style.
+    literal = next(element for element in result if "__" in element["text"])
+    assert "style" not in literal
+
+    # The surrounding content is retained.
+    joined = "".join(element["text"] for element in result)
+    assert joined == "Action: Action__UpdateIssueFields"
+
+
+def test_parse_md_empty_bold_delimiters_kept_as_literal_text():
+    """
+    Given:
+        Text containing empty bold delimiters ("****").
+    When:
+        Parsing to rich text elements.
+    Then:
+        The delimiters are kept as literal, unstyled text with a non-empty "text"
+        field so Slack does not reject the block.
+    """
+    result = parse_md_to_rich_text_elements("before****after")
+
+    for element in result:
+        assert element.get("text")
+
+    joined = "".join(element["text"] for element in result)
+    assert joined == "before****after"
+
+
+def test_parse_md_intraword_underscores_not_italicized():
+    """
+    Given:
+        Text where underscores are adjacent to word characters, e.g. a token like
+        "run__script" or "first_name". These must NOT be treated as italic
+        emphasis (which would strip the underscores and, in the empty-content case,
+        cause the Slack `invalid_attachments`/`invalid_blocks` error).
+    When:
+        Parsing to rich text elements.
+    Then:
+        The underscores are preserved literally, no element is italicized, and no
+        element has an empty "text".
+    """
+    result = parse_md_to_rich_text_elements("Use the run__script and first_name now")
+
+    for element in result:
+        assert element.get("text")
+        assert "style" not in element
+
+    joined = "".join(element["text"] for element in result)
+    assert joined == "Use the run__script and first_name now"
+
+
+def test_parse_md_italic_with_surrounding_spaces_still_works():
+    """
+    Given:
+        Legitimate italic markdown where the underscore delimiters are bounded by
+        whitespace/edges (e.g. "_italic_" and "__also italic__").
+    When:
+        Parsing to rich text elements.
+    Then:
+        The emphasized text is italicized and the delimiters are removed.
+    """
+    result = parse_md_to_rich_text_elements("This is _italic_ and __also italic__ end")
+
+    italic_texts = [element["text"] for element in result if element.get("style", {}).get("italic")]
+    assert "italic" in italic_texts
+    assert "also italic" in italic_texts
+
+
 # ============================================================================
 # Test create_rich_cell
 # ============================================================================

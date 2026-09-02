@@ -119,7 +119,7 @@ script:
   - name: smg-get-blocked-ips
     arguments: []
     description: Returns a list of all blocked IP addresses.
-  dockerimage: demisto/bs4-py3:1.0.0.117152
+  dockerimage: demisto/bs4-py3:1.0.0.10120494
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
