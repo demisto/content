@@ -36,7 +36,7 @@ For Traffic logs via Fortiweb Cloud, you are required to send the logs with [Ama
 
 **_Audit_ Logs**
 
-- [How to export Audit logs to a log server](https://docs.fortinet.com/document/fortiweb-cloud/23.3.0/user-guide/367276/audit-logs).
+- [How to export Audit logs to a log server](https://docs.fortinet.com/document/fortiappsec-cloud/latest/user-guide/203570/audit-logs).
 
 1. Go to **Global** &rarr; **System Settings** &rarr; **Settings**.
 2. Enable **Audit Logs Export**.
@@ -54,7 +54,7 @@ For Traffic logs via Fortiweb Cloud, you are required to send the logs with [Ama
 
 **_Attack_ Logs**
 
-- [How to export Attack and Traffic logs to a log server](https://docs.fortinet.com/document/fortiweb-cloud/23.3.0/user-guide/681595/log-settings).
+- [How to export Attack and Traffic logs to a log server](https://docs.fortinet.com/document/fortiappsec-cloud/latest/user-guide/681595/log-settings).
 
 1. Go to **Log Settings**.
 2. Enable **Attack Log Export**.
@@ -73,7 +73,7 @@ For Traffic logs via Fortiweb Cloud, you are required to send the logs with [Ama
 
 **_Traffic_ Logs (AWS S3)**
 
-- [How to export Attack and Traffic logs to a log server](https://docs.fortinet.com/document/fortiweb-cloud/23.3.0/user-guide/681595/log-settings).
+- [How to export Attack and Traffic logs to a log server](https://docs.fortinet.com/document/fortiappsec-cloud/latest/user-guide/681595/log-settings).
 
 1. Go to **Log Settings**.
 2. Enable **Traffic Log Export**.
