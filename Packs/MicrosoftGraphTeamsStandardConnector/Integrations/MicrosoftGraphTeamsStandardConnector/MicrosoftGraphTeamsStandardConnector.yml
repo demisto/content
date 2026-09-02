@@ -72,7 +72,7 @@ script:
       name: verdict_details
     - description: The billing model appended as the model query parameter when provided.
       name: payment_model
-    description: Applies a data loss prevention (DLP) policyViolation to a Microsoft Teams message. Targets a chat message, a channel message, or a channel reply.
+    description: Applies a data loss prevention (DLP) policy violation to a Microsoft Teams message. Targets a chat message, a channel message, or a channel reply.
     name: msgraph-teams-message-update-policy-violation
     outputs:
     - contextPath: MSGraphTeams.TeamsMessagePolicyViolation.messageId

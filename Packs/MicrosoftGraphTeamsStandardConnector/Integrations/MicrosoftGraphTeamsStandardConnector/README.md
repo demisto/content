@@ -20,7 +20,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### msgraph-teams-message-update-policy-violation
 
 ***
-Applies a data loss prevention (DLP) policyViolation to a Microsoft Teams message. Targets a chat message, a channel message, or a channel reply.
+Applies a data loss prevention (DLP) policy violation to a Microsoft Teams message. Targets a chat message, a channel message, or a channel reply.
 
 #### Base Command
 

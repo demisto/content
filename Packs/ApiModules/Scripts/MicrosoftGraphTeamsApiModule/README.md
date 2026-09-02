@@ -1,4 +1,4 @@
-To use the common Microsoft Graph Teams integration logic, run the following command to import the `MicrosoftGraphTeamsApiModule`.
+To use the common Microsoft Graph Teams integration logic, add the following code to import the `MicrosoftGraphTeamsApiModule`.
 
 ```python
 def main():

@@ -8,7 +8,7 @@ subtype: python3
 tags:
 - infra
 - server
-comment: Common Microsoft Graph Teams code that will be appended into the Microsoft Graph Teams integrations when it's deployed.
+comment: Provides common Microsoft Graph Teams code that is appended into Cortex integrations during deployment.
 system: true
 scripttarget: 0
 dependson: {}

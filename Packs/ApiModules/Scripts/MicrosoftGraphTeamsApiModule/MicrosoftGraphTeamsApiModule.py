@@ -1,4 +1,4 @@
-import demistomock as demisto  # noqa: F401user_id = user_id if user_id else
+import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 """ IMPORTS """
@@ -288,7 +288,8 @@ class MsGraphClient:
             body: The request body containing the policyViolation object.
 
         Returns:
-            The raw HTTP response object so the caller can inspect the status code and body.
+            The raw HTTP response object. `resp_type="response"` is required because a
+            successful PATCH returns 204 No Content, which has no JSON body to decode.
         """
         return self.ms_client.http_request(
             method="PATCH",
@@ -903,7 +904,6 @@ def run_microsoft_graph_teams_integration():
         "msgraph-teams-add-member": add_member_command,
         "msgraph-teams-list-messages": list_messages_command,
         "msgraph-teams-send-message": send_message_command,
-        "msgraph-teams-message-update-policy-violation": update_teams_message_policy_violation_command,
     }
     command = demisto.command()
     demisto.info(f"Command being called is {command}")
@@ -935,4 +935,5 @@ def run_microsoft_graph_teams_integration():
             run_command(commands, command, client, demisto.args(), tries)
 
     except Exception as e:
+        demisto.debug(traceback.format_exc())
         return_error(str(e))
