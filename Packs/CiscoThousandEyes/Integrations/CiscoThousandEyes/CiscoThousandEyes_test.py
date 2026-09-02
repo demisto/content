@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 import demistomock as demisto
 import pytest
@@ -407,7 +407,7 @@ def test_fetch_events_no_new_alerts_keeps_checkpoint(mocker):
     from CiscoThousandEyes import fetch_events
 
     client = mock_client()
-    frozen_now = datetime(2024, 12, 30, 8, 56, 46, tzinfo=timezone.utc)
+    frozen_now = datetime(2024, 12, 30, 8, 56, 46, tzinfo=UTC)
     expected_end_date = "2024-12-30T08:56:46Z"
     last_run = {
         "alerts": {"last_fetch": "2024-11-19T14:20:00Z"},
