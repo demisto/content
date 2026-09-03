@@ -389,9 +389,8 @@ def fetch_incidents(
 
     # Otherwise use the mail UID
     uid_to_fetch_from = arg_to_number(last_run.get("last_uid", 0))
-    if date_fetch and last_run:
-        time_to_fetch_from = last_run.get("last_date")
-        time_to_fetch_from = datetime.fromisoformat(time_to_fetch_from)  # type: ignore[arg-type]
+    if date_fetch and last_run and last_run.get("last_date"):
+        time_to_fetch_from = datetime.fromisoformat(last_run["last_date"])
         demisto.debug(f"last_date as date: {time_to_fetch_from}")
     mails_fetched, messages, uid_to_fetch_from = fetch_mails(
         client=client,
@@ -409,7 +408,12 @@ def fetch_incidents(
     for mail in mails_fetched:
         incidents.append(mail.convert_to_incident())
         uid_to_fetch_from = max(uid_to_fetch_from, mail.id)
-        time_to_fetch_from = max(time_to_fetch_from, mail.date)
+        # Skip None dates so max() never compares a datetime with None (UID cursor still tracks progress).
+        if mail.date is None:
+            demisto.debug(f"Email with UID {mail.id} has no parseable Date header; excluded from date cursor.")
+        candidate_dates = [date for date in (time_to_fetch_from, mail.date) if date is not None]
+        if candidate_dates:
+            time_to_fetch_from = max(candidate_dates)
     next_run: dict = {}
     demisto.debug(f"introducing {next_run=}")
     if time_to_fetch_from:
