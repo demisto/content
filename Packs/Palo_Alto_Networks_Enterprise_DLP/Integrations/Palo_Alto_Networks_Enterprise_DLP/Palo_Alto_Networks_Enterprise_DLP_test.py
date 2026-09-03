@@ -220,6 +220,51 @@ def test_get_dlp_report(requests_mock, mocker):
     assert results[0]["Contents"] == {"id": "test"}
 
 
+def test_get_dlp_report_sends_service_name_header(requests_mock, mocker):
+    """
+    Given:
+        - A service_name argument.
+    When:
+        - Running the pan-dlp-get-report command.
+    Then:
+        - Ensure the service-name header is sent, so the report is retrieved from the
+          requested service rather than the prisma-access default.
+    """
+    report_id = 12345
+    requests_mock.get(f"{DLP_URL}public/report/{report_id}?fetchSnippets=true", json={"id": "test"})
+    mocker.patch.object(demisto, "command", return_value="pan-dlp-get-report")
+    args = {"report_id": report_id, "fetch_snippets": "true", "service_name": "prisma-saas"}
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch.object(demisto, "params", return_value={"credentials": CREDENTIALS})
+    mocker.patch.object(demisto, "results")
+
+    main()
+
+    assert requests_mock.last_request.headers["service-name"] == "prisma-saas"
+
+
+def test_get_dlp_report_omits_service_name_header_by_default(requests_mock, mocker):
+    """
+    Given:
+        - No service_name argument.
+    When:
+        - Running the pan-dlp-get-report command.
+    Then:
+        - Ensure no service-name header is sent, leaving existing calls unchanged.
+    """
+    report_id = 12345
+    requests_mock.get(f"{DLP_URL}public/report/{report_id}?fetchSnippets=true", json={"id": "test"})
+    mocker.patch.object(demisto, "command", return_value="pan-dlp-get-report")
+    args = {"report_id": report_id, "fetch_snippets": "true"}
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch.object(demisto, "params", return_value={"credentials": CREDENTIALS})
+    mocker.patch.object(demisto, "results")
+
+    main()
+
+    assert "service-name" not in requests_mock.last_request.headers
+
+
 def test_parse_dlp_report(mocker):
     mocker.patch.object(demisto, "results")
     results = parse_dlp_report(REPORT_DATA).to_context()

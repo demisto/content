@@ -32,6 +32,7 @@ from Qualysv2 import (
     fetch_events,
     get_activity_logs_events,
     fetch_assets,
+    get_detections_from_hosts,
     fetch_vulnerabilities,
     fetch_assets_and_vulnerabilities_by_date,
     fetch_assets_and_vulnerabilities_by_qids,
@@ -203,6 +204,56 @@ def test_fetch_assets_command_time_out(requests_mock: RequestsMocker, mocker, cl
     assets, new_last_run, amount_to_report, snapshot_id, set_new_limit = fetch_assets(client=client, assets_last_run={})
     assert not assets
     assert set_new_limit
+
+
+def test_get_detections_from_hosts_sets_last_vm_auth_scan_datetime_null_when_missing():
+    """
+    Given:
+    - A host that does not contain the LAST_VM_AUTH_SCAN_DATETIME field.
+    When:
+    - Parsing detections from hosts via get_detections_from_hosts.
+    Then:
+    - Ensure the resulting asset has LAST_VM_AUTH_SCAN_DATETIME set to None.
+    """
+    hosts = [
+        {
+            "ID": "1",
+            "IP": "1.1.1.1",
+            "LAST_VM_SCANNED_DATE": "01-01-2020",
+            "DETECTION_LIST": {"DETECTION": [{"QID": "123"}]},
+        }
+    ]
+
+    assets, _ = get_detections_from_hosts(hosts)
+
+    assert len(assets) == 1
+    assert "LAST_VM_AUTH_SCAN_DATETIME" in assets[0]
+    assert assets[0]["LAST_VM_AUTH_SCAN_DATETIME"] is None
+
+
+def test_get_detections_from_hosts_preserves_existing_last_vm_auth_scan_datetime():
+    """
+    Given:
+    - A host that already contains the LAST_VM_AUTH_SCAN_DATETIME field.
+    When:
+    - Parsing detections from hosts via get_detections_from_hosts.
+    Then:
+    - Ensure the existing LAST_VM_AUTH_SCAN_DATETIME value is preserved.
+    """
+    hosts = [
+        {
+            "ID": "1",
+            "IP": "1.1.1.1",
+            "LAST_VM_SCANNED_DATE": "01-01-2020",
+            "LAST_VM_AUTH_SCAN_DATETIME": "2020-01-01T00:00:00Z",
+            "DETECTION_LIST": {"DETECTION": [{"QID": "123"}]},
+        }
+    ]
+
+    assets, _ = get_detections_from_hosts(hosts)
+
+    assert len(assets) == 1
+    assert assets[0]["LAST_VM_AUTH_SCAN_DATETIME"] == "2020-01-01T00:00:00Z"
 
 
 def test_fetch_vulnerabilities_command_by_date(requests_mock: RequestsMocker, client: Client):

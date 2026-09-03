@@ -16,6 +16,7 @@ The permissions required to use this integration depends on which operations you
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. The default port for Elasticsearch v7 and below is 9200. Use the Server URL for on-premises deployments. | False |
+| Kibana Server URL | The Kibana server used by the es-kibana-\* commands and by fetching and mirroring security alerts and cases. Required for on-premises \(self-managed\) deployments, where Kibana is usually hosted separately from Elasticsearch \(for example, https://kibana.example.com:5601\). If left empty, the Kibana URL is derived from the Server URL, which is supported only for Elastic Cloud deployments whose hostname contains ".es." \(the segment is replaced with ".kb."\). | False |
 | Authorization type | Select the authentication type and enter the appropriate credentials:<br/>- Basic Auth: Enter Username and Password.<br/>- Bearer Auth: Enter Username and Password.<br/>- API Key Auth: Enter the API Key ID and API Key. | True |
 | API key ID | Use for API key auth | False |
 | API Key | Use for API key auth | False |

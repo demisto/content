@@ -61,7 +61,7 @@ configuration:
   section: Collect
   required: false
   defaultvalue: '1000'
-  additionalinfo: Events are retrieved in pages of up to 100 (the API page-size limit) until this number is reached. The maximum is 1000.
+  additionalinfo: The number of events to retrieve. Events are retrieved in pages of up to 100 (the API page-size limit) until this number is reached.
 - display: Fetch events
   name: isFetchEvents
   type: 8
@@ -103,7 +103,7 @@ script:
   - description: Returns a list of alerts. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     name: microsoft-defender-cloud-apps-get-events
     arguments:
-    - description: The maximum number of events to return per event type. Events are retrieved in pages of up to 100 (the API page-size limit). The maximum is 1000.
+    - description: The maximum number of events to return per event type. Events are retrieved in pages of up to 100 (the API page-size limit).
       defaultValue: '1000'
       name: limit
     - description: The first fetch time (<number> <time unit>, for example 12 hours, 1 day, 3 months).
@@ -118,6 +118,14 @@ script:
       predefined:
       - 'false'
       - 'true'
+    - name: event_types_to_fetch
+      auto: PREDEFINED
+      description: A comma-separated list of event types to scope this run to. If not provided, all configured event types are fetched.
+      isArray: true
+      predefined:
+      - Alerts
+      - Admin activities
+      - Login activities
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: microsoft-defender-cloud-apps-auth-reset
     arguments: []

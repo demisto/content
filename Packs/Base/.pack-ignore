@@ -76,6 +76,9 @@ ignore=BA127,BA124,RN107,BA129
 [file:SearchIndicatorRelationshipsAgentix.yml]
 ignore=SC110
 
+[file:UpdateIssue.yml]
+ignore=AG117
+
 [known_words]
 createindicatorrelationship
 commonserverpython
