@@ -14248,7 +14248,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         # memory stays ~flat. At the target chunk size we close the stream, POST it, and open a fresh one.
         target_chunk_size = min(chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
 
-        def _send_and_count(zipped_data, item_count):
+        def _send_and_count(zipped_data, item_count):  # type: (bytes, int) -> int
             """POST one gzipped chunk and return the number of items it held (for the health count)."""
             xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
                                         error_msg=header_msg, headers=headers,
@@ -14267,7 +14267,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
             support_multithreading()
             executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
 
-        def _dispatch(zipped_data, item_count):
+        def _dispatch(zipped_data, item_count):  # type: (bytes, int) -> int
             """Send one compressed chunk: inline when single-thread, or submit to the bounded pool when threaded."""
             if executor is None:
                 return _send_and_count(zipped_data, item_count)
