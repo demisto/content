@@ -231,9 +231,7 @@ def test_ipv4_cidr_regex_full_prefix_length(cidr: str, expected_value: str):
 
     match = re.search(ipv4cidrRegex, cidr)
     assert match is not None, f"Expected a match for {cidr!r}"
-    assert match.group(0) == expected_value, (
-        f"For input {cidr!r}: expected {expected_value!r} but got {match.group(0)!r}"
-    )
+    assert match.group(0) == expected_value, f"For input {cidr!r}: expected {expected_value!r} but got {match.group(0)!r}"
 
 
 @pytest.mark.parametrize(
@@ -278,9 +276,7 @@ def test_ipv6_cidr_regex_full_prefix_length(cidr: str, expected_value: str):
 
     match = re.search(ipv6cidrRegex, cidr)
     got = match.group(0) if match else None
-    assert got == expected_value, (
-        f"For input {cidr!r}: expected {expected_value!r} but got {got!r}"
-    )
+    assert got == expected_value, f"For input {cidr!r}: expected {expected_value!r} but got {got!r}"
 
 
 def test_get_stix_indicators():
