@@ -316,6 +316,9 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-zone-get": (GCPServices.COMPUTE, ["compute.zones.get"]),
     "gcp-compute-networks-list": (GCPServices.COMPUTE, ["compute.networks.list"]),
     "gcp-compute-network-insert": (GCPServices.COMPUTE, ["compute.networks.create"]),
+    "gcp-compute-machine-type-get": (GCPServices.COMPUTE, ["compute.machineTypes.get"]),
+    "gcp-compute-machine-types-list": (GCPServices.COMPUTE, ["compute.machineTypes.list"]),
+    "gcp-compute-machine-types-aggregated-list": (GCPServices.COMPUTE, ["compute.machineTypes.list"]),
     "gcp-container-cluster-security-update": (
         GCPServices.CONTAINER,
         ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
@@ -2944,6 +2947,150 @@ def gcp_compute_networks_list(creds: Credentials, args: dict[str, Any]) -> Comma
     )
 
 
+def gcp_compute_machine_type_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the specified machine type.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'machine_type' and 'zone'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    machine_type = args.get("machine_type")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = (
+        compute.machineTypes().get(project=project_id, zone=zone, machineType=machine_type).execute()  # pylint: disable=E1101
+    )
+    demisto.debug(f"GCP Compute machine type get response for {project_id}: retrieved machine type {response.get('name')}")
+
+    readable_output = tableToMarkdown(
+        f"GCP Compute Machine Type {machine_type}",
+        response,
+        headers=["id", "name", "memoryMb", "guestCpus"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.MachineTypes",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_machine_types_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves a list of machine types available in the specified zone.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'zone'. May include 'limit', 'filter', 'order_by' and 'next_token'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    limit = arg_to_number(args.get("limit")) or 50
+    filters = args.get("filter")
+    order_by = args.get("order_by")
+    next_token = args.get("next_token")
+
+    validate_limit(limit)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = (
+        compute.machineTypes()  # pylint: disable=E1101
+        .list(project=project_id, zone=zone, filter=filters, maxResults=limit, orderBy=order_by, pageToken=next_token)
+        .execute()
+    )
+    machine_types = response.get("items", [])
+    next_page_token = response.get("nextPageToken")
+    demisto.debug(
+        f"GCP Compute machine types list response for {project_id}: "
+        f"{len(machine_types)} machine types returned, {next_page_token=}"
+    )
+
+    readable_output = tableToMarkdown(
+        "GCP Compute Machine Types",
+        machine_types,
+        headers=["id", "name", "memoryMb", "guestCpus"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    outputs = {
+        "GCP.Compute.MachineTypes(val.id && val.id == obj.id)": machine_types,
+        "GCP.Compute(true)": {"MachineTypesNextToken": next_page_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def gcp_compute_machine_types_aggregated_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves an aggregated list of machine types across all zones of the specified project.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): May include 'limit', 'filter', 'order_by' and 'next_token'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    project_id = args.get("project_id")
+    limit = arg_to_number(args.get("limit")) or 50
+    filters = args.get("filter")
+    order_by = args.get("order_by")
+    next_token = args.get("next_token")
+
+    validate_limit(limit)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = (
+        compute.machineTypes()  # pylint: disable=E1101
+        .aggregatedList(project=project_id, filter=filters, maxResults=limit, orderBy=order_by, pageToken=next_token)
+        .execute()
+    )
+    machine_types: list[dict[str, Any]] = []
+    for scope, scoped_list in response.get("items", {}).items():
+        if warning := scoped_list.get("warning"):
+            demisto.debug(f"GCP Compute machine types aggregated list returned a warning for {scope}: {warning}")
+        else:
+            machine_types.extend(scoped_list.get("machineTypes", []))
+
+    next_page_token = response.get("nextPageToken")
+    demisto.debug(
+        f"GCP Compute machine types aggregated list response for {project_id}: "
+        f"{len(machine_types)} machine types returned, {next_page_token=}"
+    )
+
+    readable_output = tableToMarkdown(
+        "GCP Compute Machine Types",
+        machine_types,
+        headers=["id", "name", "zone", "memoryMb", "guestCpus"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    outputs = {
+        "GCP.Compute.MachineTypes(val.id && val.id == obj.id)": machine_types,
+        "GCP.Compute(true)": {"AggregatedMachineTypesNextToken": next_page_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Main function to route commands and execute logic.
@@ -2990,6 +3137,9 @@ def main():  # pragma: no cover
             "gcp-compute-zone-get": gcp_compute_zone_get,
             "gcp-compute-networks-list": gcp_compute_networks_list,
             "gcp-compute-network-insert": gcp_compute_network_insert,
+            "gcp-compute-machine-type-get": gcp_compute_machine_type_get,
+            "gcp-compute-machine-types-list": gcp_compute_machine_types_list,
+            "gcp-compute-machine-types-aggregated-list": gcp_compute_machine_types_aggregated_list,
             # Storage commands
             "gcp-storage-bucket-list": storage_bucket_list,
             "gcp-storage-bucket-get": storage_bucket_get,

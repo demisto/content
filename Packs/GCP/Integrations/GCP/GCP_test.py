@@ -5241,6 +5241,388 @@ class TestGCPComputeNetworksList:
         assert "custom-token" in result.readable_output
 
 
+# gcp_compute_machine_type_get
+def test_gcp_compute_machine_type_get_success(mocker):
+    """
+    Given: A mocked compute client returning a machine type resource.
+    When: gcp_compute_machine_type_get is called with project_id, zone and machine_type.
+    Then: The API is called with the machine type parameters and the resource is returned under GCP.Compute.MachineTypes.
+    """
+    from GCP import GCPServices, gcp_compute_machine_type_get
+
+    mock_creds = mocker.Mock()
+    mock_compute = mocker.Mock()
+    mock_machine_types = mocker.Mock()
+    mock_get = mocker.Mock()
+
+    mock_response = {
+        "id": "3001",
+        "name": "n1-standard-1",
+        "memoryMb": 3840,
+        "guestCpus": 1,
+        "zone": "us-central1-a",
+        "kind": "compute#machineType",
+    }
+
+    mock_get.execute.return_value = mock_response
+    mock_machine_types.get.return_value = mock_get
+    mock_compute.machineTypes.return_value = mock_machine_types
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "machine_type": "n1-standard-1"}
+    result = gcp_compute_machine_type_get(mock_creds, args)
+
+    mock_machine_types.get.assert_called_once_with(project="test-project", zone="us-central1-a", machineType="n1-standard-1")
+    assert result.outputs_prefix == "GCP.Compute.MachineTypes"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
+    assert "n1-standard-1" in result.readable_output
+
+
+def test_gcp_compute_machine_type_get_extracts_zone_from_url(mocker):
+    """
+    Given: A mocked compute client and a zone provided as a full resource URL.
+    When: gcp_compute_machine_type_get is called.
+    Then: Only the zone name is passed to the API call.
+    """
+    from GCP import GCPServices, gcp_compute_machine_type_get
+
+    mock_creds = mocker.Mock()
+    mock_compute = mocker.Mock()
+    mock_machine_types = mocker.Mock()
+    mock_get = mocker.Mock()
+
+    mock_get.execute.return_value = {"id": "3001", "name": "n1-standard-1"}
+    mock_machine_types.get.return_value = mock_get
+    mock_compute.machineTypes.return_value = mock_machine_types
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    args = {
+        "project_id": "test-project",
+        "zone": "https://www.googleapis.com/compute/v1/projects/test-project/zones/us-central1-a",
+        "machine_type": "n1-standard-1",
+    }
+    gcp_compute_machine_type_get(mock_creds, args)
+
+    mock_machine_types.get.assert_called_once_with(project="test-project", zone="us-central1-a", machineType="n1-standard-1")
+
+
+def test_gcp_compute_machine_type_get_api_error(mocker):
+    """
+    Given: A mocked compute client whose get call raises an HttpError.
+    When: gcp_compute_machine_type_get is called.
+    Then: The error propagates to the caller so main() can map it to a permission error.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import GCPServices, gcp_compute_machine_type_get
+
+    mock_creds = mocker.Mock()
+    mock_compute = mocker.Mock()
+    mock_machine_types = mocker.Mock()
+    mock_get = mocker.Mock()
+
+    mock_resp = mocker.Mock()
+    mock_resp.status = 403
+    mock_get.execute.side_effect = HttpError(resp=mock_resp, content=b'{"error": {"message": "Permission denied"}}')
+    mock_machine_types.get.return_value = mock_get
+    mock_compute.machineTypes.return_value = mock_machine_types
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "machine_type": "n1-standard-1"}
+    with pytest.raises(HttpError):
+        gcp_compute_machine_type_get(mock_creds, args)
+
+
+# gcp_compute_machine_types_list
+def test_gcp_compute_machine_types_list_default_limit(mocker):
+    """
+    Given: A mocked compute client returning a single machine type.
+    When: gcp_compute_machine_types_list is called with only project_id and zone.
+    Then: The API is called with the default limit (maxResults=50) and the machine type is returned in the outputs.
+    """
+    from GCP import GCPServices, gcp_compute_machine_types_list
+
+    mock_creds = mocker.Mock()
+    mock_compute = mocker.Mock()
+    mock_machine_types = mocker.Mock()
+    mock_list = mocker.Mock()
+
+    mock_response = {"items": [{"id": "3001", "name": "n1-standard-1", "memoryMb": 3840, "guestCpus": 1}]}
+
+    mock_list.execute.return_value = mock_response
+    mock_machine_types.list.return_value = mock_list
+    mock_compute.machineTypes.return_value = mock_machine_types
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "zone": "us-central1-a"}
+    result = gcp_compute_machine_types_list(mock_creds, args)
+
+    mock_machine_types.list.assert_called_once_with(
+        project="test-project", zone="us-central1-a", filter=None, maxResults=50, orderBy=None, pageToken=None
+    )
+    assert len(result.outputs["GCP.Compute.MachineTypes(val.id && val.id == obj.id)"]) == 1
+    assert "n1-standard-1" in result.readable_output
+
+
+def test_gcp_compute_machine_types_list_with_all_parameters(mocker):
+    """
+    Given: A mocked compute client returning a machine type and a next page token.
+    When: gcp_compute_machine_types_list is called with limit, filter, order_by and next_token.
+    Then: The API is called with all the given parameters and the next page token is returned in the outputs.
+    """
+    from GCP import GCPServices, gcp_compute_machine_types_list
+
+    mock_creds = mocker.Mock()
+    mock_compute = mocker.Mock()
+    mock_machine_types = mocker.Mock()
+    mock_list = mocker.Mock()
+
+    mock_response = {
+        "items": [{"id": "4001", "name": "n2-standard-4", "memoryMb": 16384, "guestCpus": 4}],
+        "nextPageToken": "next-token-123",
+    }
+
+    mock_list.execute.return_value = mock_response
+    mock_machine_types.list.return_value = mock_list
+    mock_compute.machineTypes.return_value = mock_machine_types
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "limit": "25",
+        "filter": "name=n2*",
+        "order_by": "name",
+        "next_token": "prev-token",
+    }
+    result = gcp_compute_machine_types_list(mock_creds, args)
+
+    mock_machine_types.list.assert_called_once_with(
+        project="test-project", zone="us-central1-a", filter="name=n2*", maxResults=25, orderBy="name", pageToken="prev-token"
+    )
+    assert result.outputs["GCP.Compute(true)"]["MachineTypesNextToken"] == "next-token-123"
+
+
+def test_gcp_compute_machine_types_list_empty_response(mocker):
+    """
+    Given: A mocked compute client returning an empty response.
+    When: gcp_compute_machine_types_list is called.
+    Then: The machine types output is empty and the next page token is set to None.
+    """
+    from GCP import GCPServices, gcp_compute_machine_types_list
+
+    mock_creds = mocker.Mock()
+    mock_compute = mocker.Mock()
+    mock_machine_types = mocker.Mock()
+    mock_list = mocker.Mock()
+
+    mock_list.execute.return_value = {}
+    mock_machine_types.list.return_value = mock_list
+    mock_compute.machineTypes.return_value = mock_machine_types
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "zone": "us-central1-a"}
+    result = gcp_compute_machine_types_list(mock_creds, args)
+
+    assert result.outputs == {
+        "GCP.Compute.MachineTypes(val.id && val.id == obj.id)": [],
+        "GCP.Compute(true)": {"MachineTypesNextToken": None},
+    }
+    assert result.raw_response == {}
+
+
+def test_gcp_compute_machine_types_list_invalid_limit(mocker):
+    """
+    Given: A limit argument above the maximum allowed value.
+    When: gcp_compute_machine_types_list is called.
+    Then: A DemistoException is raised and the API is never called.
+    """
+    from GCP import DemistoException, GCPServices, gcp_compute_machine_types_list
+
+    mock_creds = mocker.Mock()
+    mock_compute = mocker.Mock()
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "limit": "501"}
+    with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 500"):
+        gcp_compute_machine_types_list(mock_creds, args)
+
+    mock_compute.machineTypes.assert_not_called()
+
+
+def test_gcp_compute_machine_types_list_zero_limit_falls_back_to_default(mocker):
+    """
+    Given: A limit argument of "0", which is falsy.
+    When: gcp_compute_machine_types_list is called.
+    Then: The default limit of 50 is used for the API call.
+    """
+    from GCP import GCPServices, gcp_compute_machine_types_list
+
+    mock_creds = mocker.Mock()
+    mock_compute = mocker.Mock()
+    mock_machine_types = mocker.Mock()
+    mock_list = mocker.Mock()
+
+    mock_list.execute.return_value = {}
+    mock_machine_types.list.return_value = mock_list
+    mock_compute.machineTypes.return_value = mock_machine_types
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "limit": "0"}
+    gcp_compute_machine_types_list(mock_creds, args)
+
+    assert mock_machine_types.list.call_args[1]["maxResults"] == 50
+
+
+# gcp_compute_machine_types_aggregated_list
+def test_gcp_compute_machine_types_aggregated_list_success(mocker):
+    """
+    Given: A mocked compute client returning machine types in several zone scopes.
+    When: gcp_compute_machine_types_aggregated_list is called with project_id.
+    Then: The machine types of all scopes are flattened into a single list in the outputs.
+    """
+    from GCP import GCPServices, gcp_compute_machine_types_aggregated_list
+
+    mock_creds = mocker.Mock()
+    mock_compute = mocker.Mock()
+    mock_machine_types = mocker.Mock()
+    mock_aggregated_list = mocker.Mock()
+
+    mock_response = {
+        "items": {
+            "zones/us-central1-a": {
+                "machineTypes": [{"id": "3001", "name": "n1-standard-1", "zone": "us-central1-a", "guestCpus": 1}]
+            },
+            "zones/us-east1-b": {"machineTypes": [{"id": "4001", "name": "n2-standard-4", "zone": "us-east1-b", "guestCpus": 4}]},
+        }
+    }
+
+    mock_aggregated_list.execute.return_value = mock_response
+    mock_machine_types.aggregatedList.return_value = mock_aggregated_list
+    mock_compute.machineTypes.return_value = mock_machine_types
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    args = {"project_id": "test-project"}
+    result = gcp_compute_machine_types_aggregated_list(mock_creds, args)
+
+    mock_machine_types.aggregatedList.assert_called_once_with(
+        project="test-project", filter=None, maxResults=50, orderBy=None, pageToken=None
+    )
+    machine_types = result.outputs["GCP.Compute.MachineTypes(val.id && val.id == obj.id)"]
+    assert len(machine_types) == 2
+    assert {machine_type["name"] for machine_type in machine_types} == {"n1-standard-1", "n2-standard-4"}
+
+
+def test_gcp_compute_machine_types_aggregated_list_skips_warning_scopes(mocker):
+    """
+    Given: A mocked compute client returning a scope with a warning and a scope with machine types.
+    When: gcp_compute_machine_types_aggregated_list is called.
+    Then: Only the machine types of the scope without a warning are returned, and the warning is logged.
+    """
+    from GCP import GCPServices, gcp_compute_machine_types_aggregated_list
+
+    debug_mock = mocker.patch("GCP.demisto.debug")
+    mock_creds = mocker.Mock()
+    mock_compute = mocker.Mock()
+    mock_machine_types = mocker.Mock()
+    mock_aggregated_list = mocker.Mock()
+
+    mock_response = {
+        "items": {
+            "zones/us-central1-a": {
+                "machineTypes": [{"id": "3001", "name": "n1-standard-1", "zone": "us-central1-a"}],
+            },
+            "zones/us-west1-a": {
+                "warning": {"code": "NO_RESULTS_ON_PAGE", "message": "There are no results for scope"},
+                "machineTypes": [{"id": "9999", "name": "should-be-skipped", "zone": "us-west1-a"}],
+            },
+        }
+    }
+
+    mock_aggregated_list.execute.return_value = mock_response
+    mock_machine_types.aggregatedList.return_value = mock_aggregated_list
+    mock_compute.machineTypes.return_value = mock_machine_types
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    result = gcp_compute_machine_types_aggregated_list(mock_creds, {"project_id": "test-project"})
+
+    machine_types = result.outputs["GCP.Compute.MachineTypes(val.id && val.id == obj.id)"]
+    assert len(machine_types) == 1
+    assert machine_types[0]["name"] == "n1-standard-1"
+    assert any("returned a warning for zones/us-west1-a" in str(call_args) for call_args in debug_mock.call_args_list)
+
+
+def test_gcp_compute_machine_types_aggregated_list_empty_response(mocker):
+    """
+    Given: A mocked compute client returning an empty response.
+    When: gcp_compute_machine_types_aggregated_list is called.
+    Then: The outputs are empty and the next page token is set to None.
+    """
+    from GCP import GCPServices, gcp_compute_machine_types_aggregated_list
+
+    mock_creds = mocker.Mock()
+    mock_compute = mocker.Mock()
+    mock_machine_types = mocker.Mock()
+    mock_aggregated_list = mocker.Mock()
+
+    mock_aggregated_list.execute.return_value = {}
+    mock_machine_types.aggregatedList.return_value = mock_aggregated_list
+    mock_compute.machineTypes.return_value = mock_machine_types
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    result = gcp_compute_machine_types_aggregated_list(mock_creds, {"project_id": "test-project"})
+
+    assert result.outputs == {
+        "GCP.Compute.MachineTypes(val.id && val.id == obj.id)": [],
+        "GCP.Compute(true)": {"AggregatedMachineTypesNextToken": None},
+    }
+    assert result.raw_response == {}
+
+
+def test_gcp_compute_machine_types_aggregated_list_invalid_limit(mocker):
+    """
+    Given: A limit argument below the minimum allowed value.
+    When: gcp_compute_machine_types_aggregated_list is called.
+    Then: A DemistoException is raised and the API is never called.
+    """
+    from GCP import DemistoException, GCPServices, gcp_compute_machine_types_aggregated_list
+
+    mock_creds = mocker.Mock()
+    mock_compute = mocker.Mock()
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "limit": "-1"}
+    with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 500"):
+        gcp_compute_machine_types_aggregated_list(mock_creds, args)
+
+    mock_compute.machineTypes.assert_not_called()
+
+
+def test_gcp_compute_machine_types_aggregated_list_zero_limit_falls_back_to_default(mocker):
+    """
+    Given: A limit argument of "0", which is falsy.
+    When: gcp_compute_machine_types_aggregated_list is called.
+    Then: The default limit of 50 is used for the API call.
+    """
+    from GCP import GCPServices, gcp_compute_machine_types_aggregated_list
+
+    mock_creds = mocker.Mock()
+    mock_compute = mocker.Mock()
+    mock_machine_types = mocker.Mock()
+    mock_aggregated_list = mocker.Mock()
+
+    mock_aggregated_list.execute.return_value = {}
+    mock_machine_types.aggregatedList.return_value = mock_aggregated_list
+    mock_compute.machineTypes.return_value = mock_machine_types
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "limit": "0"}
+    gcp_compute_machine_types_aggregated_list(mock_creds, args)
+
+    assert mock_machine_types.aggregatedList.call_args[1]["maxResults"] == 50
+
+
 def test_bq_dataset_policy_remove_command_remove_user(mocker):
     """
     Given:

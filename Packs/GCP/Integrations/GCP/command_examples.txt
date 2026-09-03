@@ -6,3 +6,6 @@
 !gcp-compute-instances-list project_id=project-id zone=zone
 !gcp-compute-instance-get instance=instance-name project_id=project-id zone=zone
 !gcp-compute-instance-labels-set instance=instance-name labels=key=k1,value=v1 project_id=project-id zone=zone label_fingerprint=label-fingerprint
+!gcp-compute-machine-type-get project_id=project-id zone=zone machine_type=n1-standard-1
+!gcp-compute-machine-types-list project_id=project-id zone=zone limit=5
+!gcp-compute-machine-types-aggregated-list project_id=project-id limit=5
