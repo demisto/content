@@ -566,7 +566,7 @@ def reconcile_split_set_names(configured_names: list[str], tenant_names: list[st
             index += 1
 
     if repaired != configured_names:
-        demisto.info(
+        demisto.debug(
             f"[reconcile_split_set_names] Repaired the configured set names against the tenant list: "
             f"{configured_names} -> {repaired}"
         )
@@ -614,8 +614,8 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
         resolved_set_names = set(context_set_items.keys())
         unresolved_set_names = set(set_names) - resolved_set_names
 
-        demisto.info(f"[get_set_ids_by_set_names] Successfully resolved set names: {resolved_set_names}")
-        demisto.info(f"[get_set_ids_by_set_names] Resolved set_name -> set_id mapping: {context_set_items}")
+        demisto.debug(f"[get_set_ids_by_set_names] Successfully resolved set names: {resolved_set_names}")
+        demisto.debug(f"[get_set_ids_by_set_names] Resolved set_name -> set_id mapping: {context_set_items}")
 
         if unresolved_set_names:
             # Both sides of the comparison are logged together. Resolution is an exact string
@@ -639,7 +639,7 @@ def get_set_ids_by_set_names(client: Client, set_names: list) -> list[str]:
         demisto.debug(f"[get_set_ids_by_set_names] Using cached set_items from integration context: {lookup_names}")
 
     set_ids = list(context_set_items.values())
-    demisto.info(f"[get_set_ids_by_set_names] Final set_ids to fetch events from: {set_ids}")
+    demisto.debug(f"[get_set_ids_by_set_names] Final set_ids to fetch events from: {set_ids}")
 
     return set_ids
 
@@ -767,13 +767,13 @@ def fetch_events(
     """
     events: list = []
     set_ids_to_process = list(last_run.keys())
-    demisto.info(f"[fetch_events] Start fetching, {last_run=}")
-    demisto.info(f"[fetch_events] Set IDs to process: {set_ids_to_process}")
+    demisto.debug(f"[fetch_events] Start fetching, {last_run=}")
+    demisto.debug(f"[fetch_events] Set IDs to process: {set_ids_to_process}")
     demisto.debug(f"[fetch_events] params: {max_fetch=}, {enable_admin_audits=}")
     # Restate the base URL at the start of every fetch. The client is built once and its base URL
     # logged once, but a fetch is what runs every cycle - so this is the line that proves, per
     # cycle, which URL the event calls actually went to.
-    demisto.info(f"[fetch_events] Using base_url={client._base_url!r}")
+    demisto.debug(f"[fetch_events] Using base_url={client._base_url!r}")
 
     if enable_admin_audits:
         for set_id, admin_audits in get_admin_audits(client, last_run, max_fetch).items():
@@ -807,7 +807,7 @@ def fetch_events(
 
     unique_types = list(dict.fromkeys(e.get("eventType") for e in events if isinstance(e, dict)))
     demisto.debug(f"[fetch_events] unique_event_types fetched during this fetch={unique_types}")
-    demisto.info(
+    demisto.debug(
         f"[fetch_events] Sending {len(events)} events to XSIAM. "
         f"first_event_keys={(list(events[0].keys()) if events else [])} "
         f"updated_next_run={last_run}"
@@ -830,7 +830,7 @@ def test_module(client: Client, last_run: dict) -> str:
     Returns:
         str: 'ok' if the test passed. Any failure raises and fails the test.
     """
-    demisto.info(f"[test_module] Starting test fetch with max_fetch=5 using base_url={client._base_url!r}")
+    demisto.debug(f"[test_module] Starting test fetch with max_fetch=5 using base_url={client._base_url!r}")
     fetch_events(client=client, last_run=last_run, max_fetch=5)
     demisto.info(f"[test_module] PASSED: test fetch succeeded against base_url={client._base_url!r}")
     return "ok"
