@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: Siemens_SiPass_ModelingRule
-name: Siemens_SiPass Modeling Rule
-rules: ''
-schema: ''
-tags: ''
-supportedModules:
-- xsiam
