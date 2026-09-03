@@ -13,34 +13,43 @@ Other identity packs tell you what one product saw. This pack tells the analyst 
 - **Hydden Identity System of Record** dashboard: XQL widgets on `hydden_mesh_raw` (new accounts, top events/actions/actors/targets).
 - **Playbooks** for Identity Analytics issues: blast radius enrichment and account deprovision.
 
-## Configure Hydden Control
+## Configure Hydden Control on Cortex XSIAM
 
-1. Install the pack.
-2. **Settings → Data Sources & Integrations** → **Hydden Control** → **Add Instance**.
-3. Set **Hydden API URL** to `https://control.hydden.ai/api/public/v1` and paste the **Client ID** and **Client Secret**.
-4. **Test**, then **Save & Exit**. Leave the instance enabled.
+1. Navigate to **Settings** > **Data Sources & Integrations**.
+2. Search for Hydden Control.
+3. Click **Add instance** to create and configure a new integration instance.
 
-The API user needs REST API access. `hydden-deprovision-account` is marked potentially harmful.
+ | **Parameter** | **Description** | **Required** |
+ | --- | --- | --- |
+ | Hydden API URL | Public API root, for example `https://control.hydden.ai/api/public/v1`. | True |
+ | Client ID / Client Secret | Credentials for a Hydden API user with `rest_api` access. | True |
+ | HTTP request timeout (seconds) | Optional. Default 300. | False |
+ | Trust any certificate (not secure) | Optional. | False |
+ | Use system proxy settings | Optional. | False |
+
+4. Click **Test**, then **Save & Exit**. Leave the instance enabled.
+
+`hydden-deprovision-account` is marked potentially harmful.
 
 ## Modeling rules
 
 **Hydden Mesh Modeling Rule** maps Mesh events in `hydden_mesh_raw` to XDM. Nested Mesh fields are read from the `mesh` JSON column; flat columns (`event_type`, `actor_*`, `target_*`, `outcome`, and so on) are used when present.
 
-After install, confirm the rule is enabled under **Settings → Data Management → Data Model**. `datamodel dataset = hydden_mesh_raw` queries stay empty until Mesh events land.
+After install, confirm the rule is enabled under **Settings** → **Data Management** → **Data Model**. `datamodel dataset = hydden_mesh_raw` queries stay empty until Mesh events land.
 
 ## Dashboard
 
-After install, open **Hydden Identity System of Record** from **Dashboards & Reports → Dashboards** (or **Dashboard Manager**). Widgets query `hydden_mesh_raw` and stay empty until Hydden Mesh events land.
+After install, open **Hydden Identity System of Record** from **Dashboards & Reports** → **Dashboards** (or **Dashboard Manager**). Widgets query `hydden_mesh_raw` and stay empty until Hydden Mesh events land.
 
 ## Playbooks
 
-| Cortex detection | Playbook ID |
+| **Cortex detection** | **Playbook ID** |
 | --- | --- |
 | Identity Analytics | Hydden - Blast Radius |
 | Compromised or high-risk account | Hydden - Deprovision Account |
 
-Both playbooks take the account ID from the issue (`alert.username`, then `incident.username`) and pass it to one Hydden Control command.
+Both playbooks take the account identifier from the issue (`alert.user_name`, then `alert.username`, then `incident.username`) and pass it to one Hydden Control command. XDR Analytics identity issues populate `user_name`.
 
 ## Dependencies
 
-Identity Analytics must be enabled: Cloud Identity Engine + Cortex Analytics, then **Settings → Configurations → Cortex XSIAM - Analytics → Enable Identity Analytics**.
+Identity Analytics must be enabled: Cloud Identity Engine + Cortex Analytics, then **Settings** → **Configurations** → **Cortex XSIAM - Analytics** → **Enable Identity Analytics**.

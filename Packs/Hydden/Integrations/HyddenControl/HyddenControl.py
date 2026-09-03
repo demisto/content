@@ -6,6 +6,7 @@ import urllib3
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
+from ContentClientApiModule import *  # noqa: F401,F403
 
 urllib3.disable_warnings()
 
@@ -58,7 +59,7 @@ def _as_blast_radius_string(response: Any) -> str:
     return str(value)
 
 
-class Client(BaseClient):
+class Client(ContentClient):  # noqa: F405
     """Client for the Hydden Control public API.
 
     The public API accepts nothing but a client-credentials bearer token, so

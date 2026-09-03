@@ -16,6 +16,13 @@ def _install_cortex_test_stubs() -> None:
         common = ModuleType("CommonServerPython")
 
         class BaseClient:
+            def __init__(self, **kwargs):
+                self._headers = kwargs.get("headers") or {}
+                self._verify = kwargs.get("verify", True)
+                self._proxy = kwargs.get("proxy", False)
+                self._base_url = kwargs.get("base_url")
+
+        class ContentClient(BaseClient):
             pass
 
         class DemistoException(Exception):
@@ -26,12 +33,20 @@ def _install_cortex_test_stubs() -> None:
                 self.__dict__.update(kwargs)
 
         common.BaseClient = BaseClient
+        common.ContentClient = ContentClient
         common.DemistoException = DemistoException
         common.CommandResults = CommandResults
         common.tableToMarkdown = lambda _title, data: str(data)
         common.return_results = lambda result: result
         common.return_error = lambda message: message
+        common.arg_to_number = lambda value: int(value) if value not in (None, "") else None
         sys.modules["CommonServerPython"] = common
+
+    if "ContentClientApiModule" not in sys.modules:
+        content_client_mod = ModuleType("ContentClientApiModule")
+        csp = sys.modules["CommonServerPython"]
+        content_client_mod.ContentClient = getattr(csp, "ContentClient", getattr(csp, "BaseClient"))
+        sys.modules["ContentClientApiModule"] = content_client_mod
 
 
 _install_cortex_test_stubs()
@@ -43,6 +58,7 @@ from HyddenControl import (
     hydden_blast_radius_command,
     hydden_deprovision_account_command,
     _as_blast_radius_string,
+    test_module as run_test_module,
 )
 
 ACCOUNT_ID = "00000000-0000-0000-0000-000000000000"
@@ -210,7 +226,7 @@ def test_deprovision_account_posts_account_actions_path_with_bearer_token() -> N
             "content-type": "application/json",
             "Authorization": f"Bearer {TOKEN}",
         },
-        params={"account_id": ACCOUNT_ID},
+        params={"ref": ACCOUNT_ID},
         resp_type="text",
     )
 
@@ -230,3 +246,61 @@ def test_hydden_deprovision_account_command() -> None:
 def test_get_account_id_rejects_empty_value() -> None:
     with pytest.raises(DemistoException, match="Please provide account_id"):
         _get_account_id({"account_id": " "})
+
+
+def test_hydden_blast_radius_command_passes_group_type() -> None:
+    client = MagicMock()
+    client.get_bearer_token.return_value = TOKEN
+    client.get_blast_radius.return_value = {**LIVE_RESPONSE, "score": 1}
+
+    hydden_blast_radius_command(client, {"account_id": ACCOUNT_ID, "type": "group"})
+
+    client.get_blast_radius.assert_called_once_with(ACCOUNT_ID, TOKEN, "group")
+
+
+def test_test_module_treats_not_found_as_ok() -> None:
+    client = MagicMock()
+    client.get_bearer_token.return_value = TOKEN
+    client.get_blast_radius.side_effect = DemistoException("404 Not Found")
+
+    assert run_test_module(client) == "ok"
+
+
+def test_test_module_raises_on_authorization_failure() -> None:
+    client = MagicMock()
+    client.get_bearer_token.side_effect = DemistoException("401 Unauthorized")
+
+    with pytest.raises(DemistoException, match="Authorization failed"):
+        run_test_module(client)
+
+
+def test_client_inherits_from_content_client() -> None:
+    from ContentClientApiModule import ContentClient
+
+    assert issubclass(Client, ContentClient)
+
+
+def test_client_forwards_verify_and_proxy_to_content_client(monkeypatch) -> None:
+    """YAML insecure/proxy (type 8) must reach ContentClient as verify/proxy."""
+    from ContentClientApiModule import ContentClient
+
+    seen: dict = {}
+
+    def capture_init(self, **kwargs):
+        seen.update(kwargs)
+        self._headers = kwargs.get("headers") or {}
+        self._verify = kwargs.get("verify", True)
+        self._proxy = kwargs.get("proxy", False)
+
+    monkeypatch.setattr(ContentClient, "__init__", capture_init)
+    Client(
+        client_id="client-id",
+        client_secret="client-secret",
+        base_url="https://control.hydden.ai/api/public/v1/",
+        verify=False,
+        proxy=True,
+        headers={"accept": "application/json"},
+    )
+
+    assert seen["verify"] is False
+    assert seen["proxy"] is True

@@ -25,6 +25,18 @@ configuration:
   required: false
   section: Connect
   advanced: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
 description: Calculate account blast radius and deprovision accounts from Cortex using Hydden Control.
 display: Hydden Control
 name: Hydden Control
@@ -75,17 +87,17 @@ script:
       description: When the score was computed.
       type: Date
   - name: hydden-deprovision-account
-    description: Deprovision an account across the Hydden identity fabric using POST /account-actions/deprovision?account_id=.
+    description: Deprovision an account across the Hydden identity fabric using POST /account-actions/deprovision?ref=.
     execution: true
     arguments:
     - name: account_id
       required: true
-      description: The Cortex account ID to deprovision. Sent to Hydden as the account_id query parameter.
+      description: The Cortex account ID to deprovision. Sent to Hydden as the ref query parameter.
     outputs:
     - contextPath: Hydden.Identity.deprovisioned
       description: Whether deprovisioning succeeded.
       type: Boolean
-  dockerimage: demisto/python3:3.12.13.10399583
+  dockerimage: demisto/fastapi:0.125.0.11206988
   runonce: false
   script: '-'
   subtype: python3

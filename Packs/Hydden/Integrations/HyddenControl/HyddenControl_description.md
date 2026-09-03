@@ -1,16 +1,31 @@
+## Configure Hydden Control on Cortex XSIAM
 
-![Logo](./../../doc_files/icon.png)
-## Hydden Control
+This integration was integrated and tested with the Hydden Control public REST API (`/api/public/v1`).
 
-Configure an instance with your Hydden Control API URL and API credentials.
+### Get Hydden API credentials
 
-The API user must be able to call the public REST API (`rest_api`). Enter your **Client ID** and **Client Secret**.
+1. Sign in to Hydden Control.
+2. Create or select an API user that can call the public REST API (`rest_api`).
+3. Copy the **Client ID** and **Client Secret**. The integration exchanges those values for an OAuth 2.0 client-credentials bearer token.
 
-### Instance URL
+### Create the instance
 
-Set **Hydden API URL** to the public API root: https://control.hydden.ai/api/public/v1
+1. Navigate to **Settings** > **Data Sources & Integrations**.
+2. Search for **Hydden Control**.
+3. Click **Add instance** to create and configure a new integration instance.
 
-### Commands
+   | **Parameter** | **Required** |
+   | --- | --- |
+   | Hydden API URL (e.g., https://control.hydden.ai/api/public/v1) | True |
+   | Client ID / Client Secret | True |
+   | HTTP request timeout (seconds) | False |
+   | Trust any certificate (not secure) | False |
+   | Use system proxy settings | False |
 
-- `hydden-blast-radius` — blast radius information string for an account (`GET /blast-radius?ref=<account_id>&type=account`). Output: `Hydden.Identity.blast_radius`.
-- `hydden-deprovision-account` — deprovision the account (`POST /account-actions/deprovision?account_id=`). Marked potentially harmful. Output: `Hydden.Identity.deprovisioned`.
+4. Set **Hydden API URL** to the public API root, for example `https://control.hydden.ai/api/public/v1`.
+5. Enter the **Client ID** and **Client Secret**.
+6. Optionally set **HTTP request timeout** (default `300` seconds). A cold blast-radius call can take several minutes; later calls are typically sub-second.
+7. Click **Test** to validate the URL, credentials, and connection.
+8. Click **Save & Exit** and leave the instance enabled.
+
+`hydden-deprovision-account` is marked potentially harmful. Use it only for accounts you intend to disable across the Hydden identity fabric.
