@@ -726,7 +726,8 @@ def create_search_alerts_filters(args, is_fetch=False):
     if time_to:
         filters.append(f"createdDateTime le {time_to}")
     if filter_query:
-        filters.append(f"{filter_query}")
+        # Wrap in parentheses so an `or` clause can't escape the createdDateTime time window (OData `and` binds before `or`).
+        filters.append(f"({filter_query})")
     if page_size:
         if page_size > PAGE_SIZE_LIMIT:
             raise DemistoException(f"Please note that the page size limit is {PAGE_SIZE_LIMIT}")
@@ -1247,7 +1248,8 @@ def fetch_incidents(
     # $top is set to fetch_limit so we request up to fetch_limit incidents in a single request.
     filter_expression = f"createdDateTime gt {time_from} and createdDateTime le {time_to}"
     if extra_filter:
-        filter_expression += f" and {extra_filter}"
+        # Wrap in parentheses so an `or` clause can't escape the createdDateTime time window (OData `and` binds before `or`).
+        filter_expression += f" and ({extra_filter})"
     url_suffix = f"security/incidents?$expand=alerts&$top={fetch_limit}&$filter={filter_expression}&$orderby=createdDateTime asc"
     # This header maps unknownFutureValue enum values to the appropriate real value (e.g. new service sources).
     headers = {"Prefer": "include-unknown-enum-members"}
@@ -2310,7 +2312,8 @@ def test_function(client: MsGraphClient, args, has_access_to_context=False):  # 
                 fetch_incidents_filter = params.get("fetch_incidents_filter", "")
                 filter_expression = f"createdDateTime gt {time_from} and createdDateTime le {time_to}"
                 if fetch_incidents_filter:
-                    filter_expression += f" and {fetch_incidents_filter}"
+                    # Wrap in parentheses so an `or` clause can't escape the time window (matches the real fetch query).
+                    filter_expression += f" and ({fetch_incidents_filter})"
                 url_suffix = f"security/incidents?$top=1&$filter={filter_expression}"
                 try:
                     client.get_incidents_request(url_suffix, FETCH_INCIDENTS_TIMEOUT)
