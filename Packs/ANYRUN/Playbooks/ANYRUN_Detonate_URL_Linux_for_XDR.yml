@@ -26,7 +26,7 @@ tasks:
       istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
-      - "7"
+      - "40"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -34,6 +34,177 @@ tasks:
         "position": {
           "x": 50,
           "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 20b42369-91c9-4dc7-bda5-86a75cbb70a3
+    type: condition
+    task:
+      id: 20b42369-91c9-4dc7-bda5-86a75cbb70a3
+      version: -1
+      name: Is a specific ANY.RUN instance provided?
+      description: Checks whether the "Using" playbook input was provided, to
+        determine which ANY.RUN Cloud Sandbox instance to run commands against.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Using
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 1a590795-bf2f-4db5-8262-7d84ac99100a
+    type: regular
+    task:
+      id: 1a590795-bf2f-4db5-8262-7d84ac99100a
+      version: -1
+      name: Set instance to use (from input)
+      description: Sets the selected ANY.RUN integration instance in playbook context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: ANYRUNInstance
+      value:
+        simple: ${inputs.Using}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: e89b96d2-c515-46b3-8b86-762601eacccb
+    type: regular
+    task:
+      id: e89b96d2-c515-46b3-8b86-762601eacccb
+      version: -1
+      name: Get active ANY.RUN Cloud Sandbox instances
+      description: Returns active ANY.RUN Cloud Sandbox integration instances.
+      scriptName: GetInstances
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      brand:
+        simple: ANY.RUN Cloud Sandbox
+      instance_status:
+        simple: active
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 023b3105-f9f6-428a-babd-0b4378c88b24
+    type: regular
+    task:
+      id: 023b3105-f9f6-428a-babd-0b4378c88b24
+      version: -1
+      name: Set instance to use (first active instance)
+      description: Sets the first active ANY.RUN integration instance in playbook context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: ANYRUNInstance
+      value:
+        complex:
+          root: Modules
+          accessor: name
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 590
         }
       }
     note: false
@@ -62,6 +233,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
       env_locale:
         simple: ${inputs.env_locale}
       env_os:
@@ -72,6 +245,8 @@ tasks:
         simple: ${inputs.obj_ext_extension}
       obj_url:
         simple: ${inputs.obj_url}
+      opt_automated_interactivity:
+        simple: ${inputs.opt_automated_interactivity}
       opt_network_connect:
         simple: ${inputs.opt_network_connect}
       opt_network_fakenet:
@@ -96,7 +271,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 590
+          "y": 1100
         }
       }
     note: false
@@ -125,6 +300,8 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
       report_format:
         simple: html
       task_uuid:
@@ -135,7 +312,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1145
+          "y": 1655
         }
       }
     note: false
@@ -164,7 +341,7 @@ tasks:
       {
         "position": {
           "x": 80,
-          "y": 2070
+          "y": 2580
         }
       }
     note: false
@@ -210,7 +387,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 405
+          "y": 915
         }
       }
     note: false
@@ -250,7 +427,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 220
+          "y": 730
         }
       }
     note: false
@@ -297,7 +474,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 960
+          "y": 1470
         }
       }
     note: false
@@ -327,6 +504,8 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
       task_uuid:
         simple: ${ANYRUN_DetonateUrlLinux.TaskID}
     separatecontext: false
@@ -335,7 +514,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 775
+          "y": 1285
         }
       }
     note: false
@@ -364,6 +543,8 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
       report_format:
         simple: ioc
       task_uuid:
@@ -374,7 +555,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1330
+          "y": 1840
         }
       }
     note: false
@@ -421,7 +602,7 @@ tasks:
       {
         "position": {
           "x": 612.5,
-          "y": 1885
+          "y": 2395
         }
       }
     note: false
@@ -467,7 +648,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1515
+          "y": 2025
         }
       }
     note: false
@@ -507,7 +688,7 @@ tasks:
       {
         "position": {
           "x": 500,
-          "y": 1700
+          "y": 2210
         }
       }
     note: false
@@ -525,7 +706,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2080,
+        "height": 2590,
         "width": 942.5,
         "x": 50,
         "y": 50
@@ -533,6 +714,13 @@ view: |-
     }
   }
 inputs:
+- key: Using
+  value: {}
+  required: false
+  description: |-
+    The name of the ANY.RUN Cloud Sandbox integration instance to use for running commands in this playbook.
+    If left empty, and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
+  playbookInputQuery: null
 - key: obj_url
   value:
     simple: ${issue.xdmtargeturl}
@@ -609,6 +797,12 @@ inputs:
   required: false
   description: 'Timeout option. Size range: 10-660.'
   playbookInputQuery: null
+- key: opt_automated_interactivity
+  value:
+    simple: "True"
+  required: false
+  description: Automated interactivity.
+  playbookInputQuery: null
 - key: obj_ext_browser
   value:
     simple: Google Chrome
@@ -623,9 +817,11 @@ inputs:
   playbookInputQuery: null
 inputSections:
 - inputs:
+  - Using
   - obj_url
-  name: General (Inputs group)
-  description: Generic group for inputs
+  name: URL and Instance Selection
+  description: Provide the target URL and optionally select the ANY.RUN instance with
+    Using.
 - inputs:
   - env_locale
   - env_os
@@ -641,6 +837,7 @@ inputSections:
   - opt_network_residential_proxy_geo
   - opt_privacy_type
   - opt_timeout
+  - opt_automated_interactivity
   name: Options
   description: ""
 - inputs:
@@ -669,3 +866,8 @@ quiet: true
 dirtyInputs: true
 adopted: true
 possibleresponses: []
+marketplaces:
+- platform
+- marketplacev2
+supportedModules:
+- edr

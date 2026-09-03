@@ -416,8 +416,18 @@ def get_analysis_report(params: dict, args: dict) -> None:  # pragma: no cover
             return_results(fileResult(f"anyrun_report_{task_uuid}.html", report))
         elif report_format == "json":
             return_results(fileResult(f"anyrun_report_{task_uuid}.json", json.dumps(report)))
-        elif report_format == "ioc" and report:
-            ioc_details, readable_output, ioc_values = create_indicators(report, task_uuid, root_url)
+        elif report_format == "ioc":
+            ioc_details, readable_output, ioc_values = create_indicators(report or [], task_uuid, root_url)
+
+            if not ioc_details or not ioc_values:
+                return_results(
+                    CommandResults(
+                        readable_output="No IOCs found",
+                        outputs_prefix="ANYRUN",
+                        ignore_auto_extract=True,
+                    )
+                )
+                return
 
             return_results(
                 CommandResults(

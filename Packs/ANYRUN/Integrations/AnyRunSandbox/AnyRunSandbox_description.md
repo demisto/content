@@ -19,4 +19,11 @@ API-KEY from your ANY.RUN account is required.
 | **Parameter**    | **Description**                                                          
 |------------------|--------------------------------------------------------------------------|
 | Password         | ANY.RUN API-KEY without prefix                                            
-| Root URL         | Base domain for the ANY.RUN connection. By default, the domain is any.run.
+| Base domain      | Base domain for the ANY.RUN connection. By default, the domain is any.run.
+
+## Base domain
+
+| **Base domain** | **Usage**
+|-----------------|------------------------|
+| any.run         | Default
+| anyrun.us       | Special access required
