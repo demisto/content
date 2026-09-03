@@ -1,7 +1,7 @@
 category: Vulnerability Management
 provider: Horizon3
 sectionorder:
-- Connect
+  - Connect
 commonfields:
   id: NodeZero MCP
   version: -1
@@ -9,14 +9,14 @@ configuration:
   - name: base_url
     section: Connect
     display: MCP Server URL
-    defaultvalue: https://mcp.horizon3ai.com
+    defaultvalue: https://mcp.horizon3ai.com/mcp
     additionalinfo: The NodeZero MCP server endpoint. Select the region that matches your NodeZero deployment.
     type: 15
     required: true
     options:
-    - https://mcp.horizon3ai.com
-    - https://mcp.horizon3ai.eu
-    - https://mcp.horizon3ai.au
+      - https://mcp.horizon3ai.com/mcp
+      - https://mcp.horizon3ai.eu/mcp
+      - https://mcp.horizon3ai.au/mcp
   - name: auth_code
     type: 9
     displaypassword: Authorization Code
@@ -28,36 +28,36 @@ display: NodeZero MCP
 name: NodeZero MCP
 script:
   commands:
-  - arguments: []
-    description: Retrieves a list of available tools in the NodeZero MCP server.
-    name: list-tools
-    hidden: true
-    outputs: []
-  - arguments:
-    - name: name
-      description: The name of the tool to call.
-    - name: arguments
-      description: Parameters for the tool execution.
-    description: Calls a specific tool on the NodeZero MCP server with optional input parameters.
-    name: call-tool
-    hidden: true
-    outputs: []
-  - description: Register this integration with your NodeZero portal and generate a login URL. Follow the returned instructions to authenticate via the NodeZero portal.
-    name: nodezero-mcp-generate-login-url
-  - description: Test the OAuth authentication configuration with the NodeZero MCP server.
-    name: nodezero-mcp-auth-test
-  script: '-'
+    - arguments: []
+      description: Retrieves a list of available tools in the NodeZero MCP server.
+      name: list-tools
+      hidden: true
+      outputs: []
+    - arguments:
+        - name: name
+          description: The name of the tool to call.
+        - name: arguments
+          description: Parameters for the tool execution.
+      description: Calls a specific tool on the NodeZero MCP server with optional input parameters.
+      name: call-tool
+      hidden: true
+      outputs: []
+    - description: Register this integration with your NodeZero portal and generate a login URL. Follow the returned instructions to authenticate via the NodeZero portal.
+      name: nodezero-mcp-generate-login-url
+    - description: Test the OAuth authentication configuration with the NodeZero MCP server.
+      name: nodezero-mcp-auth-test
+  script: "-"
   type: python
   subtype: python3
   dockerimage: demisto/mcp:1.0.0.10120494
   mcp: true
 fromversion: 6.1.0
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
 marketplaces:
-- xsoar
-- marketplacev2
-- platform
+  - xsoar
+  - marketplacev2
+  - platform
 supportedModules:
-- agentix
-- xsiam
+  - agentix
+  - xsiam

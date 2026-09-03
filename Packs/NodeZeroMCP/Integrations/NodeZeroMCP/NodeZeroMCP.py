@@ -6,7 +6,7 @@ import asyncio
 from urllib.parse import unquote
 
 COMMAND_PREFIX = "nodezero-mcp"
-DEFAULT_BASE_URL = "https://mcp.horizon3ai.com"
+DEFAULT_BASE_URL = "https://mcp.horizon3ai.com/mcp"
 SCOPE = "read write offline_access"
 
 
