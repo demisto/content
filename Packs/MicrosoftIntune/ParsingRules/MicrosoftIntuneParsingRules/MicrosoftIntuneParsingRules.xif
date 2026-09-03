@@ -6,7 +6,7 @@ filter to_string(time) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[\.\dZ]*"
     tmp_splitStr = split(tmp_timestampModify, ".")
 | alter 
     tmp_epoch_s = to_string(to_epoch(parse_timestamp("%Y-%m-%dT%H:%M:%S", arrayindex(tmp_splitStr ,0)), "seconds")),
-    tmp_epoch_ms = trim(arrayindex(tmp_splitStr, 1),"Z")
+    tmp_epoch_ms = coalesce(trim(arrayindex(tmp_splitStr, 1),"Z"), "")
 | alter
     tmp_epoch_ms_check = if(
         to_string(len(tmp_epoch_ms)) = "0", "", 
@@ -19,7 +19,8 @@ filter to_string(time) ~= "\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}[\.\dZ]*"
         to_string(len(tmp_epoch_ms)) = "0", to_timestamp(to_integer(concat(tmp_epoch_s , tmp_epoch_ms_check)), "SECONDS"),
         to_string(len(tmp_epoch_ms)) ~= "3|4|5", to_timestamp(to_integer(concat(tmp_epoch_s , tmp_epoch_ms_check)), "MILLIS"),
         to_string(len(tmp_epoch_ms)) ~= "6|7|8", to_timestamp(to_integer(concat(tmp_epoch_s , tmp_epoch_ms_check)), "MICROS"),
-        to_string(len(tmp_epoch_ms)) ~= "9", to_timestamp(floor(divide(to_integer(concat(tmp_epoch_s , tmp_epoch_ms_check)), 1000)), "MICROS")
+        to_string(len(tmp_epoch_ms)) ~= "9", to_timestamp(floor(divide(to_integer(concat(tmp_epoch_s , tmp_epoch_ms_check)), 1000)), "MICROS"),
+        to_timestamp(to_integer(tmp_epoch_s), "SECONDS")
     )
 | alter 
     _time = tmp_set_timestamp
