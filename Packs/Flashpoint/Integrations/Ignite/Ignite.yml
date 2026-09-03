@@ -109,6 +109,8 @@ configuration:
   - Communities
   - Images
   - Marketplaces
+  - Reports
+  - Vulnerabilities
   type: 16
   required: false
   section: Collect
@@ -597,6 +599,8 @@ script:
       - Communities
       - Images
       - Marketplaces
+      - Reports
+      - Vulnerabilities
       isArray: true
     - name: tags
       description: A comma-separated list of alerts filtered by tags.
@@ -1616,7 +1620,7 @@ script:
       type: string
     - contextPath: Ignite.Domain.total_sightings
       description: The total sightings of domain.
-      type: integer  
+      type: integer
     - contextPath: Domain.Malicious.Description
       description: The description of the malicious indicator.
       type: string
@@ -2129,13 +2133,13 @@ script:
       type: string
     - contextPath: Ignite.File.historical_tags
       description: The tags of File.
-      type: string 
+      type: string
     - contextPath: Ignite.File.reports.html
       description: Platform url to access the report of the indicator.
-      type: string 
+      type: string
     - contextPath: Ignite.File.reports.json
       description: API url of the report of the indicator.
-      type: string 
+      type: string
     - contextPath: Ignite.Domain.id
       description: The ID of domain.
       type: string
@@ -2261,7 +2265,7 @@ script:
       type: string
     - contextPath: Ignite.Domain.total_sightings
       description: The total sightings of domain.
-      type: integer  
+      type: integer
     - contextPath: Domain.Malicious.Description
       description: The description of the malicious indicator.
       type: string
@@ -2291,13 +2295,13 @@ script:
       type: string
     - contextPath: Ignite.Domain.historical_tags
       description: The tags of Domain.
-      type: string 
+      type: string
     - contextPath: Ignite.Domain.reports.html
       description: Platform url to access the report of the indicator.
-      type: string 
+      type: string
     - contextPath: Ignite.Domain.reports.json
       description: API url of the report of the indicator.
-      type: string 
+      type: string
     - contextPath: URL.Malicious.Description
       description: The description of the malicious indicator.
       type: string
@@ -2453,13 +2457,13 @@ script:
       type: integer
     - contextPath: Ignite.URL.historical_tags
       description: The tags of URL.
-      type: string 
+      type: string
     - contextPath: Ignite.URL.reports.html
       description: Platform url to access the report of the indicator.
-      type: string 
+      type: string
     - contextPath: Ignite.URL.reports.json
       description: API url of the report of the indicator.
-      type: string 
+      type: string
     - contextPath: IP.Address
       description: The IP address.
       type: string
@@ -2612,13 +2616,13 @@ script:
       type: integer
     - contextPath: Ignite.IP.historical_tags
       description: The tags of IP.
-      type: string 
+      type: string
     - contextPath: Ignite.IP.reports.html
       description: Platform url to access the report of the indicator.
-      type: string 
+      type: string
     - contextPath: Ignite.IP.reports.json
       description: API url of the report of the indicator.
-      type: string 
+      type: string
     description: 'Looks up details for indicators of types "URL", "Domain", "File Hash", and "IP" using their ID. The reputation of the indicator is decided from the indicator score if it is found in the Ignite IOC database.'
   - name: url
     arguments:
@@ -3013,7 +3017,7 @@ script:
       type: string
     - contextPath: Ignite.Domain.total_sightings
       description: The total sightings of domain.
-      type: integer  
+      type: integer
     - contextPath: Domain.Malicious.Description
       description: The description of the malicious indicator.
       type: string
@@ -4205,6 +4209,9 @@ script:
     description: Retrieves detailed information about a specific CVE by its CVE ID.
   - name: flashpoint-ignite-vulnerability-list
     arguments:
+    - description: "Filter by the vulnerability IDs assigned by Flashpoint. Supports comma-separated values.\n\nExample: 463513, FP-VULN-463512."
+      name: vulnerability_ids
+      isArray: true
     - description: "Get vulnerabilities that were updated after the specified date or relative timestamp.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ."
       name: updated_after
     - description: "Get vulnerabilities that were updated before the specified date or relative timestamp.\n\nFormats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ."
@@ -4840,7 +4847,7 @@ script:
     description: List products using provided filters.
   script: ''
   type: python
-  dockerimage: demisto/python3:3.12.13.10404775
+  dockerimage: demisto/python3:3.12.13.11879924
   isfetch: true
   runonce: false
   subtype: python3
