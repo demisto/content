@@ -1,0 +1,1006 @@
+{
+    "dashboards_data": [
+        {
+            "id": "e6a268db1f544f5ba1a8014911927ec0",
+            "name": "Hydden Identity System of Record",
+            "description": "Hydden Mesh identity activity overview.",
+            "status": "ENABLED",
+            "layout": [
+                {
+                    "id": "row-0",
+                    "data": [
+                        {
+                            "key": "xql_1787163192222",
+                            "data": {
+                                "type": "Custom XQL",
+                                "height": 400,
+                                "phrase": "config timeframe = 2d\r\n| dataset = metrics_source\r\n| filter _vendor = \"Hydden\" and _product = \"Mesh\"\r\n| bin _time span = 1h\r\n| comp sum(total_size_bytes) as total_bytes, sum(total_event_count) as total_events by _time, _vendor, _product \r\n| sort asc _time\n| view graph type = line header = \"Hydden Event Volume\" xaxis = _time yaxis = total_events seriescolor(\"total_events\",\"#f70650\") xaxistitle = \"Hour\" yaxistitle = \"Events\" ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "2d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 86400000
+                                },
+                                "viewOptions": {
+                                    "type": "line",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Hydden Event Volume\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "_time"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "total_events"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "total_events",
+                                                    "#f70650"
+                                                ],
+                                                "name": "seriescolor"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxistitle",
+                                                "value": "\"Hour\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxistitle",
+                                                "value": "\"Events\""
+                                            }
+                                        }
+                                    ]
+                                },
+                                "title": "Hydden Identity Event Volume",
+                                "width": 100.0
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-2",
+                    "data": [
+                        {
+                            "key": "xql_1786136415515",
+                            "data": {
+                                "type": "Custom XQL",
+                                "height": 400,
+                                "phrase": "datamodel dataset = hydden_mesh_raw\n| comp max(xdm.target.resource.value) as max_risk by xdm.target.resource.name\n| sort desc max_risk\n| limit 20\n| fields xdm.target.resource.name, max_risk\n| view graph type = column subtype = grouped header = \"Top 20 Privileged Indentities\" show_callouts_names = `true` xaxis = xdm.target.resource.name yaxis = max_risk yaxmaxrange = 1 ",
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Top 10 Privileged Indentities\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts_names",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.target.resource.name"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "max_risk"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "title": "Top 10 Privileged Identities",
+                                "width": 50.0
+                            }
+                        },
+                        {
+                            "key": "xql_1786492878000",
+                            "data": {
+                                "type": "Custom XQL",
+                                "height": 400,
+                                "phrase": "config timeframe = 7d\r\n| datamodel dataset = hydden_mesh_raw \r\n|  filter xdm.event.original_event_type = \"account_enabled\"\r\n| bin _time span = 1d \r\n| comp count() as event_count by _time \r\n| sort asc _time\r\n| view graph type = column subtype = grouped header = \"New Accounts by Day\" xaxis = _time yaxis = event_count seriescolor(\"event_count\",\"#ef5dee\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "7d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "column",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "grouped"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"New Accounts by Day\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "_time"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "event_count"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "\"event_count\"",
+                                                    "\"#ef5dee\""
+                                                ],
+                                                "name": "seriescolor"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "title": "New Accounts Last 7 Days",
+                                "width": 50.0
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-5",
+                    "data": [
+                        {
+                            "key": "xql_1787159436451",
+                            "data": {
+                                "type": "Custom XQL",
+                                "height": 400,
+                                "phrase": "config timeframe = 7d\n|datamodel dataset = hydden_mesh_raw\n| top 10 xdm.event.original_event_type\n| view graph type = pie subtype = full header = \"Top 10 Identity Events\" show_callouts = `true` show_callouts_names = `true` show_percentage = `false` xaxis = xdm.event.original_event_type yaxis = top_percent legend_percentage = `true` ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "7d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Top 10 Identity Events\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts_names",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_percentage",
+                                                "value": "false"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "xdm.event.original_event_type"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "top_percent"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legend_percentage",
+                                                "value": "true"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "title": "Top 10 Identity Events Last 7 Days",
+                                "width": 50.0
+                            }
+                        },
+                        {
+                            "key": "xql_1786136664193",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50.0,
+                                "height": 477,
+                                "phrase": "config timeframe = 7d\n|dataset = hydden_mesh_raw\n| top 10 action\n| view graph type = pie subtype = full header = \"Top 10 Identity Actions\" show_callouts = `true` show_callouts_names = `true` xaxis = action yaxis = top_percent legend_percentage = `true` ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "7d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "subtype",
+                                                "value": "full"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Top 10 Identity Actions\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts_names",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "action"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "top_percent"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "legend_percentage",
+                                                "value": "true"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "title": "Top 10 Identity Actions Last 7 Days"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "row-8",
+                    "data": [
+                        {
+                            "key": "xql_1786136802876",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50.0,
+                                "height": 477,
+                                "phrase": "config timeframe = 7d\n| dataset = hydden_mesh_raw\n| top 10 actor_name\n| view graph type = pie header = \"Top 10 Identity Actors\" show_callouts = `true` show_callouts_names = `true` xaxis = actor_name yaxis = top_count seriestitle(\"top_count\",\"Total\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "7d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Top 10 Identity Actors\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts_names",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "actor_name"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "top_count"
+                                            }
+                                        },
+                                        {
+                                            "func": {
+                                                "args": [
+                                                    "top_count",
+                                                    "Total"
+                                                ],
+                                                "name": "seriestitle"
+                                            }
+                                        }
+                                    ]
+                                },
+                                "title": "Top 10 Identity Actors Last 7 Days"
+                            }
+                        },
+                        {
+                            "key": "xql_1786136918478",
+                            "data": {
+                                "type": "Custom XQL",
+                                "width": 50.0,
+                                "height": 477,
+                                "phrase": "config timeframe = 7d\n|dataset = hydden_mesh_raw\n| top 10 target_name\n| view graph type = pie header = \"Top 10 Identity Targets\" show_callouts = `true` show_callouts_names = `true` xaxis = target_name yaxis = top_count seriestitle(\"top_count\",\"Total\") ",
+                                "timeSpan": {
+                                    "toTime": "now",
+                                    "fromTime": "7d",
+                                    "isRelative": true
+                                },
+                                "time_frame": {
+                                    "relativeTime": 2592000000
+                                },
+                                "viewOptions": {
+                                    "type": "pie",
+                                    "commands": [
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "header",
+                                                "value": "\"Top 10 Identity Targets\""
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "show_callouts_names",
+                                                "value": "true"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "xaxis",
+                                                "value": "target_name"
+                                            }
+                                        },
+                                        {
+                                            "command": {
+                                                "op": "=",
+                                                "name": "yaxis",
+                                                "value": "top_count"
+                                            }
+                                        },
+                                        {
+								                            "func": {
+								                                "args": [
+								                                    "top_count",
+								                                    "Total"
+								                                ],
+								                                "name": "seriestitle"
+								                            }
+								                        }
+                                    ]
+                                },
+                                "title": "Top 10 Identity Targets Last 7 Days"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "default_dashboard_id": 1,
+            "global_id": "e6a268db1f544f5ba1a8014911927ec0",
+            "metadata": {
+                "params": []
+            }
+        }
+    ],
+    "widgets_data": [
+        {
+            "widget_key": "xql_1786136415515",
+            "title": "Top 10 Privileged Identities",
+            "creation_time": 1786136415515,
+            "description": "Top 10 Hydden Privileged Identities.",
+            "data": {
+                "phrase": "datamodel dataset = hydden_mesh_raw\n| comp max(xdm.target.resource.value) as max_risk by xdm.target.resource.name\n| sort desc max_risk\n| limit 20\n| fields xdm.target.resource.name, max_risk\n| view graph type = column subtype = grouped header = \"Top 20 Privileged Indentities\" show_callouts_names = `true` xaxis = xdm.target.resource.name yaxis = max_risk yaxmaxrange = 1 ",
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Top 10 Privileged Indentities\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts_names",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.target.resource.name"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "max_risk"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1787163192222",
+            "title": "Hydden Identity Event Volume",
+            "creation_time": 1787163192222,
+            "description": "Hydden Identity Event Volume",
+            "data": {
+                "phrase": "config timeframe = 2d\r\n| dataset = metrics_source\r\n| filter _vendor = \"Hydden\" and _product = \"Mesh\"\r\n| bin _time span = 1h\r\n| comp sum(total_size_bytes) as total_bytes, sum(total_event_count) as total_events by _time, _vendor, _product \r\n| sort asc _time\n| view graph type = line header = \"Hydden Event Volume\" xaxis = _time yaxis = total_events seriescolor(\"total_events\",\"#f70650\") xaxistitle = \"Hour\" yaxistitle = \"Events\" ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "2d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 86400000
+                },
+                "viewOptions": {
+                    "type": "line",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Hydden Event Volume\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "_time"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "total_events"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "total_events",
+                                    "#f70650"
+                                ],
+                                "name": "seriescolor"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxistitle",
+                                "value": "\"Hour\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxistitle",
+                                "value": "\"Events\""
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "metrics_source"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1787159436451",
+            "title": "Top 10 Identity Events Last 7 Days",
+            "creation_time": 1787159436451,
+            "description": "Top 10 Hydden Mesh events.",
+            "data": {
+                "phrase": "config timeframe = 7d\n|datamodel dataset = hydden_mesh_raw\n| top 10 xdm.event.original_event_type\n| view graph type = pie subtype = full header = \"Top 10 Identity Events\" show_callouts = `true` show_callouts_names = `true` show_percentage = `false` xaxis = xdm.event.original_event_type yaxis = top_percent legend_percentage = `true` ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "7d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "full"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Top 10 Identity Events\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts_names",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_percentage",
+                                "value": "false"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "xdm.event.original_event_type"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "top_percent"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legend_percentage",
+                                "value": "true"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1786136664193",
+            "title": "Top 10 Identity Actions Last 7 Days",
+            "creation_time": 1786136664193,
+            "description": "Top 10 Hydden Mesh actions.",
+            "data": {
+                "phrase": "config timeframe = 7d\n|dataset = hydden_mesh_raw\n| top 10 action\n| view graph type = pie subtype = full header = \"Top 10 Identity Actions\" show_callouts = `true` show_callouts_names = `true` xaxis = action yaxis = top_percent legend_percentage = `true` ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "7d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "full"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Top 10 Identity Actions\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts_names",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "action"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "top_percent"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "legend_percentage",
+                                "value": "true"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "hydden_mesh_raw"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1786136918478",
+            "title": "Top 10 Identity Targets Last 7 Days",
+            "creation_time": 1786136918478,
+            "description": "Top 10 Hydden Mesh targets.",
+            "data": {
+                "phrase": "config timeframe = 7d\n|dataset = hydden_mesh_raw\n| top 10 target_name\n| view graph type = pie header = \"Top 10 Identity Targets\" show_callouts = `true` show_callouts_names = `true` xaxis = target_name yaxis = top_count seriestitle(\"top_count\",\"Total\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "7d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Top 10 Identity Targets\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts_names",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "target_name"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "top_count"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "top_count",
+                                    "Total"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "hydden_mesh_raw"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1786136802876",
+            "title": "Top 10 Identity Actors Last 7 Days",
+            "creation_time": 1786136802876,
+            "description": "Top 10 Hydden Mesh actors.",
+            "data": {
+                "phrase": "config timeframe = 7d\n| dataset = hydden_mesh_raw\n| top 10 actor_name\n| view graph type = pie header = \"Top 10 Identity Actors\" show_callouts = `true` show_callouts_names = `true` xaxis = actor_name yaxis = top_count seriestitle(\"top_count\",\"Total\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "7d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "pie",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"Top 10 Identity Actors\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "show_callouts_names",
+                                "value": "true"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "actor_name"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "top_count"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "top_count",
+                                    "Total"
+                                ],
+                                "name": "seriestitle"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [
+                    "hydden_mesh_raw"
+                ],
+                "query_uses_library": false
+            }
+        },
+        {
+            "widget_key": "xql_1786492878000",
+            "title": "New Accounts Last 7 Days",
+            "creation_time": 1786492878000,
+            "description": "New Accounts Last 7 Days",
+            "data": {
+                "phrase": "config timeframe = 7d\r\n| datamodel dataset = hydden_mesh_raw \r\n|  filter xdm.event.original_event_type = \"account_enabled\"\r\n| bin _time span = 1d \r\n| comp count() as event_count by _time \r\n| sort asc _time\r\n| view graph type = column subtype = grouped header = \"New Accounts by Day\" xaxis = _time yaxis = event_count seriescolor(\"event_count\",\"#ef5dee\") ",
+                "timeSpan": {
+                    "toTime": "now",
+                    "fromTime": "7d",
+                    "isRelative": true
+                },
+                "time_frame": {
+                    "relativeTime": 2592000000
+                },
+                "viewOptions": {
+                    "type": "column",
+                    "commands": [
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "subtype",
+                                "value": "grouped"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "header",
+                                "value": "\"New Accounts by Day\""
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "xaxis",
+                                "value": "_time"
+                            }
+                        },
+                        {
+                            "command": {
+                                "op": "=",
+                                "name": "yaxis",
+                                "value": "event_count"
+                            }
+                        },
+                        {
+                            "func": {
+                                "args": [
+                                    "\"event_count\"",
+                                    "\"#ef5dee\""
+                                ],
+                                "name": "seriescolor"
+                            }
+                        }
+                    ]
+                }
+            },
+            "support_time_range": true,
+            "additional_info": {
+                "query_tables": [],
+                "query_uses_library": false
+            }
+        }
+    ],
+    "fromVersion": "6.10.0"
+}

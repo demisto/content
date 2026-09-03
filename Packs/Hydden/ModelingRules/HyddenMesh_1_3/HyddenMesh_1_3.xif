@@ -1,0 +1,76 @@
+[MODEL: dataset="hydden_mesh_raw"]
+alter
+  xdm.event.id = coalesce(json_extract_scalar(mesh, "$._metadata.event_id"), _id),
+  xdm.event.original_event_type = arrayindex(split(coalesce(event_type, json_extract_scalar(mesh, "$._metadata.discriminator")), "/"), -1),
+  xdm.event.description = concat(coalesce(event_type, json_extract_scalar(mesh, "$._metadata.discriminator")), " space=", json_extract_scalar(mesh, "$._metadata.space"), " event_ref=", json_extract_scalar(mesh, "$.event_ref")),
+  xdm.event.outcome = if(
+    lowercase(coalesce(outcome, json_extract_scalar(mesh, "$.outcome.result"))) in ("success", "succeeded", "ok"), XDM_CONST.OUTCOME_SUCCESS,
+    lowercase(coalesce(outcome, json_extract_scalar(mesh, "$.outcome.result"))) in ("fail", "failed", "failure"), XDM_CONST.OUTCOME_FAILED,
+    outcome = null and json_extract_scalar(mesh, "$.outcome.result") = "", XDM_CONST.OUTCOME_UNKNOWN,
+    XDM_CONST.OUTCOME_UNKNOWN
+  ),
+  xdm.event.outcome_reason = coalesce(outcome_reason, json_extract_scalar(mesh, "$.review_result")),
+  xdm.event.type = if(
+    event_type in ("mesh://catalog/v1/events/login_succeeded", "mesh://catalog/v1/events/login_failed", "mesh://catalog/v1/events/mfa_succeeded", "mesh://catalog/v1/events/session_created", "mesh://catalog/v1/events/session_terminated"), "authentication",
+    "AUDIT"
+  ),
+  xdm.event.tags = if(
+    event_type in ("mesh://catalog/v1/events/login_succeeded", "mesh://catalog/v1/events/login_failed", "mesh://catalog/v1/events/mfa_succeeded", "mesh://catalog/v1/events/session_created", "mesh://catalog/v1/events/session_terminated"), arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION, XDM_CONST.EVENT_TAG_SAAS),
+    arraycreate(XDM_CONST.EVENT_TAG_SAAS)
+  ),
+  xdm.event.operation = if(
+    event_type in ("mesh://catalog/v1/events/login_succeeded", "mesh://catalog/v1/events/login_failed", "mesh://catalog/v1/events/session_created", "mesh://catalog/v1/events/session_terminated"), XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
+    event_type = "mesh://catalog/v1/events/mfa_succeeded", XDM_CONST.OPERATION_TYPE_AUTH_MFA,
+    event_type in ("mesh://catalog/v1/events/account_enabled", "mesh://catalog/v1/events/account_disabled"), XDM_CONST.OPERATION_TYPE_STATUS_CHANGE,
+    event_type in ("mesh://catalog/v1/events/account_created", "mesh://catalog/v1/events/group_member_added", "mesh://catalog/v1/events/role_assigned", "mesh://catalog/v1/events/permission_granted", "mesh://catalog/v1/events/license_assigned", "mesh://catalog/v1/events/agent_created", "mesh://catalog/v1/events/campaign_created", "mesh://catalog/v1/events/device_registered"), XDM_CONST.OPERATION_TYPE_CREATE,
+    event_type in ("mesh://catalog/v1/events/group_member_removed", "mesh://catalog/v1/events/role_removed", "mesh://catalog/v1/events/permission_revoked", "mesh://catalog/v1/events/credential_removed", "mesh://catalog/v1/events/agent_deleted", "mesh://catalog/v1/events/campaign_completed"), XDM_CONST.OPERATION_TYPE_DELETE,
+    event_type in ("mesh://catalog/v1/events/resource_accessed", "mesh://catalog/v1/events/sensitive_data_accessed"), XDM_CONST.OPERATION_TYPE_READ,
+    event_type in ("mesh://catalog/v1/events/agent_invoked", "mesh://catalog/v1/events/agent_task_executed", "mesh://catalog/v1/events/campaign_started"), XDM_CONST.OPERATION_TYPE_EXECUTION,
+    event_type = "mesh://catalog/v1/events/access_review_completed", XDM_CONST.OPERATION_TYPE_AUDIT,
+    event_type in ("mesh://catalog/v1/events/risk_detected", "mesh://catalog/v1/events/suspicious_activity"), XDM_CONST.OPERATION_TYPE_AUDIT,
+    XDM_CONST.OPERATION_TYPE_UPDATE
+  ),
+  xdm.event.operation_sub_type = coalesce(json_extract_scalar(mesh, "$.capability_used"), json_extract_scalar(mesh, "$.capability_ref"), json_extract_scalar(mesh, "$.change_type"), json_extract_scalar(mesh, "$.review_type")),
+  xdm.event.duration = to_integer(json_extract_scalar(mesh, "$.execution_time_ms")),
+  xdm.session_context_id = coalesce(json_extract_scalar(mesh, "$.context.session_id"), json_extract_scalar(mesh, "$.parent_session_id")),
+  xdm.source.user.identifier = coalesce(actor_ref, json_extract_scalar(mesh, "$.actor.ref"), json_extract_scalar(mesh, "$.invoker_ref")),
+  xdm.source.user.upn = coalesce(actor_ref, json_extract_scalar(mesh, "$.actor.ref")),
+  xdm.source.user.username = coalesce(actor_name, json_extract_scalar(mesh, "$.actor.display_name")),
+  xdm.source.user.user_type = if(
+    coalesce(actor_type, json_extract_scalar(mesh, "$.actor.type")) = "account", XDM_CONST.USER_TYPE_REGULAR,
+    coalesce(actor_type, json_extract_scalar(mesh, "$.actor.type")) in ("system", "agent"), XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+    json_extract_scalar(mesh, "$.invoker_type") = "system", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+    coalesce(actor_type, json_extract_scalar(mesh, "$.actor.type")) = null, null,
+    to_string(coalesce(actor_type, json_extract_scalar(mesh, "$.actor.type")))
+  ),
+  xdm.source.user.has_admin_permissions = if(to_float(json_extract_scalar(mesh, "$.context.actor_privilege_score")) >= 0.9, true, false),
+  xdm.source.user.roles = arraycreate(json_extract_scalar(mesh, "$.role_ref")),
+  xdm.source.ipv4 = json_extract_scalar(mesh, "$.context.ip_address"),
+  xdm.source.user_agent = json_extract_scalar(mesh, "$.context.user_agent"),
+  xdm.source.host.device_id = coalesce(_device_id, json_extract_scalar(mesh, "$.device_ref")),
+  xdm.source.agent.identifier = if(coalesce(actor_type, json_extract_scalar(mesh, "$.actor.type")) = "agent", coalesce(actor_ref, json_extract_scalar(mesh, "$.agent_ref")), json_extract_scalar(mesh, "$.agent_ref")),
+  xdm.source.cloud.project_id = coalesce(tenant_id, json_extract_scalar(mesh, "$._metadata.tenant_id")),
+  xdm.target.resource.type = if(coalesce(target_type, json_extract_scalar(mesh, "$.target.type")) = "accounts", "account", coalesce(target_type, json_extract_scalar(mesh, "$.target.type"))),
+  xdm.target.resource.id = coalesce(json_extract_scalar(mesh, "$.target_resource_ref"), json_extract_scalar(mesh, "$.group_ref"), json_extract_scalar(mesh, "$.license_ref"), json_extract_scalar(mesh, "$.permission_ref"), json_extract_scalar(mesh, "$.credential_ref"), json_extract_scalar(mesh, "$.campaign_ref"), json_extract_scalar(mesh, "$.agent_ref"), target_ref, json_extract_scalar(mesh, "$.target.ref")),
+  xdm.target.resource.name = coalesce(json_extract_scalar(mesh, "$.campaign_name"), target_name, json_extract_scalar(mesh, "$.target.display_name")),
+  xdm.target.resource.sub_type = coalesce(json_extract_scalar(mesh, "$.capability_type"), json_extract_scalar(mesh, "$.campaign_type"), json_extract_scalar(mesh, "$.review_type")),
+  xdm.target.resource.value = json_extract_scalar(mesh, "$.context.target_privilege_score"),
+  xdm.target.user.identifier = if(coalesce(target_type, json_extract_scalar(mesh, "$.target.type")) in ("account", "accounts"), coalesce(target_ref, json_extract_scalar(mesh, "$.target.ref")), null),
+  xdm.target.user.upn = if(coalesce(target_type, json_extract_scalar(mesh, "$.target.type")) in ("account", "accounts"), coalesce(target_ref, json_extract_scalar(mesh, "$.target.ref")), null),
+  xdm.target.user.username = if(coalesce(target_type, json_extract_scalar(mesh, "$.target.type")) in ("account", "accounts"), coalesce(target_name, json_extract_scalar(mesh, "$.target.display_name")), null),
+  xdm.target.user.groups = arraycreate(json_extract_scalar(mesh, "$.group_ref")),
+  xdm.target.user.is_disabled = if(event_type = "mesh://catalog/v1/events/account_disabled", true, event_type = "mesh://catalog/v1/events/account_enabled", false, null),
+  xdm.target.user.has_admin_permissions = if(json_extract_scalar(mesh, "$.was_privileged") = "true" or to_float(json_extract_scalar(mesh, "$.context.target_privilege_score")) >= 0.9, true, false),
+  xdm.target.application.name = if(coalesce(target_type, json_extract_scalar(mesh, "$.target.type")) = "application", coalesce(target_name, json_extract_scalar(mesh, "$.target.display_name")), json_extract_scalar(mesh, "$.model_name")),
+  xdm.auth.is_mfa_needed = if(event_type = "mesh://catalog/v1/events/mfa_succeeded" or is_mfa = true, true, false),
+  xdm.auth.service = if(event_type in ("mesh://catalog/v1/events/login_succeeded", "mesh://catalog/v1/events/login_failed", "mesh://catalog/v1/events/mfa_succeeded"), "IDP", null),
+  xdm.auth.privilege_level = if(json_extract_scalar(mesh, "$.privileged") = "true", XDM_CONST.PRIVILEGE_LEVEL_ADMIN, json_extract_scalar(mesh, "$.privileged") = "false", XDM_CONST.PRIVILEGE_LEVEL_USER, null),
+  xdm.logon.logon_guid = json_extract_scalar(mesh, "$.event_ref"),
+  xdm.observer.name = _collector_name,
+  xdm.observer.type = _collector_type,
+  xdm.observer.unique_identifier = coalesce(connector_id, json_extract_scalar(mesh, "$._metadata.connector_id")),
+  xdm.observer.action = json_extract_scalar(mesh, "$.outcome.action"),
+  xdm.alert.severity = coalesce(severity, risk_level),
+  xdm.alert.risks = arraycreate(json_extract_scalar(mesh, "$.context.actor_privilege_score")),
+  xdm.alert.name = if(event_type in ("mesh://catalog/v1/events/risk_detected", "mesh://catalog/v1/events/suspicious_activity"), event_type, null)
+| filter xdm.event.id != null;

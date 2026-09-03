@@ -1,0 +1,160 @@
+id: Hydden - Deprovision Account
+version: -1
+name: Hydden - Deprovision Account
+description: When a Cortex issue indicates a compromised or otherwise high-risk account, take the account ID from the issue and deprovision it with Hydden Control. Returns Hydden.Identity.deprovisioned as true or false.
+starttaskid: "0"
+fromversion: "6.10.0"
+inputs:
+- key: AccountId
+  value:
+    complex:
+      root: alert
+      accessor: user_name
+      transformers:
+      - operator: SetIfEmpty
+        args:
+          defaultValue:
+            simple: ${alert.username}
+  required: true
+  description: Cortex account identifier from the issue. Defaults to the alert user_name,
+    which is the field XDR Analytics identity issues populate, and falls back to username.
+  playbookInputQuery:
+- key: AccountIdFallback
+  value:
+    simple: ${incident.username}
+  required: false
+  description: Incident username when the alert username is empty.
+  playbookInputQuery:
+outputs:
+- contextPath: Hydden.Identity.deprovisioned
+  description: Whether Hydden Control deprovisioned the account.
+  type: boolean
+tasks:
+  "0":
+    id: "0"
+    taskid: c1111111-d222-4e33-8f44-a55555555501
+    type: start
+    task:
+      id: c1111111-d222-4e33-8f44-a55555555501
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: c1111111-d222-4e33-8f44-a55555555502
+    type: regular
+    task:
+      id: c1111111-d222-4e33-8f44-a55555555502
+      version: -1
+      name: Set account ID
+      description: Stage the account identifier from the issue under Hydden.Input.AccountId.
+        Falls back to the incident username when the alert field is empty.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: Hydden.Input.AccountId
+      value:
+        complex:
+          root: inputs.AccountId
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              defaultValue:
+                simple: ${inputs.AccountIdFallback}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: c1111111-d222-4e33-8f44-a55555555503
+    type: regular
+    task:
+      id: c1111111-d222-4e33-8f44-a55555555503
+      version: -1
+      name: Deprovision account in Hydden
+      description: Call hydden-deprovision-account (POST /account-actions/deprovision) with the account ID from the issue. Sets Hydden.Identity.deprovisioned to true on success.
+      script: 'Hydden Control|||hydden-deprovision-account'
+      type: regular
+      iscommand: true
+      brand: Hydden Control
+    scriptarguments:
+      account_id:
+        complex:
+          root: Hydden.Input
+          accessor: AccountId
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              defaultValue:
+                simple: ${inputs.AccountId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 470,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+quiet: false
+tests:
+- No tests
