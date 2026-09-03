@@ -870,6 +870,30 @@ Sends request to disable user account.
 | CBP.UserDisable.ID | String | The ID of the user in Carbon Black. |
 | CBP.UserDisable.Name | String | The name of the user account. |
 
+### cbp-user-delete
+
+***
+Sends request to delete user account.
+
+#### Base Command
+
+`cbp-user-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | ID of the user to delete. Retrieved from cbp-user-data-get. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CBP.UserDelete.Department | String | The department of the user. |
+| CBP.UserDelete.EmailAddress | String | The email of the user. |
+| CBP.UserDelete.ID | String | The ID of the user in Carbon Black. |
+| CBP.UserDelete.Name | String | The name of the user account. |
+
 ### cbp-user-data-get
 
 ***
