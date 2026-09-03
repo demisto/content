@@ -14219,9 +14219,9 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         try:
             response = res.json()
             error = res.reason
-            if response.get('error').lower() == 'false':
-                xsiam_server_err_msg = response.get('error')
-                error += ": " + xsiam_server_err_msg
+            xsiam_server_err_msg = response.get('error')
+            if xsiam_server_err_msg and str(xsiam_server_err_msg).lower() != 'false':
+                error += ": " + str(xsiam_server_err_msg)
 
         except ValueError:
             if res.text:
