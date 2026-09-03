@@ -271,6 +271,9 @@ script:
     - defaultValue: '0'
       description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
       name: lastUpdate
+  - name: update-remote-system
+    description: Updates alert status/severity on Cyble Vision when mirrored incidents change in Cortex (outgoing mirroring).
+    arguments: []
 
   dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
