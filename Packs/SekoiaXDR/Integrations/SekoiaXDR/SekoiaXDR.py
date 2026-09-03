@@ -1674,6 +1674,7 @@ def get_query_run_command(client: Client, args: dict[str, Any]) -> CommandResult
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="SekoiaXDR.QueryRun",
+        outputs_key_field="uuid",
         outputs=status,
     )
 
@@ -1698,21 +1699,24 @@ def download_query_result_command(client: Client, args: dict[str, Any]) -> dict[
 def run_query_command(args: dict[str, Any], client: Client) -> PollResult:
     parent_uuid, parent_slug, parent_type = args.get("parent_uuid"), args.get("parent_slug"), args.get("parent_type")
     community_uuid, query_uuid = args.get("community_uuid"), args.get("query_uuid")
+
     result_format = args["result_format"]
-
-    try:
-        query_definition = json.loads(args["query_definition"])
-
-    except json.JSONDecodeError as e:
-        raise DemistoException(f"query_definition argument is not a valid JSON: {e}")
-
-    try:
-        query_parameters = json.loads(args["query_parameters"]) if "query_parameters" in args else None
-
-    except json.JSONDecodeError as e:
-        raise DemistoException(f"query_parameters argument is not a valid JSON: {e}")
+    if result_format not in ("jsonl", "csv"):
+        raise DemistoException("result_format should be either 'jsonl' or 'csv'")
 
     if not (query_run_uuid := args.get("query_run_uuid")):
+        try:
+            query_definition = json.loads(args["query_definition"])
+
+        except json.JSONDecodeError as e:
+            raise DemistoException(f"query_definition argument is not a valid JSON: {e}")
+
+        try:
+            query_parameters = json.loads(args["query_parameters"]) if "query_parameters" in args else None
+
+        except json.JSONDecodeError as e:
+            raise DemistoException(f"query_parameters argument is not a valid JSON: {e}")
+
         query_run_result = client.trigger_query_execution(
             query_uuid=query_uuid,
             parent_uuid=parent_uuid,
@@ -1724,20 +1728,24 @@ def run_query_command(args: dict[str, Any], client: Client) -> PollResult:
         )
         query_run_uuid = query_run_result["uuid"]
 
-    query_run_status = client.get_query_run_by_uuid(query_run_uuid=query_run_uuid)
-    finished_status = query_run_status["status"] == "finished"
+    query_run = client.get_query_run_by_uuid(query_run_uuid=query_run_uuid)
+    query_run_status = query_run["status"]
 
-    if not finished_status:
+    finished_status = query_run_status == "finished"
+    if query_run_status == "error":
+        return_error(f"The query run {query_run_uuid} failed with error.")
+
+    elif not finished_status:
         return PollResult(
             response=None,
             continue_to_poll=True,
             args_for_next_run=(args | {"query_run_uuid": query_run_uuid}),
             partial_result=CommandResults(
-                readable_output=f"Query is still running. Current state: {query_run_status['status']}."
+                readable_output=f"Query is still running. Current state: {query_run_status}."
             ),
         )
 
-    filename = "result.csv" if result_format == "csv" else "result.jl"
+    filename = "result.csv" if result_format == "csv" else "result.jsonl"
     download_result = client.download_query_result(query_run_uuid=query_run_uuid, result_format=result_format)
 
     return PollResult(

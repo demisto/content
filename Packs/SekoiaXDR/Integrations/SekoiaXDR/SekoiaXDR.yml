@@ -1232,7 +1232,7 @@ script:
     - contextPath: SekoiaXDR.QueryRun.uuid
       description: Query Run UUID.
   - name: sekoia-xdr-get-query-run
-    description: Command gets query run status.
+    description: Gets the query run status.
     arguments:
     - name: query_run_uuid
       description: Query run UUID.
@@ -1247,13 +1247,13 @@ script:
     - contextPath: SekoiaXDR.QueryRun.duration
       description: Duration.
     - contextPath: SekoiaXDR.QueryRun.error
-      description: error.
+      description: Error.
     - contextPath: SekoiaXDR.QueryRun.parent_slug
       description: Parent slug.
     - contextPath: SekoiaXDR.QueryRun.parent_type
       description: Parent type.
     - contextPath: SekoiaXDR.QueryRun.parent_uuid
-      description: Parent UUId.
+      description: Parent UUID.
     - contextPath: SekoiaXDR.QueryRun.status
       description: Status.
     - contextPath: SekoiaXDR.QueryRun.total
@@ -1271,7 +1271,7 @@ script:
       - jsonl
       required: true
       type: string
-    description: Command downloads query result as file.
+    description: Downloads the query result as a file.
   - name: sekoia-xdr-run-query
     description: "Command to run a query and get its result. This is a combination of 3 commands: sekoia-xdr-execute-query, sekoia-xdr-get-query-run and sekoia-xdr-download-query-result."
     polling: true

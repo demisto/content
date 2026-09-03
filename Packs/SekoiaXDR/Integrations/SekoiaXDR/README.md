@@ -848,7 +848,7 @@ Command to create a query run on Sekoia XDR, after this execute "sekoia-xdr-get-
 ### sekoia-xdr-get-query-run
 
 ***
-Command gets query run status.
+Gets the query run status.
 
 #### Base Command
 
@@ -863,22 +863,22 @@ Command gets query run status.
 #### Context Output
 
 | **Path** | **Type** | **Description** |
-| --- | --- | --- |
+| --- | --- |-----------------|
 | SekoiaXDR.QueryRun.community_uuid | unknown | Community UUID. | 
-| SekoiaXDR.QueryRun.created_at | unknown | Created at. | 
-| SekoiaXDR.QueryRun.created_by | unknown | Created by. | 
-| SekoiaXDR.QueryRun.duration | unknown | Duration. | 
-| SekoiaXDR.QueryRun.error | unknown | error. | 
-| SekoiaXDR.QueryRun.parent_slug | unknown | Parent slug. | 
-| SekoiaXDR.QueryRun.parent_type | unknown | Parent type. | 
-| SekoiaXDR.QueryRun.parent_uuid | unknown | Parent UUId. | 
-| SekoiaXDR.QueryRun.status | unknown | Status. | 
-| SekoiaXDR.QueryRun.total | unknown | Total. | 
+| SekoiaXDR.QueryRun.created_at | unknown | Created at.     | 
+| SekoiaXDR.QueryRun.created_by | unknown | Created by.     | 
+| SekoiaXDR.QueryRun.duration | unknown | Duration.       | 
+| SekoiaXDR.QueryRun.error | unknown | Error.          | 
+| SekoiaXDR.QueryRun.parent_slug | unknown | Parent slug.    | 
+| SekoiaXDR.QueryRun.parent_type | unknown | Parent type.    | 
+| SekoiaXDR.QueryRun.parent_uuid | unknown | Parent UUID.    | 
+| SekoiaXDR.QueryRun.status | unknown | Status.         | 
+| SekoiaXDR.QueryRun.total | unknown | Total.          | 
 
 ### sekoia-xdr-download-query-result
 
 ***
-Command downloads query result as file.
+Downloads the query result as a file.
 
 #### Base Command
 
