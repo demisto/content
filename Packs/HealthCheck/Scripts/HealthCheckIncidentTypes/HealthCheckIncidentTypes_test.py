@@ -1,22 +1,49 @@
 import demistomock as demisto
+import HealthCheckIncidentTypes
 from HealthCheckIncidentTypes import filter_non_locked, main
 
 
-def _wrap_core_api_response(response, extra_entries=0):
-    """Build a raw ``demisto.executeCommand`` result for ``core-api-get``.
+INCIDENT_TYPES = [
+    {
+        "prevName": "AllExtraction",
+        "locked": False,
+        "detached": False,
+        "extractSettings": {"mode": "All"},
+    },
+    {
+        "prevName": "SpecificWithFields",
+        "locked": False,
+        "detached": False,
+        "extractSettings": {
+            "mode": "Specific",
+            "fieldCliNameToExtractSettings": {"somefield": {}},
+        },
+    },
+    {
+        "prevName": "SpecificWithoutFields",
+        "locked": False,
+        "detached": False,
+        "extractSettings": {
+            "mode": "Specific",
+            "fieldCliNameToExtractSettings": {},
+        },
+    },
+    {
+        "prevName": "LockedType",
+        "locked": True,
+        "detached": False,
+        "extractSettings": {"mode": "All"},
+    },
+]
 
-    Returns the raw list of war-room entries. The real ``execute_command``
-    (with the default ``extract_contents=True``) then collapses a single entry
-    to a dict and keeps multiple entries as a list, so the test exercises the
-    exact behaviour that produced the ``KeyError: 0`` regression (XSUP-74019).
 
-    ``extra_entries`` simulates the server returning additional entries
-    alongside the response (which keeps the collapsed result a list).
-    """
-    entries = [{"Type": 1, "Contents": {"response": response}}]
-    for _ in range(extra_entries):
-        entries.append({"Type": 1, "Contents": {"response": []}})
-    return entries
+def _mock_execute_command(mocker, response):
+    """Patch execute_command (the CommonServerPython wrapper used by main())."""
+    return mocker.patch.object(
+        HealthCheckIncidentTypes,
+        "execute_command",
+        return_value={"response": response},
+    )
 
 
 def test_filter_non_locked_keeps_unlocked_and_detached():
@@ -34,66 +61,30 @@ def test_filter_non_locked_keeps_unlocked_and_detached():
     assert names == ["Unlocked", "LockedButDetached"]
 
 
-def test_main_builds_table_from_single_entry_response(mocker):
-    """Regression test for XSUP-74019.
-
-    A single-entry response from `core-api-get` is a dict, not a list. The
-    previous implementation used `[0]["response"]` which raised `KeyError: 0`.
-    """
-    incident_types = [
-        {
-            "prevName": "AllExtraction",
-            "locked": False,
-            "detached": False,
-            "extractSettings": {"mode": "All"},
-        },
-        {
-            "prevName": "SpecificWithFields",
-            "locked": False,
-            "detached": False,
-            "extractSettings": {
-                "mode": "Specific",
-                "fieldCliNameToExtractSettings": {"somefield": {}},
-            },
-        },
-        {
-            "prevName": "SpecificWithoutFields",
-            "locked": False,
-            "detached": False,
-            "extractSettings": {
-                "mode": "Specific",
-                "fieldCliNameToExtractSettings": {},
-            },
-        },
-        {
-            "prevName": "LockedType",
-            "locked": True,
-            "detached": False,
-            "extractSettings": {"mode": "All"},
-        },
-    ]
-
+def test_main_builds_table_xsoar6(mocker):
+    """On XSOAR 6, table is built correctly from incident types."""
     mocker.patch.object(demisto, "incidents", return_value=[{"account": ""}])
-    execute_mock = mocker.patch.object(
-        demisto,
-        "executeCommand",
+    mocker.patch.object(HealthCheckIncidentTypes, "is_demisto_version_ge", return_value=False)
+    mocker.patch.object(
+        HealthCheckIncidentTypes,
+        "execute_command",
         side_effect=[
-            _wrap_core_api_response(incident_types),  # core-api-get
-            [{"Type": 1, "Contents": "done"}],  # setIncident
+            {"response": INCIDENT_TYPES},  # core-api-get
+            {},  # setIncident
         ],
     )
+    mocker.patch.object(HealthCheckIncidentTypes, "return_results")
 
     main()
 
-    # Verify core-api-get was called with the expected uri.
-    core_call = execute_mock.call_args_list[0]
-    assert core_call.args[0] == "core-api-get"
-    assert core_call.args[1] == {"uri": "/incidenttype"}
+    # Verify core-api-get URI (no account prefix, no leading slash)
+    core_call = HealthCheckIncidentTypes.execute_command.call_args_list[0]
+    assert core_call[0][0] == "core-api-get"
+    assert core_call[0][1]["uri"] == "incidenttype"
 
-    # Verify the resulting table set on the incident.
-    set_call = execute_mock.call_args_list[1]
-    assert set_call.args[0] == "setIncident"
-    table = set_call.args[1]["healthcheckautoextractionbasedincidenttype"]
+    # Verify setIncident table
+    set_call = HealthCheckIncidentTypes.execute_command.call_args_list[1]
+    table = set_call[0][1]["healthcheckautoextractionbasedincidenttype"]
     assert table == [
         {
             "incidenttype": "AllExtraction",
@@ -106,8 +97,68 @@ def test_main_builds_table_from_single_entry_response(mocker):
     ]
 
 
+def test_main_uses_account_prefix_xsoar6(mocker):
+    """On XSOAR 6 with an account, the URI is prefixed with acc_<account>."""
+    mocker.patch.object(demisto, "incidents", return_value=[{"account": "test"}])
+    mocker.patch.object(HealthCheckIncidentTypes, "is_demisto_version_ge", return_value=False)
+    mocker.patch.object(
+        HealthCheckIncidentTypes,
+        "execute_command",
+        side_effect=[
+            {"response": []},
+            {},
+        ],
+    )
+    mocker.patch.object(HealthCheckIncidentTypes, "return_results")
+
+    main()
+
+    core_call = HealthCheckIncidentTypes.execute_command.call_args_list[0]
+    assert core_call[0][1]["uri"] == "acc_test/incidenttype"
+
+
+def test_main_uses_xsoar8_uri(mocker):
+    """On XSOAR 8, the URI uses the xsoar/public/v1/ prefix."""
+    mocker.patch.object(HealthCheckIncidentTypes, "is_demisto_version_ge", return_value=True)
+    mocker.patch.object(
+        HealthCheckIncidentTypes,
+        "execute_command",
+        side_effect=[
+            {"response": []},
+            {},
+        ],
+    )
+    mocker.patch.object(HealthCheckIncidentTypes, "return_results")
+
+    main()
+
+    core_call = HealthCheckIncidentTypes.execute_command.call_args_list[0]
+    assert core_call[0][1]["uri"] == "xsoar/public/v1/incidenttype"
+
+
+def test_main_list_response(mocker):
+    """When execute_command returns a list (multi-tenant), first entry is used."""
+    mocker.patch.object(demisto, "incidents", return_value=[{"account": ""}])
+    mocker.patch.object(HealthCheckIncidentTypes, "is_demisto_version_ge", return_value=False)
+    mocker.patch.object(
+        HealthCheckIncidentTypes,
+        "execute_command",
+        side_effect=[
+            [{"response": INCIDENT_TYPES}, {"response": []}],  # list response
+            {},
+        ],
+    )
+    mocker.patch.object(HealthCheckIncidentTypes, "return_results")
+
+    main()
+
+    set_call = HealthCheckIncidentTypes.execute_command.call_args_list[1]
+    table = set_call[0][1]["healthcheckautoextractionbasedincidenttype"]
+    assert len(table) == 2
+
+
 def test_main_handles_missing_extract_settings(mocker):
-    """Types without `extractSettings` (or its sub-keys) must not raise."""
+    """Types without extractSettings (or its sub-keys) must not raise."""
     incident_types = [
         {"prevName": "NoExtractSettings", "locked": False, "detached": False},
         {
@@ -119,71 +170,49 @@ def test_main_handles_missing_extract_settings(mocker):
     ]
 
     mocker.patch.object(demisto, "incidents", return_value=[{"account": ""}])
-    execute_mock = mocker.patch.object(
-        demisto,
-        "executeCommand",
+    mocker.patch.object(HealthCheckIncidentTypes, "is_demisto_version_ge", return_value=False)
+    mocker.patch.object(
+        HealthCheckIncidentTypes,
+        "execute_command",
         side_effect=[
-            _wrap_core_api_response(incident_types),
-            [{"Type": 1, "Contents": "done"}],
+            {"response": incident_types},
+            {},
         ],
     )
+    mocker.patch.object(HealthCheckIncidentTypes, "return_results")
 
     main()
 
-    set_call = execute_mock.call_args_list[1]
-    assert set_call.args[1]["healthcheckautoextractionbasedincidenttype"] == []
+    set_call = HealthCheckIncidentTypes.execute_command.call_args_list[1]
+    assert set_call[0][1]["healthcheckautoextractionbasedincidenttype"] == []
 
 
-def test_main_uses_account_prefix(mocker):
-    """When the incident belongs to an account, the uri is prefixed."""
-    mocker.patch.object(demisto, "incidents", return_value=[{"account": "test"}])
-    execute_mock = mocker.patch.object(
-        demisto,
-        "executeCommand",
-        side_effect=[
-            _wrap_core_api_response([]),
-            [{"Type": 1, "Contents": "done"}],
-        ],
-    )
-
-    main()
-
-    assert execute_mock.call_args_list[0].args[1] == {"uri": "acc_test/incidenttype"}
-
-
-def test_main_handles_multiple_returned_entries(mocker):
-    """The response is read correctly when the result is a list.
-
-    When multiple entries are returned, `execute_command` keeps the result as
-    a list. The script must then read the payload from the first element
-    (`result[0]["response"]`) rather than treating it as a dict.
-    """
-    incident_types = [
-        {
-            "prevName": "AllExtraction",
-            "locked": False,
-            "detached": False,
-            "extractSettings": {"mode": "All"},
-        },
-    ]
-
+def test_main_none_response(mocker):
+    """When execute_command returns None, no error is raised."""
     mocker.patch.object(demisto, "incidents", return_value=[{"account": ""}])
-    execute_mock = mocker.patch.object(
-        demisto,
-        "executeCommand",
+    mocker.patch.object(HealthCheckIncidentTypes, "is_demisto_version_ge", return_value=False)
+    mocker.patch.object(
+        HealthCheckIncidentTypes,
+        "execute_command",
         side_effect=[
-            _wrap_core_api_response(incident_types, extra_entries=2),
-            [{"Type": 1, "Contents": "done"}],
+            None,
+            {},
         ],
     )
+    mocker.patch.object(HealthCheckIncidentTypes, "return_results")
 
     main()
 
-    set_call = execute_mock.call_args_list[1]
-    table = set_call.args[1]["healthcheckautoextractionbasedincidenttype"]
-    assert table == [
-        {
-            "incidenttype": "AllExtraction",
-            "detection": "Indicators extraction defined on all fields",
-        },
-    ]
+    set_call = HealthCheckIncidentTypes.execute_command.call_args_list[1]
+    assert set_call[0][1]["healthcheckautoextractionbasedincidenttype"] == []
+
+
+def test_main_exception_calls_return_error(mocker):
+    """When an exception occurs, return_error is called."""
+    mocker.patch.object(HealthCheckIncidentTypes, "is_demisto_version_ge", side_effect=Exception("boom"))
+    mock_error = mocker.patch.object(HealthCheckIncidentTypes, "return_error")
+
+    main()
+
+    mock_error.assert_called_once()
+    assert "boom" in mock_error.call_args[0][0]
