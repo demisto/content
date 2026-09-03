@@ -67,6 +67,8 @@ MAX_ERROR_MESSAGE_LENGTH = 50000
 MAX_API_RESPONSE_BODY_LENGTH = 500
 NUM_OF_WORKERS = 20
 # Max compressed chunks in flight at once on the streaming + multiple_threads path (bounds peak memory).
+# With streaming + multiple_threads, peak resident compressed chunks is N+1 (N in flight + 1 being built);
+# it does NOT scale with the total number of events, unlike the non-streaming multiple_threads path.
 MAX_INFLIGHT_CHUNKS = NUM_OF_WORKERS
 HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
 JSON_SEPARATORS = (",", ":")  # To get the most compact JSON representation, we should specify (',', ':') to eliminate whitespace.
