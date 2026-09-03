@@ -40,32 +40,32 @@ configuration:
 - display: Maximum Indicators Per Fetch
   name: limit
   type: 0
-  defaultvalue: '100000'
+  defaultvalue: '20000'
   additionalinfo: |-
-    Maximum number of indicators to fetch per type. 
+    Maximum number of indicators to fetch per type.
     Example: limit=20,000 with 4 types selected = 80,000 total indicators.
-    
+
     The total (limit × number of types) is automatically capped at 100,000.
     If limit × types > 100,000, the limit per type is adjusted.
     Example: limit=30,000 with 4 types selected = 120,000 total indicators
     adjusted to 25,000 per type (100,000 / 4 = 25,000).
-    
+
     Fetch priority order:
     1. Threat Objects
     2. IPs
     3. Domains
     4. URLs
     5. Files
-    
-    Default (total for all types): 100,000. Maximum (total for all types): 100,000.
+
+    Maximum (total for all types): 100,000.
   required: false
   section: Collect
   advanced: true
 - display: Feed Fetch Interval
-  additionalinfo: Don't set the feed fetch interval to less than 12 hours.
+  additionalinfo: The feed fetch interval, which is set to 1 hour and is not configurable.
   name: feedFetchInterval
   type: 19
-  defaultvalue: '720'
+  defaultvalue: '60'
   required: false
   section: Collect
   advanced: true
@@ -205,7 +205,7 @@ script:
       name: limit
     description: Gets threat objects from the feed.
     name: unit42-get-threat-objects
-  dockerimage: demisto/python3:3.12.13.10404775
+  dockerimage: demisto/python3:3.12.14.12343672
   feed: true
   runonce: false
   script: '-'

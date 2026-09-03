@@ -14,6 +14,9 @@ TOTAL_INDICATOR_LIMIT = 100000
 # Note: Threat Objects are handled separately in feed_types
 INDICATOR_TYPE_PRIORITY = ["IP", "Domain", "URL", "File"]
 
+# Key used in the last run state to identify the threat objects fetch unit
+THREAT_OBJECTS_TYPE = "Threat Objects"
+
 # API endpoints
 BASE_URL = "https://prod-us.tas.crtx.paloaltonetworks.com"
 INDICATORS_ENDPOINT = "/api/v1/feeds/indicators"
@@ -880,8 +883,14 @@ def push_indicators_in_batches(indicators: list, batch_size: int = 2000) -> None
 
 
 def fetch_indicator_type(
-    client: Client, indicator_type: str, limit: int, start_time: str, feed_tags: list, tlp_color: str | None
-) -> int:
+    client: Client,
+    indicator_type: str,
+    limit: int,
+    start_time: str,
+    feed_tags: list,
+    tlp_color: str | None,
+    next_page_token: str | None = None,
+) -> tuple[int, str | None]:
     """
     Fetch indicators for a specific type with pagination and limit enforcement.
 
@@ -897,12 +906,13 @@ def fetch_indicator_type(
         start_time: Start time for fetching
         feed_tags: Tags to add to indicators
         tlp_color: TLP color
+        next_page_token: Page token to resume an interrupted fetch from
 
     Returns:
-        Number of indicators fetched and pushed (count <= limit)
+        Tuple of the number of indicators fetched and pushed (count <= limit), and the
+        page token to resume from on the next fetch (None when the type was exhausted).
     """
     total_fetched = 0
-    next_page_token = None
 
     while total_fetched < limit:
         # Calculate how many more we need
@@ -919,11 +929,13 @@ def fetch_indicator_type(
         # Parse response
         if not response or not isinstance(response, dict):
             demisto.debug(f"UNIT42FEED: Invalid response for {indicator_type}, stopping")
+            next_page_token = None
             break
 
         data = response.get("data", [])
         if not data or not isinstance(data, list):
             demisto.debug(f"UNIT42FEED: No more data for {indicator_type}, stopping")
+            next_page_token = None
             break
 
         # Parse indicators for this page
@@ -950,10 +962,12 @@ def fetch_indicator_type(
             demisto.debug(f"UNIT42FEED: No more pages for {indicator_type}")
             break
 
-    return total_fetched
+    return total_fetched, next_page_token
 
 
-def fetch_threat_objects_with_limit(client: Client, limit: int, feed_tags: list, tlp_color: str | None) -> int:
+def fetch_threat_objects_with_limit(
+    client: Client, limit: int, feed_tags: list, tlp_color: str | None, next_page_token: str | None = None
+) -> tuple[int, str | None]:
     """
     Fetch threat objects with pagination and limit enforcement.
 
@@ -967,12 +981,13 @@ def fetch_threat_objects_with_limit(client: Client, limit: int, feed_tags: list,
         limit: Maximum number to fetch
         feed_tags: Tags to add to threat objects
         tlp_color: TLP color
+        next_page_token: Page token to resume an interrupted fetch from
 
     Returns:
-        Number of threat objects fetched and pushed (count <= limit)
+        Tuple of the number of threat objects fetched and pushed (count <= limit), and the
+        page token to resume from on the next fetch (None when there is nothing left to fetch).
     """
     total_fetched = 0
-    next_page_token = None
 
     while total_fetched < limit:
         # Calculate how many more we need
@@ -987,11 +1002,13 @@ def fetch_threat_objects_with_limit(client: Client, limit: int, feed_tags: list,
         # Parse response
         if not response or not isinstance(response, dict):
             demisto.debug("UNIT42FEED: Invalid response for threat objects, stopping")
+            next_page_token = None
             break
 
         data = response.get("data", [])
         if not data or not isinstance(data, list):
             demisto.debug("UNIT42FEED: No more threat objects data, stopping")
+            next_page_token = None
             break
 
         # Parse threat objects for this page (note: this may include extra location
@@ -1017,7 +1034,7 @@ def fetch_threat_objects_with_limit(client: Client, limit: int, feed_tags: list,
             demisto.debug("UNIT42FEED: No more pages for threat objects")
             break
 
-    return total_fetched
+    return total_fetched, next_page_token
 
 
 def test_module(client: Client) -> str:
@@ -1036,7 +1053,41 @@ def test_module(client: Client) -> str:
         return f"Failed to connect to Unit 42 API. Check your Server URL and License. Error: {str(e)}"
 
 
-def fetch_indicators(client: Client, params: dict, current_time: datetime) -> int:
+def build_fetch_units(feed_types: list, indicator_types: list, last_run: dict) -> list[dict]:
+    """Build the ordered list of fetch units (threat objects and indicator types) for this fetch.
+
+    When the previous fetch stopped because the maximum indicators per fetch limit was hit
+    while more pages were available, the pending units (with their page tokens) are stored
+    in the last run and are resumed here instead of starting a new fetch cycle.
+
+    Args:
+        feed_types: The configured feed types (Indicators / Threat Objects)
+        indicator_types: The configured indicator types
+        last_run: demisto.getLastRun()
+
+    Returns:
+        List of fetch units, each holding a "type" and its "page_token" (None when not resumed).
+    """
+    pending_units = last_run.get("pending_units") or []
+    if pending_units:
+        demisto.debug(f"UNIT42FEED: Resuming pending fetch units: {pending_units}")
+        return pending_units
+
+    fetch_units: list[dict] = []
+
+    # Threat objects have the highest priority
+    if THREAT_OBJECTS_TYPE in feed_types:
+        fetch_units.append({"type": THREAT_OBJECTS_TYPE, "page_token": None})
+
+    if "Indicators" in feed_types:
+        sorted_types = sort_indicator_types_by_priority(indicator_types)
+        demisto.debug(f"UNIT42FEED: Fetching indicators in priority order: {sorted_types}")
+        fetch_units.extend({"type": ind_type, "page_token": None} for ind_type in sorted_types)
+
+    return fetch_units
+
+
+def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tuple[int, dict]:
     """Retrieves indicators from the feed with per-type limit enforcement.
 
     Indicators/threat objects are pushed to the server as soon as each page is
@@ -1045,12 +1096,19 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> in
     only tracks and returns the total count fetched, to avoid holding all indicators
     in memory at once and causing out-of-memory issues.
 
+    The fetch is incremental: when the maximum indicators per fetch limit is hit and the
+    API still has more pages, the pending query (the start time and the page tokens of the
+    types that were not exhausted) is returned as the next run, so the following fetch
+    resumes exactly where this one stopped. Otherwise, the next run only holds the
+    last successful run time.
+
     Args:
         client: Client object with request
         params: demisto.params()
         current_time: The current fetch time.
     Returns:
-        int. Total number of indicators/threat objects fetched and pushed to the server.
+        Tuple of the total number of indicators/threat objects fetched and pushed to the
+        server, and the next run object to store with demisto.setLastRun().
     """
     total_fetched = 0
 
@@ -1060,14 +1118,21 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> in
     feed_tags = argToList(params.get("feedTags", []))
     tlp_color = params.get("tlp_color")
 
-    # Get start time
+    # Get start time - a pending query from an interrupted fetch takes precedence,
+    # so the resumed pages keep querying the same time window.
     default_start = (current_time - timedelta(hours=24)).strftime(DATE_FORMAT)
     last_run = demisto.getLastRun() or {}
-    start_time = last_run.get("last_successful_run", default_start)
+    if last_run.get("pending_units"):
+        start_time = last_run.get("start_time") or default_start
+    else:
+        start_time = last_run.get("last_successful_run") or default_start
+
+    # Preserve the timestamp of the run that initiated the current pending cycle.
+    cycle_start_time = last_run.get("cycle_start_time") or current_time.strftime(DATE_FORMAT)
 
     # Calculate total types (including threat objects if enabled)
     total_types = 0
-    if "Threat Objects" in feed_types:
+    if THREAT_OBJECTS_TYPE in feed_types:
         total_types += 1
     if "Indicators" in feed_types:
         total_types += len(set(indicator_types))
@@ -1080,71 +1145,72 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> in
     demisto.debug(f"UNIT42FEED: Total types: {total_types}, max total: {limit_per_type * total_types}")
     demisto.debug(f"UNIT42FEED: Indicator types: {indicator_types}, start_time={start_time}")
 
+    fetch_units = build_fetch_units(feed_types, indicator_types, last_run)
+
     # Track remaining quota for redistribution to the last type
     remaining_quota = 0
 
-    # FETCH THREAT OBJECTS FIRST (if enabled) - Highest Priority
-    if "Threat Objects" in feed_types:
-        demisto.debug(f"UNIT42FEED: Fetching Threat Objects (limit: {limit_per_type})")
+    # Units that hit their limit while more pages are available, to resume on the next fetch
+    pending_units: list[dict] = []
 
-        fetched_count = fetch_threat_objects_with_limit(
-            client=client, limit=limit_per_type, feed_tags=feed_tags, tlp_color=tlp_color
-        )
+    for idx, fetch_unit in enumerate(fetch_units):
+        unit_type = fetch_unit.get("type")
+        page_token = fetch_unit.get("page_token")
+        is_last_type = idx == len(fetch_units) - 1
 
-        total_fetched += fetched_count
-
-        # Track unused quota
-        if fetched_count < limit_per_type:
-            remaining_quota += limit_per_type - fetched_count
+        # For the last type, add remaining quota
+        type_limit = limit_per_type + remaining_quota if is_last_type else limit_per_type
 
         demisto.debug(
-            f"UNIT42FEED: Fetched {fetched_count}/{limit_per_type} threat objects. "
-            f"Total: {total_fetched}, Unused quota: {remaining_quota}"
+            f"UNIT42FEED: Fetching {unit_type} "
+            f"(limit: {type_limit}{' [LAST TYPE - includes remaining quota]' if is_last_type else ''}, "
+            f"page_token={page_token})"
         )
 
-    # FETCH INDICATORS (if enabled) - After Threat Objects
-    if "Indicators" in feed_types:
-        sorted_types = sort_indicator_types_by_priority(indicator_types)
-        demisto.debug(f"UNIT42FEED: Fetching indicators in priority order: {sorted_types}")
-
-        for idx, ind_type in enumerate(sorted_types):
-            is_last_type = idx == len(sorted_types) - 1
-
-            # For the last type, add remaining quota
-            if is_last_type:
-                type_limit = limit_per_type + remaining_quota
-            else:
-                type_limit = limit_per_type
-
-            demisto.debug(
-                f"UNIT42FEED: Fetching {ind_type} "
-                f"(limit: {type_limit}{'[LAST TYPE - includes remaining quota]' if is_last_type else ''})"
+        if unit_type == THREAT_OBJECTS_TYPE:
+            fetched_count, next_page_token = fetch_threat_objects_with_limit(
+                client=client, limit=type_limit, feed_tags=feed_tags, tlp_color=tlp_color, next_page_token=page_token
             )
-
-            # Fetch this indicator type
-            fetched_count = fetch_indicator_type(
+        else:
+            fetched_count, next_page_token = fetch_indicator_type(
                 client=client,
-                indicator_type=ind_type,
+                indicator_type=str(unit_type),
                 limit=type_limit,
                 start_time=start_time,
                 feed_tags=feed_tags,
                 tlp_color=tlp_color,
+                next_page_token=page_token,
             )
 
-            total_fetched += fetched_count
+        total_fetched += fetched_count
 
-            # Track unused quota for non-last types
-            if not is_last_type and fetched_count < limit_per_type:
-                remaining_quota += limit_per_type - fetched_count
+        # Track unused quota for non-last types
+        if not is_last_type and fetched_count < limit_per_type:
+            remaining_quota += limit_per_type - fetched_count
 
-            demisto.debug(
-                f"UNIT42FEED: Fetched {fetched_count}/{type_limit} {ind_type} indicators. "
-                f"Total: {total_fetched}, Unused quota: {remaining_quota}"
-            )
+        # The limit was hit but the API has more pages - resume this unit on the next fetch
+        if next_page_token:
+            pending_units.append({"type": unit_type, "page_token": next_page_token})
+
+        demisto.debug(
+            f"UNIT42FEED: Fetched {fetched_count}/{type_limit} {unit_type}. "
+            f"Total: {total_fetched}, Unused quota: {remaining_quota}"
+        )
+
+    if pending_units:
+        next_run = {"start_time": start_time, "pending_units": pending_units, "cycle_start_time": cycle_start_time}
+        demisto.info(
+            f"UNIT42FEED: Fetch limit reached with more data available. "
+            f"Next run will resume {len(pending_units)} pending type(s) from start_time {start_time}."
+        )
+    else:
+        # Store the cycle start time, when types finish at different times across resumed runs -
+        # this ensures the next full cycle starts from the original time so no indicators are missed.
+        next_run = {"last_successful_run": cycle_start_time}
 
     demisto.info(f"UNIT42FEED: Fetch complete. Total indicators: {total_fetched} (limit per type: {limit_per_type})")
 
-    return total_fetched
+    return total_fetched, next_run
 
 
 def get_indicators_command(client: Client, args: dict, feed_tags: list = [], tlp_color: str | None = None) -> CommandResults:
@@ -1233,9 +1299,6 @@ def main():  # pragma: no cover
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
-    if (arg_to_number(params.get("feedFetchInterval", "720")) or 720) < 720:
-        return_error("Feed Fetch Interval parameter must be set to at least 12 hours.")
-
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
 
@@ -1255,13 +1318,11 @@ def main():  # pragma: no cover
             # Indicators/threat objects are pushed to the server incrementally, page by page,
             # inside fetch_indicators (see fetch_indicator_type / fetch_threat_objects_with_limit)
             # to avoid holding the entire fetched dataset in memory at once.
-            total_fetched = fetch_indicators(client, params, now)
+            total_fetched, next_run = fetch_indicators(client, params, now)
             demisto.debug(f"UNIT42FEED_DEBUG: fetch_indicators fetched and pushed {total_fetched} indicators")
 
-            demisto.setLastRun({"last_successful_run": now.strftime(DATE_FORMAT)})
-            demisto.info(
-                f"The fetch-indicators command completed successfully. Next run will fetch from: {now.strftime(DATE_FORMAT)}"
-            )
+            demisto.setLastRun(next_run)
+            demisto.info(f"The fetch-indicators command completed successfully. Next run: {next_run}")
 
         elif command == "unit42-get-indicators":
             return_results(get_indicators_command(client, demisto.args()))
