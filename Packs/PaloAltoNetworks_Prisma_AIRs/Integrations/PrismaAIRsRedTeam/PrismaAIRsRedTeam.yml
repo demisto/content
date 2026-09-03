@@ -3120,13 +3120,4 @@ script:
   type: python
 tests:
 - PaloAltoNetworks_Prisma_AIRs_RedTeam_Prompts_Test
-marketplaces:
-- xsoar
-- marketplacev2
-- platform
-supportedModules:
-- cloud_runtime_security
-- xsiam
-- cloud
-- agentix
 fromversion: 6.10.0

@@ -32,12 +32,6 @@
         "marketplacev2",
         "platform"
     ],
-    "supportedModules": [
-        "cloud_runtime_security",
-        "xsiam",
-        "cloud",
-        "agentix"
-    ],
     "dependencies": {
         "CommonPlaybooks": {
             "mandatory": true
