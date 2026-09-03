@@ -4,6 +4,7 @@ import demistomock as demisto
 import pytest
 from Palo_Alto_Networks_WildFire_v2 import (
     NotFoundError,
+    clean_token,
     create_dbot_score_from_url_verdict,
     create_dbot_score_from_verdict,
     create_dbot_score_from_verdicts,
@@ -18,6 +19,7 @@ from Palo_Alto_Networks_WildFire_v2 import (
     prettify_url_verdict,
     prettify_verdict,
     prettify_verdicts,
+    resolve_token,
     run_polling_command,
     test_module as _test_module,
     wildfire_file_command,
@@ -765,6 +767,99 @@ def test_get_agent(api_key_source, is_xsiam_platform, is_version_ge_8, token, ex
 
     # Assert
     assert agent == expected_agent, f"Test failed for {test_id}"
+
+
+@pytest.mark.parametrize(
+    "raw_value, expected_token, test_id",
+    [
+        ("real-api-key", "real-api-key", "real_token_returned_as_is"),
+        ("  padded-api-key  ", "padded-api-key", "surrounding_whitespace_is_stripped"),
+        (None, "", "none_is_treated_as_no_token"),
+        ("", "", "empty_string_is_treated_as_no_token"),
+        ("   ", "", "whitespace_only_is_treated_as_no_token"),
+        ("****", "", "mask_placeholder_is_treated_as_no_token"),
+        ("*", "", "single_asterisk_mask_is_treated_as_no_token"),
+        ("  ****  ", "", "padded_mask_placeholder_is_treated_as_no_token"),
+        ("abc****", "abc****", "token_merely_containing_asterisks_is_kept"),
+    ],
+)
+def test_clean_token(raw_value, expected_token, test_id):
+    """
+    Given:
+        - A raw secret value read from the instance configuration.
+    When:
+        - clean_token() is called.
+    Then:
+        - Blank values and asterisk-only mask placeholders normalize to an empty string,
+          while real tokens are returned stripped.
+    """
+    assert clean_token(raw_value) == expected_token, f"Test failed for {test_id}"
+
+
+@pytest.mark.parametrize(
+    "params, expected_token, test_id",
+    [
+        ({"token": "token-param-key"}, "token-param-key", "token_param_is_used"),
+        ({"credentials": {"password": "credentials-key"}}, "credentials-key", "credentials_password_is_used"),
+        (
+            {"token": "token-param-key", "credentials": {"password": "credentials-key"}},
+            "token-param-key",
+            "token_param_takes_priority_over_credentials",
+        ),
+        # The bug: a masked/blank 'token' param must not shadow a real credentials password.
+        (
+            {"token": "****", "credentials": {"password": "credentials-key"}},
+            "credentials-key",
+            "masked_token_param_falls_back_to_credentials",
+        ),
+        (
+            {"token": "", "credentials": {"password": "credentials-key"}},
+            "credentials-key",
+            "empty_token_param_falls_back_to_credentials",
+        ),
+        # The bug: a masked credentials password must resolve to empty so the TIM license is used.
+        ({"token": "", "credentials": {"password": "****"}}, "", "masked_credentials_resolve_to_empty"),
+        ({"token": "****", "credentials": {"password": "****"}}, "", "both_masked_resolve_to_empty"),
+        ({}, "", "no_params_resolve_to_empty"),
+        ({"token": None, "credentials": None}, "", "none_params_resolve_to_empty"),
+    ],
+)
+def test_resolve_token(params, expected_token, test_id):
+    """
+    Given:
+        - Instance parameters holding the token in the 'token' field, the 'credentials'
+          password field, both, or neither - possibly as a mask placeholder.
+    When:
+        - resolve_token() is called.
+    Then:
+        - The real configured token is returned, masked/blank values are ignored, and an
+          empty string is returned when no real token exists.
+    """
+    assert resolve_token(params) == expected_token, f"Test failed for {test_id}"
+
+
+def test_main_falls_back_to_license_when_token_is_masked(mocker: MockerFixture):
+    """
+    Given:
+        - An instance configured with an asterisk mask placeholder instead of a real token.
+    When:
+        - Running main().
+    Then:
+        - The mask is not used as the API key, the TIM license token is fetched instead,
+          and it is the value passed to set_http_params.
+    """
+    license_token = "X" * 32
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(demisto, "params", return_value={"server": "https://test.com/", "token": "****"})
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.get_demisto_version", return_value={"platform": "xsoar"})
+    mock_get_license = mocker.patch.object(demisto, "getLicenseCustomField", return_value=license_token)
+    mock_set_http_params = mocker.patch("Palo_Alto_Networks_WildFire_v2.set_http_params")
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.test_module", return_value="ok")
+
+    main()
+
+    mock_get_license.assert_called()
+    assert mock_set_http_params.call_args[0][0] == license_token
 
 
 @pytest.mark.parametrize("platform", ["x2", "xsoar", "xsoar-hosted"])
