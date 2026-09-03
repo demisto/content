@@ -104,6 +104,10 @@ SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS = [2, 5, 15]
 # Statuses worth re-requesting at a smaller page size. Mirrors RetryPolicy.retryable_status_codes in
 # ContentClientApiModule; anything else (expired cursor 404, 401, 400) cannot be helped by shrinking.
 SPOTLIGHT_TRANSIENT_HTTP_STATUS_CODES = {408, 413, 425, 429, 500, 502, 503, 504}
+# Longest single blocking sleep in the long-running loop. The wait between cycles can be ~24h, and
+# a one-shot sleep of that length leaves the container unable to answer a shutdown request or
+# health check until it returns, so the wait is served in chunks of at most this many seconds.
+LONG_RUNNING_SLEEP_CHUNK_SECONDS = 60
 # Delay before each retry of a rejected XSIAM send. Back-to-back retries all fail to the same
 # gateway blip, so the attempts are spaced out to let it clear.
 XSIAM_SEND_RETRY_BACKOFF_SECONDS = 1
@@ -4200,9 +4204,12 @@ async def xsiam_api_call_async(
                         status_code = e.status
                         if e.status == 429:
                             await asyncio.sleep(1)
-                            attempt_num += 1
+                        attempt_num += 1
                         continue
                     else:
+                        # Clear any status carried over from an earlier attempt, so a 429 followed
+                        # by a 502 is not reported - or slept on - as though it were still a 429.
+                        status_code = None
                         # Only logged here: a retry may still succeed, and reporting every attempt
                         # to the health module turns a recovered blip into a red instance.
                         last_error = e
@@ -4211,8 +4218,6 @@ async def xsiam_api_call_async(
                             await asyncio.sleep(XSIAM_SEND_RETRY_BACKOFF_SECONDS)
 
         log_falcon_assets(f"received status code: {status_code}")
-        if status_code == 429:
-            await asyncio.sleep(1)
         attempt_num += 1
 
     if status_code != 200:
@@ -5627,7 +5632,14 @@ def long_running_spotlight_execution():
                 f"the {LONG_RUNNING_ASSETS_INTERVAL_MINUTES}-minute interval; starting the next cycle immediately.",
                 "info",
             )
-        time.sleep(sleep_seconds)
+        # Served in chunks rather than one long sleep: the wait can be ~24h, and a single
+        # time.sleep of that length would leave the container unresponsive to shutdown requests
+        # and health checks until it returned.
+        remaining = sleep_seconds
+        while remaining > 0:
+            chunk = min(remaining, LONG_RUNNING_SLEEP_CHUNK_SECONDS)
+            time.sleep(chunk)
+            remaining -= chunk
 
 
 def fetch_detections_by_product_type(
@@ -8344,6 +8356,14 @@ def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
 
 
 def module_test():
+    params = demisto.params()
+    if params.get("isFetchAssets") and params.get("longRunning"):
+        # Both collectors would fetch Spotlight into the same snapshot, racing each other over the
+        # record count. Refused here rather than left to the parameter help, which is easy to miss.
+        return (
+            "Error: 'Fetch assets' and 'Long running instance for Spotlight vulnerabilities' cannot both be enabled "
+            "on the same instance. Enable only one, and configure a separate instance if you also need CNAPP Alerts."
+        )
     try:
         get_token(new_token=True)
     except (ValueError, DemistoException, requests.exceptions.RequestException) as e:
@@ -8353,7 +8373,7 @@ def module_test():
             " correct, that the API credentials are valid, and that the server is reachable from your host"
             " (check network connectivity, DNS, and proxy settings)."
         )
-    if demisto.params().get("isFetch"):
+    if params.get("isFetch"):
         try:
             fetch_items(command="fetch-incidents")
         except ValueError:

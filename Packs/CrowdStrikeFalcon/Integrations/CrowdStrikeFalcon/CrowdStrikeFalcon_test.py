@@ -12058,19 +12058,46 @@ class TestLongRunningSpotlightExecution:
     """Tests for the opt-in long-running Spotlight fetch loop."""
 
     @staticmethod
-    def _run_loop(mocker, cycle_durations, fetch_side_effect=None):
+    def _run_loop(mocker, cycle_durations, fetch_side_effect=None, return_chunks=False):
         """Run the long-running loop for len(cycle_durations) cycles, then stop.
 
         The cycle period is a fixed 24 hours (LONG_RUNNING_ASSETS_INTERVAL_MINUTES) and is not
         configurable, so no interval parameter is set up here.
 
-        Returns (sleep_calls, mock_fetch, mock_cnapp, mock_log).
+        The loop serves each wait as several short ``time.sleep`` chunks, so the individual calls
+        are summed back into one total per cycle - the schedule is what these tests are about, not
+        how the wait is delivered. Pass ``return_chunks=True`` to inspect the raw chunks instead.
+
+        Returns (sleeps, mock_fetch, mock_cnapp, mock_log), where ``sleeps`` holds one total per
+        cycle, or every individual chunk when ``return_chunks`` is set.
         """
         from CrowdStrikeFalcon import long_running_spotlight_execution
 
         mocker.patch("CrowdStrikeFalcon.demisto.params", return_value={})
         mocker.patch("CrowdStrikeFalcon.demisto.error")
-        mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets")
+
+        cycle_totals: list[float] = []
+        chunks: list[float] = []
+        pending = [0.0]
+        cycles_started = [0]
+
+        def on_log(message, *_args, **_kwargs):
+            # The loop announces each cycle before fetching, which is the one unambiguous cycle
+            # boundary available: the previous cycle's wait has been fully served in chunks by
+            # now, so bank it. Counting monotonic calls would not work - a successful cycle reads
+            # the clock three times and a failed one twice. A cycle whose wait is zero banks 0.0,
+            # so the count of started cycles is tracked explicitly rather than inferred from
+            # whether any sleeping happened.
+            if not message.endswith("starting."):
+                return
+            if cycles_started[0]:
+                cycle_totals.append(pending[0])
+                pending[0] = 0.0
+            cycles_started[0] += 1
+            if len(cycle_totals) >= len(cycle_durations):
+                raise StopLoop
+
+        mock_log = mocker.patch("CrowdStrikeFalcon.log_falcon_assets", side_effect=on_log)
 
         # fetch_spotlight_assets is a coroutine function, so patching would normally build an
         # AsyncMock - that returns a coroutine and only raises side_effect when awaited, which never
@@ -12100,19 +12127,16 @@ class TestLongRunningSpotlightExecution:
 
         mocker.patch("CrowdStrikeFalcon.time.monotonic", side_effect=fake_monotonic)
 
-        sleep_calls: list[float] = []
-
         def fake_sleep(seconds):
-            sleep_calls.append(seconds)
-            if len(sleep_calls) >= len(cycle_durations):
-                raise StopLoop
+            chunks.append(seconds)
+            pending[0] += seconds
 
         mocker.patch("CrowdStrikeFalcon.time.sleep", side_effect=fake_sleep)
 
         with pytest.raises(StopLoop):
             long_running_spotlight_execution()
 
-        return sleep_calls, mock_fetch, mock_cnapp, mock_log
+        return (chunks if return_chunks else cycle_totals), mock_fetch, mock_cnapp, mock_log
 
     def test_runs_fetch_each_cycle(self, mocker):
         """
@@ -12265,6 +12289,82 @@ class TestLongRunningSpotlightExecution:
         sleeps, _fetch, _cnapp, _log = self._run_loop(mocker, cycle_durations=[one_hour])
 
         assert sleeps == [LONG_RUNNING_ASSETS_INTERVAL_MINUTES * 60 - one_hour]
+
+    def test_wait_is_broken_into_short_blocking_chunks(self, mocker):
+        """
+        Given: A finished cycle with a long wait ahead of it (the 24 hour cadence).
+        When: The loop waits for the next cycle.
+        Then: No single blocking sleep is long. A one-shot ``time.sleep`` of up to 24 hours leaves
+              the container unable to answer a shutdown request or health check for that whole
+              period, so the wait is served in short chunks instead.
+
+        The total wait is asserted separately below - splitting it must not change the cadence.
+        """
+        from CrowdStrikeFalcon import LONG_RUNNING_SLEEP_CHUNK_SECONDS
+
+        chunks, _fetch, _cnapp, _log = self._run_loop(mocker, cycle_durations=[0], return_chunks=True)
+
+        assert chunks, "The loop must actually wait between cycles"
+        assert (
+            max(chunks) <= LONG_RUNNING_SLEEP_CHUNK_SECONDS
+        ), f"No single blocking sleep may exceed {LONG_RUNNING_SLEEP_CHUNK_SECONDS}s, got {max(chunks)}s"
+
+    def test_chunked_wait_still_totals_the_full_interval(self, mocker):
+        """
+        Given: An instant cycle on the fixed 24 hour cadence.
+        When: The wait is served in chunks.
+        Then: The chunks add up to the full interval, so breaking the sleep up does not drift the
+              schedule or busy-loop.
+        """
+        from CrowdStrikeFalcon import LONG_RUNNING_ASSETS_INTERVAL_MINUTES
+
+        chunks, _fetch, _cnapp, _log = self._run_loop(mocker, cycle_durations=[0], return_chunks=True)
+
+        assert sum(chunks) == LONG_RUNNING_ASSETS_INTERVAL_MINUTES * 60
+
+
+class TestLongRunningAndAssetsFetchAreMutuallyExclusive:
+    """Enabling both the assets fetch and the long-running Spotlight loop on one instance makes
+    two collectors race for the same snapshot. The docs asked users not to do it; the code now
+    refuses it instead of relying on the user reading the parameter help.
+    """
+
+    @staticmethod
+    def _test_module_with(mocker, params: dict) -> str:
+        mocker.patch("CrowdStrikeFalcon.demisto.params", return_value=params)
+        mocker.patch("CrowdStrikeFalcon.get_token")
+        from CrowdStrikeFalcon import module_test
+
+        return module_test()
+
+    def test_rejects_enabling_both_collectors(self, mocker):
+        """
+        Given: An instance with both the assets fetch and the long-running loop enabled.
+        When: The configuration is tested.
+        Then: The test fails with a message naming both settings, so the conflict is caught at
+              configuration time rather than as a silently doubled snapshot.
+        """
+        message = self._test_module_with(mocker, {"isFetchAssets": True, "longRunning": True})
+
+        assert message != "ok"
+        assert "long" in message.lower(), f"The error must name the long-running setting, got: {message!r}"
+        assert "asset" in message.lower(), f"The error must name the assets fetch setting, got: {message!r}"
+
+    @pytest.mark.parametrize(
+        "params",
+        [
+            pytest.param({"isFetchAssets": True, "longRunning": False}, id="assets_fetch_only"),
+            pytest.param({"isFetchAssets": False, "longRunning": True}, id="long_running_only"),
+            pytest.param({"isFetchAssets": False, "longRunning": False}, id="neither"),
+        ],
+    )
+    def test_accepts_each_collector_on_its_own(self, mocker, params):
+        """
+        Given: Only one of the two collectors enabled, or neither.
+        When: The configuration is tested.
+        Then: It passes - the guard must reject only the genuine conflict.
+        """
+        assert self._test_module_with(mocker, params) == "ok"
 
 
 class TestXsiamSendFailureIsNotCounted:
@@ -12459,6 +12559,54 @@ class TestXsiamSendFailureIsNotCounted:
         await xsiam_api_call_async(xsiam_url="mock_url", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets")
 
         assert responses == [], "Both the throttled and the accepted response should have been consumed"
+
+    @pytest.mark.asyncio
+    async def test_429_then_502_does_not_carry_the_stale_429_forward(self, mocker):
+        """
+        Given: XSIAM answers 429 on the first attempt and 502 on every attempt after it.
+        When: xsiam_api_call_async runs out of attempts.
+        Then: The 502 attempts must not report the earlier 429.
+
+        ``status_code`` was only ever assigned on the accepted-status branch, so after a 429 it
+        stayed 429 for the rest of the loop. The bottom-of-loop ``if status_code == 429`` then
+        fired an extra throttling sleep on an attempt that had actually failed with 502, and
+        "received status code: 429" was logged for a 502 response.
+        """
+        from CrowdStrikeFalcon import xsiam_api_call_async
+
+        log = self._patch_xsiam_env(mocker)
+        mocker.patch("CrowdStrikeFalcon.asyncio.sleep", mocker.AsyncMock())
+
+        throttled = mocker.MagicMock()
+        throttled.status = 429
+        throttled.raise_for_status.side_effect = self._client_response_error(429, "Too Many Requests")
+
+        rejected = mocker.MagicMock()
+        rejected.status = 502
+        rejected.raise_for_status.side_effect = self._client_response_error(502, "Bad Gateway")
+
+        responses = [throttled, rejected, rejected]
+
+        def next_post_ctx(*_args, **_kwargs):
+            ctx = mocker.MagicMock()
+            ctx.__aenter__ = mocker.AsyncMock(return_value=responses.pop(0))
+            ctx.__aexit__ = mocker.AsyncMock(return_value=False)
+            return ctx
+
+        session = mocker.MagicMock()
+        session.post = mocker.MagicMock(side_effect=next_post_ctx)
+        session_ctx = mocker.MagicMock()
+        session_ctx.__aenter__ = mocker.AsyncMock(return_value=session)
+        session_ctx.__aexit__ = mocker.AsyncMock(return_value=False)
+        mocker.patch("CrowdStrikeFalcon.aiohttp.ClientSession", return_value=session_ctx)
+
+        with pytest.raises(DemistoException, match="502"):
+            await xsiam_api_call_async(xsiam_url="mock_url", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets")
+
+        logged = [call.args[0] for call in log.call_args_list]
+        assert not any(
+            "received status code: 429" in message for message in logged
+        ), f"A 502 attempt must not report the earlier 429, got: {logged}"
 
     @pytest.mark.asyncio
     async def test_health_error_states_the_reason_once(self, mocker):
