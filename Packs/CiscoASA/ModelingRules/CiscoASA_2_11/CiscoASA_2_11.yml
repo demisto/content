@@ -1,6 +1,5 @@
-fromversion: 8.11.0
-toversion: 8.14.0
-id: cisco_asa_modeling_rule
+fromversion: 8.15.0
+id: cisco_asa_ModelingRule
 name: Cisco ASA Modeling Rule
 rules: ''
 schema: ''
