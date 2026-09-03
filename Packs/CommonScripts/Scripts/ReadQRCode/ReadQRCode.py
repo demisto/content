@@ -65,8 +65,12 @@ def extract_info_from_qr_code(entry_id: str) -> CommandResults:
         if not any(text):
             return CommandResults(readable_output="No QR code was found in the image.")
         indicators = extract_indicators_from_text(text)
-    except (cv2.error, TypeError) as e:  # generic error raised by cv2
-        raise DemistoException("Error parsing file. Please make sure it is a valid image file.") from e
+    except (cv2.error, TypeError) as e:  # raised by cv2 when the file is not a valid/parseable image
+        demisto.debug(f"Could not parse file with entry ID {entry_id} as an image: {e}")
+        return CommandResults(
+            readable_output="The file could not be parsed as an image. No QR code could be read.",
+            entry_type=EntryType.WARNING,
+        )
     except ValueError as e:  # raised by demisto.getFilePath when the entry_id is not found
         demisto.debug(f"ValueError: {e}, {e.args}")
         raise DemistoException(f"Invalid entry ID: {entry_id=}") from e
