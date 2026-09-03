@@ -2051,6 +2051,826 @@ script:
       - contextPath: GCP.BigQuery.Datasets.catalogSource
         description: The origin of the dataset.
         type: String
+  - name: gcp-kms-key-rings-list
+    description: "Lists the Cloud KMS key rings in a given location, or across all locations. Required Permissions: cloudkms.keyRings.list."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: all_locations
+      description: Whether to return the key rings from all supported locations. When set to true, the location argument is ignored.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: limit
+      description: The maximum number of key rings to return per location. Valid range is 1-500.
+      required: false
+      defaultValue: '50'
+    - name: page_token
+      description: The token for the next page of results, used for pagination. Ignored when all_locations is set to true, because a page token is bound to a single location.
+      required: false
+    outputs:
+      - contextPath: GCP.KMS.KeyRings.Name
+        description: The ID of the key ring.
+        type: String
+      - contextPath: GCP.KMS.KeyRings.ResourceName
+        description: The full resource name of the key ring.
+        type: String
+      - contextPath: GCP.KMS.KeyRings.Project
+        description: The project that holds the key ring.
+        type: String
+      - contextPath: GCP.KMS.KeyRings.Location
+        description: The location of the key ring.
+        type: String
+      - contextPath: GCP.KMS.KeyRings.createTime
+        description: The time at which the key ring was created.
+        type: Date
+      - contextPath: GCP.KMS.KeyRingsNextToken
+        description: The token to pass as the page_token argument to retrieve the next page of key rings.
+        type: String
+  - name: gcp-kms-keys-list
+    description: "Lists the crypto keys of a given Cloud KMS key ring. Required Permissions: cloudkms.cryptoKeys.list."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto keys.
+      required: true
+    - name: key_state
+      description: 'The state of the primary crypto key version to filter by. Leave empty to return all keys.'
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - ENABLED
+      - DISABLED
+      - DESTROYED
+      - DESTROY_SCHEDULED
+      - PENDING_GENERATION
+      - PENDING_IMPORT
+      - IMPORT_FAILED
+    - name: limit
+      description: The maximum number of crypto keys to return. Valid range is 1-500.
+      required: false
+      defaultValue: '50'
+    - name: page_token
+      description: The token for the next page of results, used for pagination.
+      required: false
+    outputs:
+      - contextPath: GCP.KMS.CryptoKeys.Name
+        description: The ID of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.ResourceName
+        description: The full resource name of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Project
+        description: The project that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Location
+        description: The location of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.KeyRing
+        description: The key ring that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.purpose
+        description: The immutable purpose of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.createTime
+        description: The time at which the crypto key was created.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.nextRotationTime
+        description: The time at which the next scheduled rotation is due to run.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.rotationPeriod
+        description: The time period between automatic key rotations.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.labels
+        description: The labels with user-defined metadata.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.versionTemplate
+        description: The version template of the crypto key, containing the protectionLevel and algorithm fields.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.primary
+        description: The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeysNextToken
+        description: The token to use when requesting the next set of crypto keys.
+        type: String
+  - name: gcp-kms-keys-list-all
+    description: "Lists every crypto key across all key rings in a location, or across all locations. Required Permissions: cloudkms.keyRings.list, cloudkms.cryptoKeys.list."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: all_locations
+      description: Whether to return the crypto keys from all supported locations. When set to true, the location argument is ignored.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: key_state
+      description: 'Returns only keys whose primary crypto key version is in this state. Leave empty to return all keys.'
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - ENABLED
+      - DISABLED
+      - DESTROYED
+      - DESTROY_SCHEDULED
+      - PENDING_GENERATION
+      - PENDING_IMPORT
+      - IMPORT_FAILED
+    - name: limit
+      description: The maximum number of crypto keys to return per key ring. Valid range is 1-500. This command aggregates results across key rings and cannot be paged. If any key ring holds more keys than this limit, a truncation notice is returned. Use gcp-kms-keys-list to page through a single key ring.
+      required: false
+      defaultValue: '50'
+    outputs:
+      - contextPath: GCP.KMS.CryptoKeys.Name
+        description: The ID of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.ResourceName
+        description: The full resource name of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Project
+        description: The project that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Location
+        description: The location of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.KeyRing
+        description: The key ring that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.purpose
+        description: The immutable purpose of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.createTime
+        description: The time at which the crypto key was created.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.nextRotationTime
+        description: The time at which the next scheduled rotation is due to run.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.rotationPeriod
+        description: The period between automatic key rotations.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.labels
+        description: The labels with user-defined metadata.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.versionTemplate
+        description: The version template of the crypto key, containing the protectionLevel and algorithm fields.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.primary
+        description: The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields.
+        type: Unknown
+  - name: gcp-kms-key-get
+    description: "Returns the metadata of a given crypto key and its primary crypto key version. Required Permissions: cloudkms.cryptoKeys.get."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the crypto key to fetch.
+      required: true
+    outputs:
+      - contextPath: GCP.KMS.CryptoKeys.Name
+        description: The ID of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.ResourceName
+        description: The full resource name of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Project
+        description: The project that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Location
+        description: The location of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.KeyRing
+        description: The key ring that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.purpose
+        description: The immutable purpose of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.createTime
+        description: The time at which the crypto key was created.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.nextRotationTime
+        description: The time at which the next scheduled rotation is due to run.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.rotationPeriod
+        description: The time period between automatic key rotations.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.labels
+        description: The labels with user-defined metadata.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.versionTemplate
+        description: The version template of the crypto key, containing the protectionLevel and algorithm fields.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.primary
+        description: The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields.
+        type: Unknown
+  - name: gcp-kms-key-create
+    description: "Creates a new crypto key within a given key ring. Required Permissions: cloudkms.cryptoKeys.create."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring in which to create the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the crypto key to create. Must be unique within the key ring and match the regular expression [a-zA-Z0-9_-]{1,63}.
+      required: true
+    - name: purpose
+      description: The immutable cryptographic capability of the crypto key.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - ENCRYPT_DECRYPT
+      - ASYMMETRIC_SIGN
+      - ASYMMETRIC_DECRYPT
+      defaultValue: ENCRYPT_DECRYPT
+    - name: algorithm
+      description: The algorithm to use when creating a crypto key version based on this template.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - GOOGLE_SYMMETRIC_ENCRYPTION
+      - RSA_SIGN_PSS_2048_SHA256
+      - RSA_SIGN_PSS_3072_SHA256
+      - RSA_SIGN_PSS_4096_SHA256
+      - RSA_SIGN_PSS_4096_SHA512
+      - RSA_SIGN_PKCS1_2048_SHA256
+      - RSA_SIGN_PKCS1_3072_SHA256
+      - RSA_SIGN_PKCS1_4096_SHA256
+      - RSA_SIGN_PKCS1_4096_SHA512
+      - RSA_DECRYPT_OAEP_2048_SHA256
+      - RSA_DECRYPT_OAEP_3072_SHA256
+      - RSA_DECRYPT_OAEP_4096_SHA256
+      - RSA_DECRYPT_OAEP_4096_SHA512
+      - EC_SIGN_P256_SHA256
+      - EC_SIGN_P384_SHA384
+      defaultValue: GOOGLE_SYMMETRIC_ENCRYPTION
+    - name: protection_level
+      description: The protection level to use when creating a crypto key version based on this template.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - SOFTWARE
+      - HSM
+      defaultValue: SOFTWARE
+    - name: rotation_period
+      description: The time period between automatic key rotations, in seconds (for example, 7776000s). Must be between 24 hours and 876,000 hours. Supported only for keys whose purpose is ENCRYPT_DECRYPT.
+      required: false
+    - name: next_rotation_time
+      description: The time of the next scheduled rotation. Accepts an absolute timestamp in RFC3339 UTC "Zulu" format (for example, 2024-10-02T15:01:23Z) or a relative expression (for example, "in 30 days"). Supported only for keys whose purpose is ENCRYPT_DECRYPT.
+      required: false
+    - name: labels
+      description: The labels with user-defined metadata, in the format key=abc,value=123;key=def,value=456.
+      required: false
+    - name: skip_initial_version_creation
+      description: Whether to create the crypto key without an initial crypto key version. When set to true, a crypto key version must be created before the key can be used.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+      - contextPath: GCP.KMS.CryptoKeys.Name
+        description: The ID of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.ResourceName
+        description: The full resource name of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Project
+        description: The project that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Location
+        description: The location of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.KeyRing
+        description: The key ring that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.purpose
+        description: The immutable purpose of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.createTime
+        description: The time at which the crypto key was created.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.nextRotationTime
+        description: The time at which the next scheduled rotation is due to run.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.rotationPeriod
+        description: The period between automatic key rotations.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.labels
+        description: The labels with user-defined metadata.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.versionTemplate
+        description: The version template of the crypto key, containing the protectionLevel and algorithm fields.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.primary
+        description: The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields.
+        type: Unknown
+  - name: gcp-kms-key-update
+    description: "Updates the mutable fields of a given crypto key. Only the supplied fields are updated. Required Permissions: cloudkms.cryptoKeys.update."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the crypto key to update.
+      required: true
+    - name: labels
+      description: The labels with user-defined metadata, in the format key=abc,value=123;key=def,value=456.
+      required: false
+    - name: next_rotation_time
+      description: The time of the next scheduled rotation. Accepts an absolute timestamp in RFC3339 UTC "Zulu" format (for example, 2024-10-02T15:01:23Z) or a relative expression (for example, "in 30 days").
+      required: false
+    - name: rotation_period
+      description: The time period between automatic key rotations, in seconds (for example, 7776000s). Must be between 24 hours and 876,000 hours.
+      required: false
+    - name: algorithm
+      description: The algorithm to use when creating a crypto key version based on this template.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - GOOGLE_SYMMETRIC_ENCRYPTION
+      - RSA_SIGN_PSS_2048_SHA256
+      - RSA_SIGN_PSS_3072_SHA256
+      - RSA_SIGN_PSS_4096_SHA256
+      - RSA_SIGN_PSS_4096_SHA512
+      - RSA_SIGN_PKCS1_2048_SHA256
+      - RSA_SIGN_PKCS1_3072_SHA256
+      - RSA_SIGN_PKCS1_4096_SHA256
+      - RSA_SIGN_PKCS1_4096_SHA512
+      - RSA_DECRYPT_OAEP_2048_SHA256
+      - RSA_DECRYPT_OAEP_3072_SHA256
+      - RSA_DECRYPT_OAEP_4096_SHA256
+      - RSA_DECRYPT_OAEP_4096_SHA512
+      - EC_SIGN_P256_SHA256
+      - EC_SIGN_P384_SHA384
+    - name: protection_level
+      description: The protection level to use when creating a crypto key version based on this template.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - SOFTWARE
+      - HSM
+    outputs:
+      - contextPath: GCP.KMS.CryptoKeys.Name
+        description: The ID of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.ResourceName
+        description: The full resource name of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Project
+        description: The project that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Location
+        description: The location of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.KeyRing
+        description: The key ring that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.purpose
+        description: The immutable purpose of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.createTime
+        description: The time at which the crypto key was created.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.nextRotationTime
+        description: The time at which the next scheduled rotation is due to run.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.rotationPeriod
+        description: The time period between automatic key rotations.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.labels
+        description: The labels with user-defined metadata.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.versionTemplate
+        description: The version template of the crypto key, containing the protectionLevel and algorithm fields.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.primary
+        description: The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields.
+        type: Unknown
+  - name: gcp-kms-key-version-enable
+    description: "Enables a crypto key version of a given crypto key. Required Permissions: cloudkms.cryptoKeyVersions.update, cloudkms.cryptoKeys.get."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the crypto key to enable.
+      required: true
+    - name: crypto_key_version
+      description: The ID of the crypto key version to enable. Use the keyword default to target the primary crypto key version of the given crypto key.
+      required: false
+      defaultValue: default
+    outputs:
+      - contextPath: GCP.KMS.CryptoKeyVersions.name
+        description: The resource name of the crypto key version.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.state
+        description: The current state of the crypto key version.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.protectionLevel
+        description: The protection level describing how cryptographic operations are performed.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.algorithm
+        description: The algorithm that the crypto key version supports.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.createTime
+        description: The date and time when the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z).
+        type: Date
+  - name: gcp-kms-key-version-disable
+    description: "Disables a crypto key version of a given crypto key. Required Permissions: cloudkms.cryptoKeyVersions.update, cloudkms.cryptoKeys.get."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the crypto key to disable.
+      required: true
+    - name: crypto_key_version
+      description: The ID of the crypto key version to disable. Use the keyword default to target the primary crypto key version of the given crypto key.
+      required: false
+      defaultValue: default
+    outputs:
+      - contextPath: GCP.KMS.CryptoKeyVersions.name
+        description: The resource name of the crypto key version.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.state
+        description: The current state of the crypto key version.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.protectionLevel
+        description: The protection level describing how cryptographic operations are performed.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.algorithm
+        description: The algorithm that the crypto key version supports.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.createTime
+        description: The date and time when the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z).
+        type: Date
+  - name: gcp-kms-key-version-destroy
+    description: "Schedules a crypto key version for destruction. The key material is destroyed 24 hours later. Required Permissions: cloudkms.cryptoKeyVersions.destroy, cloudkms.cryptoKeys.get."
+    execution: true
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the crypto key to destroy.
+      required: true
+    - name: crypto_key_version
+      description: The ID of the crypto key version to destroy. Use the keyword default to target the primary crypto key version of the given crypto key.
+      required: false
+      defaultValue: default
+    outputs:
+      - contextPath: GCP.KMS.CryptoKeyVersions.name
+        description: The resource name of the crypto key version.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.state
+        description: The current state of the crypto key version.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.destroyTime
+        description: The date and time when the crypto key version material is scheduled to be destroyed. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z).
+        type: Date
+  - name: gcp-kms-key-version-restore
+    description: "Restores a crypto key version that is scheduled for destruction. Required Permissions: cloudkms.cryptoKeyVersions.restore, cloudkms.cryptoKeys.get."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the crypto key to restore.
+      required: true
+    - name: crypto_key_version
+      description: The ID of the crypto key version to restore. Use the keyword default to target the primary crypto key version of the given crypto key.
+      required: false
+      defaultValue: default
+    outputs:
+      - contextPath: GCP.KMS.CryptoKeyVersions.name
+        description: The resource name of the crypto key version.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.state
+        description: The current state of the crypto key version.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.protectionLevel
+        description: The protection level describing how cryptographic operations are performed.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.algorithm
+        description: The algorithm that the crypto key version supports.
+        type: String
+  - name: gcp-kms-public-key-get
+    description: "Returns the public key of a given asymmetric crypto key version. Required Permissions: cloudkms.cryptoKeyVersions.viewPublicKey."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the asymmetric crypto key.
+      required: true
+    - name: crypto_key_version
+      description: The ID of the crypto key version whose public key is returned.
+      required: false
+      defaultValue: '1'
+    outputs:
+      - contextPath: GCP.KMS.PublicKey.CryptoKey
+        description: The crypto key to which the public key belongs.
+        type: String
+      - contextPath: GCP.KMS.PublicKey.CryptoKeyVersion
+        description: The resource name of the crypto key version.
+        type: String
+      - contextPath: GCP.KMS.PublicKey.pem
+        description: The public key in PEM format.
+        type: String
+      - contextPath: GCP.KMS.PublicKey.pemCrc32c
+        description: The CRC32C checksum of the returned PEM public key.
+        type: String
+      - contextPath: GCP.KMS.PublicKey.algorithm
+        description: The algorithm of the public key.
+        type: String
+      - contextPath: GCP.KMS.PublicKey.name
+        description: The resource name of the crypto key version returned by the API.
+        type: String
+      - contextPath: GCP.KMS.PublicKey.protectionLevel
+        description: The protection level of the crypto key version.
+        type: String
+  - name: gcp-kms-symmetric-encrypt
+    description: "Encrypts data using a symmetric crypto key. Required Permissions: cloudkms.cryptoKeyVersions.useToEncrypt."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the crypto key to encrypt with.
+      required: true
+    - name: plaintext
+      description: The plain text to encrypt. Must be no larger than 64KB. Mutually exclusive with base64_plaintext and entry_id.
+      required: false
+      secret: true
+    - name: base64_plaintext
+      description: The Base64-encoded plain text to encrypt. Mutually exclusive with plaintext and entry_id.
+      required: false
+      secret: true
+    - name: entry_id
+      description: The War Room entry ID of the file to encrypt. Mutually exclusive with plaintext and base64_plaintext.
+      required: false
+    - name: additional_authenticated_data
+      description: The Base64-encoded additional authenticated data (AAD). The same value must be supplied when decrypting.
+      required: false
+    outputs:
+      - contextPath: GCP.KMS.SymmetricEncrypt.CryptoKey
+        description: The crypto key used for the encryption.
+        type: String
+      - contextPath: GCP.KMS.SymmetricEncrypt.ResourceName
+        description: The full resource name of the crypto key used for the encryption.
+        type: String
+      - contextPath: GCP.KMS.SymmetricEncrypt.ciphertext
+        description: The Base64-encoded encrypted ciphertext.
+        type: String
+      - contextPath: GCP.KMS.SymmetricEncrypt.ciphertextCrc32c
+        description: The CRC32C checksum of the returned ciphertext.
+        type: String
+      - contextPath: GCP.KMS.SymmetricEncrypt.verifiedPlaintextCrc32c
+        description: Whether the API verified the CRC32C checksum of the supplied plaintext.
+        type: Boolean
+      - contextPath: GCP.KMS.SymmetricEncrypt.name
+        description: The resource name of the crypto key version used for the encryption.
+        type: String
+      - contextPath: GCP.KMS.SymmetricEncrypt.protectionLevel
+        description: The protection level of the crypto key version used for the encryption.
+        type: String
+  - name: gcp-kms-symmetric-decrypt
+    description: "Decrypts data that was encrypted with a symmetric crypto key. Required Permissions: cloudkms.cryptoKeyVersions.useToDecrypt."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the crypto key to decrypt with.
+      required: true
+    - name: ciphertext
+      description: The Base64-encoded ciphertext to decrypt. Mutually exclusive with entry_id.
+      required: false
+      secret: true
+    - name: entry_id
+      description: The War Room entry ID of the file holding the raw cipher text bytes to decrypt. Mutually exclusive with ciphertext.
+      required: false
+    - name: additional_authenticated_data
+      description: The Base64-encoded additional authenticated data (AAD) that was supplied during encryption.
+      required: false
+    outputs:
+      - contextPath: GCP.KMS.SymmetricDecrypt.CryptoKey
+        description: The crypto key used for the decryption.
+        type: String
+      - contextPath: GCP.KMS.SymmetricDecrypt.ResourceName
+        description: The full resource name of the crypto key used for the decryption.
+        type: String
+      - contextPath: GCP.KMS.SymmetricDecrypt.Plaintext
+        description: The decrypted plain text. Omitted when the decrypted data is binary, in which case it is returned as a file instead.
+        type: String
+      - contextPath: GCP.KMS.SymmetricDecrypt.FullResponse
+        description: The full API response returned by the decrypt operation.
+        type: Unknown
+  - name: gcp-kms-asymmetric-encrypt
+    description: "Encrypts data with the public key of an asymmetric crypto key version. The encryption is performed locally using the retrieved public key. Required Permissions: cloudkms.cryptoKeyVersions.viewPublicKey."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the asymmetric crypto key to encrypt with.
+      required: true
+    - name: crypto_key_version
+      description: The ID of the crypto key version to encrypt with.
+      required: false
+      defaultValue: '1'
+    - name: plaintext
+      description: The plain text to encrypt. Mutually exclusive with base64_plaintext and entry_id.
+      required: false
+      secret: true
+    - name: base64_plaintext
+      description: The Base64-encoded plaintext to encrypt. Mutually exclusive with plaintext and entry_id.
+      required: false
+      secret: true
+    - name: entry_id
+      description: The War Room entry ID of the file to encrypt. Mutually exclusive with plaintext and base64_plaintext.
+      required: false
+    outputs:
+      - contextPath: GCP.KMS.AsymmetricEncrypt.CryptoKey
+        description: The crypto key used for the encryption.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricEncrypt.CryptoKeyVersion
+        description: The resource name of the crypto key version used for the encryption.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricEncrypt.Ciphertext
+        description: The Base64-encoded encrypted cipher text.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricEncrypt.pem
+        description: The public key, in PEM format, that was used for the encryption.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricEncrypt.algorithm
+        description: The algorithm of the public key that was used for the encryption.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricEncrypt.name
+        description: The resource name of the crypto key version returned by the API.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricEncrypt.protectionLevel
+        description: The protection level of the crypto key version used for the encryption.
+        type: String
+  - name: gcp-kms-asymmetric-decrypt
+    description: "Decrypts data using an asymmetric crypto key version. Required Permissions: cloudkms.cryptoKeyVersions.useToDecrypt."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the asymmetric crypto key to decrypt with.
+      required: true
+    - name: crypto_key_version
+      description: The ID of the crypto key version to decrypt with.
+      required: false
+      defaultValue: '1'
+    - name: ciphertext
+      description: The Base64-encoded cipher text to decrypt. Mutually exclusive with entry_id.
+      required: false
+      secret: true
+    - name: entry_id
+      description: The War Room entry ID of the file holding the raw cipher text bytes to decrypt. Mutually exclusive with ciphertext.
+      required: false
+    outputs:
+      - contextPath: GCP.KMS.AsymmetricDecrypt.CryptoKey
+        description: The crypto key used for the decryption.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricDecrypt.CryptoKeyVersion
+        description: The resource name of the crypto key version used for the decryption.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricDecrypt.Plaintext
+        description: The decrypted plain text. Omitted when the decrypted data is binary, in which case it is returned as a file instead.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricDecrypt.plaintextCrc32c
+        description: The CRC32C checksum of the returned plaintext.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricDecrypt.verifiedCiphertextCrc32c
+        description: Whether the API verified the CRC32C checksum of the supplied ciphertext.
+        type: Boolean
+      - contextPath: GCP.KMS.AsymmetricDecrypt.protectionLevel
+        description: The protection level of the crypto key version used for the decryption.
+        type: String
 
 # The command is currently unsupported.
 #  - name: gcp-iam-project-deny-policy-create

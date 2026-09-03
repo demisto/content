@@ -1675,3 +1675,498 @@ Removes an email from the BigQuery dataset policy. Required Permissions: bigquer
 | GCP.BigQuery.Datasets.resourceTags | String | The tags attached to this dataset. |
 | GCP.BigQuery.Datasets.storageBillingModel | String | The billing model that will be applied to the dataset. |
 | GCP.BigQuery.Datasets.catalogSource | String | The origin of the dataset. |
+
+### gcp-kms-key-rings-list
+
+***
+Lists the Cloud KMS key rings in a given location, or across all locations. Required Permissions: cloudkms.keyRings.list.
+
+#### Base Command
+
+`gcp-kms-key-rings-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| all_locations | Whether to return the key rings from all supported locations. When set to true, the location argument is ignored. Possible values are: true, false. Default is false. | Optional |
+| limit | The maximum number of key rings to return per location. Valid range 1-500. Default is 50. | Optional |
+| page_token | The token for the next page of results, used for pagination. Ignored when all_locations is set to true, because a page token is bound to a single location. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.KeyRings.Name | String | The ID of the key ring. |
+| GCP.KMS.KeyRings.ResourceName | String | The full resource name of the key ring. |
+| GCP.KMS.KeyRings.Project | String | The project that holds the key ring. |
+| GCP.KMS.KeyRings.Location | String | The location of the key ring. |
+| GCP.KMS.KeyRings.createTime | Date | The time at which the key ring was created. |
+| GCP.KMS.KeyRingsNextToken | String | The token to pass as the page_token argument to retrieve the next page of key rings. |
+
+### gcp-kms-keys-list
+
+***
+Lists the crypto keys of a given Cloud KMS key ring. Required Permissions: cloudkms.cryptoKeys.list.
+
+#### Base Command
+
+`gcp-kms-keys-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto keys. | Required |
+| key_state | Returns only keys whose primary crypto key version is in this state. Leave empty to return all keys. Possible values are: ENABLED, DISABLED, DESTROYED, DESTROY_SCHEDULED, PENDING_GENERATION, PENDING_IMPORT, IMPORT_FAILED. | Optional |
+| limit | The maximum number of crypto keys to return. Valid range 1-500. Default is 50. | Optional |
+| page_token | The token for the next page of results, used for pagination. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.CryptoKeys.Name | String | The ID of the crypto key. |
+| GCP.KMS.CryptoKeys.ResourceName | String | The full resource name of the crypto key. |
+| GCP.KMS.CryptoKeys.Project | String | The project that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Location | String | The location of the crypto key. |
+| GCP.KMS.CryptoKeys.KeyRing | String | The key ring that holds the crypto key. |
+| GCP.KMS.CryptoKeys.purpose | String | The immutable purpose of the crypto key. |
+| GCP.KMS.CryptoKeys.createTime | Date | The time at which the crypto key was created. |
+| GCP.KMS.CryptoKeys.nextRotationTime | Date | The time at which the next scheduled rotation is due to run. |
+| GCP.KMS.CryptoKeys.rotationPeriod | String | The period between automatic key rotations. |
+| GCP.KMS.CryptoKeys.labels | Unknown | The labels with user-defined metadata. |
+| GCP.KMS.CryptoKeys.versionTemplate | Unknown | The version template of the crypto key, containing the protectionLevel and algorithm fields. |
+| GCP.KMS.CryptoKeys.primary | Unknown | The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields. |
+| GCP.KMS.CryptoKeysNextToken | String | The token to use when requesting the next set of crypto keys. |
+
+### gcp-kms-keys-list-all
+
+***
+Lists every crypto key across all key rings in a location, or across all locations. Required Permissions: cloudkms.keyRings.list, cloudkms.cryptoKeys.list.
+
+#### Base Command
+
+`gcp-kms-keys-list-all`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| all_locations | Whether to return the crypto keys from all supported locations. When set to true, the location argument is ignored. Possible values are: true, false. Default is false. | Optional |
+| key_state | Returns only keys whose primary crypto key version is in this state. Leave empty to return all keys. Possible values are: ENABLED, DISABLED, DESTROYED, DESTROY_SCHEDULED, PENDING_GENERATION, PENDING_IMPORT, IMPORT_FAILED. | Optional |
+| limit | The maximum number of crypto keys to return per key ring. Valid range 1-500. This command aggregates results across key rings and cannot be paged. If any key ring holds more keys than this limit, a truncation notice is returned. Use gcp-kms-keys-list to page through a single key ring. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.CryptoKeys.Name | String | The ID of the crypto key. |
+| GCP.KMS.CryptoKeys.ResourceName | String | The full resource name of the crypto key. |
+| GCP.KMS.CryptoKeys.Project | String | The project that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Location | String | The location of the crypto key. |
+| GCP.KMS.CryptoKeys.KeyRing | String | The key ring that holds the crypto key. |
+| GCP.KMS.CryptoKeys.purpose | String | The immutable purpose of the crypto key. |
+| GCP.KMS.CryptoKeys.createTime | Date | The time at which the crypto key was created. |
+| GCP.KMS.CryptoKeys.nextRotationTime | Date | The time at which the next scheduled rotation is due to run. |
+| GCP.KMS.CryptoKeys.rotationPeriod | String | The period between automatic key rotations. |
+| GCP.KMS.CryptoKeys.labels | Unknown | The labels with user-defined metadata. |
+| GCP.KMS.CryptoKeys.versionTemplate | Unknown | The version template of the crypto key, containing the protectionLevel and algorithm fields. |
+| GCP.KMS.CryptoKeys.primary | Unknown | The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields. |
+
+### gcp-kms-key-get
+
+***
+Returns the metadata of a given crypto key and its primary crypto key version. Required Permissions: cloudkms.cryptoKeys.get.
+
+#### Base Command
+
+`gcp-kms-key-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the crypto key to fetch. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.CryptoKeys.Name | String | The ID of the crypto key. |
+| GCP.KMS.CryptoKeys.ResourceName | String | The full resource name of the crypto key. |
+| GCP.KMS.CryptoKeys.Project | String | The project that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Location | String | The location of the crypto key. |
+| GCP.KMS.CryptoKeys.KeyRing | String | The key ring that holds the crypto key. |
+| GCP.KMS.CryptoKeys.purpose | String | The immutable purpose of the crypto key. |
+| GCP.KMS.CryptoKeys.createTime | Date | The time at which the crypto key was created. |
+| GCP.KMS.CryptoKeys.nextRotationTime | Date | The time at which the next scheduled rotation is due to run. |
+| GCP.KMS.CryptoKeys.rotationPeriod | String | The period between automatic key rotations. |
+| GCP.KMS.CryptoKeys.labels | Unknown | The labels with user-defined metadata. |
+| GCP.KMS.CryptoKeys.versionTemplate | Unknown | The version template of the crypto key, containing the protectionLevel and algorithm fields. |
+| GCP.KMS.CryptoKeys.primary | Unknown | The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields. |
+
+### gcp-kms-key-create
+
+***
+Creates a new crypto key within a given key ring. Required Permissions: cloudkms.cryptoKeys.create.
+
+#### Base Command
+
+`gcp-kms-key-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring in which to create the crypto key. | Required |
+| crypto_key | The ID of the crypto key to create. Must be unique within the key ring and match the regular expression [a-zA-Z0-9_-]{1,63}. | Required |
+| purpose | The immutable cryptographic capability of the crypto key. Possible values are: ENCRYPT_DECRYPT, ASYMMETRIC_SIGN, ASYMMETRIC_DECRYPT. Default is ENCRYPT_DECRYPT. | Optional |
+| algorithm | The algorithm to use when creating a crypto key version based on this template. Possible values are: GOOGLE_SYMMETRIC_ENCRYPTION, RSA_SIGN_PSS_2048_SHA256, RSA_SIGN_PSS_3072_SHA256, RSA_SIGN_PSS_4096_SHA256, RSA_SIGN_PSS_4096_SHA512, RSA_SIGN_PKCS1_2048_SHA256, RSA_SIGN_PKCS1_3072_SHA256, RSA_SIGN_PKCS1_4096_SHA256, RSA_SIGN_PKCS1_4096_SHA512, RSA_DECRYPT_OAEP_2048_SHA256, RSA_DECRYPT_OAEP_3072_SHA256, RSA_DECRYPT_OAEP_4096_SHA256, RSA_DECRYPT_OAEP_4096_SHA512, EC_SIGN_P256_SHA256, EC_SIGN_P384_SHA384. Default is GOOGLE_SYMMETRIC_ENCRYPTION. | Optional |
+| protection_level | The protection level to use when creating a crypto key version based on this template. Possible values are: SOFTWARE, HSM. Default is SOFTWARE. | Optional |
+| rotation_period | The period between automatic key rotations, as a duration in seconds (for example, 7776000s). Must be between 24 hours and 876,000 hours. Supported only for keys whose purpose is ENCRYPT_DECRYPT. | Optional |
+| next_rotation_time | The time of the next scheduled rotation. Accepts an absolute timestamp in RFC3339 UTC "Zulu" format (for example, 2024-10-02T15:01:23Z) or a relative expression (for example, "in 30 days"). Supported only for keys whose purpose is ENCRYPT_DECRYPT. | Optional |
+| labels | The labels with user-defined metadata, in the format key=abc,value=123;key=def,value=456. | Optional |
+| skip_initial_version_creation | Whether to create the crypto key without an initial crypto key version. When set to true, a crypto key version must be created before the key can be used. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.CryptoKeys.Name | String | The ID of the crypto key. |
+| GCP.KMS.CryptoKeys.ResourceName | String | The full resource name of the crypto key. |
+| GCP.KMS.CryptoKeys.Project | String | The project that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Location | String | The location of the crypto key. |
+| GCP.KMS.CryptoKeys.KeyRing | String | The key ring that holds the crypto key. |
+| GCP.KMS.CryptoKeys.purpose | String | The immutable purpose of the crypto key. |
+| GCP.KMS.CryptoKeys.createTime | Date | The time at which the crypto key was created. |
+| GCP.KMS.CryptoKeys.nextRotationTime | Date | The time at which the next scheduled rotation is due to run. |
+| GCP.KMS.CryptoKeys.rotationPeriod | String | The period between automatic key rotations. |
+| GCP.KMS.CryptoKeys.labels | Unknown | The labels with user-defined metadata. |
+| GCP.KMS.CryptoKeys.versionTemplate | Unknown | The version template of the crypto key, containing the protectionLevel and algorithm fields. |
+| GCP.KMS.CryptoKeys.primary | Unknown | The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields. |
+
+### gcp-kms-key-update
+
+***
+Updates the mutable fields of a given crypto key. Only the supplied fields are updated. Required Permissions: cloudkms.cryptoKeys.update.
+
+#### Base Command
+
+`gcp-kms-key-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the crypto key to update. | Required |
+| labels | The labels with user-defined metadata, in the format key=abc,value=123;key=def,value=456. | Optional |
+| next_rotation_time | The time of the next scheduled rotation. Accepts an absolute timestamp in RFC3339 UTC "Zulu" format (for example, 2024-10-02T15:01:23Z) or a relative expression (for example, "in 30 days"). | Optional |
+| rotation_period | The period between automatic key rotations, as a duration in seconds (for example, 7776000s). Must be between 24 hours and 876,000 hours. | Optional |
+| algorithm | The algorithm to use when creating a crypto key version based on this template. Possible values are: GOOGLE_SYMMETRIC_ENCRYPTION, RSA_SIGN_PSS_2048_SHA256, RSA_SIGN_PSS_3072_SHA256, RSA_SIGN_PSS_4096_SHA256, RSA_SIGN_PSS_4096_SHA512, RSA_SIGN_PKCS1_2048_SHA256, RSA_SIGN_PKCS1_3072_SHA256, RSA_SIGN_PKCS1_4096_SHA256, RSA_SIGN_PKCS1_4096_SHA512, RSA_DECRYPT_OAEP_2048_SHA256, RSA_DECRYPT_OAEP_3072_SHA256, RSA_DECRYPT_OAEP_4096_SHA256, RSA_DECRYPT_OAEP_4096_SHA512, EC_SIGN_P256_SHA256, EC_SIGN_P384_SHA384. | Optional |
+| protection_level | The protection level to use when creating a crypto key version based on this template. Possible values are: SOFTWARE, HSM. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.CryptoKeys.Name | String | The ID of the crypto key. |
+| GCP.KMS.CryptoKeys.ResourceName | String | The full resource name of the crypto key. |
+| GCP.KMS.CryptoKeys.Project | String | The project that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Location | String | The location of the crypto key. |
+| GCP.KMS.CryptoKeys.KeyRing | String | The key ring that holds the crypto key. |
+| GCP.KMS.CryptoKeys.purpose | String | The immutable purpose of the crypto key. |
+| GCP.KMS.CryptoKeys.createTime | Date | The time at which the crypto key was created. |
+| GCP.KMS.CryptoKeys.nextRotationTime | Date | The time at which the next scheduled rotation is due to run. |
+| GCP.KMS.CryptoKeys.rotationPeriod | String | The period between automatic key rotations. |
+| GCP.KMS.CryptoKeys.labels | Unknown | The labels with user-defined metadata. |
+| GCP.KMS.CryptoKeys.versionTemplate | Unknown | The version template of the crypto key, containing the protectionLevel and algorithm fields. |
+| GCP.KMS.CryptoKeys.primary | Unknown | The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields. |
+
+### gcp-kms-key-version-enable
+
+***
+Enables a crypto key version of a given crypto key. Required Permissions: cloudkms.cryptoKeyVersions.update, cloudkms.cryptoKeys.get.
+
+#### Base Command
+
+`gcp-kms-key-version-enable`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the crypto key to enable. | Required |
+| crypto_key_version | The ID of the crypto key version to enable. Use the keyword default to target the primary crypto key version of the given crypto key. Default is default. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.CryptoKeyVersions.name | String | The resource name of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.state | String | The current state of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.protectionLevel | String | The protection level describing how cryptographic operations are performed. |
+| GCP.KMS.CryptoKeyVersions.algorithm | String | The algorithm that the crypto key version supports. |
+| GCP.KMS.CryptoKeyVersions.createTime | Date | The time at which the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z). |
+
+### gcp-kms-key-version-disable
+
+***
+Disables a crypto key version of a given crypto key. Required Permissions: cloudkms.cryptoKeyVersions.update, cloudkms.cryptoKeys.get.
+
+#### Base Command
+
+`gcp-kms-key-version-disable`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the crypto key to disable. | Required |
+| crypto_key_version | The ID of the crypto key version to disable. Use the keyword default to target the primary crypto key version of the given crypto key. Default is default. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.CryptoKeyVersions.name | String | The resource name of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.state | String | The current state of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.protectionLevel | String | The protection level describing how cryptographic operations are performed. |
+| GCP.KMS.CryptoKeyVersions.algorithm | String | The algorithm that the crypto key version supports. |
+| GCP.KMS.CryptoKeyVersions.createTime | Date | The time at which the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z). |
+
+### gcp-kms-key-version-destroy
+
+***
+Schedules a crypto key version for destruction. The key material is destroyed 24 hours later. Required Permissions: cloudkms.cryptoKeyVersions.destroy, cloudkms.cryptoKeys.get.
+
+#### Base Command
+
+`gcp-kms-key-version-destroy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the crypto key to destroy. | Required |
+| crypto_key_version | The ID of the crypto key version to destroy. Use the keyword default to target the primary crypto key version of the given crypto key. Default is default. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.CryptoKeyVersions.name | String | The resource name of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.state | String | The current state of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.destroyTime | Date | The time at which the crypto key version material is scheduled to be destroyed. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z). |
+
+### gcp-kms-key-version-restore
+
+***
+Restores a crypto key version that is scheduled for destruction. Required Permissions: cloudkms.cryptoKeyVersions.restore, cloudkms.cryptoKeys.get.
+
+#### Base Command
+
+`gcp-kms-key-version-restore`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the crypto key to restore. | Required |
+| crypto_key_version | The ID of the crypto key version to restore. Use the keyword default to target the primary crypto key version of the given crypto key. Default is default. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.CryptoKeyVersions.name | String | The resource name of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.state | String | The current state of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.protectionLevel | String | The protection level describing how cryptographic operations are performed. |
+| GCP.KMS.CryptoKeyVersions.algorithm | String | The algorithm that the crypto key version supports. |
+
+### gcp-kms-public-key-get
+
+***
+Returns the public key of a given asymmetric crypto key version. Required Permissions: cloudkms.cryptoKeyVersions.viewPublicKey.
+
+#### Base Command
+
+`gcp-kms-public-key-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the asymmetric crypto key. | Required |
+| crypto_key_version | The ID of the crypto key version whose public key is returned. Default is 1. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.PublicKey.CryptoKey | String | The crypto key to which the public key belongs. |
+| GCP.KMS.PublicKey.CryptoKeyVersion | String | The resource name of the crypto key version. |
+| GCP.KMS.PublicKey.pem | String | The public key in PEM format. |
+| GCP.KMS.PublicKey.pemCrc32c | String | The CRC32C checksum of the returned PEM public key. |
+| GCP.KMS.PublicKey.algorithm | String | The algorithm of the public key. |
+| GCP.KMS.PublicKey.name | String | The resource name of the crypto key version returned by the API. |
+| GCP.KMS.PublicKey.protectionLevel | String | The protection level of the crypto key version. |
+
+### gcp-kms-symmetric-encrypt
+
+***
+Encrypts data using a symmetric crypto key. Required Permissions: cloudkms.cryptoKeyVersions.useToEncrypt.
+
+#### Base Command
+
+`gcp-kms-symmetric-encrypt`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the crypto key to encrypt with. | Required |
+| plaintext | The plaintext to encrypt. Must be no larger than 64KiB. Mutually exclusive with base64_plaintext and entry_id. | Optional |
+| base64_plaintext | The Base64-encoded plaintext to encrypt. Mutually exclusive with plaintext and entry_id. | Optional |
+| entry_id | The War Room entry ID of the file to encrypt. Mutually exclusive with plaintext and base64_plaintext. | Optional |
+| additional_authenticated_data | The Base64-encoded additional authenticated data (AAD). The same value must be supplied when decrypting. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.SymmetricEncrypt.CryptoKey | String | The crypto key used for the encryption. |
+| GCP.KMS.SymmetricEncrypt.ResourceName | String | The full resource name of the crypto key used for the encryption. |
+| GCP.KMS.SymmetricEncrypt.ciphertext | String | The Base64-encoded encrypted ciphertext. |
+| GCP.KMS.SymmetricEncrypt.ciphertextCrc32c | String | The CRC32C checksum of the returned ciphertext. |
+| GCP.KMS.SymmetricEncrypt.verifiedPlaintextCrc32c | Boolean | Whether the API verified the CRC32C checksum of the supplied plaintext. |
+| GCP.KMS.SymmetricEncrypt.name | String | The resource name of the crypto key version used for the encryption. |
+| GCP.KMS.SymmetricEncrypt.protectionLevel | String | The protection level of the crypto key version used for the encryption. |
+
+### gcp-kms-symmetric-decrypt
+
+***
+Decrypts data that was encrypted with a symmetric crypto key. Required Permissions: cloudkms.cryptoKeyVersions.useToDecrypt.
+
+#### Base Command
+
+`gcp-kms-symmetric-decrypt`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the crypto key to decrypt with. | Required |
+| ciphertext | The Base64-encoded ciphertext to decrypt. Mutually exclusive with entry_id. | Optional |
+| entry_id | The War Room entry ID of the file holding the raw ciphertext bytes to decrypt. Mutually exclusive with ciphertext. | Optional |
+| additional_authenticated_data | The Base64-encoded additional authenticated data (AAD) that was supplied during encryption. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.SymmetricDecrypt.CryptoKey | String | The crypto key used for the decryption. |
+| GCP.KMS.SymmetricDecrypt.ResourceName | String | The full resource name of the crypto key used for the decryption. |
+| GCP.KMS.SymmetricDecrypt.Plaintext | String | The decrypted plaintext. Omitted when the decrypted data is binary, in which case it is returned as a file instead. |
+| GCP.KMS.SymmetricDecrypt.FullResponse | Unknown | The full API response returned by the decrypt operation. |
+
+### gcp-kms-asymmetric-encrypt
+
+***
+Encrypts data with the public key of an asymmetric crypto key version. The encryption is performed locally using the retrieved public key. Required Permissions: cloudkms.cryptoKeyVersions.viewPublicKey.
+
+#### Base Command
+
+`gcp-kms-asymmetric-encrypt`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the asymmetric crypto key to encrypt with. | Required |
+| crypto_key_version | The ID of the crypto key version to encrypt with. Default is 1. | Optional |
+| plaintext | The plaintext to encrypt. Mutually exclusive with base64_plaintext and entry_id. | Optional |
+| base64_plaintext | The Base64-encoded plaintext to encrypt. Mutually exclusive with plaintext and entry_id. | Optional |
+| entry_id | The War Room entry ID of the file to encrypt. Mutually exclusive with plaintext and base64_plaintext. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.AsymmetricEncrypt.CryptoKey | String | The crypto key used for the encryption. |
+| GCP.KMS.AsymmetricEncrypt.CryptoKeyVersion | String | The resource name of the crypto key version used for the encryption. |
+| GCP.KMS.AsymmetricEncrypt.Ciphertext | String | The Base64-encoded encrypted ciphertext. |
+| GCP.KMS.AsymmetricEncrypt.pem | String | The public key, in PEM format, that was used for the encryption. |
+| GCP.KMS.AsymmetricEncrypt.algorithm | String | The algorithm of the public key that was used for the encryption. |
+| GCP.KMS.AsymmetricEncrypt.name | String | The resource name of the crypto key version returned by the API. |
+| GCP.KMS.AsymmetricEncrypt.protectionLevel | String | The protection level of the crypto key version used for the encryption. |
+
+### gcp-kms-asymmetric-decrypt
+
+***
+Decrypts data using an asymmetric crypto key version. Required Permissions: cloudkms.cryptoKeyVersions.useToDecrypt.
+
+#### Base Command
+
+`gcp-kms-asymmetric-decrypt`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the asymmetric crypto key to decrypt with. | Required |
+| crypto_key_version | The ID of the crypto key version to decrypt with. Default is 1. | Optional |
+| ciphertext | The Base64-encoded ciphertext to decrypt. Mutually exclusive with entry_id. | Optional |
+| entry_id | The War Room entry ID of the file holding the raw ciphertext bytes to decrypt. Mutually exclusive with ciphertext. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.AsymmetricDecrypt.CryptoKey | String | The crypto key used for the decryption. |
+| GCP.KMS.AsymmetricDecrypt.CryptoKeyVersion | String | The resource name of the crypto key version used for the decryption. |
+| GCP.KMS.AsymmetricDecrypt.Plaintext | String | The decrypted plaintext. Omitted when the decrypted data is binary, in which case it is returned as a file instead. |
+| GCP.KMS.AsymmetricDecrypt.plaintextCrc32c | String | The CRC32C checksum of the returned plaintext. |
+| GCP.KMS.AsymmetricDecrypt.verifiedCiphertextCrc32c | Boolean | Whether the API verified the CRC32C checksum of the supplied ciphertext. |
+| GCP.KMS.AsymmetricDecrypt.protectionLevel | String | The protection level of the crypto key version used for the decryption. |
