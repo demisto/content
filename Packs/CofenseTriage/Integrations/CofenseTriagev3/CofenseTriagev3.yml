@@ -117,6 +117,13 @@ configuration:
   type: 13
   section: Collect
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -1845,7 +1852,7 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
-  dockerimage: demisto/python3:3.12.8.3720084
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   isremotesyncin: true
   runonce: false

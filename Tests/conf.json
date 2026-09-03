@@ -275,11 +275,6 @@
             "fromversion": "6.1.0"
         },
         {
-            "integrations": "Bitbucket",
-            "playbookID": "Test_Bitbucket",
-            "fromversion": "6.5.0"
-        },
-        {
             "playbookID": "MapRangeValuesTest"
         },
         {
@@ -5920,18 +5915,6 @@
             ]
         },
         {
-            "playbookID": "IPEnrichment-Test",
-            "integrations": [
-                "VirusTotal (API v3)",
-                "Palo Alto Networks Threat Vault v2",
-                "Cortex XDR - IR"
-            ],
-            "instance_names": [
-                "virus_total_v3"
-            ],
-            "fromversion": "8.0.0"
-        },
-        {
             "playbookID": "GetEndpointData-Test",
             "integrations": ["Active Directory Query v2", "CrowdstrikeFalcon", "FireEyeHX v2", "Cortex XDR - IR"],
             "instance_names": [
@@ -5950,6 +5933,7 @@
         }
     ],
     "skipped_tests": {
+        "Test XDR Playbook general commands": "xdr-get-endpoint-device-control-violations fails because no device-control violations exist on the XDR lab tenants — CRTX-261310",
         "Test - Netcraft": "Netcraft tenant is out of takedown credits, causing the test playbook to fail.",
         "Tanium Threat Response V2 Test": "The creds were expired, opened a ticket CRTX-155635",
         "ExabeamDataLake-test": "The credentials were expired, can't restore CRTX-149225",
@@ -6151,7 +6135,8 @@
         "ForcepointSecurityManagementCenter_test": "No instance",
         "AnsibleTower_Test_playbook": "Instance not working",
         "playbook_TrendmicroCAS_Test": "Authentication token not found",
-        "PaloAltoNetworks_DeviceSecurity-Test": "No instance"
+        "PaloAltoNetworks_DeviceSecurity-Test": "No instance",
+        "Test_Bitbucket": "No instance"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
