@@ -1,5 +1,6 @@
 id: ANYRUN Detonate File Linux for XDR
 version: 2
+fromversion: 6.0.0
 vcShouldKeepItemLegacyProdMachine: false
 aclrelations: []
 aclowner:
@@ -931,8 +932,6 @@ tasks:
         simple: JSON
       ioc_object:
         simple: ${ANYRUN.IOCDetails.ioc_object}
-      vendor_reliability:
-        simple: A - Completely reliable
     separatecontext: false
     continueonerrortype: ""
     view: |-

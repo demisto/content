@@ -1,5 +1,6 @@
 id: ANYRUN Detonate URL Windows for XDR
 version: 6
+fromversion: 6.0.0
 vcShouldKeepItemLegacyProdMachine: false
 aclrelations: []
 aclowner:
@@ -598,8 +599,6 @@ tasks:
         simple: JSON
       ioc_object:
         simple: ${ANYRUN.IOCDetails.ioc_object}
-      vendor_reliability:
-        simple: A - Completely reliable
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -810,7 +809,7 @@ inputs:
   playbookInputQuery: null
 - key: opt_timeout
   value:
-    simple: "60"
+    simple: "120"
   required: false
   description: 'Timeout option. Size range: 10-660.'
   playbookInputQuery: null

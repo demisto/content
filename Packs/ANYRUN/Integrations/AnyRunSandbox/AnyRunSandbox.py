@@ -363,13 +363,13 @@ def create_indicators(report: dict, task_uuid: str, root_url: str) -> None:  # p
             "expiration_date": expiration_date,
             "comment": f"ANY.RUN Cloud Sandbox | https://app.{root_url}/tasks/{task_uuid}",
             "reputation": xdr_reputation,
-            "reliability": "A - Completely reliable",
+            "reliability": "A",
             "class": _xdr_indicator_class,
             "vendors": [
                 {
                     "vendor_name": "ANY.RUN",
-                    "reputation": "GOOD",
-                    "reliability": "A - Completely reliable",
+                    "reputation": xdr_reputation,
+                    "reliability": "A",
                 }
             ],
         }
