@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: MicrosoftNPS_ModelingRule
+name: MicrosoftNPS Modeling Rule
+rules: ''
+schema: ''
+tags: Microsoft NPS
+supportedModules:
+- xsiam

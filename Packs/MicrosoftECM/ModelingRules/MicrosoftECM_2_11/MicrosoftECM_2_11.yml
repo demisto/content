@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: MicrosoftECM_ModelingRule
+name: MicrosoftECM Modeling Rule
+rules: ''
+schema: ''
+tags: Microsoft System Center Configuration Manager sccm
+supportedModules:
+- xsiam
