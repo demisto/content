@@ -3540,16 +3540,16 @@ script:
       required: true
     outputs:
     - contextPath: GCP.Compute.Addresses.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique identifier for the resource, defined by the server.
       type: string
     - contextPath: GCP.Compute.Addresses.creationTimestamp
-      description: The creation timestamp in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The creation timestamp in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Addresses.name
       description: The name of the resource.
       type: string
     - contextPath: GCP.Compute.Addresses.description
-      description: An optional description of this resource.
+      description: The optional description of this resource.
       type: string
     - contextPath: GCP.Compute.Addresses.address
       description: The static IP address represented by this resource.
@@ -3558,7 +3558,7 @@ script:
       description: The prefix length if the resource represents an IP range.
       type: number
     - contextPath: GCP.Compute.Addresses.status
-      description: 'The status of the address, which can be one of RESERVING, RESERVED, or IN_USE.'
+      description: 'The status of the address. Possible values are RESERVING, RESERVED, or IN_USE.'
       type: string
     - contextPath: GCP.Compute.Addresses.region
       description: The URL of the region where a regional address resides.
@@ -3567,10 +3567,10 @@ script:
       description: The URLs of the resources that are using this address.
       type: string
     - contextPath: GCP.Compute.Addresses.networkTier
-      description: 'The networking tier used for configuring this address, which can be PREMIUM or STANDARD.'
+      description: 'The networking tier used for configuring this address. Possible values are PREMIUM or STANDARD.'
       type: string
     - contextPath: GCP.Compute.Addresses.addressType
-      description: 'The type of address to reserve, either INTERNAL or EXTERNAL.'
+      description: 'The type of address to reserve. Possible values are INTERNAL or EXTERNAL.'
       type: string
     - contextPath: GCP.Compute.Addresses.purpose
       description: The purpose of this resource, which can be used for network load balancing or other purposes.
@@ -3585,7 +3585,7 @@ script:
       description: The labels applied to this resource. These can only be added or modified by the setLabels method.
       type: Unknown
     - contextPath: GCP.Compute.Addresses.labelFingerprint
-      description: A fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels.
+      description: The fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels.
       type: string
     - contextPath: GCP.Compute.Addresses.network
       description: The URL of the network in which to reserve the address.
@@ -3613,26 +3613,26 @@ script:
       description: The name of the region for this request.
       required: true
     - name: limit
-      description: 'The maximum number of results to return. Acceptable values are 1 to 500, inclusive.'
+      description: 'The maximum number of results to return, ranging from 1 to 500.'
       defaultValue: '50'
     - name: filter
-      description: A filter expression that filters resources listed in the response.
+      description: The filter expression that filters resources listed in the response.
     - name: order_by
       description: The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name.
     - name: next_token
       description: The token for the next set of items to return, used for pagination. Set this to the value of GCP.Compute.AddressesNextToken returned by a previous list request.
     outputs:
     - contextPath: GCP.Compute.Addresses.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique identifier for the resource, defined by the server.
       type: string
     - contextPath: GCP.Compute.Addresses.creationTimestamp
-      description: The creation timestamp in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The creation timestamp in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Addresses.name
       description: The name of the resource.
       type: string
     - contextPath: GCP.Compute.Addresses.description
-      description: An optional description of this resource.
+      description: The optional description of this resource.
       type: string
     - contextPath: GCP.Compute.Addresses.address
       description: The static IP address represented by this resource.
@@ -3641,7 +3641,7 @@ script:
       description: The prefix length if the resource represents an IP range.
       type: number
     - contextPath: GCP.Compute.Addresses.status
-      description: 'The status of the address, which can be one of RESERVING, RESERVED, or IN_USE.'
+      description: 'The status of the address. Possible values are RESERVING, RESERVED, or IN_USE.'
       type: string
     - contextPath: GCP.Compute.Addresses.region
       description: The URL of the region where a regional address resides.
@@ -3650,10 +3650,10 @@ script:
       description: The URLs of the resources that are using this address.
       type: string
     - contextPath: GCP.Compute.Addresses.networkTier
-      description: 'The networking tier used for configuring this address, which can be PREMIUM or STANDARD.'
+      description: 'The networking tier used for configuring this address. Possible values are PREMIUM or STANDARD.'
       type: string
     - contextPath: GCP.Compute.Addresses.addressType
-      description: 'The type of address to reserve, either INTERNAL or EXTERNAL.'
+      description: 'The type of address to reserve. Possible values are INTERNAL or EXTERNAL.'
       type: string
     - contextPath: GCP.Compute.Addresses.purpose
       description: The purpose of this resource, which can be used for network load balancing or other purposes.
@@ -3662,7 +3662,7 @@ script:
       description: The URL of the subnetwork in which to reserve the address.
       type: string
     - contextPath: GCP.Compute.Addresses.ipVersion
-      description: The IP version used by this address. Can be IPV4 or IPV6.
+      description: The IP version used by this address. Possible values are IPV4 or IPV6.
       type: string
     - contextPath: GCP.Compute.Addresses.ipv6EndpointType
       description: The endpoint type of this address, which can be VM or NETLB. Used to decide which type of endpoint this address can be used for after the external IPv6 address reservation.
@@ -3671,7 +3671,7 @@ script:
       description: The labels applied to this resource. These can only be added or modified by the setLabels method.
       type: Unknown
     - contextPath: GCP.Compute.Addresses.labelFingerprint
-      description: A fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels.
+      description: The fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels.
       type: string
     - contextPath: GCP.Compute.Addresses.network
       description: The URL of the network in which to reserve the address.
@@ -3696,26 +3696,26 @@ script:
       required: false
       required:platform: true
     - name: limit
-      description: 'The maximum number of results to return. Acceptable values are 1 to 500, inclusive.'
+      description: 'The maximum number of results to return, ranging from 1 to 500.'
       defaultValue: '50'
     - name: filter
-      description: A filter expression that filters resources listed in the response.
+      description: The filter expression that filters resources listed in the response.
     - name: order_by
       description: The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name.
     - name: next_token
       description: The token for the next set of items to return, used for pagination. Set this to the value of GCP.Compute.AggregatedAddressesNextToken returned by a previous list request.
     outputs:
     - contextPath: GCP.Compute.Addresses.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique identifier for the resource, defined by the server.
       type: string
     - contextPath: GCP.Compute.Addresses.creationTimestamp
-      description: The creation timestamp in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The creation timestamp in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Addresses.name
       description: The name of the resource.
       type: string
     - contextPath: GCP.Compute.Addresses.description
-      description: An optional description of this resource.
+      description: The optional description of this resource.
       type: string
     - contextPath: GCP.Compute.Addresses.address
       description: The static IP address represented by this resource.
@@ -3724,7 +3724,7 @@ script:
       description: The prefix length if the resource represents an IP range.
       type: number
     - contextPath: GCP.Compute.Addresses.status
-      description: 'The status of the address, which can be one of RESERVING, RESERVED, or IN_USE.'
+      description: 'The status of the address. Possible values are RESERVING, RESERVED, or IN_USE.'
       type: string
     - contextPath: GCP.Compute.Addresses.region
       description: The URL of the region where a regional address resides.
@@ -3733,10 +3733,10 @@ script:
       description: The URLs of the resources that are using this address.
       type: string
     - contextPath: GCP.Compute.Addresses.networkTier
-      description: 'The networking tier used for configuring this address, which can be PREMIUM or STANDARD.'
+      description: 'The networking tier used for configuring this address. Possible values are PREMIUM or STANDARD.'
       type: string
     - contextPath: GCP.Compute.Addresses.addressType
-      description: 'The type of address to reserve, either INTERNAL or EXTERNAL.'
+      description: 'The type of address to reserve. Possible values are INTERNAL or EXTERNAL.'
       type: string
     - contextPath: GCP.Compute.Addresses.purpose
       description: The purpose of this resource, which can be used for network load balancing or other purposes.
@@ -3745,7 +3745,7 @@ script:
       description: The URL of the subnetwork in which to reserve the address.
       type: string
     - contextPath: GCP.Compute.Addresses.ipVersion
-      description: The IP version used by this address. Can be IPV4 or IPV6.
+      description: The IP version used by this address. Possible values are IPV4 or IPV6.
       type: string
     - contextPath: GCP.Compute.Addresses.ipv6EndpointType
       description: The endpoint type of this address, which can be VM or NETLB. Used to decide which type of endpoint this address can be used for after the external IPv6 address reservation.
@@ -3754,7 +3754,7 @@ script:
       description: The labels applied to this resource. These can only be added or modified by the setLabels method.
       type: Unknown
     - contextPath: GCP.Compute.Addresses.labelFingerprint
-      description: A fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels.
+      description: The fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels.
       type: string
     - contextPath: GCP.Compute.Addresses.network
       description: The URL of the network in which to reserve the address.
@@ -3785,7 +3785,7 @@ script:
       description: The name of the address resource to create.
       required: true
     - name: description
-      description: An optional description of this resource.
+      description: The optional description of this resource.
     - name: address
       description: The static IP address to reserve. If not specified, an unused ephemeral IP address is assigned.
     - name: prefix_length
@@ -3810,7 +3810,7 @@ script:
       description: The URL of the network in which to reserve the address.
     outputs:
     - contextPath: GCP.Compute.Operations.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique identifier for the resource, defined by the server.
       type: string
     - contextPath: GCP.Compute.Operations.name
       description: The name of the resource.
@@ -3831,13 +3831,13 @@ script:
       description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
       type: string
     - contextPath: GCP.Compute.Operations.statusMessage
-      description: An optional textual description of the current status of the operation.
+      description: The optional textual description of the current status of the operation.
       type: string
     - contextPath: GCP.Compute.Operations.user
       description: The user who requested the operation, for example, EMAILADDRESS.
       type: string
     - contextPath: GCP.Compute.Operations.progress
-      description: An optional progress indicator that ranges from 0 to 100.
+      description: The optional progress indicator, ranging from 0 to 100.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
       description: The time the operation was requested, in RFC3339 text format.
@@ -3867,7 +3867,7 @@ script:
       description: The server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.description
-      description: A textual description of the operation, which is set when the operation is created.
+      description: The textual description of the operation, which is set when the operation is created.
       type: string
     - contextPath: GCP.Compute.Operations.kind
       description: The type of the resource. Always compute#operation for Operation resources.
@@ -3888,7 +3888,7 @@ script:
       required: true
     outputs:
     - contextPath: GCP.Compute.Operations.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique identifier for the resource, defined by the server.
       type: string
     - contextPath: GCP.Compute.Operations.name
       description: The name of the resource.
@@ -3909,13 +3909,13 @@ script:
       description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
       type: string
     - contextPath: GCP.Compute.Operations.statusMessage
-      description: An optional textual description of the current status of the operation.
+      description: The optional textual description of the current status of the operation.
       type: string
     - contextPath: GCP.Compute.Operations.user
       description: The user who requested the operation, for example, EMAILADDRESS.
       type: string
     - contextPath: GCP.Compute.Operations.progress
-      description: An optional progress indicator that ranges from 0 to 100.
+      description: The optional progress indicator, ranging from 0 to 100.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
       description: The time the operation was requested, in RFC3339 text format.
@@ -3945,7 +3945,7 @@ script:
       description: The server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.description
-      description: A textual description of the operation, which is set when the operation is created.
+      description: The textual description of the operation, which is set when the operation is created.
       type: string
     - contextPath: GCP.Compute.Operations.kind
       description: The type of the resource. Always compute#operation for Operation resources.
@@ -3962,16 +3962,16 @@ script:
       required: true
     outputs:
     - contextPath: GCP.Compute.Addresses.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique identifier for the resource, defined by the server.
       type: string
     - contextPath: GCP.Compute.Addresses.creationTimestamp
-      description: The creation timestamp in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The creation timestamp in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Addresses.name
       description: The name of the resource.
       type: string
     - contextPath: GCP.Compute.Addresses.description
-      description: An optional description of this resource.
+      description: The optional description of this resource.
       type: string
     - contextPath: GCP.Compute.Addresses.address
       description: The static IP address represented by this resource.
@@ -3980,16 +3980,16 @@ script:
       description: The prefix length if the resource represents an IP range.
       type: number
     - contextPath: GCP.Compute.Addresses.status
-      description: 'The status of the address, which can be one of RESERVING, RESERVED, or IN_USE.'
+      description: 'The status of the address. Possible values are RESERVING, RESERVED, or IN_USE.'
       type: string
     - contextPath: GCP.Compute.Addresses.users
       description: The URLs of the resources that are using this address.
       type: string
     - contextPath: GCP.Compute.Addresses.networkTier
-      description: 'The networking tier used for configuring this address, which can be PREMIUM or STANDARD.'
+      description: 'The networking tier used for configuring this address. Possible values are PREMIUM or STANDARD.'
       type: string
     - contextPath: GCP.Compute.Addresses.addressType
-      description: 'The type of address to reserve, either INTERNAL or EXTERNAL.'
+      description: 'The type of address to reserve. Possible values are INTERNAL or EXTERNAL.'
       type: string
     - contextPath: GCP.Compute.Addresses.purpose
       description: The purpose of this resource, which can be used for network load balancing or other purposes.
@@ -4004,7 +4004,7 @@ script:
       description: The labels applied to this resource. These can only be added or modified by the setLabels method.
       type: Unknown
     - contextPath: GCP.Compute.Addresses.labelFingerprint
-      description: A fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels.
+      description: The fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels.
       type: string
     - contextPath: GCP.Compute.Addresses.network
       description: The URL of the network in which to reserve the address.
@@ -4029,26 +4029,26 @@ script:
       required: false
       required:platform: true
     - name: limit
-      description: 'The maximum number of results to return. Acceptable values are 1 to 500, inclusive.'
+      description: 'The maximum number of results to return, ranging from 1 to 500.'
       defaultValue: '50'
     - name: filter
-      description: A filter expression that filters resources listed in the response.
+      description: The filter expression that filters resources listed in the response.
     - name: order_by
       description: The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name.
     - name: next_token
       description: The token for the next set of items to return, used for pagination. Set this to the value of GCP.Compute.GlobalAddressesNextToken returned by a previous list request.
     outputs:
     - contextPath: GCP.Compute.Addresses.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique identifier for the resource, defined by the server.
       type: string
     - contextPath: GCP.Compute.Addresses.creationTimestamp
-      description: The creation timestamp in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The creation timestamp in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Addresses.name
       description: The name of the resource.
       type: string
     - contextPath: GCP.Compute.Addresses.description
-      description: An optional description of this resource.
+      description: The optional description of this resource.
       type: string
     - contextPath: GCP.Compute.Addresses.address
       description: The static IP address represented by this resource.
@@ -4057,16 +4057,16 @@ script:
       description: The prefix length if the resource represents an IP range.
       type: number
     - contextPath: GCP.Compute.Addresses.status
-      description: 'The status of the address, which can be one of RESERVING, RESERVED, or IN_USE.'
+      description: 'The status of the address. Possible values are RESERVING, RESERVED, or IN_USE.'
       type: string
     - contextPath: GCP.Compute.Addresses.users
       description: The URLs of the resources that are using this address.
       type: string
     - contextPath: GCP.Compute.Addresses.networkTier
-      description: 'The networking tier used for configuring this address, which can be PREMIUM or STANDARD.'
+      description: 'The networking tier used for configuring this address. Possible values are PREMIUM or STANDARD.'
       type: string
     - contextPath: GCP.Compute.Addresses.addressType
-      description: 'The type of address to reserve, either INTERNAL or EXTERNAL.'
+      description: 'The type of address to reserve. Possible values are INTERNAL or EXTERNAL.'
       type: string
     - contextPath: GCP.Compute.Addresses.purpose
       description: The purpose of this resource, which can be used for network load balancing or other purposes.
@@ -4075,7 +4075,7 @@ script:
       description: The URL of the subnetwork in which to reserve the address.
       type: string
     - contextPath: GCP.Compute.Addresses.ipVersion
-      description: The IP version used by this address. Can be IPV4 or IPV6.
+      description: The IP version used by this address. Possible values are IPV4 or IPV6.
       type: string
     - contextPath: GCP.Compute.Addresses.ipv6EndpointType
       description: The endpoint type of this address, which can be VM or NETLB. Used to decide which type of endpoint this address can be used for after the external IPv6 address reservation.
@@ -4084,7 +4084,7 @@ script:
       description: The labels applied to this resource. These can only be added or modified by the setLabels method.
       type: Unknown
     - contextPath: GCP.Compute.Addresses.labelFingerprint
-      description: A fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels.
+      description: The fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels.
       type: string
     - contextPath: GCP.Compute.Addresses.network
       description: The URL of the network in which to reserve the address.
@@ -4112,7 +4112,7 @@ script:
       description: The name of the address resource to create.
       required: true
     - name: description
-      description: An optional description of this resource.
+      description: The optional description of this resource.
     - name: address
       description: The static IP address to reserve. If not specified, an unused ephemeral IP address is assigned.
     - name: prefix_length
@@ -4143,7 +4143,7 @@ script:
       description: The URL of the network in which to reserve the address.
     outputs:
     - contextPath: GCP.Compute.Operations.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique identifier for the resource, defined by the server.
       type: string
     - contextPath: GCP.Compute.Operations.name
       description: The name of the resource.
@@ -4164,13 +4164,13 @@ script:
       description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
       type: string
     - contextPath: GCP.Compute.Operations.statusMessage
-      description: An optional textual description of the current status of the operation.
+      description: The optional textual description of the current status of the operation.
       type: string
     - contextPath: GCP.Compute.Operations.user
       description: The user who requested the operation, for example, EMAILADDRESS.
       type: string
     - contextPath: GCP.Compute.Operations.progress
-      description: An optional progress indicator that ranges from 0 to 100.
+      description: The optional progress indicator, ranging from 0 to 100.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
       description: The time the operation was requested, in RFC3339 text format.
@@ -4197,7 +4197,7 @@ script:
       description: The server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.description
-      description: A textual description of the operation, which is set when the operation is created.
+      description: The textual description of the operation, which is set when the operation is created.
       type: string
     - contextPath: GCP.Compute.Operations.kind
       description: The type of the resource. Always compute#operation for Operation resources.
@@ -4215,7 +4215,7 @@ script:
       required: true
     outputs:
     - contextPath: GCP.Compute.Operations.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique identifier for the resource, defined by the server.
       type: string
     - contextPath: GCP.Compute.Operations.name
       description: The name of the resource.
@@ -4236,13 +4236,13 @@ script:
       description: 'The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE.'
       type: string
     - contextPath: GCP.Compute.Operations.statusMessage
-      description: An optional textual description of the current status of the operation.
+      description: The optional textual description of the current status of the operation.
       type: string
     - contextPath: GCP.Compute.Operations.user
       description: The user who requested the operation, for example, EMAILADDRESS.
       type: string
     - contextPath: GCP.Compute.Operations.progress
-      description: An optional progress indicator that ranges from 0 to 100.
+      description: The optional progress indicator, ranging from 0 to 100.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
       description: The time the operation was requested, in RFC3339 text format.
@@ -4269,7 +4269,7 @@ script:
       description: The server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.description
-      description: A textual description of the operation, which is set when the operation is created.
+      description: The textual description of the operation, which is set when the operation is created.
       type: string
     - contextPath: GCP.Compute.Operations.kind
       description: The type of the resource. Always compute#operation for Operation resources.

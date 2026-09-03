@@ -7229,7 +7229,6 @@ def test_handle_permission_error_for_address_commands(mocker, command_name, perm
     """
     from GCP import handle_permission_error
     from googleapiclient.errors import HttpError
-    import json
 
     mock_resp = mocker.MagicMock()
     mock_resp.status = 403
