@@ -6,6 +6,3 @@ rules: ''
 samples: ''
 supportedModules:
 - xsiam
-supportedFeatures:
-- supported_feature_a
-- supported_feature_e

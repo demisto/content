@@ -94,9 +94,6 @@ configuration:
   type: 19
   section: Collect
   advanced: true
-  supportedFeatures:
-  - supported_feature_d
-  - '  '
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -114,8 +111,7 @@ display: Cisco AMP v2
 name: AMPv2
 script:
   commands:
-  - supportedFeatures: []
-    arguments:
+  - arguments:
     - description: Page number to return.
       name: page
     - description: Number of results in a page. Maximum is 500.
@@ -1810,7 +1806,5 @@ script:
   subtype: python3
   type: python
 fromversion: 6.5.0
-supportedFeatures:
-- supported_feature_d
 tests:
 - No tests (auto formatted)

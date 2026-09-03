@@ -1,10 +1,8 @@
-fromversion: 8.14.0
+fromversion: 8.15.0
 id: Slack_ModelingRule
 name: Slack Modeling Rule
 rules: ''
 schema: ''
 supportedModules:
 - xsiam
-supportedFeatures:
-- supported_feature_a
 tags: 'slack'

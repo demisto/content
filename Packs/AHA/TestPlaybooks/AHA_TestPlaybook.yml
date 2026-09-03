@@ -546,6 +546,3 @@ inputs: []
 outputs: []
 quiet: true
 fromversion: 6.5.0
-supportedFeatures:
-- supported_feature_a
-- supported_feature_z

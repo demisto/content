@@ -174,8 +174,5 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.12.13.10116658
 fromversion: 6.5.0
-supportedFeatures:
-- supported_feature_a
-- supported_feature_d
 tests:
 - No tests (auto formatted)
