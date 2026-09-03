@@ -247,8 +247,6 @@ tasks:
         simple: ${inputs.obj_ext_extension}
       obj_ext_startfolder:
         simple: ${inputs.obj_ext_startfolder}
-      opt_automated_interactivity:
-        simple: ${inputs.opt_automated_interactivity}
       opt_network_connect:
         simple: ${inputs.opt_network_connect}
       opt_network_fakenet:
@@ -1337,12 +1335,6 @@ inputs:
   required: false
   description: 'Timeout option. Size range: 10-660.'
   playbookInputQuery: null
-- key: opt_automated_interactivity
-  value:
-    simple: "True"
-  required: false
-  description: Automated interactivity.
-  playbookInputQuery: null
 - key: obj_ext_cmd
   value: {}
   required: false
@@ -1390,7 +1382,6 @@ inputSections:
   - opt_network_residential_proxy_geo
   - opt_privacy_type
   - opt_timeout
-  - opt_automated_interactivity
   name: ANY.RUN Options
   description: ""
 - inputs:

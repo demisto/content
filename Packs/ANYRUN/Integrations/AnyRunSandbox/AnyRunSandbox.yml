@@ -430,9 +430,10 @@ script:
     - auto: PREDEFINED
       description: 'Automated interactivity.'
       name: opt_automated_interactivity
-      defaultValue: 'True'
+      defaultValue: 'False'
       required: false
       type: String
+      hidden: true
       predefined:
       - 'True'
       - 'False'
@@ -571,9 +572,10 @@ script:
     - auto: PREDEFINED
       description: 'Automated interactivity.'
       name: opt_automated_interactivity
-      defaultValue: 'True'
+      defaultValue: 'False'
       required: false
       type: String
+      hidden: true
       predefined:
       - 'True'
       - 'False'
@@ -685,9 +687,10 @@ script:
     - auto: PREDEFINED
       description: 'Automated interactivity.'
       name: opt_automated_interactivity
-      defaultValue: 'True'
+      defaultValue: 'False'
       required: false
       type: String
+      hidden: true
       predefined:
       - 'True'
       - 'False'
@@ -785,9 +788,10 @@ script:
     - auto: PREDEFINED
       description: 'Automated interactivity.'
       name: opt_automated_interactivity
-      defaultValue: 'True'
+      defaultValue: 'False'
       required: false
       type: String
+      hidden: true
       predefined:
       - 'True'
       - 'False'
