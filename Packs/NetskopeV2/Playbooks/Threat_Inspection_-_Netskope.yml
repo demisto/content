@@ -1,0 +1,396 @@
+id: Threat Inspection - Netskope
+version: -1
+name: Threat Inspection - Netskope
+description: |-
+  Submits a file for Netskope's sandbox scan (netskopev2-submit-file-scan /
+  netskopev2-get-scan-report) and polls for the result, since the scan is asynchronous and can
+  take a while to complete.
+
+  Only certain file types are accepted for inspection - this is enforced by
+  netskopev2-submit-file-scan itself (not just this playbook), per the API spec: the file must be
+  a password-protected .zip whose one member file is .exe, .pdf, .doc, .xls, .ppt, or .rtf. A
+  plain .zip (the container format) is also accepted directly. Anything else is rejected with a
+  clear error before an API call is even made.
+
+  Checks whether the EntryID input was provided, checks whether a Netskope integration instance is
+  enabled (matching any brand name containing "Netskope"), submits the file for scanning, then
+  uses the standard GenericPolling sub-playbook to repeatedly call netskopev2-get-scan-report
+  (every Interval minutes, up to Timeout minutes) until the scan's status stops being
+  "InProgress". The final poll's result is what's left in the Netskope.FileScanReport context
+  when this playbook finishes - no separate "final fetch" step is needed.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 511a0f96-4ada-4457-bb45-f18a886eb49a
+    type: start
+    task:
+      id: 511a0f96-4ada-4457-bb45-f18a886eb49a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: c64b8af2-0159-49fd-9168-f8600b11c99a
+    type: condition
+    task:
+      id: c64b8af2-0159-49fd-9168-f8600b11c99a
+      version: -1
+      name: Is Netskope enabled?
+      description: Verify that there is a valid, active Netskope integration instance enabled (matches any brand name containing "Netskope", so it works against a renamed dev/test instance too).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Netskope
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 000efa21-6436-4312-921c-7696789986b7
+    type: regular
+    task:
+      id: 000efa21-6436-4312-921c-7696789986b7
+      version: -1
+      name: Submit File for Scan
+      description: 'Submit the file for sandbox scanning. Rejected with an error if the file type is not one of: zip, exe, pdf, doc, xls, ppt, rtf.'
+      script: "|||netskopev2-submit-file-scan"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "8"
+    scriptarguments:
+      entry_id:
+        complex:
+          root: inputs.EntryID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: d020ea38-6dc5-41e5-9f9d-50db068cceb7
+    type: title
+    task:
+      id: d020ea38-6dc5-41e5-9f9d-50db068cceb7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 32cded99-c485-491d-aea7-dab82b7c4a7d
+    type: condition
+    task:
+      id: 32cded99-c485-491d-aea7-dab82b7c4a7d
+      version: -1
+      name: Check required inputs were provided
+      description: Check whether the necessary inputs were provided
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.EntryID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 6c8e0c2a-e72c-4c5b-8520-05a02b705d9f
+    type: playbook
+    task:
+      id: 6c8e0c2a-e72c-4c5b-8520-05a02b705d9f
+      version: -1
+      name: GenericPolling
+      description: Repeatedly call netskopev2-get-scan-report until the scan's status stops being "InProgress", or Timeout minutes elapse. The last poll's result is left in Netskope.FileScanReport for the rest of the playbook (or the caller) to read.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "9"
+    scriptarguments:
+      Ids:
+        complex:
+          root: Netskope.FileScan
+          accessor: jobid
+      PollingCommandName:
+        simple: netskopev2-get-scan-report
+      PollingCommandArgName:
+        simple: jobid
+      Interval:
+        complex:
+          root: inputs.Interval
+      Timeout:
+        complex:
+          root: inputs.Timeout
+      dt:
+        simple: Netskope.FileScanReport(val.status=='InProgress').jobid
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: b0a21afd-4de3-443e-89d0-470290ab24eb
+    type: regular
+    task:
+      id: b0a21afd-4de3-443e-89d0-470290ab24eb
+      version: -1
+      name: Get Final Scan Report
+      description: GenericPolling already stopped once the scan was no longer "InProgress", so this fetches one final, guaranteed-fresh copy of the completed report to build incident labels from.
+      script: "|||netskopev2-get-scan-report"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "10"
+    scriptarguments:
+      jobid:
+        complex:
+          root: Netskope.FileScan
+          accessor: jobid
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: df04b385-9c22-4962-89bd-57e1a518134c
+    type: regular
+    task:
+      id: df04b385-9c22-4962-89bd-57e1a518134c
+      version: -1
+      name: Build Incident Labels
+      description: Build the setIncident addLabels JSON string from the final scan report.
+      scriptName: NetskopeFileScanLabels
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "11"
+    scriptarguments:
+      scan_result:
+        complex:
+          root: Netskope.FileScanReport
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 173128e7-6175-4d04-8694-ef8cea91a5f7
+    type: regular
+    task:
+      id: 173128e7-6175-4d04-8694-ef8cea91a5f7
+      version: -1
+      name: Update Incident with Scan Result
+      description: Record the file scan result (job ID, status, verdict, MD5, SHA256) as labels directly on the incident.
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      "#none#":
+      - "4"
+    scriptarguments:
+      addLabels:
+        simple: ${NetskopeFileScanLabels.labels_json}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_3_yes": 0.53,
+      "2_4_#default#": 0.47,
+      "5_2_yes": 0.71,
+      "5_4_#default#": 0.53
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1450,
+        "width": 820,
+        "x": 450,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: EntryID
+  value:
+    simple: ${File.EntryID}
+  required: true
+  description: 'Entry ID of the file to submit for sandbox scanning. Defaults to ${File.EntryID} - the file already attached to the incident (via the War Room) - so no manual entry is needed if the incident has exactly one attached file. Must be one of: zip, exe, pdf, doc, xls, ppt, rtf (per the Netskope API spec, the file should be a password-protected .zip whose one member is exe/pdf/doc/xls/ppt/rtf - a plain .zip is also accepted directly). Anything else is rejected with a clear error by netskopev2-submit-file-scan itself.'
+  playbookInputQuery:
+- key: Interval
+  value:
+    simple: "1"
+  required: false
+  description: Minutes between each poll of the scan status.
+  playbookInputQuery:
+- key: Timeout
+  value:
+    simple: "15"
+  required: false
+  description: Maximum minutes to keep polling before giving up and resuming the playbook (sandbox scans can take a while).
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0
+issilent: false

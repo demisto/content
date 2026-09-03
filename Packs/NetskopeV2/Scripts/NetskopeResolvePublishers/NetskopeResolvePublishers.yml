@@ -1,0 +1,24 @@
+args:
+- description: Comma-separated publisher names to resolve to publisher_id (matched case-insensitively against netskopev2-list-publishers' publisher_name field). Not marked required at the platform level - an empty value is handled inside the script (sets ResolvedPublishers.error) rather than blocking the task from running at all.
+  name: publisher_names
+comment: netskopev2-list-publishers has no name filter argument, so this fetches all publishers and resolves each requested name to its publisher_id in Python, building the JSON array netskopev2-create-private-app/netskopev2-update-private-app expect for their "publishers" argument.
+commonfields:
+  id: NetskopeResolvePublishers
+  version: -1
+name: NetskopeResolvePublishers
+outputs:
+- contextPath: ResolvedPublishers.publishers_json
+  description: JSON array of {publisher_id, publisher_name} objects, ready to pass as the "publishers" argument. Empty if any name failed to resolve.
+  type: String
+- contextPath: ResolvedPublishers.error
+  description: Error message if any name didn't resolve (not found, or ambiguous multiple matches). Empty on success.
+  type: String
+script: ''
+type: python
+subtype: python3
+tags: []
+timeout: '0'
+dockerimage: demisto/python3:3.12.8.3296088
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

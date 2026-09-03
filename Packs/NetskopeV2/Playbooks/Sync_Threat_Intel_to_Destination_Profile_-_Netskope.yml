@@ -1,0 +1,632 @@
+id: Sync Threat Intel to Destination Profile - Netskope
+version: -1
+name: Sync Threat Intel to Destination Profile - Netskope
+description: |-
+  Meant to run periodically (attach it to an hourly scheduled Job in XSOAR) to keep a Netskope
+  Destination Profile in sync with indicators already ingested into XSOAR's own Threat Intel
+  Management.
+
+  ProfileName, MatchType, and IndicatorTypes are ordinary playbook inputs with defaults pre-filled
+  in the Inputs and Outputs panel (Test02 / regex / Domain,URL,IP,CIDR) - edit them there like any
+  other input, no task editing needed. IMPORTANT caveat: on this instance, a Job-triggered run of
+  this playbook does not apply a playbook input's default Value (confirmed empirically - the Job's
+  incident has no matching custom fields, and the declared input default isn't substituted for an
+  auto-triggered main playbook), so this run's inputs may come through empty even with defaults
+  set. To handle that, task #13 ("Were ... inputs provided?") checks for this and, if they're
+  empty, falls back to the exact same default values hardcoded directly in task #14 - so the sync
+  still runs correctly on a Job either way. If you change the defaults, update BOTH the input's
+  Value in this panel AND task #14's values argument, so manual runs and Job runs stay consistent.
+  All three inputs and both tasks write to the same SyncConfig context key that every downstream
+  task reads from.
+
+  Checks whether a Netskope integration instance is enabled (matching any brand name containing
+  "Netskope"), looks up the destination profile by name, then:
+  - if the profile exists: searches XSOAR indicators of the selected IndicatorTypes
+    (Domain/URL/IP/CIDR, customer-selectable), skips any value already present in the profile,
+    appends the rest in batches of at most 10 (the API's per-call cap - batching is done inside
+    the NetskopeIndicatorSync script, not via a playbook loop task), and deploys the change.
+  - if no profile with that name exists yet: searches the same way, and if any values were found,
+    creates a new profile with MatchType and those values in one call (create has no 10-item cap
+    and applies immediately by default, so no separate deploy step is needed on this path).
+
+  CIDR indicator values are prefixed with "CIDR:" to match the format Netskope's destination
+  profile Definition field expects; Domain/URL/IP values are passed through as-is. This playbook
+  does not attempt to convert CIDR ranges into Netskope's separate "RANGE:start-end" syntax - if
+  you need that, extend NetskopeIndicatorSync's format_value function.
+
+  Every run only pulls indicators already found via the same de-dup logic used by the Block Domain
+  - Destination Profile playbook (checking current profile values first), so re-running this on a
+  schedule with a mostly-unchanged indicator set is a safe, idempotent no-op for values already
+  synced.
+
+  Ends with a Close Investigation task - a recurring Job typically won't start a new run while
+  the previous job-created incident is still open, so leaving it open (the default if a playbook
+  just ends at a title task) silently blocks every future firing regardless of the configured
+  interval.
+
+  Make sure only one Netskope integration instance is enabled at a time - if two are enabled,
+  XSOAR dispatches every command to both, silently doubling every append.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8deef1aa-a343-4329-8636-dc321d937642
+    type: start
+    task:
+      id: 8deef1aa-a343-4329-8636-dc321d937642
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "1":
+    id: "1"
+    taskid: 321b6025-8f4c-494e-9d3c-c27e7bfd32e1
+    type: regular
+    task:
+      id: 321b6025-8f4c-494e-9d3c-c27e7bfd32e1
+      version: -1
+      name: Set Sync Configuration From Inputs
+      description: ProfileName/MatchType/IndicatorTypes were provided as playbook inputs (e.g. a manual run) - use them as-is.
+      script: "|||SetMultipleValues"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "2"
+    scriptarguments:
+      parent:
+        simple: SyncConfig
+      keys:
+        simple: ProfileName|||MatchType|||IndicatorTypes
+      values:
+        simple: ${inputs.ProfileName}|||${inputs.MatchType}|||${inputs.IndicatorTypes}
+      delimiter:
+        simple: "|||"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 087611a4-0f30-42a0-bcc2-185d30653572
+    type: condition
+    task:
+      id: 087611a4-0f30-42a0-bcc2-185d30653572
+      version: -1
+      name: Were ProfileName/MatchType/IndicatorTypes inputs provided?
+      description: Check whether these playbook inputs actually came through non-empty for this run. On this instance, a Job-triggered run does not apply a playbook input's default Value, so this run's inputs may be empty even though defaults are set in the Inputs and Outputs panel - in that case, fall back to the same defaults directly (task #14) instead of silently doing nothing.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "14"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ProfileName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.MatchType
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.IndicatorTypes
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "14":
+    id: "14"
+    taskid: 41efcdc4-6d5a-4433-9fb8-1a8462080bed
+    type: regular
+    task:
+      id: 41efcdc4-6d5a-4433-9fb8-1a8462080bed
+      version: -1
+      name: Set Sync Configuration (Fallback Defaults)
+      description: 'The ProfileName/MatchType/IndicatorTypes inputs came through empty for this run (expected on a Job-triggered run on this instance) - fall back to the same literal defaults shown in the Inputs and Outputs panel. To change these defaults, edit BOTH here and the matching input''s Value in the Inputs and Outputs panel, so manual runs and Job runs stay consistent.'
+      script: "|||SetMultipleValues"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "2"
+    scriptarguments:
+      parent:
+        simple: SyncConfig
+      keys:
+        simple: ProfileName|||MatchType|||IndicatorTypes
+      values:
+        simple: Test02|||regex|||Domain,URL,IP,CIDR
+      delimiter:
+        simple: "|||"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 567f2a54-652c-4a1f-b202-79fb0fe1d297
+    type: condition
+    task:
+      id: 567f2a54-652c-4a1f-b202-79fb0fe1d297
+      version: -1
+      name: Is Netskope enabled?
+      description: Verify that there is a valid, active Netskope integration instance enabled (matches any brand name containing "Netskope", so it works against a renamed dev/test instance too).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Netskope
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: dee1c88e-35d5-40d4-8969-71c36c80f46a
+    type: title
+    task:
+      id: dee1c88e-35d5-40d4-8969-71c36c80f46a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: cf120fd0-9d0f-4b89-8896-b41bbf934b65
+    type: regular
+    task:
+      id: cf120fd0-9d0f-4b89-8896-b41bbf934b65
+      version: -1
+      name: Close Investigation
+      description: Close this run's incident so the recurring Job isn't blocked from firing again - Jobs typically won't start a new run while the previous job-created incident is still open.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeReason:
+        simple: Other
+      closeNotes:
+        simple: Netskope Threat Intel sync run completed.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 084c42ac-f9ce-473b-a43d-6d1e8a3166ac
+    type: regular
+    task:
+      id: 084c42ac-f9ce-473b-a43d-6d1e8a3166ac
+      version: -1
+      name: Find Destination Profile by Name
+      description: Look up the destination profile's ID and current values by its exact name (profile names are unique in Netskope). ProfileName comes from the SyncConfig context key set by task #1.
+      script: "|||netskopev2-list-destination-profiles"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "8"
+    scriptarguments:
+      filter:
+        simple: name eq "${SyncConfig.ProfileName}"
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 3dc7d8f1-f767-4ccb-b69c-f8b98f25caa3
+    type: condition
+    task:
+      id: 3dc7d8f1-f767-4ccb-b69c-f8b98f25caa3
+      version: -1
+      name: Was a matching profile found?
+      description: Check whether the name lookup found an existing destination profile.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "10"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Netskope.DestinationProfile.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 7aa11aa5-4e1e-4242-82f5-1e67ec5f85a9
+    type: regular
+    task:
+      id: 7aa11aa5-4e1e-4242-82f5-1e67ec5f85a9
+      version: -1
+      name: Sync New Indicators to Existing Profile
+      description: Search XSOAR indicators of the selected types, skip anything already in the profile, append the rest in batches of at most 10, and deploy.
+      scriptName: NetskopeIndicatorSync
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "4"
+    scriptarguments:
+      profile_id:
+        complex:
+          root: Netskope.DestinationProfile.id
+      tags:
+        complex:
+          root: inputs.Tags
+      skip_tags:
+        complex:
+          root: inputs.SkipTags
+      indicator_types:
+        complex:
+          root: SyncConfig.IndicatorTypes
+      existing_values:
+        complex:
+          root: Netskope.DestinationProfile.values
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ","
+      max_indicators:
+        complex:
+          root: inputs.MaxIndicators
+      change_note:
+        simple: Hourly Threat Intel sync - Netskope playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 289fa65a-c826-474b-903a-ffdb3e15f71d
+    type: regular
+    task:
+      id: 289fa65a-c826-474b-903a-ffdb3e15f71d
+      version: -1
+      name: Prepare New Values for New Profile
+      description: No profile with that name exists yet - search XSOAR indicators of the selected types and prepare the new-value list, without appending/deploying anything yet.
+      scriptName: NetskopeIndicatorSync
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "11"
+    scriptarguments:
+      tags:
+        complex:
+          root: inputs.Tags
+      skip_tags:
+        complex:
+          root: inputs.SkipTags
+      indicator_types:
+        complex:
+          root: SyncConfig.IndicatorTypes
+      max_indicators:
+        complex:
+          root: inputs.MaxIndicators
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 537c8004-336e-468f-b3f3-9656da4ca03d
+    type: condition
+    task:
+      id: 537c8004-336e-468f-b3f3-9656da4ca03d
+      version: -1
+      name: Are there new values to create with?
+      description: Skip creating an empty profile if the query found nothing new.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NetskopeSync.all_new_values
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 6e754da1-e17a-4c43-8f6c-ed45f1986eb4
+    type: regular
+    task:
+      id: 6e754da1-e17a-4c43-8f6c-ed45f1986eb4
+      version: -1
+      name: Create Destination Profile
+      description: Create the profile with the chosen match type and the newly found values in one call. Applies immediately (interactive=false), no separate deploy needed. ProfileName/MatchType come from the SyncConfig context key set by task #1.
+      script: "|||netskopev2-create-destination-profile"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "4"
+    scriptarguments:
+      name:
+        complex:
+          root: SyncConfig.ProfileName
+      type:
+        complex:
+          root: SyncConfig.MatchType
+      values:
+        complex:
+          root: NetskopeSync.all_new_values
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_1_yes": 0.53,
+      "13_14_#default#": 0.47,
+      "2_7_yes": 0.53,
+      "2_4_#default#": 0.47,
+      "8_9_yes": 0.53,
+      "8_10_#default#": 0.47,
+      "11_12_yes": 0.53,
+      "11_4_#default#": 0.47
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1470,
+        "width": 1140,
+        "x": 130,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: ProfileName
+  value:
+    simple: Test02
+  required: false
+  description: Name of the Netskope Destination Profile to sync indicators into. Defaults to "Test02" - if this run's value ever comes through empty (e.g. a Job-triggered run on this instance, which doesn't apply this default automatically), the playbook falls back to the same "Test02" default set directly in task   #14, so keep both in sync if you change this.
+  playbookInputQuery:
+- key: MatchType
+  value:
+    simple: regex
+  required: false
+  description: Match type to use only if ProfileName doesn't exist yet and a new profile needs to be created - ignored when appending to an existing profile. One of "sensitive" (Exact - Case Sensitive), "insensitive" (Exact - Case Insensitive), or "regex" (RegEx). Defaults to "regex" - keep task   #14's fallback value in sync if you change this.
+  playbookInputQuery:
+- key: IndicatorTypes
+  value:
+    simple: Domain,URL,IP,CIDR
+  required: false
+  description: Comma-separated list of XSOAR indicator types to pull and sync into the profile. One or more of Domain, URL, IP, CIDR. Defaults to all four - keep task   #14's fallback value in sync if you change this.
+  playbookInputQuery:
+- key: Tags
+  value: {}
+  required: false
+  description: Optional comma-separated indicator tags to further restrict which indicators are pulled (e.g. "netskope-block"). Leave empty to consider all indicators regardless of tag.
+  playbookInputQuery:
+- key: SkipTags
+  value: {}
+  required: false
+  description: Optional comma-separated indicator tags to exclude - any indicator carrying one of these tags is skipped even if it matches Tags. Leave empty to not exclude by tag.
+  playbookInputQuery:
+- key: MaxIndicators
+  value: {}
+  required: false
+  description: Maximum number of indicators to pull from XSOAR per run (default 500 if left empty). Bounds how much work a single scheduled run does.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0
+issilent: false

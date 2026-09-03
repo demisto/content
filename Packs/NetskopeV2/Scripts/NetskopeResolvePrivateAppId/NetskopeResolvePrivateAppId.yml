@@ -1,0 +1,29 @@
+args:
+- description: App ID, if already known. If provided, used directly - no lookup happens.
+  name: app_id
+- description: App name to look up if app_id isn't provided. Matched case-insensitively against netskopev2-list-private-apps' app_name field (Netskope wraps that field in brackets, e.g. "[test server]" - this handles that automatically).
+  name: app_name
+comment: netskopev2-list-private-apps has no name filter argument (unlike the destination/network profile list commands), so this fetches all private apps and matches by name in Python - also needed to strip the brackets Netskope wraps app_name in for list responses.
+commonfields:
+  id: NetskopeResolvePrivateAppId
+  version: -1
+name: NetskopeResolvePrivateAppId
+outputs:
+- contextPath: ResolvedAppId.app_id
+  description: The resolved (or directly provided) app ID. Empty if resolution failed.
+  type: String
+- contextPath: ResolvedAppId.resolved_by
+  description: Whether the ID came from app_id directly, an app_name lookup, or neither was provided.
+  type: String
+- contextPath: ResolvedAppId.error
+  description: Error message if resolution failed (no match, or ambiguous multiple matches). Empty on success.
+  type: String
+script: ''
+type: python
+subtype: python3
+tags: []
+timeout: '0'
+dockerimage: demisto/python3:3.12.8.3296088
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

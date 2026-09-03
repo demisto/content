@@ -1,0 +1,24 @@
+args:
+- description: Comma-separated port numbers (e.g. "443,8080,22"). Leave empty to leave protocols unset (e.g. when modifying a private app without changing its protocols).
+  name: ports
+- defaultValue: tcp
+  description: Transport protocol applied to every port in "ports" (e.g. "tcp" or "udp"). Netskope private apps support one protocol type per value, so all ports built here share the same type.
+  name: protocol_type
+comment: 'Builds the JSON array netskopev2-create-private-app/netskopev2-update-private-app expect for their "protocols" argument (e.g. [{"type": "tcp", "port": "443"}]) from a plain comma-separated port list, so callers do not need to hand-write JSON (and cannot accidentally pass a bare number like "443", which parses as valid JSON but is not the array shape the API needs).'
+commonfields:
+  id: NetskopeBuildProtocolsJson
+  version: -1
+name: NetskopeBuildProtocolsJson
+outputs:
+- contextPath: BuiltProtocols.protocols_json
+  description: JSON array of {type, port} objects, ready to pass as the "protocols" argument. Empty string if no ports were provided.
+  type: String
+script: ''
+type: python
+subtype: python3
+tags: []
+timeout: '0'
+dockerimage: demisto/python3:3.12.8.3296088
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

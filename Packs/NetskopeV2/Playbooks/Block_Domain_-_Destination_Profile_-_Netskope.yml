@@ -1,0 +1,508 @@
+id: Block Domain - Destination Profile - Netskope
+version: -1
+name: Block Domain - Destination Profile - Netskope
+description: |-
+  Blocks a domain via a Netskope Destination Profile: looks up the profile by name and either
+  appends the domain to that existing profile or, if no profile with that name exists yet,
+  prompts the analyst to pick a match type and creates a new one with the domain as its first
+  value.
+
+  The match type prompt is a single-select with exactly three choices - sensitive (Exact - Case
+  Sensitive), insensitive (Exact - Case Insensitive), or regex (RegEx), mirroring the "Match Type"
+  choice in the Netskope UI's destination profile editor - so there's no risk of a typo or wrong
+  casing (e.g. "Regex" instead of "regex") getting rejected by the create command. It's only asked
+  when a new profile actually needs to be created - it's skipped entirely when appending to a
+  profile that already exists (its match type was already fixed at creation).
+
+  Profile names are unique in Netskope, so an exact-match lookup (name eq "<ProfileName>") returns
+  at most one profile - no manual ID lookup needed, just the profile's display name.
+
+  IMPORTANT: unlike the URL List and File Hash List "append" behavior, Netskope's destination
+  profile values "append" operation has no server-side dedup - calling it twice with the same
+  domain (e.g. re-running this playbook for a domain that's already blocked) adds it twice. This
+  playbook checks the profile's current values (fetched by the name lookup) first and only
+  appends when the domain isn't already present, so re-running it for an already-blocked domain
+  is a safe no-op. Also make sure only one Netskope integration instance is enabled at a time - if
+  two are enabled, XSOAR dispatches the command to both, causing the same double-add.
+
+  Unlike URL Lists, Destination Profile value changes are staged (pending) until deployed - this
+  playbook appends the value and then immediately deploys that one profile so the change takes
+  effect right away. Creating a profile with default settings (interactive=false) applies
+  immediately - no separate deploy step is needed for that path, unlike the
+  append-to-existing-profile path.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5ed88c6b-11f5-4506-b1c4-f228c0235f57
+    type: start
+    task:
+      id: 5ed88c6b-11f5-4506-b1c4-f228c0235f57
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 7d8cc7f4-a561-4844-84cf-7536f0182213
+    type: condition
+    task:
+      id: 7d8cc7f4-a561-4844-84cf-7536f0182213
+      version: -1
+      name: Is Netskope enabled?
+      description: Verify that there is a valid, active Netskope integration instance enabled (matches any brand name containing "Netskope", so it works against a renamed dev/test instance too).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Netskope
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "3":
+    id: "3"
+    taskid: 6a4aeb45-9f20-40a5-92a8-ff0dc0bc2ba0
+    type: regular
+    task:
+      id: 6a4aeb45-9f20-40a5-92a8-ff0dc0bc2ba0
+      version: -1
+      name: Append Domain to Destination Profile
+      description: Append the domain to the destination profile found by name, without replacing its other values.
+      script: "|||netskopev2-update-destination-profile-values"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "6"
+    scriptarguments:
+      id:
+        complex:
+          root: Netskope.DestinationProfile.id
+      operation:
+        simple: append
+      values:
+        complex:
+          root: inputs.Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: 25950cb0-cb91-486a-8161-d384c0377e57
+    type: title
+    task:
+      id: 25950cb0-cb91-486a-8161-d384c0377e57
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "5":
+    id: "5"
+    taskid: 24f3719d-ce8e-4f59-a203-39189e81680a
+    type: condition
+    task:
+      id: 24f3719d-ce8e-4f59-a203-39189e81680a
+      version: -1
+      name: Check required inputs were provided
+      description: Check whether the necessary inputs were provided
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ProfileName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "6":
+    id: "6"
+    taskid: 095a67b0-69fe-44b6-8fb9-1893a6b62e82
+    type: regular
+    task:
+      id: 095a67b0-69fe-44b6-8fb9-1893a6b62e82
+      version: -1
+      name: Deploy Destination Profile Changes
+      description: Deploy the staged (pending) change so the appended value takes effect.
+      script: "|||netskopev2-deploy-destination-profiles"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "4"
+    scriptarguments:
+      ids:
+        complex:
+          root: Netskope.DestinationProfile.id
+      change_note:
+        simple: Appended domain via Block Domain - Destination Profile - Netskope playbook
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: acef162a-af0b-4bcd-8e7f-c32fbc16424d
+    type: regular
+    task:
+      id: acef162a-af0b-4bcd-8e7f-c32fbc16424d
+      version: -1
+      name: Find Destination Profile by Name
+      description: Look up the destination profile's ID by its exact name (profile names are unique in Netskope).
+      script: "|||netskopev2-list-destination-profiles"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "8"
+    scriptarguments:
+      filter:
+        simple: name eq "${inputs.ProfileName}"
+      limit:
+        simple: "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: bca2e566-3fc4-42c5-890d-9b38af21e9d1
+    type: condition
+    task:
+      id: bca2e566-3fc4-42c5-890d-9b38af21e9d1
+      version: -1
+      name: Was a matching profile found?
+      description: Check whether the name lookup found an existing destination profile.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "13"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Netskope.DestinationProfile.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 9ba00115-a1e8-4483-bdf0-dcb6ee86a42f
+    type: condition
+    task:
+      id: 9ba00115-a1e8-4483-bdf0-dcb6ee86a42f
+      version: -1
+      name: Is the domain already in the profile?
+      description: Skip appending if the domain is already present in the profile's current values - Netskope's append operation does not dedup, so appending an already-present value would add it twice.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "3"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              complex:
+                root: inputs.Domain
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: Netskope.DestinationProfile.values
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 5b568aa0-b0bc-4e14-bb5d-cda28413ff6e
+    type: regular
+    task:
+      id: 5b568aa0-b0bc-4e14-bb5d-cda28413ff6e
+      version: -1
+      name: Create Destination Profile
+      description: No profile with that name exists yet - create one with the chosen match type and the domain as its first value. Applies immediately (interactive=false), no separate deploy needed.
+      script: "|||netskopev2-create-destination-profile"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "4"
+    scriptarguments:
+      name:
+        complex:
+          root: inputs.ProfileName
+      type:
+        simple: ${ChooseMatchType.Answers.0}
+      values:
+        complex:
+          root: inputs.Domain
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: eca9bde0-f666-4e54-a66b-68e4768b334f
+    type: collection
+    task:
+      id: eca9bde0-f666-4e54-a66b-68e4768b334f
+      version: -1
+      name: Choose Match Type
+      description: No profile named ProfileName exists yet - ask which match type to create it with.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "10"
+    separatecontext: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'No destination profile named "${inputs.ProfileName}" exists yet. Pick the match type to create it with: sensitive = Exact - Case Sensitive, insensitive = Exact - Case Insensitive, regex = RegEx.'
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: sensitive
+        - simple: insensitive
+        - simple: regex
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: ChooseMatchType
+      description: Pick exactly one match type for the new destination profile.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "2_7_yes": 0.53,
+      "2_4_#default#": 0.47,
+      "5_2_yes": 0.71,
+      "5_4_#default#": 0.53,
+      "8_9_yes": 0.53,
+      "8_13_#default#": 0.47,
+      "9_3_#default#": 0.53,
+      "9_4_yes": 0.47
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1400,
+        "width": 820,
+        "x": 450,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: Domain
+  value: {}
+  required: true
+  description: The domain to block.
+  playbookInputQuery:
+- key: ProfileName
+  value: {}
+  required: true
+  description: Name of the Netskope Destination Profile to add the domain to. The playbook looks up the profile by this name (netskopev2-list-destination-profiles, filter name eq "<ProfileName>"). If no profile with this name exists, you'll be prompted to pick a match type (single-select - sensitive, insensitive, or regex) and one is created with the domain as its first value.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.9.0
+issilent: false

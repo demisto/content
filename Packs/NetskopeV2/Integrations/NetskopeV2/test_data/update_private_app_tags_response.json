@@ -1,0 +1,13 @@
+{
+    "data": [
+        {
+            "app_id": 3,
+            "app_name": "[quarantine]",
+            "host": "172.31.34.6",
+            "tags": [
+                {"id": 58, "name": "quarantine", "tag_type": "service", "created_at": "2026-08-19T07:14:56.360Z", "updated_at": "2026-08-19T07:14:56.360Z"}
+            ]
+        }
+    ],
+    "status": "success"
+}
