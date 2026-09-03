@@ -199,30 +199,29 @@ Updates Google Cloud Storage (GCS) bucket metadata, including settings such as v
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.StorageBucket.Metadata | Unknown | Updated bucket metadata. |
-| GCP.StorageBucket.Metadata.name | String | The name of the GCP bucket. |
-| GCP.StorageBucket.Metadata.id | String | The ID of the GCP bucket. |
-| GCP.StorageBucket.Metadata.location | String | The location of the bucket. |
-| GCP.StorageBucket.Metadata.storageClass | String | The storage class of the bucket \(e.g., STANDARD, NEARLINE\). |
-| GCP.StorageBucket.Metadata.created | Date | The creation timestamp of the bucket. |
-| GCP.StorageBucket.Metadata.updated | Date | The last update timestamp of the bucket. |
-| GCP.StorageBucket.Metadata.metageneration | Number | The metadata generation of the bucket. |
-| GCP.StorageBucket.Metadata.labels | Unknown | The labels attached to the bucket. |
-| GCP.StorageBucket.Metadata.defaultEventBasedHold | Boolean | Whether a default event-based hold is enabled on the bucket. |
-| GCP.StorageBucket.Metadata.retentionPolicy.retentionPeriod | Number | The duration in seconds that objects in the bucket must be retained. |
-| GCP.StorageBucket.Metadata.retentionPolicy.effectiveTime | Date | The time from which the retention policy is effective. |
-| GCP.StorageBucket.Metadata.retentionPolicy.isLocked | Boolean | Whether the retention policy is locked. |
-| GCP.StorageBucket.Metadata.versioning.enabled | Boolean | Whether object versioning is enabled. |
-| GCP.StorageBucket.Metadata.logging.logBucket | String | The destination bucket where access logs are stored. |
-| GCP.StorageBucket.Metadata.logging.logObjectPrefix | String | The object prefix used for logging. |
-| GCP.StorageBucket.Metadata.lifecycle.rule | Unknown | A list of lifecycle management rules for the bucket. |
-| GCP.StorageBucket.Metadata.iamConfiguration.uniformBucketLevelAccess | Boolean | Whether uniform bucket-level access is enabled. |
-| GCP.StorageBucket.Metadata.cors | Unknown | CORS configuration for the bucket. |
-| GCP.StorageBucket.Metadata.customPlacementConfig | Unknown | Custom placement configuration for multi-region buckets. |
-| GCP.StorageBucket.Metadata.encryption.defaultKmsKeyName | String | The default Cloud KMS key used to encrypt objects. |
-| GCP.StorageBucket.Metadata.billing.requesterPays | Boolean | Whether requester pays is enabled. |
-| GCP.StorageBucket.Metadata.website.mainPageSuffix | String | Suffix appended to requests for the bucket's website configuration. |
-| GCP.StorageBucket.Metadata.website.notFoundPage | String | The path to the custom 404 page for the bucket website. |
+| GCP.Storage.Buckets.name | String | The name of the GCP bucket. |
+| GCP.Storage.Buckets.id | String | The ID of the GCP bucket. |
+| GCP.Storage.Buckets.location | String | The location of the bucket. |
+| GCP.Storage.Buckets.storageClass | String | The storage class of the bucket \(e.g., STANDARD, NEARLINE\). |
+| GCP.Storage.Buckets.created | Date | The creation timestamp of the bucket \(e.g., 2024-01-15T12:34:56Z\). |
+| GCP.Storage.Buckets.updated | Date | The last update timestamp of the bucket. |
+| GCP.Storage.Buckets.metageneration | Number | The metadata generation of the bucket. |
+| GCP.Storage.Buckets.labels | Unknown | The labels attached to the bucket. |
+| GCP.Storage.Buckets.defaultEventBasedHold | Boolean | Whether a default event-based hold is enabled on the bucket. |
+| GCP.Storage.Buckets.retentionPolicy.retentionPeriod | Number | The duration in seconds that objects in the bucket must be retained. |
+| GCP.Storage.Buckets.retentionPolicy.effectiveTime | Date | The time from which the retention policy is effective. |
+| GCP.Storage.Buckets.retentionPolicy.isLocked | Boolean | Whether the retention policy is locked. |
+| GCP.Storage.Buckets.versioning.enabled | Boolean | Whether object versioning is enabled. |
+| GCP.Storage.Buckets.logging.logBucket | String | The destination bucket where access logs are stored. |
+| GCP.Storage.Buckets.logging.logObjectPrefix | String | The object prefix used for logging. |
+| GCP.Storage.Buckets.lifecycle.rule | Unknown | A list of lifecycle management rules for the bucket. |
+| GCP.Storage.Buckets.iamConfiguration.uniformBucketLevelAccess | Boolean | Whether uniform bucket-level access is enabled. |
+| GCP.Storage.Buckets.cors | Unknown | CORS configuration for the bucket. |
+| GCP.Storage.Buckets.customPlacementConfig | Unknown | Custom placement configuration for multi-region buckets. |
+| GCP.Storage.Buckets.encryption.defaultKmsKeyName | String | The default Cloud KMS key used to encrypt objects. |
+| GCP.Storage.Buckets.billing.requesterPays | Boolean | Whether requester pays is enabled. |
+| GCP.Storage.Buckets.website.mainPageSuffix | String | Suffix appended to requests for the bucket's website configuration. |
+| GCP.Storage.Buckets.website.notFoundPage | String | The path to the custom 404 page for the bucket website. |
 
 ### gcp-iam-project-policy-binding-remove
 
@@ -627,7 +626,7 @@ Returns a specific instance resource. To get a list of available instances, make
 ### gcp-storage-bucket-list
 
 ***
-Retrieves the list of buckets in the project associated with the client. Required permission: storage.buckets.list.
+Retrieves the list of buckets in the project associated with the client. The command is deprecated, please use gcp-storage-buckets-list. Required permission: storage.buckets.list.
 
 #### Base Command
 
@@ -681,20 +680,20 @@ Retrieves information about a specific bucket. Required permission: storage.buck
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Storage.Bucket.id | String | The unique identifier for the bucket. |
-| GCP.Storage.Bucket.name | String | The name of the bucket. |
-| GCP.Storage.Bucket.kind | String | The type of resource \(for example, storage\#bucket\). |
-| GCP.Storage.Bucket.location | String | The location of the bucket. |
-| GCP.Storage.Bucket.locationType | String | The type of location \(for example, multi-region\). |
-| GCP.Storage.Bucket.projectNumber | String | The GCP project number associated with the bucket. |
-| GCP.Storage.Bucket.storageClass | String | The storage class of the bucket. |
-| GCP.Storage.Bucket.rpo | String | The recovery point objective setting of the bucket. |
-| GCP.Storage.Bucket.etag | String | The HTTP entity tag of the bucket. |
-| GCP.Storage.Bucket.generation | String | The generation number of the bucket. |
-| GCP.Storage.Bucket.metageneration | String | The metageneration number of the bucket. |
-| GCP.Storage.Bucket.timeCreated | Date | The time the bucket was created. |
-| GCP.Storage.Bucket.timeUpdated | Date | The time the bucket was last updated. |
-| GCP.Storage.Bucket.selfLink | String | The link to the bucket resource on the GCP API. |
+| GCP.Storage.Buckets.id | String | The unique identifier for the bucket. |
+| GCP.Storage.Buckets.name | String | The name of the bucket. |
+| GCP.Storage.Buckets.kind | String | The type of resource \(for example, storage\#bucket\). |
+| GCP.Storage.Buckets.location | String | The location of the bucket. |
+| GCP.Storage.Buckets.locationType | String | The type of location \(for example, multi-region\). |
+| GCP.Storage.Buckets.projectNumber | String | The GCP project number associated with the bucket. |
+| GCP.Storage.Buckets.storageClass | String | The storage class of the bucket. |
+| GCP.Storage.Buckets.rpo | String | The recovery point objective setting of the bucket. |
+| GCP.Storage.Buckets.etag | String | The HTTP entity tag of the bucket. |
+| GCP.Storage.Buckets.generation | String | The generation number of the bucket. |
+| GCP.Storage.Buckets.metageneration | String | The metageneration number of the bucket. |
+| GCP.Storage.Buckets.timeCreated | Date | The time the bucket was created \(e.g., 2024-01-15T12:34:56Z\). |
+| GCP.Storage.Buckets.timeUpdated | Date | The time the bucket was last updated. |
+| GCP.Storage.Buckets.selfLink | String | The link to the bucket resource on the GCP API. |
 
 ### gcp-storage-bucket-objects-list
 
@@ -714,35 +713,37 @@ Retrieves the list of objects in a bucket. Required permission: storage.objects.
 | prefix | Filter results to objects whose names begin with this prefix. | Optional |
 | delimiter | Delimiter to use for grouping objects. For example delimiter="/" Returns results in a directory-like mode, with / being a common value for the delimiter. | Optional |
 | limit | Maximum number of objects to return. | Optional |
-| page_token | Token for pagination. | Optional |
+| page_token | The token for pagination. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Storage.BucketObject.id | String | The unique identifier for the object. |
-| GCP.Storage.BucketObject.name | String | The name of the object. |
-| GCP.Storage.BucketObject.kind | String | The type of resource \(for example, storage\#object\). |
-| GCP.Storage.BucketObject.bucket | String | The name of the bucket containing the object. |
-| GCP.Storage.BucketObject.contentType | String | The MIME type of the object. |
-| GCP.Storage.BucketObject.size | Number | The size of the object in bytes. |
-| GCP.Storage.BucketObject.crc32c | String | The CRC32C checksum of the object. |
-| GCP.Storage.BucketObject.md5Hash | String | The MD5 hash of the object. |
-| GCP.Storage.BucketObject.etag | String | The HTTP entity tag of the object. |
-| GCP.Storage.BucketObject.generation | String | The generation number of the object. |
-| GCP.Storage.BucketObject.metageneration | String | The metageneration number of the object. |
-| GCP.Storage.BucketObject.storageClass | String | The storage class of the object. |
-| GCP.Storage.BucketObject.mediaLink | String | The link for downloading the object content. |
-| GCP.Storage.BucketObject.selfLink | String | The link to the object resource in the GCP API. |
-| GCP.Storage.BucketObject.timeCreated | Date | The time when the object was created. |
-| GCP.Storage.BucketObject.timeFinalized | Date | The time when the object was finalized. |
-| GCP.Storage.BucketObject.timeStorageClassUpdated | Date | The time when the object's storage class was last updated. |
-| GCP.Storage.BucketObject.updated | Date | The time when the object was last modified. |
+| GCP.Storage.Buckets.Objects.id | String | The unique identifier for the object. |
+| GCP.Storage.Buckets.Objects.name | String | The name of the object. |
+| GCP.Storage.Buckets.Objects.kind | String | The type of resource \(for example, storage\#object\). |
+| GCP.Storage.Buckets.Objects.bucket | String | The name of the bucket containing the object. |
+| GCP.Storage.Buckets.Objects.contentType | String | The MIME type of the object. |
+| GCP.Storage.Buckets.Objects.size | Number | The size of the object in bytes. |
+| GCP.Storage.Buckets.Objects.crc32c | String | The CRC32C checksum of the object. |
+| GCP.Storage.Buckets.Objects.md5Hash | String | The MD5 hash of the object. |
+| GCP.Storage.Buckets.Objects.etag | String | The HTTP entity tag of the object. |
+| GCP.Storage.Buckets.Objects.generation | String | The generation number of the object. |
+| GCP.Storage.Buckets.Objects.metageneration | String | The metageneration number of the object. |
+| GCP.Storage.Buckets.Objects.storageClass | String | The storage class of the object. |
+| GCP.Storage.Buckets.Objects.mediaLink | String | The link for downloading the object content. |
+| GCP.Storage.Buckets.Objects.selfLink | String | The link to the object resource in the GCP API. |
+| GCP.Storage.Buckets.Objects.timeCreated | Date | The time when the object was created. |
+| GCP.Storage.Buckets.Objects.timeFinalized | Date | The time when the object was finalized. |
+| GCP.Storage.Buckets.Objects.timeStorageClassUpdated | Date | The time when the object's storage class was last updated. |
+| GCP.Storage.Buckets.Objects.updated | Date | The time when the object was last modified. |
+| GCP.Storage.Buckets.ObjectsNextToken | String | The continuation token. Provide this value as the page_token of a subsequent request in order to return the next page of results. |
+| GCP.Storage.Buckets.name | String | The name of the bucket containing the object. |
 
 ### gcp-storage-bucket-policy-list
 
 ***
-Retrieves the IAM policy for a bucket. Required permissions: storage.buckets.getIamPolicy, storage.buckets.get.
+Retrieves the IAM policy for a bucket. The command is deprecated, please use gcp-storage-bucket-policies-list. Required permissions: storage.buckets.getIamPolicy, storage.buckets.get.
 
 #### Base Command
 
@@ -779,32 +780,6 @@ Sets the IAM policy for a bucket. Required permission: storage.buckets.setIamPol
 
 `gcp-storage-bucket-policy-set`
 
-#### Usage
-
-- **add=false**: Replaces the entire bucket IAM policy with the JSON provided in `policy`.
-- **add=true**: Reads the current bucket policy (getIamPolicy), merges the provided `bindings` per role (deduplicates members), and updates the bucket policy (setIamPolicy) while preserving other top-level fields.
-
-> Warning: Use this command with extreme caution. Running it without explicitly merging (i.e., with `add=false`) will overwrite the bucket's existing IAM policy with the provided `policy`. If you intend to keep current bindings and add new ones, use `add=true`.
-
-#### Policy structure
-
-- **bindings**: Array of binding objects. Each binding:
-  - **role**: String. For example, `roles/storage.objectViewer`, `roles/storage.admin`.
-  - **members**: Array of strings. Allowed formats:
-    - `user:<email>` (e.g., `user:alice@example.com`)
-    - `group:<email>`
-    - `serviceAccount:<email>`
-    - `domain:<domain>` (e.g., `domain:example.com`)
-    - `allUsers` | `allAuthenticatedUsers`
-- **version**: Number. Required to be `3` or greater if any binding includes `condition`.
-- **etag**: String. Recommended for replace flow (`add=false`) to avoid overwriting concurrent updates.
-- Optional fields like `kind`, `resourceId` may appear in responses but are not required in requests.
-
-Notes:
-
-- For `add=true` (merge), only a valid `bindings` array is required; other top-level fields are taken from the existing policy.
-- For `add=false` (replace), the provided object becomes the entire policy on the bucket.
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -818,14 +793,14 @@ Notes:
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Storage.BucketPolicy.version | Number | IAM policy version after update. |
-| GCP.Storage.BucketPolicy.etag | String | ETag of the updated IAM policy. |
-| GCP.Storage.BucketPolicy.bindings | List | List of role bindings for the bucket. |
+| GCP.Storage.BucketPolicies.version | Number | IAM policy version after update. |
+| GCP.Storage.BucketPolicies.etag | String | ETag of the updated IAM policy. |
+| GCP.Storage.BucketPolicies.bindings | Unknown | List of role bindings for the bucket. |
 
 ### gcp-storage-bucket-object-policy-list
 
 ***
-Retrieves the IAM policy for a specific object in a bucket. Required permission: storage.objects.getIamPolicy.
+Retrieves the IAM policy for a specific object in a bucket. The command is deprecated, please use gcp-storage-bucket-object-policies-list. Required permission: storage.objects.getIamPolicy.
 
 #### Base Command
 
@@ -865,15 +840,15 @@ Sets the IAM policy for a specific object in a bucket. Required permission: stor
 | bucket_name | Name of the bucket containing the object. | Required |
 | object_name | Name of the object to set IAM policy on. | Required |
 | policy | JSON string representing the IAM policy to set. | Required |
-| generation | Generation of the object. | Optional |
+| generation | The generation of the object (e.g., a positive integer). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Storage.BucketObjectPolicy.version | Number | IAM policy version after update. |
-| GCP.Storage.BucketObjectPolicy.etag | String | ETag of the updated IAM policy. |
-| GCP.Storage.BucketObjectPolicy.bindings | Unknown | List of role bindings for the object. |
+| GCP.Storage.BucketObjectPolicies.version | Number | IAM policy version after update. |
+| GCP.Storage.BucketObjectPolicies.etag | String | ETag of the updated IAM policy. |
+| GCP.Storage.BucketObjectPolicies.bindings | Unknown | List of role bindings for the object. |
 
 ### gcp-compute-snapshot-get
 
@@ -895,28 +870,28 @@ Retrieves details for a specific snapshot. Required permission: compute.snapshot
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Snapshot.id | String | Unique identifier for the snapshot resource. |
-| GCP.Compute.Snapshot.name | String | Name of the snapshot resource. |
-| GCP.Compute.Snapshot.kind | String | Type of the resource, for example compute\#snapshot. |
-| GCP.Compute.Snapshot.status | String | Current status of the snapshot, such as READY or FAILED. |
-| GCP.Compute.Snapshot.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
-| GCP.Compute.Snapshot.architecture | String | CPU architecture of the source disk, for example X86_64. |
-| GCP.Compute.Snapshot.creationTimestamp | Date | The time when the snapshot was created. |
-| GCP.Compute.Snapshot.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
-| GCP.Compute.Snapshot.diskSizeGb | Number | Size of the snapshot in gigabytes. |
-| GCP.Compute.Snapshot.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
-| GCP.Compute.Snapshot.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
-| GCP.Compute.Snapshot.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
-| GCP.Compute.Snapshot.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
-| GCP.Compute.Snapshot.licenses | Unknown | List of license URLs associated with the snapshot. |
-| GCP.Compute.Snapshot.selfLink | String | Server-defined URL for the snapshot resource. |
-| GCP.Compute.Snapshot.sourceDisk | String | URL of the source disk used to create the snapshot. |
-| GCP.Compute.Snapshot.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
-| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
-| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
-| GCP.Compute.Snapshot.storageBytes | Number | Total storage size of the snapshot in bytes. |
-| GCP.Compute.Snapshot.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
-| GCP.Compute.Snapshot.storageLocations | Unknown | List of storage locations for the snapshot. |
+| GCP.Compute.Snapshots.id | String | Unique identifier for the snapshot resource. |
+| GCP.Compute.Snapshots.name | String | Name of the snapshot resource. |
+| GCP.Compute.Snapshots.kind | String | Type of the resource, for example compute\#snapshot. |
+| GCP.Compute.Snapshots.status | String | Current status of the snapshot, such as READY or FAILED. |
+| GCP.Compute.Snapshots.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
+| GCP.Compute.Snapshots.architecture | String | CPU architecture of the source disk, for example X86_64. |
+| GCP.Compute.Snapshots.creationTimestamp | Date | The time when the snapshot was created. |
+| GCP.Compute.Snapshots.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
+| GCP.Compute.Snapshots.diskSizeGb | Number | Size of the snapshot in gigabytes. |
+| GCP.Compute.Snapshots.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
+| GCP.Compute.Snapshots.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
+| GCP.Compute.Snapshots.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
+| GCP.Compute.Snapshots.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
+| GCP.Compute.Snapshots.licenses | Unknown | List of license URLs associated with the snapshot. |
+| GCP.Compute.Snapshots.selfLink | String | Server-defined URL for the snapshot resource. |
+| GCP.Compute.Snapshots.sourceDisk | String | URL of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshots.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshots.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshots.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshots.storageBytes | Number | Total storage size of the snapshot in bytes. |
+| GCP.Compute.Snapshots.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
+| GCP.Compute.Snapshots.storageLocations | Unknown | List of storage locations for the snapshot. |
 
 ### gcp-compute-instances-aggregated-list-by-ip
 
@@ -934,18 +909,19 @@ Returns an aggregated list of instances across all zones that can be filtered by
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | ip_address | The IP address to search for. | Required |
 | match_external | If true, match against external NAT IPs; otherwise internal NIC IPs. Possible values are: true, false. | Optional |
-| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
-| page_token | Token for pagination. | Optional |
+| limit | The maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
+| page_token | The token for pagination. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Instance.name | string | Instance name. |
-| GCP.Compute.Instance.id | string | Instance ID. |
-| GCP.Compute.Instance.zone | string | Instance zone URL. |
-| GCP.Compute.Instance.status | string | Instance status. |
-| GCP.Compute.Instance.networkInterfaces | Unknown | Network interfaces of the instance. |
+| GCP.Compute.Instances.name | string | Instance name. |
+| GCP.Compute.Instances.id | string | Instance ID. |
+| GCP.Compute.Instances.zone | string | Instance zone URL. |
+| GCP.Compute.Instances.status | string | Instance status. |
+| GCP.Compute.Instances.networkInterfaces | Unknown | Network interfaces of the instance. |
+| GCP.Compute.AggregatedByIPInstancesNextToken | string | This token allows you to get the next page of results for list requests. If the number of results is larger than limit, use the next_token as a value for the query parameter page_token in the next list request. |
 
 ### gcp-compute-network-tag-set
 
@@ -1510,7 +1486,7 @@ Creates a new firewall rule in a specific project. Required permission: compute.
 ### gcp-compute-firewall-list
 
 ***
-Lists the firewall rules in a specific project. Required permission: compute.firewalls.list.
+Lists the firewall rules in a specific project. The command is deprecated, please use gcp-compute-firewalls-list. Required permission: compute.firewalls.list.
 
 #### Base Command
 
@@ -1564,13 +1540,13 @@ Retrieves a specific firewall rule by name. Required permission: compute.firewal
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Firewall.name | string | Firewall rule name. |
-| GCP.Compute.Firewall.network | string | Network URL for the firewall rule. |
-| GCP.Compute.Firewall.direction | string | Direction of traffic \(INGRESS/EGRESS\). |
-| GCP.Compute.Firewall.priority | number | Priority of the rule. |
-| GCP.Compute.Firewall.allowed | Unknown | Allowed tuples. |
-| GCP.Compute.Firewall.denied | Unknown | Denied tuples. |
-| GCP.Compute.Firewall.targetTags | Unknown | Target instance tags. |
+| GCP.Compute.Firewalls.name | string | Firewall rule name. |
+| GCP.Compute.Firewalls.network | string | Network URL for the firewall rule. |
+| GCP.Compute.Firewalls.direction | string | Direction of traffic \(INGRESS/EGRESS\). |
+| GCP.Compute.Firewalls.priority | number | Priority of the rule. |
+| GCP.Compute.Firewalls.allowed | Unknown | Allowed tuples. |
+| GCP.Compute.Firewalls.denied | Unknown | Denied tuples. |
+| GCP.Compute.Firewalls.targetTags | Unknown | Target instance tags. |
 
 ### gcp-compute-snapshots-list
 
@@ -1586,37 +1562,37 @@ Lists snapshots in a specific project. Required permission: compute.snapshots.li
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| limit | Maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
-| page_token | Token for pagination. | Optional |
+| limit | The maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
+| page_token | The token for pagination. | Optional |
 | filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/snapshots/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Snapshot.id | String | Unique identifier for the snapshot resource. |
-| GCP.Compute.Snapshot.name | String | Name of the snapshot resource. |
-| GCP.Compute.Snapshot.kind | String | Type of the resource, for example compute\#snapshot. |
-| GCP.Compute.Snapshot.status | String | Current status of the snapshot, such as READY or FAILED. |
-| GCP.Compute.Snapshot.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
-| GCP.Compute.Snapshot.architecture | String | CPU architecture of the source disk, for example X86_64. |
-| GCP.Compute.Snapshot.creationTimestamp | Date | The time when the snapshot was created. |
-| GCP.Compute.Snapshot.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
-| GCP.Compute.Snapshot.diskSizeGb | Number | Size of the snapshot in gigabytes. |
-| GCP.Compute.Snapshot.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
-| GCP.Compute.Snapshot.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
-| GCP.Compute.Snapshot.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
-| GCP.Compute.Snapshot.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
-| GCP.Compute.Snapshot.licenses | Unknown | List of license URLs associated with the snapshot. |
-| GCP.Compute.Snapshot.selfLink | String | Server-defined URL for the snapshot resource. |
-| GCP.Compute.Snapshot.sourceDisk | String | URL of the source disk used to create the snapshot. |
-| GCP.Compute.Snapshot.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
-| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
-| GCP.Compute.Snapshot.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
-| GCP.Compute.Snapshot.storageBytes | Number | Total storage size of the snapshot in bytes. |
-| GCP.Compute.Snapshot.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
-| GCP.Compute.Snapshot.storageLocations | Unknown | List of storage locations for the snapshot. |
-| GCP.Compute.SnapshotNextToken | String | Next page token for pagination. |
+| GCP.Compute.Snapshots.id | String | Unique identifier for the snapshot resource. |
+| GCP.Compute.Snapshots.name | String | Name of the snapshot resource. |
+| GCP.Compute.Snapshots.kind | String | Type of the resource, for example compute\#snapshot. |
+| GCP.Compute.Snapshots.status | String | Current status of the snapshot, such as READY or FAILED. |
+| GCP.Compute.Snapshots.autoCreated | Boolean | Indicates whether the snapshot was automatically created. |
+| GCP.Compute.Snapshots.architecture | String | CPU architecture of the source disk, for example X86_64. |
+| GCP.Compute.Snapshots.creationTimestamp | Date | The time when the snapshot was created. |
+| GCP.Compute.Snapshots.creationSizeBytes | Number | Total size of the snapshot in bytes at creation time. |
+| GCP.Compute.Snapshots.diskSizeGb | Number | Size of the snapshot in gigabytes. |
+| GCP.Compute.Snapshots.downloadBytes | Number | Total bytes downloaded to create the snapshot. |
+| GCP.Compute.Snapshots.enableConfidentialCompute | Boolean | Indicates if confidential compute is enabled for this snapshot. |
+| GCP.Compute.Snapshots.labelFingerprint | String | Fingerprint for the labels applied to the snapshot. |
+| GCP.Compute.Snapshots.licenseCodes | Unknown | List of license code identifiers attached to the snapshot. |
+| GCP.Compute.Snapshots.licenses | Unknown | List of license URLs associated with the snapshot. |
+| GCP.Compute.Snapshots.selfLink | String | Server-defined URL for the snapshot resource. |
+| GCP.Compute.Snapshots.sourceDisk | String | URL of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshots.sourceDiskId | String | Unique ID of the source disk used to create the snapshot. |
+| GCP.Compute.Snapshots.sourceSnapshotSchedulePolicy | String | URL of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshots.sourceSnapshotSchedulePolicyId | String | Unique ID of the snapshot schedule policy used to create this snapshot. |
+| GCP.Compute.Snapshots.storageBytes | Number | Total storage size of the snapshot in bytes. |
+| GCP.Compute.Snapshots.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
+| GCP.Compute.Snapshots.storageLocations | Unknown | List of storage locations for the snapshot. |
+| GCP.Compute.SnapshotsNextToken | String | Next page token for pagination. |
 
 ### gcp-bq-dataset-policy-remove
 
@@ -1675,3 +1651,179 @@ Removes an email from the BigQuery dataset policy. Required Permissions: bigquer
 | GCP.BigQuery.Datasets.resourceTags | String | The tags attached to this dataset. |
 | GCP.BigQuery.Datasets.storageBillingModel | String | The billing model that will be applied to the dataset. |
 | GCP.BigQuery.Datasets.catalogSource | String | The origin of the dataset. |
+
+### gcp-compute-firewalls-list
+
+***
+Lists the firewall rules in a specific project. Required permission: compute.firewalls.list.
+
+#### Base Command
+
+`gcp-compute-firewalls-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| limit | The maximum number of results to return. Acceptable values are 0 to 500, inclusive. Default is 50. | Optional |
+| page_token | The token for pagination. | Optional |
+| filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.<br/>For more options and details, see:<br/>https://cloud.google.com/compute/docs/reference/rest/v1/firewalls/list#:~:text=page%20of%20results.-,filter,-string. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Firewalls.id | String | The unique identifier for the firewall rule. |
+| GCP.Compute.Firewalls.name | String | Name of the firewall rule. |
+| GCP.Compute.Firewalls.kind | String | Type of the resource \(for example, compute\#firewall\). |
+| GCP.Compute.Firewalls.description | String | Description of the firewall rule. |
+| GCP.Compute.Firewalls.direction | String | Direction of traffic for the rule \(INGRESS or EGRESS\). |
+| GCP.Compute.Firewalls.disabled | Boolean | Indicates whether the firewall rule is disabled. |
+| GCP.Compute.Firewalls.priority | Number | Priority value of the firewall rule. |
+| GCP.Compute.Firewalls.network | String | The network URL this firewall rule applies to. |
+| GCP.Compute.Firewalls.selfLink | String | Server-defined URL for the resource. |
+| GCP.Compute.Firewalls.creationTimestamp | Date | The creation timestamp of the firewall rule in ISO 8601 format \(e.g., 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Firewalls.logConfig.enable | Boolean | Indicates whether logging is enabled for the firewall rule. |
+| GCP.Compute.Firewalls.sourceRanges | Unknown | List of source IP ranges that the rule applies to. |
+| GCP.Compute.Firewalls.targetTags | Unknown | List of target instance tags to which the rule applies. |
+| GCP.Compute.FirewallsNextToken | String | Next page token for pagination. |
+
+### gcp-storage-buckets-list
+
+***
+Retrieves the list of buckets in the project associated with the client. Required permission: storage.buckets.list.
+
+#### Base Command
+
+`gcp-storage-buckets-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| limit | Maximum number of buckets to return. | Optional |
+| prefix | Filter results to buckets whose names begin with this prefix. | Optional |
+| page_token | The token for pagination. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.Buckets.id | String | The unique identifier for the bucket. |
+| GCP.Storage.Buckets.name | String | The name of the bucket. |
+| GCP.Storage.Buckets.kind | String | The type of resource \(for example, storage\#bucket\). |
+| GCP.Storage.Buckets.location | String | The location of the bucket. |
+| GCP.Storage.Buckets.locationType | String | The type of location \(for example, multi-region\). |
+| GCP.Storage.Buckets.projectNumber | String | The GCP project number associated with the bucket. |
+| GCP.Storage.Buckets.storageClass | String | The storage class of the bucket. |
+| GCP.Storage.Buckets.rpo | String | The recovery point objective setting of the bucket. |
+| GCP.Storage.Buckets.etag | String | The HTTP entity tag of the bucket. |
+| GCP.Storage.Buckets.generation | String | The generation number of the bucket. |
+| GCP.Storage.Buckets.metageneration | String | The metageneration number of the bucket. |
+| GCP.Storage.Buckets.timeCreated | Date | The time the bucket was created. |
+| GCP.Storage.Buckets.timeUpdated | Date | The time the bucket was last updated. |
+| GCP.Storage.Buckets.selfLink | String | The link to the bucket resource on the GCP API. |
+| GCP.Storage.BucketsNextToken | String | The continuation token. Provide this value as the page_token of a subsequent request in order to return the next page of results. |
+
+### gcp-storage-bucket-policies-list
+
+***
+Retrieves the IAM policy for a bucket. Required permissions: storage.buckets.getIamPolicy, storage.buckets.get.
+
+#### Base Command
+
+`gcp-storage-bucket-policies-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| bucket_name | The name of the bucket to retrieve IAM policy from. | Required |
+| requested_policy_version | The IAM policy version to be returned. If the optionsRequestedPolicyVersion is for an older version that doesn't support part of the requested IAM policy, the request fails. Required to be 3 or greater for buckets with IAM Conditions. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketPolicies.version | Number | IAM policy version. |
+| GCP.Storage.BucketPolicies.etag | String | ETag of the IAM policy. |
+| GCP.Storage.BucketPolicies.bindings | Unknown | List of role bindings for the bucket. |
+| GCP.Storage.BucketPolicies.resourceId | String | Resource ID of the updated IAM policy. e.g. projects/_/buckets/BUCKET_NAME. |
+
+### gcp-storage-bucket-object-policies-list
+
+***
+Retrieves the IAM policy for a specific object in a bucket. Required permission: storage.objects.getIamPolicy.
+
+#### Base Command
+
+`gcp-storage-bucket-object-policies-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| bucket_name | The name of the bucket containing the object. | Required |
+| object_name | Name of the object to retrieve IAM policy from. | Required |
+| generation | The generation of the object (e.g., a positive integer). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Storage.BucketObjectPolicies.bucketName | String | The name of the bucket containing the object. |
+| GCP.Storage.BucketObjectPolicies.objectName | String | Name of the object. |
+| GCP.Storage.BucketObjectPolicies.bindings | Unknown | List of role bindings for the object. |
+
+### gcp-gke-cluster-security-update
+
+***
+Configures security settings for GKE clusters, including access controls and visibility. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list.
+
+#### Base Command
+
+`gcp-gke-cluster-security-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP region. | Required |
+| resource_name | Name of the GKE cluster. | Required |
+| enable_intra_node_visibility | Whether to enable intra-node visibility. Possible values are: true, false. | Optional |
+| enable_master_authorized_networks | Whether to enable Master Authorized Networks. Possible values are: true, false. | Optional |
+| cidrs | A comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.<br/>If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.<br/>. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.GKE.Operations.name | String | The name of the GKE cluster. |
+| GCP.GKE.Operations.zone | String | The zone of the GKE cluster. |
+| GCP.GKE.Operations.enableStackdriverLogging | Boolean | Whether Stackdriver Logging is enabled for the cluster. |
+| GCP.GKE.Operations.enableStackdriverMonitoring | Boolean | Whether Stackdriver Monitoring is enabled for the cluster. |
+| GCP.GKE.Operations.enablePrivateNodes | Boolean | Whether private nodes are enabled for the GKE cluster. |
+| GCP.GKE.Operations.enablePrivateEndpoint | Boolean | Whether private endpoint is enabled for the GKE cluster control plane. |
+| GCP.GKE.Operations.enableHttpsOnly | Boolean | Whether HTTPS-only traffic is enforced for the cluster. |
+| GCP.GKE.Operations.enableNetworkPolicy | Boolean | Whether network policies are enabled for the cluster. |
+| GCP.GKE.Operations.enableAutoscaling | Boolean | Whether autoscaling is enabled for the cluster nodes. |
+| GCP.GKE.Operations.enableIstio | Boolean | Whether Istio is enabled for the GKE cluster. |
+| GCP.GKE.Operations.enablePodSecurityPolicy | Boolean | Whether PodSecurityPolicy is enabled for the GKE cluster. |
+| GCP.GKE.Operations.enableBinaryAuthorization | Boolean | Whether Binary Authorization is enabled for the cluster. |
+| GCP.GKE.Operations.enableLegacyABAC | Boolean | Whether legacy ABAC is enabled for the cluster. |
+| GCP.GKE.Operations.clusterIpv4Cidr | String | The cluster’s IPv4 CIDR block. |
+| GCP.GKE.Operations.masterAuthorizedNetworksConfig.cidrBlocks | Unknown | List of authorized CIDR blocks that can access the GKE cluster master. |
+| GCP.GKE.Operations.masterAuthorizedNetworksConfig.enabled | Boolean | Whether master authorized networks are enabled for the cluster. |
+| GCP.GKE.Operations.network | String | The network to which the GKE cluster belongs. |
+| GCP.GKE.Operations.subnetwork | String | The subnetwork to which the GKE cluster belongs. |
+| GCP.GKE.Operations.loggingService | String | The logging service used for the cluster \(e.g., "logging.googleapis.com"\). |
+| GCP.GKE.Operations.monitoringService | String | The monitoring service used for the cluster \(e.g., "monitoring.googleapis.com"\). |
+| GCP.GKE.Operations.nodePools | Unknown | A list of node pools in the cluster, with their configuration and security settings. |
+| GCP.GKE.Operations.privateClusterConfig.enablePrivateNodes | Boolean | Whether private nodes are enabled in the cluster. |
+| GCP.GKE.Operations.privateClusterConfig.enablePrivateEndpoint | Boolean | Whether private endpoint is enabled for the cluster control plane. |
+| GCP.GKE.Operations.masterVersion | String | The current version of the Kubernetes master in the GKE cluster. |

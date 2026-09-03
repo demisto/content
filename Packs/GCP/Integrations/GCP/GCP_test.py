@@ -6,6 +6,7 @@ from unittest.mock import MagicMock
 import os
 import re
 import yaml
+import demistomock as demisto
 
 
 def util_load_json(path):
@@ -268,7 +269,42 @@ def test_compute_firewall_list_with_pagination_and_filter(mocker):
     assert called_kwargs["pageToken"] == "t0"
     assert called_kwargs["filter"] == "name eq fw-*"
 
+    assert res.outputs["GCP.Compute(true)"]["FirewallsNextToken"] == "t1"
+
+
+def test_compute_firewall_list_deprecated_command_keeps_singular_context(mocker):
+    """
+    Given:
+        - The deprecated command name gcp-compute-firewall-list is invoked.
+    When:
+        - compute_firewall_list is called.
+    Then:
+        - The context output keys remain the singular GCP.Compute.Firewall and FirewallNextToken,
+          preserving backward compatibility for existing playbooks.
+    """
+    from GCP import compute_firewall_list
+
+    # Given: the deprecated singular command name and a paginated API response
+    mocker.patch.object(demisto, "command", return_value="gcp-compute-firewall-list")
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_firewalls = mocker.Mock()
+    mock_compute.firewalls.return_value = mock_firewalls
+    mock_firewalls.list.return_value.execute.return_value = {
+        "items": [{"name": "fw-1", "id": "1"}],
+        "nextPageToken": "t1",
+    }
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="md")
+
+    # When: the command function is executed
+    res = compute_firewall_list(mock_creds, {"project_id": "p1"})
+
+    # Then: the singular context paths are used, not the pluralized ones
+    assert "GCP.Compute.Firewall(val.name && val.name == obj.name)" in res.outputs
     assert res.outputs["GCP.Compute(true)"]["FirewallNextToken"] == "t1"
+    assert "GCP.Compute.Firewalls(val.name && val.name == obj.name)" not in res.outputs
 
 
 def test_compute_firewall_get_found_and_not_found(mocker):
@@ -290,7 +326,7 @@ def test_compute_firewall_get_found_and_not_found(mocker):
     mocker.patch("GCP.build", return_value=mock_compute)
     mocker.patch("GCP.tableToMarkdown", return_value="md")
     res = compute_firewall_get(mock_creds, {"project_id": "p1", "resource_name": "fw-1"})
-    assert res.outputs_prefix == "GCP.Compute.Firewall"
+    assert res.outputs_prefix == "GCP.Compute.Firewalls"
 
     # Not found case
     resp = mocker.MagicMock()
@@ -324,7 +360,7 @@ def test_compute_snapshots_list_with_pagination(mocker):
     mocker.patch("GCP.tableToMarkdown", return_value="md")
 
     res = compute_snapshots_list(mock_creds, args)
-    assert res.outputs["GCP.Compute(true)"]["SnapshotNextToken"] == "b"
+    assert res.outputs["GCP.Compute(true)"]["SnapshotsNextToken"] == "b"
 
 
 def test_compute_snapshot_get_found_and_not_found(mocker):
@@ -346,7 +382,7 @@ def test_compute_snapshot_get_found_and_not_found(mocker):
     mocker.patch("GCP.build", return_value=mock_compute)
     mocker.patch("GCP.tableToMarkdown", return_value="md")
     res = compute_snapshot_get(mock_creds, {"project_id": "p1", "resource_name": "snap-1"})
-    assert res.outputs_prefix == "GCP.Compute.Snapshot"
+    assert res.outputs_prefix == "GCP.Compute.Snapshots"
 
     # Not found
     resp = mocker.MagicMock()
@@ -400,8 +436,8 @@ def test_compute_instances_aggregated_list_by_ip_internal(mocker):
     res = compute_instances_aggregated_list_by_ip(mock_creds, {"project_id": "p1", "ip_address": "10.0.0.6", "limit": "10"})
 
     # Expect only i-2
-    assert len(res.outputs) == 1
-    assert res.outputs[0]["name"] == "i-2"
+    assert len(res.outputs["GCP.Compute.Instances(val.id && val.id == obj.id)"]) == 1
+    assert res.outputs["GCP.Compute.Instances(val.id && val.id == obj.id)"][0]["name"] == "i-2"
 
 
 def test_compute_instances_aggregated_list_by_ip_external(mocker):
@@ -449,8 +485,8 @@ def test_compute_instances_aggregated_list_by_ip_external(mocker):
     )
 
     # Expect only i-2
-    assert len(res.outputs) == 1
-    assert res.outputs[0]["name"] == "i-2"
+    assert len(res.outputs["GCP.Compute.Instances(val.id && val.id == obj.id)"]) == 1
+    assert res.outputs["GCP.Compute.Instances(val.id && val.id == obj.id)"][0]["name"] == "i-2"
 
 
 def test__collect_instance_ips_basic():
@@ -947,7 +983,7 @@ def test_storage_bucket_metadata_update_enable_both_settings(mocker):
     assert body["iamConfiguration"]["uniformBucketLevelAccess"]["enabled"] is False
 
     # Check outputs
-    assert result.outputs_prefix == "GCP.StorageBucket.Metadata"
+    assert result.outputs_prefix == "GCP.Storage.Buckets"
     assert result.outputs == mock_response
     assert result.outputs_key_field == "name"
 
@@ -2940,6 +2976,47 @@ def test_storage_bucket_list_basic(mocker):
     result = storage_bucket_list(creds, args)
 
     mock_buckets.list.assert_called_with(project="p1", maxResults=10, prefix="p", pageToken="t")
+    assert result.outputs["GCP.Storage.Buckets(val.name && val.name == obj.name)"][0]["name"] == "b1"
+
+
+def test_storage_bucket_list_deprecated_command_keeps_singular_context(mocker):
+    """
+    Given:
+        - The deprecated command name gcp-storage-bucket-list is invoked.
+    When:
+        - storage_bucket_list is called.
+    Then:
+        - The result uses the singular outputs_prefix GCP.Storage.Bucket with a plain list output,
+          preserving backward compatibility for existing playbooks.
+    """
+    from GCP import storage_bucket_list
+
+    # Given: the deprecated singular command name and a bucket API response
+    mocker.patch.object(demisto, "command", return_value="gcp-storage-bucket-list")
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.list.return_value.execute.return_value = {
+        "items": [
+            {
+                "name": "b1",
+                "timeCreated": "2024-01-01T00:00:00Z",
+                "updated": "2024-01-02T00:00:00Z",
+                "owner": {"entityId": "123"},
+                "location": "US",
+                "storageClass": "STANDARD",
+            }
+        ]
+    }
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+
+    # When: the command function is executed
+    result = storage_bucket_list(creds, {"project_id": "p1"})
+
+    # Then: the singular prefix and list output are preserved
     assert result.outputs_prefix == "GCP.Storage.Bucket"
     assert result.outputs[0]["name"] == "b1"
 
@@ -2969,7 +3046,7 @@ def test_storage_bucket_get_basic(mocker):
     result = storage_bucket_get(creds, {"bucket_name": "b1"})
 
     mock_buckets.get.assert_called_with(bucket="b1")
-    assert result.outputs_prefix == "GCP.Storage.Bucket"
+    assert result.outputs_prefix == "GCP.Storage.Buckets"
     assert result.outputs["name"] == "b1"
 
 
@@ -2995,6 +3072,7 @@ def test_storage_bucket_objects_list_basic(mocker):
                 "updated": "2024-01-02T00:00:00Z",
                 "md5Hash": "md5",
                 "crc32c": "crc",
+                "id": "bucket_name/object_name/generation_number",
             }
         ]
     }
@@ -3005,8 +3083,49 @@ def test_storage_bucket_objects_list_basic(mocker):
     result = storage_bucket_objects_list(creds, args)
 
     mock_objects.list.assert_called_with(bucket="b1", prefix="p/", delimiter="/", maxResults=5, pageToken="tok")
-    assert result.outputs_prefix == "GCP.Storage.BucketObject"
-    assert result.outputs[0]["name"] == "o1"
+    assert "GCP.Storage.Buckets(val.name && val.name == obj.name)" in result.outputs
+    assert result.outputs["GCP.Storage.Buckets(val.name && val.name == obj.name)"]["Objects"][0]["name"] == "o1"
+
+
+def test_storage_bucket_objects_list_merges_with_context(mocker):
+    """
+    Given: A bucket that already has objects in the context, and a new page holding an existing and a new object
+    When: storage_bucket_objects_list is called
+    Then: The existing object is replaced, the new object is appended, and other buckets are left untouched
+    """
+    from GCP import storage_bucket_objects_list
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.list.return_value.execute.return_value = {
+        "items": [{"name": "o1", "bucket": "b1", "size": "2"}, {"name": "o2", "bucket": "b1", "size": "3"}]
+    }
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={
+            "GCP": {
+                "Storage": {
+                    "Buckets": [
+                        {"name": "b1", "Objects": [{"name": "o1", "bucket": "b1", "size": "1"}]},
+                        {"name": "b2", "Objects": [{"name": "other", "bucket": "b2", "size": "9"}]},
+                    ]
+                }
+            }
+        },
+    )
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_objects_list(creds, {"bucket_name": "b1"})
+
+    bucket_output = result.outputs["GCP.Storage.Buckets(val.name && val.name == obj.name)"]
+    assert bucket_output["name"] == "b1"
+    assert bucket_output["Objects"] == [
+        {"name": "o1", "bucket": "b1", "size": "2"},
+        {"name": "o2", "bucket": "b1", "size": "3"},
+    ]
 
 
 def test_storage_bucket_policy_list_with_version(mocker):
@@ -3028,8 +3147,38 @@ def test_storage_bucket_policy_list_with_version(mocker):
     result = storage_bucket_policy_list(creds, args)
 
     mock_buckets.getIamPolicy.assert_called_with(bucket="b1", optionsRequestedPolicyVersion=3)
-    assert result.outputs_prefix == "GCP.Storage.BucketPolicy"
+    assert result.outputs_prefix == "GCP.Storage.BucketPolicies"
     assert result.outputs["version"] == 3
+
+
+def test_storage_bucket_policy_list_deprecated_command_keeps_singular_context(mocker):
+    """
+    Given:
+        - The deprecated command name gcp-storage-bucket-policy-list is invoked.
+    When:
+        - storage_bucket_policy_list is called.
+    Then:
+        - The result uses the singular outputs_prefix GCP.Storage.BucketPolicy,
+          preserving backward compatibility for existing playbooks.
+    """
+    from GCP import storage_bucket_policy_list
+
+    # Given: the deprecated singular command name and a bucket policy API response
+    mocker.patch.object(demisto, "command", return_value="gcp-storage-bucket-policy-list")
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.getIamPolicy.return_value.execute.return_value = {"version": 3, "etag": "abc", "bindings": []}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+
+    # When: the command function is executed
+    result = storage_bucket_policy_list(creds, {"bucket_name": "b1"})
+
+    # Then: the singular prefix is preserved
+    assert result.outputs_prefix == "GCP.Storage.BucketPolicy"
 
 
 def test_storage_bucket_policy_set_basic(mocker):
@@ -3052,7 +3201,7 @@ def test_storage_bucket_policy_set_basic(mocker):
     result = storage_bucket_policy_set(creds, args)
 
     mock_buckets.setIamPolicy.assert_called_with(bucket="b1", body=policy)
-    assert result.outputs_prefix == "GCP.Storage.BucketPolicy"
+    assert result.outputs_prefix == "GCP.Storage.BucketPolicies"
     assert result.outputs["etag"] == "etag1"
 
 
@@ -3075,15 +3224,46 @@ def test_storage_bucket_object_policy_list_normal_and_ubla(mocker):
     creds = mocker.Mock(spec=Credentials)
     result = storage_bucket_object_policy_list(creds, {"bucket_name": "b1", "object_name": "o1"})
     mock_oac.list.assert_called_with(bucket="b1", object="o1")
-    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
+    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicies"
     assert result.outputs[0]["entity"] == "allUsers"
 
     # Case 2: UBLA enabled -> delegates to bucket policy list
     mocker.patch("GCP._is_ubla_enabled", return_value=True)
     # Patch bucket policy list to observe delegation
-    mocker.patch("GCP.storage_bucket_policy_list", return_value=MagicMock(outputs_prefix="GCP.Storage.BucketObjectPolicy"))
+    mocker.patch("GCP.storage_bucket_policy_list", return_value=MagicMock(outputs_prefix="GCP.Storage.BucketObjectPolicies"))
     result2 = storage_bucket_object_policy_list(creds, {"bucket_name": "b1", "object_name": "o1"})
-    assert result2.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
+    assert result2.outputs_prefix == "GCP.Storage.BucketObjectPolicies"
+
+
+def test_storage_bucket_object_policy_list_deprecated_command_keeps_singular_context(mocker):
+    """
+    Given:
+        - The deprecated command name gcp-storage-bucket-object-policy-list is invoked with UBLA disabled.
+    When:
+        - storage_bucket_object_policy_list is called.
+    Then:
+        - The result uses the singular outputs_prefix GCP.Storage.BucketObjectPolicy,
+          preserving backward compatibility for existing playbooks.
+    """
+    from GCP import storage_bucket_object_policy_list
+
+    # Given: the deprecated singular command name, UBLA disabled, and an object ACL API response
+    mocker.patch.object(demisto, "command", return_value="gcp-storage-bucket-object-policy-list")
+
+    mock_storage = mocker.Mock()
+    mock_oac = mocker.Mock()
+    mock_storage.objectAccessControls.return_value = mock_oac
+    mock_oac.list.return_value.execute.return_value = {"items": [{"entity": "allUsers", "role": "READER"}]}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=False)
+
+    creds = mocker.Mock(spec=Credentials)
+
+    # When: the command function is executed
+    result = storage_bucket_object_policy_list(creds, {"bucket_name": "b1", "object_name": "o1"})
+
+    # Then: the singular prefix is preserved
+    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
 
 
 def test_storage_bucket_object_policy_set_update_then_insert(mocker):
@@ -3111,7 +3291,7 @@ def test_storage_bucket_object_policy_set_update_then_insert(mocker):
 
     mock_oac.patch.assert_called()
     mock_oac.insert.assert_called()
-    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
+    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicies"
     assert result.outputs[0]["entity"] == "allUsers"
 
 
@@ -6392,8 +6572,12 @@ def _extract_output_prefixes(function_node: ast.AST) -> set:
 
     Recognizes the supported CommandResults wiring patterns:
       1. ``outputs_prefix="GCP.Some.Path"`` keyword arguments, variable
-         assignments (``outputs_prefix = "GCP.Some.Path"``), and function
-         parameter defaults (``outputs_prefix: str = "GCP.Some.Path"``).
+         assignments (``outputs_prefix = "GCP.Some.Path"`` or the singular
+         ``output_prefix = "GCP.Some.Path"``), and function parameter defaults
+         (``outputs_prefix: str = "GCP.Some.Path"``). The assigned value may be a
+         plain string literal or a command-branched conditional expression, e.g.
+         ``outputs_prefix = "GCP.Some.Path" if command_name == "..." else other``;
+         every ``GCP.``-prefixed literal in either branch is collected.
       2. Context paths used directly as ``outputs`` dict keys, e.g.
          ``"GCP.Some.Path(val.id && val.id == obj.id)": data``. The DT
          transformer suffix in parentheses is stripped.
@@ -6415,12 +6599,25 @@ def _extract_output_prefixes(function_node: ast.AST) -> set:
             for keyword in node.keywords:
                 if keyword.arg == "outputs_prefix" and (value := _string_constant(keyword.value)):
                     prefixes.add(value)
-        # Pattern 1b: outputs_prefix = "..." / outputs_prefix: str = "..."
+        # Pattern 1b: outputs_prefix = "..." / output_prefix = "..." /
+        # outputs_prefix: str = "...". The right-hand side may be a plain string
+        # literal OR a command-branched conditional such as
+        # ``"GCP.X" if command_name == "..." else "GCP.Y"`` (an ast.IfExp); in
+        # that case every ``GCP.``-prefixed literal in either branch is collected.
         elif isinstance(node, ast.Assign | ast.AnnAssign):
             targets = node.targets if isinstance(node, ast.Assign) else [node.target]
-            is_prefix_target = any(isinstance(target, ast.Name) and target.id == "outputs_prefix" for target in targets)
-            if is_prefix_target and (value := _string_constant(node.value)):
-                prefixes.add(value)
+            is_prefix_target = any(
+                isinstance(target, ast.Name) and target.id in ("outputs_prefix", "output_prefix") for target in targets
+            )
+            if is_prefix_target and node.value is not None:
+                if value := _string_constant(node.value):
+                    prefixes.add(value)
+                else:
+                    # Non-literal RHS (e.g. a conditional expression): collect any
+                    # GCP.* string literals nested within it.
+                    for sub_node in ast.walk(node.value):
+                        if (sub_value := _string_constant(sub_node)) and sub_value.startswith("GCP."):
+                            prefixes.add(sub_value)
         # Pattern 2: context paths used as outputs dict keys.
         elif isinstance(node, ast.Dict):
             for key in node.keys:
@@ -6609,10 +6806,13 @@ def test_extract_args_get_reads_subscript_access():
 def test_extract_output_prefixes_covers_all_declaration_forms():
     """
     Given: Handlers declaring an output prefix as a parameter default, as a local
-           assignment, and as outputs dict keys.
+           assignment, as a command-branched conditional assignment (both to
+           ``outputs_prefix`` and to the singular ``output_prefix``), and as
+           outputs dict keys.
     When: Extracting their output prefixes.
-    Then: Every form is recognized, the DT transformer suffix is stripped from dict
-          keys, and a non-GCP dict key is not treated as a context path.
+    Then: Every form is recognized, both branches of a conditional are collected,
+          the DT transformer suffix is stripped from dict keys, and a non-GCP dict
+          key is not treated as a context path.
     """
     source = (
         'def param_default(creds, args, outputs_prefix: str = "GCP.Storage.BucketPolicy"):\n'
@@ -6622,6 +6822,23 @@ def test_extract_output_prefixes_covers_all_declaration_forms():
         "def local_assignment(creds, args):\n"
         '    outputs_prefix = "GCP.Assigned.Path"\n'
         "    return CommandResults(outputs_prefix=outputs_prefix)\n"
+        "\n"
+        "\n"
+        "def conditional_outputs_prefix(creds, args, outputs_prefix='GCP.Storage.BucketPolicies'):\n"
+        "    command_name = demisto.command()\n"
+        '    outputs_prefix = "GCP.Storage.BucketPolicy"'
+        ' if command_name == "gcp-storage-bucket-policy-list" else outputs_prefix\n'
+        "    return CommandResults(outputs_prefix=outputs_prefix)\n"
+        "\n"
+        "\n"
+        "def conditional_output_prefix_singular(creds, args):\n"
+        "    command_name = demisto.command()\n"
+        "    output_prefix = (\n"
+        '        "GCP.Storage.BucketObjectPolicy"\n'
+        '        if command_name == "gcp-storage-bucket-object-policy-list"\n'
+        '        else "GCP.Storage.BucketObjectPolicies"\n'
+        "    )\n"
+        "    return CommandResults(outputs_prefix=output_prefix)\n"
         "\n"
         "\n"
         "def dict_keys(creds, args):\n"
@@ -6638,6 +6855,17 @@ def test_extract_output_prefixes_covers_all_declaration_forms():
     # does not leave the handler with no prefix at all.
     assert _extract_output_prefixes(functions["param_default"]) == {"GCP.Storage.BucketPolicy"}
     assert _extract_output_prefixes(functions["local_assignment"]) == {"GCP.Assigned.Path"}
+    # A command-branched conditional contributes the singular literal plus the
+    # plural parameter default it falls back to.
+    assert _extract_output_prefixes(functions["conditional_outputs_prefix"]) == {
+        "GCP.Storage.BucketPolicy",
+        "GCP.Storage.BucketPolicies",
+    }
+    # The singular ``output_prefix`` target with a two-branch conditional yields both literals.
+    assert _extract_output_prefixes(functions["conditional_output_prefix_singular"]) == {
+        "GCP.Storage.BucketObjectPolicy",
+        "GCP.Storage.BucketObjectPolicies",
+    }
     assert _extract_output_prefixes(functions["dict_keys"]) == {"GCP.Compute.Firewall", "GCP.Compute"}
 
 
