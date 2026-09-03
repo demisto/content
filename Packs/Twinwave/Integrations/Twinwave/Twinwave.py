@@ -11,13 +11,27 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-API_HOST = "https://api.twinwave.io"
 API_VERSION = "v1"
 EXPIRE_SECONDS = 86400
+DEFAULT_API_HOST = "api.twinwave.io"
+SUPPORTED_API_HOSTS = {
+    "api.twinwave.io",
+    "api.global2.twinwave.io",
+    "api.eu1.twinwave.io",
+    "api.apac1.twinwave.io",
+    "api.ind1.twinwave.io",
+    "api.uk1.twinwave.io",
+}
 
 
 class AuthenticationException(Exception):
     pass
+
+
+def get_api_url(api_host: str, version: str = API_VERSION) -> str:
+    if api_host not in SUPPORTED_API_HOSTS:
+        raise ValueError(f"Unsupported Twinwave API host: {api_host}")
+    return f"https://{api_host}/{version}"
 
 
 class Client(BaseClient):
@@ -25,8 +39,8 @@ class Client(BaseClient):
     Client to connect to the API
     """
 
-    def __init__(self, api_token, verify, proxy, host=API_HOST, version=API_VERSION):
-        self.host = f"{host}/{version}"
+    def __init__(self, api_token, verify, proxy, api_host=DEFAULT_API_HOST, version=API_VERSION):
+        self.host = get_api_url(api_host, version)
         self.api_token = api_token
         self._verify = verify
         self._proxy = proxy
@@ -257,8 +271,9 @@ def submit_file(client, args):
     Submit the File
     """
     file_entry_id = args.get("entry_id")
-    file_path = demisto.getFilePath(file_entry_id)["path"]
-    file_name = demisto.getFilePath(file_entry_id)["name"]
+    file_info = demisto.getFilePath(file_entry_id)
+    file_path = file_info["path"]
+    file_name = args.get("filename") or file_info["name"]
     engines = argToList(args.get("engines", "[]"))
     priority = args.get("priority", 10)
     profile = args.get("profile")
@@ -583,12 +598,13 @@ def main():
     params = demisto.params()
 
     api_token = params.get("api-token")
+    api_host = params.get("api-host") or DEFAULT_API_HOST
     verify_certificate = not params.get("insecure", False)
     proxy = handle_proxy()
 
     LOG(f"Command being called is {demisto.command()}")
     try:
-        client = Client(api_token=api_token, verify=verify_certificate, proxy=proxy)
+        client = Client(api_token=api_token, verify=verify_certificate, proxy=proxy, api_host=api_host)
 
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.

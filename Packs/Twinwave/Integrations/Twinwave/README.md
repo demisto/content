@@ -9,6 +9,7 @@ Supported Cortex XSOAR versions: 6.0.0 and later.
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
 | api-token | Twinwave API token | True |
+| api-host | Twinwave API host. HTTPS is used automatically. | False |
 | first_fetch | Number of jobs to first fetch | False |
 | max_fetch |  | False |
 | source | Filter incidents by submission source. | False |
@@ -66,6 +67,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | entry_id | The entry id of the File. | Required |
 | priority | The job's priority relative to other jobs. Jobs with a lower priority value are processed before those with a higher value. (e.g., a priority=1 job will be processed before a priority=2 job.) Valid priority values are between 1 and 255. You may omit this field, in which case a default priority (10) is used. Default is 10. | Optional |
 | profile | An optional profile name that defines the analysis behavior to be used during the analysis for this job. Profiles names map to behaviors like identifying what collection of engines will be used. If no profile name is submitted the system will use the default profile. | Optional |
+| filename | Optional override for the filename reported to Twinwave. Providing an accurate name (with extension) can help the analysis treat the file as the correct type. If omitted, the name of the War Room file entry is used. | Optional |
 
 #### Context Output
 
