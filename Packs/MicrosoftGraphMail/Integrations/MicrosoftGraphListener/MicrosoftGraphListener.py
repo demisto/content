@@ -211,7 +211,17 @@ def main():  # pragma: no cover
                 # cannot use test module due to the lack of ability to set refresh token to integration context
                 raise Exception("Please use !msgraph-mail-test instead")
         if command == "msgraph-mail-test":
-            client.test_connection()
+            try:
+                client.test_connection()
+            except Exception:
+                return_results(
+                    CommandResults(
+                        readable_output="Note: Please make sure you created the authorization code with the same "
+                        "Microsoft user you configured the integration instance with.",
+                        entry_type=EntryType.WARNING,
+                    )
+                )
+                raise
             return_results(CommandResults(readable_output="```✅ Success!```"))
         if command == "msgraph-mail-auth-reset":
             return_results(reset_auth())
