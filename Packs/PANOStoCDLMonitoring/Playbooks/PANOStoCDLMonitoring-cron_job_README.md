@@ -8,7 +8,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* Mail Sender
+* Mail Sender (New)
 
 ### Scripts
 * FW-to-CDL-monitoring

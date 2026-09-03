@@ -37,7 +37,5 @@ scripttarget: 0
 runas: DBotWeakRole
 marketplaces:
 - xsoar
-- marketplacev2
-- platform
 tests:
 - Send Investigation Summary Reports - Test

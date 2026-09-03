@@ -14,7 +14,7 @@ This playbook does not use any sub-playbooks.
 
 * Slack v3
 * Microsoft Teams
-* Mail Sender
+* Mail Sender (New)
 * ServiceNow v2
 * Jira V3
 
