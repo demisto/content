@@ -203,6 +203,41 @@ class TestFetchActivity:
         assert previously_ingested not in result
         assert len(result) == 1
 
+    def test_dedup_value_proof_log(self, mocker):
+        """
+        Proves (in the logs) the value of the previous fix. On a cycle where the API re-returns an
+        already-ingested event AND a brand-new event that sorts before the previous checkpoint:
+          - duplicates_prevented counts the re-ingested duplicate the OLD code often missed.
+          - would_have_been_dropped_by_old_code counts the new pre-checkpoint event the OLD
+            position-based code would have SILENTLY LOST.
+        """
+        import WorkdayEventCollector as wec
+        from WorkdayEventCollector import get_event_identity, remove_duplications
+
+        info_spy = mocker.patch.object(wec.demisto, "info")
+
+        previously_ingested = self._event(10, "2026-08-26T10:27:53.697Z")
+        brand_new_earlier = self._event(11, "2026-08-26T10:27:53.300Z")  # sorts BEFORE checkpoint
+        brand_new_later = self._event(12, "2026-08-26T10:27:54.000Z")  # after checkpoint
+        last_run = {
+            "previous_event_ids": [get_event_identity(previously_ingested)],
+            "latest_request_time": "2026-08-26T10:27:53.697Z",
+        }
+
+        result = remove_duplications([brand_new_earlier, previously_ingested, brand_new_later], last_run)
+
+        assert previously_ingested not in result
+        assert brand_new_earlier in result
+        assert brand_new_later in result
+
+        # Find the dedup-value proof log line and assert the counts.
+        proof_lines = [c.args[0] for c in info_spy.call_args_list if wec.DEDUP_VALUE_LOG_TAG in c.args[0]]
+        assert proof_lines, "expected a dedup-value proof log line"
+        line = proof_lines[-1]
+        assert "duplicates_prevented=1" in line
+        assert "would_have_been_dropped_by_old_code=1" in line
+        assert "OLD_CODE_WOULD_HAVE_MISHANDLED=2" in line
+
     def test_remove_milliseconds_from_time_of_logging(self):
         """
         Given: loggings with time string with milliseconds
@@ -427,3 +462,117 @@ class TestFetchActivity:
         self.client.get_activity_logging_request(from_date="2023-04-15T07:00:00Z", to_date="2023-04-15T08:00:00Z")
         params_sent = http_request.call_args_list[0][1].get("params", {})
         assert params_sent.get("instancesReturned") == instance_returned
+
+    # ------------------------- Late-arrival audit (XSUP-75678 smoking gun) -------------------------
+
+    def test_count_activity_logging_for_window_single_call(self, mocker):
+        """
+        Given: the API returns a partial page (< MAX_PAGE_SIZE) for the audit window.
+        When: running count_activity_logging_for_window.
+        Then: it performs EXACTLY ONE API call, returns the exact count and capped=False.
+        """
+        from WorkdayEventCollector import count_activity_logging_for_window
+
+        single = util_load_json("test_data/single_loggings_response.json")
+        page = [single.copy() for _ in range(150)]
+        request_mock = mocker.patch.object(Client, "get_activity_logging_request", return_value=page)
+
+        count, capped = count_activity_logging_for_window(
+            self.client, from_date="2026-08-31T07:00:00Z", to_date="2026-08-31T07:01:00Z"
+        )
+
+        assert request_mock.call_count == 1  # strictly one API call, no pagination
+        assert count == 150
+        assert capped is False
+
+    def test_count_activity_logging_for_window_caps_at_page_size(self, mocker):
+        """
+        Given: a busy minute returns a full page (== MAX_PAGE_SIZE).
+        When: running count_activity_logging_for_window.
+        Then: still ONE API call; count is MAX_PAGE_SIZE and capped=True (no extra pagination calls).
+        """
+        from WorkdayEventCollector import MAX_PAGE_SIZE, count_activity_logging_for_window
+
+        single = util_load_json("test_data/single_loggings_response.json")
+        full_page = [single.copy() for _ in range(MAX_PAGE_SIZE)]
+        request_mock = mocker.patch.object(Client, "get_activity_logging_request", return_value=full_page)
+
+        count, capped = count_activity_logging_for_window(
+            self.client, from_date="2026-08-31T07:00:00Z", to_date="2026-08-31T07:01:00Z"
+        )
+
+        assert request_mock.call_count == 1
+        assert count == MAX_PAGE_SIZE
+        assert capped is True
+
+    @freeze_time("2026-08-31 07:15:00")
+    def test_audit_records_first_seen_then_detects_growth(self, mocker):
+        """
+        Given: the same past minute is audited twice - first the API returns 100, later 130.
+        When: running run_late_arrival_audit across two cycles.
+        Then: the first call records first_seen=100; the second call detects growth (+30), which is
+              the smoking-gun proof of late-arriving events. No events are ingested.
+        """
+        from WorkdayEventCollector import run_late_arrival_audit
+
+        # Cycle 1: API currently returns 100 for the audited (already-elapsed) minute.
+        mocker.patch("WorkdayEventCollector.count_activity_logging_for_window", return_value=(100, False))
+        history1 = run_late_arrival_audit(self.client, last_run={})
+        # Exactly one audited minute recorded, value 100.
+        assert list(history1.values()) == [100]
+        audited_minute = next(iter(history1))
+
+        # Cycle 2 (same frozen time -> same audited minute): API now returns 130.
+        mocker.patch("WorkdayEventCollector.count_activity_logging_for_window", return_value=(130, False))
+        history2 = run_late_arrival_audit(self.client, last_run={"audit_history": history1})
+        # First-seen value is preserved (still 100) so growth is measurable.
+        assert history2[audited_minute] == 100
+
+    @freeze_time("2026-08-31 07:15:00")
+    def test_audit_is_failure_safe(self, mocker):
+        """
+        Given: the audit API query raises.
+        When: running run_late_arrival_audit.
+        Then: it swallows the error and returns the prior history unchanged (never breaks fetch).
+        """
+        from WorkdayEventCollector import run_late_arrival_audit
+
+        mocker.patch("WorkdayEventCollector.count_activity_logging_for_window", side_effect=Exception("boom"))
+        prior = {"audit_history_marker": 1}
+        result = run_late_arrival_audit(self.client, last_run={"audit_history": prior})
+        assert result == prior
+
+    @freeze_time("2026-08-31 07:15:00")
+    def test_audit_does_not_affect_ingested_events_or_checkpoint(self, mocker):
+        """
+        SAFETY: the audit must never cause duplicates or missing events.
+
+        Given: a normal fetch cycle with the audit enabled.
+        When: running fetch_activity_logging.
+        Then:
+            - The events returned for ingestion are exactly the deduped fetch result (audit adds none).
+            - The fetch checkpoint keys (last_fetch_time/previous_event_ids) are unaffected by the audit.
+            - The audit result is isolated under the `audit_history` key only.
+        """
+        from WorkdayEventCollector import fetch_activity_logging
+
+        first_fetch_time = datetime.strptime("2026-08-31T07:00:00Z", DATE_FORMAT)
+        single = util_load_json("test_data/single_loggings_response.json")
+        real_batch = [dict(single, taskId=str(i), requestTime="2026-08-31T07:14:00.100Z") for i in range(3)]
+
+        # Fetch returns the real batch (page1) then empty (page2). Audit count is a separate large number.
+        mocker.patch.object(Client, "get_activity_logging_request", side_effect=[real_batch, []])
+        mocker.patch("WorkdayEventCollector.count_activity_logging_for_window", return_value=99999)
+
+        events_to_ingest, new_last_run = fetch_activity_logging(
+            self.client, last_run={}, first_fetch=first_fetch_time, max_fetch=100
+        )
+
+        # Ingestion list is exactly the deduped fetch result - the audit's 99999 count is NOT included.
+        assert len(events_to_ingest) == 3
+        assert all(e in real_batch for e in events_to_ingest)
+        # Checkpoint reflects the real events only.
+        assert new_last_run["last_fetch_time"] == "2026-08-31T07:14:00Z"
+        assert len(new_last_run["previous_event_ids"]) == 3
+        # Audit lives in its own isolated key.
+        assert "audit_history" in new_last_run

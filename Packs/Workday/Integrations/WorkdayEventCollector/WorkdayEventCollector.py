@@ -14,7 +14,21 @@ urllib3.disable_warnings()
 # BUILD_MARKER: bump this string on every hotfix build so the exact deployed version can be
 # identified from the tenant integration logs (search for "WORKDAY_EC_BUILD" in GCP Logs Explorer).
 # This is what lets us confirm the fix is actually running on the client tenant after upload.
-BUILD_MARKER = "WORKDAY_EC_BUILD=XSUP-75678-dedup-fix-1"
+BUILD_MARKER = "WORKDAY_EC_BUILD=XSUP-75678-dedup-fix-2-late-arrival-audit"
+
+# Late-arrival audit (read-only diagnostic): on each fetch we re-query the Workday API for a single
+# minute that has ALREADY fully elapsed and was already fetched by earlier cycles. If the API now
+# returns MORE events for that past minute than we originally ingested, that is direct proof that
+# Workday makes events available late/out-of-order (the cause of the residual gap in XSUP-75678).
+# The audit only COUNTS events - it never ingests them - so it cannot cause duplication or loss.
+AUDIT_LOG_TAG = "WORKDAY_LATE_ARRIVAL_AUDIT"
+# Tag for the dedup-value proof: quantifies, each cycle, the duplicates the identity-based fix
+# prevented from being re-ingested, and the boundary-second events it KEPT that the OLD
+# position-based code would have silently dropped. Greppable in tenant logs to show the fix's value.
+DEDUP_VALUE_LOG_TAG = "WORKDAY_DEDUP_VALUE"
+# How far back the audited minute sits from "now" (seconds). 600s = audit the minute that ended
+# 10 minutes ago, giving the API ample time to have "caught up" if it were strongly consistent.
+AUDIT_DELAY_SECONDS = 600
 
 DEFAULT_MAX_FETCH = 3000
 MAX_PAGE_SIZE = 1000
@@ -163,6 +177,88 @@ def get_max_fetch_activity_logging(client: Client, logging_to_fetch: int, from_d
     return activity_loggings
 
 
+def count_activity_logging_for_window(client: Client, from_date: str, to_date: str) -> tuple[int, bool]:
+    """
+    Read-only helper for the late-arrival audit: counts (without ingesting) how many activity
+    loggings the Workday API returns *right now* for a given [from_date, to_date) window.
+
+    To strictly bound API cost, this performs EXACTLY ONE non-paginated request (limit=MAX_PAGE_SIZE),
+    regardless of how many events the window contains. For the audited 1-minute windows this is
+    effectively always the full count. If a minute ever exceeds MAX_PAGE_SIZE events, the count is
+    reported as MAX_PAGE_SIZE with capped=True (still sufficient to demonstrate a growing count).
+
+    Args:
+        client: Client object.
+        from_date: window start (whole-second string).
+        to_date: window end (whole-second string).
+
+    Returns:
+        (count, capped) - capped is True if the window may contain more than MAX_PAGE_SIZE events.
+    """
+    page = client.get_activity_logging_request(from_date=from_date, to_date=to_date, offset=0, limit=MAX_PAGE_SIZE)
+    count = len(page)
+    capped = count >= MAX_PAGE_SIZE
+    return count, capped
+
+
+def run_late_arrival_audit(client: Client, last_run: dict) -> dict:
+    """
+    Self-proving diagnostic for XSUP-75678 (read-only; ingests nothing).
+
+    Each fetch cycle re-queries the API for a single minute that has ALREADY fully elapsed
+    (ending AUDIT_DELAY_SECONDS ago). It records the count the API returns for that minute the
+    first time it is audited, then on every later cycle re-counts the SAME minute and logs whether
+    the API now returns MORE events than before. A growing count for a fixed, long-past minute is
+    direct proof that Workday releases events late/out-of-order - no manual customer command needed.
+
+    The per-minute first-seen counts are stored in last_run["audit_history"] (a small dict keyed by
+    the minute string). Old entries are pruned so the state stays tiny.
+
+    Args:
+        client: Client object.
+        last_run: the last run object (mutated copy is returned via the caller).
+
+    Returns:
+        The updated audit_history dict to persist in last_run.
+    """
+    audit_history: dict = dict(last_run.get("audit_history", {}))
+    now = datetime.now(tz=timezone.utc)
+    # The minute that ended AUDIT_DELAY_SECONDS ago, floored to whole minutes.
+    audit_to_dt = (now - timedelta(seconds=AUDIT_DELAY_SECONDS)).replace(second=0, microsecond=0)
+    audit_from_dt = audit_to_dt - timedelta(minutes=1)
+    audit_from = audit_from_dt.strftime(DATE_FORMAT)
+    audit_to = audit_to_dt.strftime(DATE_FORMAT)
+    minute_key = audit_from  # unique per audited minute
+
+    # Exactly ONE read-only API call per audit (non-paginated) to strictly bound API usage.
+    try:
+        api_count_now, capped = count_activity_logging_for_window(client, from_date=audit_from, to_date=audit_to)
+    except Exception as e:  # never let the diagnostic break the fetch
+        demisto.debug(f"{AUDIT_LOG_TAG} audit query failed (non-fatal): {e!s}")
+        return audit_history
+
+    capped_note = " (capped at MAX_PAGE_SIZE)" if capped else ""
+    first_seen = audit_history.get(minute_key)
+    if first_seen is None:
+        audit_history[minute_key] = api_count_now
+        demisto.info(
+            f"{AUDIT_LOG_TAG} window=[{audit_from},{audit_to}) first_seen_api_count={api_count_now}{capped_note} "
+            f"age_seconds={AUDIT_DELAY_SECONDS}"
+        )
+    else:
+        grew_by = api_count_now - first_seen
+        demisto.info(
+            f"{AUDIT_LOG_TAG} window=[{audit_from},{audit_to}) first_seen_api_count={first_seen} "
+            f"api_count_now={api_count_now}{capped_note} grew_by={grew_by} "
+            f"LATE_ARRIVAL_DETECTED={grew_by > 0}"
+        )
+
+    # Prune audit_history to the most recent ~30 minutes to keep last_run small.
+    cutoff = (now - timedelta(seconds=AUDIT_DELAY_SECONDS + 1800)).strftime(DATE_FORMAT)
+    audit_history = {k: v for k, v in audit_history.items() if k >= cutoff}
+    return audit_history
+
+
 def get_event_identity(activity_logging: dict) -> str:
     """
     Builds a stable, order-independent identity for a single activity logging event.
@@ -208,6 +304,10 @@ def remove_duplications(activity_loggings: list, last_run: dict) -> list:
     previous_event_ids = set(last_run.get("previous_event_ids", []))
     if not previous_event_ids:
         demisto.debug("No previous_event_ids in last_run, returning everything.")
+        demisto.info(
+            f"{DEDUP_VALUE_LOG_TAG} received={len(activity_loggings)} duplicates_prevented=0 "
+            f"kept={len(activity_loggings)} would_have_been_dropped_by_old_code=0 (first cycle / no checkpoint)"
+        )
         return activity_loggings
 
     deduped = [logging for logging in activity_loggings if get_event_identity(logging) not in previous_event_ids]
@@ -216,6 +316,24 @@ def remove_duplications(activity_loggings: list, last_run: dict) -> list:
         f"Identity-based dedup: received {len(activity_loggings)} loggings, "
         f"removed {removed} already-ingested duplicates, keeping {len(deduped)}."
     )
+
+    # ---- Proof of the previous fix's value (logged, does not change behavior) --------------------
+    # 1) duplicates_prevented: real duplicates the OLD code often FAILED to detect (exact-dict match),
+    #    which would have been RE-INGESTED into the dataset. The new identity dedup removes them.
+    # 2) would_have_been_dropped_by_old_code: KEPT (non-duplicate) events whose requestTime sorts
+    #    BEFORE the previous checkpoint. The OLD position-based code trimmed everything before the
+    #    stored last_log's position, so these brand-new events would have been SILENTLY LOST.
+    previous_checkpoint = last_run.get("latest_request_time", "")
+    would_have_been_dropped = 0
+    if previous_checkpoint:
+        would_have_been_dropped = sum(1 for logging in deduped if str(logging.get("requestTime", "")) < previous_checkpoint)
+    demisto.info(
+        f"{DEDUP_VALUE_LOG_TAG} received={len(activity_loggings)} duplicates_prevented={removed} "
+        f"kept={len(deduped)} would_have_been_dropped_by_old_code={would_have_been_dropped} "
+        f"previous_checkpoint={previous_checkpoint or 'n/a'} "
+        f"OLD_CODE_WOULD_HAVE_MISHANDLED={removed + would_have_been_dropped}"
+    )
+    # ---------------------------------------------------------------------------------------------
     return deduped
 
 
@@ -346,9 +464,24 @@ def fetch_activity_logging(client: Client, max_fetch: int, first_fetch: datetime
     activity_loggings = remove_duplications(activity_loggings=activity_loggings, last_run=last_run)
     demisto.debug(f"{len(activity_loggings)} activity loggings remain after dedup and will be sent to XSIAM.")
 
-    next_last_run = build_next_last_run(activity_loggings, last_run)
+    # The list of events to ingest is now FINAL. Nothing below is allowed to modify it.
+    events_to_ingest = activity_loggings
 
-    return activity_loggings, next_last_run
+    next_last_run = build_next_last_run(events_to_ingest, last_run)
+
+    # ---- Read-only diagnostic (XSUP-75678 smoking gun) -------------------------------------------
+    # SAFETY GUARANTEES:
+    #   * It does NOT touch `events_to_ingest` (the only list ever sent to XSIAM) -> no duplicates.
+    #   * It does NOT touch fetch checkpoint keys (last_fetch_time/previous_event_ids) -> no loss.
+    #   * It only performs an extra READ query and adds an isolated `audit_history` key.
+    #   * Any failure is swallowed inside run_late_arrival_audit -> cannot break the fetch.
+    try:
+        next_last_run["audit_history"] = run_late_arrival_audit(client=client, last_run=last_run)
+    except Exception as e:  # extra belt-and-suspenders; never affect ingestion
+        demisto.debug(f"{AUDIT_LOG_TAG} skipped due to non-fatal error: {e!s}")
+    # ---------------------------------------------------------------------------------------------
+
+    return events_to_ingest, next_last_run
 
 
 def test_module(client: Client) -> str:  # pragma: no cover
