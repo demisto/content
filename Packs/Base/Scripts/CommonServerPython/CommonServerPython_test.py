@@ -10368,7 +10368,8 @@ class TestSendEventsToXSIAMTest:
             request_mocker = requests_mock.post(
                 'https://api-url/logs/v1/xsiam', json=error_msg, status_code=status_code, reason='Unauthorized[401]'
             )
-            expected_error_msg = 'Unauthorized[401]'
+            # A real server 'error' value (non-'false') is appended after the HTTP reason (CIAC-17212 fix).
+            expected_error_msg = 'Unauthorized[401]: {}'.format(error_msg['error'])
         else:
             status_code = 403
             request_mocker = requests_mock.post('https://api-url/logs/v1/xsiam', text=None, status_code=status_code)
@@ -10393,6 +10394,48 @@ class TestSendEventsToXSIAMTest:
 
         error_log_mocker.assert_called_with(
             expected_request_and_response_info.format(status_code=str(status_code), error_received=expected_error_msg))
+
+    @pytest.mark.parametrize('server_error_body, should_append', [
+        ({'error': 'boom'}, True),      # a real server error message is appended after the reason
+        ({'error': 'false'}, False),    # the 'false' sentinel means "no error" - nothing appended
+        ({'error': ''}, False),         # empty error - nothing appended
+        ({}, False),                    # missing 'error' key - nothing appended
+    ])
+    def test_data_error_handler_appends_real_error(self, mocker, requests_mock, server_error_body, should_append):
+        """
+        Given:
+            An XSIAM error response whose JSON body contains an 'error' field that is either a real message,
+            the 'false' sentinel, empty, or missing.
+        When:
+            send_data_to_xsiam hits the error path and data_error_handler parses the response.
+        Then:
+            The raised DemistoException appends ': <error>' only when 'error' is a real (non-'false', non-empty)
+            message; otherwise only the HTTP reason is used. Locks in the CIAC-17212 error-handler fix.
+        """
+        if not IS_PY3:
+            return
+
+        mocker.patch.object(demisto, "params", return_value={"url": "www.test_url.com"})
+        mocker.patch.object(demisto, "callingContext", {"context": {"IntegrationInstance": "test_integration_instance",
+                                                                    "IntegrationBrand": "test_brand"}})
+        mocker.patch('time.time', return_value=123)
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'error')
+
+        reason = 'Unauthorized[401]'
+        requests_mock.post('https://api-url/logs/v1/xsiam', json=server_error_body, status_code=401, reason=reason)
+
+        events = self.test_data['json_events']['events']
+        with pytest.raises(DemistoException) as exc_info:
+            send_data_to_xsiam(data=events, vendor='some vendor', product='some product', data_type="events")
+
+        raised_message = str(exc_info.value)
+        if should_append:
+            assert raised_message.endswith('{reason}: {err}'.format(reason=reason, err=server_error_body['error']))
+        else:
+            assert raised_message.endswith(reason)
+            assert ': false' not in raised_message
 
     @pytest.mark.parametrize(
         'mocked_responses, expected_request_call_count, expected_error_log_count, should_succeed', [
