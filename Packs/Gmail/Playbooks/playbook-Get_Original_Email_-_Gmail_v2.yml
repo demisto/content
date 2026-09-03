@@ -4,7 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Get Original Email - Gmail v2
 description: |
-  This v2 playbook uses the reporter's email headers to retrieve the original email. This decreases the number of tasks to retrieve the original email. 
+  This v2 playbook uses the Gmail integration to search the reporter's email headers to retrieve the original email. This decreases the number of tasks to retrieve the original email. 
   Use this playbook to retrieve the original email using the Gmail integration, including headers and attachments.
   Note: You must have the necessary Google Apps Domain-Wide Delegation of Authority permissions in your Gmail service to execute global search.
 starttaskid: "0"
