@@ -19,13 +19,53 @@ DEMISTO_XSOAR_VERSION = get_demisto_version_as_str().split("-")[0]
 CONNECTOR_NAME_VERSION = f"CensysXSOAR/{PACK_VERSION} (XSOAR/{DEMISTO_XSOAR_VERSION}; ts={int(time.time())})"
 
 ENDPOINTS = {
+    "SEARCH_QUERY": "v3/global/search/query",
     "HOST_EVENT_HISTORY": "v3/global/asset/host/{}/timeline",
+    "HOST_ENRICHMENT": "v3/global/asset/enrichment/host/{}",
     "INITIATE_RESCAN": "v3/global/scans/rescan",
     "RESCAN_STATUS": "v3/global/scans/{}",
     "INITIATE_JOB": "v3/threat-hunting/censeye/jobs",
     "JOB_STATUS": "v3/threat-hunting/censeye/jobs/{}",
     "JOB_RESULTS": "v3/threat-hunting/censeye/jobs/{}/results",
 }
+
+IP_SEARCH_FIELDS = [
+    "host.labels.value",
+    "host.ip",
+    "host.autonomous_system.asn",
+    "host.autonomous_system.name",
+    "host.autonomous_system.bgp_prefix",
+    "host.autonomous_system.country_code",
+    "host.autonomous_system.description",
+    "host.location.country_code",
+    "host.location.timezone",
+    "host.location.province",
+    "host.location.postal_code",
+    "host.location.coordinates.latitude",
+    "host.location.coordinates.longitude",
+    "host.location.city",
+    "host.location.continent",
+    "host.location.country",
+    "host.services.protocol",
+    "host.services.port",
+    "host.services.transport_protocol",
+    "host.services.extended_service_name",
+    "host.services.cert",
+    "host.whois.network.updated",
+    "host.dns.reverse_dns.names",
+    "host.operating_system.source",
+    "host.operating_system.part",
+    "host.operating_system.version",
+    "host.service_count",
+    "host.services.labels.value",
+    "host.services.threats.name",
+    "host.services.vulns",
+    "host.services.scan_time",
+    "host.dns.names",
+    "host.dns.forward_dns.names",
+    "host.whois.network.name",
+    "host.whois.network.cidrs",
+]
 
 ERRORS = {
     "INVALID_OBJECT": "Failed to parse {} object from response: {}",
@@ -92,6 +132,7 @@ class Client(BaseClient):
         data: dict[str, Any] = None,
         json_data: dict[str, Any] = None,
         response_type: str = "json",
+        retries: int = TOTAL_RETRIES,
         **kwargs,
     ) -> dict[str, Any]:
         """Makes an HTTP request to the Censys API with automatic retry logic.
@@ -108,6 +149,8 @@ class Client(BaseClient):
             json_data: JSON data to be sent in the request body. Defaults to None.
             response_type: The expected response type. Options: 'json', 'content', 'response', 'text'.
                           Defaults to 'json'.
+            retries: The number of retries for the statuses in STATUS_CODE_TO_RETRY. Defaults to TOTAL_RETRIES.
+                     Set to 0 to disable the retry mechanism.
             **kwargs: Additional keyword arguments passed to _http_request.
 
         Returns:
@@ -123,7 +166,8 @@ class Client(BaseClient):
 
         Note:
             Automatically retries up to TOTAL_RETRIES (4) times for rate limit (429) and
-            server errors (5xx) with exponential backoff (BACKOFF_FACTOR=7.5).
+            server errors (5xx) with exponential backoff (BACKOFF_FACTOR=7.5), unless the
+            "retries" argument overrides it.
         """
         demisto.debug(f"Making API request at {method} {url_suffix} with params: {params} and body: {data or json_data}")
         # Make the HTTP request using the _http_request method, passing the necessary parameters.
@@ -133,7 +177,7 @@ class Client(BaseClient):
             data=data,
             json_data=json_data,
             params=params,
-            retries=TOTAL_RETRIES,
+            retries=retries,
             status_list_to_retry=STATUS_CODE_TO_RETRY,
             ok_codes=OK_CODES,
             backoff_factor=BACKOFF_FACTOR,
@@ -183,11 +227,26 @@ class Client(BaseClient):
         Returns:
             API response dictionary
         """
-        url_suffix = "/v3/global/search/query"
+        url_suffix = ENDPOINTS["SEARCH_QUERY"]
         data = assign_params(query=query, page_size=page_size, fields=fields, page_token=page_token)
         demisto.debug(f"censys_search_request: query={query}, page_size={page_size}, page_token={page_token}")
         params = {"organization_id": self.org_id}
         return self.http_request("POST", url_suffix, json_data=data, params=params)
+
+    def censys_host_enrichment_request(self, ip_address: str) -> dict:
+        """Fetch enriched host data from the Censys host enrichment API.
+
+        Args:
+            ip_address: The IP address of the host to enrich.
+
+        Returns:
+            Response object from the API containing the enriched host asset.
+        """
+        url_suffix = ENDPOINTS["HOST_ENRICHMENT"].format(ip_address)
+        params = {"organization_id": self.org_id}
+        demisto.debug(f"censys_host_enrichment_request: ip_address={ip_address}")
+        # The ip command falls back to the search endpoint when the enrichment fails, so failures are not retried.
+        return self.http_request("GET", url_suffix, params=params, retries=0)
 
     def censys_host_history_request(self, ip_address: str, start_time: str, end_time: str) -> dict:
         """Fetch host event history from the Censys API.
@@ -693,12 +752,138 @@ def validate_related_infra_command_args(ioc_type: str, ioc_value: str) -> None:
         validate_port_argument(port)
 
 
-def prepare_hr_for_ip_resource(resources: list[dict] | dict) -> str:
+def prepare_hr_for_greynoise(resource: dict) -> str:
+    """Prepare human-readable output for the GreyNoise data of a host resource.
+
+    Args:
+        resource: The host resource data from Censys API
+
+    Returns:
+        Human-readable output string for the GreyNoise section
+    """
+    greynoise = resource.get("greynoise") or {}
+    if not greynoise:
+        return ""
+
+    hr_content = {
+        "Classification": greynoise.get("classification"),
+        "Threat Actor": greynoise.get("actor"),
+        "Last Seen Scanned": greynoise.get("last_observed_time"),
+    }
+
+    return tableToMarkdown("GreyNoise", hr_content, removeNull=True, sort_headers=False)
+
+
+def prepare_hr_for_ip_info(resource: dict) -> str:
+    """Prepare human-readable output for the network and privacy data of a host resource.
+
+    Args:
+        resource: The host resource data from Censys API
+
+    Returns:
+        Human-readable output string for the IP information section
+    """
+    networks = resource.get("network") or []
+    privacies = resource.get("privacy") or []
+    if not networks and not privacies:
+        return ""
+
+    hr_data = []
+
+    # The network and the privacy data are reported as parallel lists, one entry per source.
+    for network, privacy in zip(networks, privacies):
+        hr_data.append(
+            {
+                "Network Hosting": network.get("hosting"),
+                "Network Mobile": network.get("mobile"),
+                "Network Satellite": network.get("satellite"),
+                "Privacy Anonymous": privacy.get("anonymous"),
+                "Privacy Tor": privacy.get("tor"),
+                "Privacy Proxy": privacy.get("proxy"),
+                "Privacy Relay": privacy.get("relay"),
+                "Privacy VPN": privacy.get("vpn"),
+            }
+        )
+
+    headers = [
+        "Network Hosting",
+        "Network Mobile",
+        "Network Satellite",
+        "Privacy Anonymous",
+        "Privacy Tor",
+        "Privacy Proxy",
+        "Privacy Relay",
+        "Privacy VPN",
+    ]
+
+    return tableToMarkdown("IP Info", hr_data, headers=headers, removeNull=True, sort_headers=False)
+
+
+def prepare_hr_for_mallory(resource: dict) -> str:
+    """Prepare human-readable output for the Mallory third party data of a host resource.
+
+    Args:
+        resource: The host resource data from Censys API
+
+    Returns:
+        Human-readable output string for the Mallory section
+    """
+    mallory_entries = demisto.get(resource, "third_party.mallory") or []
+    if not mallory_entries:
+        return ""
+
+    hr_data = []
+
+    for entry in mallory_entries:
+        observable = entry.get("observable") or {}
+        verdict_summary = entry.get("verdict_summary") or {}
+        verdicts = [f"{verdict}: {count}" for verdict, count in verdict_summary.items() if count]
+        opinions = entry.get("opinions") or []
+        sources = list(dict.fromkeys([opinion.get("source") for opinion in opinions if opinion.get("source")]))
+        confidences = list(dict.fromkeys([opinion.get("confidence") for opinion in opinions if opinion.get("confidence")]))
+        tags = list(
+            dict.fromkeys([tag for opinion in opinions for tag in (demisto.get(opinion, "attributes.tags") or []) if tag])
+        )
+
+        hr_data.append(
+            {
+                "Name": observable.get("name"),
+                "Type": observable.get("type"),
+                "First Seen At": entry.get("first_seen_at"),
+                "Last Seen At": entry.get("last_seen_at"),
+                "Last Update At": observable.get("updated_at"),
+                "Description": observable.get("description"),
+                "Verdict": ", ".join(verdicts),
+                "Confidence": ", ".join(confidences),
+                "Source": ", ".join(sources),
+                "Source Count": entry.get("source_count"),
+                "Tags": ", ".join(tags),
+            }
+        )
+
+    headers = [
+        "Name",
+        "Type",
+        "First Seen At",
+        "Last Seen At",
+        "Last Update At",
+        "Description",
+        "Verdict",
+        "Confidence",
+        "Source",
+        "Source Count",
+        "Tags",
+    ]
+
+    return tableToMarkdown("Mallory", hr_data, headers=headers, removeNull=True, sort_headers=False)
+
+
+def prepare_hr_for_ip_resource(resources: list[dict] | dict, table_name: str = "Enriched Host Data") -> str:
     """Prepare human-readable output for IP resource(s).
 
     Args:
         resources: The host resource data from Censys API (single dict or list of dicts)
-        params: Integration parameters
+        table_name: The title of the host data table. Defaults to "Enriched Host Data".
 
     Returns:
         Human-readable output string
@@ -800,7 +985,15 @@ def prepare_hr_for_ip_resource(resources: list[dict] | dict) -> str:
         }
         hr_data.append(hr_content)
 
-    human_readable = tableToMarkdown("Enriched Host Data", hr_data, removeNull=True, sort_headers=False)
+    human_readable = tableToMarkdown(table_name, hr_data, removeNull=True, sort_headers=False)
+
+    for resource in resources:
+        sections = [
+            prepare_hr_for_greynoise(resource),
+            prepare_hr_for_ip_info(resource),
+            prepare_hr_for_mallory(resource),
+        ]
+        human_readable += "".join(f"\n{section}" for section in sections if section)
 
     return human_readable
 
@@ -934,6 +1127,143 @@ def prepare_hr_for_pivot_information(pivot_data: list[dict[str, Any]]) -> str:
     )
 
     return hr_output
+
+
+def prepare_command_result_for_ip_resource(
+    resource: dict, params: dict, raw_response: dict, host_enrichment_used: bool = False
+) -> CommandResults:
+    """Build the command result for a single host resource of the ip command.
+
+    Args:
+        resource: The host resource returned by the search or the host enrichment API.
+        params: Integration parameters.
+        raw_response: The raw API response the resource was extracted from.
+        host_enrichment_used: Whether the data was retrieved from the host enrichment API.
+            Defaults to False, for the search API cases.
+
+    Returns:
+        CommandResults for the given host resource.
+    """
+    ip = resource.get("ip")
+    labels = list({label.get("value") for label in resource.get("labels", [])})
+    score, malicious_description = get_dbot_score(params, labels)
+    dbot_score = Common.DBotScore(
+        indicator=ip,
+        indicator_type=DBotScoreType.IP,
+        integration_name="Censys",
+        score=score,
+        malicious_description=malicious_description,
+        reliability=params.get("integration_reliability"),
+    )
+    content = {
+        "ip": ip,
+        "asn": demisto.get(resource, "autonomous_system.asn"),
+        "updated_date": demisto.get(resource, "whois.network.updated"),
+        "geo_latitude": demisto.get(resource, "location.coordinates.latitude"),
+        "geo_longitude": demisto.get(resource, "location.coordinates.longitude"),
+        "geo_country": demisto.get(resource, "location.country"),
+        "port": ", ".join([str(service.get("port")) for service in resource.get("services", [])]),
+    }
+    indicator = Common.IP(dbot_score=dbot_score, **content)
+
+    hr_output = f"### Censys results for IP: {ip}\n\n"
+    table_name = "Enriched Host Data (Enrichment API)" if host_enrichment_used else "Enriched Host Data"
+
+    hr_output += prepare_hr_for_ip_resource(resource, table_name)
+    outputs = {**resource, "HostEnrichmentUsed": host_enrichment_used}
+    return CommandResults(
+        outputs_prefix="Censys.IP",
+        outputs_key_field="ip",
+        readable_output=hr_output,
+        outputs=remove_empty_elements(outputs),
+        raw_response=raw_response,
+        indicator=indicator,
+    )
+
+
+def get_ip_data_using_enrichment_endpoint(
+    client: Client, ips: list, params: dict, execution_metrics: ExecutionMetrics
+) -> tuple[List[CommandResults], list]:
+    """Enrich each IP using the host enrichment API.
+
+    Every IP is requested separately, since the endpoint supports a single host per call.
+    IPs whose enrichment call fails are returned to the caller, so they can be retried
+    using the search API.
+
+    Args:
+        client: The Censys client instance.
+        ips: The IP addresses to enrich.
+        params: Integration parameters.
+        execution_metrics: Execution metrics to update.
+
+    Returns:
+        Tuple of the command results for the enriched IP addresses and the list of IP addresses
+        that could not be enriched and should fall back to the search API.
+    """
+    results: List[CommandResults] = []
+    failed_ips = []
+
+    for ip in ips:
+        try:
+            raw_response = client.censys_host_enrichment_request(ip)
+            resource = demisto.get(raw_response, "result.resource")
+            if not resource or not isinstance(resource, dict):
+                raise ValueError(f"Unexpected response: 'resource' path not found in response.result. Response: {raw_response}")
+            results.append(prepare_command_result_for_ip_resource(resource, params, raw_response, host_enrichment_used=True))
+            execution_metrics.success += 1
+        except (DemistoException, ValueError) as e:
+            demisto.error(f"ip_command: host enrichment failed for IP {ip}, falling back to search. Error: {e!s}")
+            failed_ips.append(ip)
+
+    return results, failed_ips
+
+
+def get_ip_data_using_search_endpoint(
+    client: Client, ips: list, params: dict, execution_metrics: ExecutionMetrics
+) -> List[CommandResults]:
+    """Retrieve host data for the given IPs using the search API.
+
+    Args:
+        client: The Censys client instance.
+        ips: The IP addresses to look up.
+        params: Integration parameters.
+        execution_metrics: Execution metrics to update.
+
+    Returns:
+        List of command results for the given IP addresses.
+    """
+    results: List[CommandResults] = []
+    fields = IP_SEARCH_FIELDS if params.get("premium_access") else None
+
+    # Build query for all IPs
+    query = " or ".join([f'host.ip="{ip_addr}"' for ip_addr in ips])
+
+    # Send all IPs in a single API call with pagination
+    raw_response = censys_search_with_pagination(client, query, fields=fields)
+    hits = raw_response.get("result", {}).get("hits")
+    if hits is None or not isinstance(hits, list):
+        error_msg = f"Unexpected response: 'hits' path not found in response.result. Response: {raw_response}"
+        raise ValueError(error_msg)
+
+    # Track which IPs were found
+    found_ips = set()
+
+    # Process each hit from the response
+    for hit in hits:
+        # Extract resource from host_v1 wrapper
+        resource = demisto.get(hit, "host_v1.resource", {})
+        ip = resource.get("ip")
+        found_ips.add(ip)
+        results.append(prepare_command_result_for_ip_resource(resource, params, raw_response, host_enrichment_used=False))
+        execution_metrics.success += 1
+
+    # Report IPs that were not found
+    for ip in ips:
+        if ip not in found_ips:
+            demisto.debug(f"ip_command: IP {ip} not found in search results")
+            results.append(CommandResults(readable_output=f"No results found for IP: {ip}"))
+
+    return results
 
 
 """ COMMAND FUNCTIONS """
@@ -1181,114 +1511,49 @@ def search_certs_command(client: Client, args: dict[str, Any], query: str, limit
     )
 
 
-def ip_command(client: Client, args: dict, params: dict):
-    fields = (
-        [
-            "host.labels.value",
-            "host.ip",
-            "host.autonomous_system.asn",
-            "host.autonomous_system.name",
-            "host.autonomous_system.bgp_prefix",
-            "host.autonomous_system.country_code",
-            "host.autonomous_system.description",
-            "host.location.country_code",
-            "host.location.timezone",
-            "host.location.province",
-            "host.location.postal_code",
-            "host.location.coordinates.latitude",
-            "host.location.coordinates.longitude",
-            "host.location.city",
-            "host.location.continent",
-            "host.location.country",
-            "host.services.protocol",
-            "host.services.port",
-            "host.services.transport_protocol",
-            "host.services.extended_service_name",
-            "host.services.cert",
-            "host.whois.network.updated",
-            "host.dns.reverse_dns.names",
-            "host.operating_system.source",
-            "host.operating_system.part",
-            "host.operating_system.version",
-            "host.service_count",
-            "host.services.labels.value",
-            "host.services.threats.name",
-            "host.services.vulns",
-            "host.services.scan_time",
-            "host.dns.names",
-            "host.dns.forward_dns.names",
-            "host.whois.network.name",
-            "host.whois.network.cidrs",
-        ]
-        if params.get("premium_access")
-        else None
-    )
+def ip_command(client: Client, args: dict, params: dict) -> List[CommandResults]:
+    """Run reputation on the given IP addresses.
 
+    When "use_enrichment_endpoint" is enabled, each IP address is retrieved from the host
+    enrichment endpoint. IP addresses whose enrichment call fails fall back to the search
+    endpoint, which retrieves all the remaining IP addresses in a single paginated query.
+    When it is disabled, all the IP addresses are retrieved using the search endpoint only.
+
+    Args:
+        client: The Censys client instance for making API requests.
+        args: Command arguments containing:
+            - ip (str, required): A comma-separated list of IP addresses to check.
+            - use_enrichment_endpoint (str, optional): Whether to retrieve the host data from the
+                host enrichment endpoint. Takes precedence over the "use_host_enrichment" parameter.
+        params: Integration parameters, used for the reputation calculation
+            (malicious and suspicious labels, thresholds, source reliability, premium access)
+            and for the "use_host_enrichment" default of the enrichment endpoint.
+
+    Returns:
+        List of CommandResults with the host data and the IP indicators, followed by the
+        execution metrics results, if any.
+    """
     ips: list = argToList(args.get("ip"))
+    # The command argument takes precedence over the integration parameter when it is provided.
+    use_enrichment_endpoint_arg = args.get("use_enrichment_endpoint")
+    use_enrichment_endpoint = (
+        argToBoolean(use_enrichment_endpoint_arg)
+        if use_enrichment_endpoint_arg
+        else argToBoolean(params.get("use_host_enrichment") or False)
+    )
     demisto.debug(f"ip_command: processing IPs {ips}")
     results: List[CommandResults] = []
     execution_metrics = ExecutionMetrics()
 
     try:
-        # Build query for all IPs
-        query = " or ".join([f'host.ip="{ip_addr}"' for ip_addr in ips])
+        pending_ips = ips
+        if use_enrichment_endpoint:
+            # Use the host enrichment endpoint and fall back to the search endpoint for the failed IPs.
+            enriched_results, pending_ips = get_ip_data_using_enrichment_endpoint(client, ips, params, execution_metrics)
+            results.extend(enriched_results)
 
-        # Send all IPs in a single API call with pagination
-        raw_response = censys_search_with_pagination(client, query, fields=fields)
-        hits = raw_response.get("result", {}).get("hits")
-        if hits is None or not isinstance(hits, list):
-            error_msg = f"Unexpected response: 'hits' path not found in response.result. Response: {raw_response}"
-            raise ValueError(error_msg)
-
-        # Track which IPs were found
-        found_ips = set()
-
-        # Process each hit from the response
-        for hit in hits:
-            # Extract resource from host_v1 wrapper
-            resource = demisto.get(hit, "host_v1.resource", {})
-            ip = resource.get("ip")
-            found_ips.add(ip)
-            labels = list({label.get("value") for label in resource.get("labels", [])})
-            score, malicious_description = get_dbot_score(params, labels)
-            dbot_score = Common.DBotScore(
-                indicator=ip,
-                indicator_type=DBotScoreType.IP,
-                integration_name="Censys",
-                score=score,
-                malicious_description=malicious_description,
-                reliability=params.get("integration_reliability"),
-            )
-            content = {
-                "ip": ip,
-                "asn": demisto.get(resource, "autonomous_system.asn"),
-                "updated_date": demisto.get(resource, "whois.network.updated"),
-                "geo_latitude": demisto.get(resource, "location.coordinates.latitude"),
-                "geo_longitude": demisto.get(resource, "location.coordinates.longitude"),
-                "geo_country": demisto.get(resource, "location.country"),
-                "port": ", ".join([str(service.get("port")) for service in resource.get("services", [])]),
-            }
-            indicator = Common.IP(dbot_score=dbot_score, **content)
-
-            hr_output = f"### Censys results for IP: {ip}\n\n"
-            hr_output += prepare_hr_for_ip_resource(resource)
-            results.append(
-                CommandResults(
-                    outputs_prefix="Censys.IP",
-                    outputs_key_field="ip",
-                    readable_output=hr_output,
-                    outputs=resource,
-                    raw_response=raw_response,
-                    indicator=indicator,
-                )
-            )
-            execution_metrics.success += 1
-
-        # Report IPs that were not found
-        for ip in ips:
-            if ip not in found_ips:
-                demisto.debug(f"ip_command: IP {ip} not found in search results")
-                results.append(CommandResults(readable_output=f"No results found for IP: {ip}"))
+        if pending_ips:
+            results.extend(get_ip_data_using_search_endpoint(client, pending_ips, params, execution_metrics))
 
     except Exception as e:
         # Handle exceptions for the entire batch
