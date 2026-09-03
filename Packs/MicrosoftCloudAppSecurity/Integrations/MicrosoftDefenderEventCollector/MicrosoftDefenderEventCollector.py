@@ -1,6 +1,6 @@
 import traceback
 from abc import ABC
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from enum import Enum
 from typing import Any, NamedTuple
 
@@ -18,8 +18,12 @@ from CommonServerUserPython import *  # noqa
 
 
 DEFAULT_LIMIT = 1000
-MAX_LIMIT = 1000
 DEFAULT_FROM_FETCH_PARAMETER = "3 days"
+# When a fetched event type returns 0 events and has no existing watermark, seed its watermark to
+# (now - this buffer) instead of exactly "now". The small step-back covers the vendor's ingestion
+# lag (~2-3 min) so events that occurred just before "now" but were not yet available are not
+# skipped, while the watermark still advances every cycle (so an empty type never loops).
+WATERMARK_SAFETY_BUFFER_MS = 5 * 60 * 1000  # 5 minutes
 
 
 class EventFilter(NamedTuple):
@@ -114,9 +118,11 @@ class IntegrationOptions(BaseModel):
 
     proxy: bool | None = False
     # limit is the maximum number of events to fetch per event type per fetch cycle.
-    # Defaults to DEFAULT_LIMIT so fetch-events pagination is always bounded, and is
-    # capped at MAX_LIMIT. Pagination loops in pages (~100, the API default page size).
-    limit: int = Field(DEFAULT_LIMIT, ge=1, le=MAX_LIMIT)
+    # Defaults to DEFAULT_LIMIT so fetch-events pagination is always bounded. There is no
+    # upper cap: the correct value depends on the tenant's event volume, which we cannot
+    # know in advance, so admins may raise it as needed. Pagination loops in pages (~100,
+    # the API default page size).
+    limit: int = Field(DEFAULT_LIMIT, ge=1)
 
 
 class IntegrationEventsClient(ABC):
@@ -350,30 +356,38 @@ class DefenderGetEvents(IntegrationGetEvents):
             yield events
 
     @staticmethod
-    def get_last_run(events: list) -> dict:
+    def get_last_run(events: list, fetched_types: Iterable[str] | None = None) -> dict:
         last_run = demisto.getLastRun()
         demisto.debug(f"MD: Got the last run: {last_run}")
-        alerts_last_run = 0
-        activities_admin_last_run = 0
-        activities_login_last_run = 0
 
+        latest_per_type: dict[str, int] = {}
         for event in events:
             event_type = event["event_type_name"]
             timestamp = event["timestamp"]
             demisto.debug(f"MD: Got event from type {event_type}, with timestamp {timestamp}")
-            if event_type == "alerts":
-                alerts_last_run = timestamp
-            elif event_type == "activities_login":
-                activities_login_last_run = timestamp
-            elif event_type == "activities_admin":
-                activities_admin_last_run = timestamp
+            if timestamp > latest_per_type.get(event_type, 0):
+                latest_per_type[event_type] = timestamp
 
-        if alerts_last_run:
-            last_run["alerts"] = alerts_last_run + 1
-        if activities_login_last_run:
-            last_run["activities_login"] = activities_login_last_run + 1
-        if activities_admin_last_run:
-            last_run["activities_admin"] = activities_admin_last_run + 1
+        # Seed a watermark for every fetched type, including ones with 0 events, so a type
+        # without a watermark stops re-scanning the same first-fetch window every cycle.
+        types_in_play = set(latest_per_type)
+        if fetched_types is not None:
+            types_in_play |= set(fetched_types)
+
+        # Seed to (now - safety buffer) rather than exactly "now": the step-back covers the vendor's
+        # ingestion lag so events that occurred just before now (but were not yet available) are not
+        # skipped, while the watermark still advances every cycle so an empty type never loops.
+        now_ms = int(datetime.now(timezone.utc).timestamp() * 1000)
+        seed_ms = now_ms - WATERMARK_SAFETY_BUFFER_MS
+        for event_type in types_in_play:
+            latest = latest_per_type.get(event_type, 0)
+            if latest:
+                last_run[event_type] = latest + 1
+            elif event_type not in last_run:
+                # No events and no existing watermark: seed forward (minus the buffer) so we advance
+                # without looping and without skipping recent, not-yet-available events.
+                demisto.debug(f"MD: seeding forward watermark for {event_type=} to {seed_ms}")
+                last_run[event_type] = seed_ms
 
         return last_run
 
@@ -454,7 +468,7 @@ def main(command: str, demisto_params: dict):
             if command == "fetch-events":
                 # publishing events to XSIAM
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)  # type: ignore
-                next_run = DefenderGetEvents.get_last_run(events)
+                next_run = DefenderGetEvents.get_last_run(events, get_events.filter_name_to_attributes.keys())
                 demisto.debug(f"MD: setting the next run: {next_run}")
                 demisto.setLastRun(next_run)
 
