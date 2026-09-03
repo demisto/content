@@ -10,10 +10,10 @@ This integration was integrated and tested with version 0.40.1 of M2Crypto.
 
 ## Usage
 
-- In order to send signed/encrypted messages using the S/MIME Messaging and Mail Sender (New) perform the following steps:
+- In order to send signed/encrypted messages using the S/MIME Messaging and Mail Sender perform the following steps:
 
     1. Run the `smime-sign-and-encrypt` command with the required parameters.
-    2. Enter the output message from step 1 as the input for the `raw_message` argument of the `send-mail` command in the Mail Sender (New) integration (e.g., the value stored in the Context Data under `SMIME.SignedAndEncrypted.Message`).
+    2. Enter the output message from step 1 as the input for the `raw_message` argument of the `send-mail` command in the Mail Sender integration (e.g., the value stored in the Context Data under `SMIME.SignedAndEncrypted.Message`).
     3. Run the `send-mail` command with the `raw_message` argument (as described in step 2), with any of the optional arguments `to`, `cc` and `bcc` (e.g., `!send-mail to=user@email.com raw_message=${SMIME.SignedAndEncrypted.Message}`).
 
 - While decrypting or verifying a message, S/MIME Messaging will attempt to parse the message into readable text, as well as extract any attachments and images if present. If you wish to get the raw message instead, use the raw_output argument.

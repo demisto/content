@@ -9,7 +9,7 @@ This playbook does not use any sub-playbooks.
 ### Integrations
 * Microsoft Teams
 * Palo_Alto_Networks_Enterprise_DLP
-* Mail Sender (New)
+* Mail Sender
 * SlackV3
 
 ### Scripts

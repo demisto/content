@@ -4,7 +4,7 @@ Supported Integrations:
 - Chronicle
 - Google SecOps
 - Whois
-- Mail Sender (New)
+- Mail Sender
 - Palo Alto Networks PAN-OS
 - Palo Alto Networks AutoFocus v2
 
@@ -21,7 +21,7 @@ This playbook does not use any sub-playbooks.
 * Chronicle
 * Google SecOps
 * Whois
-* Mail Sender (New)
+* Mail Sender
 * Palo Alto Networks PAN-OS
 * Palo Alto Networks AutoFocus v2
 

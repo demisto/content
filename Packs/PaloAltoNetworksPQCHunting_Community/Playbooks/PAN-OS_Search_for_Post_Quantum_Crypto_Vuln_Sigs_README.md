@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* Mail Sender (New)
+* Mail Sender
 * Cortex Data Lake
 * PAN-OS
 

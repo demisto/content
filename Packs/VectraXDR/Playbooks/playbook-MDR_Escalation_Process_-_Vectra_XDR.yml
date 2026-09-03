@@ -806,7 +806,7 @@ tasks:
       id: 08d61c21-6bb7-4d4f-82d1-00f0934edad1
       version: -1
       name: Is Mail Sender (New) Integration Enabled?
-      description: Check whether the Mail Sender (New) integration is active.
+      description: Check whether the Mail Sender integration is active.
       type: condition
       iscommand: false
       brand: ""
