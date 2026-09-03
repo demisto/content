@@ -4322,6 +4322,7 @@ def test_normalize_case_data_record_maps_fields_and_nests_data():
         - Nested alerts/artifacts are surfaced under Issues/FileArtifacts/NetworkArtifacts.
         - Each nested issue record's alert_id is renamed to the documented issue_id.
         - Each nested record inherits the parent case_id when one is not already set.
+        - Each nested issue record gets a host_ip_list derived from host_ip.
     """
     from CortexXDRIR import normalize_case_data_record
 
@@ -4353,8 +4354,8 @@ def test_normalize_case_data_record_maps_fields_and_nests_data():
 
     # Nested data surfaced under the case-shaped keys, with alert_id renamed to issue_id.
     assert case["Issues"] == [
-        {"issue_id": "a1", "case_id": "100"},
-        {"issue_id": "a2", "case_id": "999"},
+        {"issue_id": "a1", "case_id": "100", "host_ip_list": []},
+        {"issue_id": "a2", "case_id": "999", "host_ip_list": []},
     ]
     assert case["FileArtifacts"] == [{"name": "file.exe", "case_id": "100"}]
     assert case["NetworkArtifacts"] == [{"ip": "1.2.3.4", "case_id": "100"}]
@@ -4378,6 +4379,40 @@ def test_normalize_case_data_record_flat_record_without_nested_data():
     assert "Issues" not in case
     assert "FileArtifacts" not in case
     assert "NetworkArtifacts" not in case
+
+
+def test_normalize_case_data_record_derives_host_ip_list():
+    """
+    Given:
+        - A raw record whose nested issues carry a single host_ip, a comma-separated
+          host_ip, an explicit null host_ip, and no host_ip key at all.
+    When:
+        - Running normalize_case_data_record (used by the xdr-case-list extra_data path).
+    Then:
+        - host_ip_list is derived from host_ip exactly as sort_incident_data derives it for
+          the legacy xdr-get-incident-extra-data output, so playbook inputs that read
+          PaloAltoNetworksXDR.Case.Issues.host_ip_list keep resolving after the migration.
+    """
+    from CortexXDRIR import normalize_case_data_record
+
+    incident_record = {
+        "incident": {"incident_id": "300"},
+        "alerts": {
+            "data": [
+                {"alert_id": "single", "host_ip": "192.0.2.26"},
+                {"alert_id": "multi", "host_ip": "10.0.0.1,10.0.0.2"},
+                {"alert_id": "null", "host_ip": None},
+                {"alert_id": "absent"},
+            ]
+        },
+    }
+
+    issues = normalize_case_data_record(incident_record)["Issues"]
+
+    assert issues[0]["host_ip_list"] == ["192.0.2.26"]
+    assert issues[1]["host_ip_list"] == ["10.0.0.1", "10.0.0.2"]
+    assert issues[2]["host_ip_list"] == []
+    assert issues[3]["host_ip_list"] == []
 
 
 def test_case_list_command_extra_data_returns_normalized_cases(mocker):
