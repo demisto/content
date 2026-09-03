@@ -6,3 +6,5 @@
 !gcp-compute-instances-list project_id=project-id zone=zone
 !gcp-compute-instance-get instance=instance-name project_id=project-id zone=zone
 !gcp-compute-instance-labels-set instance=instance-name labels=key=k1,value=v1 project_id=project-id zone=zone label_fingerprint=label-fingerprint
+!gcp-compute-regions-list project_id=project-id limit=2
+!gcp-compute-zones-list project_id=project-id limit=2

@@ -2683,6 +2683,100 @@ script:
       description: Type of the resource. Always compute#region for regions.
       type: string
 
+# gcp-compute-regions-list
+  - name: gcp-compute-regions-list
+    description: "Retrieves the list of region resources available to the specified project. Required permission: compute.regions.list."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: limit
+      description: 'The maximum number of results per page that should be returned. If the number of available results is larger than the limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
+      defaultValue: '50'
+    - name: filter
+      description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, you can exclude a region named example-region by specifying name != example-region.
+    - name: order_by
+      description: The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
+    - name: next_token
+      description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results.
+    outputs:
+    - contextPath: GCP.Compute.Regions.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.Regions.creationTimestamp
+      description: The creation timestamp in RFC3339 text format (for example, 2024-01-15T12:34:56.000-07:00).
+      type: string
+    - contextPath: GCP.Compute.Regions.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Regions.description
+      description: The textual description of the resource.
+      type: string
+    - contextPath: GCP.Compute.Regions.status
+      description: The status of the region, either UP or DOWN.
+      type: string
+    - contextPath: GCP.Compute.Regions.zones
+      description: The list of zones available in this region, in the form of resource URLs.
+      type: string
+    - contextPath: GCP.Compute.Regions.quotas
+      description: The quotas assigned to this region.
+      type: string
+    - contextPath: GCP.Compute.Regions.quotas.metric
+      description: The name of the quota metric.
+      type: string
+    - contextPath: GCP.Compute.Regions.quotas.limit
+      description: The quota limit for this metric.
+      type: number
+    - contextPath: GCP.Compute.Regions.quotas.usage
+      description: The current usage of this metric.
+      type: number
+    - contextPath: GCP.Compute.Regions.quotas.owner
+      description: The owning resource, meaning the resource to which this quota applies.
+      type: string
+    - contextPath: GCP.Compute.Regions.deprecated
+      description: The deprecation status associated with this region.
+      type: string
+    - contextPath: GCP.Compute.Regions.deprecated.state
+      description: The deprecation state of this resource. This can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image, can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error.
+      type: string
+    - contextPath: GCP.Compute.Regions.deprecated.replacement
+      description: The URL of the suggested replacement for a deprecated resource. The suggested replacement resource must be the same kind of resource as the deprecated resource.
+      type: string
+    - contextPath: GCP.Compute.Regions.deprecated.deprecated
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.
+      type: string
+    - contextPath: GCP.Compute.Regions.deprecated.obsolete
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.
+      type: string
+    - contextPath: GCP.Compute.Regions.deprecated.deleted
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.
+      type: string
+    - contextPath: GCP.Compute.Regions.selfLink
+      description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Regions.supportsPzs
+      description: Whether the region supports physical zone separation. Reserved for future use.
+      type: boolean
+    - contextPath: GCP.Compute.Regions.quotaStatusWarning
+      description: The warning raised while fetching the quotas field for this region. This field is populated only if fetching of the quotas field fails.
+      type: string
+    - contextPath: GCP.Compute.Regions.quotaStatusWarning.code
+      description: The warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.
+      type: string
+    - contextPath: GCP.Compute.Regions.quotaStatusWarning.message
+      description: The human-readable description of the warning code.
+      type: string
+    - contextPath: GCP.Compute.Regions.quotaStatusWarning.data
+      description: The metadata about this warning, in key-value format.
+      type: string
+    - contextPath: GCP.Compute.Regions.kind
+      description: The type of the resource. Always compute#region for regions.
+      type: string
+    - contextPath: GCP.Compute.RegionsNextToken
+      description: The next page token to use for retrieving the next page of regions.
+      type: string
+
 # gcp-compute-instance-group-get
   - arguments:
     - description: The name of the instance group.
@@ -2800,6 +2894,82 @@ script:
       type: string
     - contextPath: GCP.Compute.Zones.kind
       description: Type of the resource. Always compute#zone for zones.
+      type: string
+
+# gcp-compute-zones-list
+  - name: gcp-compute-zones-list
+    description: "Retrieves the list of zone resources available to the specified project. Required permission: compute.zones.list."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: limit
+      description: 'The maximum number of results per page that should be returned. If the number of available results is larger than the limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
+      defaultValue: '50'
+    - name: filter
+      description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, you can exclude a zone named example-zone by specifying name != example-zone.
+    - name: order_by
+      description: The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
+    - name: next_token
+      description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results.
+    outputs:
+    - contextPath: GCP.Compute.Zones.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.Zones.creationTimestamp
+      description: The creation timestamp in RFC3339 text format (for example, 2024-01-15T12:34:56.000-07:00).
+      type: string
+    - contextPath: GCP.Compute.Zones.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Zones.description
+      description: The textual description of the resource.
+      type: string
+    - contextPath: GCP.Compute.Zones.status
+      description: The status of the zone, either UP or DOWN.
+      type: string
+    - contextPath: GCP.Compute.Zones.deprecated
+      description: The deprecation status associated with this zone.
+      type: string
+    - contextPath: GCP.Compute.Zones.deprecated.state
+      description: The deprecation state of this resource. This can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image, can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error.
+      type: string
+    - contextPath: GCP.Compute.Zones.deprecated.replacement
+      description: The URL of the suggested replacement for a deprecated resource. The suggested replacement resource must be the same kind of resource as the deprecated resource.
+      type: string
+    - contextPath: GCP.Compute.Zones.deprecated.deprecated
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.
+      type: string
+    - contextPath: GCP.Compute.Zones.deprecated.obsolete
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.
+      type: string
+    - contextPath: GCP.Compute.Zones.deprecated.deleted
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.
+      type: string
+    - contextPath: GCP.Compute.Zones.region
+      description: The full URL reference to the region which hosts the zone.
+      type: string
+    - contextPath: GCP.Compute.Zones.selfLink
+      description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Zones.availableCpuPlatforms
+      description: The available CPU platform selections for the zone.
+      type: string
+    - contextPath: GCP.Compute.Zones.supportsPzs
+      description: Whether the zone supports physical zone separation. Reserved for future use.
+      type: boolean
+    - contextPath: GCP.Compute.Zones.resourceStatus
+      description: The additional status details of the zone.
+      type: Unknown
+    - contextPath: GCP.Compute.Zones.resourceStatus.upcomingMaintenances
+      description: The list of upcoming maintenances scheduled for this zone.
+      type: Unknown
+    - contextPath: GCP.Compute.Zones.kind
+      description: The type of the resource. Always compute#zone for zones.
+      type: string
+    - contextPath: GCP.Compute.ZonesNextToken
+      description: The next page token to use for retrieving the next page of zones.
       type: string
 
 # gcp-compute-networks-list
