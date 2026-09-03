@@ -18,7 +18,7 @@ CACHE_TOKEN = argToBoolean(demisto.params().get("cache_token", "false") or "fals
 NAMESPACE = demisto.params().get("namespace")
 USE_APPROLE_AUTH_METHOD = argToBoolean(demisto.params().get("use_approle", "false") or "false")
 BASE_URL = demisto.params().get("server", "")
-SERVER_URL = BASE_URL + "/v1"
+SERVER_URL = urljoin(BASE_URL, "/v1")
 
 DEFAULT_STATUS_CODES = {429, 472, 473}
 TIME_BUFFER = 5
@@ -95,6 +95,45 @@ def send_request(path, method="get", body=None, params=None, headers=None):
     if res.content:
         return res.json()
     return ""
+
+
+def build_kv2_path(engine_path: str, kind: str, secret_path: str) -> str:
+    """
+    Build a normalized KV V2 API path, tolerating leading/trailing slashes on both inputs.
+    Args:
+        engine_path (str): The KV V2 engine path, e.g., "kv", "kv/" or "/kv/".
+        kind (str): The KV V2 endpoint kind. Either "data" or "metadata".
+        secret_path (str): The secret path, e.g., "my-secret" or "/folder/my-secret".
+    Returns:
+        str: The normalized path, e.g., "kv/data/folder/my-secret".
+    """
+    stripped_engine_path = str(engine_path or "").strip("/")
+    stripped_secret_path = str(secret_path or "").strip("/")
+    return f"{stripped_engine_path}/{kind}/{stripped_secret_path}"
+
+
+def parse_json_object_arg(raw: Any, arg_name: str) -> dict:
+    """
+    Parse a command argument that is expected to hold a JSON object (a key/value map).
+    Args:
+        raw (Any): The raw argument value, as received from the user.
+        arg_name (str): The name of the argument, used in error messages.
+    Returns:
+        dict: The parsed JSON object.
+    Raises:
+        DemistoException: If the value is not valid JSON, or if it is valid JSON but not an object.
+    """
+    try:
+        parsed = json.loads(raw)
+    except Exception as err:
+        raise DemistoException(f'Failed to parse the "{arg_name}" argument. It must be a valid JSON object.', err)
+
+    if not isinstance(parsed, dict):
+        raise DemistoException(
+            f'The "{arg_name}" argument must be a JSON object (a key/value map), not a {type(parsed).__name__}.'
+        )
+
+    return parsed
 
 
 """ FUNCTIONS """
@@ -275,6 +314,68 @@ def get_secret_metadata(engine_path, secret_path):
     path = engine_path + "/metadata/" + secret_path
 
     return send_request(path, "get")
+
+
+def build_secret_metadata_body(args: dict) -> dict:
+    """
+    Build the request body for the KV V2 metadata endpoints (create / update secret metadata).
+    Args:
+        args (dict): The command arguments. Supports "max_versions", "cas_required",
+            "delete_version_after" and "custom_metadata", all optional.
+    Returns:
+        dict: The flat request body.
+    """
+    body: dict = {}
+
+    max_versions = arg_to_number(args.get("max_versions"))
+    if max_versions is not None:
+        body["max_versions"] = max_versions
+
+    cas_required = args.get("cas_required")
+    if cas_required not in (None, ""):
+        body["cas_required"] = argToBoolean(cas_required)
+
+    delete_version_after = args.get("delete_version_after")
+    if delete_version_after:
+        body["delete_version_after"] = delete_version_after
+
+    custom_metadata = args.get("custom_metadata")
+    if custom_metadata:
+        body["custom_metadata"] = parse_json_object_arg(custom_metadata, "custom_metadata")
+
+    return body
+
+
+def create_update_secret_metadata_command():
+    """
+    Create or replace the metadata of a secret at the specified location in a KV V2 engine.
+    Fields that are not supplied are reset to their server defaults.
+    Args:
+        args (dict): A dictionary containing the following keys:
+            - 'engine' (required): The KV V2 engine path, e.g., "kv/".
+            - 'secret_path' (required): The secret path, e.g., "my-secret".
+            - 'max_versions': The number of versions to keep per key.
+            - 'cas_required': Whether the cas parameter is required on all write requests to this key.
+            - 'delete_version_after': A duration, e.g., "3h25m19s", after which new versions are deleted.
+            - 'custom_metadata': A JSON object of user-provided metadata, e.g., {"foo": "abc"}.
+    Returns:
+        CommandResults: The command results object containing a success message as readable output.
+    """
+    args = demisto.args()
+    engine_path = args.get("engine")
+    secret_path = args.get("secret_path")
+
+    if not engine_path:
+        raise DemistoException('The "engine" argument must be provided.')
+    if not secret_path:
+        raise DemistoException('The "secret_path" argument must be provided.')
+
+    path = build_kv2_path(engine_path, "metadata", secret_path)
+    body = build_secret_metadata_body(args)
+
+    send_request(path, "post", body=body)
+
+    return_results(CommandResults(readable_output=f'Secret "{secret_path}" was successfully written to engine "{engine_path}"'))
 
 
 def delete_secret_command():  # pragma: no cover
@@ -868,6 +969,8 @@ if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
             get_policy_command()
         elif command == "hashicorp-get-secret-metadata":
             get_secret_metadata_command()
+        elif command == "hashicorp-create-update-secret-metadata":
+            create_update_secret_metadata_command()
         elif command == "hashicorp-delete-secret":
             delete_secret_command()
         elif command == "hashicorp-undelete-secret":
