@@ -14,6 +14,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 API_VERSION = "v1"
 EXPIRE_SECONDS = 86400
 DEFAULT_API_HOST = "api.twinwave.io"
+USER_AGENT = "Twinwave XSOAR Integration"
 SUPPORTED_API_HOSTS = {
     "api.twinwave.io",
     "api.global2.twinwave.io",
@@ -47,14 +48,19 @@ class Client(BaseClient):
 
     def get_token(self):
         auth_url = f"{self.host}/accesstoken"
-        resp = requests.get(auth_url, verify=self._verify, proxies=self._proxy)
+        resp = requests.get(
+            auth_url,
+            headers={"User-Agent": USER_AGENT},
+            verify=self._verify,
+            proxies=self._proxy,
+        )
         if resp.ok:
             return resp.json()
         else:
             raise AuthenticationException("Error getting access token, Please check the username and password")
 
     def get_header(self):
-        return {"X-API-KEY": self.api_token}
+        return {"X-API-KEY": self.api_token, "User-Agent": USER_AGENT}
 
     def get_recent_jobs(self, num_jobs=10, username=None, source=None, state=None):
         url = f"{self.host}/jobs/recent"
