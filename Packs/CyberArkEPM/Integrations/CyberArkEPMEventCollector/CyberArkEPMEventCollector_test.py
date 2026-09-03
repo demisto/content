@@ -748,7 +748,7 @@ def test_epm_auth_method_base_url_comes_from_the_logon_response(requests_mock):
         auth_method="EPM",
     )
 
-    assert client._base_url.startswith("https://example.manager.cyberark.com")
+    assert client._base_url == "https://example.manager.cyberark.com/EPM/API/"
 
 
 def test_oauth_token_refresh_keeps_the_version_less_base_url(mocker, requests_mock):
@@ -842,26 +842,36 @@ def test_test_module_succeeds_against_the_version_less_path(mocker, requests_moc
     """
     Given:
         - An Idira OAuth instance, whose data-plane URL is the version-less `/EPM/API/` form.
-        - A tenant that serves that path, as confirmed in production against a live tenant:
-          `GET /EPM/API/Sets` returned 200.
+        - A resolved set in `last_run`, so the test fetch actually reaches the event endpoints.
+          With an empty `last_run` there is nothing to iterate and no data call is made at all,
+          which would make this test vacuous.
 
     When:
-        - Running test-module, which performs a real 5-event fetch before calling `get_set_list`.
+        - Running test-module, which performs a real 5-event fetch.
 
     Then:
-        - It returns "ok", and every request went to the version-less URL. No request carries a
-          version segment, and none contains the "//" that an empty segment would produce.
+        - It returns "ok", and both event endpoints were exercised on the version-less URL: no
+          version segment, and none of the "//" an empty segment would produce. This is the same
+          chain the customer's scheduled fetch drives, so a 404 from a stale version pin would
+          fail here.
     """
+    mocker.patch("CyberArkEPMEventCollector.demisto.info")
     client = _build_oauth_client_versionless(mocker, requests_mock)
-    sets_matcher = requests_mock.get(f"{OAUTH_SERVER_URL}/EPM/API/Sets", json={"Sets": []})
 
-    assert run_test_module(client=client, last_run={}) == "ok"
+    policy_matcher = requests_mock.post(
+        f"{OAUTH_SERVER_URL}/EPM/API/Sets/set-id-1/policyaudits/search", json={"PolicyAudits": []}
+    )
+    events_matcher = requests_mock.post(f"{OAUTH_SERVER_URL}/EPM/API/Sets/set-id-1/Events/Search", json={"events": []})
 
-    assert sets_matcher.called
+    last_run = create_last_run(["set-id-1"], "2026-09-02T00:00:00Z")
+
+    assert run_test_module(client=client, last_run=last_run) == "ok"
+
+    assert policy_matcher.called
+    assert events_matcher.called
     requested = [request.url for request in requests_mock.request_history if "/EPM/API/" in request.url]
-    assert requested, "expected at least one EPM data call"
+    assert len(requested) == 2, "test-module drives exactly the two event endpoints"
     for url in requested:
-        assert "/EPM/API/Sets" in url
         assert "//" not in url.removeprefix("https://")
 
 

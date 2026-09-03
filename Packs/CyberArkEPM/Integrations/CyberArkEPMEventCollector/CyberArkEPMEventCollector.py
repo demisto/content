@@ -817,18 +817,22 @@ def fetch_events(
 
 
 def test_module(client: Client, last_run: dict) -> str:
-    """
-    Tests API connectivity and authentication'
-    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is successful.
-    Raises exceptions if something goes wrong.
+    """Test API connectivity and authentication by running a small real fetch.
+
+    A trimmed fetch is used rather than a single probe call because it exercises the whole chain the
+    customer depends on - authentication, set-name resolution, and the event endpoints - so a
+    misconfiguration surfaces here instead of at the first scheduled fetch.
+
     Args:
         client (Client): CyberArkEPM client to use.
+        last_run (dict): The current last-run object, passed through to the test fetch.
+
     Returns:
-        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
+        str: 'ok' if the test passed. Any failure raises and fails the test.
     """
     demisto.info(f"[test_module] Starting test fetch with max_fetch=5 using base_url={client._base_url!r}")
     fetch_events(client=client, last_run=last_run, max_fetch=5)
-    demisto.info(f"[test_module] PASSED: test fetch and set list both succeeded against base_url={client._base_url!r}")
+    demisto.info(f"[test_module] PASSED: test fetch succeeded against base_url={client._base_url!r}")
     return "ok"
 
 
