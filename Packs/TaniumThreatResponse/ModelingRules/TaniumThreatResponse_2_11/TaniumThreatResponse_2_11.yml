@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: TaniumThreatResponse_ModelingRule
-name: TaniumThreatResponse Modeling Rule
-rules: ''
-schema: ''
-tags: ''
-supportedModules:
-- xsiam
