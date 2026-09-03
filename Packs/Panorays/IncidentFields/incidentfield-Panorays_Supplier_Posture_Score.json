@@ -1,15 +1,14 @@
 {
-    "cliName": "panoraysfindingstatus",
-    "description": "The current status of the Panorays finding.",
+    "cliName": "panorayssupplierposturescore",
+    "description": "The external posture score of the supplier as calculated by Panorays.",
     "group": 0,
-    "id": "incident_panoraysfindingstatus",
-    "name": "Panorays Finding Status",
+    "id": "incident_panorayssupplierposturescore",
+    "name": "Panorays Supplier Posture Score",
     "associatedTypes": [
-        "Panorays Finding",
         "Panorays Supplier Finding"
     ],
     "associatedToAll": false,
-    "type": "shortText",
+    "type": "number",
     "fromVersion": "6.10.0",
     "version": -1,
     "content": true,

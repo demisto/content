@@ -1,15 +1,14 @@
 {
-    "cliName": "panoraysfindingstatus",
-    "description": "The current status of the Panorays finding.",
+    "cliName": "panorayssuppliercombinedscore",
+    "description": "The combined Panorays risk score of the supplier.",
     "group": 0,
-    "id": "incident_panoraysfindingstatus",
-    "name": "Panorays Finding Status",
+    "id": "incident_panorayssuppliercombinedscore",
+    "name": "Panorays Supplier Combined Score",
     "associatedTypes": [
-        "Panorays Finding",
         "Panorays Supplier Finding"
     ],
     "associatedToAll": false,
-    "type": "shortText",
+    "type": "number",
     "fromVersion": "6.10.0",
     "version": -1,
     "content": true,

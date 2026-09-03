@@ -4,11 +4,19 @@
     "group": 0,
     "id": "incident_panoraysfindingcves",
     "name": "Panorays Finding CVEs",
-    "associatedTypes": ["Panorays Finding"],
+    "associatedTypes": [
+        "Panorays Finding",
+        "Panorays Supplier Finding"
+    ],
     "associatedToAll": false,
     "type": "longText",
-    "content": true,
-    "unsearchable": true,
+    "fromVersion": "6.10.0",
     "version": -1,
-    "fromVersion": "6.10.0"
+    "content": true,
+    "system": false,
+    "unsearchable": true,
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

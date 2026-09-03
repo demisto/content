@@ -1,15 +1,14 @@
 {
-    "cliName": "panoraysfindingstatus",
-    "description": "The current status of the Panorays finding.",
+    "cliName": "panorayssupplierbusinessimpact",
+    "description": "The business impact level assigned to the supplier in Panorays, as a numeric value.",
     "group": 0,
-    "id": "incident_panoraysfindingstatus",
-    "name": "Panorays Finding Status",
+    "id": "incident_panorayssupplierbusinessimpact",
+    "name": "Panorays Supplier Business Impact",
     "associatedTypes": [
-        "Panorays Finding",
         "Panorays Supplier Finding"
     ],
     "associatedToAll": false,
-    "type": "shortText",
+    "type": "number",
     "fromVersion": "6.10.0",
     "version": -1,
     "content": true,

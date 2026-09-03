@@ -1,11 +1,10 @@
 {
-    "cliName": "panoraysfindingstatus",
-    "description": "The current status of the Panorays finding.",
+    "cliName": "panorayssuppliername",
+    "description": "The name of the supplier (third party) the finding belongs to.",
     "group": 0,
-    "id": "incident_panoraysfindingstatus",
-    "name": "Panorays Finding Status",
+    "id": "incident_panorayssuppliername",
+    "name": "Panorays Supplier Name",
     "associatedTypes": [
-        "Panorays Finding",
         "Panorays Supplier Finding"
     ],
     "associatedToAll": false,

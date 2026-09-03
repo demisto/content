@@ -4,11 +4,19 @@
     "group": 0,
     "id": "incident_panoraysfindingstestname",
     "name": "Panorays Finding Test Name",
-    "associatedTypes": ["Panorays Finding"],
+    "associatedTypes": [
+        "Panorays Finding",
+        "Panorays Supplier Finding"
+    ],
     "associatedToAll": false,
     "type": "shortText",
-    "content": true,
-    "unsearchable": true,
+    "fromVersion": "6.10.0",
     "version": -1,
-    "fromVersion": "6.10.0"
+    "content": true,
+    "system": false,
+    "unsearchable": true,
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

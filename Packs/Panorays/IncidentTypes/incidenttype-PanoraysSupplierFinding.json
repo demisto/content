@@ -1,14 +1,13 @@
 {
-    "id": "Panorays Finding",
+    "id": "Panorays Supplier Finding",
     "version": -1,
-    "name": "Panorays Finding",
-    "prevName": "Panorays Finding",
+    "name": "Panorays Supplier Finding",
+    "prevName": "Panorays Supplier Finding",
     "color": "#295AFF",
-    "playbookId": "Panorays Finding - Triage and Response",
     "hours": 0,
     "days": 0,
     "weeks": 0,
-    "autorun": true,
+    "autorun": false,
     "closureScript": "",
     "preProcessingScript": "",
     "system": false,
@@ -20,7 +19,7 @@
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
     },
-    "fromVersion": "6.0.0",
+    "fromVersion": "6.10.0",
     "supportedModules": [
         "agentix",
         "xsiam"
