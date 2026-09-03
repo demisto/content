@@ -1,0 +1,3133 @@
+category: Cloud Security
+provider: Palo Alto Networks
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: Palo Alto Networks Prisma AIRS - AI Red Teaming
+  version: -1
+configuration:
+- defaultvalue: https://api.sase.paloaltonetworks.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: API Client ID
+  section: Connect
+  name: credentials
+  required: true
+  type: 9
+  displaypassword: API Client Secret
+- additionalinfo: 'Default Tenant Services Group ID to use for API calls. Example: 1234567890.'
+  display: Tenant Services Group ID
+  name: tsg_id
+  required: true
+  type: 0
+  section: Connect
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+description: 'Discover and remediate AI application vulnerabilities with Palo Alto Networks Prisma AIRS AI Red Teaming: targets, adapters, scans, attack reports, prompt sets, and custom attacks.'
+display: Palo Alto Networks Prisma AIRS - AI Red Teaming
+name: Palo Alto Networks Prisma AIRS - AI Red Teaming
+supportlevelheader: community
+script:
+  commands:
+  - name: prisma-airs-redteam-targets-list
+    description: List all Red Team targets.
+    arguments:
+    - name: limit
+      required: false
+      description: The maximum number of targets to return.
+      defaultValue: '50'
+    - name: target_type
+      required: false
+      description: The target type to filter results by (e.g., API, UI, MOBILE).
+    - name: status
+      required: false
+      description: The target status to filter results by (e.g., READY, VALIDATING, FAILED).
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTarget.uuid
+      description: The target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.name
+      description: The target name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.tsg_id
+      description: The tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.status
+      description: The target status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.active
+      description: Whether the target is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTarget.validated
+      description: Whether the target has been validated.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTarget.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamTarget.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamTarget.description
+      description: The target description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.target_type
+      description: The target type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.connection_type
+      description: The connection type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTarget.auth_type
+      description: The authentication type.
+      type: String
+  - name: prisma-airs-redteam-targets-create
+    description: Create a new Red Team target.
+    arguments:
+    - name: name
+      required: true
+      description: The target name.
+    - name: description
+      required: false
+      description: The target description.
+    - name: target_type
+      required: false
+      description: The target type (e.g., APPLICATION, AGENT, MODEL).
+    - name: connection_type
+      required: false
+      description: The connection type (e.g., REST, STREAMING, WEBSOCKET).
+    - name: api_endpoint_type
+      required: false
+      description: The API endpoint accessibility (PUBLIC, PRIVATE, NETWORK_BROKER).
+    - name: response_mode
+      required: false
+      description: The response mode (REST, STREAMING).
+    - name: session_supported
+      required: false
+      description: Whether the target supports sessions (true/false).
+    - name: connection_params
+      required: false
+      description: The connection parameters as JSON string.
+    - name: validate
+      required: false
+      description: Whether to validate target connectivity before creating.
+      defaultValue: 'false'
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTargetCreate.uuid
+      description: The target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetCreate.name
+      description: The target name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetCreate.status
+      description: The target status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetCreate.active
+      description: Whether the target is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTargetCreate.validated
+      description: Whether the target has been validated.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTargetCreate.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: prisma-airs-redteam-targets-get
+    description: Get Red Team target details by UUID.
+    arguments:
+    - name: uuid
+      required: true
+      description: The target UUID.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTargetGet.uuid
+      description: The target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetGet.name
+      description: The target name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetGet.tsg_id
+      description: The tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetGet.status
+      description: The target status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetGet.active
+      description: Whether the target is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTargetGet.validated
+      description: Whether the target has been validated.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTargetGet.target_type
+      description: The target type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetGet.connection_type
+      description: The connection type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetGet.profiling_status
+      description: The profiling status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetGet.target_metadata
+      description: The target metadata object with probe results.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamTargetGet.target_background
+      description: The target background context.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamTargetGet.additional_context
+      description: The additional target context.
+      type: Unknown
+  - name: prisma-airs-redteam-targets-update
+    description: Update an existing Red Team target.
+    arguments:
+    - name: uuid
+      required: true
+      description: The target UUID.
+    - name: name
+      required: false
+      description: The new target name.
+    - name: description
+      required: false
+      description: The new target description.
+    - name: target_type
+      required: false
+      description: The new target type.
+    - name: connection_type
+      required: false
+      description: The new connection type.
+    - name: connection_params
+      required: false
+      description: The new connection parameters as JSON string.
+    - name: validate
+      required: false
+      description: Whether to validate target connectivity after the update.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTargetUpdate.uuid
+      description: The target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetUpdate.name
+      description: The target name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetUpdate.status
+      description: The target status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetUpdate.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: prisma-airs-redteam-targets-delete
+    execution: true
+    description: Delete a Red Team target.
+    arguments:
+    - name: uuid
+      required: true
+      description: The target UUID to delete.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTargetDelete.uuid
+      description: The deleted target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetDelete.message
+      description: The deletion confirmation message.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetDelete.status
+      description: The HTTP status code.
+      type: Number
+  - name: prisma-airs-redteam-targets-probe
+    description: Probe a Red Team target to validate connectivity and gather profiling data.
+    arguments:
+    - name: name
+      required: true
+      description: The target name.
+    - name: uuid
+      required: false
+      description: The existing target UUID (optional, for probing existing targets).
+    - name: description
+      required: false
+      description: The target description.
+    - name: target_type
+      required: false
+      description: The target type.
+    - name: connection_type
+      required: false
+      description: The connection type.
+    - name: connection_params
+      required: false
+      description: The connection parameters as JSON string.
+    - name: probe_fields
+      required: false
+      isArray: true
+      description: A comma-separated list of fields to probe (e.g., "multi_turn,rate_limit,content_filter").
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTargetProbe.uuid
+      description: The target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetProbe.name
+      description: The target name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetProbe.status
+      description: The target status after probing.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetProbe.validated
+      description: Whether the target was validated.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTargetProbe.profiling_status
+      description: The profiling status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetProbe.multi_turn_supported
+      description: Whether multi-turn conversation is supported.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTargetProbe.rate_limit_enabled
+      description: Whether rate limiting is enabled.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTargetProbe.content_filter_enabled
+      description: Whether content filtering is enabled.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTargetProbe.target_metadata
+      description: The full probe results metadata.
+      type: Unknown
+  - name: prisma-airs-redteam-targets-profile
+    description: Get Red Team target profile (background, context, profiling status). View detailed profiling information including background context and AI-generated fields.
+    arguments:
+    - name: target_uuid
+      required: true
+      description: The target UUID to retrieve profile for.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTargetProfile.target_id
+      description: The target ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetProfile.target_version
+      description: The target version number.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamTargetProfile.status
+      description: The target status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetProfile.profiling_status
+      description: The profiling status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetProfile.target_background
+      description: The target background information (industry, use case, etc.).
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamTargetProfile.additional_context
+      description: The additional context (model details, languages, etc.).
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamTargetProfile.ai_generated_fields
+      description: The aI-generated fields from profiling.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamTargetProfile.other_details
+      description: The other profile details.
+      type: Unknown
+  - name: prisma-airs-redteam-targets-update-profile
+    description: Update Red Team target profile (background and additional context). Modify target background information or add additional context like model details and supported languages.
+    arguments:
+    - name: target_uuid
+      required: true
+      description: The target UUID to update.
+    - name: target_background
+      required: false
+      description: 'The target background as JSON string. Example: {"industry": "Healthcare", "use_case": "Patient Support Chatbot"}.'
+    - name: additional_context
+      required: false
+      description: 'The additional context as JSON string. Example: {"base_model": "GPT-4", "languages_supported": ["en", "es"]}.'
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTargetUpdateProfile.uuid
+      description: The target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetUpdateProfile.name
+      description: The target name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetUpdateProfile.status
+      description: The target status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetUpdateProfile.active
+      description: Whether the target is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTargetUpdateProfile.validated
+      description: Whether the target is validated.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTargetUpdateProfile.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamTargetUpdateProfile.target_background
+      description: The updated target background.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamTargetUpdateProfile.additional_context
+      description: The updated additional context.
+      type: Unknown
+  - name: prisma-airs-redteam-targets-metadata
+    description: Get Red Team target field metadata. Returns field definitions (types, requirements, constraints) for all available target configuration fields. Useful for understanding what fields can be configured when creating or updating targets.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTargetMetadata
+      description: The field metadata dictionary with field definitions.
+      type: Unknown
+  - name: prisma-airs-redteam-targets-validate-auth
+    description: Validate authentication credentials for a Red Team target provider without creating or modifying a target. Useful for verifying credentials before creating a target.
+    arguments:
+    - name: auth_type
+      description: The authentication type to validate (for example, HEADERS, BEARER, API_KEY).
+      required: true
+    - name: auth_config
+      description: 'The authentication configuration as a JSON object (for example: {"Authorization": "Bearer sk-xxx"}).'
+      required: true
+    - name: target_id
+      description: The optional UUID of an existing target to validate credentials against.
+    - name: network_broker_channel_uuid
+      description: The optional network broker channel UUID to route the validation through.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTargetAuthValidation.validated
+      description: Whether the supplied credentials were successfully validated.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamTargetAuthValidation.token_preview
+      description: A masked preview of the validated token, if provided.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetAuthValidation.expires_in
+      description: The number of seconds until the validated token expires, if provided.
+      type: Number
+  - name: prisma-airs-redteam-targets-templates
+    description: List Red Team target configuration templates per provider (for example, OPENAI, HUGGING_FACE, DATABRICKS, BEDROCK, REST, STREAMING, WEBSOCKET). Each template describes the connection fields expected for that target provider type.
+    arguments: []
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTargetTemplate
+      description: The provider-keyed dictionary of target configuration templates.
+      type: Unknown
+  - name: prisma-airs-redteam-targets-error-logs
+    description: List target-profile (profiling) error logs for a Red Team target. Returns the failures recorded while Prisma AIRs was probing or profiling the target (for example, connection, probe, or authentication errors).
+    arguments:
+    - name: target_id
+      description: The UUID of the target whose profiling error logs to retrieve.
+      required: true
+    - name: limit
+      description: The maximum number of error-log entries to return.
+      defaultValue: '50'
+    - name: skip
+      description: The number of entries to skip (offset) for pagination.
+    - name: search
+      description: Optional text to filter the error-log entries by.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.created_at
+      description: The timestamp when the error was recorded.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.updated_at
+      description: The timestamp when the error record was last updated.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.job_id
+      description: The scan job UUID associated with the error, if any.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.target_id
+      description: The target UUID the error relates to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.target_version
+      description: The target version the error relates to.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.attack_id
+      description: The attack UUID associated with the error, if any.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.error_type
+      description: The category of the error.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.error_source
+      description: The source component that raised the error.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.error_message
+      description: The human-readable error message.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.target_object
+      description: The target object snapshot associated with the error.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.extra_info
+      description: Additional error context, if provided.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamTargetErrorLog.version
+      description: The record schema version.
+      type: Number
+  - name: prisma-airs-redteam-scan-error-logs
+    description: List job-level error logs for a Red Team scan. Returns the per-attack probe failures recorded while a scan job was running (for example, timeouts or target connection or authentication errors), scoped to a single scan job.
+    arguments:
+    - name: job_id
+      description: The UUID of the scan job whose error logs to retrieve.
+      required: true
+    - name: limit
+      description: The maximum number of error-log entries to return.
+      defaultValue: '50'
+    - name: skip
+      description: The number of entries to skip (offset) for pagination.
+    - name: search
+      description: Optional text to filter the error-log entries by.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamScanErrorLog.created_at
+      description: The timestamp when the error was recorded.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamScanErrorLog.updated_at
+      description: The timestamp when the error record was last updated.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamScanErrorLog.job_id
+      description: The scan job UUID associated with the error.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanErrorLog.target_id
+      description: The target UUID the error relates to, if any.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanErrorLog.target_version
+      description: The target version the error relates to.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScanErrorLog.attack_id
+      description: The attack UUID associated with the error, if any.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanErrorLog.error_type
+      description: The category of the error.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanErrorLog.error_source
+      description: The source component that raised the error.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanErrorLog.error_message
+      description: The human-readable error message.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanErrorLog.target_object
+      description: The target object snapshot associated with the error.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamScanErrorLog.extra_info
+      description: Additional error context, if provided.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamScanErrorLog.version
+      description: The record schema version.
+      type: Number
+  - name: prisma-airs-redteam-dashboard-scan-statistics
+    description: Get Red Team scan statistics and risk profile (dashboard telemetry). Returns aggregate scan counts and, when available, breakdowns by target type, scan status, and risk rating.
+    arguments:
+    - name: date_range
+      description: Optional date range filter for the statistics window (for example, 30d).
+    - name: target_id
+      description: Optional target UUID to scope the statistics to a single target.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamScanStatistics.total_scans
+      description: The total number of scans in the window.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScanStatistics.targets_scanned
+      description: The number of distinct targets scanned in the window.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScanStatistics.targets_scanned_by_type.name
+      description: The target type name in the targets-scanned breakdown.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanStatistics.targets_scanned_by_type.count
+      description: The number of targets scanned of this type.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScanStatistics.scan_status.name
+      description: The scan status name in the status breakdown.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanStatistics.scan_status.count
+      description: The number of scans in this status.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScanStatistics.risk_profile.risk_rating
+      description: The risk rating label in the risk breakdown.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanStatistics.risk_profile.total
+      description: The number of scans or targets at this risk rating.
+      type: Number
+  - name: prisma-airs-redteam-dashboard-score-trend
+    description: Get the Red Team risk score trend for a target (dashboard telemetry). Returns time-bucketed labels plus one or more data series showing how the target's score changed over time.
+    arguments:
+    - name: target_id
+      description: The UUID of the target whose score trend to retrieve.
+      required: true
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamScoreTrend.target_id
+      description: The target UUID the trend relates to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScoreTrend.labels
+      description: The ordered time-bucket labels for the trend.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamScoreTrend.series.label
+      description: The name of the data series.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScoreTrend.series.data
+      description: The data points for the series, aligned to the labels.
+      type: Unknown
+  - name: prisma-airs-redteam-metering-quota
+    description: Get the Red Team metering quota summary. Returns the allocated, consumed, and unlimited flags for each quota bucket (static, dynamic, and custom).
+    arguments: []
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamQuota.static.allocated
+      description: The allocated static quota.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamQuota.static.consumed
+      description: The consumed static quota.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamQuota.static.unlimited
+      description: Whether the static quota is unlimited.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamQuota.dynamic.allocated
+      description: The allocated dynamic quota.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamQuota.dynamic.consumed
+      description: The consumed dynamic quota.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamQuota.dynamic.unlimited
+      description: Whether the dynamic quota is unlimited.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamQuota.custom.allocated
+      description: The allocated custom quota.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamQuota.custom.consumed
+      description: The consumed custom quota.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamQuota.custom.unlimited
+      description: Whether the custom quota is unlimited.
+      type: Boolean
+  - name: prisma-airs-redteam-dashboard-overview
+    description: Get the Red Team management dashboard overview. Returns the total target count and, when available, a breakdown of targets by type.
+    arguments: []
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamDashboardOverview.total_targets
+      description: The total number of Red Team targets.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamDashboardOverview.targets_by_type.name
+      description: The target type name in the breakdown.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamDashboardOverview.targets_by_type.count
+      description: The number of targets of this type.
+      type: Number
+  - name: prisma-airs-redteam-instances-create
+    description: Create a new Red Team tenant instance.
+    arguments:
+    - name: tsg_id
+      required: true
+      description: The Tenant Service Group ID.
+    - name: tenant_id
+      required: true
+      description: The tenant ID.
+    - name: app_id
+      required: true
+      description: The application ID.
+    - name: region
+      required: true
+      description: The instance region.
+    - name: tenant_instance_name
+      required: false
+      description: The tenant instance name.
+    - name: support_account_id
+      required: false
+      description: The support account ID.
+    - name: support_account_name
+      required: false
+      description: The support account name.
+    - name: created_by
+      required: false
+      description: The identity that created the instance.
+    - name: internal
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Whether the instance is internal.
+    - name: iam_controlled
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Whether the instance is IAM controlled.
+    - name: platform_region
+      required: false
+      description: The platform region.
+    - name: csp_tenant_id
+      required: false
+      description: The cloud service provider tenant ID.
+    - name: extra
+      required: false
+      description: The additional instance attributes as a JSON string.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamInstanceCreate.tenant_id
+      description: The tenant ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceCreate.tsg_id
+      description: The Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceCreate.app_id
+      description: The application ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceCreate.is_success
+      description: Whether the instance was created successfully.
+      type: Boolean
+  - name: prisma-airs-redteam-instances-get
+    description: Get a Red Team tenant instance by tenant ID.
+    arguments:
+    - name: tenant_id
+      required: true
+      description: The tenant ID.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.tenant_id
+      description: The tenant ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.tsg_id
+      description: The Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.app_id
+      description: The application ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.region
+      description: The instance region.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.tenant_instance_name
+      description: The tenant instance name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.support_account_id
+      description: The support account ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.support_account_name
+      description: The support account name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.created_by
+      description: The identity that created the instance.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.internal
+      description: Whether the instance is internal.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamInstanceGet.deployment_profiles
+      description: The deployment profiles associated with the instance.
+      type: Unknown
+  - name: prisma-airs-redteam-instances-update
+    description: Update an existing Red Team tenant instance.
+    arguments:
+    - name: tenant_id
+      required: true
+      description: The tenant ID of the instance to update.
+    - name: tsg_id
+      required: false
+      description: The new Tenant Service Group ID.
+    - name: app_id
+      required: false
+      description: The new application ID.
+    - name: region
+      required: false
+      description: The new instance region.
+    - name: tenant_instance_name
+      required: false
+      description: The new tenant instance name.
+    - name: support_account_id
+      required: false
+      description: The new support account ID.
+    - name: support_account_name
+      required: false
+      description: The new support account name.
+    - name: created_by
+      required: false
+      description: The identity that created the instance.
+    - name: internal
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Whether the instance is internal.
+    - name: iam_controlled
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Whether the instance is IAM controlled.
+    - name: platform_region
+      required: false
+      description: The new platform region.
+    - name: csp_tenant_id
+      required: false
+      description: The new cloud service provider tenant ID.
+    - name: extra
+      required: false
+      description: The additional instance attributes as a JSON string.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamInstanceUpdate.tenant_id
+      description: The tenant ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceUpdate.tsg_id
+      description: The Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceUpdate.app_id
+      description: The application ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceUpdate.is_success
+      description: Whether the instance was updated successfully.
+      type: Boolean
+  - name: prisma-airs-redteam-instances-delete
+    execution: true
+    description: Delete a Red Team tenant instance. This permanently removes the instance and cannot be undone.
+    arguments:
+    - name: tenant_id
+      required: true
+      description: The tenant ID of the instance to delete.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamInstanceDelete.tenant_id
+      description: The deleted tenant ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceDelete.tsg_id
+      description: The Tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceDelete.app_id
+      description: The application ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamInstanceDelete.is_success
+      description: Whether the instance was deleted successfully.
+      type: Boolean
+  - name: prisma-airs-redteam-devices-create
+    description: Create one or more devices on a Red Team tenant instance. Provide a single device with serial_number, or a batch with the devices JSON array (maximum 5).
+    arguments:
+    - name: tenant_id
+      required: true
+      description: The tenant ID of the parent instance.
+    - name: serial_number
+      required: false
+      description: The device serial number. Use this for a single device.
+    - name: device_name
+      required: false
+      description: The device name. Applies to the single-device form.
+    - name: model
+      required: false
+      description: The device model. Applies to the single-device form.
+    - name: sku
+      required: false
+      description: The device SKU. Applies to the single-device form.
+    - name: device_type
+      required: false
+      description: The device type. Applies to the single-device form.
+    - name: asset_type
+      required: false
+      description: The device asset type. Applies to the single-device form.
+    - name: support_account_id
+      required: false
+      description: The support account ID. Applies to the single-device form.
+    - name: devices
+      required: false
+      description: 'The devices as a JSON array for batch operations (maximum 5). Example: [{"serial_number": "SN-0001", "device_name": "gw-1"}].'
+    - name: created_by
+      required: false
+      description: The identity creating the devices.
+    - name: app_id
+      required: false
+      description: The parent instance application ID. Resolved from the instance when omitted.
+    - name: region
+      required: false
+      description: The parent instance region. Resolved from the instance when omitted.
+    - name: tsg_id
+      required: false
+      description: The parent instance Tenant Service Group ID. Resolved from the instance when omitted.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamDeviceCreate.serial_number
+      description: The device serial number.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamDeviceCreate.status
+      description: The per-device operation status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamDeviceCreate.error
+      description: The per-device error message, if any.
+      type: String
+  - name: prisma-airs-redteam-devices-update
+    description: Update one or more devices on a Red Team tenant instance. Provide a single device with serial_number, or a batch with the devices JSON array (maximum 5).
+    arguments:
+    - name: tenant_id
+      required: true
+      description: The tenant ID of the parent instance.
+    - name: serial_number
+      required: false
+      description: The device serial number. Use this for a single device.
+    - name: device_name
+      required: false
+      description: The new device name. Applies to the single-device form.
+    - name: model
+      required: false
+      description: The device model. Applies to the single-device form.
+    - name: sku
+      required: false
+      description: The device SKU. Applies to the single-device form.
+    - name: device_type
+      required: false
+      description: The device type. Applies to the single-device form.
+    - name: asset_type
+      required: false
+      description: The device asset type. Applies to the single-device form.
+    - name: support_account_id
+      required: false
+      description: The support account ID. Applies to the single-device form.
+    - name: devices
+      required: false
+      description: 'The devices as a JSON array for batch operations (maximum 5). Example: [{"serial_number": "SN-0001", "device_name": "renamed"}].'
+    - name: created_by
+      required: false
+      description: The identity updating the devices.
+    - name: app_id
+      required: false
+      description: The parent instance application ID. Resolved from the instance when omitted.
+    - name: region
+      required: false
+      description: The parent instance region. Resolved from the instance when omitted.
+    - name: tsg_id
+      required: false
+      description: The parent instance Tenant Service Group ID. Resolved from the instance when omitted.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamDeviceUpdate.serial_number
+      description: The device serial number.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamDeviceUpdate.status
+      description: The per-device operation status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamDeviceUpdate.error
+      description: The per-device error message, if any.
+      type: String
+  - name: prisma-airs-redteam-devices-delete
+    execution: true
+    description: Delete one or more devices from a Red Team tenant instance by serial number. This permanently removes the devices and cannot be undone.
+    arguments:
+    - name: tenant_id
+      required: true
+      description: The tenant ID of the parent instance.
+    - name: serial_numbers
+      required: true
+      isArray: true
+      description: A comma-separated list of device serial numbers to delete (maximum 5).
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamDeviceDelete.serial_number
+      description: The deleted device serial number.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamDeviceDelete.status
+      description: The per-device deletion status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamDeviceDelete.error
+      description: The per-device error message, if any.
+      type: String
+  - name: prisma-airs-redteam-adapters-list
+    description: List Red Team custom target adapters. List rows carry no script, description, or variables - use prisma-airs-redteam-adapters-get for the full record.
+    arguments:
+    - name: limit
+      description: The maximum number of adapters to return.
+      defaultValue: '50'
+    - name: skip
+      description: The number of adapters to skip from the start (for pagination).
+    - name: search
+      description: A free-text search filter applied to adapter names.
+    - name: include_target_count
+      description: Whether to include the number of targets referencing each adapter.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamAdapter.uuid
+      description: The adapter UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.name
+      description: The adapter name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.status
+      description: The adapter status (DRAFT or ACTIVE).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.target_count
+      description: The number of targets currently referencing this adapter.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamAdapter.created_at
+      description: The adapter creation timestamp.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.updated_at
+      description: The adapter last-update timestamp.
+      type: String
+  - name: prisma-airs-redteam-adapters-get
+    description: Get a single Red Team custom target adapter by UUID, including its script, variables, and configuration.
+    arguments:
+    - name: uuid
+      required: true
+      description: The UUID of the adapter to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamAdapter.uuid
+      description: The adapter UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.name
+      description: The adapter name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.status
+      description: The adapter status (DRAFT or ACTIVE).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.description
+      description: The adapter description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.tsg_id
+      description: The tenant service group ID that owns the adapter.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.network_broker_channel_uuid
+      description: The network broker channel UUID used to reach the target.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.script_b64
+      description: The base64-encoded adapter script.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.variables
+      description: The adapter configuration variables (secrets are redacted).
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamAdapter.target_count
+      description: The number of targets currently referencing this adapter.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamAdapter.created_at
+      description: The adapter creation timestamp.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.updated_at
+      description: The adapter last-update timestamp.
+      type: String
+  - name: prisma-airs-redteam-adapters-create
+    description: Create a new Red Team custom target adapter. By default the script is run end-to-end during save (validate=true) and the adapter is saved as ACTIVE on success or DRAFT on failure. Provide the script via either the script or script_b64 argument.
+    arguments:
+    - name: name
+      required: true
+      description: The adapter name.
+    - name: prompt
+      required: true
+      description: A sample prompt used to exercise the adapter during validation. Not stored.
+    - name: script
+      description: The adapter Python script as plain text. It will be base64-encoded automatically. Use this or script_b64.
+    - name: script_b64
+      description: The adapter Python script, already base64-encoded. Use this or script.
+    - name: description
+      description: An optional description for the adapter.
+    - name: network_broker_channel_uuid
+      description: The network broker channel UUID. Optional while the adapter is a DRAFT, required to activate it (validate=true).
+    - name: variables
+      description: 'A JSON array of adapter configuration variables. Each entry is an object with keys: key, value, and type (VAR or SECRET). Example: [{"key":"endpoint","value":"http://agent.svc:8080","type":"VAR"},{"key":"api_key","value":"s3cret","type":"SECRET"}].'
+    - name: validate
+      description: Whether to run the script end-to-end during save. When true (default) the adapter is saved ACTIVE on success or DRAFT on failure. Set to false to save as DRAFT without running the script.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'true'
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamAdapter.uuid
+      description: The created adapter UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.name
+      description: The adapter name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.status
+      description: The adapter status (DRAFT or ACTIVE).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.network_broker_channel_uuid
+      description: The network broker channel UUID used to reach the target.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.target_count
+      description: The number of targets currently referencing this adapter.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamAdapter.created_at
+      description: The adapter creation timestamp.
+      type: String
+  - name: prisma-airs-redteam-adapters-update
+    description: Update a Red Team custom target adapter. The upstream update is a full replacement, so the prompt argument is always required, and the variables argument (when provided) defines the complete desired variable set (omitted keys are deleted). Fields not provided are preserved from the current record; stored secrets are kept when their variables are resent unchanged.
+    arguments:
+    - name: uuid
+      required: true
+      description: The UUID of the adapter to update.
+    - name: prompt
+      required: true
+      description: A sample prompt used to exercise the adapter during validation. Required on every update because it is not stored server-side.
+    - name: name
+      description: A new adapter name. Preserved from the current record when omitted.
+    - name: script
+      description: A new adapter Python script as plain text (base64-encoded automatically). Preserved from the current record when omitted.
+    - name: script_b64
+      description: A new adapter Python script, already base64-encoded. Preserved from the current record when omitted.
+    - name: description
+      description: A new adapter description.
+    - name: network_broker_channel_uuid
+      description: A new network broker channel UUID. Preserved from the current record when omitted.
+    - name: variables
+      description: 'A JSON array of adapter configuration variables that replaces the entire variable set. Each entry is an object with keys: key, value, and type (VAR or SECRET). Use value=null to keep a stored secret unchanged. When omitted, the stored variable set is preserved.'
+    - name: validate
+      description: Whether to re-run the script end-to-end during save. When true (default) the adapter is saved ACTIVE on success or DRAFT on failure. Set to false to save as DRAFT without running the script.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'true'
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamAdapter.uuid
+      description: The adapter UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.name
+      description: The adapter name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.status
+      description: The adapter status (DRAFT or ACTIVE).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.network_broker_channel_uuid
+      description: The network broker channel UUID used to reach the target.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapter.target_count
+      description: The number of targets currently referencing this adapter.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamAdapter.updated_at
+      description: The adapter last-update timestamp.
+      type: String
+  - name: prisma-airs-redteam-adapters-delete
+    execution: true
+    description: Delete a Red Team custom target adapter by UUID. This permanently removes the adapter and cannot be undone.
+    arguments:
+    - name: uuid
+      required: true
+      description: The UUID of the adapter to delete.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamAdapterDelete.uuid
+      description: The deleted adapter UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapterDelete.is_success
+      description: Whether the deletion succeeded.
+      type: Boolean
+  - name: prisma-airs-redteam-adapters-validate
+    description: Validate a Red Team custom target adapter script end-to-end through a network broker channel without saving anything. Returns the execution outcome (validated plus stdout/stderr/traceback), not an adapter record. The channel must be ONLINE.
+    arguments:
+    - name: network_broker_channel_uuid
+      required: true
+      description: The network broker channel UUID to run the script through. Must be ONLINE.
+    - name: prompt
+      required: true
+      description: A sample prompt used to exercise the adapter script.
+    - name: script
+      description: The adapter Python script as plain text (base64-encoded automatically). Use this or script_b64.
+    - name: script_b64
+      description: The adapter Python script, already base64-encoded. Use this or script.
+    - name: variables
+      description: 'A JSON array of adapter configuration variables. Each entry is an object with keys: key, value, and type (VAR or SECRET). When adapter_uuid is provided, null/redacted values resolve from that adapter''s stored secrets.'
+    - name: adapter_uuid
+      description: An optional existing adapter UUID whose stored secrets resolve null/redacted variable values during the run.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamAdapterValidation.validated
+      description: Whether the adapter script executed successfully.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamAdapterValidation.stdout
+      description: The standard output captured from the script run.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapterValidation.stderr
+      description: The standard error captured from the script run.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAdapterValidation.traceback
+      description: The Python traceback captured when the script failed.
+      type: String
+  - name: prisma-airs-redteam-scan-create
+    description: Create a new Red Team scan job. This command submits the scan and returns immediately without polling. Use prisma-airs-redteam-scan-get to check status.
+    arguments:
+    - name: name
+      required: true
+      description: The scan name for identification.
+    - name: target_uuid
+      required: true
+      description: The UUID of the target to scan.
+    - name: job_type
+      required: false
+      description: The scan type - STATIC (attack library), DYNAMIC (agent-driven), or CUSTOM (prompt sets).
+      defaultValue: STATIC
+      auto: PREDEFINED
+      predefined:
+      - STATIC
+      - DYNAMIC
+      - CUSTOM
+    - name: categories
+      required: false
+      description: 'The JSON object for category filtering (STATIC scans only). Example: {"category": {"subcategory": true}}. Empty {} means all categories.'
+    - name: stream_breadth
+      required: false
+      description: The parallel agents per goal (DYNAMIC scans only).
+      defaultValue: '6'
+    - name: stream_depth
+      required: false
+      description: The maximum conversation turns per goal (DYNAMIC scans only).
+      defaultValue: '10'
+    - name: attack_goals
+      required: false
+      description: 'The JSON array of attack goal strings (DYNAMIC scans only). Example: ["Extract PII", "Bypass content filter"].'
+    - name: custom_prompt_sets
+      required: false
+      isArray: true
+      description: A comma-separated list of prompt set UUIDs (CUSTOM scans only). Required for CUSTOM type.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamScanCreate.uuid
+      description: The created scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanCreate.tsg_id
+      description: The tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanCreate.name
+      description: The scan name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanCreate.job_type
+      description: The job type (STATIC, DYNAMIC, CUSTOM).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanCreate.status
+      description: The initial scan status (typically QUEUED).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanCreate.target_id
+      description: The target UUID being scanned.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanCreate.target_type
+      description: The target type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanCreate.total
+      description: The total number of attacks in the scan.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScanCreate.completed
+      description: The number of completed attacks (initially 0).
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScanCreate.score
+      description: The risk score (null until scan completes).
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScanCreate.asr
+      description: The attack Success Rate (null until scan completes).
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScanCreate.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamScanCreate.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamScanCreate.version
+      description: The scan version.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScanCreate.job_metadata
+      description: The job metadata containing scan configuration.
+      type: Unknown
+  - name: prisma-airs-redteam-scans-list
+    description: List all Red Team scans.
+    arguments:
+    - name: limit
+      required: false
+      description: The maximum number of scans to return.
+      defaultValue: '50'
+    - name: job_type
+      required: false
+      description: The job type to filter results by (e.g., STATIC, DYNAMIC, CUSTOM).
+    - name: status
+      required: false
+      description: The scan status to filter results by (e.g., COMPLETED, RUNNING, FAILED).
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamScan.uuid
+      description: The scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.tsg_id
+      description: The tenant Service Group ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.job_type
+      description: The job type (STATIC, DYNAMIC, CUSTOM).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.status
+      description: The scan status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamScan.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamScan.target_uuid
+      description: The target UUID being scanned.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.target_name
+      description: The target name being scanned.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScan.started_at
+      description: The scan start timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamScan.completed_at
+      description: The scan completion timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamScan.progress
+      description: The scan progress percentage.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScan.total_prompts
+      description: The total number of prompts in the scan.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScan.completed_prompts
+      description: The number of completed prompts.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScan.failed_prompts
+      description: The number of failed prompts.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScan.error_message
+      description: The error message if scan failed.
+      type: String
+  - name: prisma-airs-redteam-scan-get
+    description: Get Red Team scan status and details by job ID.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamScanGet.uuid
+      description: The scan UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanGet.name
+      description: The scan name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanGet.job_type
+      description: The job type (STATIC, DYNAMIC, CUSTOM).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanGet.status
+      description: The scan status (QUEUED, RUNNING, COMPLETED, FAILED, ABORTED).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanGet.target_id
+      description: The target UUID being scanned.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanGet.target_name
+      description: The target name being scanned.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanGet.total
+      description: The total number of attacks in the scan.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScanGet.completed
+      description: The number of completed attacks.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScanGet.score
+      description: The risk score (0-100).
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScanGet.asr
+      description: The attack Success Rate (ASR) percentage.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScanGet.progress
+      description: The progress string (e.g., "150/200").
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanGet.progress_percentage
+      description: The progress percentage.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamScanGet.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamScanGet.started_at
+      description: The start timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamScanGet.completed_at
+      description: The completion timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: prisma-airs-redteam-scan-abort
+    execution: true
+    description: Abort a running Red Team scan.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID to abort.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamScanAbort.job_id
+      description: The aborted job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamScanAbort.message
+      description: The abort confirmation message.
+      type: String
+  - name: prisma-airs-redteam-categories-list
+    description: List all Red Team attack categories and subcategories.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamCategory.id
+      description: The category ID (e.g., SECURITY, SAFETY, COMPLIANCE, BRAND).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCategory.display_name
+      description: The category display name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCategory.description
+      description: The category description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCategory.preselect
+      description: Whether this category is preselected by default.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamCategory.sub_category_count
+      description: The number of subcategories.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCategory.sub_categories
+      description: The array of subcategory objects.
+      type: Unknown
+  - name: prisma-airs-redteam-network-channels-list
+    description: List Red Team network broker channels. Network channels are the data-plane relays that connect Red Team clients to targets.
+    arguments:
+    - name: limit
+      required: false
+      description: The maximum number of channels to return.
+      defaultValue: '50'
+    - name: skip
+      required: false
+      description: The number of channels to skip from the start (for pagination).
+    - name: search
+      required: false
+      description: The free-text search filter.
+    - name: status
+      required: false
+      description: A comma-separated list of channel statuses to filter results by.
+      auto: PREDEFINED
+      predefined:
+      - ONLINE
+      - OFFLINE
+      - DRAFT
+      isArray: true
+    - name: include_all_if_empty
+      required: false
+      description: Whether to return all channels if the other filters match nothing.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.uuid
+      description: The channel UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.name
+      description: The channel name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.description
+      description: The channel description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.status
+      description: The channel status (ONLINE, OFFLINE, DRAFT).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.added_by
+      description: The UUID of the user that created the channel.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.last_online_at
+      description: The timestamp the channel was last online, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.connected_clients_count
+      description: The number of currently connected clients.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.outdated_clients_count
+      description: The number of connected clients running an outdated version.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.oldest_client_version
+      description: The oldest client version currently connected to the channel.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.features
+      description: The map of feature flags enabled on the channel.
+      type: Unknown
+  - name: prisma-airs-redteam-network-channels-create
+    description: Create a new Red Team network broker channel.
+    arguments:
+    - name: name
+      required: true
+      description: The channel name (1-64 characters).
+    - name: description
+      required: false
+      description: The channel description.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelCreate.uuid
+      description: The channel UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelCreate.name
+      description: The channel name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelCreate.description
+      description: The channel description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelCreate.status
+      description: The channel status (ONLINE, OFFLINE, DRAFT).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelCreate.added_by
+      description: The UUID of the user that created the channel.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelCreate.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelCreate.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: prisma-airs-redteam-network-channels-stats
+    description: Retrieve Red Team network broker channel statistics and deployment info (broker domain, docker registry/image, helm chart, online/total counts).
+    arguments: []
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelStats.network_channels_server_domain
+      description: The network channels broker server domain.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelStats.docker_registry
+      description: The Docker registry proxy domain for the channel client image.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelStats.helm_chart
+      description: The Helm chart path for deploying the channel client.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelStats.docker_image
+      description: The Docker image path for the channel client.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelStats.online_channels
+      description: The number of online channels.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelStats.total_channels
+      description: The total number of channels.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelStats.client_version
+      description: The current channel client version.
+      type: String
+  - name: prisma-airs-redteam-network-channels-get
+    description: Get a single Red Team network broker channel by UUID.
+    arguments:
+    - name: channel_id
+      required: true
+      description: The channel UUID.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.uuid
+      description: The channel UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.name
+      description: The channel name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.description
+      description: The channel description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.status
+      description: The channel status (ONLINE, OFFLINE, DRAFT).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.added_by
+      description: The UUID of the user that created the channel.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.last_online_at
+      description: The timestamp the channel was last online, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.connected_clients_count
+      description: The number of currently connected clients.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.outdated_clients_count
+      description: The number of connected clients running an outdated version.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.oldest_client_version
+      description: The oldest client version currently connected to the channel.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannel.features
+      description: The map of feature flags enabled on the channel.
+      type: Unknown
+  - name: prisma-airs-redteam-network-channels-update
+    description: Update a Red Team network broker channel's name and/or description. At least one of name or description is required.
+    arguments:
+    - name: channel_id
+      required: true
+      description: The channel UUID.
+    - name: name
+      required: false
+      description: The new channel name (1-64 characters).
+    - name: description
+      required: false
+      description: The new channel description.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelUpdate.uuid
+      description: The channel UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelUpdate.name
+      description: The channel name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelUpdate.description
+      description: The channel description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelUpdate.status
+      description: The channel status (ONLINE, OFFLINE, DRAFT).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamNetworkChannelUpdate.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: prisma-airs-redteam-languages-list
+    description: List the tenant's allowed languages for Red Team scans. Queries the data plane by default; set use_management=true to query the management plane.
+    arguments:
+    - name: use_management
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+      description: Whether to query the management plane instead of the data plane. Both return the same shape; the management plane may expose a different subset.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamLanguages.multilingual_enabled
+      description: Whether multilingual Red Team scanning is enabled for the tenant.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamLanguages.supported_job_types
+      description: The scan job types the languages apply to (for example STATIC, DYNAMIC).
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamLanguages.plane
+      description: The which plane the list was retrieved from (data or management).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamLanguages.languages.code
+      description: The language code (for example en, es).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamLanguages.languages.name
+      description: The language display name (for example English, Spanish).
+      type: String
+  - name: prisma-airs-redteam-report-get
+    description: Get Red Team scan report with attack results and recommendations.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID.
+    - name: job_type
+      required: false
+      description: The job type (STATIC, DYNAMIC, CUSTOM).
+      defaultValue: STATIC
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamReport.job_id
+      description: The scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamReport.job_type
+      description: The job type (STATIC, DYNAMIC, CUSTOM).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamReport.score
+      description: The risk score (0-100).
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamReport.asr
+      description: The attack Success Rate (ASR) percentage.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamReport.total_attacks
+      description: The total number of attacks.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamReport.successful_attacks
+      description: The number of successful attacks.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamReport.failed_attacks
+      description: The number of failed attacks.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamReport.severity_breakdown
+      description: The array of severity statistics.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamReport.category_reports
+      description: The array of category-level reports.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamReport.report_summary
+      description: The executive summary of findings.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamReport.total_goals
+      description: The total goals (Dynamic scans only).
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamReport.goals_achieved
+      description: The goals achieved (Dynamic scans only).
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamReport.total_threats
+      description: The total threats detected (Dynamic scans only).
+      type: Number
+  - name: prisma-airs-redteam-report-attacks-list
+    description: List attacks for a Red Team static scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID.
+    - name: status
+      required: false
+      description: The attack status to filter results by (e.g., SUCCESS, FAILED).
+    - name: severity
+      required: false
+      description: The severity to filter results by (e.g., high, medium, low).
+    - name: category
+      required: false
+      description: The attack category to filter results by.
+    - name: sub_category
+      required: false
+      description: The attack sub-category to filter results by.
+    - name: attack_type
+      required: false
+      description: The attack type to filter results by.
+    - name: threat
+      required: false
+      description: Whether to return only attacks flagged as a threat.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: limit
+      required: false
+      description: The maximum number of attacks to return.
+      defaultValue: '50'
+    - name: skip
+      required: false
+      description: The number of attacks to skip from the start (for pagination).
+    - name: search
+      required: false
+      description: The free-text search filter to apply.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamAttack.uuid
+      description: The attack UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.job_id
+      description: The scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.target_id
+      description: The target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.prompt
+      description: The attack prompt content.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.category
+      description: The attack category.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.sub_category
+      description: The attack sub-category.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.category_display_name
+      description: The attack category display name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.sub_category_display_name
+      description: The attack sub-category display name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.status
+      description: The attack status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.threat
+      description: Whether the attack was flagged as a threat.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamAttack.attack_type
+      description: The attack type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.multi_turn
+      description: Whether the attack is multi-turn.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamAttack.severity
+      description: The attack severity.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.asr
+      description: The attack Success Rate (ASR) for this attack.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamAttack.marked_safe
+      description: Whether the attack was marked safe.
+      type: Boolean
+  - name: prisma-airs-redteam-report-attack-get
+    description: Get attack details for a Red Team static scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID.
+    - name: attack_id
+      required: true
+      description: The attack UUID.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamAttack.uuid
+      description: The attack UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.job_id
+      description: The scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.target_id
+      description: The target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.prompt
+      description: The attack prompt content.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.category
+      description: The attack category.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.sub_category
+      description: The attack sub-category.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.category_display_name
+      description: The attack category display name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.sub_category_display_name
+      description: The attack sub-category display name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.status
+      description: The attack status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.threat
+      description: Whether the attack was flagged as a threat.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamAttack.attack_type
+      description: The attack type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.multi_turn
+      description: Whether the attack is multi-turn.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamAttack.severity
+      description: The attack severity.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.asr
+      description: The attack Success Rate (ASR) for this attack.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamAttack.marked_safe
+      description: Whether the attack was marked safe.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamAttack.goal
+      description: The attack goal.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttack.compliance_frameworks
+      description: The array of associated compliance frameworks.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamAttack.outputs
+      description: The array of model responses to the attack.
+      type: Unknown
+  - name: prisma-airs-redteam-report-attack-multi-turn-get
+    description: Get multi-turn attack details for a Red Team static scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID.
+    - name: attack_id
+      required: true
+      description: The attack UUID.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.uuid
+      description: The attack UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.job_id
+      description: The scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.target_id
+      description: The target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.prompt
+      description: The attack prompt content.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.category
+      description: The attack category.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.sub_category
+      description: The attack sub-category.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.category_display_name
+      description: The attack category display name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.sub_category_display_name
+      description: The attack sub-category display name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.status
+      description: The attack status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.threat
+      description: Whether the attack was flagged as a threat.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.attack_type
+      description: The attack type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.multi_turn
+      description: Whether the attack is multi-turn.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.severity
+      description: The attack severity.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.asr
+      description: The attack Success Rate (ASR) for this attack.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.marked_safe
+      description: Whether the attack was marked safe.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.goal
+      description: The attack goal.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.compliance_frameworks
+      description: The array of associated compliance frameworks.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamAttackMultiTurn.outputs
+      description: The array of per-turn model responses to the attack.
+      type: Unknown
+  - name: prisma-airs-redteam-report-remediation-get
+    description: Get remediation recommendations for a Red Team scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID.
+    - name: job_type
+      required: false
+      description: The job type (STATIC, DYNAMIC, CUSTOM).
+      defaultValue: STATIC
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamRemediation.job_id
+      description: The scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRemediation.job_type
+      description: The job type (STATIC, DYNAMIC, CUSTOM).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRemediation.remediations
+      description: The array of remediation recommendations.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamRemediation.remediations.remediation
+      description: The remediation title.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRemediation.remediations.description
+      description: The remediation description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRemediation.remediations.priority_level
+      description: The remediation priority level.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRemediation.remediations.effectiveness_level
+      description: The remediation effectiveness level.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRemediation.remediations.ease_of_implementation_level
+      description: The remediation ease of implementation level.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRemediation.remediations.resource_links
+      description: The array of reference resource links.
+      type: Unknown
+  - name: prisma-airs-redteam-report-runtime-policy-get
+    description: Get the runtime security profile config derived from a Red Team scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID.
+    - name: job_type
+      required: false
+      description: The job type (STATIC, DYNAMIC, CUSTOM).
+      defaultValue: STATIC
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamRuntimePolicy.job_id
+      description: The scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRuntimePolicy.job_type
+      description: The job type (STATIC, DYNAMIC, CUSTOM).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRuntimePolicy.runtime_security_profile
+      description: The array of runtime security policy configurations.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamRuntimePolicy.runtime_security_profile.policy_id
+      description: The runtime security policy UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRuntimePolicy.runtime_security_profile.display_name
+      description: The runtime security policy display name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRuntimePolicy.runtime_security_profile.config
+      description: The runtime security policy configuration object.
+      type: Unknown
+  - name: prisma-airs-redteam-report-goals-list
+    description: List goals for a Red Team dynamic scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID.
+    - name: goal_type
+      required: false
+      description: The goal type to filter results by.
+    - name: status
+      required: false
+      description: The goal status to filter results by.
+    - name: count
+      required: false
+      description: Whether to request goal count metadata from the API.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: limit
+      required: false
+      description: The maximum number of goals to return.
+      defaultValue: '50'
+    - name: skip
+      required: false
+      description: The number of goals to skip from the start (for pagination).
+    - name: search
+      required: false
+      description: The free-text search filter to apply.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamGoal.uuid
+      description: The goal UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamGoal.tsg_id
+      description: The tenant service group UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamGoal.job_id
+      description: The scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamGoal.goal
+      description: The goal description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamGoal.goal_to_show
+      description: The display version of the goal description.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamGoal.goal_type
+      description: The goal type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamGoal.custom_goal
+      description: Whether the goal is a custom goal.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamGoal.threat
+      description: Whether the goal was flagged as a threat.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamGoal.version
+      description: The goal version number.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamGoal.safe_response
+      description: The expected safe model response for the goal.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamGoal.jailbroken_response
+      description: The jailbroken model response for the goal.
+      type: String
+  - name: prisma-airs-redteam-report-goal-streams-list
+    description: List streams for a goal in a Red Team dynamic scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The scan job UUID.
+    - name: goal_id
+      required: true
+      description: The goal UUID.
+    - name: limit
+      required: false
+      description: The maximum number of streams to return.
+      defaultValue: '50'
+    - name: skip
+      required: false
+      description: The number of streams to skip from the start (for pagination).
+    - name: search
+      required: false
+      description: The free-text search filter to apply.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamStream.uuid
+      description: The stream UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.tsg_id
+      description: The tenant service group UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.job_id
+      description: The scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.target_id
+      description: The target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.goal_id
+      description: The goal UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.stream_idx
+      description: The stream index within the goal.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamStream.iteration
+      description: The iteration count for the stream.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamStream.stream_type
+      description: The stream type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.marked_safe
+      description: Whether the stream was marked safe.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamStream.threat
+      description: Whether the stream was flagged as a threat.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamStream.created_at
+      description: The stream creation timestamp in ISO 8601 format (e.g., 2024-01-15T10:30:00Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamStream.updated_at
+      description: The stream last-update timestamp in ISO 8601 format (e.g., 2024-01-15T10:30:00Z).
+      type: Date
+  - name: prisma-airs-redteam-report-stream-get
+    description: Get stream details for a Red Team dynamic scan report.
+    arguments:
+    - name: stream_id
+      required: true
+      description: The stream UUID.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamStream.uuid
+      description: The stream UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.tsg_id
+      description: The tenant service group UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.job_id
+      description: The scan job UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.target_id
+      description: The target UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.goal_id
+      description: The goal UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.stream_idx
+      description: The stream index within the goal.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamStream.iteration
+      description: The iteration count for the stream.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamStream.stream_type
+      description: The stream type.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamStream.marked_safe
+      description: Whether the stream was marked safe.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamStream.threat
+      description: Whether the stream was flagged as a threat.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamStream.created_at
+      description: The stream creation timestamp in ISO 8601 format (e.g., 2024-01-15T10:30:00Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamStream.updated_at
+      description: The stream last-update timestamp in ISO 8601 format (e.g., 2024-01-15T10:30:00Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamStream.first_threat_iteration
+      description: The first iteration flagged as a threat.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamStream.iterations
+      description: The array of per-iteration attack progression records.
+      type: Unknown
+  - name: prisma-airs-redteam-report-download
+    description: Download a Red Team scan report and attach it to the War Room. The endpoint streams the report back as a ZIP archive bundling the report file(s) (for example report_summary.csv).
+    arguments:
+    - name: job_id
+      description: The UUID of the scan job whose report to download.
+      required: true
+    - name: file_format
+      description: The report file format to request.
+      auto: PREDEFINED
+      predefined:
+      - CSV
+      - JSON
+      - ALL
+      defaultValue: CSV
+    outputs:
+    - contextPath: InfoFile.Name
+      description: The attached report file name.
+      type: String
+    - contextPath: InfoFile.EntryID
+      description: The War Room entry ID of the attached report file.
+      type: String
+    - contextPath: InfoFile.Size
+      description: The attached report file size in bytes.
+      type: Number
+    - contextPath: InfoFile.Type
+      description: The attached report file type.
+      type: String
+  - name: prisma-airs-redteam-report-generate-partial
+    description: 'Unlock the partial report of a still-running Red Team scan. Consumes one quota credit of the job type and unlocks the report for viewing. The job must be in the PARTIALLY_COMPLETE state. Returns the updated job information.'
+    arguments:
+    - name: job_id
+      description: The UUID of the scan job whose partial report to unlock.
+      required: true
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPartialReport.job_id
+      description: The scan job UUID whose partial report was unlocked.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPartialReport.status
+      description: The scan job status after unlocking the partial report.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPartialReport.report_stats.partial_report_unlocked
+      description: Whether the partial report has been unlocked with a credit.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPartialReport.report_stats.partial_report_unlocked_at
+      description: The timestamp when the partial report was unlocked, in ISO 8601 format.
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPartialReport.report_stats.output_completion_percentage
+      description: The percentage of attack outputs that completed successfully (0-100).
+      type: Number
+  - name: prisma-airs-redteam-eula-status
+    description: Get Red Team EULA acceptance status.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamEula.uuid
+      description: The EULA record UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamEula.is_accepted
+      description: Whether the EULA is accepted.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamEula.accepted_at
+      description: The timestamp when EULA was accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamEula.accepted_by_user_id
+      description: The user ID who accepted the EULA.
+      type: String
+  - name: prisma-airs-redteam-eula-content
+    description: Get Red Team EULA content (full legal text).
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamEulaContent.content
+      description: The full EULA text content.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamEulaContent.content_length
+      description: The length of EULA content in characters.
+      type: Number
+  - name: prisma-airs-redteam-eula-accept
+    description: Accept the Red Team EULA (required before running scans).
+    arguments:
+    - name: accepted_at
+      required: false
+      description: The optional timestamp for acceptance (ISO 8601 format). If not provided, server time is used.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamEula.uuid
+      description: The EULA record UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamEula.is_accepted
+      description: Whether the EULA is accepted.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamEula.accepted_at
+      description: The timestamp when EULA was accepted, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamEula.accepted_by_user_id
+      description: The user ID who accepted the EULA.
+      type: String
+  - name: prisma-airs-redteam-prompts-create
+    description: Create a new prompt in a Red Team prompt set for custom attack scenarios.
+    arguments:
+    - name: prompt_set_uuid
+      required: true
+      description: The UUID of the prompt set to add the prompt to.
+    - name: prompt
+      required: true
+      description: The prompt text to create.
+    - name: goal
+      required: false
+      description: The optional custom goal for the prompt.
+    - name: properties
+      required: false
+      description: The optional JSON object with additional properties for the prompt.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptCreate.uuid
+      description: The UUID of the created prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptCreate.prompt
+      description: The prompt text.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptCreate.user_defined_goal
+      description: Whether the prompt has a user-defined goal.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptCreate.status
+      description: The status of the prompt (e.g., READY, PENDING).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptCreate.active
+      description: Whether the prompt is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptCreate.prompt_set_id
+      description: The UUID of the prompt set this prompt belongs to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptCreate.created_at
+      description: The timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptCreate.updated_at
+      description: The timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptCreate.goal
+      description: The optional custom goal for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptCreate.properties
+      description: The optional additional properties for the prompt.
+      type: Unknown
+  - name: prisma-airs-redteam-prompts-list
+    description: List prompts in a Red Team prompt set.
+    arguments:
+    - name: prompt_set_uuid
+      required: true
+      description: The UUID of the prompt set to list prompts from.
+    - name: limit
+      required: false
+      description: The maximum number of prompts to return.
+      defaultValue: '50'
+    - name: skip
+      required: false
+      description: The number of prompts to skip for pagination.
+    - name: search
+      required: false
+      description: The free-text search filter for prompt text.
+    - name: status
+      required: false
+      description: The prompt status to filter results by (e.g., READY, PENDING).
+    - name: active
+      required: false
+      description: The active status to filter results by (true or false).
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPrompts.uuid
+      description: The UUID of the prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPrompts.prompt
+      description: The prompt text.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPrompts.user_defined_goal
+      description: Whether the prompt has a user-defined goal.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPrompts.status
+      description: The status of the prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPrompts.active
+      description: Whether the prompt is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPrompts.created_at
+      description: The timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPrompts.updated_at
+      description: The timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPrompts.goal
+      description: The optional custom goal for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPrompts.properties
+      description: The optional additional properties for the prompt.
+      type: Unknown
+  - name: prisma-airs-redteam-prompts-get
+    description: Get details of a specific prompt in a Red Team prompt set.
+    arguments:
+    - name: prompt_set_uuid
+      required: true
+      description: The UUID of the prompt set containing the prompt.
+    - name: prompt_uuid
+      required: true
+      description: The UUID of the prompt to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptGet.uuid
+      description: The UUID of the prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptGet.prompt
+      description: The prompt text.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptGet.user_defined_goal
+      description: Whether the prompt has a user-defined goal.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptGet.status
+      description: The status of the prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptGet.active
+      description: Whether the prompt is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptGet.prompt_set_id
+      description: The UUID of the prompt set this prompt belongs to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptGet.created_at
+      description: The timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptGet.updated_at
+      description: The timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptGet.goal
+      description: The optional custom goal for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptGet.properties
+      description: The optional additional properties for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptGet.property_assignments
+      description: The optional property assignments for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptGet.detector_category
+      description: The optional detector category for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptGet.severity
+      description: The optional severity level for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptGet.extra_info
+      description: The optional extra information about the prompt.
+      type: Unknown
+  - name: prisma-airs-redteam-prompts-update
+    description: Update an existing prompt in a Red Team prompt set.
+    arguments:
+    - name: prompt_set_uuid
+      required: true
+      description: The UUID of the prompt set containing the prompt.
+    - name: prompt_uuid
+      required: true
+      description: The UUID of the prompt to update.
+    - name: prompt
+      required: false
+      description: The updated prompt text.
+    - name: goal
+      required: false
+      description: The updated custom goal.
+    - name: properties
+      required: false
+      description: The updated properties JSON object.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptUpdate.uuid
+      description: The UUID of the updated prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptUpdate.prompt
+      description: The updated prompt text.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptUpdate.user_defined_goal
+      description: Whether the prompt has a user-defined goal.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptUpdate.status
+      description: The status of the prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptUpdate.active
+      description: Whether the prompt is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptUpdate.prompt_set_id
+      description: The UUID of the prompt set this prompt belongs to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptUpdate.created_at
+      description: The timestamp when the prompt was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptUpdate.updated_at
+      description: The timestamp when the prompt was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptUpdate.goal
+      description: The optional custom goal for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptUpdate.properties
+      description: The optional additional properties for the prompt.
+      type: Unknown
+  - name: prisma-airs-redteam-prompts-delete
+    execution: true
+    description: Delete a prompt from a Red Team prompt set.
+    arguments:
+    - name: prompt_set_uuid
+      required: true
+      description: The UUID of the prompt set containing the prompt.
+    - name: prompt_uuid
+      required: true
+      description: The UUID of the prompt to delete.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptDeleted.prompt_uuid
+      description: The UUID of the deleted prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptDeleted.prompt_set_uuid
+      description: The UUID of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptDeleted.status
+      description: The deletion status.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptDeleted.message
+      description: The optional deletion message.
+      type: String
+  - name: prisma-airs-redteam-prompt-sets-create
+    description: Create a new Red Team prompt set for organizing custom attack prompts.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the prompt set.
+    - name: description
+      required: false
+      description: The description of the prompt set.
+    - name: property_names
+      required: false
+      isArray: true
+      description: A comma-separated list of custom property names for the prompt set (e.g., "category,severity").
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptSetCreate.uuid
+      description: The UUID of the created prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetCreate.name
+      description: The name of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetCreate.active
+      description: Whether the prompt set is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSetCreate.archive
+      description: Whether the prompt set is archived.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSetCreate.status
+      description: The status of the prompt set (e.g., READY, PENDING).
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetCreate.created_at
+      description: The timestamp when the prompt set was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSetCreate.updated_at
+      description: The timestamp when the prompt set was last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSetCreate.description
+      description: The description of the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetCreate.property_names
+      description: The array of custom property names.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetCreate.properties
+      description: The array of property definitions.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetCreate.stats
+      description: The statistics about the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetCreate.version
+      description: The version information.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetCreate.created_by_user_id
+      description: The user ID who created the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetCreate.updated_by_user_id
+      description: The user ID who last updated the prompt set.
+      type: Unknown
+  - name: prisma-airs-redteam-prompt-sets-list
+    description: List Red Team prompt sets for custom attack scenarios.
+    arguments:
+    - name: limit
+      required: false
+      description: The maximum number of prompt sets to return.
+      defaultValue: '50'
+    - name: skip
+      required: false
+      description: The number of prompt sets to skip for pagination.
+    - name: search
+      required: false
+      description: The free-text search filter for prompt set names/descriptions.
+    - name: status
+      required: false
+      description: The prompt set status to filter results by (e.g., READY, PENDING).
+    - name: active
+      required: false
+      description: The active status to filter results by (true or false).
+    - name: archive
+      required: false
+      description: Whether to filter by archive status.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptSets.uuid
+      description: The UUID of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSets.name
+      description: The name of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSets.active
+      description: Whether the prompt set is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSets.archive
+      description: Whether the prompt set is archived.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSets.status
+      description: The status of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSets.created_at
+      description: The timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSets.updated_at
+      description: The timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSets.description
+      description: The description of the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSets.property_names
+      description: The array of custom property names.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSets.stats
+      description: The statistics about the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSets.created_by_user_id
+      description: The user ID who created the prompt set.
+      type: Unknown
+  - name: prisma-airs-redteam-prompt-sets-get
+    description: Get details of a specific Red Team prompt set.
+    arguments:
+    - name: uuid
+      required: true
+      description: The UUID of the prompt set to retrieve.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptSetGet.uuid
+      description: The UUID of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetGet.name
+      description: The name of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetGet.active
+      description: Whether the prompt set is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSetGet.archive
+      description: Whether the prompt set is archived.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSetGet.status
+      description: The status of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetGet.created_at
+      description: The timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSetGet.updated_at
+      description: The timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSetGet.description
+      description: The description of the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetGet.property_names
+      description: The array of custom property names.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetGet.properties
+      description: The array of property definitions.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetGet.stats
+      description: The statistics about the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetGet.extra_info
+      description: The additional information.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetGet.version
+      description: The version information.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetGet.created_by_user_id
+      description: The user ID who created the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetGet.updated_by_user_id
+      description: The user ID who last updated the prompt set.
+      type: Unknown
+  - name: prisma-airs-redteam-prompt-sets-update
+    description: Update an existing Red Team prompt set.
+    arguments:
+    - name: uuid
+      required: true
+      description: The UUID of the prompt set to update.
+    - name: name
+      required: false
+      description: The updated name of the prompt set.
+    - name: description
+      required: false
+      description: The updated description.
+    - name: property_names
+      required: false
+      isArray: true
+      description: A comma-separated list of updated custom property names.
+    - name: archive
+      required: false
+      description: Whether the prompt set should be archived.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpdate.uuid
+      description: The UUID of the updated prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpdate.name
+      description: The name of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpdate.active
+      description: Whether the prompt set is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpdate.archive
+      description: Whether the prompt set is archived.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpdate.status
+      description: The status of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpdate.created_at
+      description: The timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpdate.updated_at
+      description: The timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpdate.description
+      description: The description of the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpdate.property_names
+      description: The array of custom property names.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpdate.properties
+      description: The array of property definitions.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpdate.stats
+      description: The statistics about the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpdate.version
+      description: The version information.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpdate.updated_by_user_id
+      description: The user ID who last updated the prompt set.
+      type: Unknown
+  - name: prisma-airs-redteam-prompt-sets-archive
+    execution: true
+    description: Archive or unarchive a Red Team prompt set.
+    arguments:
+    - name: uuid
+      required: true
+      description: The UUID of the prompt set to archive/unarchive.
+    - name: archive
+      required: true
+      description: Whether to archive the prompt set (true to archive, false to unarchive).
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptSetArchive.uuid
+      description: The UUID of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetArchive.name
+      description: The name of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetArchive.active
+      description: Whether the prompt set is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSetArchive.archive
+      description: Whether the prompt set is archived.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSetArchive.status
+      description: The status of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetArchive.created_at
+      description: The timestamp when created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSetArchive.updated_at
+      description: The timestamp when last updated, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSetArchive.description
+      description: The description of the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetArchive.property_names
+      description: The array of custom property names.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetArchive.properties
+      description: The array of property definitions.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetArchive.stats
+      description: The statistics about the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetArchive.version
+      description: The version information.
+      type: Unknown
+  - name: prisma-airs-redteam-registry-credentials-get
+    description: Get or create Red Team registry credentials for pulling scanner container images from the Prisma AIRs registry.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamRegistryCredentials.token
+      description: The registry access token for authenticating with the container registry.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamRegistryCredentials.expiry
+      description: The token expiry timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: prisma-airs-redteam-prompt-sets-download
+    description: Download CSV template for a Red Team prompt set. The template includes header row and sample data for bulk prompt uploads.
+    arguments:
+    - name: uuid
+      required: true
+      description: The UUID of the prompt set to download the template for.
+  - name: prisma-airs-redteam-prompt-sets-upload
+    description: Upload CSV file with prompts to a Red Team prompt set. CSV must have 'prompt' and 'goal' columns (goal is optional).
+    arguments:
+    - name: uuid
+      required: true
+      description: The UUID of the prompt set to upload prompts to.
+    - name: entryID
+      required: true
+      description: The entry ID of the CSV file from the war room to upload.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpload.message
+      description: The response message from the upload operation.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpload.status
+      description: The HTTP status code of the upload operation.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpload.prompt_set_uuid
+      description: The UUID of the prompt set that was uploaded to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetUpload.file_name
+      description: The name of the uploaded CSV file.
+      type: String
+  - name: prisma-airs-redteam-prompt-sets-reference
+    description: Resolve a prompt set reference (the data-plane consumption view of a prompt set).
+    arguments:
+    - name: uuid
+      required: true
+      description: The UUID of the prompt set.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptSetReference.uuid
+      description: The UUID of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetReference.name
+      description: The name of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetReference.status
+      description: The status of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetReference.active
+      description: Whether the prompt set is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSetReference.version
+      description: The version of the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetReference.tsg_id
+      description: The tenant Service Group ID that owns the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetReference.created_at
+      description: The creation timestamp of the prompt set, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSetReference.updated_at
+      description: The last-updated timestamp of the prompt set, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: prisma-airs-redteam-prompt-sets-version-info
+    description: Get version information for a prompt set, including prompt counts.
+    arguments:
+    - name: uuid
+      required: true
+      description: The UUID of the prompt set.
+    - name: version
+      required: false
+      description: A specific version ID to query. If not provided, the latest version is returned.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptSetVersionInfo.uuid
+      description: The UUID of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetVersionInfo.status
+      description: The status of the prompt set version.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetVersionInfo.is_latest
+      description: Whether this is the latest version.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSetVersionInfo.version
+      description: The version identifier.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetVersionInfo.snapshot_created_at
+      description: The timestamp the version snapshot was created, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSetVersionInfo.stats.total_prompts
+      description: The total number of prompts in the version.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamPromptSetVersionInfo.stats.active_prompts
+      description: The number of active prompts in the version.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamPromptSetVersionInfo.stats.inactive_prompts
+      description: The number of inactive prompts in the version.
+      type: Number
+  - name: prisma-airs-redteam-prompt-sets-active-list
+    description: List active prompt sets (the data-plane consumption view).
+    arguments: []
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPromptSetActive.uuid
+      description: The UUID of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetActive.name
+      description: The name of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetActive.status
+      description: The status of the prompt set.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPromptSetActive.active
+      description: Whether the prompt set is active.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamPromptSetActive.version
+      description: The version of the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamPromptSetActive.created_at
+      description: The creation timestamp of the prompt set, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: PrismaAIRs.RedTeamPromptSetActive.updated_at
+      description: The last-updated timestamp of the prompt set, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: prisma-airs-redteam-properties-list
+    description: List custom-attack property names. Property names (for example, category, severity) form the metadata vocabulary used to tag and filter custom attack prompts. Read-only.
+    arguments: []
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamProperty
+      description: The list of custom-attack property names.
+      type: Unknown
+  - name: prisma-airs-redteam-properties-values
+    description: Get the allowed values for one or more custom-attack property names. Provide either property_name (single) or property_names (comma-separated list for a batch lookup). Read-only.
+    arguments:
+    - name: property_name
+      description: A single property name to look up values for.
+    - name: property_names
+      description: A comma-separated list of property names to look up values for (batch lookup).
+      isArray: true
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPropertyValue.name
+      description: The property name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPropertyValue.values
+      description: The allowed values for the property name.
+      type: Unknown
+  - name: prisma-airs-redteam-properties-create
+    description: Create a new custom-attack property name.
+    arguments:
+    - name: name
+      required: true
+      description: The property name to create (for example, severity).
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPropertyCreate.name
+      description: The property name that was created.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPropertyCreate.message
+      description: The response message from the create operation.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPropertyCreate.status
+      description: The HTTP status code of the create operation.
+      type: Number
+  - name: prisma-airs-redteam-properties-add-value
+    description: Add an allowed value to an existing custom-attack property name.
+    arguments:
+    - name: property_name
+      required: true
+      description: The property name to add a value to (for example, severity).
+    - name: property_value
+      required: true
+      description: The value to add (for example, critical).
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamPropertyValueCreate.property_name
+      description: The property name the value was added to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPropertyValueCreate.property_value
+      description: The value that was added.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPropertyValueCreate.message
+      description: The response message from the add-value operation.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamPropertyValueCreate.status
+      description: The HTTP status code of the add-value operation.
+      type: Number
+  - name: prisma-airs-redteam-sentiment-get
+    description: Get the sentiment (up/down-vote) recorded for a Red Team scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The job UUID of the scan report to get sentiment for.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamSentiment.job_id
+      description: The job UUID the sentiment applies to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamSentiment.up_vote
+      description: Whether the report was up-voted.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamSentiment.down_vote
+      description: Whether the report was down-voted.
+      type: Boolean
+  - name: prisma-airs-redteam-sentiment-update
+    description: Update the sentiment (up/down-vote) for a Red Team scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The job UUID of the scan report to vote on.
+    - name: vote
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - up
+      - down
+      description: The vote to record for the report. One of "up" or "down".
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamSentiment.job_id
+      description: The job UUID the sentiment applies to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamSentiment.up_vote
+      description: Whether the report was up-voted.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamSentiment.down_vote
+      description: Whether the report was down-voted.
+      type: Boolean
+  - name: prisma-airs-redteam-custom-attack-report-get
+    description: Get the custom-attack report summary (totals, score, and attack success rate) for a scan job.
+    arguments:
+    - name: job_id
+      required: true
+      description: The job UUID of the custom-attack scan.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReport.job_id
+      description: The job UUID of the custom-attack scan.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReport.total_prompts
+      description: The total number of prompts in the scan.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReport.total_attacks
+      description: The total number of attacks executed.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReport.total_threats
+      description: The total number of attacks that produced a threat.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReport.failed_attacks
+      description: The total number of attacks that failed to execute.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReport.score
+      description: The overall report score.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReport.asr
+      description: The attack success rate.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReport.custom_attack_reports
+      description: The per-prompt-set summary breakdown.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReport.property_statistics
+      description: The per-property attack-success statistics.
+      type: Unknown
+  - name: prisma-airs-redteam-custom-attack-report-prompt-sets
+    description: Get the prompt-set breakdown for a custom-attack scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The job UUID of the custom-attack scan.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReportPromptSet.prompt_set_id
+      description: The prompt-set UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReportPromptSet.prompt_set_name
+      description: The prompt-set name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReportPromptSet.total_prompts
+      description: The total number of prompts in the prompt set.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReportPromptSet.total_attacks
+      description: The total number of attacks executed for the prompt set.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReportPromptSet.total_threats
+      description: The total number of threats found for the prompt set.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReportPromptSet.failed_attacks
+      description: The total number of failed attacks for the prompt set.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReportPromptSet.threat_rate
+      description: The threat rate for the prompt set.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReportPromptSet.property_names
+      description: The property names associated with the prompt set.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamCustomAttackReportPromptSet.property_statistics
+      description: The per-property attack-success statistics for the prompt set.
+      type: Unknown
+  - name: prisma-airs-redteam-custom-attack-report-prompts
+    description: List prompts for a specific prompt set within a custom-attack scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The job UUID of the custom-attack scan.
+    - name: prompt_set_id
+      required: true
+      description: The prompt-set UUID.
+    - name: is_threat
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Whether to filter to prompts that produced a threat.
+    - name: skip
+      description: The number of records to skip from the start.
+    - name: limit
+      description: The maximum number of records to return.
+    - name: search
+      description: The free-text search filter.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.prompt_id
+      description: The prompt UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.prompt_text
+      description: The prompt text.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.goal
+      description: The attack goal for the prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.user_defined_goal
+      description: Whether the goal was user-defined.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.properties
+      description: The property assignments for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.attack_id
+      description: The attack UUID associated with the prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.threat
+      description: Whether the prompt produced a threat.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.asr
+      description: The attack success rate for the prompt.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.prompt_set_id
+      description: The prompt-set UUID the prompt belongs to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.prompt_set_name
+      description: The prompt-set name the prompt belongs to.
+      type: String
+  - name: prisma-airs-redteam-custom-attack-report-prompt-get
+    description: Get details for a single prompt within a custom-attack scan report.
+    arguments:
+    - name: job_id
+      required: true
+      description: The job UUID of the custom-attack scan.
+    - name: prompt_id
+      required: true
+      description: The prompt UUID.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.prompt_id
+      description: The prompt UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.prompt_text
+      description: The prompt text.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.goal
+      description: The attack goal for the prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.user_defined_goal
+      description: Whether the goal was user-defined.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.properties
+      description: The property assignments for the prompt.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.attack_id
+      description: The attack UUID associated with the prompt.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.threat
+      description: Whether the prompt produced a threat.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.attack_outputs
+      description: The target outputs generated for the prompt's attack.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.asr
+      description: The attack success rate for the prompt.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.prompt_set_id
+      description: The prompt-set UUID the prompt belongs to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPrompt.prompt_set_name
+      description: The prompt-set name the prompt belongs to.
+      type: String
+  - name: prisma-airs-redteam-custom-attacks-list
+    description: List custom attacks for a scan job, with optional threat, prompt-set, and property filters.
+    arguments:
+    - name: job_id
+      required: true
+      description: The job UUID of the custom-attack scan.
+    - name: threat
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      description: Whether to filter to attacks that produced a threat.
+    - name: prompt_set_id
+      description: The prompt-set UUID to filter attacks by.
+    - name: property_value
+      description: The property value to filter attacks by.
+    - name: skip
+      description: The number of records to skip from the start.
+    - name: limit
+      description: The maximum number of records to return.
+    - name: search
+      description: The free-text search filter.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamCustomAttack.job_id
+      description: The job UUID of the custom-attack scan.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttack.attacks
+      description: The list of custom attacks.
+      type: Unknown
+    - contextPath: PrismaAIRs.RedTeamCustomAttack.summary.total_attacks
+      description: The total number of attacks matching the filters.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttack.summary.total_threats
+      description: The total number of threats matching the filters.
+      type: Number
+    - contextPath: PrismaAIRs.RedTeamCustomAttack.summary.total_items
+      description: The total number of paginated items.
+      type: Number
+  - name: prisma-airs-redteam-custom-attack-outputs
+    description: List the target outputs generated for a single custom attack.
+    arguments:
+    - name: job_id
+      required: true
+      description: The job UUID of the custom-attack scan.
+    - name: attack_id
+      required: true
+      description: The custom-attack UUID.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamCustomAttackOutput.uuid
+      description: The output UUID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackOutput.tsg_id
+      description: The tenant service group ID.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackOutput.custom_attack_id
+      description: The custom-attack UUID the output belongs to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackOutput.job_id
+      description: The job UUID the output belongs to.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackOutput.target_id
+      description: The target UUID that produced the output.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackOutput.output
+      description: The target output text.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackOutput.threat
+      description: Whether the output was classified as a threat.
+      type: Boolean
+    - contextPath: PrismaAIRs.RedTeamCustomAttackOutput.marked_safe
+      description: Whether the output was manually marked safe.
+      type: Boolean
+  - name: prisma-airs-redteam-custom-attack-property-stats
+    description: Get per-property attack-success statistics for a custom-attack scan.
+    arguments:
+    - name: job_id
+      required: true
+      description: The job UUID of the custom-attack scan.
+    outputs:
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPropertyStat.property_name
+      description: The property name.
+      type: String
+    - contextPath: PrismaAIRs.RedTeamCustomAttackPropertyStat.values
+      description: The per-value attack-success statistics (value, successful_attack_count, total_attack_count, success_rate).
+      type: Unknown
+  dockerimage: demisto/python3:3.10.14.95956
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- PaloAltoNetworks_Prisma_AIRs_RedTeam_Prompts_Test
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+supportedModules:
+- cloud_runtime_security
+- xsiam
+- cloud
+- agentix
+fromversion: 6.10.0
