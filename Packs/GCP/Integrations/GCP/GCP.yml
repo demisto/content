@@ -2613,6 +2613,549 @@ script:
       description: Type of the resource. Always compute#image for images.
       type: string
 
+# gcp-compute-image-get-from-family
+  - name: gcp-compute-image-get-from-family
+    description: "Returns the latest image that is part of an image family and is not deprecated. Required permission: compute.images.get."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: family
+      required: true
+      description: The name of the image family to search for.
+    outputs:
+    - contextPath: GCP.Compute.Images.kind
+      description: The type of the resource. Always compute#image for images.
+      type: String
+    - contextPath: GCP.Compute.Images.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Images.creationTimestamp
+      description: The creation timestamp in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Images.name
+      description: The name of the resource, provided by the client when the resource is created.
+      type: String
+    - contextPath: GCP.Compute.Images.description
+      description: The optional description of this resource.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceType
+      description: The type of the image used to create this disk. The default and only value is RAW.
+      type: String
+    - contextPath: GCP.Compute.Images.rawDisk.source
+      description: The full Google Cloud Storage URL where the disk image is stored.
+      type: String
+    - contextPath: GCP.Compute.Images.rawDisk.sha1Checksum
+      description: The optional SHA1 checksum of the disk image before unpackaging, provided by the client when the disk image is created.
+      type: String
+    - contextPath: GCP.Compute.Images.rawDisk.containerType
+      description: The format used to encode and transmit the block device, which should be TAR.
+      type: String
+    - contextPath: GCP.Compute.Images.deprecated.state
+      description: The deprecation state of this resource. Possible values are ACTIVE, DEPRECATED, OBSOLETE, or DELETED.
+      type: String
+    - contextPath: GCP.Compute.Images.deprecated.replacement
+      description: The URL of the suggested replacement for a deprecated resource.
+      type: String
+    - contextPath: GCP.Compute.Images.deprecated.deprecated
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED.
+      type: Date
+    - contextPath: GCP.Compute.Images.deprecated.obsolete
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE.
+      type: Date
+    - contextPath: GCP.Compute.Images.deprecated.deleted
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED.
+      type: Date
+    - contextPath: GCP.Compute.Images.status
+      description: The status of the image. Possible values are FAILED, PENDING, or READY.
+      type: String
+    - contextPath: GCP.Compute.Images.archiveSizeBytes
+      description: The size of the image tar.gz archive stored in Google Cloud Storage, in bytes.
+      type: String
+    - contextPath: GCP.Compute.Images.diskSizeGb
+      description: The size of the image when restored onto a persistent disk, in GB.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDisk
+      description: The URL of the source disk used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDiskId
+      description: The ID value of the disk used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDiskEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the source disk that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDiskEncryptionKey.sha256
+      description: The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects the source disk.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImage
+      description: The URL of the source image used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImageId
+      description: The ID value of the image used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImageEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the source image that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImageEncryptionKey.sha256
+      description: The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects the source image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshot
+      description: The URL of the source snapshot used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshotId
+      description: The ID value of the snapshot used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshotEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the source snapshot that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshotEncryptionKey.sha256
+      description: The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects the source snapshot.
+      type: String
+    - contextPath: GCP.Compute.Images.imageEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the image that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.imageEncryptionKey.sha256
+      description: The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects the image.
+      type: String
+    - contextPath: GCP.Compute.Images.licenses
+      description: The applicable license URIs.
+      type: String
+    - contextPath: GCP.Compute.Images.licenseCodes
+      description: The integer license codes indicating which licenses are attached to this image.
+      type: String
+    - contextPath: GCP.Compute.Images.family
+      description: The name of the image family to which this image belongs.
+      type: String
+    - contextPath: GCP.Compute.Images.labels
+      description: The labels applied to this image.
+      type: Unknown
+    - contextPath: GCP.Compute.Images.labelFingerprint
+      description: The fingerprint of the labels applied to this image, used for optimistic locking.
+      type: String
+    - contextPath: GCP.Compute.Images.guestOsFeatures.type
+      description: The ID of a supported guest operating system feature.
+      type: String
+    - contextPath: GCP.Compute.Images.shieldedInstanceInitialState
+      description: The initial state for the image, which is used by Shielded VM instances on boot.
+      type: Unknown
+    - contextPath: GCP.Compute.Images.storageLocations
+      description: The Cloud Storage location, either regional or multi-regional, where the image content is stored.
+      type: String
+    - contextPath: GCP.Compute.Images.architecture
+      description: The architecture of the image. Possible values are ARM64 or X86_64.
+      type: String
+    - contextPath: GCP.Compute.Images.enableConfidentialCompute
+      description: Whether the image is created from a confidential compute mode disk.
+      type: Boolean
+    - contextPath: GCP.Compute.Images.satisfiesPzs
+      description: Whether the resource satisfies physical zone separation.
+      type: Boolean
+    - contextPath: GCP.Compute.Images.satisfiesPzi
+      description: Whether the resource satisfies physical zone isolation.
+      type: Boolean
+    - contextPath: GCP.Compute.Images.selfLink
+      description: The server-defined URL for the resource.
+      type: String
+
+# gcp-compute-images-list
+  - name: gcp-compute-images-list
+    description: "Lists images in a specific project. Required permission: compute.images.list."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: limit
+      defaultValue: '50'
+      description: "The maximum number of results to return. Acceptable values are 1 to 500, inclusive."
+    - name: next_token
+      required: false
+      description: The token for the next set of items to return, used for pagination.
+    - name: filter
+      description: "The filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value."
+    - name: order_by
+      description: The order to sort list results by. By default, results are returned in alphanumerical order based on the resource name.
+    outputs:
+    - contextPath: GCP.Compute.Images.kind
+      description: The type of the resource. Always compute#image for images.
+      type: String
+    - contextPath: GCP.Compute.Images.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Images.creationTimestamp
+      description: The creation timestamp in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Images.name
+      description: The name of the resource, provided by the client when the resource is created.
+      type: String
+    - contextPath: GCP.Compute.Images.description
+      description: The optional description of this resource.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceType
+      description: The type of the image used to create this disk. The default and only value is RAW.
+      type: String
+    - contextPath: GCP.Compute.Images.rawDisk.source
+      description: The full Google Cloud Storage URL where the disk image is stored.
+      type: String
+    - contextPath: GCP.Compute.Images.rawDisk.sha1Checksum
+      description: The optional SHA1 checksum of the disk image before unpackaging, provided by the client when the disk image is created.
+      type: String
+    - contextPath: GCP.Compute.Images.rawDisk.containerType
+      description: The format used to encode and transmit the block device, which should be TAR.
+      type: String
+    - contextPath: GCP.Compute.Images.deprecated.state
+      description: The deprecation state of this resource. Possible values are ACTIVE, DEPRECATED, OBSOLETE, or DELETED.
+      type: String
+    - contextPath: GCP.Compute.Images.deprecated.replacement
+      description: The URL of the suggested replacement for a deprecated resource.
+      type: String
+    - contextPath: GCP.Compute.Images.deprecated.deprecated
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED.
+      type: Date
+    - contextPath: GCP.Compute.Images.deprecated.obsolete
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE.
+      type: Date
+    - contextPath: GCP.Compute.Images.deprecated.deleted
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED.
+      type: Date
+    - contextPath: GCP.Compute.Images.status
+      description: The status of the image. Possible values are FAILED, PENDING, or READY.
+      type: String
+    - contextPath: GCP.Compute.Images.archiveSizeBytes
+      description: The size of the image tar.gz archive stored in Google Cloud Storage, in bytes.
+      type: String
+    - contextPath: GCP.Compute.Images.diskSizeGb
+      description: The size of the image when restored onto a persistent disk, in GB.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDisk
+      description: The URL of the source disk used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDiskId
+      description: The ID value of the disk used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDiskEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the source disk that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDiskEncryptionKey.sha256
+      description: The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects the source disk.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImage
+      description: The URL of the source image used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImageId
+      description: The ID value of the image used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImageEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the source image that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImageEncryptionKey.sha256
+      description: The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects the source image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshot
+      description: The URL of the source snapshot used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshotId
+      description: The ID value of the snapshot used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshotEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the source snapshot that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshotEncryptionKey.sha256
+      description: The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects the source snapshot.
+      type: String
+    - contextPath: GCP.Compute.Images.imageEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the image that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.imageEncryptionKey.sha256
+      description: The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects the image.
+      type: String
+    - contextPath: GCP.Compute.Images.licenses
+      description: The applicable license URIs.
+      type: String
+    - contextPath: GCP.Compute.Images.licenseCodes
+      description: The integer license codes indicating which licenses are attached to this image.
+      type: String
+    - contextPath: GCP.Compute.Images.family
+      description: The name of the image family to which this image belongs.
+      type: String
+    - contextPath: GCP.Compute.Images.labels
+      description: The labels applied to this image.
+      type: Unknown
+    - contextPath: GCP.Compute.Images.labelFingerprint
+      description: The fingerprint of the labels applied to this image, used for optimistic locking.
+      type: String
+    - contextPath: GCP.Compute.Images.guestOsFeatures.type
+      description: The ID of a supported guest operating system feature.
+      type: String
+    - contextPath: GCP.Compute.Images.shieldedInstanceInitialState
+      description: The initial state for the image, which is used by Shielded VM instances on boot.
+      type: Unknown
+    - contextPath: GCP.Compute.Images.storageLocations
+      description: The Cloud Storage location, either regional or multi-regional, where the image content is stored.
+      type: String
+    - contextPath: GCP.Compute.Images.architecture
+      description: The architecture of the image. Possible values are ARM64 or X86_64.
+      type: String
+    - contextPath: GCP.Compute.Images.enableConfidentialCompute
+      description: Whether the image is created from a confidential compute mode disk.
+      type: Boolean
+    - contextPath: GCP.Compute.Images.satisfiesPzs
+      description: Whether the resource satisfies physical zone separation.
+      type: Boolean
+    - contextPath: GCP.Compute.Images.satisfiesPzi
+      description: Whether the resource satisfies physical zone isolation.
+      type: Boolean
+    - contextPath: GCP.Compute.Images.selfLink
+      description: The server-defined URL for the resource.
+      type: String
+    - contextPath: GCP.Compute.ImagesNextToken
+      description: The token to use as the next_token argument to retrieve the next page of results.
+      type: String
+
+# gcp-compute-image-delete
+  - name: gcp-compute-image-delete
+    description: "Deletes the specified image. Required permission: compute.images.delete."
+    execution: true
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: image
+      required: true
+      description: The name of the image resource to delete.
+
+# gcp-compute-image-labels-set
+  - name: gcp-compute-image-labels-set
+    description: "Sets the labels on an image. Required permission: compute.images.setLabels."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: image
+      required: true
+      description: The name of the image resource to set labels on.
+    - name: labels
+      required: true
+      description: 'The list of labels to apply for this resource, in tuples, e.g., key=abc,value=123;key=def,value=456.'
+    - name: label_fingerprint
+      required: true
+      description: The fingerprint of the previous set of labels for this resource, used to detect conflicts. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels.
+    outputs:
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource. Always compute#operation for operation resources.
+      type: String
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation resource, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides. Only available when performing per-zone operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of requestId if it was provided in the request. Not present otherwise.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: The status of the operation. Possible values are PENDING, RUNNING, or DONE.
+      type: String
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example EMAILADDRESS.
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: The progress of the operation as a percentage between 0 and 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time the operation was requested, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time the operation was started by the server, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time the operation was completed, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.error.errors
+      description: The array of errors encountered while processing the operation.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during processing of the operation.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails.
+      type: Number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails, such as NOT FOUND.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides. Only available when performing regional operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.description
+      description: The textual description of the operation, which is set when the operation is created.
+      type: String
+
+# gcp-compute-image-insert
+  - name: gcp-compute-image-insert
+    description: "Creates an image in the specified project using the data included in the request. Required permission: compute.images.create."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: name
+      required: true
+      description: The name of the resource; provided by the client when the resource is created.
+    - name: force_create
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to attempt to create the image even if OS features or license validation fails.
+    - name: description
+      description: The optional description of this resource.
+    - name: raw_disk_source
+      description: The full Google Cloud Storage URL where the disk image is stored.
+    - name: raw_disk_sha1_checksum
+      description: The optional SHA1 checksum of the disk image before unpackaging.
+    - name: raw_disk_container_type
+      auto: PREDEFINED
+      predefined:
+      - TAR
+      description: The format used to encode and transmit the block device, which should be TAR.
+    - name: deprecated_state
+      auto: PREDEFINED
+      predefined:
+      - ACTIVE
+      - DEPRECATED
+      - OBSOLETE
+      - DELETED
+      description: The deprecation state of this resource. Can be ACTIVE, DEPRECATED, OBSOLETE, or DELETED.
+    - name: deprecated_replacement
+      description: The URL of the suggested replacement for a deprecated resource.
+    - name: archive_size_bytes
+      description: The size of the image tar.gz archive stored in Google Cloud Storage (in bytes).
+    - name: disk_size_gb
+      description: The size of the image when restored onto a persistent disk (in GB).
+    - name: source_disk
+      description: The URL of the source disk used to create this image. You must provide either this property or the raw_disk_source property but not both.
+    - name: licenses
+      isArray: true
+      description: A comma-separated list of applicable license URIs.
+    - name: family
+      description: The name of the image family to which this image belongs.
+    - name: image_encryption_key_raw_key
+      description: The 256-bit customer-supplied encryption key (RFC 4648 base64) for the image.
+    - name: image_encryption_key_kms_key_name
+      description: The name of the encryption key that is stored in Google Cloud KMS for the image.
+    - name: source_disk_encryption_key_raw_key
+      description: The 256-bit customer-supplied encryption key (RFC 4648 base64) of the source disk.
+    - name: source_disk_encryption_key_kms_key_name
+      description: The name of the encryption key stored in Google Cloud KMS of the source disk.
+    - name: labels
+      description: 'The list of labels to apply for this resource, in tuples, e.g., key=abc,value=123;key=def,value=456.'
+    - name: label_fingerprint
+      description: The fingerprint of the previous set of labels for this resource.
+    - name: guest_os_features
+      isArray: true
+      description: A comma-separated list of guest OS features to enable on the image.
+    - name: license_codes
+      isArray: true
+      description: A comma-separated list of integer license codes indicating which licenses are attached to this image.
+    - name: source_image
+      description: The URL of the source image used to create this image.
+    - name: source_image_encryption_key_kms_key_name
+      description: The name of the encryption key stored in Google Cloud KMS of the source image.
+    - name: source_snapshot
+      description: The URL of the source snapshot used to create this image.
+    - name: source_snapshot_encryption_key_raw_key
+      description: The 256-bit customer-supplied encryption key (RFC 4648 base64) of the source snapshot.
+    - name: source_snapshot_encryption_key_kms_key_name
+      description: The name of the encryption key stored in Google Cloud KMS of the source snapshot.
+    outputs:
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource. Always compute#operation for operation resources.
+      type: String
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation resource, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides. Only available when performing per-zone operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of requestId if it was provided in the request. Not present otherwise.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: The status of the operation. Possible values are PENDING, RUNNING, or DONE.
+      type: String
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example EMAILADDRESS.
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: The progress of the operation as a percentage between 0 and 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time the operation was requested, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time the operation was started by the server, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time the operation was completed, in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.error.errors
+      description: The array of errors encountered while processing the operation.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during processing of the operation.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails.
+      type: Number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails, such as NOT FOUND.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides. Only available when performing regional operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.description
+      description: The textual description of the operation, which is set when the operation is created.
+      type: String
+
 # gcp-compute-region-get
   - arguments:
     - description: Name of the region resource to return.

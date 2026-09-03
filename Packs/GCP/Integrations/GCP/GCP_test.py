@@ -6652,3 +6652,384 @@ def test_extract_output_prefixes_does_not_strip_whitespace_typos():
     handler = _top_level_functions(ast.parse(source))["handler"]
 
     assert _extract_output_prefixes(handler) == {" GCP.Compute.Operations"}
+
+
+# gcp_compute_image_get_from_family
+def test_gcp_compute_image_get_from_family_success(mocker):
+    """
+    Given: A mocked GCP compute client returning the latest image of a family.
+    When: gcp_compute_image_get_from_family is called with project_id and family.
+    Then: It returns CommandResults with the GCP.Compute.Images prefix and calls getFromFamily.
+    """
+    from GCP import gcp_compute_image_get_from_family, GCPServices
+
+    args = {"project_id": "test-project", "family": "ubuntu-2004-lts"}
+    mock_response = {
+        "id": "111",
+        "name": "ubuntu-2004-focal-v20230724",
+        "family": "ubuntu-2004-lts",
+        "status": "READY",
+    }
+    mock_compute = mocker.Mock()
+    mock_images = mocker.Mock()
+    mock_compute.images.return_value = mock_images
+    mock_images.getFromFamily.return_value.execute.return_value = mock_response
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    result = gcp_compute_image_get_from_family(mocker.Mock(spec=Credentials), args)
+
+    mock_images.getFromFamily.assert_called_once_with(project="test-project", family="ubuntu-2004-lts")
+    assert result.outputs_prefix == "GCP.Compute.Images"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
+
+
+def test_gcp_compute_image_get_from_family_minimal_response(mocker):
+    """
+    Given: A mocked GCP compute client returning a response with only an id.
+    When: gcp_compute_image_get_from_family is called.
+    Then: It returns CommandResults without raising on missing optional fields.
+    """
+    from GCP import gcp_compute_image_get_from_family, GCPServices
+
+    args = {"project_id": "test-project", "family": "custom-family"}
+    mock_compute = mocker.Mock()
+    mock_compute.images.return_value.getFromFamily.return_value.execute.return_value = {"id": "222"}
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    result = gcp_compute_image_get_from_family(mocker.Mock(spec=Credentials), args)
+
+    assert result.outputs == {"id": "222"}
+
+
+def test_gcp_compute_image_get_from_family_permission_error_propagates(mocker):
+    """
+    Given: A mocked GCP compute client that raises HttpError on getFromFamily.
+    When: gcp_compute_image_get_from_family is called.
+    Then: The HttpError propagates to be handled by main().
+    """
+    from GCP import gcp_compute_image_get_from_family, GCPServices
+    from googleapiclient.errors import HttpError
+
+    args = {"project_id": "test-project", "family": "no-perm"}
+    resp = MagicMock()
+    resp.status = 403
+    http_error = HttpError(resp=resp, content=b'{"error": {"message": "forbidden"}}')
+    mock_compute = mocker.Mock()
+    mock_compute.images.return_value.getFromFamily.return_value.execute.side_effect = http_error
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    with pytest.raises(HttpError):
+        gcp_compute_image_get_from_family(mocker.Mock(spec=Credentials), args)
+
+
+# gcp_compute_images_list
+def test_gcp_compute_images_list_with_pagination(mocker):
+    """
+    Given: Pagination, filter, and order_by arguments and a response with a next page token.
+    When: gcp_compute_images_list is called.
+    Then: The next token is emitted under GCP.Compute.ImagesNextToken and the API is called with the params.
+    """
+    from GCP import gcp_compute_images_list, GCPServices
+
+    args = {
+        "project_id": "p1",
+        "limit": "2",
+        "next_token": "t0",
+        "filter": "name eq image-*",
+        "order_by": "creationTimestamp desc",
+    }
+    mock_compute = mocker.Mock()
+    mock_images = mocker.Mock()
+    mock_compute.images.return_value = mock_images
+    mock_images.list.return_value.execute.return_value = {
+        "items": [{"name": "image-1", "id": "1"}],
+        "nextPageToken": "t1",
+    }
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    result = gcp_compute_images_list(mocker.Mock(spec=Credentials), args)
+
+    call_kwargs = mock_images.list.call_args[1]
+    assert call_kwargs["project"] == "p1"
+    assert call_kwargs["maxResults"] == 2
+    assert call_kwargs["pageToken"] == "t0"
+    assert call_kwargs["filter"] == "name eq image-*"
+    assert call_kwargs["orderBy"] == "creationTimestamp desc"
+    assert result.outputs["GCP.Compute.Images(val.id && val.id == obj.id)"] == [{"name": "image-1", "id": "1"}]
+    assert result.outputs["GCP.Compute(true)"] == {"ImagesNextToken": "t1"}
+
+
+def test_gcp_compute_images_list_empty(mocker):
+    """
+    Given: A response with no items and no next page token, and no limit argument provided.
+    When: gcp_compute_images_list is called.
+    Then: The default limit of 50 is applied and the outputs contain an empty list and no next token.
+    """
+    from GCP import gcp_compute_images_list, GCPServices
+
+    args = {"project_id": "p1"}
+    mock_compute = mocker.Mock()
+    mock_images = mocker.Mock()
+    mock_compute.images.return_value = mock_images
+    mock_images.list.return_value.execute.return_value = {}
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    result = gcp_compute_images_list(mocker.Mock(spec=Credentials), args)
+
+    assert mock_images.list.call_args[1]["maxResults"] == 50
+    assert result.outputs["GCP.Compute.Images(val.id && val.id == obj.id)"] == []
+    assert result.outputs["GCP.Compute(true)"] == {"ImagesNextToken": None}
+
+
+def test_gcp_compute_images_list_invalid_limit(mocker):
+    """
+    Given: A limit outside the accepted range.
+    When: gcp_compute_images_list is called.
+    Then: validate_limit raises a DemistoException.
+    """
+    from GCP import gcp_compute_images_list, GCPServices
+    from CommonServerPython import DemistoException
+
+    args = {"project_id": "p1", "limit": "9999"}
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mocker.Mock())
+
+    with pytest.raises(DemistoException):
+        gcp_compute_images_list(mocker.Mock(spec=Credentials), args)
+
+
+# gcp_compute_image_delete
+def test_gcp_compute_image_delete_success(mocker):
+    """
+    Given: A mocked GCP compute client returning an operation.
+    When: gcp_compute_image_delete is called with project_id and image.
+    Then: It calls delete and returns a readable status without any context outputs.
+    """
+    from GCP import gcp_compute_image_delete, GCPServices
+
+    args = {"project_id": "p1", "image": "img-1"}
+    mock_response = {"id": "op-1", "name": "operation-del", "operationType": "delete", "status": "PENDING"}
+    mock_compute = mocker.Mock()
+    mock_images = mocker.Mock()
+    mock_compute.images.return_value = mock_images
+    mock_images.delete.return_value.execute.return_value = mock_response
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    result = gcp_compute_image_delete(mocker.Mock(spec=Credentials), args)
+
+    mock_images.delete.assert_called_once_with(project="p1", image="img-1")
+    assert "Delete Operation Started Successfully" in result.readable_output
+    assert result.outputs is None
+    assert result.outputs_prefix is None
+    assert result.raw_response == mock_response
+
+
+def test_gcp_compute_image_delete_no_context(mocker):
+    """
+    Given: A mocked GCP compute client returning a partial operation.
+    When: gcp_compute_image_delete is called.
+    Then: No context outputs are set (delete returns status only), and the raw response is preserved.
+    """
+    from GCP import gcp_compute_image_delete, GCPServices
+
+    args = {"project_id": "p1", "image": "img-2"}
+    mock_compute = mocker.Mock()
+    mock_compute.images.return_value.delete.return_value.execute.return_value = {"id": "op-2"}
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    result = gcp_compute_image_delete(mocker.Mock(spec=Credentials), args)
+
+    assert result.outputs is None
+    assert result.raw_response == {"id": "op-2"}
+
+
+def test_gcp_compute_image_delete_error_propagates(mocker):
+    """
+    Given: A mocked GCP compute client that raises HttpError on delete.
+    When: gcp_compute_image_delete is called.
+    Then: The HttpError propagates to be handled by main().
+    """
+    from GCP import gcp_compute_image_delete, GCPServices
+    from googleapiclient.errors import HttpError
+
+    args = {"project_id": "p1", "image": "img-3"}
+    resp = MagicMock()
+    resp.status = 404
+    http_error = HttpError(resp=resp, content=b'{"error": {"message": "not found"}}')
+    mock_compute = mocker.Mock()
+    mock_compute.images.return_value.delete.return_value.execute.side_effect = http_error
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    with pytest.raises(HttpError):
+        gcp_compute_image_delete(mocker.Mock(spec=Credentials), args)
+
+
+# gcp_compute_image_labels_set
+def test_gcp_compute_image_labels_set_success(mocker):
+    """
+    Given: A mocked GCP compute client and a labels string plus a fingerprint.
+    When: gcp_compute_image_labels_set is called.
+    Then: The setLabels body carries the parsed labels and fingerprint, and outputs use Operations.
+    """
+    from GCP import gcp_compute_image_labels_set, GCPServices
+
+    args = {
+        "project_id": "p1",
+        "image": "img-1",
+        "labels": "key=env,value=prod;key=team,value=cloud",
+        "label_fingerprint": "abc123==",
+    }
+    mock_response = {"id": "op-1", "operationType": "setLabels", "status": "PENDING"}
+    mock_compute = mocker.Mock()
+    mock_images = mocker.Mock()
+    mock_compute.images.return_value = mock_images
+    mock_images.setLabels.return_value.execute.return_value = mock_response
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    result = gcp_compute_image_labels_set(mocker.Mock(spec=Credentials), args)
+
+    call_kwargs = mock_images.setLabels.call_args[1]
+    assert call_kwargs["project"] == "p1"
+    assert call_kwargs["resource"] == "img-1"
+    assert call_kwargs["body"] == {"labels": {"env": "prod", "team": "cloud"}, "labelFingerprint": "abc123=="}
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+
+
+def test_gcp_compute_image_labels_set_invalid_labels(mocker):
+    """
+    Given: A malformed labels string.
+    When: gcp_compute_image_labels_set is called.
+    Then: parse_labels raises a ValueError before any API call.
+    """
+    from GCP import gcp_compute_image_labels_set, GCPServices
+
+    args = {"project_id": "p1", "image": "img-1", "labels": "not-valid", "label_fingerprint": "abc"}
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mocker.Mock())
+
+    with pytest.raises(ValueError):
+        gcp_compute_image_labels_set(mocker.Mock(spec=Credentials), args)
+
+
+def test_gcp_compute_image_labels_set_error_propagates(mocker):
+    """
+    Given: A mocked GCP compute client that raises HttpError on setLabels.
+    When: gcp_compute_image_labels_set is called.
+    Then: The HttpError propagates to be handled by main().
+    """
+    from GCP import gcp_compute_image_labels_set, GCPServices
+    from googleapiclient.errors import HttpError
+
+    args = {"project_id": "p1", "image": "img-1", "labels": "key=a,value=b", "label_fingerprint": "fp"}
+    resp = MagicMock()
+    resp.status = 412
+    http_error = HttpError(resp=resp, content=b'{"error": {"message": "conditionNotMet"}}')
+    mock_compute = mocker.Mock()
+    mock_compute.images.return_value.setLabels.return_value.execute.side_effect = http_error
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    with pytest.raises(HttpError):
+        gcp_compute_image_labels_set(mocker.Mock(spec=Credentials), args)
+
+
+# gcp_compute_image_insert
+def test_gcp_compute_image_insert_minimal(mocker):
+    """
+    Given: Minimal args (name only) for creating an image.
+    When: gcp_compute_image_insert is called.
+    Then: The body contains only the lowercased name and forceCreate defaults to False.
+    """
+    from GCP import gcp_compute_image_insert, GCPServices
+
+    args = {"project_id": "p1", "name": "MyImage"}
+    mock_compute = mocker.Mock()
+    mock_images = mocker.Mock()
+    mock_compute.images.return_value = mock_images
+    mock_images.insert.return_value.execute.return_value = {"id": "op-1", "status": "PENDING"}
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    result = gcp_compute_image_insert(mocker.Mock(spec=Credentials), args)
+
+    call_kwargs = mock_images.insert.call_args[1]
+    assert call_kwargs["project"] == "p1"
+    assert call_kwargs["forceCreate"] is False
+    assert call_kwargs["body"] == {"name": "myimage"}
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+
+
+def test_gcp_compute_image_insert_full_body(mocker):
+    """
+    Given: A rich set of args including nested encryption, raw disk, deprecated, and list fields.
+    When: gcp_compute_image_insert is called.
+    Then: The request body reflects all conversions, parsing, and nested object construction.
+    """
+    from GCP import gcp_compute_image_insert, GCPServices
+
+    args = {
+        "project_id": "p1",
+        "name": "Full-Image",
+        "force_create": "true",
+        "description": "desc",
+        "source_disk": "zones/z/disks/d",
+        "family": "my-family",
+        "archive_size_bytes": "1024",
+        "disk_size_gb": "20",
+        "licenses": "lic-a,lic-b",
+        "license_codes": "111,222",
+        "labels": "key=env,value=prod",
+        "label_fingerprint": "fp==",
+        "guest_os_features": "UEFI_COMPATIBLE,VIRTIO_SCSI_MULTIQUEUE",
+        "raw_disk_source": "gs://bucket/image.tar.gz",
+        "raw_disk_sha1_checksum": "sha1val",
+        "raw_disk_container_type": "TAR",
+        "deprecated_state": "DEPRECATED",
+        "deprecated_replacement": "projects/p/global/images/new",
+        "image_encryption_key_kms_key_name": "kms-key",
+        "source_disk_encryption_key_raw_key": "raw-key",
+    }
+    mock_compute = mocker.Mock()
+    mock_images = mocker.Mock()
+    mock_compute.images.return_value = mock_images
+    mock_images.insert.return_value.execute.return_value = {"id": "op-1", "status": "PENDING"}
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    gcp_compute_image_insert(mocker.Mock(spec=Credentials), args)
+
+    call_kwargs = mock_images.insert.call_args[1]
+    assert call_kwargs["forceCreate"] is True
+    body = call_kwargs["body"]
+    assert body["name"] == "full-image"
+    assert body["description"] == "desc"
+    assert body["sourceDisk"] == "zones/z/disks/d"
+    assert body["family"] == "my-family"
+    assert body["archiveSizeBytes"] == 1024
+    assert body["diskSizeGb"] == 20
+    assert body["licenses"] == ["lic-a", "lic-b"]
+    assert body["licenseCodes"] == ["111", "222"]
+    assert body["labels"] == {"env": "prod"}
+    assert body["labelFingerprint"] == "fp=="
+    assert body["guestOsFeatures"] == [{"type": "UEFI_COMPATIBLE"}, {"type": "VIRTIO_SCSI_MULTIQUEUE"}]
+    assert body["rawDisk"] == {"source": "gs://bucket/image.tar.gz", "sha1Checksum": "sha1val", "containerType": "TAR"}
+    assert body["deprecated"] == {"state": "DEPRECATED", "replacement": "projects/p/global/images/new"}
+    assert body["imageEncryptionKey"] == {"kmsKeyName": "kms-key"}
+    assert body["sourceDiskEncryptionKey"] == {"rawKey": "raw-key"}
+
+
+def test_gcp_compute_image_insert_error_propagates(mocker):
+    """
+    Given: A mocked GCP compute client that raises HttpError on insert.
+    When: gcp_compute_image_insert is called.
+    Then: The HttpError propagates to be handled by main().
+    """
+    from GCP import gcp_compute_image_insert, GCPServices
+    from googleapiclient.errors import HttpError
+
+    args = {"project_id": "p1", "name": "img"}
+    resp = MagicMock()
+    resp.status = 409
+    http_error = HttpError(resp=resp, content=b'{"error": {"message": "already exists"}}')
+    mock_compute = mocker.Mock()
+    mock_compute.images.return_value.insert.return_value.execute.side_effect = http_error
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    with pytest.raises(HttpError):
+        gcp_compute_image_insert(mocker.Mock(spec=Credentials), args)

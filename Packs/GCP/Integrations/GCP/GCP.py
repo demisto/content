@@ -311,6 +311,11 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     ),
     "gcp-compute-network-get": (GCPServices.COMPUTE, ["compute.networks.get"]),
     "gcp-compute-image-get": (GCPServices.COMPUTE, ["compute.images.get"]),
+    "gcp-compute-image-get-from-family": (GCPServices.COMPUTE, ["compute.images.get"]),
+    "gcp-compute-images-list": (GCPServices.COMPUTE, ["compute.images.list"]),
+    "gcp-compute-image-delete": (GCPServices.COMPUTE, ["compute.images.delete"]),
+    "gcp-compute-image-labels-set": (GCPServices.COMPUTE, ["compute.images.setLabels"]),
+    "gcp-compute-image-insert": (GCPServices.COMPUTE, ["compute.images.create"]),
     "gcp-compute-instance-group-get": (GCPServices.COMPUTE, ["compute.instanceGroups.get"]),
     "gcp-compute-region-get": (GCPServices.COMPUTE, ["compute.regions.get"]),
     "gcp-compute-zone-get": (GCPServices.COMPUTE, ["compute.zones.get"]),
@@ -2692,6 +2697,253 @@ def gcp_compute_image_get(creds: Credentials, args: dict[str, Any]) -> CommandRe
     )
 
 
+def gcp_compute_image_get_from_family(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the latest image that is part of an image family and is not deprecated.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id' and 'family'.
+
+    Returns:
+        CommandResults: Object containing the image details under `GCP.Compute.Images`.
+    """
+    project_id = args.get("project_id")
+    family = args.get("family")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.images().getFromFamily(project=project_id, family=family).execute()  # pylint: disable=E1101
+
+    data_res = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "family": response.get("family"),
+        "creationTimestamp": response.get("creationTimestamp"),
+        "description": response.get("description"),
+    }
+    headers = ["id", "name", "family", "creationTimestamp", "description"]
+
+    readable_output = tableToMarkdown(
+        f"GCP image family {family}", data_res, headers=headers, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Images",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_images_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists all Compute Engine images in a specified GCP project.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - limit (int, optional): Maximum number of results to return (1-500).
+            - next_token (str, optional): Token for pagination.
+            - filter (str, optional): Expression for filtering listed images.
+            - order_by (str, optional): Sorts list results by a certain order.
+
+    Returns:
+        CommandResults: Object containing a list of image details under `GCP.Compute.Images`
+        and pagination token under `GCP.Compute.ImagesNextToken`.
+    """
+    project_id = args.get("project_id")
+    limit = arg_to_number(args.get("limit")) or 50
+    next_token = args.get("next_token")
+    flt = args.get("filter")
+    order_by = args.get("order_by")
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "maxResults": limit,
+        "pageToken": next_token,
+        "filter": flt,
+        "orderBy": order_by,
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.images().list(**params).execute()  # pylint: disable=E1101
+    items = response.get("items", [])
+    next_page_token = response.get("nextPageToken")
+    headers = ["name", "id", "family", "status", "creationTimestamp"]
+    readable_output = tableToMarkdown(
+        "GCP Compute Images",
+        items,
+        headers=headers,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    outputs = {
+        "GCP.Compute.Images(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"ImagesNextToken": next_page_token},
+    }
+    return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=response)
+
+
+def gcp_compute_image_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified image.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id' and 'image'.
+
+    Returns:
+        CommandResults: Object containing the human-readable status of the delete operation.
+    """
+    project_id = args.get("project_id")
+    image = args.get("image")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.images().delete(project=project_id, image=image).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Image Delete Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        raw_response=response,
+    )
+
+
+def gcp_compute_image_labels_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets the labels on an image.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id', 'image', 'labels', and 'label_fingerprint'.
+
+    Returns:
+        CommandResults: Object containing the operation details of the setLabels request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    image = args.get("image")
+    labels = parse_labels(args.get("labels", ""))
+    label_fingerprint = args.get("label_fingerprint")
+    demisto.debug(f"The parsed {labels=}")
+
+    body = {"labels": labels, "labelFingerprint": label_fingerprint}
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.images().setLabels(project=project_id, resource=image, body=body).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        f"Google Cloud Compute Image {image} Labels Update Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_image_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates an image in the specified project using the data included in the request.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id', 'name', and the various optional
+            image source and encryption fields.
+
+    Returns:
+        CommandResults: Object containing the operation details of the insert request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    force_create = argToBoolean(args.get("force_create", False))
+    name = args["name"]
+    labels = args.get("labels")
+    guest_os_features = argToList(args.get("guest_os_features"))
+
+    body = remove_empty_elements(
+        {
+            "name": name.lower(),
+            "description": args.get("description"),
+            "sourceDisk": args.get("source_disk"),
+            "sourceImage": args.get("source_image"),
+            "sourceSnapshot": args.get("source_snapshot"),
+            "family": args.get("family"),
+            "archiveSizeBytes": arg_to_number(args.get("archive_size_bytes")),
+            "diskSizeGb": arg_to_number(args.get("disk_size_gb")),
+            "licenses": argToList(args.get("licenses")),
+            "licenseCodes": argToList(args.get("license_codes")),
+            "labels": parse_labels(labels) if labels else None,
+            "labelFingerprint": args.get("label_fingerprint"),
+            "guestOsFeatures": [{"type": feature} for feature in guest_os_features],
+            "rawDisk": {
+                "source": args.get("raw_disk_source"),
+                "sha1Checksum": args.get("raw_disk_sha1_checksum"),
+                "containerType": args.get("raw_disk_container_type"),
+            },
+            "deprecated": {
+                "state": args.get("deprecated_state"),
+                "replacement": args.get("deprecated_replacement"),
+            },
+            "imageEncryptionKey": {
+                "rawKey": args.get("image_encryption_key_raw_key"),
+                "kmsKeyName": args.get("image_encryption_key_kms_key_name"),
+            },
+            "sourceDiskEncryptionKey": {
+                "rawKey": args.get("source_disk_encryption_key_raw_key"),
+                "kmsKeyName": args.get("source_disk_encryption_key_kms_key_name"),
+            },
+            "sourceImageEncryptionKey": {
+                "rawKey": args.get("source_image_encryption_key_raw_key"),
+                "kmsKeyName": args.get("source_image_encryption_key_kms_key_name"),
+            },
+            "sourceSnapshotEncryptionKey": {
+                "rawKey": args.get("source_snapshot_encryption_key_raw_key"),
+                "kmsKeyName": args.get("source_snapshot_encryption_key_kms_key_name"),
+            },
+        }
+    )
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"Image insert body keys for project {project_id}: {list(body.keys()) if isinstance(body, dict) else []}")
+    response = (
+        compute.images()  # pylint: disable=E1101
+        .insert(project=project_id, forceCreate=force_create, body=body)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Image Insert Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
 def gcp_compute_region_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Get a specified region resource.
@@ -2985,6 +3237,11 @@ def main():  # pragma: no cover
             "gcp-compute-instance-labels-set": gcp_compute_instance_label_set_command,
             "gcp-compute-network-get": gcp_compute_network_get_command,
             "gcp-compute-image-get": gcp_compute_image_get,
+            "gcp-compute-image-get-from-family": gcp_compute_image_get_from_family,
+            "gcp-compute-images-list": gcp_compute_images_list,
+            "gcp-compute-image-delete": gcp_compute_image_delete,
+            "gcp-compute-image-labels-set": gcp_compute_image_labels_set,
+            "gcp-compute-image-insert": gcp_compute_image_insert,
             "gcp-compute-instance-group-get": gcp_compute_instance_group_get,
             "gcp-compute-region-get": gcp_compute_region_get,
             "gcp-compute-zone-get": gcp_compute_zone_get,
