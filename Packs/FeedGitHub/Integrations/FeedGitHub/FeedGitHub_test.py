@@ -223,7 +223,7 @@ def test_ipv4_cidr_regex_full_prefix_length(cidr: str, expected_value: str):
      - The ipv4cidrRegex is applied via re.search.
     Then:
      - The full CIDR value including the complete prefix length is matched,
-       not a truncated single-digit prefix (regression for XSUP-75295).
+       not a truncated single-digit prefix.
     """
     import re
 
@@ -231,7 +231,9 @@ def test_ipv4_cidr_regex_full_prefix_length(cidr: str, expected_value: str):
 
     match = re.search(ipv4cidrRegex, cidr)
     assert match is not None, f"Expected a match for {cidr!r}"
-    assert match.group(0) == expected_value, f"For input {cidr!r}: expected {expected_value!r} but got {match.group(0)!r}"
+    assert match.group(0) == expected_value, (
+        f"For input {cidr!r}: expected {expected_value!r} but got {match.group(0)!r}"
+    )
 
 
 @pytest.mark.parametrize(
@@ -240,32 +242,45 @@ def test_ipv4_cidr_regex_full_prefix_length(cidr: str, expected_value: str):
         # Three-digit prefix lengths must not be truncated
         ("2001:db8::/128", "2001:db8::/128"),
         ("2001:db8::/112", "2001:db8::/112"),
+        ("::ffff:192.168.1.0/120", "::ffff:192.168.1.0/120"),
         # Two-digit prefix lengths must not be truncated to one digit
         ("2001:db8::/64", "2001:db8::/64"),
         ("2001:db8::/48", "2001:db8::/48"),
         ("2001:db8::/32", "2001:db8::/32"),
+        ("fe80::/10", "fe80::/10"),
         # Single-digit prefix lengths must still match
         ("2001:db8::/8", "2001:db8::/8"),
         ("2001:db8::/1", "2001:db8::/1"),
+        ("::/0", "::/0"),
+        # Loopback
+        ("::1/128", "::1/128"),
+        # Full address
+        ("2001:0db8:85a3::8a2e:0370:7334/64", "2001:0db8:85a3::8a2e:0370:7334/64"),
+        # Invalid: literal 'd' instead of digit -- must NOT match
+        ("::ffff:1dd.1dd.1dd.1dd/128", None),
+        # Invalid: non-dot separator -- must NOT match
+        ("::ffff:1.1.1_1/128", None),
     ],
 )
 def test_ipv6_cidr_regex_full_prefix_length(cidr: str, expected_value: str):
     """
     Given:
-     - An IPv6 CIDR string with a multi-digit prefix length (e.g. /32, /64, /112, /128).
+     - An IPv6 CIDR string with various prefix lengths and formats.
     When:
      - The ipv6cidrRegex is applied via re.search.
     Then:
-     - The full CIDR value including the complete prefix length is matched,
-       not a truncated single-digit prefix (regression for XSUP-75295).
+     - Valid CIDRs are matched with the complete prefix length.
+     - Malformed strings with literal 'd' digits or non-dot separators are not matched.
     """
     import re
 
     from FeedGitHub import ipv6cidrRegex
 
     match = re.search(ipv6cidrRegex, cidr)
-    assert match is not None, f"Expected a match for {cidr!r}"
-    assert match.group(0) == expected_value, f"For input {cidr!r}: expected {expected_value!r} but got {match.group(0)!r}"
+    got = match.group(0) if match else None
+    assert got == expected_value, (
+        f"For input {cidr!r}: expected {expected_value!r} but got {got!r}"
+    )
 
 
 def test_get_stix_indicators():
