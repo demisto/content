@@ -1675,3 +1675,410 @@ Removes an email from the BigQuery dataset policy. Required Permissions: bigquer
 | GCP.BigQuery.Datasets.resourceTags | String | The tags attached to this dataset. |
 | GCP.BigQuery.Datasets.storageBillingModel | String | The billing model that will be applied to the dataset. |
 | GCP.BigQuery.Datasets.catalogSource | String | The origin of the dataset. |
+
+### gcp-compute-global-address-get
+
+***
+Returns the specified global address resource. Required permission: compute.globalAddresses.get.
+
+#### Base Command
+
+`gcp-compute-global-address-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| address | The name of the address resource to return. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Addresses.id | string | The unique identifier for the resource, defined by the server. |
+| GCP.Compute.Addresses.creationTimestamp | string | The creation timestamp in RFC3339 text format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Addresses.name | string | The name of the resource. |
+| GCP.Compute.Addresses.description | string | The optional description of this resource. |
+| GCP.Compute.Addresses.address | string | The static IP address represented by this resource. |
+| GCP.Compute.Addresses.prefixLength | number | The prefix length if the resource represents an IP range. |
+| GCP.Compute.Addresses.status | string | The status of the address. Possible values are RESERVING, RESERVED, or IN_USE. |
+| GCP.Compute.Addresses.users | string | The URLs of the resources that are using this address. |
+| GCP.Compute.Addresses.networkTier | string | The networking tier used for configuring this address. Possible values are PREMIUM or STANDARD. |
+| GCP.Compute.Addresses.addressType | string | The type of address to reserve. Possible values are INTERNAL or EXTERNAL. |
+| GCP.Compute.Addresses.purpose | string | The purpose of this resource, which can be used for network load balancing or other purposes. |
+| GCP.Compute.Addresses.subnetwork | string | The URL of the subnetwork in which to reserve the address. |
+| GCP.Compute.Addresses.ipv6EndpointType | string | The endpoint type of this address, which can be VM or NETLB. Used to decide which type of endpoint this address can be used for after the external IPv6 address reservation. |
+| GCP.Compute.Addresses.labels | Unknown | The labels applied to this resource. These can only be added or modified by the setLabels method. |
+| GCP.Compute.Addresses.labelFingerprint | string | The fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels. |
+| GCP.Compute.Addresses.network | string | The URL of the network in which to reserve the address. |
+| GCP.Compute.Addresses.ipCollection | string | The URL of the source of external IPv4 addresses, such as a public delegated prefix \(PDP\) used for bring your own IP \(BYOIP\). |
+| GCP.Compute.Addresses.ipVersion | string | The IP version that will be used by this address. |
+| GCP.Compute.Addresses.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Addresses.kind | string | The type of the resource. Always compute\#address for addresses. |
+
+### gcp-compute-global-address-list
+
+***
+Retrieves the list of global address resources. Required permission: compute.globalAddresses.list.
+
+#### Base Command
+
+`gcp-compute-global-address-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| limit | The maximum number of results to return, ranging from 1 to 500. Default is 50. | Optional |
+| filter | The filter expression that filters resources listed in the response. | Optional |
+| order_by | The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name. | Optional |
+| next_token | The token for the next set of items to return, used for pagination. Set this to the value of GCP.Compute.GlobalAddressesNextToken returned by a previous list request. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Addresses.id | string | The unique identifier for the resource, defined by the server. |
+| GCP.Compute.Addresses.creationTimestamp | string | The creation timestamp in RFC3339 text format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Addresses.name | string | The name of the resource. |
+| GCP.Compute.Addresses.description | string | The optional description of this resource. |
+| GCP.Compute.Addresses.address | string | The static IP address represented by this resource. |
+| GCP.Compute.Addresses.prefixLength | number | The prefix length if the resource represents an IP range. |
+| GCP.Compute.Addresses.status | string | The status of the address. Possible values are RESERVING, RESERVED, or IN_USE. |
+| GCP.Compute.Addresses.users | string | The URLs of the resources that are using this address. |
+| GCP.Compute.Addresses.networkTier | string | The networking tier used for configuring this address. Possible values are PREMIUM or STANDARD. |
+| GCP.Compute.Addresses.addressType | string | The type of address to reserve. Possible values are INTERNAL or EXTERNAL. |
+| GCP.Compute.Addresses.purpose | string | The purpose of this resource, which can be used for network load balancing or other purposes. |
+| GCP.Compute.Addresses.subnetwork | string | The URL of the subnetwork in which to reserve the address. |
+| GCP.Compute.Addresses.ipVersion | string | The IP version used by this address. Possible values are IPV4 or IPV6. |
+| GCP.Compute.Addresses.ipv6EndpointType | string | The endpoint type of this address, which can be VM or NETLB. Used to decide which type of endpoint this address can be used for after the external IPv6 address reservation. |
+| GCP.Compute.Addresses.labels | Unknown | The labels applied to this resource. These can only be added or modified by the setLabels method. |
+| GCP.Compute.Addresses.labelFingerprint | string | The fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels. |
+| GCP.Compute.Addresses.network | string | The URL of the network in which to reserve the address. |
+| GCP.Compute.Addresses.ipCollection | string | The URL of the source of external IPv4 addresses, such as a public delegated prefix \(PDP\) used for bring your own IP \(BYOIP\). |
+| GCP.Compute.Addresses.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Addresses.kind | string | The type of the resource. Always compute\#address for addresses. |
+| GCP.Compute.GlobalAddressesNextToken | string | The token used to retrieve the next page of results for list requests. |
+
+### gcp-compute-address-insert
+
+***
+Creates a regional address resource in the specified project using the data included in the request. Required permission: compute.addresses.create.
+
+#### Base Command
+
+`gcp-compute-address-insert`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The name of the region for this request. | Required |
+| name | The name of the address resource to create. | Required |
+| description | The optional description of this resource. | Optional |
+| address | The static IP address to reserve. If not specified, an unused ephemeral IP address is assigned. | Optional |
+| prefix_length | The prefix length if the resource represents an IP range. | Optional |
+| network_tier | The networking tier used for configuring this address. Possible values are: PREMIUM, STANDARD. | Optional |
+| address_type | The type of address to reserve. Possible values are: INTERNAL, EXTERNAL. | Optional |
+| purpose | The purpose of this resource, such as GCE_ENDPOINT, SHARED_LOADBALANCER_VIP, or VPC_PEERING. | Optional |
+| subnetwork | The URL of the subnetwork in which to reserve the address. Required if the address type is INTERNAL. | Optional |
+| network | The URL of the network in which to reserve the address. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique identifier for the resource, defined by the server. |
+| GCP.Compute.Operations.name | string | The name of the resource. |
+| GCP.Compute.Operations.clientOperationId | string | The value of the request ID if provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | The user who requested the operation, for example, EMAILADDRESS. |
+| GCP.Compute.Operations.progress | number | The optional progress indicator, ranging from 0 to 100. |
+| GCP.Compute.Operations.insertTime | string | The time the operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | string | The time the operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | string | The time the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error | Unknown | The errors generated during processing of the operation, if any. |
+| GCP.Compute.Operations.warnings | Unknown | The warning messages generated during processing of the operation, if any. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code returned if the operation fails. For example, 404 means the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. |
+| GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Operations.description | string | The textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.kind | string | The type of the resource. Always compute\#operation for Operation resources. |
+
+### gcp-compute-global-address-insert
+
+***
+Creates a global address resource in the specified project using the data included in the request. Required permission: compute.globalAddresses.create.
+
+#### Base Command
+
+`gcp-compute-global-address-insert`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| name | The name of the address resource to create. | Required |
+| description | The optional description of this resource. | Optional |
+| address | The static IP address to reserve. If not specified, an unused ephemeral IP address is assigned. | Optional |
+| prefix_length | The prefix length if the resource represents an IP range. | Optional |
+| network_tier | The networking tier used for configuring this address. Possible values are: PREMIUM, STANDARD. | Optional |
+| ip_version | The IP version that will be used by this address. Possible values are: IPV4, IPV6. | Optional |
+| address_type | The type of address to reserve. Possible values are: INTERNAL, EXTERNAL. | Optional |
+| purpose | The purpose of this resource, such as GCE_ENDPOINT, SHARED_LOADBALANCER_VIP, or VPC_PEERING. | Optional |
+| subnetwork | The URL of the subnetwork in which to reserve the address. Required if the address type is INTERNAL. | Optional |
+| network | The URL of the network in which to reserve the address. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique identifier for the resource, defined by the server. |
+| GCP.Compute.Operations.name | string | The name of the resource. |
+| GCP.Compute.Operations.clientOperationId | string | The value of the request ID if provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | The user who requested the operation, for example, EMAILADDRESS. |
+| GCP.Compute.Operations.progress | number | The optional progress indicator, ranging from 0 to 100. |
+| GCP.Compute.Operations.insertTime | string | The time the operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | string | The time the operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | string | The time the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error | Unknown | The errors generated during processing of the operation, if any. |
+| GCP.Compute.Operations.warnings | Unknown | The warning messages generated during processing of the operation, if any. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code returned if the operation fails. For example, 404 means the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Operations.description | string | The textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.kind | string | The type of the resource. Always compute\#operation for Operation resources. |
+
+### gcp-compute-address-aggregated-list
+
+***
+Retrieves an aggregated list of regional address resources across all regions. Required permission: compute.addresses.list.
+
+#### Base Command
+
+`gcp-compute-address-aggregated-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| limit | The maximum number of results to return, ranging from 1 to 500. Default is 50. | Optional |
+| filter | The filter expression that filters resources listed in the response. | Optional |
+| order_by | The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name. | Optional |
+| next_token | The token for the next set of items to return, used for pagination. Set this to the value of GCP.Compute.AggregatedAddressesNextToken returned by a previous list request. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Addresses.id | string | The unique identifier for the resource, defined by the server. |
+| GCP.Compute.Addresses.creationTimestamp | string | The creation timestamp in RFC3339 text format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Addresses.name | string | The name of the resource. |
+| GCP.Compute.Addresses.description | string | The optional description of this resource. |
+| GCP.Compute.Addresses.address | string | The static IP address represented by this resource. |
+| GCP.Compute.Addresses.prefixLength | number | The prefix length if the resource represents an IP range. |
+| GCP.Compute.Addresses.status | string | The status of the address. Possible values are RESERVING, RESERVED, or IN_USE. |
+| GCP.Compute.Addresses.region | string | The URL of the region where a regional address resides. |
+| GCP.Compute.Addresses.users | string | The URLs of the resources that are using this address. |
+| GCP.Compute.Addresses.networkTier | string | The networking tier used for configuring this address. Possible values are PREMIUM or STANDARD. |
+| GCP.Compute.Addresses.addressType | string | The type of address to reserve. Possible values are INTERNAL or EXTERNAL. |
+| GCP.Compute.Addresses.purpose | string | The purpose of this resource, which can be used for network load balancing or other purposes. |
+| GCP.Compute.Addresses.subnetwork | string | The URL of the subnetwork in which to reserve the address. |
+| GCP.Compute.Addresses.ipVersion | string | The IP version used by this address. Possible values are IPV4 or IPV6. |
+| GCP.Compute.Addresses.ipv6EndpointType | string | The endpoint type of this address, which can be VM or NETLB. Used to decide which type of endpoint this address can be used for after the external IPv6 address reservation. |
+| GCP.Compute.Addresses.labels | Unknown | The labels applied to this resource. These can only be added or modified by the setLabels method. |
+| GCP.Compute.Addresses.labelFingerprint | string | The fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels. |
+| GCP.Compute.Addresses.network | string | The URL of the network in which to reserve the address. |
+| GCP.Compute.Addresses.ipCollection | string | The URL of the source of external IPv4 addresses, such as a public delegated prefix \(PDP\) used for bring your own IP \(BYOIP\). |
+| GCP.Compute.Addresses.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Addresses.kind | string | The type of the resource. Always compute\#address for addresses. |
+| GCP.Compute.AggregatedAddressesNextToken | string | The token used to retrieve the next page of results for list requests. |
+
+### gcp-compute-address-delete
+
+***
+Deletes the specified regional address resource. Required permission: compute.addresses.delete.
+
+#### Base Command
+
+`gcp-compute-address-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The name of the region for this request. | Required |
+| address | The name of the address resource to delete. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique identifier for the resource, defined by the server. |
+| GCP.Compute.Operations.name | string | The name of the resource. |
+| GCP.Compute.Operations.clientOperationId | string | The value of the request ID if provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | The user who requested the operation, for example, EMAILADDRESS. |
+| GCP.Compute.Operations.progress | number | The optional progress indicator, ranging from 0 to 100. |
+| GCP.Compute.Operations.insertTime | string | The time the operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | string | The time the operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | string | The time the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error | Unknown | The errors generated during processing of the operation, if any. |
+| GCP.Compute.Operations.warnings | Unknown | The warning messages generated during processing of the operation, if any. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code returned if the operation fails. For example, 404 means the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. |
+| GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Operations.description | string | The textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.kind | string | The type of the resource. Always compute\#operation for Operation resources. |
+
+### gcp-compute-address-get
+
+***
+Returns the specified regional address resource. Required permission: compute.addresses.get.
+
+#### Base Command
+
+`gcp-compute-address-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The name of the region for this request. | Required |
+| address | The name of the address resource to return. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Addresses.id | string | The unique identifier for the resource, defined by the server. |
+| GCP.Compute.Addresses.creationTimestamp | string | The creation timestamp in RFC3339 text format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Addresses.name | string | The name of the resource. |
+| GCP.Compute.Addresses.description | string | The optional description of this resource. |
+| GCP.Compute.Addresses.address | string | The static IP address represented by this resource. |
+| GCP.Compute.Addresses.prefixLength | number | The prefix length if the resource represents an IP range. |
+| GCP.Compute.Addresses.status | string | The status of the address. Possible values are RESERVING, RESERVED, or IN_USE. |
+| GCP.Compute.Addresses.region | string | The URL of the region where a regional address resides. |
+| GCP.Compute.Addresses.users | string | The URLs of the resources that are using this address. |
+| GCP.Compute.Addresses.networkTier | string | The networking tier used for configuring this address. Possible values are PREMIUM or STANDARD. |
+| GCP.Compute.Addresses.addressType | string | The type of address to reserve. Possible values are INTERNAL or EXTERNAL. |
+| GCP.Compute.Addresses.purpose | string | The purpose of this resource, which can be used for network load balancing or other purposes. |
+| GCP.Compute.Addresses.subnetwork | string | The URL of the subnetwork in which to reserve the address. |
+| GCP.Compute.Addresses.ipv6EndpointType | string | The endpoint type of this address, which can be VM or NETLB. Used to decide which type of endpoint this address can be used for after the external IPv6 address reservation. |
+| GCP.Compute.Addresses.labels | Unknown | The labels applied to this resource. These can only be added or modified by the setLabels method. |
+| GCP.Compute.Addresses.labelFingerprint | string | The fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels. |
+| GCP.Compute.Addresses.network | string | The URL of the network in which to reserve the address. |
+| GCP.Compute.Addresses.ipCollection | string | The URL of the source of external IPv4 addresses, such as a public delegated prefix \(PDP\) used for bring your own IP \(BYOIP\). |
+| GCP.Compute.Addresses.ipVersion | string | The IP version that will be used by this address. |
+| GCP.Compute.Addresses.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Addresses.kind | string | The type of the resource. Always compute\#address for addresses. |
+
+### gcp-compute-address-list
+
+***
+Retrieves the list of regional address resources in the specified region. Required permission: compute.addresses.list.
+
+#### Base Command
+
+`gcp-compute-address-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The name of the region for this request. | Required |
+| limit | The maximum number of results to return, ranging from 1 to 500. Default is 50. | Optional |
+| filter | The filter expression that filters resources listed in the response. | Optional |
+| order_by | The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name. | Optional |
+| next_token | The token for the next set of items to return, used for pagination. Set this to the value of GCP.Compute.AddressesNextToken returned by a previous list request. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Addresses.id | string | The unique identifier for the resource, defined by the server. |
+| GCP.Compute.Addresses.creationTimestamp | string | The creation timestamp in RFC3339 text format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Addresses.name | string | The name of the resource. |
+| GCP.Compute.Addresses.description | string | The optional description of this resource. |
+| GCP.Compute.Addresses.address | string | The static IP address represented by this resource. |
+| GCP.Compute.Addresses.prefixLength | number | The prefix length if the resource represents an IP range. |
+| GCP.Compute.Addresses.status | string | The status of the address. Possible values are RESERVING, RESERVED, or IN_USE. |
+| GCP.Compute.Addresses.region | string | The URL of the region where a regional address resides. |
+| GCP.Compute.Addresses.users | string | The URLs of the resources that are using this address. |
+| GCP.Compute.Addresses.networkTier | string | The networking tier used for configuring this address. Possible values are PREMIUM or STANDARD. |
+| GCP.Compute.Addresses.addressType | string | The type of address to reserve. Possible values are INTERNAL or EXTERNAL. |
+| GCP.Compute.Addresses.purpose | string | The purpose of this resource, which can be used for network load balancing or other purposes. |
+| GCP.Compute.Addresses.subnetwork | string | The URL of the subnetwork in which to reserve the address. |
+| GCP.Compute.Addresses.ipVersion | string | The IP version used by this address. Possible values are IPV4 or IPV6. |
+| GCP.Compute.Addresses.ipv6EndpointType | string | The endpoint type of this address, which can be VM or NETLB. Used to decide which type of endpoint this address can be used for after the external IPv6 address reservation. |
+| GCP.Compute.Addresses.labels | Unknown | The labels applied to this resource. These can only be added or modified by the setLabels method. |
+| GCP.Compute.Addresses.labelFingerprint | string | The fingerprint for the labels applied to this address, used for optimistic locking. Provide an up-to-date fingerprint hash in order to update or change labels. |
+| GCP.Compute.Addresses.network | string | The URL of the network in which to reserve the address. |
+| GCP.Compute.Addresses.ipCollection | string | The URL of the source of external IPv4 addresses, such as a public delegated prefix \(PDP\) used for bring your own IP \(BYOIP\). |
+| GCP.Compute.Addresses.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Addresses.kind | string | The type of the resource. Always compute\#address for addresses. |
+| GCP.Compute.AddressesNextToken | string | The token used to retrieve the next page of results for list requests. |
+
+### gcp-compute-global-address-delete
+
+***
+Deletes the specified global address resource. Required permission: compute.globalAddresses.delete.
+
+#### Base Command
+
+`gcp-compute-global-address-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| address | The name of the address resource to delete. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique identifier for the resource, defined by the server. |
+| GCP.Compute.Operations.name | string | The name of the resource. |
+| GCP.Compute.Operations.clientOperationId | string | The value of the request ID if provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | The user who requested the operation, for example, EMAILADDRESS. |
+| GCP.Compute.Operations.progress | number | The optional progress indicator, ranging from 0 to 100. |
+| GCP.Compute.Operations.insertTime | string | The time the operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | string | The time the operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | string | The time the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error | Unknown | The errors generated during processing of the operation, if any. |
+| GCP.Compute.Operations.warnings | Unknown | The warning messages generated during processing of the operation, if any. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code returned if the operation fails. For example, 404 means the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Operations.description | string | The textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.kind | string | The type of the resource. Always compute\#operation for Operation resources. |
