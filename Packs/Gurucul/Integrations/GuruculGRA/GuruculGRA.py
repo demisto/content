@@ -102,6 +102,31 @@ def _rewrite_gra_date_fields(record: dict[str, Any], keys: list[str], gra_timezo
         record[key] = _occurred_from_gra_date(raw, gra_timezone)
 
 
+def _analytical_api_day(raw_value: Any, gra_timezone: str = "UTC") -> str:
+    """Return yyyy-MM-dd for the GRA analytical-features API (Case wall-clock, War Room day, or UTC ISO in GRA TZ)."""
+    raw = str(raw_value).strip()
+    try:
+        return datetime.strptime(raw, "%m/%d/%Y %H:%M:%S").strftime("%Y-%m-%d")
+    except ValueError:
+        pass
+    if "T" in raw or raw.endswith("Z"):
+        timezone = gra_timezone or "UTC"
+        parsed = dateparser.parse(raw, settings={"TIMEZONE": "UTC", "TO_TIMEZONE": timezone})
+        if parsed is None:
+            raise ValueError(f"Invalid analytical feature date: {raw}")
+        return parsed.strftime("%Y-%m-%d")
+    try:
+        return datetime.strptime(raw[:10], "%Y-%m-%d").strftime("%Y-%m-%d")
+    except ValueError:
+        raise ValueError(f"Invalid analytical feature date: {raw}") from None
+
+
+def _analytical_api_date_range(from_date: Any, to_date: Any, gra_timezone: str = "UTC") -> tuple[str, str]:
+    from_day = _analytical_api_day(from_date, gra_timezone)
+    to_day = _analytical_api_day(to_date, gra_timezone)
+    return from_day + " 00:00:00", to_day + " 23:59:59"
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -488,8 +513,10 @@ def main() -> None:
             analytical_params["entityValue"] = entityValue
             analytical_params["modelName"] = modelName
             if fromDate is not None and toDate is not None:
-                analytical_params["fromDate"] = fromDate + " 00:00:00"
-                analytical_params["toDate"] = toDate + " 23:59:59"
+                gra_timezone = demisto.params().get("gra_server_timezone") or "UTC"
+                analytical_params["fromDate"], analytical_params["toDate"] = _analytical_api_date_range(
+                    fromDate, toDate, gra_timezone
+                )
             if entityTypeId is not None:
                 analytical_params["entityTypeId"] = entityTypeId
             fetch_records(

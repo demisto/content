@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 
@@ -18,7 +16,7 @@ def displayAnalyticalFeatures():
         if label["value"] is not None and label["type"] == "entityTypeId":
             entityTypeId = label["value"]
         if label["value"] is not None and label["type"] == "riskDate":
-            riskDate = datetime.strptime(label["value"], "%m/%d/%Y %H:%M:%S").strftime("%Y-%m-%d")
+            riskDate = str(label["value"])
         if label["value"] is not None and label["type"] == "entity":
             entityValue = label["value"]
 

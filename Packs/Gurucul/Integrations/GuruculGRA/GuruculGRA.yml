@@ -74,7 +74,7 @@ configuration:
   options:
   - Incidents
   - Alerts
-  additionalinfo: The objects to import from GRA. Cases are no longer fetched. Legacy GRACase incidents remain actionable via gra-case-* commands. Use a separate instance for Alerts. Default Fetch type is Incidents. New instances default to Mapper (incoming) GRAIncident-Mapper and Incident type GRAIncident. On an Alerts instance, set Fetch type to Alerts, Mapper (incoming) to GRAAlert-Mapper, and Incident type to GRAAlert. After the first bootstrap, fetch continues with maxIncidentId or maxAlertId only.
+  additionalinfo: The objects to import from GRA. Cases are no longer fetched. Fetch imports OPEN Incidents or OPEN Alerts only. Legacy GRACase incidents remain actionable via gra-case-* commands. Use a separate instance for Alerts. Default Fetch type is Incidents. New instances default to Mapper (incoming) GRAIncident-Mapper and Incident type GRAIncident. On an Alerts instance, set Fetch type to Alerts, Mapper (incoming) to GRAAlert-Mapper, and Incident type to GRAAlert. After the first bootstrap, fetch continues with maxIncidentId or maxAlertId only.
 - display: GRA server timezone
   name: gra_server_timezone
   defaultvalue: UTC
@@ -140,6 +140,9 @@ script:
     - contextPath: Gra.Users.exitDate
       description: Exit Date.
       type: date
+    - contextPath: Gra.Users.profilePicturePath
+      description: Profile Picture Path.
+      type: string
     description: Retrieve list of all users (identities).
   - name: gra-fetch-accounts
     arguments:
@@ -944,38 +947,8 @@ script:
     - contextPath: Gra.Highrisk.Users.exitDate
       description: Exit Date.
       type: date
-    - contextPath: Gra.Highrisk.Users.updated_on
-      description: Updated On.
-      type: date
-    - contextPath: Gra.Highrisk.Users.created_on
-      description: Created On.
-      type: date
-    - contextPath: Gra.Highrisk.Users.resource
-      description: Resource.
-      type: string
-    - contextPath: Gra.Highrisk.Users.name
-      description: Name.
-      type: string
-    - contextPath: Gra.Highrisk.Users.id
-      description: Id.
-      type: string
-    - contextPath: Gra.Highrisk.Users.type
-      description: Type.
-      type: string
-    - contextPath: Gra.Highrisk.Users.description
-      description: Description.
-      type: string
-    - contextPath: Gra.Highrisk.Users.is_reassigned
-      description: Is Reassigned.
-      type: string
-    - contextPath: Gra.Highrisk.Users.high_risk
-      description: High Risk.
-      type: string
-    - contextPath: Gra.Highrisk.Users.is_orphan
-      description: Is Orphan.
-      type: string
-    - contextPath: Gra.Highrisk.Users.domain
-      description: Domain.
+    - contextPath: Gra.Highrisk.Users.profilePicturePath
+      description: Profile Picture Path.
       type: string
     description: Retrieve list of all high risk users.
   - name: gra-cases
@@ -1209,10 +1182,10 @@ script:
       description: Model Name.
     - name: fromDate
       required: true
-      description: From Date ( yyyy-MM-dd ).
+      description: From Date (yyyy-MM-dd, MM/DD/YYYY HH:MM:SS, or UTC ISO).
     - name: toDate
       required: true
-      description: To Date ( yyyy-MM-dd ).
+      description: To Date (yyyy-MM-dd, MM/DD/YYYY HH:MM:SS, or UTC ISO).
     - name: entityTypeId
       description: Entity Type Id.
     outputs:

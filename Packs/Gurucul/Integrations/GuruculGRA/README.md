@@ -14,7 +14,7 @@ Please make sure you look at the integration source code and comments.
 | Use system proxy settings | Whether to use the system proxy settings. | False |
 | First fetch time | The first-fetch time window used only when no ID cursor exists yet. | False |
 | Maximum number of incidents per fetch | The maximum number of incidents to fetch per run. | False |
-| Fetch type | The objects to import from GRA (`Incidents` or `Alerts`). Default: **Incidents**. Cases are no longer fetched. Use a separate instance for Alerts. | False |
+| Fetch type | The objects to import from GRA (`Incidents` or `Alerts`). Default: **Incidents**. Cases are no longer fetched. Fetch imports OPEN Incidents or OPEN Alerts only. Use a separate instance for Alerts. | False |
 | GRA server timezone | Set the timezone of the GRA server (IANA id). Used when fetching Incidents and Alerts. Not used for First fetch time. Default **UTC**. | False |
 
 ### Fetch setup (Incidents vs Alerts)
@@ -26,7 +26,7 @@ Use two integration instances when you need both types:
 | Incidents | Incidents (YAML default) | None / Select | GRAIncident-Mapper (YAML default) | GRAIncident (YAML default) |
 | Alerts | Alerts | None / Select | GRAAlert-Mapper | GRAAlert |
 
-New instances default to **Fetch type** = `Incidents`, with Mapper (incoming) = `GRAIncident-Mapper` and Incident type = `GRAIncident` (YAML defaults). On an Alerts instance, set Fetch type to `Alerts`, then set Mapper and Incident type to the Alert values above so fields and layouts map correctly.
+New instances default to **Fetch type** = `Incidents`, with Mapper (incoming) = `GRAIncident-Mapper` and Incident type = `GRAIncident` (YAML defaults). On an Alerts instance, set Fetch type to `Alerts`, then set Mapper and Incident type to the Alert values above so fields and layouts map correctly. Fetch imports OPEN Incidents or OPEN Alerts only.
 
 Set **GRA server timezone** to the GRA server timezone so **Occurred** matches GRA (default UTC). It is not used for **First fetch time**. War Room commands still return GRA date strings unchanged.
 
@@ -89,6 +89,7 @@ Retrieve List of All Users (Identities)
 | Gra.Users.joiningDate | String | Joining Date. |
 | Gra.Users.exitDate | String | Exit Date. |
 | Gra.Users.userRisk | String | User Risk. |
+| Gra.Users.profilePicturePath | String | Profile Picture Path. |
 
 #### Command Example
 
@@ -162,7 +163,7 @@ Retrieve all Accounts Information
       "created_on":"05/16/2019 06:49:18",
       "department":null,
       "description":null,
-      "resource":"Windows Security",
+      "datasourcename":"Windows Security",
       "domain":"in",
       "high_risk":null,
       "is_orphan":"No",
@@ -844,10 +845,10 @@ get details of the user.
 
 #### Human Readable Output
 
-### gra-fetch-users-details
+### gra-highRisk-users
 
 ***
-get details of the user.
+Retrieve list of all high risk users.
 
 #### Base Command
 
@@ -864,34 +865,21 @@ get details of the user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gra.Highrisk.Users.id | Number | User Id . |
-| Gra.Highrisk.Users.name | String |  User Name. |
-| Gra.Highrisk.Users.type | String |  Type. |
-| Gra.Highrisk.Users.created_on | Date | Created On . |
-| Gra.Highrisk.Users.department | String |  Department. |
-| Gra.Highrisk.Users.description | String |  Description. |
-| Gra.Highrisk.Users.resource | String | Resource Name. |
-| Gra.Highrisk.Users.domain | String | Domain. |
-| Gra.Highrisk.Users.high_risk | String | High Risk. |
-| Gra.Highrisk.Users.is_orphan | String | Is Orphan Account . |
-| Gra.Highrisk.Users.is_reassigned | String | Is Reassigned . |
-| Gra.Highrisk.Users.updated_on | Date | Updated On . |
-| Gra.Highrisk.Users.exitDate | Date | Exit Date . |
-| Gra.Highrisk.Users.created_on | Date | Created On . |
-| Gra.Highrisk.Users.joiningDate | Date | Joining Date . |
-| Gra.Highrisk.Users.manager | String | Manager . |
-| Gra.Highrisk.Users.employeeId | String | Employee Id . |
-| Gra.Highrisk.Users.firstName | String | First Name . |
-| Gra.Highrisk.Users.middleName | String | Middle Name . |
-| Gra.Highrisk.Users.lastName | String | Last Name . |
-| Gra.Highrisk.Users.location | String | Location . |
-| Gra.Highrisk.Users.title | String | Title . |
-| Gra.Highrisk.Users.userRisk | Number | User Risk . |
-| Gra.Highrisk.Users.riskScore | Number | Risk Score . |
-| Gra.Highrisk.Users.description | String | Description . |
-| Gra.Highrisk.Users.is_orphan | String | Is Orphan . |
-| Gra.Highrisk.Users.phone | String | Phone . |
-| Gra.Highrisk.Users.email | String | Email . |
+| Gra.Highrisk.Users.firstName | String | First Name. |
+| Gra.Highrisk.Users.middleName | String | Middle Name. |
+| Gra.Highrisk.Users.lastName | String | Last Name. |
+| Gra.Highrisk.Users.employeeId | String | Employee Id. |
+| Gra.Highrisk.Users.riskScore | Number | Risk Score. |
+| Gra.Highrisk.Users.userRisk | Number | User Risk. |
+| Gra.Highrisk.Users.department | String | Department. |
+| Gra.Highrisk.Users.email | String | Email. |
+| Gra.Highrisk.Users.phone | String | Phone. |
+| Gra.Highrisk.Users.location | String | Location. |
+| Gra.Highrisk.Users.manager | String | Manager. |
+| Gra.Highrisk.Users.title | String | Title. |
+| Gra.Highrisk.Users.joiningDate | Date | Joining Date. |
+| Gra.Highrisk.Users.exitDate | Date | Exit Date. |
+| Gra.Highrisk.Users.profilePicturePath | String | Profile Picture Path. |
 
 #### Command Example
 
@@ -902,20 +890,22 @@ get details of the user.
 ```
 [
   {
-      "id":188,
-      "name":"Vitoria Inger",
-      "type":null,
-      "created_on":"02/02/2020 10:00:00",
-      "department":null,
-      "description":"Mozilla/5.0 (Windows NT) AppleWebKit/534.20 (KHTML, like Gecko) Chrome/11.0.672.2 Safari/534.20",
-      "resource":"AIX",
-      "domain":"163.com",
-      "high_risk":null,
-      "is_orphan":"No",
-      "is_reassigned":null,
-      "risk_score":88,
-      "updated_on":null
-   }
+    "firstName":"Jonathan",
+    "middleName":null,
+    "lastName":"Osterman01_NN",
+    "employeeId":"AB1234",
+    "riskScore":95,
+    "userRisk":95,
+    "department":"IT",
+    "email":"Jonathan.Osterman@abc.com",
+    "phone":"(91)-123-4567-890",
+    "location":"USA",
+    "manager":"Thor.Odinson01_NN",
+    "title":"Sr.Developer",
+    "joiningDate":"01/01/2017 12:47:00",
+    "exitDate":"12/31/2019 23:47:00",
+    "profilePicturePath":null
+  }
 ]
 ```
 

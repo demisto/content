@@ -12,9 +12,9 @@ This Content Pack integrates GRA with Cortex so analysts can investigate high-ri
 
 ## Pack contents
 
-- **Gurucul-GRA** integration
-- Incident types, fields, and mappers for GRA Incidents, Alerts, and Cases (legacy Case classifier retained)
-- Layouts for investigation workflows
-- Display and close/update scripts used by the layouts
+- **Gurucul-GRA** integration (fetch Incidents or Alerts; War Room commands)
+- Incident types **GRAIncident** and **GRAAlert**, with incoming mappers, custom fields, and layouts
+- **GRACase** type, fields, layout, and Case commands for existing Case records (Cases are not fetched)
+- Layout scripts (anomaly, analytical features, alert history and classifiers) and close/update post-processing scripts
 
 For command details and fetch setup, see the Gurucul-GRA integration documentation on the Cortex Developer Hub.

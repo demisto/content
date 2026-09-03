@@ -513,6 +513,33 @@ def test_gra_analytical_features_entity_value(requests_mock):
     assert response.outputs_key_field == "entityID"
 
 
+def test_analytical_api_date_range_case_mm_dd_yyyy():
+    """Case GRA riskDate stays the same calendar day (no timezone convert)."""
+    from GuruculGRA import _analytical_api_date_range
+
+    from_date, to_date = _analytical_api_date_range("01/01/2021 00:00:00", "01/01/2021 00:00:00", "Asia/Kolkata")
+    assert from_date == "2021-01-01 00:00:00"
+    assert to_date == "2021-01-01 23:59:59"
+
+
+def test_analytical_api_date_range_yyyy_mm_dd():
+    """War Room yyyy-MM-dd is unchanged besides appending times."""
+    from GuruculGRA import _analytical_api_date_range
+
+    from_date, to_date = _analytical_api_date_range("2021-01-01", "2021-01-01", "UTC")
+    assert from_date == "2021-01-01 00:00:00"
+    assert to_date == "2021-01-01 23:59:59"
+
+
+def test_analytical_api_date_range_iso_utc_to_kolkata():
+    """Incident fetch ISO UTC is converted to the GRA server timezone calendar day."""
+    from GuruculGRA import _analytical_api_date_range
+
+    from_date, to_date = _analytical_api_date_range("2026-08-27T18:30:00.000Z", "2026-08-27T18:30:00.000Z", "Asia/Kolkata")
+    assert from_date == "2026-08-28 00:00:00"
+    assert to_date == "2026-08-28 23:59:59"
+
+
 def test_fetch_gra_incidents_bootstrap_uses_dates(requests_mock):
     """First incident fetch uses date window and stores maxIncidentId."""
     from GuruculGRA import Client, fetch_gra_incidents
