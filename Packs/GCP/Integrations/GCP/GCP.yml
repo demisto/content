@@ -2770,12 +2770,6 @@ script:
     - contextPath: GCP.Compute.Regions.quotaStatusWarning.data
       description: The metadata about this warning, in key-value format.
       type: string
-    - contextPath: GCP.Compute.Regions.quotaStatusWarning.data.key
-      description: The key that provides more detail on the warning being returned.
-      type: string
-    - contextPath: GCP.Compute.Regions.quotaStatusWarning.data.value
-      description: The value for the key.
-      type: string
     - contextPath: GCP.Compute.Regions.kind
       description: The type of the resource. Always compute#region for regions.
       type: string
@@ -2970,21 +2964,6 @@ script:
       type: Unknown
     - contextPath: GCP.Compute.Zones.resourceStatus.upcomingMaintenances
       description: The list of upcoming maintenances scheduled for this zone.
-      type: Unknown
-    - contextPath: GCP.Compute.Zones.resourceStatus.upcomingMaintenances.type
-      description: The type of the upcoming maintenance, for example SCHEDULED or UNSCHEDULED.
-      type: string
-    - contextPath: GCP.Compute.Zones.resourceStatus.upcomingMaintenances.subType
-      description: The subtype of the upcoming maintenance, for example SCHEDULED_MAINTENANCE_OPT_IN.
-      type: string
-    - contextPath: GCP.Compute.Zones.resourceStatus.upcomingMaintenances.targetResource
-      description: The resource that the upcoming maintenance applies to.
-      type: string
-    - contextPath: GCP.Compute.Zones.resourceStatus.upcomingMaintenances.windowStartTime
-      description: The start time of the upcoming maintenance window.
-      type: Unknown
-    - contextPath: GCP.Compute.Zones.resourceStatus.upcomingMaintenances.windowEndTime
-      description: The end time of the upcoming maintenance window.
       type: Unknown
     - contextPath: GCP.Compute.Zones.kind
       description: The type of the resource. Always compute#zone for zones.

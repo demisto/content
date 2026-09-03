@@ -1334,8 +1334,6 @@ Retrieves the list of region resources available to the specified project. Requi
 | GCP.Compute.Regions.quotaStatusWarning.code | string | The warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response. |
 | GCP.Compute.Regions.quotaStatusWarning.message | string | The human-readable description of the warning code. |
 | GCP.Compute.Regions.quotaStatusWarning.data | string | The metadata about this warning, in key-value format. |
-| GCP.Compute.Regions.quotaStatusWarning.data.key | string | The key that provides more detail on the warning being returned. |
-| GCP.Compute.Regions.quotaStatusWarning.data.value | string | The value for the key. |
 | GCP.Compute.Regions.kind | string | The type of the resource. Always compute\#region for regions. |
 | GCP.Compute.RegionsNextToken | string | The next page token to use for retrieving the next page of regions. |
 
@@ -1465,11 +1463,6 @@ Retrieves the list of zone resources available to the specified project. Require
 | GCP.Compute.Zones.supportsPzs | boolean | Whether the zone supports physical zone separation. Reserved for future use. |
 | GCP.Compute.Zones.resourceStatus | Unknown | The additional status details of the zone. |
 | GCP.Compute.Zones.resourceStatus.upcomingMaintenances | Unknown | The list of upcoming maintenances scheduled for this zone. |
-| GCP.Compute.Zones.resourceStatus.upcomingMaintenances.type | string | The type of the upcoming maintenance, for example SCHEDULED or UNSCHEDULED. |
-| GCP.Compute.Zones.resourceStatus.upcomingMaintenances.subType | string | The subtype of the upcoming maintenance, for example SCHEDULED_MAINTENANCE_OPT_IN. |
-| GCP.Compute.Zones.resourceStatus.upcomingMaintenances.targetResource | string | The resource that the upcoming maintenance applies to. |
-| GCP.Compute.Zones.resourceStatus.upcomingMaintenances.windowStartTime | Unknown | The start time of the upcoming maintenance window. |
-| GCP.Compute.Zones.resourceStatus.upcomingMaintenances.windowEndTime | Unknown | The end time of the upcoming maintenance window. |
 | GCP.Compute.Zones.kind | string | The type of the resource. Always compute\#zone for zones. |
 | GCP.Compute.ZonesNextToken | string | The next page token to use for retrieving the next page of zones. |
 
