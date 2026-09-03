@@ -12461,6 +12461,100 @@ class TestXsiamSendFailureIsNotCounted:
         assert responses == [], "Both the throttled and the accepted response should have been consumed"
 
     @pytest.mark.asyncio
+    async def test_health_error_states_the_reason_once(self, mocker):
+        """
+        XSUP-76105: the customer saw "Error sending assets to XSIAM: Bad GatewayBad Gateway".
+
+        Given: XSIAM rejects every attempt with 502 Bad Gateway.
+        When:  xsiam_api_call_async exhausts its retries.
+        Then:  The health message names the reason exactly once.
+
+        The message is the only part of this failure the customer ever sees, so its text is
+        behaviour, not cosmetics - a doubled reason reads like two separate faults.
+        """
+        from CrowdStrikeFalcon import xsiam_api_call_async
+
+        self._patch_xsiam_env(mocker)
+        mocker.patch("CrowdStrikeFalcon.asyncio.sleep", mocker.AsyncMock())
+        update_module_health = mocker.patch("CrowdStrikeFalcon.demisto.updateModuleHealth")
+        self._patch_session_post(mocker, 502, "Bad Gateway")
+
+        with pytest.raises(DemistoException):
+            await xsiam_api_call_async(xsiam_url="mock_url", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets")
+
+        health_message = update_module_health.call_args.args[0]
+        assert health_message.count("Bad Gateway") == 1, f"The reason must appear once, got: {health_message!r}"
+
+    @pytest.mark.asyncio
+    async def test_recovered_send_leaves_the_instance_healthy(self, mocker):
+        """
+        XSUP-76105: the customer reported a red instance while assets kept flowing, which is what
+        a per-attempt health write produces - a transient 502 that the very next attempt recovers
+        from still marks the instance as errored.
+
+        Given: XSIAM answers 502 once and then 200.
+        When:  xsiam_api_call_async is awaited.
+        Then:  No error is reported to the health module, because nothing was actually lost.
+        """
+        from CrowdStrikeFalcon import xsiam_api_call_async
+
+        self._patch_xsiam_env(mocker)
+        mocker.patch("CrowdStrikeFalcon.asyncio.sleep", mocker.AsyncMock())
+        update_module_health = mocker.patch("CrowdStrikeFalcon.demisto.updateModuleHealth")
+
+        rejected = mocker.MagicMock()
+        rejected.status = 502
+        rejected.raise_for_status.side_effect = self._client_response_error(502, "Bad Gateway")
+
+        accepted = mocker.MagicMock()
+        accepted.status = 200
+        accepted.raise_for_status.return_value = None
+
+        responses = [rejected, accepted]
+
+        def next_post_ctx(*_args, **_kwargs):
+            ctx = mocker.MagicMock()
+            ctx.__aenter__ = mocker.AsyncMock(return_value=responses.pop(0))
+            ctx.__aexit__ = mocker.AsyncMock(return_value=False)
+            return ctx
+
+        session = mocker.MagicMock()
+        session.post = mocker.MagicMock(side_effect=next_post_ctx)
+        session_ctx = mocker.MagicMock()
+        session_ctx.__aenter__ = mocker.AsyncMock(return_value=session)
+        session_ctx.__aexit__ = mocker.AsyncMock(return_value=False)
+        mocker.patch("CrowdStrikeFalcon.aiohttp.ClientSession", return_value=session_ctx)
+
+        await xsiam_api_call_async(xsiam_url="mock_url", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets")
+
+        assert responses == [], "Both the rejected and the accepted response should have been consumed"
+        errors_reported = [call for call in update_module_health.call_args_list if call.kwargs.get("is_error")]
+        assert not errors_reported, f"A recovered send must not mark the instance as errored, got: {errors_reported}"
+
+    @pytest.mark.asyncio
+    async def test_server_error_backs_off_between_attempts(self, mocker):
+        """
+        Given: XSIAM returns 502 on every attempt and num_of_attempts=3.
+        When:  xsiam_api_call_async is awaited.
+        Then:  It waits before each retry.
+
+        Without a wait the three attempts leave in the same millisecond, so a gateway blip lasting
+        a second outlives the whole retry budget and the retries buy nothing.
+        """
+        from CrowdStrikeFalcon import xsiam_api_call_async
+
+        self._patch_xsiam_env(mocker)
+        sleep = mocker.patch("CrowdStrikeFalcon.asyncio.sleep", mocker.AsyncMock())
+        self._patch_session_post(mocker, 502, "Bad Gateway")
+
+        with pytest.raises(DemistoException):
+            await xsiam_api_call_async(xsiam_url="mock_url", zipped_data=b"x", headers={}, num_of_attempts=3, data_type="assets")
+
+        waits = [call.args[0] for call in sleep.call_args_list]
+        assert len(waits) == 2, f"3 attempts means a wait before each of the 2 retries, got waits: {waits}"
+        assert all(wait > 0 for wait in waits), f"Each wait must be a real pause, got: {waits}"
+
+    @pytest.mark.asyncio
     async def test_failed_send_does_not_abort_the_severity(self, mocker):
         """
         Given: Three pages for HIGH severity where the send of page 2 fails outright.

@@ -104,6 +104,9 @@ SPOTLIGHT_PAGE_RETRY_BACKOFF_SECONDS = [2, 5, 15]
 # Statuses worth re-requesting at a smaller page size. Mirrors RetryPolicy.retryable_status_codes in
 # ContentClientApiModule; anything else (expired cursor 404, 401, 400) cannot be helped by shrinking.
 SPOTLIGHT_TRANSIENT_HTTP_STATUS_CODES = {408, 413, 425, 429, 500, 502, 503, 504}
+# Delay before each retry of a rejected XSIAM send. Back-to-back retries all fail to the same
+# gateway blip, so the attempts are spaced out to let it clear.
+XSIAM_SEND_RETRY_BACKOFF_SECONDS = 1
 MAX_PENDING_TASKS_PER_SEVERITY = 5  # Backpressure: max concurrent pending XSIAM send tasks per severity stream
 SPOTLIGHT_LOOKBACK_DAYS = 100  # Only fetch vulnerabilities updated within this many days (bounds dataset size)
 # Period between Spotlight fetch cycle starts for a long-running instance. Not configurable, so it
@@ -4200,10 +4203,12 @@ async def xsiam_api_call_async(
                             attempt_num += 1
                         continue
                     else:
+                        # Only logged here: a retry may still succeed, and reporting every attempt
+                        # to the health module turns a recovered blip into a red instance.
                         last_error = e
-                        header_msg = f"Error sending {data_type} to XSIAM: {e.message}"
-                        log_falcon_assets(header_msg, "error")
-                        demisto.updateModuleHealth(header_msg + e.message, is_error=True)
+                        log_falcon_assets(f"Error sending {data_type} to XSIAM: {e.message}", "error")
+                        if attempt_num < num_of_attempts:
+                            await asyncio.sleep(XSIAM_SEND_RETRY_BACKOFF_SECONDS)
 
         log_falcon_assets(f"received status code: {status_code}")
         if status_code == 429:
@@ -4214,10 +4219,12 @@ async def xsiam_api_call_async(
         # Raising is necessary to keep "counted" tied to "confirmed stored". Failing gracefully
         # here would let the caller count an unstored batch, and the snapshot would never seal.
         error_detail = f"HTTP {last_error.status} {last_error.message}" if last_error else f"status_code={status_code}"
-        raise DemistoException(
+        error_msg = (
             f"Failed sending {data_type} to XSIAM after {num_of_attempts} attempt(s) ({error_detail}). "
             f"The batch was NOT stored and must not be counted."
         )
+        demisto.updateModuleHealth(error_msg, is_error=True)
+        raise DemistoException(error_msg)
     return response
 
 
