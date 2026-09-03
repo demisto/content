@@ -344,6 +344,42 @@ def test_refresh_token_with_client_credentials(requests_mock):
     assert client.access_token == "abc"
 
 
+def test_client_init_with_use_client_credentials_param(requests_mock):
+    """
+    Given:
+        A UCP-reconstructed credentials object that only carries "identifier"/"password"
+        (no "credential" key), and the use_client_credentials parameter is enabled.
+    When:
+        The Client is initialized.
+    Then:
+        It uses the client-credentials flow: use_client_credentials is True and an access
+        token is fetched from the auth URL.
+    """
+    credentials = {"identifier": "client-id", "password": "client-secret"}
+    requests_mock.post(AUTH_URL, json={"access_token": "abc"})
+    client = Client(DLP_URL, AUTH_URL, credentials, False, False, use_client_credentials=True)
+    assert client.use_client_credentials is True
+    assert client.access_token == "abc"
+
+
+def test_client_init_without_use_client_credentials_param():
+    """
+    Given:
+        A UCP-reconstructed credentials object that only carries "identifier"/"password"
+        (no "credential" key), and the use_client_credentials parameter is disabled.
+    When:
+        The Client is initialized.
+    Then:
+        It falls back to the access-token/refresh-token flow: use_client_credentials is False
+        and the tokens are read from identifier/password.
+    """
+    credentials = {"identifier": "my-access-token", "password": "my-refresh-token"}
+    client = Client(DLP_URL, AUTH_URL, credentials, True, False, use_client_credentials=False)
+    assert client.use_client_credentials is False
+    assert client.access_token == "my-access-token"
+    assert client.refresh_token == "my-refresh-token"
+
+
 @pytest.mark.parametrize(
     "error_code",
     [(401), (403)],
