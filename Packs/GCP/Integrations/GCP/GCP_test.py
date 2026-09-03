@@ -6755,10 +6755,7 @@ class TestGCPComputeInstanceGroupsList:
         mock_instance_groups.list.assert_called_once_with(
             project="test-project",
             zone="us-central1-a",
-            filter=None,
             maxResults=50,
-            orderBy=None,
-            pageToken=None,
         )
 
     def test_gcp_compute_instance_groups_list_with_next_page_token(self, mocker):
@@ -6814,9 +6811,9 @@ class TestGCPComputeInstanceGroupsList:
 class TestGCPComputeInstanceGroupsAggregatedList:
     def test_gcp_compute_instance_groups_aggregated_list_success(self, mocker):
         """
-        Given: A mocked Compute API returning instance groups scoped by zone, including a scope with no groups.
+        Given: A mocked Compute API returning instance groups scoped by zone, including a scope that returned a warning.
         When: gcp_compute_instance_groups_aggregated_list is called.
-        Then: The groups from every scope are flattened into a single list in the outputs.
+        Then: The groups from every scope without a warning are flattened into a single list in the outputs.
         """
         from GCP import gcp_compute_instance_groups_aggregated_list
 
@@ -6836,9 +6833,31 @@ class TestGCPComputeInstanceGroupsAggregatedList:
             {"id": "1", "name": "group-a"},
             {"id": "2", "name": "group-b"},
         ]
-        mock_instance_groups.aggregatedList.assert_called_once_with(
-            project="test-project", filter=None, maxResults=50, orderBy=None, pageToken=None
-        )
+        mock_instance_groups.aggregatedList.assert_called_once_with(project="test-project", maxResults=50)
+
+    def test_gcp_compute_instance_groups_aggregated_list_scope_warning_is_logged(self, mocker):
+        """
+        Given: A mocked Compute API returning a scope that holds both a warning and instance groups.
+        When: gcp_compute_instance_groups_aggregated_list is called.
+        Then: The scope is skipped and its warning is logged instead of being silently ignored.
+        """
+        from GCP import gcp_compute_instance_groups_aggregated_list
+
+        response = {
+            "items": {
+                "zones/us-central1-a": {"instanceGroups": [{"id": "1", "name": "group-a"}]},
+                "zones/us-east1-b": {"warning": {"code": "NO_RESULTS_ON_PAGE"}, "instanceGroups": []},
+            },
+            "warning": {"code": "NO_RESULTS_ON_PAGE"},
+        }
+        _mock_instance_groups_resource(mocker, "aggregatedList", response)
+        debug_mock = mocker.patch("demistomock.debug")
+        mock_creds = mocker.Mock()
+
+        result = gcp_compute_instance_groups_aggregated_list(mock_creds, {"project_id": "test-project"})
+
+        assert result.outputs["GCP.Compute(true)"]["AggregatedInstanceGroupsWarning"] == {"code": "NO_RESULTS_ON_PAGE"}
+        assert any("returned a warning" in str(call) for call in debug_mock.call_args_list)
 
     def test_gcp_compute_instance_groups_aggregated_list_empty_response(self, mocker):
         """
@@ -6876,7 +6895,7 @@ class TestGCPComputeInstanceGroupInstancesList:
         """
         Given: A mocked Compute API returning the instances of an instance group and an instance_state filter.
         When: gcp_compute_instance_group_instances_list is called.
-        Then: The instances are nested under the group in the outputs and the state filter is sent in the request body.
+        Then: The instances are nested under the instance group in the outputs and the state filter is sent in the body.
         """
         from GCP import gcp_compute_instance_group_instances_list
 
@@ -6887,6 +6906,7 @@ class TestGCPComputeInstanceGroupInstancesList:
             ]
         }
         mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "listInstances", response)
+        mocker.patch("demistomock.context", return_value={})
 
         args = {
             "project_id": "test-project",
@@ -6896,17 +6916,14 @@ class TestGCPComputeInstanceGroupInstancesList:
         }
         result = gcp_compute_instance_group_instances_list(mock_creds, args)
 
-        outputs = result.outputs["GCP.Compute.InstanceGroupsInstances(val.Group && val.Group == obj.Group)"]
-        assert outputs["Group"] == "group-a"
+        outputs = result.outputs["GCP.Compute.InstanceGroups(val.id && val.id == obj.id)"]
+        assert outputs["id"] == "group-a"
         assert outputs["Instances"] == response["items"]
         mock_instance_groups.listInstances.assert_called_once_with(
             project="test-project",
             zone="us-central1-a",
             instanceGroup="group-a",
-            filter=None,
             maxResults=50,
-            orderBy=None,
-            pageToken=None,
             body={"instanceState": "RUNNING"},
         )
 
@@ -6919,6 +6936,7 @@ class TestGCPComputeInstanceGroupInstancesList:
         from GCP import gcp_compute_instance_group_instances_list
 
         mock_instance_groups, mock_creds = _mock_instance_groups_resource(mocker, "listInstances", {"items": []})
+        mocker.patch("demistomock.context", return_value={})
 
         args = {"project_id": "test-project", "zone": "us-central1-a", "instance_group": "group-a"}
         gcp_compute_instance_group_instances_list(mock_creds, args)
@@ -6929,18 +6947,41 @@ class TestGCPComputeInstanceGroupInstancesList:
         """
         Given: A mocked Compute API returning a nextPageToken.
         When: gcp_compute_instance_group_instances_list is called.
-        Then: The next page token is returned in the outputs.
+        Then: The next page token is returned nested under the instance groups context path.
         """
         from GCP import gcp_compute_instance_group_instances_list
 
         response = {"items": [{"instance": "vm-1", "status": "RUNNING"}], "nextPageToken": "token-456"}
         _mock_instance_groups_resource(mocker, "listInstances", response)
+        mocker.patch("demistomock.context", return_value={})
         mock_creds = mocker.Mock()
 
         args = {"project_id": "test-project", "zone": "us-central1-a", "instance_group": "group-a"}
         result = gcp_compute_instance_group_instances_list(mock_creds, args)
 
-        assert result.outputs["GCP.Compute(true)"]["InstanceGroupsInstancesNextToken"] == "token-456"
+        assert result.outputs["GCP.Compute.InstanceGroups(true)"]["InstanceGroupsInstancesNextToken"] == "token-456"
+
+    def test_gcp_compute_instance_group_instances_list_merges_context_instances(self, mocker):
+        """
+        Given: A context that already holds instances for the instance group from a previous paginated execution.
+        When: gcp_compute_instance_group_instances_list is called with the next page of instances.
+        Then: The instances from both executions are accumulated under the same instance group.
+        """
+        from GCP import gcp_compute_instance_group_instances_list
+
+        response = {"items": [{"instance": "vm-2", "status": "RUNNING"}]}
+        _mock_instance_groups_resource(mocker, "listInstances", response)
+        mocker.patch(
+            "demistomock.context",
+            return_value={"GCP": {"Compute": {"InstanceGroups": [{"id": "group-a", "Instances": [{"instance": "vm-1"}]}]}}},
+        )
+        mock_creds = mocker.Mock()
+
+        args = {"project_id": "test-project", "zone": "us-central1-a", "instance_group": "group-a"}
+        result = gcp_compute_instance_group_instances_list(mock_creds, args)
+
+        outputs = result.outputs["GCP.Compute.InstanceGroups(val.id && val.id == obj.id)"]
+        assert outputs["Instances"] == [{"instance": "vm-1"}, {"instance": "vm-2", "status": "RUNNING"}]
 
 
 class TestGCPComputeInstanceGroupInsert:

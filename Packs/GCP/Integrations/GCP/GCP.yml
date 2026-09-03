@@ -2877,12 +2877,15 @@ script:
     - contextPath: GCP.Compute.InstanceGroups.kind
       description: The resource type, which is always compute#instanceGroup for instance groups.
       type: string
-    - contextPath: GCP.Compute.InstanceGroupsNextToken
-      description: The token to use to retrieve the next page of instance group results.
+    - contextPath: GCP.Compute.AggregatedInstanceGroupsNextToken
+      description: The token to use to retrieve the next page of aggregated instance group results.
       type: string
-    - contextPath: GCP.Compute.InstanceGroupsSelfLink
+    - contextPath: GCP.Compute.AggregatedInstanceGroupsSelfLink
       description: The server-defined URL for the aggregated instance groups list request.
       type: string
+    - contextPath: GCP.Compute.AggregatedInstanceGroupsWarning
+      description: The informational warning which replaces the list of instance groups when the list is empty.
+      type: Unknown
 
 # gcp-compute-instance-group-instances-list
   - name: gcp-compute-instance-group-instances-list
@@ -2914,22 +2917,22 @@ script:
     - name: next_token
       description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results.
     outputs:
-    - contextPath: GCP.Compute.InstanceGroupsInstances.Group
-      description: The name of the instance group that was listed.
+    - contextPath: GCP.Compute.InstanceGroups.id
+      description: The name of the instance group whose instances were listed.
       type: string
-    - contextPath: GCP.Compute.InstanceGroupsInstances.Instances.instance
+    - contextPath: GCP.Compute.InstanceGroups.Instances.instance
       description: The URL of the instance.
       type: string
-    - contextPath: GCP.Compute.InstanceGroupsInstances.Instances.status
+    - contextPath: GCP.Compute.InstanceGroups.Instances.status
       description: The status of the instance.
       type: string
-    - contextPath: GCP.Compute.InstanceGroupsInstances.Instances.namedPorts.name
+    - contextPath: GCP.Compute.InstanceGroups.Instances.namedPorts.name
       description: The name for this named port. The name must be 1-63 characters long, and comply with RFC1035.
       type: string
-    - contextPath: GCP.Compute.InstanceGroupsInstances.Instances.namedPorts.port
+    - contextPath: GCP.Compute.InstanceGroups.Instances.namedPorts.port
       description: The port number, which can be a value between 1 and 65535.
       type: number
-    - contextPath: GCP.Compute.InstanceGroupsInstancesNextToken
+    - contextPath: GCP.Compute.InstanceGroups.InstanceGroupsInstancesNextToken
       description: The token to use to retrieve the next page of instance group instances results.
       type: string
 

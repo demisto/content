@@ -1702,12 +1702,12 @@ Lists the instances in the specified instance group. Required permission: comput
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.InstanceGroupsInstances.Group | string | The name of the instance group that was listed. |
-| GCP.Compute.InstanceGroupsInstances.Instances.instance | string | The URL of the instance. |
-| GCP.Compute.InstanceGroupsInstances.Instances.status | string | The status of the instance. |
-| GCP.Compute.InstanceGroupsInstances.Instances.namedPorts.name | string | The name for this named port. The name must be 1-63 characters long, and comply with RFC1035. |
-| GCP.Compute.InstanceGroupsInstances.Instances.namedPorts.port | number | The port number, which can be a value between 1 and 65535. |
-| GCP.Compute.InstanceGroupsInstancesNextToken | string | The token to use to retrieve the next page of instance group instances results. |
+| GCP.Compute.InstanceGroups.id | string | The name of the instance group whose instances were listed. |
+| GCP.Compute.InstanceGroups.Instances.instance | string | The URL of the instance. |
+| GCP.Compute.InstanceGroups.Instances.status | string | The status of the instance. |
+| GCP.Compute.InstanceGroups.Instances.namedPorts.name | string | The name for this named port. The name must be 1-63 characters long, and comply with RFC1035. |
+| GCP.Compute.InstanceGroups.Instances.namedPorts.port | number | The port number, which can be a value between 1 and 65535. |
+| GCP.Compute.InstanceGroups.InstanceGroupsInstancesNextToken | string | The token to use to retrieve the next page of instance group instances results. |
 
 ### gcp-compute-instance-group-insert
 
@@ -1790,8 +1790,9 @@ Retrieves the list of instance groups in the specified project across all zones.
 | GCP.Compute.InstanceGroups.region | string | The URL of the region where the instance group is located \(for regional resources\). |
 | GCP.Compute.InstanceGroups.subnetwork | string | The URL of the subnetwork to which all instances in the instance group belong. |
 | GCP.Compute.InstanceGroups.kind | string | The resource type, which is always compute\#instanceGroup for instance groups. |
-| GCP.Compute.InstanceGroupsNextToken | string | The token to use to retrieve the next page of instance group results. |
-| GCP.Compute.InstanceGroupsSelfLink | string | The server-defined URL for the aggregated instance groups list request. |
+| GCP.Compute.AggregatedInstanceGroupsNextToken | string | The token to use to retrieve the next page of aggregated instance group results. |
+| GCP.Compute.AggregatedInstanceGroupsSelfLink | string | The server-defined URL for the aggregated instance groups list request. |
+| GCP.Compute.AggregatedInstanceGroupsWarning | Unknown | The informational warning which replaces the list of instance groups when the list is empty. |
 
 ### gcp-compute-instance-groups-list
 

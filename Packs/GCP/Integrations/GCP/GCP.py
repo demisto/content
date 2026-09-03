@@ -2792,6 +2792,40 @@ def gcp_compute_instance_group_get(creds: Credentials, args: dict[str, Any]) -> 
     )
 
 
+def merge_instance_group_instances(instance_group: str, new_instances: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Merges newly fetched instances into the instances already stored in the context for the given instance group.
+
+    Instances are identified by their URL: an instance that already exists in the context is replaced in place,
+    while a new instance is appended to the end of the list. This allows accumulating instances across paginated
+    executions of the same command for the same instance group.
+
+    Args:
+        instance_group (str): The name of the instance group the instances belong to.
+        new_instances (list[dict[str, Any]]): The instances returned by the current API call.
+
+    Returns:
+        list[dict[str, Any]]: The merged list of instances for the instance group.
+    """
+    existing_groups = demisto.get(demisto.context(), "GCP.Compute.InstanceGroups") or []
+    if isinstance(existing_groups, dict):
+        existing_groups = [existing_groups]
+
+    merged_instances: dict[str, dict[str, Any]] = {}
+    for group in existing_groups:
+        if isinstance(group, dict) and group.get("id") == instance_group:
+            for instance in group.get("Instances") or []:
+                if isinstance(instance, dict) and instance.get("instance"):
+                    merged_instances[instance["instance"]] = instance
+
+    for instance in new_instances:
+        if instance.get("instance"):
+            merged_instances[instance["instance"]] = instance
+
+    demisto.debug(f"[GCP: gcp_compute_instance_group_instances_list] Instances in context after merge: {len(merged_instances)}")
+    return list(merged_instances.values())
+
+
 def gcp_compute_instance_groups_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the list of instance groups that are located in the specified project and zone.
@@ -2803,19 +2837,27 @@ def gcp_compute_instance_groups_list(creds: Credentials, args: dict[str, Any]) -
     Returns:
         CommandResults: The instance groups located in the specified zone.
     """
-    project_id = args.get("project_id")
     zone = extract_zone_name(args["zone"])
-    limit = (arg_to_number(args.get("limit")) or 50) if args.get("limit", "50") != "0" else 0
-    flt = args.get("filter")
-    order_by = args.get("order_by")
-    next_token = args.get("next_token")
+    limit = (arg_to_number(args.get("limit"))) or 50
 
     validate_limit(limit)
+
+    request_params = remove_empty_elements(
+        {
+            "project": args.get("project_id"),
+            "zone": zone,
+            "filter": args.get("filter"),
+            "maxResults": limit,
+            "orderBy": args.get("order_by"),
+            "pageToken": args.get("next_token"),
+        }
+    )
+    demisto.debug(f"[GCP: gcp_compute_instance_groups_list] Request params: {request_params}")
 
     compute = GCPServices.COMPUTE.build(creds)
     response = (
         compute.instanceGroups()  # pylint: disable=E1101
-        .list(project=project_id, zone=zone, filter=flt, maxResults=limit, orderBy=order_by, pageToken=next_token)
+        .list(**request_params)
         .execute()
     )
 
@@ -2838,9 +2880,10 @@ def gcp_compute_instance_groups_list(creds: Credentials, args: dict[str, Any]) -
             "InstanceGroupsWarning": response.get("warning"),
         },
     }
+    outputs = remove_empty_elements(outputs)
     return CommandResults(
         readable_output=readable_output,
-        outputs=remove_empty_elements(outputs),
+        outputs=outputs,
         raw_response=response,
     )
 
@@ -2856,24 +2899,34 @@ def gcp_compute_instance_groups_aggregated_list(creds: Credentials, args: dict[s
     Returns:
         CommandResults: The instance groups aggregated by zone.
     """
-    project_id = args.get("project_id")
-    limit = (arg_to_number(args.get("limit")) or 50) if args.get("limit", "50") != "0" else 0
-    flt = args.get("filter")
-    order_by = args.get("order_by")
-    next_token = args.get("next_token")
+    limit = (arg_to_number(args.get("limit"))) or 50
 
     validate_limit(limit)
+
+    request_params = remove_empty_elements(
+        {
+            "project": args.get("project_id"),
+            "filter": args.get("filter"),
+            "maxResults": limit,
+            "orderBy": args.get("order_by"),
+            "pageToken": args.get("next_token"),
+        }
+    )
+    demisto.debug(f"[GCP: gcp_compute_instance_groups_aggregated_list] Request params: {request_params}")
 
     compute = GCPServices.COMPUTE.build(creds)
     response = (
         compute.instanceGroups()  # pylint: disable=E1101
-        .aggregatedList(project=project_id, filter=flt, maxResults=limit, orderBy=order_by, pageToken=next_token)
+        .aggregatedList(**request_params)
         .execute()
     )
 
     instance_groups = []
     for scope, instance_groups_scoped_list in response.get("items", {}).items():
-        demisto.debug(f"Collecting instance groups from scope {scope}")
+        if warning := instance_groups_scoped_list.get("warning"):
+            demisto.debug(f"[GCP: gcp_compute_instance_groups_aggregated_list] Scope {scope} returned a warning: {warning}")
+            continue
+        demisto.debug(f"[GCP: gcp_compute_instance_groups_aggregated_list] Collecting instance groups from scope {scope}")
         instance_groups.extend(instance_groups_scoped_list.get("instanceGroups", []))
 
     next_page_token = response.get("nextPageToken")
@@ -2889,13 +2942,15 @@ def gcp_compute_instance_groups_aggregated_list(creds: Credentials, args: dict[s
     outputs = {
         "GCP.Compute.InstanceGroups(val.id && val.id == obj.id)": instance_groups,
         "GCP.Compute(true)": {
-            "InstanceGroupsNextToken": next_page_token,
-            "InstanceGroupsSelfLink": response.get("selfLink"),
+            "AggregatedInstanceGroupsNextToken": next_page_token,
+            "AggregatedInstanceGroupsSelfLink": response.get("selfLink"),
+            "AggregatedInstanceGroupsWarning": response.get("warning"),
         },
     }
+    outputs = remove_empty_elements(outputs)
     return CommandResults(
         readable_output=readable_output,
-        outputs=remove_empty_elements(outputs),
+        outputs=outputs,
         raw_response=response,
     )
 
@@ -2912,31 +2967,30 @@ def gcp_compute_instance_group_instances_list(creds: Credentials, args: dict[str
     Returns:
         CommandResults: The instances that belong to the specified instance group.
     """
-    project_id = args.get("project_id")
     zone = extract_zone_name(args["zone"])
     instance_group = args["instance_group"]
-    limit = (arg_to_number(args.get("limit")) or 50) if args.get("limit", "50") != "0" else 0
-    flt = args.get("filter")
-    order_by = args.get("order_by")
-    next_token = args.get("next_token")
+    limit = (arg_to_number(args.get("limit"))) or 50
 
     validate_limit(limit)
 
     body = remove_empty_elements({"instanceState": args.get("instance_state")})
+    request_params = remove_empty_elements(
+        {
+            "project": args.get("project_id"),
+            "zone": zone,
+            "instanceGroup": instance_group,
+            "filter": args.get("filter"),
+            "maxResults": limit,
+            "orderBy": args.get("order_by"),
+            "pageToken": args.get("next_token"),
+        }
+    )
+    demisto.debug(f"[GCP: gcp_compute_instance_group_instances_list] Request params: {request_params}, body: {body}")
 
     compute = GCPServices.COMPUTE.build(creds)
     response = (
         compute.instanceGroups()  # pylint: disable=E1101
-        .listInstances(
-            project=project_id,
-            zone=zone,
-            instanceGroup=instance_group,
-            filter=flt,
-            maxResults=limit,
-            orderBy=order_by,
-            pageToken=next_token,
-            body=body,
-        )
+        .listInstances(**request_params, body=body)
         .execute()
     )
 
@@ -2952,15 +3006,16 @@ def gcp_compute_instance_group_instances_list(creds: Credentials, args: dict[str
     )
 
     outputs = {
-        "GCP.Compute.InstanceGroupsInstances(val.Group && val.Group == obj.Group)": {
-            "Group": instance_group,
-            "Instances": instances,
+        "GCP.Compute.InstanceGroups(val.id && val.id == obj.id)": {
+            "id": instance_group,
+            "Instances": merge_instance_group_instances(instance_group, instances),
         },
-        "GCP.Compute(true)": {"InstanceGroupsInstancesNextToken": next_page_token},
+        "GCP.Compute.InstanceGroups(true)": {"InstanceGroupsInstancesNextToken": next_page_token},
     }
+    outputs = remove_empty_elements(outputs)
     return CommandResults(
         readable_output=readable_output,
-        outputs=remove_empty_elements(outputs),
+        outputs=outputs,
         raw_response=response,
     )
 
