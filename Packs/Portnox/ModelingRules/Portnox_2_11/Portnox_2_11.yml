@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: Portnox_ModelingRule
+name: Portnox Modeling Rule
+rules: ''
+schema: ''
+tags: portnox
+supportedModules:
+- xsiam
