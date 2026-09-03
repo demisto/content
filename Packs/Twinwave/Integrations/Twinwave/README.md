@@ -119,6 +119,28 @@ Get Job Summary
 | Twinwave.JobSummary.Tasks.ID | Unknown | Task ID |
 | Twinwave.JobSummary.Tasks.JobID | Unknown | Job ID associated to the task |
 
+### twinwave-download-job-pdf
+
+***
+Download a completed job's PDF report to the War Room.
+
+#### Base Command
+
+`twinwave-download-job-pdf`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | The job ID. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Name | Unknown | Name of the PDF report. |
+| File.EntryID | Unknown | Entry ID of the PDF report. |
+
 ### twinwave-get-job-normalized-forensics
 
 ***

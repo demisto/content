@@ -13,6 +13,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 API_VERSION = "v1"
 EXPIRE_SECONDS = 86400
+PDF_SIGNATURE = b"%PDF-"
 DEFAULT_API_HOST = "api.twinwave.io"
 USER_AGENT = "Twinwave XSOAR Integration"
 SUPPORTED_API_HOSTS = {
@@ -87,6 +88,17 @@ class Client(BaseClient):
         resp = requests.get(url, headers=self.get_header(), verify=self._verify, proxies=self._proxy)
         resp.raise_for_status()
         return resp.json()
+
+    def download_job_pdf(self, job_id: str) -> bytes:
+        url = f"{self.host}/jobs/{job_id}/pdfreport"
+        resp = requests.get(
+            url,
+            headers=self.get_header(),
+            verify=self._verify,
+            proxies=self._proxy,
+        )
+        resp.raise_for_status()
+        return resp.content
 
     def get_task_normalized_forensics(self, job_id, task_id):
         url = f"{self.host}/jobs/{job_id}/tasks/{task_id}/forensics"
@@ -519,6 +531,19 @@ def get_job_normalized_forensics(client, args):
     )
 
 
+def download_job_pdf(client: Client, args: dict) -> dict:
+    job_id = args.get("job_id")
+    job_summary = client.get_job(job_id=job_id)
+    if isinstance(job_summary, dict) and str(job_summary.get("State", "")).casefold() == "inprogress":
+        raise ValueError("The PDF report cannot be downloaded while the job is in progress")
+
+    pdf_data = client.download_job_pdf(job_id=job_id)
+    if not pdf_data.startswith(PDF_SIGNATURE):
+        raise ValueError("Downloaded PDF report is empty or is not a PDF")
+
+    return fileResult(f"Twinwave job report {job_id}.pdf", data=pdf_data)
+
+
 def get_task_normalized_forensics(client, args):
     """
     Task Normalized Forensics
@@ -637,6 +662,9 @@ def main():
 
         elif demisto.command() == "twinwave-get-job-summary":
             return_results(get_job_summary(client, demisto.args()))
+
+        elif demisto.command() == "twinwave-download-job-pdf":
+            return_results(download_job_pdf(client, demisto.args()))
 
         elif demisto.command() == "twinwave-get-job-normalized-forensics":
             return_results(get_job_normalized_forensics(client, demisto.args()))

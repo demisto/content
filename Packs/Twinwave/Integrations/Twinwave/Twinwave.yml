@@ -154,6 +154,19 @@ script:
     - name: job_id
       required: true
       description: The job ID.
+    description: Download a completed job's PDF report to the War Room.
+    name: twinwave-download-job-pdf
+    outputs:
+    - contextPath: File.Name
+      description: Name of the PDF report.
+      type: Unknown
+    - contextPath: File.EntryID
+      description: Entry ID of the PDF report.
+      type: Unknown
+  - arguments:
+    - name: job_id
+      required: true
+      description: The job ID.
     description: Get a Job's Normalized Forensics.
     name: twinwave-get-job-normalized-forensics
     outputs:
@@ -189,7 +202,7 @@ script:
     - name: task_id
       required: true
       description: The task ID.
-    description: Get a Task's Raw Forensics.
+    description: "Get a Task's Raw Forensics."
     name: twinwave-get-task-raw-forensics
     outputs:
     - contextPath: Twinwave.TaskRawForensics
@@ -234,7 +247,8 @@ script:
       description: Supported Types.
       type: Unknown
   - arguments:
-    - description: Specify the string to search for in the specified field. (E.g. .exe or example.com).
+    - description: |-
+        Specify the string to search for in the specified field. (E.g. .exe or example.com).
       name: term
     - description: 'Enum: "filename" "url" "tag" "sha256" "md5".'
       name: field
