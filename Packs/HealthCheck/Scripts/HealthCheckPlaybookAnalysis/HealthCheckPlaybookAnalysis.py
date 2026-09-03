@@ -46,7 +46,7 @@ def search_playbooks(uri_prefix, system):
     result = execute_command("core-api-post", {"uri": f"{uri_prefix}playbook/search", "body": {"query": query}})
     if isinstance(result, list):
         result = result[0] if result else {}
-    return result.get("response", {}).get("playbooks") or []
+    return (result or {}).get("response", {}).get("playbooks") or []
 
 
 def find_top_used_playbooks(uri_prefix):
@@ -67,69 +67,72 @@ def find_top_used_playbooks(uri_prefix):
     )
     if isinstance(result, list):
         result = result[0] if result else {}
-    top_used = [{"playbookname": pb["name"]} for pb in result.get("response", [])]
+    top_used = [{"playbookname": pb.get("name")} for pb in (result or {}).get("response") or []]
     execute_command("setIncident", {"healthchecktopusedplaybooks": top_used})
 
 
 def main():
-    if is_demisto_version_ge("8.0.0"):
-        uri_prefix = ""
-        resolution_email = RESOLUTION_EMAIL_ASK_USER_V8
-        resolution_tasks = RESOLUTION_MULTI_TASKS_V8
-    else:
-        account_name = demisto.incidents()[0].get("account", "")
-        uri_prefix = f"acc_{account_name}/" if account_name else ""
-        resolution_email = RESOLUTION_EMAIL_ASK_USER_V6
-        resolution_tasks = RESOLUTION_MULTI_TASKS_V6
+    try:
+        if is_demisto_version_ge("8.0.0"):
+            uri_prefix = "xsoar/public/v1/"
+            resolution_email = RESOLUTION_EMAIL_ASK_USER_V8
+            resolution_tasks = RESOLUTION_MULTI_TASKS_V8
+        else:
+            account_name = demisto.incidents()[0].get("account", "")
+            uri_prefix = f"acc_{account_name}/" if account_name else ""
+            resolution_email = RESOLUTION_EMAIL_ASK_USER_V6
+            resolution_tasks = RESOLUTION_MULTI_TASKS_V6
 
-    custom_playbooks = search_playbooks(uri_prefix, system=False)
-    builtin_names = {pb["name"] for pb in search_playbooks(uri_prefix, system=True)}
+        custom_playbooks = search_playbooks(uri_prefix, system=False)
+        builtin_names = {pb.get("name") for pb in search_playbooks(uri_prefix, system=True)}
 
-    copy_detected = []
-    sleep_detected = []
-    multi_set_incident = []
-    email_ask_user = []
-    multi_tasks = []
+        copy_detected = []
+        sleep_detected = []
+        multi_set_incident = []
+        email_ask_user = []
+        multi_tasks = []
 
-    for pb in custom_playbooks:
-        name = pb.get("name", "")
-        if any(builtin in name for builtin in builtin_names):
-            copy_detected.append(name)
-        if "Sleep" in pb.get("scriptIds", []):
-            sleep_detected.append(name)
-        if str(pb).count("Builtin|||setIncident") >= SET_INCIDENT_THRESHOLD:
-            multi_set_incident.append(name)
-        if "EmailAskUser" in pb.get("scriptIds", []):
-            email_ask_user.append(name)
-        if len(pb.get("tasks", [])) > PLAYBOOK_LENGTH_THRESHOLD:
-            multi_tasks.append(name)
+        for pb in custom_playbooks:
+            name = pb.get("name", "")
+            if any(builtin in name for builtin in builtin_names):
+                copy_detected.append(name)
+            if "Sleep" in pb.get("scriptIds", []):
+                sleep_detected.append(name)
+            if str(pb).count("Builtin|||setIncident") >= SET_INCIDENT_THRESHOLD:
+                multi_set_incident.append(name)
+            if "EmailAskUser" in pb.get("scriptIds", []):
+                email_ask_user.append(name)
+            if len(pb.get("tasks", [])) > PLAYBOOK_LENGTH_THRESHOLD:
+                multi_tasks.append(name)
 
-    res = []
-    for findings, desc, resolution in [
-        (copy_detected, DESCRIPTIONS[0], RESOLUTION_COPY),
-        (sleep_detected, DESCRIPTIONS[1], RESOLUTION_SLEEP),
-        (multi_set_incident, DESCRIPTIONS[2], RESOLUTION_SET_INCIDENT),
-        (email_ask_user, DESCRIPTIONS[3], resolution_email),
-        (multi_tasks, DESCRIPTIONS[4], resolution_tasks),
-    ]:
-        if findings:
-            res.append(
-                {
-                    "category": "Playbooks",
-                    "severity": "Low",
-                    "description": desc.format(", ".join(findings)),
-                    "resolution": resolution,
-                }
+        res = []
+        for findings, desc, resolution in [
+            (copy_detected, DESCRIPTIONS[0], RESOLUTION_COPY),
+            (sleep_detected, DESCRIPTIONS[1], RESOLUTION_SLEEP),
+            (multi_set_incident, DESCRIPTIONS[2], RESOLUTION_SET_INCIDENT),
+            (email_ask_user, DESCRIPTIONS[3], resolution_email),
+            (multi_tasks, DESCRIPTIONS[4], resolution_tasks),
+        ]:
+            if findings:
+                res.append(
+                    {
+                        "category": "Playbooks",
+                        "severity": "Low",
+                        "description": desc.format(", ".join(findings)),
+                        "resolution": resolution,
+                    }
+                )
+
+        find_top_used_playbooks(uri_prefix)
+        return_results(
+            CommandResults(
+                readable_output="HealthCheckPlaybookAnalysis Done",
+                outputs_prefix="HealthCheck.ActionableItems",
+                outputs=res,
             )
-
-    find_top_used_playbooks(uri_prefix)
-    return_results(
-        CommandResults(
-            readable_output="HealthCheckPlaybookAnalysis Done",
-            outputs_prefix="HealthCheck.ActionableItems",
-            outputs=res,
         )
-    )
+    except Exception as e:
+        return_error(f"Failed to execute HealthCheckPlaybookAnalysis: {e}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
