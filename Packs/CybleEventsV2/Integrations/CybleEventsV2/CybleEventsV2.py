@@ -7,14 +7,27 @@ import pytz
 import urllib3
 import dateparser
 import json
+import traceback
 from collections.abc import Sequence
 from datetime import datetime, timedelta
-import concurrent.futures
 import time
 from dateutil.parser import parse as parse_date
 
+# Bind demisto on this module when CommonServerPython does not export it (local stubs / builtins-only).
+if "demisto" not in globals():
+    try:
+        import demistomock as demisto  # type: ignore  # noqa: F401
+    except ImportError:
+        pass
+
 
 UTC = pytz.UTC
+
+
+def get_current_utc_time() -> datetime:
+    """Return a timezone-aware UTC datetime. Prefer this over datetime.utcnow()."""
+    return datetime.now(UTC)
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -28,6 +41,10 @@ MAX_RETRIES = 3
 FETCH_INCIDENT_RETRY_BACKOFF_SECONDS = (5, 10, 20, 20, 20)
 MAX_THREADS = 1
 MIN_MINUTES_TO_FETCH = 10
+CHUNK_MINUTES = 60
+MAX_API_TAKE = 100
+TIME_TO_RUN_BUFFER_SECONDS = 60
+DEFAULT_EXECUTION_TIMEOUT_SECONDS = 3 * 60
 DEFAULT_REQUEST_TIMEOUT = 600
 DEFAULT_TAKE_LIMIT = 5
 DEFAULT_STATUSES = ["VIEWED", "UNREVIEWED", "CONFIRMED_INCIDENT", "UNDER_REVIEW", "INFORMATIONAL"]
@@ -67,6 +84,118 @@ COMMAND = {
 }
 
 
+def get_execution_timeout_seconds() -> float:
+    """Return the Docker execution budget in seconds from the platform, or the default."""
+    timeout_nanoseconds = demisto.callingContext.get("context", {}).get("TimeoutDuration")
+    if timeout_nanoseconds:
+        return timeout_nanoseconds / 1_000_000_000
+    return float(DEFAULT_EXECUTION_TIMEOUT_SECONDS)
+
+
+def should_stop_before_next_page(pages_completed: int, last_page_duration_seconds: float, execution_start: datetime) -> bool:
+    """Stop before the next page when the remaining Docker budget is too low (Akamai-style)."""
+    if pages_completed <= 0:
+        return False
+
+    now = get_current_utc_time()
+    start = ensure_aware(execution_start)
+    elapsed_seconds = (now - start).total_seconds()
+    try:
+        timeout_seconds = float(get_execution_timeout_seconds())
+    except (TypeError, ValueError):
+        timeout_seconds = float(DEFAULT_EXECUTION_TIMEOUT_SECONDS)
+    remaining_seconds = timeout_seconds - elapsed_seconds - TIME_TO_RUN_BUFFER_SECONDS
+    estimated_next_page_seconds = last_page_duration_seconds if last_page_duration_seconds > 0 else elapsed_seconds
+
+    demisto.debug(
+        f"[fetch] timeout check: elapsed={elapsed_seconds:.1f}s, remaining={remaining_seconds:.1f}s, "
+        f"estimated_next_page={estimated_next_page_seconds:.1f}s"
+    )
+    return remaining_seconds <= estimated_next_page_seconds
+
+
+def should_abort_api_retries(execution_start: datetime) -> bool:
+    """Do not start another API attempt when remaining Docker budget is too low for a retry."""
+    now = get_current_utc_time()
+    start = ensure_aware(execution_start)
+    elapsed_seconds = (now - start).total_seconds()
+    try:
+        timeout_seconds = float(get_execution_timeout_seconds())
+    except (TypeError, ValueError):
+        timeout_seconds = float(DEFAULT_EXECUTION_TIMEOUT_SECONDS)
+    remaining_seconds = timeout_seconds - elapsed_seconds - TIME_TO_RUN_BUFFER_SECONDS
+    return remaining_seconds <= 30
+
+
+def save_events_fetch_checkpoint(
+    window_gte: str,
+    window_lte: str,
+    chunk_gte: str,
+    chunk_lte: str,
+    service: str,
+    service_index: int,
+    skip: int,
+) -> None:
+    """Persist in-progress fetch state. All values must be strings for setLastRun."""
+    demisto.setLastRun(
+        {
+            "event_pull_start_date": window_gte,
+            "window_lte": window_lte,
+            "chunk_gte": chunk_gte,
+            "chunk_lte": chunk_lte,
+            "service": service,
+            "service_index": str(service_index),
+            "skip": str(skip),
+        }
+    )
+    demisto.debug(
+        f"[fetch] Checkpoint saved: window={window_gte}→{window_lte}, service={service}, "
+        f"chunk={chunk_gte}→{chunk_lte}, skip={skip}"
+    )
+
+
+def parse_events_resume_state(last_run: dict) -> dict[str, Any]:
+    """Parse last_run for mid-fetch resume. Returns empty resume fields when not resuming."""
+    resume: dict[str, Any] = {
+        "service": None,
+        "service_index": 0,
+        "skip": 0,
+        "chunk_gte": None,
+        "chunk_lte": None,
+        "window_gte": None,
+        "window_lte": None,
+    }
+    if not last_run.get("service"):
+        return resume
+
+    resume["service"] = last_run.get("service")
+    resume["window_gte"] = last_run.get("event_pull_start_date") or last_run.get("chunk_gte")
+    resume["window_lte"] = last_run.get("window_lte")
+    resume["chunk_gte"] = last_run.get("chunk_gte")
+    resume["chunk_lte"] = last_run.get("chunk_lte")
+
+    try:
+        resume["service_index"] = int(last_run.get("service_index", 0))
+    except (TypeError, ValueError):
+        resume["service_index"] = 0
+
+    try:
+        resume["skip"] = int(last_run.get("skip", 0))
+    except (TypeError, ValueError):
+        resume["skip"] = 0
+
+    return resume
+
+
+def sanitize_token(token: str) -> str:
+    """Remove invisible Unicode and whitespace that break HTTP Authorization headers."""
+    if not token:
+        return token
+    for ch in ("\u2028", "\u2029", "\ufeff", "\u200b", "\u200c", "\u200d"):
+        token = token.replace(ch, "")
+    return token.strip()
+
+
 def get_headers(alerts_api_key: str) -> dict:
     return {"Content-Type": "application/json", "Authorization": f"Bearer {alerts_api_key}"}
 
@@ -104,9 +233,13 @@ def get_alert_payload(service, input_params: dict[str, Any], is_update=False):
         # Determine the timestamp field based on `is_update`
         timestamp_field = "updated_at" if is_update else "created_at"
 
+        # get_data expects a single service name (str). get-modified-remote-data may pass a list of
+        # services; avoid double-wrapping into [["a","b",...]].
+        service_filter = service if isinstance(service, list) else [service]
+
         return {
             "filters": {
-                "service": [service],
+                "service": service_filter,
                 timestamp_field: {  # Use dynamic field based on `is_update`
                     "gte": ensure_aware(datetime.fromisoformat(input_params["gte"])).strftime("%Y-%m-%dT%H:%M:%S+00:00"),
                     "lte": ensure_aware(datetime.fromisoformat(input_params["lte"])).strftime("%Y-%m-%dT%H:%M:%S+00:00"),
@@ -287,7 +420,7 @@ class Client(BaseClient):
             method, url, data=payload_json, headers=encoded_headers, params=params, timeout=DEFAULT_REQUEST_TIMEOUT
         )
 
-    def get_data(self, service, input_params, is_update=False):
+    def get_data(self, service, input_params, is_update=False, execution_start=None):
         """
         Sends an HTTP POST request to the given host with the provided payload and API key,
         and logs errors if the request fails.
@@ -313,11 +446,17 @@ class Client(BaseClient):
 
         backoffs = FETCH_INCIDENT_RETRY_BACKOFF_SECONDS
         for attempt in range(len(backoffs) + 1):
+            if execution_start and should_abort_api_retries(execution_start):
+                raise Exception(f"Approaching Docker execution timeout; aborting API retries for service '{service}'.")
             try:
                 demisto.debug(f"[get_data] final payload is: {payload_json}")
                 response = self.make_request(url, alerts_api_key, "POST", payload_json)
             except Exception as request_error:
                 if attempt < len(backoffs):
+                    if execution_start and should_abort_api_retries(execution_start):
+                        raise Exception(
+                            f"Approaching Docker execution timeout; aborting API retries for service '{service}'."
+                        ) from request_error
                     time.sleep(backoffs[attempt])
                     continue
                 raise Exception(f"HTTP request failed for service '{service}': {str(request_error)}") from request_error
@@ -325,6 +464,8 @@ class Client(BaseClient):
             demisto.debug(f"[get_data] Response status code: {response.status_code}")
             if response.status_code != 200:
                 if attempt < len(backoffs):
+                    if execution_start and should_abort_api_retries(execution_start):
+                        raise Exception(f"Approaching Docker execution timeout; aborting API retries for service '{service}'.")
                     time.sleep(backoffs[attempt])
                     continue
                 raise Exception(
@@ -388,23 +529,60 @@ class Client(BaseClient):
 
         return []  # pragma: no cover
 
-    def insert_data_in_cortex(self, service, input_params, is_update):
+    def insert_data_in_cortex(self, service, input_params, is_update, fetch_context=None):
         """
-        Fetches and inserts data into Cortex XSOAR from the given service based on the given parameters.
+        Fetches alert pages for a service, accumulates incidents for this run, saves a checkpoint
+        after each page, and exits gracefully before the Docker execution timeout when the remaining
+        budget is low.
+
+        Incidents are NOT submitted here — XSOAR only honors the final demisto.incidents() call from
+        fetch-incidents (a later empty call would wipe earlier page submits).
 
         :param service: The service to fetch data from
         :param input_params: A dictionary containing parameters for the API call,
         including the API key, base URL, skip, take, and time range
-        :return: The latest created time of the data inserted
+        :param fetch_context: Optional dict with execution_start, window_gte, and service_index for checkpointing
+        :return: Tuple of (all_incidents, latest_created_time, stopped_early)
         """
-        latest_created_time = datetime.utcnow().astimezone(pytz.UTC)
-        input_params.update({"skip": 0, "take": int(input_params["limit"])})
-        all_incidents = []
+        fetch_context = fetch_context or {}
+        execution_start = fetch_context.get("execution_start", get_current_utc_time())
+        window_gte = fetch_context.get("window_gte", input_params.get("gte"))
+        window_lte = fetch_context.get("window_lte", input_params.get("lte"))
+        service_index = fetch_context.get("service_index", 0)
+
+        limit_value = arg_to_number(input_params.get("limit")) or arg_to_number(MAX_ALERTS) or 300
+        take = min(int(limit_value), MAX_API_TAKE)
+        skip = arg_to_number(input_params.get("skip")) or 0
+        chunk_gte_iso = input_params["gte"]
+        chunk_lte_iso = input_params["lte"]
+        max_fetch = int(limit_value)
+        # Bound the loop (never while True). Worst case is 1 alert per page up to max_fetch,
+        # plus one extra iteration to observe an empty page / natural stop.
+        max_pages = max(max_fetch, 1) + 1
+
+        input_params.update({"skip": skip, "take": take})
+        latest_created_time = get_current_utc_time()
+        all_incidents: list[dict] = []
+        pages_completed = 0
+        last_page_duration = 0.0
 
         try:
-            while True:
+            for _ in range(max_pages):
+                if len(all_incidents) >= max_fetch:
+                    demisto.debug(
+                        f"[insert_data_in_cortex] Reached max_fetch={max_fetch}; stopping pagination for service {service}"
+                    )
+                    break
+
+                if should_stop_before_next_page(pages_completed, last_page_duration, execution_start):
+                    save_events_fetch_checkpoint(
+                        window_gte, window_lte, chunk_gte_iso, chunk_lte_iso, service, service_index, input_params["skip"]
+                    )
+                    return all_incidents, latest_created_time, True
+
+                page_start = time.time()
                 try:
-                    response = self.get_data(service, input_params, is_update)
+                    response = self.get_data(service, input_params, is_update, execution_start)
                     demisto.debug(
                         "[insert_data_in_cortex] Received response for "
                         f"skip: {input_params['skip']}, "
@@ -413,42 +591,12 @@ class Client(BaseClient):
 
                 except Exception as e:
                     demisto.error(f"[insert_data_in_cortex] get_data failed for service: {service} with error: {str(e)}")
-                    raise
+                    save_events_fetch_checkpoint(
+                        window_gte, window_lte, chunk_gte_iso, chunk_lte_iso, service, service_index, input_params["skip"]
+                    )
+                    return all_incidents, latest_created_time, True
 
-                input_params["skip"] += input_params["take"]
-
-                if "data" in response and isinstance(response["data"], Sequence):
-                    if not response["data"]:
-                        demisto.debug("[insert_data_in_cortex] No more data, exiting loop")
-                        break
-
-                    try:
-                        latest_created_time = parse_date(response["data"][-1].get("created_at")) + timedelta(microseconds=1)
-                        demisto.debug(f"[insert_data_in_cortex] Updated latest_created_time: {latest_created_time}")
-
-                    except Exception as e:
-                        demisto.error(f"[insert_data_in_cortex] Failed to parse created_at: {str(e)}")
-                        raise
-
-                    try:
-                        events, incidentsArr = format_incidents(response["data"], input_params["hce"]), []
-                        demisto.debug(f"[insert_data_in_cortex] Formatting incidents, total events: {len(events)}")
-                        for event in events:
-                            try:
-                                incident = get_event_format(event)
-                                incidentsArr.append(incident)
-                            except Exception as e:
-                                demisto.error(f"[insert_data_in_cortex] get_event_format failed: {str(e)}")
-                                continue
-                    except Exception as e:
-                        demisto.error(f"[insert_data_in_cortex] format_incidents failed: {str(e)}")
-                        raise
-
-                    all_incidents.extend(incidentsArr)
-                    demisto.debug(f"[insert_data_in_cortex] Pushing {len(incidentsArr)} incidents to Cortex")
-                    demisto.incidents(incidentsArr)
-
-                else:
+                if "data" not in response or not isinstance(response["data"], Sequence):
                     raise Exception(
                         "[insert_data_in_cortex] Unable to fetch data for "
                         f"gte: {input_params['gte']}, "
@@ -457,58 +605,147 @@ class Client(BaseClient):
                         f"take: {input_params['take']}"
                     )
 
+                if not response["data"]:
+                    demisto.debug("[insert_data_in_cortex] No more data, exiting loop")
+                    break
+
+                try:
+                    latest_created_time = parse_date(response["data"][-1].get("created_at")) + timedelta(microseconds=1)
+                    demisto.debug(f"[insert_data_in_cortex] Updated latest_created_time: {latest_created_time}")
+
+                except Exception as e:
+                    demisto.error(f"[insert_data_in_cortex] Failed to parse created_at: {str(e)}")
+                    raise
+
+                try:
+                    events = format_incidents(response["data"], input_params["hce"])
+                    incidentsArr: list[dict] = []
+                    demisto.debug(f"[insert_data_in_cortex] Formatting incidents, total events: {len(events)}")
+                    for event in events:
+                        if len(all_incidents) + len(incidentsArr) >= max_fetch:
+                            break
+                        try:
+                            incident = get_event_format(event)
+                            incidentsArr.append(incident)
+                        except Exception as e:
+                            demisto.error(f"[insert_data_in_cortex] get_event_format failed: {str(e)}")
+                            continue
+                except Exception as e:
+                    demisto.error(f"[insert_data_in_cortex] format_incidents failed: {str(e)}")
+                    raise
+
+                all_incidents.extend(incidentsArr)
+                demisto.debug(
+                    f"[insert_data_in_cortex] Accumulated {len(incidentsArr)} incidents (run total so far: {len(all_incidents)})"
+                )
+
+                returned = len(response["data"])
+                input_params["skip"] += returned
+                pages_completed += 1
+                last_page_duration = max(last_page_duration, time.time() - page_start)
+
+                save_events_fetch_checkpoint(
+                    window_gte, window_lte, chunk_gte_iso, chunk_lte_iso, service, service_index, input_params["skip"]
+                )
+
+                if len(all_incidents) >= max_fetch:
+                    demisto.debug(
+                        f"[insert_data_in_cortex] Reached max_fetch={max_fetch}; stopping pagination for service {service}"
+                    )
+                    break
+
+                if should_stop_before_next_page(pages_completed, last_page_duration, execution_start):
+                    return all_incidents, latest_created_time, True
+
         except Exception as e:
             demisto.error(f"[insert_data_in_cortex] Failed for service '{service}': {str(e)}")
             raise
 
-        demisto.debug(f"[insert_data_in_cortex] Completed. Total incidents pushed: {len(all_incidents)}")
-        return all_incidents, latest_created_time
+        demisto.debug(f"[insert_data_in_cortex] Completed. Total incidents accumulated: {len(all_incidents)}")
+        return all_incidents, latest_created_time, False
 
-    def get_data_with_retry(self, service, input_params, is_update=False):
+    def get_data_with_retry(self, service, input_params, is_update=False, fetch_context=None):
         """
-        Splits time range into 1-day chunks and fetches data, inserting it into Cortex.
-        Returns a tuple of (alerts, latest_created_time).
+        Splits time range into CHUNK_MINUTES chunks and fetches data, inserting it into Cortex.
+        Returns a tuple of (alerts, latest_created_time, stopped_early).
         """
-
+        fetch_context = fetch_context or {}
         gte = parse_date(input_params["gte"])
         lte = parse_date(input_params["lte"])
         demisto.debug(f"[get_data_with_retry] Full time range: gte={gte}, lte={lte}")
 
+        resume = fetch_context.get("resume") or {}
+        resume_chunk_gte = resume.get("chunk_gte")
+        resume_chunk_lte = resume.get("chunk_lte")
+        resume_skip = resume.get("skip", 0)
+
+        if resume_chunk_gte:
+            current_start = parse_date(resume_chunk_gte)
+        else:
+            current_start = gte
+
+        execution_start = fetch_context.get("execution_start", get_current_utc_time())
+        window_gte = fetch_context.get("window_gte", input_params["gte"])
+        window_lte = fetch_context.get("window_lte", input_params["lte"])
+        service_index = fetch_context.get("service_index", 0)
+
         latest_created_time = None
         all_alerts = []
+        is_first_chunk = True
 
-        current_start = gte
         while current_start <= lte:
-            current_end = min(current_start + timedelta(days=1), lte)
+            if resume_chunk_lte and is_first_chunk:
+                current_end = min(parse_date(resume_chunk_lte), lte)
+            else:
+                current_end = min(current_start + timedelta(minutes=CHUNK_MINUTES), lte)
 
-            demisto.debug(f"[get_data_with_retry] Processing 1-day chunk: {current_start} to {current_end}")
+            demisto.debug(f"[get_data_with_retry] Processing {CHUNK_MINUTES}-minute chunk: {current_start} to {current_end}")
 
-            current_params = {**input_params, "gte": current_start.isoformat(), "lte": current_end.isoformat()}
-            response = self.get_data(service, current_params, is_update=is_update)
+            current_params = {
+                **input_params,
+                "gte": current_start.isoformat(),
+                "lte": current_end.isoformat(),
+            }
+            if is_first_chunk and resume_skip:
+                current_params["skip"] = resume_skip
 
-            if "data" in response:
-                curr_alerts, curr_time = self.insert_data_in_cortex(service, current_params, is_update)
-                demisto.debug(f"[get_data_with_retry] Retrieved {len(curr_alerts)} alerts, curr_time: {curr_time}")
+            curr_alerts, curr_time, stopped = self.insert_data_in_cortex(
+                service,
+                current_params,
+                is_update,
+                fetch_context={
+                    "execution_start": execution_start,
+                    "window_gte": window_gte,
+                    "window_lte": window_lte,
+                    "service_index": service_index,
+                },
+            )
+            demisto.debug(f"[get_data_with_retry] Retrieved {len(curr_alerts)} alerts, curr_time: {curr_time}")
 
-                all_alerts.extend(curr_alerts)
+            all_alerts.extend(curr_alerts)
 
+            if curr_time:
                 if latest_created_time is None:
                     latest_created_time = curr_time
                 else:
                     latest_created_time = max(latest_created_time, curr_time)
-            else:
-                demisto.debug(f"[get_data_with_retry] No data returned for chunk: {current_start} to {current_end}")
 
+            if stopped:
+                return all_alerts, latest_created_time or get_current_utc_time(), True
+
+            is_first_chunk = False
+            resume_chunk_lte = None
+            resume_skip = 0
             current_start = current_end + timedelta(microseconds=1)
 
         if latest_created_time is None:
-            latest_created_time = datetime.utcnow()
+            latest_created_time = get_current_utc_time()
             demisto.debug("No data processed, using current time as latest_created_time")
 
         demisto.debug(
             f"[get_data_with_retry] Finished. Total alerts: {len(all_alerts)}, latest_created_time: {latest_created_time}"
         )
-        return all_alerts, latest_created_time + timedelta(microseconds=1)
+        return all_alerts, latest_created_time + timedelta(microseconds=1), False
 
     def get_ids_with_retry(self, service, input_params, is_update=False):
         """
@@ -757,22 +994,21 @@ def check_response(client, method, url, token):
 
     except Exception as e:
         demisto.error(f"[check_response] Failed to connect: {str(e)}")
-        raise Exception("failed to connect")
+        raise Exception(f"failed to connect: {str(e)}") from e
 
 
-def migrate_data(client: Client, input_params: dict[str, Any], is_update=False):
+def migrate_data(client: Client, input_params: dict[str, Any], last_run: dict[str, Any] | None = None, is_update=False):
     """
-    Migrates data from cyble to demisto cortex.
+    Migrates data from cyble to demisto cortex, processing services sequentially with checkpoint resume.
 
     Args:
         client: instance of client to communicate with server
         input_params: dict containing the parameters for the migration, including services and their associated parameters
+        last_run: optional last_run dict for resuming an in-progress fetch
         is_update: Boolean flag indicating whether this is an update (used for get-modified-remote-data)
 
-    Returns: the max of the last fetched timestamp
+    Returns: tuple of (all_alerts, last_fetched_time, stopped_early)
     """
-    # Add type check and default value to prevent indexing errors
-
     demisto.debug(f"[migrate_data] Function called with is_update={is_update}")
     demisto.debug(f"[migrate_data] input_params: {json.dumps(input_params)}")
 
@@ -780,34 +1016,57 @@ def migrate_data(client: Client, input_params: dict[str, Any], is_update=False):
     if not services:
         demisto.debug("[migrate_data] No services found in input_params. Returning empty alert list.")
         demisto.debug("No services found in input_params")
-        return [], datetime.utcnow()
+        return [], get_current_utc_time(), False
 
     demisto.debug(f"[migrate_data] Services to process: {services}")
 
-    chunkedServices = [services[i : i + MAX_THREADS] for i in range(0, len(services), MAX_THREADS)]
-    last_fetched = ensure_aware(datetime.utcnow())
+    resume = parse_events_resume_state(last_run or {})
+    execution_start = get_current_utc_time()
+    window_gte = input_params["gte"]
+    window_lte = input_params.get("lte") or window_gte
 
-    all_alerts = []
+    resume_valid = bool(resume["service"] and resume["service"] in services)
+    if resume["service"] and not resume_valid:
+        demisto.debug(f"[migrate_data] Checkpoint service '{resume['service']}' not in current service list; starting fresh.")
+
+    start_index = 0
+    if resume_valid:
+        start_index = services.index(resume["service"])
+
+    last_fetched = ensure_aware(get_current_utc_time())
+    all_alerts: list = []
+    stopped_early = False
 
     try:
-        for chunk in chunkedServices:
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                futures = [executor.submit(client.get_data_with_retry, service, input_params, is_update) for service in chunk]
-            for future in concurrent.futures.as_completed(futures):
-                try:
-                    alerts, fetched_time = future.result()
-                    demisto.debug(f"[migrate_data] Fetched {len(alerts)} alerts. fetched_time: {fetched_time}")
-                    all_alerts.extend(alerts)
-                    if isinstance(fetched_time, datetime):
-                        last_fetched = max(last_fetched, ensure_aware(fetched_time))
-                except Exception as inner_e:
-                    demisto.error(f"[migrate_data] Error in future: {str(inner_e)}")
-                    return_error(f"[migrate_data] Failed to process service thread: {str(inner_e)}")
+        for idx in range(start_index, len(services)):
+            service = services[idx]
+            fetch_context: dict[str, Any] = {
+                "execution_start": execution_start,
+                "window_gte": window_gte,
+                "window_lte": window_lte,
+                "service_index": idx,
+            }
+            if idx == start_index and resume_valid:
+                fetch_context["resume"] = {
+                    "chunk_gte": resume["chunk_gte"],
+                    "chunk_lte": resume["chunk_lte"],
+                    "skip": resume["skip"],
+                }
+
+            alerts, fetched_time, stopped = client.get_data_with_retry(service, input_params, is_update, fetch_context)
+            demisto.debug(f"[migrate_data] Fetched {len(alerts)} alerts from {service}. fetched_time: {fetched_time}")
+            all_alerts.extend(alerts)
+            if isinstance(fetched_time, datetime):
+                last_fetched = max(last_fetched, ensure_aware(fetched_time))
+            if stopped:
+                stopped_early = True
+                break
 
     except Exception as e:
-        return_error(f"[migrate_data] Migration failed: {str(e)}")
+        demisto.error(f"[migrate_data] Migration failed: {str(e)}\n{traceback.format_exc()}")
+        stopped_early = True
 
-    return all_alerts, last_fetched
+    return all_alerts, last_fetched, stopped_early
 
 
 def fetch_few_alerts(client, input_params, services, url, token, is_update=False):
@@ -983,8 +1242,18 @@ def get_fetch_severities(incident_severity):
 
 
 def get_gte_limit(curr_gte: str) -> str:
-    server_gte = datetime.utcnow() - timedelta(hours=3)
-    return max(curr_gte, server_gte.astimezone(pytz.UTC).isoformat())
+    if not curr_gte:
+        return get_current_utc_time().isoformat()
+    server_gte = get_current_utc_time() - timedelta(hours=3)
+    try:
+        curr_dt = parse_date(curr_gte)
+        if curr_dt.tzinfo is None:
+            curr_dt = curr_dt.replace(tzinfo=pytz.UTC)
+        else:
+            curr_dt = curr_dt.astimezone(pytz.UTC)
+    except (TypeError, ValueError):
+        return server_gte.isoformat()
+    return max(curr_dt, server_gte).isoformat()
 
 
 def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, incident_collections, incident_severity, skip=True):
@@ -1002,16 +1271,29 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
     demisto.debug(f"[cyble_events] Initial input_params: {input_params}")
 
     initial_interval = demisto.params().get("first_fetch_timestamp", 1)
-    if "event_pull_start_date" not in last_run:
-        event_pull_start_date = datetime.utcnow().astimezone(pytz.UTC) - timedelta(hours=int(initial_interval))
-        input_params["gte"] = get_gte_limit(event_pull_start_date.isoformat())
+    resume = parse_events_resume_state(last_run)
+    now_iso = get_current_utc_time().isoformat()
+
+    if resume["service"] and resume["window_gte"]:
+        window_gte = resume["window_gte"]
+        window_lte = resume["window_lte"] or last_run.get("window_lte") or now_iso
+        input_params["gte"] = window_gte
+        demisto.debug(f"[cyble_events] Resuming in-progress fetch from service={resume['service']}")
+    elif "event_pull_start_date" not in last_run:
+        event_pull_start_date = get_current_utc_time() - timedelta(hours=int(initial_interval))
+        window_gte = get_gte_limit(event_pull_start_date.isoformat())
+        window_lte = now_iso
+        input_params["gte"] = window_gte
         demisto.debug(f"[cyble_events] event_pull_start_date not in last_run, setting to: {event_pull_start_date.isoformat()}")
 
     else:
-        input_params["gte"] = get_gte_limit(last_run["event_pull_start_date"])
+        window_gte = get_gte_limit(last_run["event_pull_start_date"])
+        window_lte = last_run.get("window_lte") or now_iso
+        input_params["gte"] = window_gte
         demisto.debug(f"[cyble_events] event_pull_start_date found in last_run: {input_params['gte']}")
 
-    input_params["lte"] = datetime.utcnow().astimezone(pytz.UTC).isoformat()
+    input_params["lte"] = window_lte
+    demisto.debug(f"[cyble_events] Frozen fetch window: gte={window_gte}, lte={window_lte}")
 
     fetch_services = get_fetch_service_list(client, incident_collections, url, token)
 
@@ -1037,13 +1319,18 @@ def cyble_events(client, method, token, url, args, last_run, hide_cvv_expiry, in
     )
     demisto.debug(f"[cyble_events] Final input_params after update: {json.dumps(input_params)}")
 
-    all_alerts, latest_created_time = migrate_data(client, input_params, False)
+    all_alerts, latest_created_time, stopped_early = migrate_data(client, input_params, last_run, False)
     demisto.debug(
         f"[cyble_events] migrate_data returned {len(all_alerts)} alerts, latest_created_time: {latest_created_time.isoformat()}"
     )
 
-    last_run = {"event_pull_start_date": latest_created_time.astimezone().isoformat()}
-    demisto.debug(f"[cyble_events] Updated last_run: {last_run}")
+    if stopped_early:
+        next_run = demisto.getLastRun() or {}
+        demisto.debug(f"[cyble_events] Stopped early, preserving checkpoint: {next_run}")
+        return all_alerts, next_run
+
+    last_run = {"event_pull_start_date": input_params["lte"]}
+    demisto.debug(f"[cyble_events] Fetch window complete, last_run advanced to: {last_run}")
 
     return all_alerts, last_run
 
@@ -1084,7 +1371,7 @@ def get_modified_remote_data_command(client, url, token, args, hide_cvv_expiry, 
         "services": services or [],
         "severity": severities or [],
         "gte": last_update.isoformat(),
-        "lte": datetime.utcnow().replace(tzinfo=pytz.UTC).isoformat(),
+        "lte": get_current_utc_time().isoformat(),
     }
     ids = client.get_ids_with_retry(service=services, input_params=input_params, is_update=True)
 
@@ -1177,7 +1464,7 @@ def manual_fetch(client, args, token, url, incident_collections, incident_severi
     demisto.debug("[manual_fetch] Manual run detected")
 
     gte = args.get("start_date")
-    lte = args.get("end_date") or datetime.utcnow().astimezone().isoformat()
+    lte = args.get("end_date") or get_current_utc_time().isoformat()
 
     try:
         gte = datetime.fromisoformat(gte).isoformat()
@@ -1426,7 +1713,7 @@ def main():
 
     params = demisto.params()
     base_url = params.get("base_url")
-    token = demisto.params().get("credentials", {}).get("password", "")
+    token = sanitize_token(params.get("credentials", {}).get("password", "") or "")
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     hide_cvv_expiry = params.get("hide_data", False)
@@ -1435,7 +1722,7 @@ def main():
     incident_severity = params.get("incident_severity", [])
 
     global MAX_ALERTS
-    MAX_ALERTS = int(params.get("max_fetch", "300"))
+    MAX_ALERTS = arg_to_number(params.get("max_fetch")) or 300
 
     try:
         client = Client(base_url=params.get("base_url"), verify=verify_certificate, proxy=proxy)
@@ -1453,7 +1740,12 @@ def main():
             )
 
             demisto.setLastRun(next_run)
+            # XSOAR takes the LAST demisto.incidents() call for the run. Submit the full accumulated
+            # list once here — do not call demisto.incidents([]) afterward (that wiped earlier inserts).
+            total_inserted = len(data)
+            demisto.debug(f"[fetch-incidents] Submitting {total_inserted} incidents")
             demisto.incidents(data)
+            return_results(f"Inserted {total_inserted} incidents.")
 
         elif demisto.command() == "cyble-vision-update-alerts":
             return_results(cyble_vision_update_alerts_command(client, base_url, token, args))
@@ -1498,6 +1790,11 @@ def main():
             return_results(
                 get_remote_data_command(client, url, token, args, incident_collections, incident_severity, hide_cvv_expiry)
             )
+
+        elif demisto.command() == "update-remote-system":
+            # Required when isremotesyncout / mirror is enabled. Function already existed but was not wired.
+            url = base_url + str(ROUTES[COMMAND[demisto.command()]])
+            return_results(update_remote_system(client, "PUT", token, args, url))
 
         else:
             raise NotImplementedError(f"{demisto.command()} command is not implemented.")
