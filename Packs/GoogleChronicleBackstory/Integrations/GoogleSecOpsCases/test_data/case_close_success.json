@@ -1,0 +1,20 @@
+[
+  {
+    "caseId": "1001",
+    "status": "CLOSED",
+    "closureDetails": {
+      "reason": "NOT_MALICIOUS",
+      "rootCause": "False positive",
+      "comment": "Test comment"
+    }
+  },
+  {
+    "caseId": "1002",
+    "status": "CLOSED",
+    "closureDetails": {
+      "reason": "NOT_MALICIOUS",
+      "rootCause": "False positive",
+      "comment": "Test comment"
+    }
+  }
+]
