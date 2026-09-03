@@ -1,3 +1,5 @@
+name: KOI
+display: KOI
 category: Endpoint
 provider: KOI
 sectionorder:
@@ -20,15 +22,15 @@ configuration:
   type: 14
   additionalinfo: 'The API key for authenticating with the KOI API. See the help section for instructions on creating an API key.'
   section: Connect
-- name: insecure
-  display: Trust any certificate (not secure)
+- name: proxy
+  display: Use system proxy settings
   type: 8
   additionalinfo:
   section: Connect
   advanced: true
   required: false
-- name: proxy
-  display: Use system proxy settings
+- name: insecure
+  display: Trust any certificate (not secure)
   type: 8
   additionalinfo:
   section: Connect
@@ -92,9 +94,7 @@ configuration:
   required: false
   hidden:
   - xsoar
-description: KOI is an endpoint security platform that provides visibility and control over browser extensions, SaaS applications, and web-based threats.
-display: KOI
-name: KOI
+description: Koi (Agentic Endpoint Security) provides visibility and governance over non-binary software supply chains including browser extensions, IDE extensions, code packages, AI models, MCP servers, OS packages, binaries, and repositories.
 script:
   commands:
   - name: koi-get-events
@@ -135,15 +135,76 @@ script:
     - contextPath: KOI.Event.created_at
       description: The creation time of the event (audit logs).
       type: Date
+  - name: koi-alert-list
+    description: Retrieves a list of alerts from the Koi OCSF alert feed. Supports filtering by alert type, event ID, and date range. Returns structured alert data including finding info, severity, resources, and observables.
+    arguments:
+    - name: alert_type
+      description: 'The alert type to filter by. "system" returns system alerts (e.g., guardrails, malware). "policy" returns policy violation alerts.'
+      auto: PREDEFINED
+      predefined:
+      - system
+      - policy
+    - name: created_at_gte
+      description: 'The start date filter for alerts (ISO 8601 format, e.g., 2024-01-01T00:00:00Z).'
+    - name: created_at_lte
+      description: 'The end date filter for alerts (ISO 8601 format, e.g., 2024-12-31T23:59:59Z).'
+    - name: event_id
+      description: 'The event ID to filter by.'
+    - name: sort_direction
+      description: 'The sort direction for results.'
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    - name: page
+      description: 'The page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.'
+    - name: page_size
+      description: 'The number of results per page (default: 50, max: 500). Used only in single-page mode together with the page argument.'
+    - name: limit
+      description: 'The maximum total number of alerts to return via auto-pagination (default: 50). Ignored when the page argument is provided.'
+    outputs:
+    - contextPath: Koi.Alert.metadata.notification_event_id
+      description: The unique notification event identifier.
+      type: String
+    - contextPath: Koi.Alert.finding_info.title
+      description: The title of the finding that triggered the alert.
+      type: String
+    - contextPath: Koi.Alert.finding_info.types
+      description: The types and categories of the finding.
+      type: Unknown
+    - contextPath: Koi.Alert.severity
+      description: The alert severity label.
+      type: String
+    - contextPath: Koi.Alert.risk_level
+      description: The risk level (low, medium, high, critical).
+      type: String
+    - contextPath: Koi.Alert.risk_score
+      description: The numeric risk score.
+      type: Number
+    - contextPath: Koi.Alert.status
+      description: The alert status.
+      type: String
+    - contextPath: Koi.Alert.message
+      description: The human-readable alert message.
+      type: String
+    - contextPath: Koi.Alert.time
+      description: The alert timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: Koi.Alert.resources
+      description: The resources associated with the alert.
+      type: Unknown
+    - contextPath: Koi.Alert.observables
+      description: The observables extracted from the alert.
+      type: Unknown
   - name: koi-policy-list
     description: Retrieves a list of all policies. Use 'page' and 'page_size' to fetch a specific page, or use 'limit' to auto-paginate and collect up to the specified number of policies. If 'page' is provided, 'limit' is ignored.
     arguments:
     - name: page
-      description: 'Page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.'
+      description: 'The page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.'
     - name: page_size
-      description: 'Number of results per page (default: 50, max: 500). Used only in single-page mode together with the page argument.'
+      description: 'The number of results per page (default: 50, max: 500). Used only in single-page mode together with the page argument.'
     - name: limit
-      description: 'Maximum total number of policies to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many policies.'
+      description: 'The maximum total number of policies to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many policies.'
       defaultValue: '50'
     outputs:
     - contextPath: Koi.Policy.id
@@ -162,16 +223,16 @@ script:
       description: Whether the policy is enabled.
       type: Boolean
     - contextPath: Koi.Policy.group_ids
-      description: List of group IDs associated with the policy.
+      description: The list of group IDs associated with the policy.
       type: Unknown
     - contextPath: Koi.Policy.creator_fullname
       description: The full name of the policy creator.
       type: String
     - contextPath: Koi.Policy.created_at
-      description: The creation time of the policy in ISO 8601 format.
+      description: The creation time of the policy in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Koi.Policy.updated_at
-      description: The last update time of the policy in ISO 8601 format.
+      description: The last update time of the policy in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: koi-allowlist-get
     description: Retrieves all items in the allowlist.
@@ -196,13 +257,13 @@ script:
       description: The package name of the allowlist item.
       type: String
     - contextPath: Koi.Allowlist.notes
-      description: Notes associated with the allowlist item.
+      description: The notes associated with the allowlist item.
       type: String
     - contextPath: Koi.Allowlist.created_by
       description: The user who created the allowlist item.
       type: String
     - contextPath: Koi.Allowlist.created_at
-      description: The creation time of the allowlist item in ISO 8601 format.
+      description: The creation time of the allowlist item in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: koi-allowlist-items-remove
     description: Removes one or more items from the global allowlist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk removal from a JSON file.
@@ -214,6 +275,8 @@ script:
       description: The source marketplace of the item. Required when not using items_list_raw_json_entry_id.
       auto: PREDEFINED
       predefined:
+      - binaries
+      - bitbucket
       - chocolatey
       - chrome_web_store
       - claude_desktop_extensions
@@ -221,27 +284,32 @@ script:
       - docker
       - edge_add_ons
       - firefox_add_ons
+      - github
       - github_mcp_registry
+      - gitlab
       - homebrew
       - hugging_face
       - jetbrains
       - linux
       - mac
+      - mcp_registry
       - notepad++
       - npm
       - office_add_ins
+      - ollama
       - open_vsx_registry
       - pypi
+      - skill
       - visual_studio
       - vscode
       - windows
       - windsurf
     - name: created_by
-      description: Email of the user who created this entry.
+      description: The email of the user who created this entry.
     - name: notes
-      description: Additional notes about the removal.
+      description: The additional notes about the removal.
     - name: items_list_raw_json_entry_id
-      description: 'War Room entry ID of a JSON file containing a list of items to remove. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored.'
+      description: 'The War Room entry ID of a JSON file containing a list of items to remove. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored.'
     outputs: []
   - name: koi-allowlist-items-add
     description: Adds one or more items to the global allowlist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk addition from a JSON file.
@@ -252,6 +320,8 @@ script:
       description: The source marketplace of the item. Required when not using items_list_raw_json_entry_id.
       auto: PREDEFINED
       predefined:
+      - binaries
+      - bitbucket
       - chocolatey
       - chrome_web_store
       - claude_desktop_extensions
@@ -259,27 +329,32 @@ script:
       - docker
       - edge_add_ons
       - firefox_add_ons
+      - github
       - github_mcp_registry
+      - gitlab
       - homebrew
       - hugging_face
       - jetbrains
       - linux
       - mac
+      - mcp_registry
       - notepad++
       - npm
       - office_add_ins
+      - ollama
       - open_vsx_registry
       - pypi
+      - skill
       - visual_studio
       - vscode
       - windows
       - windsurf
     - name: created_by
-      description: Email of the user who created this entry.
+      description: The email of the user who created this entry.
     - name: notes
-      description: Additional notes about the entry.
+      description: The additional notes about the entry.
     - name: items_list_raw_json_entry_id
-      description: 'War Room entry ID of a JSON file containing a list of items to add. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored.'
+      description: 'The War Room entry ID of a JSON file containing a list of items to add. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored.'
     outputs: []
   - name: koi-blocklist-get
     description: Retrieves all items in the blocklist.
@@ -304,13 +379,13 @@ script:
       description: The package name of the blocklist item.
       type: String
     - contextPath: Koi.Blocklist.notes
-      description: Notes associated with the blocklist item.
+      description: The notes associated with the blocklist item.
       type: String
     - contextPath: Koi.Blocklist.created_by
       description: The user who created the blocklist item.
       type: String
     - contextPath: Koi.Blocklist.created_at
-      description: The creation time of the blocklist item in ISO 8601 format.
+      description: The creation time of the blocklist item in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: koi-blocklist-items-remove
     description: Removes one or more items from the global blocklist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk removal from a JSON file.
@@ -322,6 +397,8 @@ script:
       description: The source marketplace of the item. Required when not using items_list_raw_json_entry_id.
       auto: PREDEFINED
       predefined:
+      - binaries
+      - bitbucket
       - chocolatey
       - chrome_web_store
       - claude_desktop_extensions
@@ -329,27 +406,32 @@ script:
       - docker
       - edge_add_ons
       - firefox_add_ons
+      - github
       - github_mcp_registry
+      - gitlab
       - homebrew
       - hugging_face
       - jetbrains
       - linux
       - mac
+      - mcp_registry
       - notepad++
       - npm
       - office_add_ins
+      - ollama
       - open_vsx_registry
       - pypi
+      - skill
       - visual_studio
       - vscode
       - windows
       - windsurf
     - name: created_by
-      description: Email of the user who created this entry.
+      description: The email of the user who created this entry.
     - name: notes
-      description: Additional notes about the removal.
+      description: The additional notes about the removal.
     - name: items_list_raw_json_entry_id
-      description: 'War Room entry ID of a JSON file containing a list of items to remove. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored.'
+      description: 'The War Room entry ID of a JSON file containing a list of items to remove. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored.'
     outputs: []
   - name: koi-blocklist-items-add
     description: Adds one or more items to the global blocklist. Provide either 'item_id' and 'marketplace' for a single item, or 'items_list_raw_json_entry_id' for bulk addition from a JSON file.
@@ -360,6 +442,8 @@ script:
       description: The source marketplace of the item. Required when not using items_list_raw_json_entry_id.
       auto: PREDEFINED
       predefined:
+      - binaries
+      - bitbucket
       - chocolatey
       - chrome_web_store
       - claude_desktop_extensions
@@ -367,27 +451,32 @@ script:
       - docker
       - edge_add_ons
       - firefox_add_ons
+      - github
       - github_mcp_registry
+      - gitlab
       - homebrew
       - hugging_face
       - jetbrains
       - linux
       - mac
+      - mcp_registry
       - notepad++
       - npm
       - office_add_ins
+      - ollama
       - open_vsx_registry
       - pypi
+      - skill
       - visual_studio
       - vscode
       - windows
       - windsurf
     - name: created_by
-      description: Email of the user who created this entry.
+      description: The email of the user who created this entry.
     - name: notes
-      description: Additional notes or justification for blocking the item.
+      description: The additional notes or justification for blocking the item.
     - name: items_list_raw_json_entry_id
-      description: 'War Room entry ID of a JSON file containing a list of items to add. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored.'
+      description: 'The War Room entry ID of a JSON file containing a list of items to add. Each item must have "item_id" and "marketplace" fields. Optional fields: "created_by", "notes". When provided, item_id and marketplace arguments are ignored.'
     outputs: []
   - name: koi-policy-status-update
     description: Enables or disables a policy by ID.
@@ -419,43 +508,43 @@ script:
       description: Whether the policy is enabled.
       type: Boolean
     - contextPath: Koi.Policy.group_ids
-      description: List of group IDs associated with the policy.
+      description: The list of group IDs associated with the policy.
       type: Unknown
     - contextPath: Koi.Policy.creator_fullname
       description: The full name of the policy creator.
       type: String
     - contextPath: Koi.Policy.created_at
-      description: The creation time of the policy in ISO 8601 format.
+      description: The creation time of the policy in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Koi.Policy.updated_at
-      description: The last update time of the policy in ISO 8601 format.
+      description: The last update time of the policy in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
   - name: koi-inventory-list
     description: Retrieves a paginated list of items installed across your organization's endpoints. Supports extensive filtering by marketplace, platform, risk level, publisher, and specific categories.
     arguments:
     - name: page
-      description: 'Page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.'
+      description: 'The page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.'
     - name: page_size
-      description: 'Number of results per page (default: 50, max: 500). Used in single-page mode with the page argument.'
+      description: 'The number of results per page (default: 50, max: 500). Used in single-page mode with the page argument.'
     - name: limit
-      description: 'Maximum total number of inventory items to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many items.'
+      description: 'The maximum total number of inventory items to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many items.'
       defaultValue: '50'
     - name: brew_category_koi
-      description: Filter by Homebrew package category (Koi classification).
+      description: The Homebrew package category to filter by (Koi classification).
     - name: browser_category_koi
-      description: Filter by browser extension category (Koi classification).
+      description: The browser extension category to filter by (Koi classification).
     - name: chocolatey_category_koi
-      description: Filter by Chocolatey package category (Koi classification).
+      description: The Chocolatey package category to filter by (Koi classification).
     - name: device_id
-      description: Filter devices by device ID.
+      description: The device ID to filter devices by.
     - name: finding_id
-      description: Filter devices by finding ID.
+      description: The finding ID to filter devices by.
     - name: first_seen
-      description: 'Filter by first seen date (items first seen on or after this date). ISO 8601 format (e.g., "2024-01-01T00:00:00Z").'
+      description: 'The first seen date to filter by (items first seen on or after this date). ISO 8601 format (e.g., "2024-01-01T00:00:00Z").'
     - name: ide_category_koi
-      description: Filter by IDE extension category (Koi classification).
+      description: The IDE extension category to filter by (Koi classification).
     - name: installation_method
-      description: Filter by installation method.
+      description: The installation method to filter by.
       auto: PREDEFINED
       predefined:
       - marketplace
@@ -463,13 +552,15 @@ script:
       - built_in
       - side_loaded
     - name: item_display_name
-      description: Filter by item display name. Performs case-insensitive partial match.
+      description: The item display name to filter by. Performs case-insensitive partial match.
     - name: item_id
-      description: Filter by item ID.
+      description: The item ID to filter by.
     - name: marketplace
-      description: Filter by marketplace.
+      description: The marketplace to filter by.
       auto: PREDEFINED
       predefined:
+      - binaries
+      - bitbucket
       - chocolatey
       - chrome_web_store
       - claude_desktop_extensions
@@ -477,23 +568,28 @@ script:
       - docker
       - edge_add_ons
       - firefox_add_ons
+      - github
       - github_mcp_registry
+      - gitlab
       - homebrew
       - hugging_face
       - jetbrains
       - linux
       - mac
+      - mcp_registry
       - notepad++
       - npm
       - office_add_ins
+      - ollama
       - open_vsx_registry
       - pypi
+      - skill
       - visual_studio
       - vscode
       - windows
       - windsurf
     - name: platform
-      description: Filter by platform.
+      description: The platform to filter by.
       auto: PREDEFINED
       predefined:
       - antigravity
@@ -542,9 +638,9 @@ script:
       - windows
       - writerside
     - name: publisher_name
-      description: Filter by publisher name. Performs case-insensitive partial match.
+      description: The publisher name to filter by. Performs case-insensitive partial match.
     - name: risk_level
-      description: Filter by risk level.
+      description: The risk level to filter by.
       auto: PREDEFINED
       predefined:
       - low
@@ -553,9 +649,9 @@ script:
       - critical
       - pending
     - name: software_category_koi
-      description: Filter by software category (Koi classification).
+      description: The software category to filter by (Koi classification).
     - name: sort_by
-      description: Column to sort by.
+      description: The column to sort by.
       auto: PREDEFINED
       defaultValue: first_seen
       predefined:
@@ -573,13 +669,13 @@ script:
       - released_at
       - publisher_name
     - name: sort_direction
-      description: Sort direction.
+      description: The sort direction.
       auto: PREDEFINED
       predefined:
       - asc
       - desc
     - name: view
-      description: Filter by predefined view (marketplace group).
+      description: The predefined view to filter by (marketplace group).
       auto: PREDEFINED
       predefined:
       - agentic_ai
@@ -599,7 +695,7 @@ script:
       description: The marketplace source of the item.
       type: String
     - contextPath: Koi.Inventory.platforms
-      description: List of platforms where the item is installed.
+      description: The list of platforms where the item is installed.
       type: Unknown
     - contextPath: Koi.Inventory.publisher_name
       description: The publisher name of the item.
@@ -623,13 +719,13 @@ script:
       description: The total number of installs for the item.
       type: Number
     - contextPath: Koi.Inventory.first_seen
-      description: The date the item was first seen in ISO 8601 format.
+      description: The date the item was first seen in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Koi.Inventory.last_seen
-      description: The date the item was last seen in ISO 8601 format.
+      description: The date the item was last seen in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Koi.Inventory.last_used
-      description: The date the item was last used in ISO 8601 format.
+      description: The date the item was last used in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Koi.Inventory.installation_method
       description: The method used to install the item.
@@ -644,13 +740,13 @@ script:
       description: Whether the item is signed.
       type: Boolean
     - contextPath: Koi.Inventory.categories
-      description: List of categories the item belongs to.
+      description: The list of categories the item belongs to.
       type: Unknown
     - contextPath: Koi.Inventory.findings
-      description: List of findings associated with the item.
+      description: The list of findings associated with the item.
       type: Unknown
     - contextPath: Koi.Inventory.governed_details
-      description: Governance policy details for the item.
+      description: The governance policy details for the item.
       type: Unknown
     - contextPath: Koi.Inventory.released_at
       description: 'The release date of the item. Format: YYYY-MM-DD (e.g., 2023-01-15).'
@@ -674,13 +770,15 @@ script:
     description: Retrieves comprehensive details for a specific software item, extension, or package using its unique identifier, marketplace, and version.
     arguments:
     - name: item_id
-      description: Unique identifier for the item.
+      description: The unique identifier for the item.
       required: true
     - name: marketplace
       description: The marketplace where the item is hosted.
       required: true
       auto: PREDEFINED
       predefined:
+      - binaries
+      - bitbucket
       - chocolatey
       - chrome_web_store
       - claude_desktop_extensions
@@ -688,17 +786,22 @@ script:
       - docker
       - edge_add_ons
       - firefox_add_ons
+      - github
       - github_mcp_registry
+      - gitlab
       - homebrew
       - hugging_face
       - jetbrains
       - linux
       - mac
+      - mcp_registry
       - notepad++
       - npm
       - office_add_ins
+      - ollama
       - open_vsx_registry
       - pypi
+      - skill
       - visual_studio
       - vscode
       - windows
@@ -717,7 +820,7 @@ script:
       description: The marketplace source of the item.
       type: String
     - contextPath: Koi.Inventory.platforms
-      description: List of platforms where the item is installed.
+      description: The list of platforms where the item is installed.
       type: Unknown
     - contextPath: Koi.Inventory.publisher_name
       description: The publisher name of the item.
@@ -750,13 +853,13 @@ script:
       description: Whether the item is signed.
       type: Boolean
     - contextPath: Koi.Inventory.first_seen
-      description: The date the item was first seen in ISO 8601 format.
+      description: The date the item was first seen in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Koi.Inventory.last_seen
-      description: The date the item was last seen in ISO 8601 format.
+      description: The date the item was last seen in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Koi.Inventory.last_used
-      description: The date the item was last used in ISO 8601 format.
+      description: The date the item was last used in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Koi.Inventory.released_at
       description: 'The release date of the item. Format: YYYY-MM-DD (e.g., 2023-01-15).'
@@ -765,13 +868,13 @@ script:
       description: A short description of the item.
       type: String
     - contextPath: Koi.Inventory.categories
-      description: List of categories the item belongs to.
+      description: The list of categories the item belongs to.
       type: Unknown
     - contextPath: Koi.Inventory.findings
-      description: List of findings associated with the item including severity and evidence.
+      description: The list of findings associated with the item including severity and evidence.
       type: Unknown
     - contextPath: Koi.Inventory.governed_details
-      description: Governance policy details for the item.
+      description: The governance policy details for the item.
       type: Unknown
     - contextPath: Koi.Inventory.brew_category_koi
       description: The Homebrew package category (Koi classification).
@@ -792,18 +895,18 @@ script:
     description: Searches inventory items using advanced query builder filters. Provide a filter via 'filter_json' (inline JSON string) or 'filter_raw_json_entry_id' (War Room file entry ID). At least one filter source must be provided.
     arguments:
     - name: filter_json
-      description: 'Advanced filter using query builder syntax as a JSON string. Either filter_json or filter_raw_json_entry_id must be provided.'
+      description: 'The advanced filter using query builder syntax as a JSON string. Either filter_json or filter_raw_json_entry_id must be provided.'
     - name: filter_raw_json_entry_id
-      description: 'War Room entry ID of a JSON file containing the filter object. Takes priority over filter_json when both are provided.'
+      description: 'The War Room entry ID of a JSON file containing the filter object. Takes priority over filter_json when both are provided.'
     - name: page
-      description: 'Page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.'
+      description: 'The page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.'
     - name: page_size
-      description: 'Number of results per page (default: 50, max: 500). Used in single-page mode with the page argument.'
+      description: 'The number of results per page (default: 50, max: 500). Used in single-page mode with the page argument.'
     - name: limit
-      description: 'Maximum total number of inventory items to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many items.'
+      description: 'The maximum total number of inventory items to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many items.'
       defaultValue: '50'
     - name: sort_by
-      description: Column to sort by.
+      description: The column to sort by.
       auto: PREDEFINED
       defaultValue: first_seen
       predefined:
@@ -821,7 +924,7 @@ script:
       - released_at
       - publisher_name
     - name: sort_direction
-      description: Sort direction.
+      description: The sort direction.
       auto: PREDEFINED
       defaultValue: desc
       predefined:
@@ -838,7 +941,7 @@ script:
       description: The marketplace source of the item.
       type: String
     - contextPath: Koi.Inventory.platforms
-      description: List of platforms where the item is installed.
+      description: The list of platforms where the item is installed.
       type: Unknown
     - contextPath: Koi.Inventory.publisher_name
       description: The publisher name of the item.
@@ -862,13 +965,13 @@ script:
       description: The total number of installs for the item.
       type: Number
     - contextPath: Koi.Inventory.first_seen
-      description: The date the item was first seen in ISO 8601 format.
+      description: The date the item was first seen in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Koi.Inventory.last_seen
-      description: The date the item was last seen in ISO 8601 format.
+      description: The date the item was last seen in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Koi.Inventory.last_used
-      description: The date the item was last used in ISO 8601 format.
+      description: The date the item was last used in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Koi.Inventory.installation_method
       description: The method used to install the item.
@@ -883,13 +986,13 @@ script:
       description: Whether the item is signed.
       type: Boolean
     - contextPath: Koi.Inventory.categories
-      description: List of categories the item belongs to.
+      description: The list of categories the item belongs to.
       type: Unknown
     - contextPath: Koi.Inventory.findings
-      description: List of findings associated with the item.
+      description: The list of findings associated with the item.
       type: Unknown
     - contextPath: Koi.Inventory.governed_details
-      description: Governance policy details for the item.
+      description: The governance policy details for the item.
       type: Unknown
     - contextPath: Koi.Inventory.released_at
       description: 'The release date of the item. Format: YYYY-MM-DD (e.g., 2023-01-15).'
@@ -913,13 +1016,15 @@ script:
     description: Retrieves a paginated list of endpoints that have a specific item installed.
     arguments:
     - name: item_id
-      description: Unique identifier for the item.
+      description: The unique identifier for the item.
       required: true
     - name: marketplace
       description: The marketplace where the item is hosted.
       required: true
       auto: PREDEFINED
       predefined:
+      - binaries
+      - bitbucket
       - chocolatey
       - chrome_web_store
       - claude_desktop_extensions
@@ -927,17 +1032,22 @@ script:
       - docker
       - edge_add_ons
       - firefox_add_ons
+      - github
       - github_mcp_registry
+      - gitlab
       - homebrew
       - hugging_face
       - jetbrains
       - linux
       - mac
+      - mcp_registry
       - notepad++
       - npm
       - office_add_ins
+      - ollama
       - open_vsx_registry
       - pypi
+      - skill
       - visual_studio
       - vscode
       - windows
@@ -946,11 +1056,11 @@ script:
       required: true
       description: The specific version of the item.
     - name: page
-      description: 'Page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.'
+      description: 'The page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.'
     - name: page_size
-      description: 'Number of results per page (default: 50, max: 500). Used in single-page mode with the page argument.'
+      description: 'The number of results per page (default: 50, max: 500). Used in single-page mode with the page argument.'
     - name: limit
-      description: 'Maximum total number of endpoints to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many endpoints.'
+      description: 'The maximum total number of endpoints to return (default: 50, max: 1000). When provided without page, auto-paginates to collect up to this many endpoints.'
       defaultValue: '50'
     outputs:
     - contextPath: Koi.Inventory.Endpoint.id
@@ -978,11 +1088,1141 @@ script:
       description: The installation path of the item on the endpoint.
       type: String
     - contextPath: Koi.Inventory.Endpoint.first_seen
-      description: The date the item was first seen on this endpoint in ISO 8601 format.
+      description: The date the item was first seen on this endpoint in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Koi.Inventory.Endpoint.last_seen
-      description: The date the item was last seen on this endpoint in ISO 8601 format.
+      description: The date the item was last seen on this endpoint in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
+  - name: koi-agent-activity-events-list
+    description: Retrieves a list of agent activity events within a time window (max 24 hours).
+    arguments:
+    - name: created_at_gte
+      description: The start of time window (ISO 8601 or relative, e.g. "1 hour ago"). Maximum 24-hour window.
+      required: true
+    - name: created_at_lte
+      description: The end of time window (ISO 8601 or relative, e.g. "now"). Maximum 24-hour window.
+      required: true
+    - name: session_id
+      description: The session ID to filter by.
+    - name: page
+      description: The page number for pagination (1-based). When provided, fetches a single page and ignores the limit argument.
+    - name: page_size
+      description: 'The number of results per page (default: 50, max: 500).'
+    - name: limit
+      description: 'The maximum total number of events to return (default: 50, max: 1000).'
+      defaultValue: '50'
+    outputs:
+    - contextPath: Koi.AgentActivityEvent.id
+      description: The unique identifier of the event.
+      type: String
+    - contextPath: Koi.AgentActivityEvent.session_id
+      description: The session ID associated with the event.
+      type: String
+    - contextPath: Koi.AgentActivityEvent.created_at
+      description: The timestamp when the event was created in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: Koi.AgentActivityEvent.event_type
+      description: The type of event.
+      type: String
+  - name: koi-agent-activity-sessions-list
+    description: Retrieves a list of agent activity sessions within a time window (max 30 days).
+    arguments:
+    - name: created_at_gte
+      description: The start of time window (ISO 8601 or relative). Maximum 30-day window.
+      required: true
+    - name: created_at_lte
+      description: The end of time window (ISO 8601 or relative). Maximum 30-day window.
+      required: true
+    - name: agent
+      description: The AI agent name to filter by.
+    - name: host
+      description: The host to filter by.
+    - name: model
+      description: The model to filter by.
+    - name: user_email
+      description: The user email to filter by.
+    - name: verdict
+      description: The verdict to filter by.
+    - name: mcp
+      description: The MCP to filter by.
+    - name: skill
+      description: The skill to filter by.
+    - name: action
+      description: The action to filter by.
+    - name: governed_by
+      description: The governance policy to filter by.
+    - name: filter
+      description: The additional filter string.
+    - name: sort_by
+      description: The column to sort by.
+    - name: sort_direction
+      description: The sort direction.
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    - name: page
+      description: The page number for pagination (1-based).
+    - name: page_size
+      description: 'The number of results per page (default: 50, max: 500).'
+    - name: limit
+      description: 'The maximum total number of sessions to return (default: 50, max: 1000).'
+      defaultValue: '50'
+    outputs:
+    - contextPath: Koi.AgentActivitySession.id
+      description: The unique identifier of the session.
+      type: String
+    - contextPath: Koi.AgentActivitySession.agent
+      description: The AI agent name.
+      type: String
+    - contextPath: Koi.AgentActivitySession.host
+      description: The host.
+      type: String
+    - contextPath: Koi.AgentActivitySession.model
+      description: The model used.
+      type: String
+    - contextPath: Koi.AgentActivitySession.user_email
+      description: The user email.
+      type: String
+    - contextPath: Koi.AgentActivitySession.verdict
+      description: The session verdict.
+      type: String
+    - contextPath: Koi.AgentActivitySession.created_at
+      description: The session creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: koi-approval-request-list
+    description: Retrieves a list of approval requests with optional filters.
+    arguments:
+    - name: approval_status
+      description: The approval status to filter by.
+      auto: PREDEFINED
+      predefined:
+      - pending
+      - approved
+      - rejected
+    - name: marketplace
+      description: The marketplace to filter by.
+      auto: PREDEFINED
+      predefined:
+      - binaries
+      - bitbucket
+      - chocolatey
+      - chrome_web_store
+      - claude_desktop_extensions
+      - cursor
+      - docker
+      - edge_add_ons
+      - firefox_add_ons
+      - github
+      - github_mcp_registry
+      - gitlab
+      - homebrew
+      - hugging_face
+      - jetbrains
+      - linux
+      - mac
+      - mcp_registry
+      - notepad++
+      - npm
+      - office_add_ins
+      - ollama
+      - open_vsx_registry
+      - pypi
+      - skill
+      - visual_studio
+      - vscode
+      - windows
+      - windsurf
+    - name: requested_by
+      description: The requester email to filter by.
+    - name: created_at_gte
+      description: The request date to filter by (greater than or equal to). ISO 8601 or relative format.
+    - name: created_at_lte
+      description: The request date to filter by (less than or equal to). ISO 8601 or relative format.
+    - name: page
+      description: The page number for pagination (1-based).
+    - name: page_size
+      description: 'The number of results per page (default: 50, max: 500).'
+    - name: limit
+      description: 'The maximum total number of requests to return (default: 50, max: 1000).'
+      defaultValue: '50'
+    outputs:
+    - contextPath: Koi.ApprovalRequest.id
+      description: The unique identifier of the approval request.
+      type: String
+    - contextPath: Koi.ApprovalRequest.item_id
+      description: The item ID.
+      type: String
+    - contextPath: Koi.ApprovalRequest.name
+      description: The name of the item.
+      type: String
+    - contextPath: Koi.ApprovalRequest.marketplace
+      description: The marketplace.
+      type: String
+    - contextPath: Koi.ApprovalRequest.platform
+      description: The platform.
+      type: String
+    - contextPath: Koi.ApprovalRequest.approval_status
+      description: The approval status (pending, approved, rejected).
+      type: String
+    - contextPath: Koi.ApprovalRequest.requested_by
+      description: The email of the requester.
+      type: String
+    - contextPath: Koi.ApprovalRequest.justification
+      description: The justification for the request.
+      type: String
+    - contextPath: Koi.ApprovalRequest.reject_reason
+      description: The reason for rejection.
+      type: String
+    - contextPath: Koi.ApprovalRequest.version
+      description: The version of the item.
+      type: String
+    - contextPath: Koi.ApprovalRequest.publisher_name
+      description: The publisher name.
+      type: String
+    - contextPath: Koi.ApprovalRequest.created_at
+      description: The date when the request was created in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: Koi.ApprovalRequest.updated_at
+      description: The date when the request was last updated in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: Koi.ApprovalRequest.resolved_at
+      description: The date when the request was resolved in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: koi-approval-request-create
+    description: Creates a new approval request for an item.
+    arguments:
+    - name: item_id
+      description: The ID of the item.
+      required: true
+    - name: marketplace
+      description: The marketplace of the item.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - binaries
+      - bitbucket
+      - chocolatey
+      - chrome_web_store
+      - claude_desktop_extensions
+      - cursor
+      - docker
+      - edge_add_ons
+      - firefox_add_ons
+      - github
+      - github_mcp_registry
+      - gitlab
+      - homebrew
+      - hugging_face
+      - jetbrains
+      - linux
+      - mac
+      - mcp_registry
+      - notepad++
+      - npm
+      - office_add_ins
+      - ollama
+      - open_vsx_registry
+      - pypi
+      - skill
+      - visual_studio
+      - vscode
+      - windows
+      - windsurf
+    - name: platform
+      description: The platform of the item.
+      required: true
+    - name: justification
+      description: The justification for the approval request.
+      required: true
+    - name: requested_by
+      description: The email of the requester.
+      required: true
+    - name: version
+      description: The version of the item.
+    outputs:
+    - contextPath: Koi.ApprovalRequest.id
+      description: The unique identifier of the approval request.
+      type: String
+    - contextPath: Koi.ApprovalRequest.item_id
+      description: The item ID.
+      type: String
+    - contextPath: Koi.ApprovalRequest.name
+      description: The name of the item.
+      type: String
+    - contextPath: Koi.ApprovalRequest.marketplace
+      description: The marketplace.
+      type: String
+    - contextPath: Koi.ApprovalRequest.platform
+      description: The platform.
+      type: String
+    - contextPath: Koi.ApprovalRequest.approval_status
+      description: The approval status.
+      type: String
+    - contextPath: Koi.ApprovalRequest.requested_by
+      description: The email of the requester.
+      type: String
+    - contextPath: Koi.ApprovalRequest.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: koi-approval-request-approve
+    description: Approves a pending approval request.
+    arguments:
+    - name: approval_request_id
+      description: The ID of the approval request to approve.
+      required: true
+    - name: approved_by
+      description: The email of the user who approved the request.
+    outputs: []
+  - name: koi-approval-request-reject
+    description: Rejects a pending approval request.
+    execution: true
+    arguments:
+    - name: approval_request_id
+      description: The ID of the approval request to reject.
+      required: true
+    - name: rejected_by
+      description: The email of the user who rejected the request.
+    - name: reason
+      description: The reason for rejecting the approval request.
+    outputs: []
+  - name: koi-device-list
+    description: Retrieves a list of devices with optional filters.
+    arguments:
+    - name: status
+      description: The device status to filter by.
+    - name: last_seen_gte
+      description: The last seen date to filter by (greater than or equal to). ISO 8601 or relative format.
+    - name: last_seen_lte
+      description: The last seen date to filter by (less than or equal to). ISO 8601 or relative format.
+    - name: page
+      description: The page number for pagination (1-based).
+    - name: page_size
+      description: 'The number of results per page (default: 50, max: 500).'
+    - name: limit
+      description: 'The maximum total number of devices to return (default: 50, max: 1000).'
+      defaultValue: '50'
+    outputs:
+    - contextPath: Koi.Device.id
+      description: The unique identifier of the device.
+      type: String
+    - contextPath: Koi.Device.hostname
+      description: The hostname of the device.
+      type: String
+    - contextPath: Koi.Device.os
+      description: The operating system.
+      type: String
+    - contextPath: Koi.Device.platform
+      description: The platform.
+      type: String
+    - contextPath: Koi.Device.status
+      description: The device status.
+      type: String
+    - contextPath: Koi.Device.last_seen
+      description: The last seen timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: Koi.Device.serial
+      description: The serial number.
+      type: String
+  - name: koi-device-archive
+    description: Archives a device by ID.
+    execution: true
+    arguments:
+    - name: device_id
+      description: The ID of the device to archive.
+      required: true
+    - name: archived_by_user_email
+      description: The email of the user performing the archive.
+      required: true
+    outputs: []
+  - name: koi-device-inventory-get
+    description: Retrieves the inventory of software installed on a specific device.
+    arguments:
+    - name: device_id
+      description: The ID of the device.
+      required: true
+    - name: finding_id
+      description: The finding ID to filter by.
+    - name: page
+      description: The page number for pagination (1-based).
+    - name: page_size
+      description: 'The number of results per page (default: 50, max: 500).'
+    - name: limit
+      description: 'The maximum total number of items to return (default: 50, max: 1000).'
+      defaultValue: '50'
+    outputs:
+    - contextPath: Koi.DeviceInventory.item_id
+      description: The item ID.
+      type: String
+    - contextPath: Koi.DeviceInventory.item_display_name
+      description: The display name of the item.
+      type: String
+    - contextPath: Koi.DeviceInventory.marketplace
+      description: The marketplace.
+      type: String
+    - contextPath: Koi.DeviceInventory.risk_level
+      description: The risk level.
+      type: String
+    - contextPath: Koi.DeviceInventory.version
+      description: The version.
+      type: String
+  - name: koi-finding-list
+    description: Retrieves a paginated list of all finding definitions.
+    arguments:
+    - name: page
+      description: The page number for pagination (1-based).
+    - name: page_size
+      description: 'The number of results per page (default: 50, max: 500).'
+    - name: limit
+      description: 'The maximum total number of findings to return (default: 50, max: 1000).'
+      defaultValue: '50'
+    outputs:
+    - contextPath: Koi.Finding.id
+      description: The unique identifier of the finding.
+      type: String
+    - contextPath: Koi.Finding.name
+      description: The name of the finding.
+      type: String
+    - contextPath: Koi.Finding.description
+      description: The description of the finding.
+      type: String
+    - contextPath: Koi.Finding.risk
+      description: The risk level of the finding (0-10).
+      type: Number
+  - name: koi-finding-customize-risk
+    description: Customizes the risk level for a specific finding.
+    arguments:
+    - name: finding_id
+      description: The ID of the finding to customize risk for.
+      required: true
+    - name: risk
+      description: The risk level to set, between 0 and 10.
+      required: true
+    outputs: []
+  - name: koi-group-list
+    description: Retrieves a list of all device groups with device details.
+    arguments:
+    - name: page
+      description: The page number for pagination (1-based).
+    - name: page_size
+      description: 'The number of results per page (default: 50, max: 500).'
+    - name: limit
+      description: 'The maximum total number of groups to return (default: 50, max: 1000).'
+      defaultValue: '50'
+    outputs:
+    - contextPath: Koi.Group.id
+      description: The unique identifier of the group.
+      type: Number
+    - contextPath: Koi.Group.name
+      description: The group name.
+      type: String
+    - contextPath: Koi.Group.created_at
+      description: The group creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: Koi.Group.devices
+      description: The devices in the group.
+      type: Unknown
+  - name: koi-group-create
+    description: Creates a new device group. Maximum 9 groups per customer.
+    arguments:
+    - name: name
+      description: The name of the group to create.
+      required: true
+    - name: device_ids
+      description: A comma-separated list of device IDs to add to the group.
+      isArray: true
+    - name: creator
+      description: The identifier to attribute as the creator (e.g. email or service name).
+    outputs:
+    - contextPath: Koi.Group.id
+      description: The unique identifier of the created group.
+      type: Number
+    - contextPath: Koi.Group.name
+      description: The group name.
+      type: String
+    - contextPath: Koi.Group.created_at
+      description: The group creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: Koi.Group.devices
+      description: The devices in the group.
+      type: Unknown
+  - name: koi-group-update
+    description: Updates the name of an existing device group.
+    arguments:
+    - name: group_id
+      description: The ID of the group to update.
+      required: true
+    - name: name
+      description: The new name for the group.
+      required: true
+    outputs: []
+  - name: koi-group-device-add
+    description: Adds a device to a specified group.
+    arguments:
+    - name: group_id
+      description: The ID of the group.
+      required: true
+    - name: device_id
+      description: The ID of the device to add.
+      required: true
+    outputs: []
+  - name: koi-group-device-remove
+    description: Removes a device from a specified group.
+    execution: true
+    arguments:
+    - name: group_id
+      description: The ID of the group.
+      required: true
+    - name: device_id
+      description: The ID of the device to remove.
+      required: true
+    outputs: []
+  - name: koi-runtime-policy-list
+    description: Retrieves a list of agent runtime policies.
+    arguments:
+    - name: page
+      description: The page number for pagination (1-based).
+    - name: page_size
+      description: 'The number of results per page (default: 50, max: 500).'
+    - name: limit
+      description: 'The maximum total number of policies to return (default: 50, max: 1000).'
+      defaultValue: '50'
+    outputs:
+    - contextPath: Koi.RuntimePolicy.id
+      description: The unique identifier of the runtime policy.
+      type: String
+    - contextPath: Koi.RuntimePolicy.display_name
+      description: The display name of the policy.
+      type: String
+    - contextPath: Koi.RuntimePolicy.description
+      description: The description of the policy.
+      type: String
+    - contextPath: Koi.RuntimePolicy.enforcement_mode
+      description: The enforcement mode (block or ask).
+      type: String
+    - contextPath: Koi.RuntimePolicy.enabled
+      description: Whether the policy is enabled.
+      type: Boolean
+    - contextPath: Koi.RuntimePolicy.agents
+      description: The agents this policy applies to.
+      type: Unknown
+    - contextPath: Koi.RuntimePolicy.rules
+      description: The rules for this policy.
+      type: Unknown
+    - contextPath: Koi.RuntimePolicy.group_ids
+      description: The group IDs this policy applies to.
+      type: Unknown
+    - contextPath: Koi.RuntimePolicy.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: Koi.RuntimePolicy.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: koi-runtime-policy-create
+    description: Creates a new agent runtime policy.
+    arguments:
+    - name: display_name
+      description: The display name of the policy.
+      required: true
+    - name: enforcement_mode
+      description: The enforcement mode.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - block
+      - ask
+    - name: agents
+      description: A comma-separated list of agent names this policy applies to.
+      required: true
+      isArray: true
+    - name: rules
+      description: The JSON array of rule objects for the policy.
+      required: true
+    - name: enabled
+      description: Whether the policy is enabled.
+      defaultValue: 'true'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: description
+      description: The description of the policy.
+    - name: group_ids
+      description: A comma-separated list of group IDs this policy applies to.
+      isArray: true
+    outputs:
+    - contextPath: Koi.RuntimePolicy.id
+      description: The unique identifier of the created runtime policy.
+      type: String
+    - contextPath: Koi.RuntimePolicy.display_name
+      description: The display name of the policy.
+      type: String
+    - contextPath: Koi.RuntimePolicy.enforcement_mode
+      description: The enforcement mode.
+      type: String
+    - contextPath: Koi.RuntimePolicy.enabled
+      description: Whether the policy is enabled.
+      type: Boolean
+    - contextPath: Koi.RuntimePolicy.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: koi-runtime-policy-get
+    description: Retrieves a single agent runtime policy by ID.
+    arguments:
+    - name: policy_id
+      description: The ID of the runtime policy.
+      required: true
+    outputs:
+    - contextPath: Koi.RuntimePolicy.id
+      description: The unique identifier of the runtime policy.
+      type: String
+    - contextPath: Koi.RuntimePolicy.display_name
+      description: The display name of the policy.
+      type: String
+    - contextPath: Koi.RuntimePolicy.description
+      description: The description of the policy.
+      type: String
+    - contextPath: Koi.RuntimePolicy.enforcement_mode
+      description: The enforcement mode (block or ask).
+      type: String
+    - contextPath: Koi.RuntimePolicy.enabled
+      description: Whether the policy is enabled.
+      type: Boolean
+    - contextPath: Koi.RuntimePolicy.agents
+      description: The agents this policy applies to.
+      type: Unknown
+    - contextPath: Koi.RuntimePolicy.rules
+      description: The rules for this policy.
+      type: Unknown
+    - contextPath: Koi.RuntimePolicy.group_ids
+      description: The group IDs this policy applies to.
+      type: Unknown
+    - contextPath: Koi.RuntimePolicy.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: Koi.RuntimePolicy.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: koi-runtime-policy-update
+    description: Updates an existing agent runtime policy. Only provided fields are updated.
+    arguments:
+    - name: policy_id
+      description: The ID of the runtime policy to update.
+      required: true
+    - name: display_name
+      description: The new display name.
+    - name: enforcement_mode
+      description: The new enforcement mode.
+      auto: PREDEFINED
+      predefined:
+      - block
+      - ask
+    - name: agents
+      description: A comma-separated list of agent names.
+      isArray: true
+    - name: rules
+      description: The JSON array of rule objects.
+    - name: enabled
+      description: Whether the policy is enabled.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: description
+      description: The new description.
+    - name: group_ids
+      description: A comma-separated list of group IDs.
+      isArray: true
+    outputs:
+    - contextPath: Koi.RuntimePolicy.id
+      description: The unique identifier of the runtime policy.
+      type: String
+    - contextPath: Koi.RuntimePolicy.display_name
+      description: The display name of the policy.
+      type: String
+    - contextPath: Koi.RuntimePolicy.enforcement_mode
+      description: The enforcement mode.
+      type: String
+    - contextPath: Koi.RuntimePolicy.enabled
+      description: Whether the policy is enabled.
+      type: Boolean
+    - contextPath: Koi.RuntimePolicy.updated_at
+      description: The last update timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: koi-runtime-policy-delete
+    description: Deletes an agent runtime policy by ID.
+    execution: true
+    arguments:
+    - name: policy_id
+      description: The ID of the runtime policy to delete.
+      required: true
+    outputs: []
+  - name: koi-koidex-fetch
+    description: Triggers a Koidex fetch for one or more items to update their risk data.
+    arguments:
+    - name: items
+      description: 'The JSON array of items to fetch. Each item must include item_id or name, and marketplace or platform. Example: [{"item_id": "abc", "marketplace": "npm", "version": "1.0.0"}].'
+      required: true
+    outputs:
+    - contextPath: Koi.KoidexFetch.status
+      description: The status of the fetch operation.
+      type: String
+  - name: koi-koidex-risk-report-get
+    description: Retrieves the Koidex risk report for a specific item.
+    arguments:
+    - name: item_id
+      description: The ID of the item.
+      required: true
+    - name: marketplace
+      description: The marketplace of the item.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - binaries
+      - bitbucket
+      - chocolatey
+      - chrome_web_store
+      - claude_desktop_extensions
+      - cursor
+      - docker
+      - edge_add_ons
+      - firefox_add_ons
+      - github
+      - github_mcp_registry
+      - gitlab
+      - homebrew
+      - hugging_face
+      - jetbrains
+      - linux
+      - mac
+      - mcp_registry
+      - notepad++
+      - npm
+      - office_add_ins
+      - ollama
+      - open_vsx_registry
+      - pypi
+      - skill
+      - visual_studio
+      - vscode
+      - windows
+      - windsurf
+    - name: version
+      description: The version of the item. If omitted, returns the latest version.
+    outputs:
+    - contextPath: Koi.KoidexRiskReport.item_id
+      description: The item ID.
+      type: String
+    - contextPath: Koi.KoidexRiskReport.marketplace
+      description: The marketplace.
+      type: String
+    - contextPath: Koi.KoidexRiskReport.risk
+      description: The risk score.
+      type: Number
+    - contextPath: Koi.KoidexRiskReport.risk_level
+      description: The risk level.
+      type: String
+    - contextPath: Koi.KoidexRiskReport.findings
+      description: The findings for this item.
+      type: Unknown
+  - name: koi-koidex-search
+    description: Searches for items in the Koidex marketplace catalog.
+    arguments:
+    - name: marketplace
+      description: The marketplace to search in.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - binaries
+      - bitbucket
+      - chocolatey
+      - chrome_web_store
+      - claude_desktop_extensions
+      - cursor
+      - docker
+      - edge_add_ons
+      - firefox_add_ons
+      - github
+      - github_mcp_registry
+      - gitlab
+      - homebrew
+      - hugging_face
+      - jetbrains
+      - linux
+      - mac
+      - mcp_registry
+      - notepad++
+      - npm
+      - office_add_ins
+      - ollama
+      - open_vsx_registry
+      - pypi
+      - skill
+      - visual_studio
+      - vscode
+      - windows
+      - windsurf
+    - name: search_term
+      description: The search term to look for.
+      required: true
+    - name: page
+      description: The page number for pagination (1-based).
+    - name: page_size
+      description: 'The number of results per page (default: 50, max: 500).'
+    - name: limit
+      description: 'The maximum total number of results to return (default: 50, max: 1000).'
+      defaultValue: '50'
+    outputs:
+    - contextPath: Koi.KoidexSearch.item_id
+      description: The item ID.
+      type: String
+    - contextPath: Koi.KoidexSearch.name
+      description: The item name.
+      type: String
+    - contextPath: Koi.KoidexSearch.marketplace
+      description: The marketplace.
+      type: String
+    - contextPath: Koi.KoidexSearch.publisher_name
+      description: The publisher name.
+      type: String
+    - contextPath: Koi.KoidexSearch.risk
+      description: The risk score.
+      type: Number
+    - contextPath: Koi.KoidexSearch.risk_level
+      description: The risk level.
+      type: String
+  - name: koi-private-item-list
+    description: Retrieves a list of all private items.
+    arguments: []
+    outputs:
+    - contextPath: Koi.PrivateItem.id
+      description: The unique identifier of the private item.
+      type: String
+    - contextPath: Koi.PrivateItem.name
+      description: The name of the private item.
+      type: String
+    - contextPath: Koi.PrivateItem.marketplace
+      description: The marketplace.
+      type: String
+    - contextPath: Koi.PrivateItem.created_by
+      description: The creator of the private item.
+      type: String
+    - contextPath: Koi.PrivateItem.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: koi-private-item-upload
+    description: Uploads a private item for scanning.
+    arguments:
+    - name: entry_id
+      description: The War Room entry ID of the file to upload.
+      required: true
+    - name: created_by
+      description: The email of the user uploading the item.
+      required: true
+    - name: marketplace
+      description: The marketplace for the private item.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - chrome_web_store
+      - skill
+    outputs:
+    - contextPath: Koi.PrivateItem.id
+      description: The unique identifier of the uploaded private item.
+      type: String
+    - contextPath: Koi.PrivateItem.name
+      description: The name of the uploaded item.
+      type: String
+    - contextPath: Koi.PrivateItem.marketplace
+      description: The marketplace.
+      type: String
+    - contextPath: Koi.PrivateItem.created_by
+      description: The creator.
+      type: String
+  - name: koi-private-item-details-get
+    description: Retrieves full scan details for a private item.
+    arguments:
+    - name: item_id
+      description: The ID of the private item.
+      required: true
+    - name: version
+      description: The version to retrieve details for.
+    outputs:
+    - contextPath: Koi.PrivateItem.id
+      description: The unique identifier of the private item.
+      type: String
+    - contextPath: Koi.PrivateItem.name
+      description: The name of the private item.
+      type: String
+    - contextPath: Koi.PrivateItem.marketplace
+      description: The marketplace.
+      type: String
+    - contextPath: Koi.PrivateItem.risk
+      description: The risk score.
+      type: Number
+    - contextPath: Koi.PrivateItem.risk_level
+      description: The risk level.
+      type: String
+    - contextPath: Koi.PrivateItem.findings
+      description: The findings for this item.
+      type: Unknown
+  - name: koi-remediation-list
+    description: Retrieves a list of remediations with optional filters.
+    arguments:
+    - name: hostname
+      description: The hostname to filter by.
+    - name: platform
+      description: The platform to filter by.
+    - name: risk_level
+      description: The risk level to filter by.
+    - name: status
+      description: The remediation status to filter by.
+    - name: reason
+      description: The reason to filter by.
+    - name: sort_by
+      description: The column to sort by.
+    - name: sort_direction
+      description: The sort direction.
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    - name: page
+      description: The page number for pagination (1-based).
+    - name: page_size
+      description: 'The number of results per page (default: 50, max: 500).'
+    - name: limit
+      description: 'The maximum total number of remediations to return (default: 50, max: 1000).'
+      defaultValue: '50'
+    outputs:
+    - contextPath: Koi.Remediation.id
+      description: The unique identifier of the remediation.
+      type: String
+    - contextPath: Koi.Remediation.item_id
+      description: The item ID.
+      type: String
+    - contextPath: Koi.Remediation.hostname
+      description: The hostname.
+      type: String
+    - contextPath: Koi.Remediation.platform
+      description: The platform.
+      type: String
+    - contextPath: Koi.Remediation.status
+      description: The remediation status.
+      type: String
+    - contextPath: Koi.Remediation.risk_level
+      description: The risk level.
+      type: String
+    - contextPath: Koi.Remediation.reason
+      description: The reason.
+      type: String
+    - contextPath: Koi.Remediation.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: koi-remediation-submit
+    description: Submits remediations for one or more items on specific devices.
+    arguments:
+    - name: items
+      description: 'The JSON array of remediation items. Each item must include item_id, platform, version, and device_ids array. Example: [{"item_id": "abc", "platform": "chrome", "version": "1.0", "device_ids": ["dev1"]}].'
+      required: true
+    outputs:
+    - contextPath: Koi.Remediation.id
+      description: The unique identifier of the submitted remediation.
+      type: String
+    - contextPath: Koi.Remediation.status
+      description: The remediation status.
+      type: String
+  - name: koi-remediation-dismiss
+    description: Dismisses one or more remediations.
+    execution: true
+    arguments:
+    - name: items
+      description: 'The JSON array of items to dismiss. Each item must include item_id, platform, version, and device_id. Example: [{"item_id": "abc", "platform": "chrome", "version": "1.0", "device_id": "dev1"}].'
+      required: true
+    - name: dismissed_by
+      description: The email of the user dismissing the remediations.
+    outputs: []
+  - name: koi-report-create
+    description: Creates an async report. Use koi-report-status-get to check status and get download URL.
+    arguments:
+    - name: report_type
+      description: The type of report to generate.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - inventory_by_extension
+      - inventory_by_instance
+      - agent_activity_logs
+    - name: filters
+      description: The optional JSON object of filters to apply to the report.
+    outputs:
+    - contextPath: Koi.Report.id
+      description: The unique identifier of the report.
+      type: String
+    - contextPath: Koi.Report.report_type
+      description: The type of the report.
+      type: String
+    - contextPath: Koi.Report.status
+      description: The report generation status.
+      type: String
+  - name: koi-report-status-get
+    description: Retrieves the status of an async report. Returns download URL when completed.
+    arguments:
+    - name: report_id
+      description: The ID of the report to check.
+      required: true
+    outputs:
+    - contextPath: Koi.Report.id
+      description: The unique identifier of the report.
+      type: String
+    - contextPath: Koi.Report.report_type
+      description: The type of the report.
+      type: String
+    - contextPath: Koi.Report.status
+      description: The report generation status (e.g. pending, completed, failed).
+      type: String
+    - contextPath: Koi.Report.download_url
+      description: The download URL for the completed report.
+      type: String
+    - contextPath: Koi.Report.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: koi-user-list
+    description: Retrieves a list of all users.
+    arguments: []
+    outputs:
+    - contextPath: Koi.User.id
+      description: The unique identifier of the user.
+      type: String
+    - contextPath: Koi.User.email
+      description: The user email.
+      type: String
+    - contextPath: Koi.User.role
+      description: The user role.
+      type: String
+    - contextPath: Koi.User.created_at
+      description: The user creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: koi-user-create
+    description: Creates a new user.
+    arguments:
+    - name: email
+      description: The email of the user to create.
+      required: true
+    - name: role
+      description: The role to assign to the user.
+      required: true
+    outputs:
+    - contextPath: Koi.User.id
+      description: The unique identifier of the created user.
+      type: String
+    - contextPath: Koi.User.email
+      description: The user email.
+      type: String
+    - contextPath: Koi.User.role
+      description: The user role.
+      type: String
+    - contextPath: Koi.User.created_at
+      description: The creation timestamp in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+  - name: koi-user-delete
+    description: Deletes a user by ID.
+    execution: true
+    arguments:
+    - name: user_id
+      description: The ID of the user to delete.
+      required: true
+    outputs: []
+  - name: koi-item-enrich
+    description: Enriches a software item from the Koi marketplace catalog. Returns a custom "Koi Software Item" indicator with DBot score based on the item's risk assessment, surfaces risk findings and compliance details, and creates CVE indicators for any vulnerability findings.
+    arguments:
+    - name: item_id
+      description: The unique identifier of the item to enrich.
+      required: true
+    - name: marketplace
+      description: The marketplace the item belongs to.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - chrome_web_store
+      - edge_add_ons
+      - firefox_add_ons
+      - vscode
+      - jetbrains
+      - npm
+      - pypi
+      - homebrew
+      - chocolatey
+      - docker
+      - hugging_face
+      - ollama
+      - github
+      - gitlab
+      - bitbucket
+      - binaries
+      - claude_desktop_extensions
+      - office_add_ins
+      - open_vsx_registry
+      - mcp_registry
+      - cursor
+      - windsurf
+      - notepad++
+      - skill
+      - github_mcp_registry
+    - name: version
+      description: 'The specific version to enrich. If not provided, the latest version is used.'
+    outputs:
+    - contextPath: Koi.ItemEnrichment.item_id
+      description: The unique identifier of the enriched item.
+      type: String
+    - contextPath: Koi.ItemEnrichment.name
+      description: The name of the software item.
+      type: String
+    - contextPath: Koi.ItemEnrichment.marketplace
+      description: The marketplace the item belongs to.
+      type: String
+    - contextPath: Koi.ItemEnrichment.risk_score
+      description: The overall risk score of the item (0-10).
+      type: Number
+    - contextPath: Koi.ItemEnrichment.risk_level
+      description: The risk level (low, medium, high, critical, pending).
+      type: String
+    - contextPath: Koi.ItemEnrichment.version
+      description: The version that was enriched.
+      type: String
+    - contextPath: Koi.ItemEnrichment.publisher
+      description: The publisher of the item.
+      type: String
+    - contextPath: Koi.ItemEnrichment.findings_count
+      description: The total number of risk findings.
+      type: Number
+    - contextPath: Koi.ItemEnrichment.compliance_status
+      description: The compliance status of the item.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the source.
+      type: String
+    - contextPath: CVE.ID
+      description: The CVE identifier.
+      type: String
+    - contextPath: CVE.Description
+      description: The description of the CVE.
+      type: String
+    - contextPath: CVE.CVSS.Score
+      description: The CVSS score of the CVE.
+      type: Number
   runonce: false
   script: '-'
   type: python

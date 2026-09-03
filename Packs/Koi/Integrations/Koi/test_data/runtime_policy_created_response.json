@@ -1,0 +1,12 @@
+{
+    "id": "rtp-002",
+    "display_name": "Ask for Approval",
+    "description": "Ask before accessing sensitive data",
+    "enforcement_mode": "ask",
+    "enabled": true,
+    "agents": ["claude-code"],
+    "rules": [{"type": "data_access", "action": "ask"}],
+    "group_ids": [],
+    "created_at": "2025-06-01T10:00:00Z",
+    "updated_at": "2025-06-01T10:00:00Z"
+}
