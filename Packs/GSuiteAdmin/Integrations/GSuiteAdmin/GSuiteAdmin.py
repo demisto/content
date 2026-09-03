@@ -943,12 +943,16 @@ def token_revoke_command(client: Client, args: dict[str, str]) -> CommandResults
 
     client.set_authorized_http(scopes=SCOPES["USER_SECURITY"])
 
-    user_key = urllib.parse.quote(args.get("user_key", ""))
-    client_id = urllib.parse.quote(args.get("client_id", ""))
+    raw_user_key = args.get("user_key", "")
+    raw_client_id = args.get("client_id", "")
+    user_key = urllib.parse.quote(raw_user_key)
+    client_id = urllib.parse.quote(raw_client_id)
+
+    demisto.debug(f"gsuite-token-revoke: revoking tokens for user_key={raw_user_key!r}, client_id={raw_client_id!r}")
 
     client.http_request(url_suffix=URL_SUFFIX["TOKEN_REVOKE"].format(user_key, client_id), method="DELETE")
 
-    return CommandResults(readable_output=HR_MESSAGES["TOKEN_REVOKE_SUCCESS"].format(args.get("client_id", "")))
+    return CommandResults(readable_output=HR_MESSAGES["TOKEN_REVOKE_SUCCESS"].format(raw_client_id))
 
 
 @logger
@@ -1674,7 +1678,11 @@ def user_reset_password_command(client: Client, args: dict[str, str]) -> Command
     client.set_authorized_http(scopes=SCOPES["DIRECTORY_USER"])
     user_key = args.get("user_key", "")
     url_suffix = urljoin(URL_SUFFIX["USER"], urllib.parse.quote(user_key))
-    body = {"changePasswordAtNextLogin": True}
+    body: dict[str, Any] = {"changePasswordAtNextLogin": True}
+    if password := args.get("password"):
+        body["password"] = hashlib.md5(password.encode()).hexdigest()  # nosec
+        body["hashFunction"] = "MD5"
+    demisto.debug(f"gsuite-user-reset-password: updating {user_key!r}, temporary password provided: {bool(password)}")
     response = client.http_request(url_suffix=url_suffix, method="PUT", body=body)
 
     # Context
