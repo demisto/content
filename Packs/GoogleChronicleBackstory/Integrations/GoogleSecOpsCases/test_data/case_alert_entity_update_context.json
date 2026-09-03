@@ -1,0 +1,70 @@
+{
+    "id": "376398",
+    "type": "ADDRESS",
+    "suspicious": true,
+    "internal": false,
+    "networkPriority": 5,
+    "attacker": true,
+    "pivot": false,
+    "environment": "Default Environment",
+    "manuallyCreated": true,
+    "additionalProperties": "{\"Type\":\"ADDRESS\",\"IsArtifact\":\"False\",\"IsEnriched\":\"False\",\"IsVulnerable\":\"False\",\"IsInternalAsset\":\"False\",\"OriginalIdentifier\":\"192.0.2.1\"}",
+    "enriched": false,
+    "artifact": false,
+    "vulnerable": false,
+    "fields": [
+        {
+            "displayName": "Default",
+            "highlighted": false,
+            "hidden": false,
+            "items": [
+                {
+                    "name": "Network_Priority",
+                    "originalName": "Network_Priority",
+                    "value": "5"
+                },
+                {
+                    "name": "IsSuspicious",
+                    "originalName": "IsSuspicious",
+                    "value": "True"
+                },
+                {
+                    "name": "IsAttacker",
+                    "originalName": "IsAttacker",
+                    "value": "True"
+                },
+                {
+                    "name": "IsManuallyCreated",
+                    "originalName": "IsManuallyCreated",
+                    "value": "True"
+                },
+                {
+                    "name": "Environment",
+                    "originalName": "Environment",
+                    "value": "Default Environment"
+                },
+                {
+                    "name": "Alert_Id",
+                    "originalName": "Alert_Id",
+                    "value": "Testing Alert_00000000-0000-0000-0000-000000000001"
+                }
+            ]
+        },
+        {
+            "displayName": "Entity",
+            "highlighted": false,
+            "hidden": false,
+            "items": [
+                {
+                    "name": "Is Pivot",
+                    "originalName": "IsPivot",
+                    "value": "False"
+                }
+            ]
+        }
+    ],
+    "alertIdentifier": "Testing Alert_00000000-0000-0000-0000-000000000001",
+    "caseId": 306082,
+    "alertId": "1001",
+    "identifier": "192.0.2.1"
+}
