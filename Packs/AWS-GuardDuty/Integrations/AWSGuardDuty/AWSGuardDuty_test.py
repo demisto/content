@@ -4,31 +4,38 @@ from contextlib import nullcontext as does_not_raise
 import demistomock as demisto  # noqa: F401
 import pytest
 from AWSGuardDuty import (
+    DemistoException,
     archive_findings,
     connection_test,
     create_detector,
     create_ip_set,
     create_sample_findings,
+    create_threat_entity_set,
     create_threat_intel_set,
     delete_detector,
     delete_ip_set,
+    delete_threat_entity_set,
     delete_threat_intel_set,
     fetch_incidents,
     get_detector,
     get_findings,
     get_ip_set,
     get_members,
+    get_threat_entity_set,
     get_threat_intel_set,
     list_detectors,
     list_findings,
     list_ip_sets,
     list_members,
+    list_threat_entity_sets,
     list_threat_intel_sets,
     parse_incident_from_finding,
+    parse_tag_field_to_dict,
     unarchive_findings,
     update_detector,
     update_findings_feedback,
     update_ip_set,
+    update_threat_entity_set,
     update_threat_intel_set,
 )
 from test_data.api_responses_for_test import (
@@ -114,7 +121,22 @@ class MockedBoto3Client:
     def update_threat_intel_set(self, **kwargs):
         pass
 
-    def get_paginator(self, **kwargs):
+    def create_threat_entity_set(self, **kwargs):
+        pass
+
+    def update_threat_entity_set(self, **kwargs):
+        pass
+
+    def get_threat_entity_set(self, **kwargs):
+        pass
+
+    def delete_threat_entity_set(self, **kwargs):
+        pass
+
+    def list_threat_entity_sets(self, **kwargs):
+        pass
+
+    def get_paginator(self, operation_name=None, **kwargs):
         pass
 
 
@@ -578,6 +600,523 @@ def test_create_threat_intel_set(mocker):
         DetectorId="some_id", Activate=True, Format="some_format", Location="some_location", Name="some_name"
     )
     assert command_results.outputs == {"DetectorId": "some_id", "ThreatIntelSetId": "threat1"}
+
+
+@pytest.mark.parametrize(
+    "tags_str, expected",
+    [
+        pytest.param("key=Environment,value=prod", {"Environment": "prod"}, id="single pair"),
+        pytest.param(
+            "key=Environment,value=prod;key=Team,value=sec",
+            {"Environment": "prod", "Team": "sec"},
+            id="multiple pairs",
+        ),
+        pytest.param("key=Owner,value=team-a,team-b", {"Owner": "team-a,team-b"}, id="value with commas"),
+    ],
+)
+def test_parse_tag_field_to_dict(tags_str, expected):
+    """
+    Given:
+        A tags string in the "key=<KEY>,value=<VALUE>" format (values may contain commas)
+
+    When:
+        Running parse_tag_field_to_dict
+
+    Then:
+        assert the string is parsed into the expected key-to-value mapping.
+    """
+    assert parse_tag_field_to_dict(tags_str) == expected
+
+
+@pytest.mark.parametrize(
+    "tags_str",
+    [
+        pytest.param("Environment=prod", id="missing key/value fields"),
+        pytest.param("key=Environment", id="missing value"),
+    ],
+)
+def test_parse_tag_field_to_dict_invalid(tags_str):
+    """
+    Given:
+        A malformed tags string
+
+    When:
+        Running parse_tag_field_to_dict
+
+    Then:
+        assert a ValueError is raised describing the expected format.
+    """
+    with pytest.raises(ValueError, match="Could not parse field"):
+        parse_tag_field_to_dict(tags_str)
+
+
+def test_parse_tag_field_to_dict_exceeds_max_tags(mocker):
+    """
+    Given:
+        A tags string with more than 50 tag pairs
+
+    When:
+        Running parse_tag_field_to_dict
+
+    Then:
+        assert only the first 50 tags are parsed.
+    """
+    tags_str = ";".join(f"key=k{i},value=v{i}" for i in range(60))
+
+    result = parse_tag_field_to_dict(tags_str)
+
+    assert len(result) == 50
+    assert "k0" in result
+    assert "k49" in result
+    assert "k50" not in result
+
+
+def test_create_threat_entity_set(mocker):
+    """
+    Given:
+        AWSClient session
+        create_threat_entity_set valid response
+
+    When:
+        Running create_threat_entity_set command
+
+    Then:
+        assert api calls are called exactly once and as expected.
+    """
+    mocked_client = MockedBoto3Client()
+    create_threat_entity_set_mock = mocker.patch.object(
+        MockedBoto3Client, "create_threat_entity_set", side_effect=[{"ThreatEntitySetId": "entity1"}]
+    )
+
+    command_results = create_threat_entity_set(
+        mocked_client,
+        {
+            "detectorId": "some_id",
+            "activate": "True",
+            "format": "some_format",
+            "location": "some_location",
+            "name": "some_name",
+        },
+    )
+
+    create_threat_entity_set_mock.assert_called_with(
+        DetectorId="some_id", Activate=True, Format="some_format", Location="some_location", Name="some_name"
+    )
+    assert command_results.outputs == {"DetectorId": "some_id", "ThreatEntitySetId": "entity1"}
+
+
+def test_create_threat_entity_set_with_optional_args(mocker):
+    """
+    Given:
+        AWSClient session
+        create_threat_entity_set valid response and the optional expectedBucketOwner and tags arguments
+
+    When:
+        Running create_threat_entity_set command
+
+    Then:
+        assert the optional arguments are passed to the api call as expected and tags are parsed to a map.
+    """
+    mocked_client = MockedBoto3Client()
+    create_threat_entity_set_mock = mocker.patch.object(
+        MockedBoto3Client, "create_threat_entity_set", side_effect=[{"ThreatEntitySetId": "entity1"}]
+    )
+
+    command_results = create_threat_entity_set(
+        mocked_client,
+        {
+            "detectorId": "some_id",
+            "activate": "True",
+            "format": "some_format",
+            "location": "some_location",
+            "name": "some_name",
+            "expectedBucketOwner": "123456789012",
+            "tags": "key=Environment,value=prod;key=Team,value=sec",
+        },
+    )
+
+    create_threat_entity_set_mock.assert_called_with(
+        DetectorId="some_id",
+        Activate=True,
+        Format="some_format",
+        Location="some_location",
+        Name="some_name",
+        ExpectedBucketOwner="123456789012",
+        Tags={"Environment": "prod", "Team": "sec"},
+    )
+    assert command_results.outputs == {"DetectorId": "some_id", "ThreatEntitySetId": "entity1"}
+
+
+def test_create_threat_entity_set_command_results(mocker):
+    """
+    Given:
+        AWSClient session
+        create_threat_entity_set valid response
+
+    When:
+        Running create_threat_entity_set command
+
+    Then:
+        assert the CommandResults outputs_prefix, outputs_key_field and readable_output are as expected.
+    """
+    mocked_client = MockedBoto3Client()
+    mocker.patch.object(MockedBoto3Client, "create_threat_entity_set", side_effect=[{"ThreatEntitySetId": "entity1"}])
+
+    command_results = create_threat_entity_set(
+        mocked_client,
+        {
+            "detectorId": "some_id",
+            "activate": "False",
+            "format": "TXT",
+            "location": "some_location",
+            "name": "some_name",
+        },
+    )
+
+    assert command_results.outputs_prefix == "AWS.GuardDuty.ThreatEntitySet"
+    assert command_results.outputs_key_field == "ThreatEntitySetId"
+    assert "AWS GuardDuty ThreatEntity Set" in command_results.readable_output
+    assert "entity1" in command_results.readable_output
+
+
+@pytest.mark.parametrize(
+    "response, raises",
+    [
+        pytest.param({}, does_not_raise(), id="Success"),
+        pytest.param(RESPONSE_METADATA, does_not_raise(), id="Success with Metadata"),
+        pytest.param({"response": "bad"}, pytest.raises(Exception), id="Failure"),
+    ],
+)
+def test_update_threat_entity_set(mocker, response, raises):
+    """
+    Given:
+        AWSClient session
+        update_threat_entity_set various responses
+
+    When:
+        Running update_threat_entity_set command
+
+    Then:
+        assert exceptions are being raised according to api response
+        assert api calls are called exactly once and as expected.
+    """
+    mocked_client = MockedBoto3Client()
+    update_threat_entity_set_mock = mocker.patch.object(MockedBoto3Client, "update_threat_entity_set", side_effect=[response])
+
+    with raises:
+        update_threat_entity_set(
+            mocked_client,
+            {
+                "detectorId": "some_id",
+                "threatEntitySetId": "ThreatEntitySetId1",
+                "activate": "True",
+                "location": "here",
+                "name": "some_name",
+            },
+        )
+
+    update_threat_entity_set_mock.assert_called_with(
+        DetectorId="some_id", ThreatEntitySetId="ThreatEntitySetId1", Activate=True, Location="here", Name="some_name"
+    )
+
+
+def test_update_threat_entity_set_readable_output(mocker):
+    """
+    Given:
+        AWSClient session
+        update_threat_entity_set successful response
+
+    When:
+        Running update_threat_entity_set command
+
+    Then:
+        assert the returned confirmation message contains the ThreatEntitySet ID.
+    """
+    mocked_client = MockedBoto3Client()
+    mocker.patch.object(MockedBoto3Client, "update_threat_entity_set", side_effect=[{}])
+
+    result = update_threat_entity_set(mocked_client, {"detectorId": "some_id", "threatEntitySetId": "ThreatEntitySetId1"})
+
+    assert result == "Threat entity set ThreatEntitySetId1 was updated successfully"
+
+
+def test_update_threat_entity_set_failure_message(mocker):
+    """
+    Given:
+        AWSClient session
+        update_threat_entity_set response indicating a failure
+
+    When:
+        Running update_threat_entity_set command
+
+    Then:
+        assert an exception is raised with a descriptive failure message.
+    """
+    mocked_client = MockedBoto3Client()
+    mocker.patch.object(MockedBoto3Client, "update_threat_entity_set", side_effect=[{"response": "bad"}])
+
+    with pytest.raises(Exception, match="Failed updating Threat Entity set ThreatEntitySetId1"):
+        update_threat_entity_set(mocked_client, {"detectorId": "some_id", "threatEntitySetId": "ThreatEntitySetId1"})
+
+
+def test_get_threat_entity_set(mocker):
+    """
+    Given:
+        AWSClient session
+        get_threat_entity_set valid response
+
+    When:
+        Running get_threat_entity_set command
+
+    Then:
+        assert the API is called as expected and the outputs contain all the entity set fields.
+    """
+    mocked_client = MockedBoto3Client()
+    get_mock = mocker.patch.object(
+        MockedBoto3Client,
+        "get_threat_entity_set",
+        side_effect=[
+            {
+                "Name": "some_name",
+                "Format": "TXT",
+                "Location": "some_location",
+                "Status": "ACTIVE",
+                "ExpectedBucketOwner": "123456789012",
+                "CreatedAt": "2024-01-01T00:00:00Z",
+                "UpdatedAt": "2024-01-02T00:00:00Z",
+                "Tags": {"Environment": "prod"},
+            }
+        ],
+    )
+
+    command_results = get_threat_entity_set(mocked_client, {"detectorId": "some_id", "threatEntitySetId": "ThreatEntitySetId1"})
+
+    get_mock.assert_called_with(DetectorId="some_id", ThreatEntitySetId="ThreatEntitySetId1")
+    assert command_results.outputs == {
+        "DetectorId": "some_id",
+        "ThreatEntitySetId": "ThreatEntitySetId1",
+        "Name": "some_name",
+        "Format": "TXT",
+        "Location": "some_location",
+        "Status": "ACTIVE",
+        "ExpectedBucketOwner": "123456789012",
+        "CreatedAt": "2024-01-01T00:00:00Z",
+        "UpdatedAt": "2024-01-02T00:00:00Z",
+        "Tags": {"Environment": "prod"},
+    }
+
+
+def test_get_threat_entity_set_command_results(mocker):
+    """
+    Given:
+        AWSClient session
+        get_threat_entity_set valid response
+
+    When:
+        Running get_threat_entity_set command
+
+    Then:
+        assert the CommandResults outputs_prefix, outputs_key_field and readable_output are as expected.
+    """
+    mocked_client = MockedBoto3Client()
+    mocker.patch.object(MockedBoto3Client, "get_threat_entity_set", side_effect=[{"Name": "some_name", "Status": "ACTIVE"}])
+
+    command_results = get_threat_entity_set(mocked_client, {"detectorId": "some_id", "threatEntitySetId": "ThreatEntitySetId1"})
+
+    assert command_results.outputs_prefix == "AWS.GuardDuty.ThreatEntitySet"
+    assert command_results.outputs_key_field == "ThreatEntitySetId"
+    assert "AWS GuardDuty ThreatEntity Set" in command_results.readable_output
+    assert "some_name" in command_results.readable_output
+
+
+def test_get_threat_entity_set_empty_fields(mocker):
+    """
+    Given:
+        AWSClient session
+        get_threat_entity_set response with empty optional fields
+
+    When:
+        Running get_threat_entity_set command
+
+    Then:
+        assert empty fields are removed from the outputs and the identifying fields remain.
+    """
+    mocked_client = MockedBoto3Client()
+    mocker.patch.object(
+        MockedBoto3Client, "get_threat_entity_set", side_effect=[{"Name": "some_name", "Tags": {}, "Location": None}]
+    )
+
+    command_results = get_threat_entity_set(mocked_client, {"detectorId": "some_id", "threatEntitySetId": "ThreatEntitySetId1"})
+
+    assert command_results.outputs == {
+        "DetectorId": "some_id",
+        "ThreatEntitySetId": "ThreatEntitySetId1",
+        "Name": "some_name",
+    }
+
+
+@pytest.mark.parametrize(
+    "response, raises",
+    [
+        pytest.param({}, does_not_raise(), id="Success"),
+        pytest.param(RESPONSE_METADATA, does_not_raise(), id="Success with Metadata"),
+        pytest.param({"response": "bad"}, pytest.raises(Exception), id="Failure"),
+    ],
+)
+def test_delete_threat_entity_set(mocker, response, raises):
+    """
+    Given:
+        AWSClient session
+        delete_threat_entity_set various responses
+
+    When:
+        Running delete_threat_entity_set command
+
+    Then:
+        assert exceptions are being raised according to api response
+        assert api calls are called exactly once and as expected.
+    """
+    mocked_client = MockedBoto3Client()
+    delete_threat_entity_set_mock = mocker.patch.object(MockedBoto3Client, "delete_threat_entity_set", side_effect=[response])
+
+    with raises:
+        delete_threat_entity_set(mocked_client, {"detectorId": "some_id", "threatEntitySetId": "ThreatEntitySetId1"})
+
+    delete_threat_entity_set_mock.assert_called_with(DetectorId="some_id", ThreatEntitySetId="ThreatEntitySetId1")
+
+
+def test_delete_threat_entity_set_readable_output(mocker):
+    """
+    Given:
+        AWSClient session
+        delete_threat_entity_set successful response
+
+    When:
+        Running delete_threat_entity_set command
+
+    Then:
+        assert the returned confirmation message contains the ThreatEntitySet ID and Detector ID.
+    """
+    mocked_client = MockedBoto3Client()
+    mocker.patch.object(MockedBoto3Client, "delete_threat_entity_set", side_effect=[{}])
+
+    result = delete_threat_entity_set(mocked_client, {"detectorId": "some_id", "threatEntitySetId": "ThreatEntitySetId1"})
+
+    assert result == "Threat Entity Set ThreatEntitySetId1 was deleted from Detector some_id successfully"
+
+
+def test_delete_threat_entity_set_failure_message(mocker):
+    """
+    Given:
+        AWSClient session
+        delete_threat_entity_set response indicating a failure
+
+    When:
+        Running delete_threat_entity_set command
+
+    Then:
+        assert an exception is raised with a descriptive failure message.
+    """
+    mocked_client = MockedBoto3Client()
+    mocker.patch.object(MockedBoto3Client, "delete_threat_entity_set", side_effect=[{"response": "bad"}])
+
+    with pytest.raises(Exception, match="Failed to delete Threat Entity set ThreatEntitySetId1"):
+        delete_threat_entity_set(mocked_client, {"detectorId": "some_id", "threatEntitySetId": "ThreatEntitySetId1"})
+
+
+def test_list_threat_entity_sets(mocker):
+    """
+    Given:
+        AWSClient session
+        list_threat_entity_sets valid paginated response
+
+    When:
+        Running list_threat_entity_sets command
+
+    Then:
+        assert the paginator is called as expected and the outputs contain the detector and entity set IDs.
+    """
+    mocked_client = MockedBoto3Client()
+    get_paginator_mock = mocker.patch.object(MockedBoto3Client, "get_paginator", side_effect=[MockedPaginator()])
+    paginate_mock = mocker.patch.object(
+        MockedPaginator, "paginate", side_effect=[[{"ThreatEntitySetIds": ["entity1", "entity2"]}]]
+    )
+
+    command_results = list_threat_entity_sets(mocked_client, {"detectorId": "some_id"})
+
+    get_paginator_mock.assert_called_with("list_threat_entity_sets")
+    paginate_mock.assert_called_with(DetectorId="some_id", PaginationConfig={"MaxItems": 50, "PageSize": 50})
+    assert command_results.outputs == [
+        {"DetectorId": "some_id", "ThreatEntitySetId": "entity1"},
+        {"DetectorId": "some_id", "ThreatEntitySetId": "entity2"},
+    ]
+    assert command_results.outputs_prefix == "AWS.GuardDuty.ThreatEntitySet"
+
+
+def test_list_threat_entity_sets_specific_page(mocker):
+    """
+    Given:
+        AWSClient session
+        list_threat_entity_sets paginated response spanning multiple pages and the page argument
+
+    When:
+        Running list_threat_entity_sets command
+
+    Then:
+        assert only the requested page's entity sets are returned.
+    """
+    mocked_client = MockedBoto3Client()
+    mocker.patch.object(MockedBoto3Client, "get_paginator", side_effect=[MockedPaginator()])
+    mocker.patch.object(
+        MockedPaginator,
+        "paginate",
+        side_effect=[[{"ThreatEntitySetIds": ["entity1"]}, {"ThreatEntitySetIds": ["entity2"]}]],
+    )
+
+    command_results = list_threat_entity_sets(mocked_client, {"detectorId": "some_id", "page": "2", "page_size": "1"})
+
+    assert command_results.outputs == [
+        {"DetectorId": "some_id", "ThreatEntitySetId": "entity2"},
+    ]
+
+
+def test_list_threat_entity_sets_empty(mocker):
+    """
+    Given:
+        AWSClient session
+        list_threat_entity_sets paginated response with no ThreatEntitySet IDs
+
+    When:
+        Running list_threat_entity_sets command
+
+    Then:
+        assert an empty list is returned when there are no threat entity sets.
+    """
+    mocked_client = MockedBoto3Client()
+    mocker.patch.object(MockedBoto3Client, "get_paginator", side_effect=[MockedPaginator()])
+    mocker.patch.object(MockedPaginator, "paginate", side_effect=[[{"ThreatEntitySetIds": []}]])
+
+    command_results = list_threat_entity_sets(mocked_client, {"detectorId": "some_id"})
+
+    assert command_results.outputs == []
+
+
+def test_list_threat_entity_sets_invalid_page_size(mocker):
+    """
+    Given:
+        AWSClient session
+        list_threat_entity_sets called with a page_size above the allowed maximum
+
+    When:
+        Running list_threat_entity_sets command
+
+    Then:
+        assert a DemistoException is raised for the out-of-range page_size.
+    """
+    mocked_client = MockedBoto3Client()
+
+    with pytest.raises(DemistoException, match="page_size argument must be between 1 to 50"):
+        list_threat_entity_sets(mocked_client, {"detectorId": "some_id", "page_size": "51"})
 
 
 EXPECTED_IP_SET_RESULT = {
