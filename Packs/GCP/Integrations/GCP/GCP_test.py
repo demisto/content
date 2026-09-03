@@ -1,4 +1,5 @@
 import ast
+import io
 import json
 import pytest
 from google.oauth2.credentials import Credentials
@@ -33,6 +34,12 @@ _PY_TREE = ast.parse(_PY_SOURCE)
 # the integration configuration) rather than read with args.get(...) inside each
 # command handler. They are exempt from the per-handler verbatim arg check.
 PLATFORM_STANDARD_ARGS = {"project_id", "account_id"}
+
+# Output prefixes populated by the platform itself rather than by an
+# outputs_prefix in the handler. Commands that return a War Room file entry
+# (via file_result_existing_file / fileResult) declare File.* outputs in the YML,
+# but the entry is built by the platform, so no handler prefix exists to match.
+PLATFORM_STANDARD_OUTPUT_PREFIXES = {"File"}
 
 
 def test_parse_firewall_rule_valid_input():
@@ -6541,6 +6548,9 @@ def test_yml_output_prefixes_match_py_handler():
             continue
         handler_prefixes = _extract_output_prefixes(handler_node)
         for context_path in _YML_SPEC[command_name]["outputs"]:
+            if _is_covered(context_path, PLATFORM_STANDARD_OUTPUT_PREFIXES):
+                # Built by the platform (War Room file entry), not by a handler prefix.
+                continue
             if not _is_covered(context_path, handler_prefixes):
                 uncovered.append(f"{command_name} (handler {handler}) -> {context_path}")
 
@@ -6652,3 +6662,881 @@ def test_extract_output_prefixes_does_not_strip_whitespace_typos():
     handler = _top_level_functions(ast.parse(source))["handler"]
 
     assert _extract_output_prefixes(handler) == {" GCP.Compute.Operations"}
+
+
+# ---------------------------------------------------------------------------
+# gcp-storage-bucket-create
+# ---------------------------------------------------------------------------
+def test_storage_bucket_create_success(mocker):
+    """
+    Given: A bucket name, location, and project ID.
+    When: storage_bucket_create is called.
+    Then: It calls buckets().insert with the correct body and returns the bucket outputs.
+    """
+    from GCP import storage_bucket_create
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.insert.return_value.execute.return_value = {"name": "b1", "id": "b1", "location": "US"}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"project_id": "p1", "bucket_name": "b1", "location": "US"}
+    result = storage_bucket_create(creds, args)
+
+    call_kwargs = mock_buckets.insert.call_args[1]
+    assert call_kwargs["project"] == "p1"
+    assert call_kwargs["body"]["name"] == "b1"
+    assert call_kwargs["body"]["location"] == "US"
+    assert result.outputs_prefix == "GCP.Storage.Buckets"
+    assert result.outputs["name"] == "b1"
+
+
+def test_storage_bucket_create_with_ubla_and_acls(mocker):
+    """
+    Given: A bucket name with UBLA enabled and predefined ACLs.
+    When: storage_bucket_create is called.
+    Then: The request includes iamConfiguration and the predefined ACL params.
+    """
+    from GCP import storage_bucket_create
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.insert.return_value.execute.return_value = {"name": "b1", "id": "b1"}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {
+        "project_id": "p1",
+        "bucket_name": "b1",
+        "uniform_bucket_level_access": "true",
+        "bucket_acl": "private",
+        "default_object_acl": "projectPrivate",
+    }
+    storage_bucket_create(creds, args)
+
+    call_kwargs = mock_buckets.insert.call_args[1]
+    assert call_kwargs["body"]["iamConfiguration"]["uniformBucketLevelAccess"]["enabled"] is True
+    assert call_kwargs["predefinedAcl"] == "private"
+    assert call_kwargs["predefinedDefaultObjectAcl"] == "projectPrivate"
+
+
+def test_storage_bucket_create_api_error(mocker):
+    """
+    Given: A storage client whose insert raises an exception.
+    When: storage_bucket_create is called.
+    Then: The exception propagates to the caller (handled by main()).
+    """
+    from GCP import storage_bucket_create
+
+    mock_storage = mocker.Mock()
+    mock_storage.buckets.return_value.insert.return_value.execute.side_effect = Exception("API Error")
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    with pytest.raises(Exception, match="API Error"):
+        storage_bucket_create(creds, {"project_id": "p1", "bucket_name": "b1"})
+
+
+# ---------------------------------------------------------------------------
+# gcp-storage-bucket-delete
+# ---------------------------------------------------------------------------
+def test_storage_bucket_delete_success(mocker):
+    """
+    Given: A bucket name.
+    When: storage_bucket_delete is called.
+    Then: It calls buckets().delete with the bucket and returns a confirmation.
+    """
+    from GCP import storage_bucket_delete
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.delete.return_value.execute.return_value = ""
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_delete(creds, {"project_id": "p1", "bucket_name": "b1"})
+
+    mock_buckets.delete.assert_called_once_with(bucket="b1")
+    assert "b1 was deleted successfully" in result.readable_output
+
+
+def test_storage_bucket_delete_force_deletes_objects_first(mocker):
+    """
+    Given: A non-empty bucket and force set to true.
+    When: storage_bucket_delete is called.
+    Then: All object generations are deleted before the bucket itself is deleted.
+    """
+    from GCP import storage_bucket_delete
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_storage.buckets.return_value = mock_buckets
+    mock_objects.list.return_value.execute.return_value = {
+        "items": [{"name": "o1", "generation": "1"}, {"name": "o2", "generation": "2"}]
+    }
+    mock_buckets.delete.return_value.execute.return_value = ""
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_delete(creds, {"project_id": "p1", "bucket_name": "b1", "force": "true"})
+
+    assert mock_objects.delete.call_count == 2
+    mock_objects.delete.assert_any_call(bucket="b1", object="o1", generation="1")
+    mock_objects.delete.assert_any_call(bucket="b1", object="o2", generation="2")
+    mock_buckets.delete.assert_called_once_with(bucket="b1")
+    assert "b1 was deleted successfully" in result.readable_output
+    assert "2 object(s) were deleted from the bucket before deletion." in result.readable_output
+
+
+def test_storage_bucket_delete_without_force_skips_object_listing(mocker):
+    """
+    Given: A bucket and force omitted.
+    When: storage_bucket_delete is called.
+    Then: No objects are listed or deleted, only the bucket itself.
+    """
+    from GCP import storage_bucket_delete
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_storage.buckets.return_value.delete.return_value.execute.return_value = ""
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    storage_bucket_delete(creds, {"project_id": "p1", "bucket_name": "b1"})
+
+    mock_objects.list.assert_not_called()
+    mock_objects.delete.assert_not_called()
+
+
+def test_storage_bucket_delete_api_error(mocker):
+    """
+    Given: A storage client whose delete raises an exception.
+    When: storage_bucket_delete is called.
+    Then: The exception propagates to the caller.
+    """
+    from GCP import storage_bucket_delete
+
+    mock_storage = mocker.Mock()
+    mock_storage.buckets.return_value.delete.return_value.execute.side_effect = Exception("API Error")
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    with pytest.raises(Exception, match="API Error"):
+        storage_bucket_delete(creds, {"project_id": "p1", "bucket_name": "b1"})
+
+
+# ---------------------------------------------------------------------------
+# gcp-storage-bucket-public-access-block
+# ---------------------------------------------------------------------------
+def test_storage_bucket_public_access_block_enforced(mocker):
+    """
+    Given: A bucket name with the default enforced setting.
+    When: storage_bucket_public_access_block is called.
+    Then: It patches the bucket with publicAccessPrevention=enforced.
+    """
+    from GCP import storage_bucket_public_access_block
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.patch.return_value.execute.return_value = {"name": "b1"}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_public_access_block(creds, {"project_id": "p1", "bucket_name": "b1"})
+
+    call_kwargs = mock_buckets.patch.call_args[1]
+    assert call_kwargs["body"]["iamConfiguration"]["publicAccessPrevention"] == "enforced"
+    assert "enforced" in result.readable_output
+
+
+def test_storage_bucket_public_access_block_inherited(mocker):
+    """
+    Given: A bucket name with public_access_prevention set to inherited.
+    When: storage_bucket_public_access_block is called.
+    Then: It patches the bucket with publicAccessPrevention=inherited.
+    """
+    from GCP import storage_bucket_public_access_block
+
+    mock_storage = mocker.Mock()
+    mock_storage.buckets.return_value.patch.return_value.execute.return_value = {"name": "b1"}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_public_access_block(
+        creds, {"project_id": "p1", "bucket_name": "b1", "public_access_prevention": "inherited"}
+    )
+    assert "inherited" in result.readable_output
+
+
+def test_storage_bucket_public_access_block_outputs(mocker):
+    """
+    Given: A bucket that returns its updated IAM configuration.
+    When: storage_bucket_public_access_block is called.
+    Then: The full API response is returned under the shared bucket outputs prefix.
+    """
+    from GCP import storage_bucket_public_access_block
+
+    response = {"name": "b1", "id": "b1", "iamConfiguration": {"publicAccessPrevention": "enforced"}}
+    mock_storage = mocker.Mock()
+    mock_storage.buckets.return_value.patch.return_value.execute.return_value = response
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_public_access_block(creds, {"project_id": "p1", "bucket_name": "b1"})
+
+    assert result.outputs_prefix == "GCP.Storage.Buckets"
+    assert result.outputs_key_field == ["name", "id"]
+    assert result.outputs == response
+    assert result.raw_response == response
+
+
+# ---------------------------------------------------------------------------
+# gcp-storage-bucket-object-upload
+# ---------------------------------------------------------------------------
+def test_storage_bucket_object_upload_success(mocker):
+    """
+    Given: An entry ID pointing to a War Room file and a target bucket/object.
+    When: storage_bucket_object_upload is called.
+    Then: It uploads the file via objects().insert and returns a confirmation.
+    """
+    from GCP import storage_bucket_object_upload
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.insert.return_value.execute.return_value = {"name": "o1", "bucket": "b1"}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP.demisto.getFilePath", return_value={"path": "/tmp/f", "name": "f.txt"})
+    mocker.patch("GCP.MediaFileUpload", return_value=mocker.Mock())
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "entry_id": "1@1"}
+    result = storage_bucket_object_upload(creds, args)
+
+    call_kwargs = mock_objects.insert.call_args[1]
+    assert call_kwargs["bucket"] == "b1"
+    assert call_kwargs["name"] == "o1"
+    assert "f.txt was successfully uploaded" in result.readable_output
+    assert result.outputs == {
+        "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
+            "name": "b1",
+            "Objects": [{"name": "o1", "bucket": "b1"}],
+        }
+    }
+
+
+def test_storage_bucket_object_upload_with_acl(mocker):
+    """
+    Given: An upload with a predefined object ACL.
+    When: storage_bucket_object_upload is called.
+    Then: The predefinedAcl parameter is forwarded to objects().insert.
+    """
+    from GCP import storage_bucket_object_upload
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.insert.return_value.execute.return_value = {"name": "o1"}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP.demisto.getFilePath", return_value={"path": "/tmp/f", "name": "f.txt"})
+    mocker.patch("GCP.MediaFileUpload", return_value=mocker.Mock())
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {
+        "project_id": "p1",
+        "bucket_name": "b1",
+        "object_name": "o1",
+        "entry_id": "1@1",
+        "object_acl": "publicRead",
+    }
+    storage_bucket_object_upload(creds, args)
+
+    call_kwargs = mock_objects.insert.call_args[1]
+    assert call_kwargs["predefinedAcl"] == "publicRead"
+
+
+def test_storage_bucket_object_upload_api_error(mocker):
+    """
+    Given: A storage client whose insert raises an exception.
+    When: storage_bucket_object_upload is called.
+    Then: The exception propagates to the caller.
+    """
+    from GCP import storage_bucket_object_upload
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.insert.return_value.execute.side_effect = Exception("API Error")
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP.demisto.getFilePath", return_value={"path": "/tmp/f", "name": "f.txt"})
+    mocker.patch("GCP.MediaFileUpload", return_value=mocker.Mock())
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "entry_id": "1@1"}
+    with pytest.raises(Exception, match="API Error"):
+        storage_bucket_object_upload(creds, args)
+
+
+@pytest.mark.parametrize(
+    "file_path_result",
+    [
+        {"name": "f.txt"},  # missing "path"
+        {"path": "/tmp/f"},  # missing "name"
+        {},  # empty entry
+        None,  # entry could not be resolved at all
+    ],
+)
+def test_storage_bucket_object_upload_missing_file_path_keys(mocker, file_path_result):
+    """
+    Given: A War Room entry that does not expose both a path and a name.
+    When: storage_bucket_object_upload is called.
+    Then: A DemistoException naming the entry ID is raised instead of an unhandled
+          KeyError or TypeError.
+    """
+    from GCP import DemistoException, storage_bucket_object_upload
+
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mocker.Mock())
+    mocker.patch("GCP.demisto.getFilePath", return_value=file_path_result)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "entry_id": "1@1"}
+    with pytest.raises(DemistoException, match="Failed to retrieve the file path or name for entry ID 1@1"):
+        storage_bucket_object_upload(creds, args)
+
+
+# ---------------------------------------------------------------------------
+# gcp-storage-bucket-object-download
+# ---------------------------------------------------------------------------
+def test_storage_bucket_object_download_success(mocker):
+    """
+    Given: A bucket and object name.
+    When: storage_bucket_object_download is called.
+    Then: It streams the object and returns a fileResult with the resolved name.
+    """
+    from GCP import storage_bucket_object_download
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.get_media.return_value = mocker.Mock()
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    mock_downloader = mocker.Mock()
+    mock_downloader.next_chunk.return_value = (None, True)
+    mocker.patch("GCP.MediaIoBaseDownload", return_value=mock_downloader)
+    mock_file_result = mocker.patch("GCP.fileResult", return_value={"File": "o1"})
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_object_download(creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "dir/o1"})
+
+    mock_storage.objects.return_value.get_media.assert_called_once_with(bucket="b1", object="dir/o1")
+    # Default saved file name is the last path segment.
+    assert mock_file_result.call_args[0][0] == "o1"
+    assert result == {"File": "o1"}
+
+
+def test_storage_bucket_object_download_custom_name(mocker):
+    """
+    Given: A bucket, object name, and explicit saved_file_name.
+    When: storage_bucket_object_download is called.
+    Then: The war room file entry is created with the provided saved_file_name.
+    """
+    from GCP import storage_bucket_object_download
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.get_media.return_value = mocker.Mock()
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    mock_downloader = mocker.Mock()
+    mock_downloader.next_chunk.return_value = (None, True)
+    mocker.patch("GCP.MediaIoBaseDownload", return_value=mock_downloader)
+    mock_file_result = mocker.patch("GCP.fileResult", return_value={"File": "custom.txt"})
+
+    creds = mocker.Mock(spec=Credentials)
+    storage_bucket_object_download(
+        creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "saved_file_name": "custom.txt"}
+    )
+    assert mock_file_result.call_args[0][0] == "custom.txt"
+
+
+def test_storage_bucket_object_download_streams_until_done(mocker):
+    """
+    Given: An object that requires several chunks to download.
+    When: storage_bucket_object_download is called.
+    Then: next_chunk is called until it reports done, streaming into an in-memory buffer.
+    """
+    from GCP import storage_bucket_object_download
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.get_media.return_value = mocker.Mock()
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    mock_downloader = mocker.Mock()
+    mock_downloader.next_chunk.side_effect = [(None, False), (None, False), (None, True)]
+    mock_media = mocker.patch("GCP.MediaIoBaseDownload", return_value=mock_downloader)
+    mocker.patch("GCP.fileResult", return_value={"File": "o1"})
+
+    creds = mocker.Mock(spec=Credentials)
+    storage_bucket_object_download(creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1"})
+
+    assert mock_downloader.next_chunk.call_count == 3
+    # The downloader streams into an in-memory BytesIO buffer, not a file on disk.
+    assert isinstance(mock_media.call_args[0][0], io.BytesIO)
+
+
+def test_storage_bucket_object_download_api_error(mocker):
+    """
+    Given: A storage client whose chunk download raises an exception.
+    When: storage_bucket_object_download is called.
+    Then: The exception propagates to the caller.
+    """
+    from GCP import storage_bucket_object_download
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.get_media.return_value = mocker.Mock()
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    mock_downloader = mocker.Mock()
+    mock_downloader.next_chunk.side_effect = Exception("API Error")
+    mocker.patch("GCP.MediaIoBaseDownload", return_value=mock_downloader)
+
+    creds = mocker.Mock(spec=Credentials)
+    with pytest.raises(Exception, match="API Error"):
+        storage_bucket_object_download(creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1"})
+
+
+@pytest.mark.parametrize(
+    "saved_file_name, expected",
+    [
+        ("../../etc/passwd", "passwd"),
+        ("..\\..\\windows\\system32\\evil.dll", "evil.dll"),
+        ("/absolute/path/file.txt", "file.txt"),
+        ("nested/dir/report.csv", "report.csv"),
+    ],
+)
+def test_storage_bucket_object_download_sanitizes_saved_file_name(mocker, saved_file_name, expected):
+    """
+    Given: A saved_file_name containing path separators or traversal segments.
+    When: storage_bucket_object_download is called.
+    Then: Only the base name is used for the war room file entry, so a traversal path
+          cannot influence the created file name.
+    """
+    from GCP import storage_bucket_object_download
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.get_media.return_value = mocker.Mock()
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    mock_downloader = mocker.Mock()
+    mock_downloader.next_chunk.return_value = (None, True)
+    mocker.patch("GCP.MediaIoBaseDownload", return_value=mock_downloader)
+    mock_file_result = mocker.patch("GCP.fileResult", return_value={"File": expected})
+
+    creds = mocker.Mock(spec=Credentials)
+    storage_bucket_object_download(
+        creds,
+        {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "saved_file_name": saved_file_name},
+    )
+
+    assert mock_file_result.call_args[0][0] == expected
+
+
+def test_storage_bucket_object_download_stops_at_max_chunks(mocker):
+    """
+    Given: A downloader that never reports done.
+    When: storage_bucket_object_download is called.
+    Then: The loop stops at MAX_DOWNLOAD_CHUNKS and an error is raised instead of
+          looping forever until the command times out.
+    """
+    from GCP import MAX_DOWNLOAD_CHUNKS, DemistoException, storage_bucket_object_download
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.get_media.return_value = mocker.Mock()
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    mock_downloader = mocker.Mock()
+    mock_downloader.next_chunk.return_value = (None, False)
+    mocker.patch("GCP.MediaIoBaseDownload", return_value=mock_downloader)
+    mock_file_result = mocker.patch("GCP.fileResult")
+
+    creds = mocker.Mock(spec=Credentials)
+    with pytest.raises(DemistoException, match="maximum chunk limit"):
+        storage_bucket_object_download(creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1"})
+
+    assert mock_downloader.next_chunk.call_count == MAX_DOWNLOAD_CHUNKS
+    mock_file_result.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# gcp-storage-bucket-object-copy
+# ---------------------------------------------------------------------------
+def test_storage_bucket_object_copy_success(mocker):
+    """
+    Given: Source and destination bucket/object names.
+    When: storage_bucket_object_copy is called.
+    Then: It calls objects().copy with the correct parameters and returns outputs.
+    """
+    from GCP import storage_bucket_object_copy
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.copy.return_value.execute.return_value = {"name": "o2", "bucket": "dst"}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {
+        "project_id": "p1",
+        "source_bucket_name": "src",
+        "source_object_name": "o1",
+        "destination_bucket_name": "dst",
+        "destination_object_name": "o2",
+    }
+    result = storage_bucket_object_copy(creds, args)
+
+    call_kwargs = mock_objects.copy.call_args[1]
+    assert call_kwargs["sourceBucket"] == "src"
+    assert call_kwargs["sourceObject"] == "o1"
+    assert call_kwargs["destinationBucket"] == "dst"
+    assert call_kwargs["destinationObject"] == "o2"
+    assert result.outputs == {
+        "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
+            "name": "dst",
+            "Objects": [{"name": "o2", "bucket": "dst"}],
+        }
+    }
+
+
+def test_storage_bucket_object_copy_default_destination_name(mocker):
+    """
+    Given: No destination_object_name.
+    When: storage_bucket_object_copy is called.
+    Then: The destination object name defaults to the source object name.
+    """
+    from GCP import storage_bucket_object_copy
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.copy.return_value.execute.return_value = {"name": "o1", "bucket": "dst"}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {
+        "project_id": "p1",
+        "source_bucket_name": "src",
+        "source_object_name": "o1",
+        "destination_bucket_name": "dst",
+    }
+    storage_bucket_object_copy(creds, args)
+
+    call_kwargs = mock_objects.copy.call_args[1]
+    assert call_kwargs["destinationObject"] == "o1"
+
+
+def test_storage_bucket_object_copy_api_error(mocker):
+    """
+    Given: A storage client whose copy raises an exception.
+    When: storage_bucket_object_copy is called.
+    Then: The exception propagates to the caller.
+    """
+    from GCP import storage_bucket_object_copy
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.copy.return_value.execute.side_effect = Exception("API Error")
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {
+        "project_id": "p1",
+        "source_bucket_name": "src",
+        "source_object_name": "o1",
+        "destination_bucket_name": "dst",
+    }
+    with pytest.raises(Exception, match="API Error"):
+        storage_bucket_object_copy(creds, args)
+
+
+# ---------------------------------------------------------------------------
+# gcp-storage-bucket-object-delete
+# ---------------------------------------------------------------------------
+def test_storage_bucket_object_delete_success(mocker):
+    """
+    Given: A bucket and object name.
+    When: storage_bucket_object_delete is called.
+    Then: It calls objects().delete with the bucket/object and returns a confirmation.
+    """
+    from GCP import storage_bucket_object_delete
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.delete.return_value.execute.return_value = ""
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_object_delete(creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1"})
+
+    call_kwargs = mock_objects.delete.call_args[1]
+    assert call_kwargs["bucket"] == "b1"
+    assert call_kwargs["object"] == "o1"
+    assert "generation" not in call_kwargs
+    assert "o1 was successfully deleted" in result.readable_output
+
+
+def test_storage_bucket_object_delete_with_generation(mocker):
+    """
+    Given: A bucket, object name, and generation.
+    When: storage_bucket_object_delete is called.
+    Then: The generation is forwarded to objects().delete.
+    """
+    from GCP import storage_bucket_object_delete
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.delete.return_value.execute.return_value = ""
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    storage_bucket_object_delete(creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "generation": "12345"})
+
+    call_kwargs = mock_objects.delete.call_args[1]
+    assert call_kwargs["generation"] == 12345
+
+
+def test_storage_bucket_object_delete_api_error(mocker):
+    """
+    Given: A storage client whose delete raises an exception.
+    When: storage_bucket_object_delete is called.
+    Then: The exception propagates to the caller.
+    """
+    from GCP import storage_bucket_object_delete
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.delete.return_value.execute.side_effect = Exception("API Error")
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    with pytest.raises(Exception, match="API Error"):
+        storage_bucket_object_delete(creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1"})
+
+
+# ---------------------------------------------------------------------------
+# _delete_all_bucket_objects helper
+# ---------------------------------------------------------------------------
+def test_delete_all_bucket_objects_paginates(mocker):
+    """
+    Given: A bucket whose object listing spans two pages.
+    When: _delete_all_bucket_objects is called.
+    Then: It follows nextPageToken and deletes every object on every page.
+    """
+    from GCP import _delete_all_bucket_objects
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.list.return_value.execute.side_effect = [
+        {"items": [{"name": "o1", "generation": "1"}], "nextPageToken": "tok"},
+        {"items": [{"name": "o2", "generation": "2"}]},
+    ]
+
+    deleted = _delete_all_bucket_objects(mock_storage, "b1")
+
+    assert deleted == 2
+    assert mock_objects.list.call_count == 2
+    # The first page request has no page token, the second one carries it.
+    assert "pageToken" not in mock_objects.list.call_args_list[0][1]
+    assert mock_objects.list.call_args_list[1][1]["pageToken"] == "tok"
+    # All generations are requested so versioned objects are removed too.
+    assert mock_objects.list.call_args_list[0][1]["versions"] is True
+
+
+def test_delete_all_bucket_objects_empty_bucket(mocker):
+    """
+    Given: A bucket with no objects.
+    When: _delete_all_bucket_objects is called.
+    Then: Nothing is deleted and zero is returned.
+    """
+    from GCP import _delete_all_bucket_objects
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.list.return_value.execute.return_value = {}
+
+    assert _delete_all_bucket_objects(mock_storage, "b1") == 0
+    mock_objects.delete.assert_not_called()
+
+
+def test_delete_all_bucket_objects_stops_at_max_pages(mocker):
+    """
+    Given: A listing API that always returns another nextPageToken.
+    When: _delete_all_bucket_objects is called.
+    Then: It stops after MAX_OBJECT_LIST_PAGES pages and raises an informative error because
+          the bucket still contains objects and therefore cannot be deleted.
+    """
+    from GCP import MAX_OBJECT_LIST_PAGES, DemistoException, _delete_all_bucket_objects
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.list.return_value.execute.return_value = {
+        "items": [{"name": "o1", "generation": "1"}],
+        "nextPageToken": "always-more",
+    }
+
+    with pytest.raises(DemistoException, match="Reached the maximum page limit"):
+        _delete_all_bucket_objects(mock_storage, "b1")
+
+    assert mock_objects.list.call_count == MAX_OBJECT_LIST_PAGES
+
+
+def test_delete_all_bucket_objects_raises_on_object_delete_failure(mocker):
+    """
+    Given: A bucket with two objects where deleting the first object fails.
+    When: _delete_all_bucket_objects is called.
+    Then: A DemistoException is raised summarizing the failed object name and how many objects
+          were successfully deleted, since the bucket cannot be deleted while it holds objects.
+    """
+    from GCP import DemistoException, _delete_all_bucket_objects
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.list.return_value.execute.return_value = {
+        "items": [{"name": "o1", "generation": "1"}, {"name": "o2", "generation": "2"}]
+    }
+    mock_objects.delete.return_value.execute.side_effect = [Exception("retention hold"), None]
+
+    with pytest.raises(DemistoException, match="Failed to delete 1 object.*o1.*1 object.*successfully deleted"):
+        _delete_all_bucket_objects(mock_storage, "b1")
+
+
+# ---------------------------------------------------------------------------
+# gcp-storage-bucket-object-policy-delete
+# ---------------------------------------------------------------------------
+def test_storage_bucket_object_policy_delete_success(mocker):
+    """
+    Given: A bucket, object, and entity.
+    When: storage_bucket_object_policy_delete is called.
+    Then: It calls objectAccessControls().delete and returns a confirmation.
+    """
+    from GCP import storage_bucket_object_policy_delete
+
+    mock_storage = mocker.Mock()
+    mock_oac = mocker.Mock()
+    mock_storage.objectAccessControls.return_value = mock_oac
+    mock_oac.delete.return_value.execute.return_value = ""
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=False)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_object_policy_delete(
+        creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "entity": "allUsers"}
+    )
+
+    call_kwargs = mock_oac.delete.call_args[1]
+    assert call_kwargs["bucket"] == "b1"
+    assert call_kwargs["object"] == "o1"
+    assert call_kwargs["entity"] == "allUsers"
+    assert "generation" not in call_kwargs
+    assert "Removed entity allUsers" in result.readable_output
+
+
+def test_storage_bucket_object_policy_delete_with_generation(mocker):
+    """
+    Given: A bucket, object, entity, and generation.
+    When: storage_bucket_object_policy_delete is called.
+    Then: The generation is forwarded to objectAccessControls().delete.
+    """
+    from GCP import storage_bucket_object_policy_delete
+
+    mock_storage = mocker.Mock()
+    mock_oac = mocker.Mock()
+    mock_storage.objectAccessControls.return_value = mock_oac
+    mock_oac.delete.return_value.execute.return_value = ""
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=False)
+
+    creds = mocker.Mock(spec=Credentials)
+    storage_bucket_object_policy_delete(
+        creds,
+        {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "entity": "allUsers", "generation": "999"},
+    )
+
+    call_kwargs = mock_oac.delete.call_args[1]
+    assert call_kwargs["generation"] == 999
+
+
+def test_storage_bucket_object_policy_delete_ubla_enabled(mocker):
+    """
+    Given: A bucket with Uniform Bucket-Level Access enabled.
+    When: storage_bucket_object_policy_delete is called.
+    Then: It short-circuits with guidance and never calls the object ACL API.
+    """
+    from GCP import storage_bucket_object_policy_delete
+
+    mock_storage = mocker.Mock()
+    mock_oac = mocker.Mock()
+    mock_storage.objectAccessControls.return_value = mock_oac
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=True)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_object_policy_delete(
+        creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "entity": "allUsers"}
+    )
+
+    mock_oac.delete.assert_not_called()
+    assert "Uniform Bucket-Level Access (UBLA) is enabled" in result.readable_output
+    assert "gcp-storage-bucket-policy-delete" in result.readable_output
+
+
+def test_storage_bucket_object_policy_delete_ubla_error_response(mocker):
+    """
+    Given: A bucket whose ACL delete fails with a UBLA-related error.
+    When: storage_bucket_object_policy_delete is called.
+    Then: The UBLA guidance is returned instead of raising.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import storage_bucket_object_policy_delete
+
+    mock_storage = mocker.Mock()
+    ubla_error = HttpError(resp=MagicMock(status=400), content=b"uniform bucket-level access")
+    mock_storage.objectAccessControls.return_value.delete.return_value.execute.side_effect = ubla_error
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=False)
+    mocker.patch("GCP._is_ubla_error", return_value=True)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_object_policy_delete(
+        creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "entity": "allUsers"}
+    )
+
+    assert "Uniform Bucket-Level Access (UBLA) is enabled" in result.readable_output
+
+
+def test_storage_bucket_object_policy_delete_api_error(mocker):
+    """
+    Given: A storage client whose delete raises a non-UBLA exception.
+    When: storage_bucket_object_policy_delete is called.
+    Then: The exception propagates to the caller.
+    """
+    from GCP import storage_bucket_object_policy_delete
+
+    mock_storage = mocker.Mock()
+    mock_storage.objectAccessControls.return_value.delete.return_value.execute.side_effect = Exception("API Error")
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=False)
+
+    creds = mocker.Mock(spec=Credentials)
+    with pytest.raises(Exception, match="API Error"):
+        storage_bucket_object_policy_delete(
+            creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "entity": "allUsers"}
+        )

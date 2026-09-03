@@ -5,10 +5,12 @@ from googleapiclient.discovery import build
 from google.oauth2 import service_account as google_service_account
 from google_auth_httplib2 import AuthorizedHttp
 import httplib2
+import io
 import urllib.parse
 import urllib3
 from COOCApiModule import *
 from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
 
 urllib3.disable_warnings()
 
@@ -309,6 +311,38 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
         GCPServices.STORAGE,
         ["storage.objects.setIamPolicy"],
     ),
+    "gcp-storage-bucket-create": (
+        GCPServices.STORAGE,
+        ["storage.buckets.create"],
+    ),
+    "gcp-storage-bucket-delete": (
+        GCPServices.STORAGE,
+        ["storage.buckets.delete", "storage.objects.list", "storage.objects.delete"],
+    ),
+    "gcp-storage-bucket-public-access-block": (
+        GCPServices.STORAGE,
+        ["storage.buckets.update", "storage.buckets.setIamPolicy"],
+    ),
+    "gcp-storage-bucket-object-upload": (
+        GCPServices.STORAGE,
+        ["storage.objects.create"],
+    ),
+    "gcp-storage-bucket-object-download": (
+        GCPServices.STORAGE,
+        ["storage.objects.get"],
+    ),
+    "gcp-storage-bucket-object-copy": (
+        GCPServices.STORAGE,
+        ["storage.objects.get", "storage.objects.create"],
+    ),
+    "gcp-storage-bucket-object-delete": (
+        GCPServices.STORAGE,
+        ["storage.objects.delete"],
+    ),
+    "gcp-storage-bucket-object-policy-delete": (
+        GCPServices.STORAGE,
+        ["storage.objects.get", "storage.objects.update"],
+    ),
     "gcp-compute-network-get": (GCPServices.COMPUTE, ["compute.networks.get"]),
     "gcp-compute-image-get": (GCPServices.COMPUTE, ["compute.images.get"]),
     "gcp-compute-instance-group-get": (GCPServices.COMPUTE, ["compute.instanceGroups.get"]),
@@ -348,6 +382,9 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
 }
 
 OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
+# Safety bounds for API-driven loops, so a misbehaving API cannot cause a command timeout.
+MAX_OBJECT_LIST_PAGES = 100
+MAX_DOWNLOAD_CHUNKS = 10000
 # taken from GoogleCloudCompute
 FIREWALL_RULE_REGEX = re.compile(r"ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)", flags=re.I)
 KEY_VALUE_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
@@ -482,6 +519,61 @@ def _format_gcp_datetime(ts: str | None) -> str | None:
     return dt.strftime("%Y-%m-%d %H:%M:%S")
 
 
+def _delete_all_bucket_objects(storage_client, bucket_name: str) -> int:
+    """Deletes every object (including all generations) in the bucket and returns the deleted count.
+
+    Args:
+        storage_client: A built GCS API client.
+        bucket_name (str): The bucket whose objects should be deleted.
+
+    Returns:
+        int: The number of objects deleted.
+
+    Raises:
+        DemistoException: If one or more objects failed to delete, or if the bucket still
+            contains objects after reaching MAX_OBJECT_LIST_PAGES. In both cases the bucket
+            cannot be deleted while it still holds objects, so an informative error is raised
+            that reports how many objects were already deleted.
+    """
+    deleted = 0
+    failed_objects: list[str] = []
+    page_token = None
+    for _ in range(MAX_OBJECT_LIST_PAGES):
+        request_params = {"bucket": bucket_name, "versions": True, "pageToken": page_token}
+        remove_nulls_from_dictionary(request_params)
+        response = storage_client.objects().list(**request_params).execute()  # pylint: disable=E1101
+        for obj in response.get("items", []):
+            try:
+                storage_client.objects().delete(  # pylint: disable=E1101
+                    bucket=bucket_name, object=obj["name"], generation=obj.get("generation")
+                ).execute()
+                deleted += 1
+            except Exception as e:
+                failed_objects.append(obj["name"])
+                demisto.debug(
+                    f"[GCP: _delete_all_bucket_objects] Failed to delete object {obj['name']} " f"from bucket {bucket_name}: {e}"
+                )
+        page_token = response.get("nextPageToken")
+        if not page_token:
+            break
+
+    if failed_objects:
+        raise DemistoException(
+            f"Failed to delete {len(failed_objects)} object(s) from bucket {bucket_name}: "
+            f"{', '.join(failed_objects)}. {deleted} object(s) were successfully deleted. "
+            f"The bucket cannot be deleted while it still contains objects."
+        )
+
+    if page_token:
+        raise DemistoException(
+            f"Reached the maximum page limit ({MAX_OBJECT_LIST_PAGES}) while deleting objects in bucket "
+            f"{bucket_name}, but it still contains objects. {deleted} object(s) were deleted. "
+            f"The bucket cannot be deleted while it still contains objects."
+        )
+
+    return deleted
+
+
 def _is_ubla_enabled(storage_client, bucket_name: str) -> bool:
     """Returns True if Uniform Bucket-Level Access (UBLA) is enabled for the bucket."""
     try:
@@ -552,6 +644,39 @@ def _validate_bucket_policy_for_set(policy: dict[str, Any], add_mode: bool) -> N
                 version = policy.get("version", 1)
                 if not isinstance(version, int) or version < 3:
                     raise DemistoException("Policy with IAM Conditions requires 'version' to be 3 or greater.")
+
+
+def _merge_bucket_objects(bucket_name: str, new_objects: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    """
+    Merges newly fetched objects into the objects already stored in the context for the given bucket.
+
+    Objects are identified by their name: an object that already exists in the context is replaced in place,
+    while a new object is appended to the end of the list.
+
+    Args:
+        bucket_name (str): The name of the bucket the objects belong to.
+        new_objects (list[dict[str, Any]]): The objects returned by the current API call.
+
+    Returns:
+        list[dict[str, Any]]: The merged list of objects for the bucket.
+    """
+    existing_buckets = demisto.get(demisto.context(), "GCP.Storage.Buckets") or []
+    if isinstance(existing_buckets, dict):
+        existing_buckets = [existing_buckets]
+
+    merged_objects: dict[str, dict[str, Any]] = {}
+    for bucket in existing_buckets:
+        if isinstance(bucket, dict) and bucket.get("name") == bucket_name:
+            for obj in bucket.get("Objects") or []:
+                if isinstance(obj, dict) and obj.get("name"):
+                    merged_objects[obj["name"]] = obj
+
+    for obj in new_objects:
+        if obj.get("name"):
+            merged_objects[obj["name"]] = obj
+
+    demisto.debug(f"[GCP: _merge_bucket_objects] Objects in context after merge: {len(merged_objects)}")
+    return list(merged_objects.values())
 
 
 ##########
@@ -1795,6 +1920,341 @@ def storage_bucket_metadata_update(creds: Credentials, args: dict[str, Any]) -> 
     )
 
 
+def storage_bucket_create(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates a new Google Cloud Storage (GCS) bucket in the given project.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name and project_id,
+            optional location, bucket_acl (predefined), default_object_acl (predefined), and
+            uniform_bucket_level_access.
+
+    Returns:
+        CommandResults: Information about the created bucket.
+    """
+    project_id = args.get("project_id")
+    bucket_name = args["bucket_name"]
+    location = args.get("location")
+    bucket_acl = args.get("bucket_acl")
+    default_object_acl = args.get("default_object_acl")
+    uniform_bucket_level_access = arg_to_bool_or_none(args.get("uniform_bucket_level_access"))
+
+    body: dict[str, Any] = {
+        "name": bucket_name,
+        "location": location,
+        "iamConfiguration": {"uniformBucketLevelAccess": {"enabled": True}} if uniform_bucket_level_access else None,
+    }
+
+    request_params: dict[str, Any] = remove_empty_elements(
+        {
+            "project": project_id,
+            "body": body,
+            "predefinedAcl": bucket_acl,
+            "predefinedDefaultObjectAcl": default_object_acl,
+        }
+    )
+
+    storage = GCPServices.STORAGE.build(creds)
+    demisto.debug(f"[GCP: storage_bucket_create] Request params keys: {list(request_params.keys())}")
+    response = storage.buckets().insert(**request_params).execute()  # pylint: disable=E1101
+
+    bucket_info = {
+        "Name": response.get("name"),
+        "Location": response.get("location"),
+        "StorageClass": response.get("storageClass"),
+        "TimeCreated": _format_gcp_datetime(response.get("timeCreated")),
+    }
+    hr = tableToMarkdown(
+        f"Bucket {bucket_name} was created successfully.", bucket_info, removeNull=True, headerTransform=pascalToSpace
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Storage.Buckets",
+        outputs=response,
+        outputs_key_field=["name", "id"],
+        raw_response=response,
+    )
+
+
+def storage_bucket_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes a Google Cloud Storage (GCS) bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name and optional force,
+            which deletes all objects in the bucket before deleting the bucket itself.
+
+    Returns:
+        CommandResults: Human-readable confirmation of the deletion.
+    """
+    bucket_name = args["bucket_name"]
+    force = argToBoolean(args.get("force", False))
+
+    storage = GCPServices.STORAGE.build(creds)
+    deleted_objects = 0
+    if force:
+        deleted_objects = _delete_all_bucket_objects(storage, bucket_name)
+        demisto.debug(f"[GCP: storage_bucket_delete] Force deleted {deleted_objects} objects from bucket {bucket_name}")
+
+    demisto.debug(f"[GCP: storage_bucket_delete] Deleting bucket {bucket_name}")
+    storage.buckets().delete(bucket=bucket_name).execute()  # pylint: disable=E1101
+
+    readable_output = f"Bucket {bucket_name} was deleted successfully."
+    if deleted_objects:
+        readable_output += f" {deleted_objects} object(s) were deleted from the bucket before deletion."
+    return CommandResults(readable_output=readable_output)
+
+
+def storage_bucket_public_access_block(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets the public access prevention configuration on a GCS bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name and optional
+            public_access_prevention ('enforced' or 'inherited').
+
+    Returns:
+        CommandResults: Human-readable confirmation of the applied configuration.
+    """
+    bucket_name = args["bucket_name"]
+    public_access_prevention = args.get("public_access_prevention") or "enforced"
+
+    body = {"iamConfiguration": {"publicAccessPrevention": public_access_prevention}}
+
+    storage = GCPServices.STORAGE.build(creds)
+    demisto.debug(f"[GCP: storage_bucket_public_access_block] Setting public access prevention to {public_access_prevention}")
+    response = storage.buckets().patch(bucket=bucket_name, body=body).execute()  # pylint: disable=E1101
+
+    return CommandResults(
+        readable_output=f"Public access prevention is set to {public_access_prevention} for {bucket_name}.",
+        outputs_prefix="GCP.Storage.Buckets",
+        outputs=response,
+        outputs_key_field=["name", "id"],
+        raw_response=response,
+    )
+
+
+def storage_bucket_object_upload(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Uploads a War Room file (by entry ID) to a GCS bucket as an object.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name, object_name, and
+            entry_id, and optional object_acl (predefined ACL).
+
+    Returns:
+        CommandResults: Human-readable confirmation and metadata of the uploaded object.
+
+    Raises:
+        DemistoException: If the War Room entry does not expose a file path and name.
+    """
+    bucket_name = args["bucket_name"]
+    object_name = args["object_name"]
+    entry_id = args["entry_id"]
+    object_acl = args.get("object_acl")
+
+    file = demisto.getFilePath(entry_id)
+    try:
+        file_path = file["path"]
+        file_name = file["name"]
+    except (KeyError, TypeError) as e:
+        raise DemistoException(f"Failed to retrieve the file path or name for entry ID {entry_id}.") from e
+
+    media_body = MediaFileUpload(file_path, resumable=True)
+    request_params = {
+        "bucket": bucket_name,
+        "name": object_name,
+        "media_body": media_body,
+        "predefinedAcl": object_acl,
+    }
+    remove_nulls_from_dictionary(request_params)
+
+    storage = GCPServices.STORAGE.build(creds)
+    demisto.debug(f"[GCP: storage_bucket_object_upload] Uploading {file_name} to bucket {bucket_name} as {object_name}")
+    response = storage.objects().insert(**request_params).execute()  # pylint: disable=E1101
+
+    outputs = {
+        "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
+            "name": bucket_name,
+            "Objects": _merge_bucket_objects(bucket_name, [response]),
+        }
+    }
+
+    return CommandResults(
+        readable_output=f"File {file_name} was successfully uploaded to bucket {bucket_name} as {object_name}.",
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def storage_bucket_object_download(creds: Credentials, args: dict[str, Any]) -> dict[str, Any]:
+    """
+    Downloads an object from a GCS bucket and returns it as a War Room file.
+
+    The object is streamed in chunks into an in-memory buffer and returned via fileResult.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name and object_name,
+            and optional saved_file_name.
+
+    Returns:
+        dict[str, Any]: A file result entry for the downloaded object.
+
+    Raises:
+        DemistoException: If the download did not complete within MAX_DOWNLOAD_CHUNKS chunks.
+    """
+    bucket_name = args["bucket_name"]
+    object_name = args["object_name"]
+    requested_file_name = args.get("saved_file_name") or object_name
+    # Keep only the base name so that a value containing path separators cannot influence the
+    # created War Room file name (for example "../../etc/passwd").
+    saved_file_name = os.path.basename(requested_file_name.replace("\\", "/").rstrip("/")) or demisto.uniqueFile()
+
+    storage = GCPServices.STORAGE.build(creds)
+    demisto.debug(f"[GCP: storage_bucket_object_download] Downloading {object_name} from bucket {bucket_name}")
+    request = storage.objects().get_media(bucket=bucket_name, object=object_name)  # pylint: disable=E1101
+
+    file_buffer = io.BytesIO()
+    downloader = MediaIoBaseDownload(file_buffer, request)
+    done = False
+    for _ in range(MAX_DOWNLOAD_CHUNKS):
+        _, done = downloader.next_chunk()
+        if done:
+            break
+
+    if not done:
+        raise DemistoException(
+            f"Reached the maximum chunk limit ({MAX_DOWNLOAD_CHUNKS}) while downloading object {object_name} "
+            f"from bucket {bucket_name}. The downloaded file is incomplete."
+        )
+
+    return fileResult(saved_file_name, file_buffer.getvalue())
+
+
+def storage_bucket_object_copy(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Copies an object from a source bucket to a destination bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required source_bucket_name,
+            source_object_name, and destination_bucket_name, and optional destination_object_name
+            (defaults to source_object_name).
+
+    Returns:
+        CommandResults: Human-readable confirmation and metadata of the copied object.
+    """
+    source_bucket_name = args["source_bucket_name"]
+    source_object_name = args["source_object_name"]
+    destination_bucket_name = args["destination_bucket_name"]
+    destination_object_name = args.get("destination_object_name") or source_object_name
+
+    storage = GCPServices.STORAGE.build(creds)
+    demisto.debug(
+        f"[GCP: storage_bucket_object_copy] Copying {source_object_name} from {source_bucket_name} "
+        f"to {destination_bucket_name} as {destination_object_name}"
+    )
+    response = (
+        storage.objects()  # pylint: disable=E1101
+        .copy(
+            sourceBucket=source_bucket_name,
+            sourceObject=source_object_name,
+            destinationBucket=destination_bucket_name,
+            destinationObject=destination_object_name,
+            body={},
+        )
+        .execute()
+    )
+
+    outputs = {
+        "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
+            "name": destination_bucket_name,
+            "Objects": _merge_bucket_objects(destination_bucket_name, [response]),
+        }
+    }
+
+    return CommandResults(
+        readable_output=(f"File was successfully copied to bucket {destination_bucket_name} as {destination_object_name}."),
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def storage_bucket_object_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes an object from a GCS bucket.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name and object_name,
+            and optional generation.
+
+    Returns:
+        CommandResults: Human-readable confirmation of the deletion.
+    """
+    bucket_name = args["bucket_name"]
+    object_name = args["object_name"]
+    generation = arg_to_number(args.get("generation"))
+
+    request_params = {"bucket": bucket_name, "object": object_name, "generation": generation}
+    remove_nulls_from_dictionary(request_params)
+
+    storage = GCPServices.STORAGE.build(creds)
+    demisto.debug(f"[GCP: storage_bucket_object_delete] Deleting {object_name} from bucket {bucket_name}")
+    storage.objects().delete(**request_params).execute()  # pylint: disable=E1101
+
+    return CommandResults(readable_output=f"File {object_name} was successfully deleted from bucket {bucket_name}.")
+
+
+def storage_bucket_object_policy_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Removes an ACL entry (entity) from a GCS object's ObjectAccessControls.
+
+    If Uniform Bucket-Level Access (UBLA) is enabled on the bucket, object-level ACLs are
+    disabled and the command returns guidance to use bucket-level IAM instead.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including required bucket_name, object_name, and
+            entity, and optional generation.
+
+    Returns:
+        CommandResults: Human-readable confirmation of the ACL entry removal.
+    """
+    bucket_name = args["bucket_name"]
+    object_name = args["object_name"]
+    entity = args["entity"]
+    generation = arg_to_number(args.get("generation"))
+
+    storage = GCPServices.STORAGE.build(creds)
+
+    # UBLA short-circuit
+    ubla_message = f"""Uniform Bucket-Level Access (UBLA) is enabled for the bucket: {bucket_name}.
+    Use `gcp-storage-bucket-policy-delete` at the bucket level instead."""
+    if _is_ubla_enabled(storage, bucket_name):
+        demisto.debug(f"[GCP: storage_bucket_object_policy_delete] UBLA is enabled for bucket {bucket_name}")
+        return CommandResults(readable_output=ubla_message)
+
+    request_params = {"bucket": bucket_name, "object": object_name, "entity": entity, "generation": generation}
+    remove_nulls_from_dictionary(request_params)
+
+    demisto.debug(f"[GCP: storage_bucket_object_policy_delete] Removing entity {entity} from object {object_name}")
+    try:
+        storage.objectAccessControls().delete(**request_params).execute()  # pylint: disable=E1101
+    except HttpError as e:
+        if _is_ubla_error(e):
+            demisto.debug(f"[GCP: storage_bucket_object_policy_delete] UBLA error for bucket {bucket_name}")
+            return CommandResults(readable_output=ubla_message)
+        raise
+
+    return CommandResults(readable_output=f"Removed entity {entity} from ACL of object {object_name} in bucket {bucket_name}.")
+
+
 def iam_project_policy_binding_remove(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Removes specified IAM role bindings from a GCP project.
@@ -3000,6 +3460,14 @@ def main():  # pragma: no cover
             "gcp-storage-bucket-object-policy-set": storage_bucket_object_policy_set,
             "gcp-storage-bucket-policy-delete": storage_bucket_policy_delete,
             "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
+            "gcp-storage-bucket-create": storage_bucket_create,
+            "gcp-storage-bucket-delete": storage_bucket_delete,
+            "gcp-storage-bucket-public-access-block": storage_bucket_public_access_block,
+            "gcp-storage-bucket-object-upload": storage_bucket_object_upload,
+            "gcp-storage-bucket-object-download": storage_bucket_object_download,
+            "gcp-storage-bucket-object-copy": storage_bucket_object_copy,
+            "gcp-storage-bucket-object-delete": storage_bucket_object_delete,
+            "gcp-storage-bucket-object-policy-delete": storage_bucket_object_policy_delete,
             # Container (GKE) commands
             "gcp-container-cluster-security-update": container_cluster_security_update,
             # IAM commands
