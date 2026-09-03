@@ -1992,6 +1992,16 @@ def test_escape_backslashes_in_field_filters(spl_search, expected):
             '{"search":"snowman=\\u2603"}',
             '{"search":"snowman=\\u2603"}',
         ),
+        # A backslash followed by whitespace is an invalid JSON escape and is doubled
+        (
+            '{"search":"object=\\"PREFIX\\ Admin\\""}',
+            '{"search":"object=\\"PREFIX\\\\ Admin\\""}',
+        ),
+        # Lone backslashes near the end of a value (\T and \9 are invalid escapes) are doubled
+        (
+            '{"search":"object=\\"C:\\Temp\\9\\""}',
+            '{"search":"object=\\"C:\\\\Temp\\\\9\\""}',
+        ),
     ],
     ids=[
         "single invalid backslash escape is doubled",
@@ -1999,6 +2009,8 @@ def test_escape_backslashes_in_field_filters(spl_search, expected):
         "valid escapes are untouched",
         "already-doubled backslash is idempotent",
         "unicode escape is untouched",
+        "backslash followed by whitespace is doubled",
+        "backslash near end of value is doubled",
     ],
 )
 def test_escape_invalid_backslashes_in_drilldown_json(raw_json, expected):
