@@ -276,6 +276,12 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     ),
     "gcp-compute-instance-start": (GCPServices.COMPUTE, ["compute.instances.start"]),
     "gcp-compute-instance-stop": (GCPServices.COMPUTE, ["compute.instances.stop"]),
+    "gcp-compute-instance-insert": (GCPServices.COMPUTE, ["compute.instances.create"]),
+    "gcp-compute-instance-delete": (GCPServices.COMPUTE, ["compute.instances.delete"]),
+    "gcp-compute-instance-reset": (GCPServices.COMPUTE, ["compute.instances.reset"]),
+    "gcp-compute-instance-metadata-set": (GCPServices.COMPUTE, ["compute.instances.setMetadata"]),
+    "gcp-compute-instance-machine-type-set": (GCPServices.COMPUTE, ["compute.instances.setMachineType"]),
+    "gcp-compute-instances-aggregated-list": (GCPServices.COMPUTE, ["compute.instances.list"]),
     "gcp-compute-instances-list": (GCPServices.COMPUTE, ["compute.instances.list"]),
     "gcp-compute-instance-get": (GCPServices.COMPUTE, ["compute.instances.get"]),
     "gcp-compute-instance-labels-set": (GCPServices.COMPUTE, ["compute.instances.setLabels"]),
@@ -2086,6 +2092,375 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
 
 
+def compute_instance_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates a Compute Engine VM instance in the specified zone.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', 'name', and 'machine_type'.
+
+    Returns:
+        CommandResults: Result of the VM instance creation operation.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    name = args.get("name")
+    metadata_items = args.get("metadata_items")
+    service_account_email = args.get("service_account_email")
+    service_account_scopes = args.get("service_account_scopes")
+    labels = args.get("labels")
+    machine_type = args.get("machine_type", "")
+
+    # Accept either a bare machine type name (e.g. n1-standard-1) or a full/partial URL
+    # (e.g. zones/zone/machineTypes/n1-standard-1), consistent with gcp-compute-instance-machine-type-set.
+    if "/" not in machine_type:
+        machine_type = f"zones/{zone}/machineTypes/{machine_type}"
+
+    if bool(service_account_email) != bool(service_account_scopes):
+        raise DemistoException(
+            "The arguments service_account_email and service_account_scopes must be provided together. "
+            "Provide both to attach a service account to the instance, or neither to omit it."
+        )
+
+    access_config: dict[str, Any] = {"natIP": args.get("external_nat_ip")}
+    if arg_to_bool_or_none(args.get("external_internet_access")):
+        access_config.update({"type": "ONE_TO_ONE_NAT", "name": "External NAT"})
+
+    # Build the full instance body, then recursively strip empty elements. Note that
+    # remove_empty_elements keeps False/0, so explicit boolean flags are preserved.
+    body = remove_empty_elements(
+        {
+            "name": name.lower() if name else None,
+            "description": args.get("description"),
+            "machineType": machine_type,
+            "canIpForward": arg_to_bool_or_none(args.get("can_ip_forward")),
+            "tags": {
+                "items": argToList(args.get("tags")),
+                "fingerprint": args.get("tags_fingerprint"),
+            },
+            "networkInterfaces": [
+                {
+                    "network": args.get("network"),
+                    "subnetwork": args.get("subnetwork"),
+                    "networkIP": args.get("network_ip"),
+                    "accessConfigs": [access_config],
+                }
+            ],
+            "disks": [
+                {
+                    "source": args.get("disk_source"),
+                    "deviceName": args.get("disk_device_name"),
+                    "boot": arg_to_bool_or_none(args.get("disk_boot")),
+                    "autoDelete": arg_to_bool_or_none(args.get("disk_auto_delete")),
+                    "initializeParams": {
+                        "sourceImage": args.get("source_image"),
+                        "diskSizeGb": arg_to_number(args.get("disk_size_gb")),
+                        "diskType": args.get("disk_type"),
+                    },
+                }
+            ],
+            "metadata": {"items": parse_metadata_items(metadata_items)} if metadata_items else None,
+            "serviceAccounts": [{"email": service_account_email, "scopes": argToList(service_account_scopes)}]
+            if service_account_email
+            else None,
+            "labels": parse_labels(labels) if labels else None,
+            "deletionProtection": arg_to_bool_or_none(args.get("deletion_protection")),
+        }
+    )
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instances().insert(project=project_id, zone=zone, body=body).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        f"VM instance {args.get('name')} is being created in project {project_id}",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_instance_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified Compute Engine VM instance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', and 'resource_name'.
+
+    Returns:
+        CommandResults: Result of the VM instance delete operation.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .delete(project=project_id, zone=zone, instance=resource_name)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        f"VM instance {resource_name} is being deleted in project {project_id}",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_instance_reset(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Performs a hard reset on the specified Compute Engine VM instance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', and 'resource_name'.
+
+    Returns:
+        CommandResults: Result of the VM instance reset operation.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .reset(project=project_id, zone=zone, instance=resource_name)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        f"VM instance {resource_name} is being reset in project {project_id}",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_instance_metadata_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets metadata for the specified Compute Engine VM instance.
+
+    Note that GCP's setMetadata API replaces the instance metadata in full rather than merging,
+    so any key absent from 'metadata_items' is removed from the instance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', 'resource_name', and
+            'metadata_items'.
+
+    Returns:
+        CommandResults: Result of the VM instance set metadata operation.
+    """
+    metadata_items = args.get("metadata_items")
+    if metadata_items is None:
+        raise DemistoException(
+            "The 'metadata_items' argument is required. The GCP setMetadata API replaces the instance "
+            "metadata in full, so omitting it would delete all existing metadata, including keys such as "
+            "ssh-keys and startup-script. Pass an empty value explicitly to clear all metadata."
+        )
+
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+
+    body: dict[str, Any] = {}
+    metadata_fingerprint = args.get("metadata_fingerprint")
+    if not metadata_fingerprint:
+        # GCP's setMetadata API requires the current metadata fingerprint for optimistic
+        # locking. When the caller does not supply one, fetch it from the current instance.
+        instance = (
+            compute.instances()  # pylint: disable=E1101
+            .get(project=project_id, zone=zone, instance=resource_name)
+            .execute()
+        )
+        metadata_fingerprint = instance.get("metadata", {}).get("fingerprint")
+    if metadata_fingerprint:
+        body["fingerprint"] = metadata_fingerprint
+    if metadata_items:
+        body["items"] = parse_metadata_items(metadata_items)
+
+    demisto.debug(f"[GCP: compute_instance_metadata_set] Body for {resource_name}: {body}")
+
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .setMetadata(project=project_id, zone=zone, instance=resource_name, body=body)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        f"VM instance {resource_name} metadata is being updated in project {project_id}",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_instance_machine_type_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Changes the machine type of a stopped Compute Engine VM instance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', 'resource_name', and 'machine_type'.
+
+    Returns:
+        CommandResults: Result of the VM instance set machine type operation.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+    machine_type = args.get("machine_type", "")
+
+    # Accept either a bare machine type name (e.g. n1-standard-1) or a full/partial URL
+    # (e.g. zones/zone/machineTypes/n1-standard-1), consistent with gcp-compute-instance-insert.
+    if "/" not in machine_type:
+        machine_type = f"zones/{zone}/machineTypes/{machine_type}"
+
+    body = {"machineType": machine_type}
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .setMachineType(project=project_id, zone=zone, instance=resource_name, body=body)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        f"VM instance {resource_name} machine type is being updated in project {project_id}",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_instances_aggregated_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves an aggregated list of Compute Engine VM instances across all zones in the project.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id'. Supports 'filter', 'order_by',
+            'limit' (1-500, defaults to 50), and 'next_token'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    project_id = args.get("project_id")
+    # A missing limit - or an explicit 0, which would request zero results - falls back to 50.
+    limit = arg_to_number(args.get("limit")) or 50
+    filter_expression = args.get("filter")
+    order_by = args.get("order_by")
+    next_token = args.get("next_token")
+    validate_limit(limit)
+
+    request_params: dict[str, Any] = {
+        "project": project_id,
+        "filter": filter_expression,
+        "maxResults": limit,
+        "orderBy": order_by,
+        "pageToken": next_token,
+    }
+    remove_nulls_from_dictionary(request_params)
+    demisto.debug(f"[GCP: compute_instances_aggregated_list] Request params: {request_params}")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instances().aggregatedList(**request_params).execute()  # pylint: disable=E1101
+
+    instances: list[dict[str, Any]] = []
+    for scope_name, scope in response.get("items", {}).items():
+        if "warning" in scope:
+            demisto.debug(f"[GCP: compute_instances_aggregated_list] Skipping scope {scope_name}: {scope['warning']}")
+            continue
+        instances.extend(scope.get("instances") or [])
+
+    demisto.debug(f"[GCP: compute_instances_aggregated_list] Instances returned: {len(instances)}")
+
+    next_page_token = response.get("nextPageToken")
+    metadata = (
+        "Run the following command to retrieve the next batch of instances:\n"
+        f"!gcp-compute-instances-aggregated-list project_id={project_id} next_token={next_page_token}"
+        if next_page_token
+        else None
+    )
+
+    readable_output = (
+        tableToMarkdown(
+            f"GCP Compute Instances in project {project_id}",
+            instances,
+            headers=["id", "name", "status", "machineType", "zone"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+            metadata=metadata,
+        )
+        if instances
+        else "No instances were found."
+    )
+
+    outputs = {
+        "GCP.Compute.Instances(val.id && val.id == obj.id)": instances,
+        # The token is always emitted, even when None, so that a token from a previous page is
+        # overwritten in the context rather than lingering after the last page was reached.
+        "GCP.Compute(true)": {"AggregatedInstancesNextToken": next_page_token},
+    }
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
 # The command is currently unsupported.
 # def admin_user_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
 #     """
@@ -2980,6 +3355,12 @@ def main():  # pragma: no cover
             "gcp-compute-instance-service-account-remove": compute_instance_service_account_remove,
             "gcp-compute-instance-start": compute_instance_start,
             "gcp-compute-instance-stop": compute_instance_stop,
+            "gcp-compute-instance-insert": compute_instance_insert,
+            "gcp-compute-instance-delete": compute_instance_delete,
+            "gcp-compute-instance-reset": compute_instance_reset,
+            "gcp-compute-instance-metadata-set": compute_instance_metadata_set,
+            "gcp-compute-instance-machine-type-set": compute_instance_machine_type_set,
+            "gcp-compute-instances-aggregated-list": compute_instances_aggregated_list,
             "gcp-compute-instances-list": gcp_compute_instances_list_command,
             "gcp-compute-instance-get": gcp_compute_instance_get_command,
             "gcp-compute-instance-labels-set": gcp_compute_instance_label_set_command,
