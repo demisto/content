@@ -316,6 +316,9 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-zone-get": (GCPServices.COMPUTE, ["compute.zones.get"]),
     "gcp-compute-networks-list": (GCPServices.COMPUTE, ["compute.networks.list"]),
     "gcp-compute-network-insert": (GCPServices.COMPUTE, ["compute.networks.create"]),
+    "gcp-compute-network-peering-add": (GCPServices.COMPUTE, ["compute.networks.addPeering"]),
+    "gcp-compute-network-delete": (GCPServices.COMPUTE, ["compute.networks.delete"]),
+    "gcp-compute-network-peering-remove": (GCPServices.COMPUTE, ["compute.networks.removePeering"]),
     "gcp-container-cluster-security-update": (
         GCPServices.CONTAINER,
         ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
@@ -2863,6 +2866,110 @@ def gcp_compute_network_insert(creds: Credentials, args: dict[str, Any]) -> Comm
     )
 
 
+def gcp_compute_network_peering_add(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Adds a peering to the specified network.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Arguments including 'network' and the peering configuration.
+    Returns:
+        CommandResults: The result of the add peering operation.
+    """
+    project = args.get("project_id")
+    network = args.get("network")
+
+    name = args.get("name")
+    config: dict[str, Any] = remove_empty_elements(
+        {
+            "name": name.lower() if name else None,
+            "peerNetwork": args.get("peer_network"),
+            "networkPeering": {
+                "name": args.get("network_peering_name"),
+                "network": args.get("network_peering_network"),
+                "exchangeSubnetRoutes": arg_to_bool_or_none(args.get("network_peering_exchange_subnet_routes")),
+            },
+        }
+    )
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Add peering config for network {network} in project {project}: {config}")
+    response = compute.networks().addPeering(project=project, network=network, body=config).execute()  # pylint: disable=E1101
+
+    readable_output = tableToMarkdown(
+        "Google Cloud Compute Operations", response, headers=OPERATION_TABLE, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_network_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified network.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Arguments including 'network', the name of the network to delete.
+    Returns:
+        CommandResults: The result of the delete network operation.
+    """
+    project = args.get("project_id")
+    network = args.get("network")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Deleting network {network} in project {project}")
+    response = compute.networks().delete(project=project, network=network).execute()  # pylint: disable=E1101
+
+    readable_output = tableToMarkdown(
+        "Google Cloud Compute Operations", response, headers=OPERATION_TABLE, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_network_peering_remove(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Removes a peering from the specified network.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Arguments including 'network' and 'name', the name of the peering to remove.
+    Returns:
+        CommandResults: The result of the remove peering operation.
+    """
+    project = args.get("project_id")
+    network = args.get("network")
+
+    config: dict[str, Any] = {}
+    if name := args.get("name"):
+        config["name"] = name
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Remove peering config for network {network} in project {project}: {config}")
+    response = compute.networks().removePeering(project=project, network=network, body=config).execute()  # pylint: disable=E1101
+
+    readable_output = tableToMarkdown(
+        "Google Cloud Compute Operations", response, headers=OPERATION_TABLE, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
 def gcp_compute_networks_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the list of networks available to the specified project.
@@ -2990,6 +3097,9 @@ def main():  # pragma: no cover
             "gcp-compute-zone-get": gcp_compute_zone_get,
             "gcp-compute-networks-list": gcp_compute_networks_list,
             "gcp-compute-network-insert": gcp_compute_network_insert,
+            "gcp-compute-network-peering-add": gcp_compute_network_peering_add,
+            "gcp-compute-network-delete": gcp_compute_network_delete,
+            "gcp-compute-network-peering-remove": gcp_compute_network_peering_remove,
             # Storage commands
             "gcp-storage-bucket-list": storage_bucket_list,
             "gcp-storage-bucket-get": storage_bucket_get,

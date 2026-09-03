@@ -1675,3 +1675,138 @@ Removes an email from the BigQuery dataset policy. Required Permissions: bigquer
 | GCP.BigQuery.Datasets.resourceTags | String | The tags attached to this dataset. |
 | GCP.BigQuery.Datasets.storageBillingModel | String | The billing model that will be applied to the dataset. |
 | GCP.BigQuery.Datasets.catalogSource | String | The origin of the dataset. |
+
+### gcp-compute-network-delete
+
+***
+Deletes the specified network. Required permission: compute.networks.delete.
+
+#### Base Command
+
+`gcp-compute-network-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| network | The name of the network to delete. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Operations.name | string | The name of the resource. |
+| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
+| GCP.Compute.Operations.clientOperationId | string | The value of requestId if you provided it in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete, and so on. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING RUNNING or DONE. |
+| GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | The user who requested the operation, for example, EMAILADDRESS. |
+| GCP.Compute.Operations.progress | number | The optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses. |
+| GCP.Compute.Operations.insertTime | string | The time that this operation was requested. This value is in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | string | The time that this operation was started by the server. This value is in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | string | The time that this operation was completed. This value is in RFC3339 text format. |
+| GCP.Compute.Operations.error | string | The errors generated during processing of the operation, if any. This field will be populated when errors occur. |
+| GCP.Compute.Operations.warnings | string | The warning messages generated during processing of the operation, if any. This field will be populated when warnings occur. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that was returned if the operation fails. For example, a 404 means the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that was returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
+| GCP.Compute.Operations.description | string | The textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.kind | string | The type of the resource. Always compute\#operation for Operation resources. |
+
+### gcp-compute-network-peering-add
+
+***
+Adds a peering to the specified network. Required permission: compute.networks.addPeering.
+
+#### Base Command
+
+`gcp-compute-network-peering-add`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| network | The name of the network resource to add peering to. | Required |
+| name | The name of the peering, which should conform to RFC1035. | Optional |
+| peer_network | The URL of the peer network. It can be either full URL or partial URL. The peer network may belong to a different project. If the partial URL does not contain project, it is assumed that the peer network is in the same project as the current network. | Optional |
+| network_peering_name | The name of this peering. Provided by the client when the peering is created. The name must comply with RFC1035. Specifically, the name must be 1-63 characters long and match regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all the following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Optional |
+| network_peering_network | The URL of the peer network. It can be either full URL or partial URL. The peer network may belong to a different project. If the partial URL does not contain project, it is assumed that the peer network is in the same project as the current network. | Optional |
+| network_peering_exchange_subnet_routes | The setting for whether full mesh connectivity is created and managed automatically between peered networks. Currently this field should always be true since Google Compute Engine will automatically create and manage subnetwork routes between two networks when peering state is ACTIVE. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Operations.name | string | The name of the resource. |
+| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
+| GCP.Compute.Operations.clientOperationId | string | The value of requestId if you provided it in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete, and so on. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING RUNNING or DONE. |
+| GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | The user who requested the operation, for example, EMAILADDRESS. |
+| GCP.Compute.Operations.progress | number | The optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses. |
+| GCP.Compute.Operations.insertTime | string | The time that this operation was requested. This value is in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | string | The time that this operation was started by the server. This value is in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | string | The time that this operation was completed. This value is in RFC3339 text format. |
+| GCP.Compute.Operations.error | string | The errors generated during processing of the operation, if any. This field will be populated when errors occur. |
+| GCP.Compute.Operations.warnings | string | The warning messages generated during processing of the operation, if any. This field will be populated when warnings occur. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that was returned if the operation fails. For example, a 404 means the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that was returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
+| GCP.Compute.Operations.description | string | The textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.kind | string | The type of the resource. Always compute\#operation for Operation resources. |
+
+### gcp-compute-network-peering-remove
+
+***
+Removes a peering from the specified network. Required permission: compute.networks.removePeering.
+
+#### Base Command
+
+`gcp-compute-network-peering-remove`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| network | The name of the network resource to remove peering from. | Required |
+| name | The name of the peering, which should conform to RFC1035. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Operations.name | string | The name of the resource. |
+| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
+| GCP.Compute.Operations.clientOperationId | string | The value of requestId if you provided it in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete, and so on. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING RUNNING or DONE. |
+| GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | The user who requested the operation, for example, EMAILADDRESS. |
+| GCP.Compute.Operations.progress | number | The optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses. |
+| GCP.Compute.Operations.insertTime | string | The time that this operation was requested. This value is in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | string | The time that this operation was started by the server. This value is in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | string | The time that this operation was completed. This value is in RFC3339 text format. |
+| GCP.Compute.Operations.error | string | The errors generated during processing of the operation, if any. This field will be populated when errors occur. |
+| GCP.Compute.Operations.warnings | string | The warning messages generated during processing of the operation, if any. This field will be populated when warnings occur. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that was returned if the operation fails. For example, a 404 means the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that was returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. |
+| GCP.Compute.Operations.description | string | The textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.kind | string | The type of the resource. Always compute\#operation for Operation resources. |
