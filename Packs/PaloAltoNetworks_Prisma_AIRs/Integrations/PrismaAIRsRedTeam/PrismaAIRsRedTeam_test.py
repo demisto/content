@@ -229,7 +229,6 @@ class TestCommands:
         assert "Test failed" in result
         assert "Authentication failed" in result
 
-
     @patch.object(Client, "http_request")
     def test_redteam_targets_profile_command(self, mock_http: Mock, mock_client: Client) -> None:
         """Test redteam targets profile command.
@@ -614,9 +613,7 @@ class TestCommands:
             ],
         }
 
-        result = redteam_scan_error_logs_command(
-            mock_client, {"job_id": "job-1", "limit": "10", "skip": "5", "search": "timed"}
-        )
+        result = redteam_scan_error_logs_command(mock_client, {"job_id": "job-1", "limit": "10", "skip": "5", "search": "timed"})
 
         assert result.outputs_prefix == "PrismaAIRs.RedTeamScanErrorLog"
         assert len(result.outputs) == 1
@@ -673,9 +670,7 @@ class TestCommands:
             "risk_profile": [{"risk_rating": "high", "total": 3}],
         }
 
-        result = redteam_dashboard_scan_statistics_command(
-            mock_client, {"date_range": "30d", "target_id": "target-1"}
-        )
+        result = redteam_dashboard_scan_statistics_command(mock_client, {"date_range": "30d", "target_id": "target-1"})
 
         assert result.outputs_prefix == "PrismaAIRs.RedTeamScanStatistics"
         assert result.outputs["total_scans"] == 10
@@ -972,7 +967,6 @@ class TestCommands:
         """
         with pytest.raises(ValueError, match="vote"):
             redteam_sentiment_update_command(mock_client, {"job_id": "job-1"})
-
 
     @patch.object(Client, "http_request")
     def test_redteam_categories_list_command(self, mock_http: Mock, mock_client: Client) -> None:
@@ -2171,7 +2165,14 @@ class TestCommands:
 
         result = redteam_devices_update_command(
             mock_client,
-            {"tenant_id": "tn-1", "serial_number": "SN-0001", "device_name": "renamed", "app_id": "a", "region": "r", "tsg_id": "t"},
+            {
+                "tenant_id": "tn-1",
+                "serial_number": "SN-0001",
+                "device_name": "renamed",
+                "app_id": "a",
+                "region": "r",
+                "tsg_id": "t",
+            },
         )
 
         assert result.outputs_prefix == "PrismaAIRs.RedTeamDeviceUpdate"
@@ -2420,9 +2421,7 @@ class TestCommands:
             {"uuid": "ad-1", "name": "keycloak", "status": "ACTIVE"},
         ]
 
-        result = redteam_adapters_update_command(
-            mock_client, {"uuid": "ad-1", "prompt": "Hello", "description": "staging"}
-        )
+        result = redteam_adapters_update_command(mock_client, {"uuid": "ad-1", "prompt": "Hello", "description": "staging"})
 
         assert result.outputs_prefix == "PrismaAIRs.RedTeamAdapter"
         put_call = mock_http.call_args_list[-1]
@@ -2764,9 +2763,7 @@ class TestCommands:
         assert kwargs["url_suffix"] == "/v1/languages"
         assert kwargs["use_redteam_mgmt"] is True
 
-
     # ----- DLP patterns: create/patch/replace (coverage) -----
-
 
     # ----- Red Team: scan-create + list commands (coverage) -----
     @patch.object(Client, "http_request")
@@ -2892,12 +2889,9 @@ class TestCommands:
 
     # ----- Security profiles: get/create/update (coverage) -----
 
-
     # ----- Custom topics: create/get/update (coverage) -----
 
-
     # ----- model-security scans-get + DLP patch + prompts-create (coverage) -----
-
 
     @patch.object(Client, "http_request")
     def test_redteam_prompts_create_full(self, mock_http: Mock, mock_client: Client) -> None:
@@ -2918,7 +2912,6 @@ class TestCommands:
         assert result.outputs["uuid"] == "pr-1"
 
     # ----- runtime-scan + probe + labels-delete + filtering-replace (coverage) -----
-
 
     @patch.object(Client, "http_request")
     def test_redteam_targets_probe_full(self, mock_http: Mock, mock_client: Client) -> None:
@@ -2960,7 +2953,6 @@ class TestCommands:
         """
         with pytest.raises(ValueError, match="name is required for target probe"):
             redteam_targets_probe_command(mock_client, {})
-
 
     # ----- model-security: rules -----
     # ----- model-security: scans core -----

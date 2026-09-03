@@ -42,7 +42,6 @@ configuration:
 description: 'Discover and remediate AI application vulnerabilities with Palo Alto Networks Prisma AIRS AI Red Teaming: targets, adapters, scans, attack reports, prompt sets, and custom attacks.'
 display: Palo Alto Networks Prisma AIRS - AI Red Teaming
 name: Palo Alto Networks Prisma AIRS - AI Red Teaming
-supportlevelheader: community
 script:
   commands:
   - name: prisma-airs-redteam-targets-list
@@ -3114,7 +3113,7 @@ script:
     - contextPath: PrismaAIRs.RedTeamCustomAttackPropertyStat.values
       description: The per-value attack-success statistics (value, successful_attack_count, total_attack_count, success_rate).
       type: Unknown
-  dockerimage: demisto/python3:3.10.14.95956
+  dockerimage: demisto/python3:3.12.14.12343672
   runonce: false
   script: '-'
   subtype: python3

@@ -525,9 +525,7 @@ def redteam_instances_get_command(client: Client, args: dict[str, Any]) -> Comma
     # Call Red Team instance get endpoint (management plane)
     # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/instances-client.ts (getInstance)
     # SDK schema: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/models/red-team.ts (InstanceGetResponseSchema)
-    response = client.http_request(
-        method="GET", url_suffix=f"{RED_TEAM_INSTANCES_ENDPOINT}/{tenant_id}", use_redteam_mgmt=True
-    )
+    response = client.http_request(method="GET", url_suffix=f"{RED_TEAM_INSTANCES_ENDPOINT}/{tenant_id}", use_redteam_mgmt=True)
 
     instance_info = {
         "tsg_id": response.get("tsg_id"),
@@ -580,9 +578,7 @@ def redteam_instances_update_command(client: Client, args: dict[str, Any]) -> Co
     # InstanceRequestSchema requires tsg_id/tenant_id/app_id/region, so fetch the current
     # instance to preserve any required fields the caller does not override.
     # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/instances-client.ts (updateInstance)
-    current = client.http_request(
-        method="GET", url_suffix=f"{RED_TEAM_INSTANCES_ENDPOINT}/{tenant_id}", use_redteam_mgmt=True
-    )
+    current = client.http_request(method="GET", url_suffix=f"{RED_TEAM_INSTANCES_ENDPOINT}/{tenant_id}", use_redteam_mgmt=True)
 
     request_body: dict[str, Any] = {
         "tsg_id": args.get("tsg_id") or current.get("tsg_id"),
@@ -1015,9 +1011,7 @@ def redteam_adapters_list_command(client: Client, args: dict[str, Any]) -> Comma
         params["include_target_count"] = str(argToBoolean(args.get("include_target_count"))).lower()
 
     # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/adapters-client.ts (list)
-    response = client.http_request(
-        method="GET", url_suffix=RED_TEAM_ADAPTERS_ENDPOINT, params=params, use_redteam_mgmt=True
-    )
+    response = client.http_request(method="GET", url_suffix=RED_TEAM_ADAPTERS_ENDPOINT, params=params, use_redteam_mgmt=True)
 
     adapters = [_parse_adapter(adapter) for adapter in response.get("data", [])]
 
@@ -1053,9 +1047,7 @@ def redteam_adapters_get_command(client: Client, args: dict[str, Any]) -> Comman
         raise ValueError("uuid is required")
 
     # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/adapters-client.ts (get)
-    response = client.http_request(
-        method="GET", url_suffix=f"{RED_TEAM_ADAPTERS_ENDPOINT}/{uuid}", use_redteam_mgmt=True
-    )
+    response = client.http_request(method="GET", url_suffix=f"{RED_TEAM_ADAPTERS_ENDPOINT}/{uuid}", use_redteam_mgmt=True)
 
     adapter_info = _parse_adapter(response)
 
@@ -1167,9 +1159,7 @@ def redteam_adapters_update_command(client: Client, args: dict[str, Any]) -> Com
 
     # Fetch the current adapter to preserve required fields the caller does not override.
     # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/adapters-client.ts (update)
-    current = client.http_request(
-        method="GET", url_suffix=f"{RED_TEAM_ADAPTERS_ENDPOINT}/{uuid}", use_redteam_mgmt=True
-    )
+    current = client.http_request(method="GET", url_suffix=f"{RED_TEAM_ADAPTERS_ENDPOINT}/{uuid}", use_redteam_mgmt=True)
 
     name = args.get("name") or current.get("name")
     script_b64 = args.get("script_b64")
@@ -1258,9 +1248,7 @@ def redteam_adapters_delete_command(client: Client, args: dict[str, Any]) -> Com
         raise ValueError("uuid is required")
 
     # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/red-team/adapters-client.ts (delete)
-    response = client.http_request(
-        method="DELETE", url_suffix=f"{RED_TEAM_ADAPTERS_ENDPOINT}/{uuid}", use_redteam_mgmt=True
-    )
+    response = client.http_request(method="DELETE", url_suffix=f"{RED_TEAM_ADAPTERS_ENDPOINT}/{uuid}", use_redteam_mgmt=True)
 
     delete_info = {
         "uuid": uuid,
@@ -5889,7 +5877,6 @@ def main() -> None:
         if command == "test-module":
             result = test_module(client)
             return_results(result)
-
 
         elif command == "prisma-airs-redteam-targets-list":
             return_results(redteam_targets_list_command(client, args))

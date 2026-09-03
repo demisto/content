@@ -14,7 +14,6 @@ inlines this file into every integration at build/upload time. Domain-specific e
 constants and command functions live in their owning integration, not here.
 """
 
-import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 

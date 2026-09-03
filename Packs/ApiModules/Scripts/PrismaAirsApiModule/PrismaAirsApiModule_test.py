@@ -183,7 +183,9 @@ class TestHttpRequestRouting:
     @patch.object(Client, "_http_request")
     def test_custom_headers_merged(self, mock_http: Mock, _tok: Mock, mock_client: Client) -> None:
         """Caller-supplied headers override/extend the auth defaults."""
-        mock_client.http_request("PATCH", "/v1/thing", use_mgmt_base=True, headers={"Content-Type": "application/merge-patch+json"})
+        mock_client.http_request(
+            "PATCH", "/v1/thing", use_mgmt_base=True, headers={"Content-Type": "application/merge-patch+json"}
+        )
 
         _, kwargs = mock_http.call_args
         assert kwargs["headers"]["Content-Type"] == "application/merge-patch+json"

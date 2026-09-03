@@ -42,7 +42,6 @@ configuration:
 description: 'Scan and govern AI models with Palo Alto Networks Prisma AIRS AI Supply Chain Security: model scans, evaluations, violations, labels, model groups, and security rules.'
 display: Palo Alto Networks Prisma AIRS - AI Supply Chain Security
 name: Palo Alto Networks Prisma AIRS - AI Model Security
-supportlevelheader: community
 script:
   commands:
   - name: prisma-airs-model-security-scans-list
@@ -1339,7 +1338,7 @@ script:
     - contextPath: PrismaAIRs.ModelSecurityRuleInstanceGet.field_values
       description: The custom field values for this rule instance.
       type: Unknown
-  dockerimage: demisto/python3:3.10.14.95956
+  dockerimage: demisto/python3:3.12.14.12343672
   runonce: false
   script: '-'
   subtype: python3

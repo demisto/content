@@ -66,11 +66,12 @@ configuration:
 description: Integrate with Palo Alto Networks Prisma AIRs for AI security capabilities including runtime scanning, red teaming, AI supply chain security, and DLP configuration.
 display: Palo Alto Networks Prisma AIRS - AI Runtime Security
 name: Palo Alto Networks Prisma AIRS - AI Runtime Security
-supportlevelheader: community
 script:
   commands:
   - name: prisma-airs-runtime-scan
     description: Scan a single prompt against a security profile for AI security threats.
+    compliantpolicies:
+    - EndPoint Isolation
     arguments:
     - name: profile_name
       required: true
@@ -2422,7 +2423,7 @@ script:
     - contextPath: PrismaAIRs.BulkScan.results
       description: The array of individual scan results.
       type: Unknown
-  dockerimage: demisto/python3:3.10.14.95956
+  dockerimage: demisto/python3:3.12.14.12343672
   runonce: false
   script: '-'
   subtype: python3

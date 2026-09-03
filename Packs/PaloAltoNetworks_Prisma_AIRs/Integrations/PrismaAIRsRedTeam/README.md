@@ -1677,6 +1677,7 @@ List Red Team network broker channels. Network channels are the data-plane relay
 | PrismaAIRs.RedTeamNetworkChannel.last_online_at | Date | The timestamp the channel was last online, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamNetworkChannel.connected_clients_count | Number | The number of currently connected clients. |
 | PrismaAIRs.RedTeamNetworkChannel.outdated_clients_count | Number | The number of connected clients running an outdated version. |
+| PrismaAIRs.RedTeamNetworkChannel.oldest_client_version | String | The oldest client version currently connected to the channel. |
 | PrismaAIRs.RedTeamNetworkChannel.features | Unknown | The map of feature flags enabled on the channel. |
 
 #### Command example
@@ -1845,6 +1846,7 @@ Get a single Red Team network broker channel by UUID.
 | PrismaAIRs.RedTeamNetworkChannel.last_online_at | Date | The timestamp the channel was last online, in ISO 8601 format (e.g., 2024-01-15T12:34:56Z). |
 | PrismaAIRs.RedTeamNetworkChannel.connected_clients_count | Number | The number of currently connected clients. |
 | PrismaAIRs.RedTeamNetworkChannel.outdated_clients_count | Number | The number of connected clients running an outdated version. |
+| PrismaAIRs.RedTeamNetworkChannel.oldest_client_version | String | The oldest client version currently connected to the channel. |
 | PrismaAIRs.RedTeamNetworkChannel.features | Unknown | The map of feature flags enabled on the channel. |
 
 #### Command example
