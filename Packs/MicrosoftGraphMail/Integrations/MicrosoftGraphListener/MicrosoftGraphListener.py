@@ -1,4 +1,5 @@
 import json
+import traceback
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -213,15 +214,15 @@ def main():  # pragma: no cover
         if command == "msgraph-mail-test":
             try:
                 client.test_connection()
-            except Exception:
-                return_results(
-                    CommandResults(
-                        readable_output="Note: Please make sure you created the authorization code with the same "
-                        "Microsoft user you configured the integration instance with.",
-                        entry_type=EntryType.WARNING,
+            except Exception as e:
+                demisto.error(traceback.format_exc())
+                error_message = str(e)
+                if auth_code:
+                    error_message = (
+                        "Note: Make sure you created the authorization code with the same Microsoft user "
+                        f"you configured the integration instance with.\n\n{error_message}"
                     )
-                )
-                raise
+                raise DemistoException(error_message) from e
             return_results(CommandResults(readable_output="```✅ Success!```"))
         if command == "msgraph-mail-auth-reset":
             return_results(reset_auth())
