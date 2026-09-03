@@ -4562,6 +4562,22 @@ def extract_device_id_from_aid(aid: str | None, cid: str | None) -> str | None:
     return aid[len(cid) + 1 :]
 
 
+def device_ids_from_vulns(vulnerabilities: list) -> set[str]:
+    """
+    Return the set of bare device IDs for a batch, stripping composite CID prefixes.
+
+    Each record carries its own CID, so extraction has to happen while the record is still in
+    scope - the CID is not available downstream.
+
+    Args:
+        vulnerabilities: List of vulnerability objects.
+
+    Returns:
+        The unique device IDs of the batch, excluding records with no usable AID.
+    """
+    return {device_id for vuln in vulnerabilities if (device_id := extract_device_id_from_aid(vuln.get("aid"), vuln.get("cid")))}
+
+
 def extract_unique_aids(vulnerabilities: list, existing_unique_aids: set) -> None:
     """
     Extract unique device IDs (Host IDs) from vulnerabilities and merge with existing set.
@@ -4574,9 +4590,7 @@ def extract_unique_aids(vulnerabilities: list, existing_unique_aids: set) -> Non
         existing_unique_aids: Existing set of unique AIDs
     """
     # Extract AIDs from this batch
-    batch_aids = {
-        device_id for vuln in vulnerabilities if (device_id := extract_device_id_from_aid(vuln.get("aid"), vuln.get("cid")))
-    }
+    batch_aids = device_ids_from_vulns(vulnerabilities)
 
     # Merge with existing
     existing_unique_aids.update(batch_aids)
@@ -4954,12 +4968,7 @@ async def fetch_vulnerabilities_by_severity(
             extract_unique_aids(vulnerabilities, unique_aids)
 
             # Send AIDs to asset handler for enrichment (async fire-and-forget)
-            batch_aids = {
-                device_id
-                for vuln in vulnerabilities
-                if (device_id := extract_device_id_from_aid(vuln.get("aid"), vuln.get("cid")))
-            }
-            await asset_handler.receive_new_aids(batch_aids)
+            await asset_handler.receive_new_aids(device_ids_from_vulns(vulnerabilities))
 
             batch_counter += 1
 
