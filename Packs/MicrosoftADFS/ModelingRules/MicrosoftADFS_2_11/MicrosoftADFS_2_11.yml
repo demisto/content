@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: MicrosoftADFS_ModelingRule
-name: MicrosoftADFS Modeling Rule
-rules: ''
-schema: ''
-tags: Microsoft Windows Active Directory Federation Services ADFS Event Colletion
-supportedModules:
-- xsiam
