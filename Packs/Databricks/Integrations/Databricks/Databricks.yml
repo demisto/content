@@ -1,0 +1,3587 @@
+category: Analytics & SIEM
+provider: Databricks
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: Databricks
+  version: -1
+configuration:
+- display: Databricks Workspace URL
+  name: url
+  type: 0
+  required: true
+  section: Connect
+  additionalinfo: "e.g., https://dbc-xxxxx.cloud.databricks.com"
+- displaypassword: Personal Access Token
+  name: credentials
+  type: 9
+  required: true
+  hiddenusername: true
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  defaultvalue: 'false'
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  defaultvalue: 'false'
+  section: Connect
+  advanced: true
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+  defaultvalue: 'false'
+  section: Collect
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+  section: Collect
+- display: Fetch types
+  name: fetch_types
+  type: 16
+  required: false
+  options:
+  - SQL Alerts
+  - Failed Jobs
+  section: Collect
+  additionalinfo: "Types of events to fetch as incidents."
+- display: Maximum incidents per fetch
+  name: max_fetch
+  type: 0
+  required: false
+  defaultvalue: '50'
+  section: Collect
+- display: First fetch time
+  name: first_fetch
+  type: 0
+  required: false
+  defaultvalue: '3 days'
+  section: Collect
+  additionalinfo: "e.g., 3 days, 1 week"
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  required: false
+  defaultvalue: '1'
+  section: Collect
+  advanced: true
+description: Comprehensive integration with Databricks workspace APIs for managing clusters, jobs, SQL, pipelines, Unity Catalog, MLflow, IAM, and more.
+display: Databricks
+name: Databricks
+supportlevelheader: community
+marketplaces:
+- xsoar
+- marketplacev2
+script:
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.11.11.1940513
+  isfetch: true
+  script: ''
+  runonce: false
+  commands:
+  - name: databricks-cluster-get
+    description: Retrieves information about a cluster by its ID.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster to retrieve.
+    outputs:
+    - contextPath: Databricks.Cluster.cluster_id
+      type: String
+      description: The unique identifier of the cluster.
+    - contextPath: Databricks.Cluster.cluster_name
+      type: String
+      description: The name of the cluster.
+    - contextPath: Databricks.Cluster.state
+      type: String
+      description: The current state of the cluster.
+    - contextPath: Databricks.Cluster.creator_user_name
+      type: String
+      description: The user who created the cluster.
+    - contextPath: Databricks.Cluster.spark_version
+      type: String
+      description: The Spark version of the cluster.
+    - contextPath: Databricks.Cluster.node_type_id
+      type: String
+      description: The node type of the cluster workers.
+    - contextPath: Databricks.Cluster.num_workers
+      type: Number
+      description: The number of workers in the cluster.
+    - contextPath: Databricks.Cluster.autotermination_minutes
+      type: Number
+      description: Auto-termination time in minutes.
+    - contextPath: Databricks.Cluster.start_time
+      type: Date
+      description: The time the cluster was started.
+    - contextPath: Databricks.Cluster.cluster_source
+      type: String
+      description: The source that created the cluster.
+
+  - name: databricks-cluster-list
+    description: Lists all clusters in the workspace.
+    arguments: []
+    outputs:
+    - contextPath: Databricks.Cluster.cluster_id
+      type: String
+      description: The unique identifier of the cluster.
+    - contextPath: Databricks.Cluster.cluster_name
+      type: String
+      description: The name of the cluster.
+    - contextPath: Databricks.Cluster.state
+      type: String
+      description: The current state of the cluster.
+    - contextPath: Databricks.Cluster.creator_user_name
+      type: String
+      description: The user who created the cluster.
+    - contextPath: Databricks.Cluster.spark_version
+      type: String
+      description: The Spark version of the cluster.
+    - contextPath: Databricks.Cluster.node_type_id
+      type: String
+      description: The node type of the cluster workers.
+    - contextPath: Databricks.Cluster.num_workers
+      type: Number
+      description: The number of workers in the cluster.
+    - contextPath: Databricks.Cluster.autotermination_minutes
+      type: Number
+      description: Auto-termination time in minutes.
+    - contextPath: Databricks.Cluster.start_time
+      type: Date
+      description: The time the cluster was started.
+    - contextPath: Databricks.Cluster.cluster_source
+      type: String
+      description: The source that created the cluster.
+
+  - name: databricks-cluster-create
+    description: Creates a new Databricks cluster.
+    arguments:
+    - name: cluster_name
+      required: true
+      description: The name for the new cluster.
+    - name: spark_version
+      required: true
+      description: The Spark version for the cluster.
+    - name: node_type_id
+      required: true
+      description: The node type ID for cluster workers.
+    - name: num_workers
+      required: false
+      description: The number of workers for the cluster.
+    - name: autotermination_minutes
+      required: false
+      description: Auto-termination time in minutes.
+    - name: custom_tags
+      required: false
+      description: Custom tags as a JSON string.
+    outputs:
+    - contextPath: Databricks.Cluster.cluster_id
+      type: String
+      description: The ID of the newly created cluster.
+
+  - name: databricks-cluster-edit
+    description: Edits the configuration of an existing cluster.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster to edit.
+    - name: cluster_name
+      required: false
+      description: New name for the cluster.
+    - name: spark_version
+      required: false
+      description: New Spark version for the cluster.
+    - name: node_type_id
+      required: false
+      description: New node type ID for cluster workers.
+    - name: num_workers
+      required: false
+      description: New number of workers.
+    - name: autotermination_minutes
+      required: false
+      description: New auto-termination time in minutes.
+    outputs: []
+
+  - name: databricks-cluster-delete
+    description: Terminates a cluster.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster to terminate.
+    outputs: []
+
+  - name: databricks-cluster-permanent-delete
+    description: Permanently deletes a cluster.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster to permanently delete.
+    outputs: []
+
+  - name: databricks-cluster-start
+    description: Starts a previously terminated cluster.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster to start.
+    outputs: []
+
+  - name: databricks-cluster-restart
+    description: Restarts a running cluster.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster to restart.
+    outputs: []
+
+  - name: databricks-cluster-resize
+    description: Resizes a cluster by changing the number of workers.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster to resize.
+    - name: num_workers
+      required: false
+      description: The new number of workers.
+    outputs: []
+
+  - name: databricks-cluster-pin
+    description: Pins a cluster to keep it visible in the cluster list.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster to pin.
+    outputs: []
+
+  - name: databricks-cluster-unpin
+    description: Unpins a cluster.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster to unpin.
+    outputs: []
+
+  - name: databricks-cluster-change-owner
+    description: Changes the owner of a cluster.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster.
+    - name: owner_username
+      required: true
+      description: The username of the new owner.
+    outputs: []
+
+  - name: databricks-cluster-list-zones
+    description: Lists available availability zones for cluster deployment.
+    arguments: []
+    outputs:
+    - contextPath: Databricks.Zone.zones
+      type: Unknown
+      description: List of available zones.
+
+  - name: databricks-cluster-update
+    description: Updates specific properties of a cluster.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster to update.
+    - name: cluster_name
+      required: false
+      description: New name for the cluster.
+    - name: spark_version
+      required: false
+      description: New Spark version for the cluster.
+    - name: node_type_id
+      required: false
+      description: New node type ID for cluster workers.
+    - name: num_workers
+      required: false
+      description: New number of workers.
+    outputs: []
+
+  - name: databricks-cluster-policy-get
+    description: Retrieves a cluster policy by its ID.
+    arguments:
+    - name: policy_id
+      required: true
+      description: The ID of the cluster policy to retrieve.
+    outputs:
+    - contextPath: Databricks.ClusterPolicy.policy_id
+      type: String
+      description: The unique identifier of the policy.
+    - contextPath: Databricks.ClusterPolicy.name
+      type: String
+      description: The name of the policy.
+    - contextPath: Databricks.ClusterPolicy.definition
+      type: String
+      description: The policy definition as a JSON string.
+    - contextPath: Databricks.ClusterPolicy.creator_user_name
+      type: String
+      description: The user who created the policy.
+    - contextPath: Databricks.ClusterPolicy.created_at_timestamp
+      type: Date
+      description: When the policy was created.
+
+  - name: databricks-cluster-policy-list
+    description: Lists all cluster policies in the workspace.
+    arguments: []
+    outputs:
+    - contextPath: Databricks.ClusterPolicy.policy_id
+      type: String
+      description: The unique identifier of the policy.
+    - contextPath: Databricks.ClusterPolicy.name
+      type: String
+      description: The name of the policy.
+    - contextPath: Databricks.ClusterPolicy.definition
+      type: String
+      description: The policy definition as a JSON string.
+    - contextPath: Databricks.ClusterPolicy.creator_user_name
+      type: String
+      description: The user who created the policy.
+    - contextPath: Databricks.ClusterPolicy.created_at_timestamp
+      type: Date
+      description: When the policy was created.
+
+  - name: databricks-cluster-policy-create
+    description: Creates a new cluster policy.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the cluster policy.
+    - name: definition
+      required: true
+      description: The policy definition as a JSON string.
+    outputs:
+    - contextPath: Databricks.ClusterPolicy.policy_id
+      type: String
+      description: The ID of the newly created policy.
+
+  - name: databricks-cluster-policy-edit
+    description: Edits an existing cluster policy.
+    arguments:
+    - name: policy_id
+      required: true
+      description: The ID of the policy to edit.
+    - name: name
+      required: false
+      description: New name for the policy.
+    - name: definition
+      required: false
+      description: New policy definition as a JSON string.
+    outputs: []
+
+  - name: databricks-cluster-policy-delete
+    description: Deletes a cluster policy.
+    arguments:
+    - name: policy_id
+      required: true
+      description: The ID of the policy to delete.
+    outputs: []
+
+  - name: databricks-instance-pool-get
+    description: Retrieves information about an instance pool.
+    arguments:
+    - name: instance_pool_id
+      required: true
+      description: The ID of the instance pool.
+    outputs:
+    - contextPath: Databricks.InstancePool.instance_pool_id
+      type: String
+      description: The unique identifier of the pool.
+    - contextPath: Databricks.InstancePool.instance_pool_name
+      type: String
+      description: The name of the pool.
+    - contextPath: Databricks.InstancePool.node_type_id
+      type: String
+      description: The node type ID used by the pool.
+    - contextPath: Databricks.InstancePool.min_idle_instances
+      type: Number
+      description: Minimum number of idle instances maintained.
+    - contextPath: Databricks.InstancePool.max_capacity
+      type: Number
+      description: Maximum number of instances in the pool.
+    - contextPath: Databricks.InstancePool.state
+      type: String
+      description: The current state of the pool.
+
+  - name: databricks-instance-pool-list
+    description: Lists all instance pools in the workspace.
+    arguments: []
+    outputs:
+    - contextPath: Databricks.InstancePool.instance_pool_id
+      type: String
+      description: The unique identifier of the pool.
+    - contextPath: Databricks.InstancePool.instance_pool_name
+      type: String
+      description: The name of the pool.
+    - contextPath: Databricks.InstancePool.node_type_id
+      type: String
+      description: The node type ID used by the pool.
+    - contextPath: Databricks.InstancePool.min_idle_instances
+      type: Number
+      description: Minimum number of idle instances maintained.
+    - contextPath: Databricks.InstancePool.max_capacity
+      type: Number
+      description: Maximum number of instances in the pool.
+    - contextPath: Databricks.InstancePool.state
+      type: String
+      description: The current state of the pool.
+
+  - name: databricks-instance-pool-create
+    description: Creates a new instance pool.
+    arguments:
+    - name: instance_pool_name
+      required: true
+      description: The name of the instance pool.
+    - name: node_type_id
+      required: true
+      description: The node type ID for the pool.
+    - name: min_idle_instances
+      required: false
+      description: Minimum number of idle instances.
+    - name: max_capacity
+      required: false
+      description: Maximum number of instances in the pool.
+    outputs:
+    - contextPath: Databricks.InstancePool.instance_pool_id
+      type: String
+      description: The ID of the newly created pool.
+
+  - name: databricks-instance-pool-edit
+    description: Edits an existing instance pool.
+    arguments:
+    - name: instance_pool_id
+      required: true
+      description: The ID of the pool to edit.
+    - name: instance_pool_name
+      required: false
+      description: New name for the pool.
+    - name: node_type_id
+      required: false
+      description: New node type ID.
+    - name: min_idle_instances
+      required: false
+      description: New minimum number of idle instances.
+    - name: max_capacity
+      required: false
+      description: New maximum capacity.
+    outputs: []
+
+  - name: databricks-instance-pool-delete
+    description: Deletes an instance pool.
+    arguments:
+    - name: instance_pool_id
+      required: true
+      description: The ID of the pool to delete.
+    outputs: []
+
+  - name: databricks-library-cluster-status
+    description: Retrieves the status of libraries on a specific cluster.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster.
+    outputs:
+    - contextPath: Databricks.LibraryStatus.library
+      type: Unknown
+      description: The library specification.
+    - contextPath: Databricks.LibraryStatus.status
+      type: String
+      description: The installation status of the library.
+    - contextPath: Databricks.LibraryStatus.is_library_for_all_clusters
+      type: Boolean
+      description: Whether the library is installed on all clusters.
+
+  - name: databricks-library-all-cluster-statuses
+    description: Retrieves library statuses for all clusters.
+    arguments: []
+    outputs:
+    - contextPath: Databricks.LibraryClusterStatus.cluster_id
+      type: String
+      description: The cluster ID.
+    - contextPath: Databricks.LibraryClusterStatus.library_statuses
+      type: Unknown
+      description: The library statuses for this cluster.
+
+  - name: databricks-library-install
+    description: Installs libraries on a cluster.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster.
+    - name: libraries
+      required: true
+      description: JSON array of library specifications to install.
+    outputs: []
+
+  - name: databricks-library-uninstall
+    description: Uninstalls libraries from a cluster.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster.
+    - name: libraries
+      required: true
+      description: JSON array of library specifications to uninstall.
+    outputs: []
+
+  - name: databricks-context-create
+    description: Creates an execution context on a cluster.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster.
+    - name: language
+      required: true
+      description: The programming language for the context.
+      auto: PREDEFINED
+      predefined:
+      - python
+      - scala
+      - sql
+      - r
+    outputs:
+    - contextPath: Databricks.Context.id
+      type: String
+      description: The ID of the created execution context.
+
+  - name: databricks-context-destroy
+    description: Destroys an execution context.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster.
+    - name: context_id
+      required: true
+      description: The ID of the context to destroy.
+    outputs: []
+
+  - name: databricks-context-status
+    description: Gets the status of an execution context.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster.
+    - name: context_id
+      required: true
+      description: The ID of the context.
+    outputs:
+    - contextPath: Databricks.Context.id
+      type: String
+      description: The ID of the context.
+    - contextPath: Databricks.Context.status
+      type: String
+      description: The status of the context.
+
+  - name: databricks-command-execute
+    description: Executes a command in an execution context.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster.
+    - name: context_id
+      required: true
+      description: The ID of the execution context.
+    - name: language
+      required: true
+      description: The programming language.
+      auto: PREDEFINED
+      predefined:
+      - python
+      - scala
+      - sql
+      - r
+    - name: command
+      required: true
+      description: The command text to execute.
+    outputs:
+    - contextPath: Databricks.Command.id
+      type: String
+      description: The ID of the command.
+    - contextPath: Databricks.Command.status
+      type: String
+      description: The execution status of the command.
+
+  - name: databricks-command-status
+    description: Gets the status and results of a command.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster.
+    - name: command_id
+      required: true
+      description: The ID of the command.
+    - name: context_id
+      required: true
+      description: The ID of the execution context.
+    outputs:
+    - contextPath: Databricks.Command.id
+      type: String
+      description: The ID of the command.
+    - contextPath: Databricks.Command.status
+      type: String
+      description: The execution status of the command.
+    - contextPath: Databricks.Command.results
+      type: Unknown
+      description: The results of the command execution.
+
+  - name: databricks-command-cancel
+    description: Cancels a running command.
+    arguments:
+    - name: cluster_id
+      required: true
+      description: The ID of the cluster.
+    - name: command_id
+      required: true
+      description: The ID of the command to cancel.
+    - name: context_id
+      required: true
+      description: The ID of the execution context.
+    outputs: []
+
+  - name: databricks-job-get
+    description: Retrieves details about a specific job.
+    arguments:
+    - name: job_id
+      required: true
+      description: The ID of the job.
+    outputs:
+    - contextPath: Databricks.Job.job_id
+      type: Number
+      description: The unique identifier of the job.
+    - contextPath: Databricks.Job.settings
+      type: Unknown
+      description: The settings of the job.
+    - contextPath: Databricks.Job.creator_user_name
+      type: String
+      description: The user who created the job.
+    - contextPath: Databricks.Job.created_time
+      type: Date
+      description: When the job was created.
+
+  - name: databricks-job-list
+    description: Lists all jobs in the workspace.
+    arguments:
+    - name: limit
+      required: false
+      defaultValue: '20'
+      description: Maximum number of jobs to return.
+    - name: offset
+      required: false
+      description: Offset for pagination.
+    - name: page
+      required: false
+      description: Page number (0-based). Used with page_size for manual pagination.
+    - name: page_size
+      required: false
+      defaultValue: '50'
+      description: Number of results per page. Used with page for manual pagination.
+    - name: name
+      required: false
+      description: Filter jobs by name.
+    - name: expand_tasks
+      required: false
+      description: Whether to include task details.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Databricks.Job.job_id
+      type: Number
+      description: The unique identifier of the job.
+    - contextPath: Databricks.Job.settings
+      type: Unknown
+      description: The settings of the job.
+    - contextPath: Databricks.Job.creator_user_name
+      type: String
+      description: The user who created the job.
+    - contextPath: Databricks.Job.created_time
+      type: Date
+      description: When the job was created.
+
+  - name: databricks-job-create
+    description: Creates a new job.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the job.
+    - name: tasks
+      required: true
+      description: JSON string defining the job tasks.
+    - name: schedule
+      required: false
+      description: JSON string defining the schedule.
+    - name: max_concurrent_runs
+      required: false
+      description: Maximum number of concurrent runs.
+    outputs:
+    - contextPath: Databricks.Job.job_id
+      type: Number
+      description: The ID of the newly created job.
+
+  - name: databricks-job-reset
+    description: Overwrites all settings of an existing job.
+    arguments:
+    - name: job_id
+      required: true
+      description: The ID of the job to reset.
+    - name: new_settings
+      required: true
+      description: JSON string with the new job settings.
+    outputs: []
+
+  - name: databricks-job-update
+    description: Partially updates a job.
+    arguments:
+    - name: job_id
+      required: true
+      description: The ID of the job to update.
+    - name: fields_to_update
+      required: true
+      description: JSON string with the fields to update.
+    outputs: []
+
+  - name: databricks-job-delete
+    description: Deletes a job.
+    arguments:
+    - name: job_id
+      required: true
+      description: The ID of the job to delete.
+    outputs: []
+
+  - name: databricks-job-run-now
+    description: Triggers an immediate run of a job.
+    arguments:
+    - name: job_id
+      required: true
+      description: The ID of the job to run.
+    - name: notebook_params
+      required: false
+      description: JSON string of notebook parameters.
+    - name: python_params
+      required: false
+      description: JSON string of Python parameters.
+    - name: jar_params
+      required: false
+      description: JSON string of JAR parameters.
+    outputs:
+    - contextPath: Databricks.JobRun.run_id
+      type: Number
+      description: The ID of the triggered run.
+    - contextPath: Databricks.JobRun.number_in_job
+      type: Number
+      description: The run number within the job.
+
+  - name: databricks-pipeline-get
+    description: Retrieves details about a pipeline.
+    arguments:
+    - name: pipeline_id
+      required: true
+      description: The ID of the pipeline.
+    outputs:
+    - contextPath: Databricks.Pipeline.pipeline_id
+      type: String
+      description: The unique identifier of the pipeline.
+    - contextPath: Databricks.Pipeline.name
+      type: String
+      description: The name of the pipeline.
+    - contextPath: Databricks.Pipeline.state
+      type: String
+      description: The current state of the pipeline.
+    - contextPath: Databricks.Pipeline.creator_user_name
+      type: String
+      description: The user who created the pipeline.
+    - contextPath: Databricks.Pipeline.cluster_id
+      type: String
+      description: The cluster ID associated with the pipeline.
+
+  - name: databricks-pipeline-list
+    description: Lists pipelines in the workspace.
+    arguments:
+    - name: max_results
+      required: false
+      description: Maximum number of pipelines to return.
+    - name: filter
+      required: false
+      description: Filter string for pipelines.
+    outputs:
+    - contextPath: Databricks.Pipeline.pipeline_id
+      type: String
+      description: The unique identifier of the pipeline.
+    - contextPath: Databricks.Pipeline.name
+      type: String
+      description: The name of the pipeline.
+    - contextPath: Databricks.Pipeline.state
+      type: String
+      description: The current state of the pipeline.
+    - contextPath: Databricks.Pipeline.creator_user_name
+      type: String
+      description: The user who created the pipeline.
+
+  - name: databricks-pipeline-create
+    description: Creates a new pipeline.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the pipeline.
+    - name: configuration
+      required: true
+      description: Pipeline configuration as a JSON string.
+    outputs:
+    - contextPath: Databricks.Pipeline.pipeline_id
+      type: String
+      description: The ID of the newly created pipeline.
+
+  - name: databricks-pipeline-update
+    description: Updates an existing pipeline.
+    arguments:
+    - name: pipeline_id
+      required: true
+      description: The ID of the pipeline to update.
+    - name: configuration
+      required: false
+      description: New pipeline configuration as a JSON string.
+    outputs: []
+
+  - name: databricks-pipeline-delete
+    description: Deletes a pipeline.
+    arguments:
+    - name: pipeline_id
+      required: true
+      description: The ID of the pipeline to delete.
+    outputs: []
+
+  - name: databricks-pipeline-clone
+    description: Clones an existing pipeline.
+    arguments:
+    - name: pipeline_id
+      required: true
+      description: The ID of the pipeline to clone.
+    outputs:
+    - contextPath: Databricks.Pipeline.pipeline_id
+      type: String
+      description: The ID of the cloned pipeline.
+
+  - name: databricks-pipeline-start
+    description: Starts a pipeline update.
+    arguments:
+    - name: pipeline_id
+      required: true
+      description: The ID of the pipeline to start.
+    - name: full_refresh
+      required: false
+      description: Whether to do a full refresh.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Databricks.PipelineUpdate.update_id
+      type: String
+      description: The ID of the triggered update.
+
+  - name: databricks-pipeline-stop
+    description: Stops a running pipeline.
+    arguments:
+    - name: pipeline_id
+      required: true
+      description: The ID of the pipeline to stop.
+    outputs: []
+
+  - name: databricks-pipeline-events
+    description: Retrieves events for a pipeline.
+    arguments:
+    - name: pipeline_id
+      required: true
+      description: The ID of the pipeline.
+    - name: max_results
+      required: false
+      description: Maximum number of events to return.
+    - name: filter
+      required: false
+      description: Filter string for events.
+    outputs:
+    - contextPath: Databricks.PipelineEvent.id
+      type: String
+      description: The unique identifier of the event.
+    - contextPath: Databricks.PipelineEvent.timestamp
+      type: Date
+      description: When the event occurred.
+    - contextPath: Databricks.PipelineEvent.event_type
+      type: String
+      description: The type of event.
+    - contextPath: Databricks.PipelineEvent.message
+      type: String
+      description: The event message.
+    - contextPath: Databricks.PipelineEvent.level
+      type: String
+      description: The severity level of the event.
+
+  - name: databricks-pipeline-list-updates
+    description: Lists updates for a pipeline.
+    arguments:
+    - name: pipeline_id
+      required: true
+      description: The ID of the pipeline.
+    - name: max_results
+      required: false
+      description: Maximum number of updates to return.
+    outputs:
+    - contextPath: Databricks.PipelineUpdate.update_id
+      type: String
+      description: The unique identifier of the update.
+    - contextPath: Databricks.PipelineUpdate.state
+      type: String
+      description: The state of the update.
+    - contextPath: Databricks.PipelineUpdate.creation_time
+      type: Date
+      description: When the update was created.
+
+  - name: databricks-pipeline-get-update
+    description: Retrieves a specific pipeline update.
+    arguments:
+    - name: pipeline_id
+      required: true
+      description: The ID of the pipeline.
+    - name: update_id
+      required: true
+      description: The ID of the update.
+    outputs:
+    - contextPath: Databricks.PipelineUpdate.update_id
+      type: String
+      description: The unique identifier of the update.
+    - contextPath: Databricks.PipelineUpdate.state
+      type: String
+      description: The state of the update.
+    - contextPath: Databricks.PipelineUpdate.creation_time
+      type: Date
+      description: When the update was created.
+    - contextPath: Databricks.PipelineUpdate.config
+      type: Unknown
+      description: The update configuration.
+
+  - name: databricks-pipeline-apply-environment
+    description: Applies environment settings to a pipeline.
+    arguments:
+    - name: pipeline_id
+      required: true
+      description: The ID of the pipeline.
+    outputs: []
+
+  - name: databricks-dbfs-get-status
+    description: Gets the status of a file or directory in DBFS.
+    arguments:
+    - name: path
+      required: true
+      description: The DBFS path.
+    outputs:
+    - contextPath: Databricks.DBFS.path
+      type: String
+      description: The DBFS path.
+    - contextPath: Databricks.DBFS.is_dir
+      type: Boolean
+      description: Whether the path is a directory.
+    - contextPath: Databricks.DBFS.file_size
+      type: Number
+      description: The file size in bytes.
+    - contextPath: Databricks.DBFS.modification_time
+      type: Date
+      description: Last modification time.
+
+  - name: databricks-dbfs-list
+    description: Lists the contents of a DBFS directory.
+    arguments:
+    - name: path
+      required: true
+      description: The DBFS directory path.
+    outputs:
+    - contextPath: Databricks.DBFS.path
+      type: String
+      description: The DBFS path.
+    - contextPath: Databricks.DBFS.is_dir
+      type: Boolean
+      description: Whether the path is a directory.
+    - contextPath: Databricks.DBFS.file_size
+      type: Number
+      description: The file size in bytes.
+    - contextPath: Databricks.DBFS.modification_time
+      type: Date
+      description: Last modification time.
+
+  - name: databricks-dbfs-read
+    description: Reads the contents of a file in DBFS.
+    arguments:
+    - name: path
+      required: true
+      description: The DBFS file path.
+    - name: offset
+      required: false
+      description: The byte offset to start reading from.
+    - name: length
+      required: false
+      description: The number of bytes to read.
+    outputs:
+    - contextPath: Databricks.DBFSFile.bytes_read
+      type: Number
+      description: The number of bytes read.
+    - contextPath: Databricks.DBFSFile.data
+      type: String
+      description: The base64-encoded file content.
+
+  - name: databricks-dbfs-create
+    description: Opens a stream to write a file in DBFS.
+    arguments:
+    - name: path
+      required: true
+      description: The DBFS file path.
+    - name: overwrite
+      required: false
+      description: Whether to overwrite existing file.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Databricks.DBFSStream.handle
+      type: Number
+      description: The handle for the write stream.
+
+  - name: databricks-dbfs-add-block
+    description: Appends a block of data to a DBFS write stream.
+    arguments:
+    - name: handle
+      required: true
+      description: The handle of the write stream.
+    - name: data
+      required: true
+      description: Base64-encoded data block to append.
+    outputs: []
+
+  - name: databricks-dbfs-close
+    description: Closes a DBFS write stream.
+    arguments:
+    - name: handle
+      required: true
+      description: The handle of the write stream to close.
+    outputs: []
+
+  - name: databricks-dbfs-put
+    description: Uploads a file to DBFS.
+    arguments:
+    - name: path
+      required: true
+      description: The DBFS file path.
+    - name: contents
+      required: false
+      description: Base64-encoded file contents.
+    - name: overwrite
+      required: false
+      description: Whether to overwrite existing file.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs: []
+
+  - name: databricks-dbfs-delete
+    description: Deletes a file or directory in DBFS.
+    arguments:
+    - name: path
+      required: true
+      description: The DBFS path to delete.
+    - name: recursive
+      required: false
+      description: Whether to delete recursively.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs: []
+
+  - name: databricks-dbfs-mkdirs
+    description: Creates a directory in DBFS.
+    arguments:
+    - name: path
+      required: true
+      description: The DBFS directory path to create.
+    outputs: []
+
+  - name: databricks-dbfs-move
+    description: Moves a file or directory in DBFS.
+    arguments:
+    - name: source_path
+      required: true
+      description: The source DBFS path.
+    - name: destination_path
+      required: true
+      description: The destination DBFS path.
+    outputs: []
+
+  - name: databricks-workspace-get-status
+    description: Gets the status of a workspace object.
+    arguments:
+    - name: path
+      required: true
+      description: The workspace path.
+    outputs:
+    - contextPath: Databricks.WorkspaceObject.object_type
+      type: String
+      description: The type of workspace object.
+    - contextPath: Databricks.WorkspaceObject.path
+      type: String
+      description: The workspace path.
+    - contextPath: Databricks.WorkspaceObject.object_id
+      type: Number
+      description: The unique identifier of the object.
+    - contextPath: Databricks.WorkspaceObject.language
+      type: String
+      description: The language of the notebook.
+
+  - name: databricks-workspace-list
+    description: Lists the contents of a workspace directory.
+    arguments:
+    - name: path
+      required: true
+      description: The workspace directory path.
+    outputs:
+    - contextPath: Databricks.WorkspaceObject.object_type
+      type: String
+      description: The type of workspace object.
+    - contextPath: Databricks.WorkspaceObject.path
+      type: String
+      description: The workspace path.
+    - contextPath: Databricks.WorkspaceObject.object_id
+      type: Number
+      description: The unique identifier of the object.
+    - contextPath: Databricks.WorkspaceObject.language
+      type: String
+      description: The language of the notebook.
+
+  - name: databricks-workspace-export
+    description: Exports a workspace object.
+    arguments:
+    - name: path
+      required: true
+      description: The workspace path to export.
+    - name: format
+      required: false
+      description: The export format.
+      auto: PREDEFINED
+      predefined:
+      - SOURCE
+      - HTML
+      - JUPYTER
+      - DBC
+    outputs:
+    - contextPath: Databricks.WorkspaceExport.content
+      type: String
+      description: The base64-encoded exported content.
+
+  - name: databricks-workspace-import
+    description: Imports a workspace object.
+    arguments:
+    - name: path
+      required: true
+      description: The workspace destination path.
+    - name: content
+      required: true
+      description: Base64-encoded content to import.
+    - name: format
+      required: false
+      description: The import format.
+      auto: PREDEFINED
+      predefined:
+      - SOURCE
+      - HTML
+      - JUPYTER
+      - DBC
+    - name: language
+      required: false
+      description: The language for the notebook.
+      auto: PREDEFINED
+      predefined:
+      - PYTHON
+      - SCALA
+      - SQL
+      - R
+    - name: overwrite
+      required: false
+      description: Whether to overwrite existing object.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs: []
+
+  - name: databricks-workspace-delete
+    description: Deletes a workspace object.
+    arguments:
+    - name: path
+      required: true
+      description: The workspace path to delete.
+    - name: recursive
+      required: false
+      description: Whether to delete recursively.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs: []
+
+  - name: databricks-workspace-mkdirs
+    description: Creates a directory in the workspace.
+    arguments:
+    - name: path
+      required: true
+      description: The workspace directory path to create.
+    outputs: []
+
+  - name: databricks-git-credential-get
+    description: Retrieves a Git credential.
+    arguments:
+    - name: credential_id
+      required: true
+      description: The ID of the Git credential.
+    outputs:
+    - contextPath: Databricks.GitCredential.credential_id
+      type: Number
+      description: The ID of the credential.
+    - contextPath: Databricks.GitCredential.git_username
+      type: String
+      description: The Git username.
+    - contextPath: Databricks.GitCredential.git_provider
+      type: String
+      description: The Git provider.
+
+  - name: databricks-git-credential-list
+    description: Lists all Git credentials.
+    arguments: []
+    outputs:
+    - contextPath: Databricks.GitCredential.credential_id
+      type: Number
+      description: The ID of the credential.
+    - contextPath: Databricks.GitCredential.git_username
+      type: String
+      description: The Git username.
+    - contextPath: Databricks.GitCredential.git_provider
+      type: String
+      description: The Git provider.
+
+  - name: databricks-git-credential-create
+    description: Creates a new Git credential.
+    arguments:
+    - name: git_provider
+      required: true
+      description: The Git provider name.
+    - name: git_username
+      required: true
+      description: The Git username.
+    - name: personal_access_token
+      required: true
+      description: The personal access token for Git.
+    outputs:
+    - contextPath: Databricks.GitCredential.credential_id
+      type: Number
+      description: The ID of the newly created credential.
+
+  - name: databricks-git-credential-update
+    description: Updates a Git credential.
+    arguments:
+    - name: credential_id
+      required: true
+      description: The ID of the credential to update.
+    - name: git_provider
+      required: false
+      description: The new Git provider.
+    - name: git_username
+      required: false
+      description: The new Git username.
+    - name: personal_access_token
+      required: false
+      description: The new personal access token.
+    outputs: []
+
+  - name: databricks-git-credential-delete
+    description: Deletes a Git credential.
+    arguments:
+    - name: credential_id
+      required: true
+      description: The ID of the credential to delete.
+    outputs: []
+
+  - name: databricks-repo-get
+    description: Retrieves a repo by its ID.
+    arguments:
+    - name: repo_id
+      required: true
+      description: The ID of the repo.
+    outputs:
+    - contextPath: Databricks.Repo.id
+      type: Number
+      description: The unique identifier of the repo.
+    - contextPath: Databricks.Repo.url
+      type: String
+      description: The URL of the remote repository.
+    - contextPath: Databricks.Repo.provider
+      type: String
+      description: The Git provider.
+    - contextPath: Databricks.Repo.path
+      type: String
+      description: The workspace path of the repo.
+    - contextPath: Databricks.Repo.branch
+      type: String
+      description: The current branch.
+    - contextPath: Databricks.Repo.head_commit_id
+      type: String
+      description: The HEAD commit ID.
+
+  - name: databricks-repo-list
+    description: Lists repos in the workspace.
+    arguments:
+    - name: path_prefix
+      required: false
+      description: Filter repos by path prefix.
+    - name: next_page_token
+      required: false
+      description: Pagination token for the next page.
+    outputs:
+    - contextPath: Databricks.Repo.id
+      type: Number
+      description: The unique identifier of the repo.
+    - contextPath: Databricks.Repo.url
+      type: String
+      description: The URL of the remote repository.
+    - contextPath: Databricks.Repo.provider
+      type: String
+      description: The Git provider.
+    - contextPath: Databricks.Repo.path
+      type: String
+      description: The workspace path of the repo.
+    - contextPath: Databricks.Repo.branch
+      type: String
+      description: The current branch.
+    - contextPath: Databricks.Repo.head_commit_id
+      type: String
+      description: The HEAD commit ID.
+
+  - name: databricks-repo-create
+    description: Creates a new repo.
+    arguments:
+    - name: url
+      required: true
+      description: The URL of the remote repository.
+    - name: provider
+      required: true
+      description: The Git provider.
+    - name: path
+      required: false
+      description: The desired workspace path.
+    outputs:
+    - contextPath: Databricks.Repo.id
+      type: Number
+      description: The ID of the newly created repo.
+
+  - name: databricks-repo-update
+    description: Updates a repo branch or tag.
+    arguments:
+    - name: repo_id
+      required: true
+      description: The ID of the repo to update.
+    - name: branch
+      required: false
+      description: The branch to checkout.
+    - name: tag
+      required: false
+      description: The tag to checkout.
+    outputs: []
+
+  - name: databricks-warehouse-get
+    description: Retrieves information about a SQL warehouse.
+    arguments:
+    - name: warehouse_id
+      required: true
+      description: The ID of the SQL warehouse.
+    outputs:
+    - contextPath: Databricks.Warehouse.id
+      type: String
+      description: The unique identifier of the warehouse.
+    - contextPath: Databricks.Warehouse.name
+      type: String
+      description: The name of the warehouse.
+    - contextPath: Databricks.Warehouse.cluster_size
+      type: String
+      description: The cluster size.
+    - contextPath: Databricks.Warehouse.state
+      type: String
+      description: The current state of the warehouse.
+    - contextPath: Databricks.Warehouse.num_clusters
+      type: Number
+      description: The number of clusters.
+    - contextPath: Databricks.Warehouse.creator_name
+      type: String
+      description: The creator of the warehouse.
+    - contextPath: Databricks.Warehouse.num_active_sessions
+      type: Number
+      description: Number of active sessions.
+
+  - name: databricks-warehouse-list
+    description: Lists all SQL warehouses.
+    arguments: []
+    outputs:
+    - contextPath: Databricks.Warehouse.id
+      type: String
+      description: The unique identifier of the warehouse.
+    - contextPath: Databricks.Warehouse.name
+      type: String
+      description: The name of the warehouse.
+    - contextPath: Databricks.Warehouse.cluster_size
+      type: String
+      description: The cluster size.
+    - contextPath: Databricks.Warehouse.state
+      type: String
+      description: The current state of the warehouse.
+    - contextPath: Databricks.Warehouse.num_clusters
+      type: Number
+      description: The number of clusters.
+    - contextPath: Databricks.Warehouse.creator_name
+      type: String
+      description: The creator of the warehouse.
+
+  - name: databricks-warehouse-create
+    description: Creates a new SQL warehouse.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the warehouse.
+    - name: cluster_size
+      required: true
+      description: The cluster size.
+    - name: max_num_clusters
+      required: false
+      description: Maximum number of clusters.
+    - name: auto_stop_mins
+      required: false
+      description: Auto-stop time in minutes.
+    - name: enable_serverless_compute
+      required: false
+      description: Whether to enable serverless compute.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Databricks.Warehouse.id
+      type: String
+      description: The ID of the newly created warehouse.
+
+  - name: databricks-warehouse-edit
+    description: Edits a SQL warehouse configuration.
+    arguments:
+    - name: warehouse_id
+      required: true
+      description: The ID of the warehouse to edit.
+    - name: name
+      required: false
+      description: New name for the warehouse.
+    - name: cluster_size
+      required: false
+      description: New cluster size.
+    - name: max_num_clusters
+      required: false
+      description: New maximum number of clusters.
+    - name: auto_stop_mins
+      required: false
+      description: New auto-stop time in minutes.
+    outputs: []
+
+  - name: databricks-warehouse-delete
+    description: Deletes a SQL warehouse.
+    arguments:
+    - name: warehouse_id
+      required: true
+      description: The ID of the warehouse to delete.
+    outputs: []
+
+  - name: databricks-warehouse-start
+    description: Starts a SQL warehouse.
+    arguments:
+    - name: warehouse_id
+      required: true
+      description: The ID of the warehouse to start.
+    outputs: []
+
+  - name: databricks-warehouse-stop
+    description: Stops a SQL warehouse.
+    arguments:
+    - name: warehouse_id
+      required: true
+      description: The ID of the warehouse to stop.
+    outputs: []
+
+  - name: databricks-warehouse-get-config
+    description: Gets the workspace warehouse configuration.
+    arguments: []
+    outputs:
+    - contextPath: Databricks.WarehouseConfig.data_access_config
+      type: Unknown
+      description: The data access configuration.
+    - contextPath: Databricks.WarehouseConfig.sql_configuration_parameters
+      type: Unknown
+      description: The SQL configuration parameters.
+
+  - name: databricks-warehouse-set-config
+    description: Sets the workspace warehouse configuration.
+    arguments:
+    - name: config
+      required: true
+      description: JSON string with the warehouse configuration.
+    outputs: []
+
+  - name: databricks-sql-statement-execute
+    description: Executes a SQL statement against a warehouse.
+    arguments:
+    - name: warehouse_id
+      required: true
+      description: The ID of the SQL warehouse.
+    - name: statement
+      required: true
+      description: The SQL statement to execute.
+    - name: catalog
+      required: false
+      description: The catalog to use.
+    - name: schema
+      required: false
+      description: The schema to use.
+    - name: wait_timeout
+      required: false
+      description: Timeout in seconds to wait for results.
+    - name: disposition
+      required: false
+      description: The result disposition.
+      auto: PREDEFINED
+      predefined:
+      - INLINE
+      - EXTERNAL_LINKS
+    - name: row_limit
+      required: false
+      description: Maximum number of rows to return.
+    outputs:
+    - contextPath: Databricks.SQLStatement.statement_id
+      type: String
+      description: The ID of the statement execution.
+    - contextPath: Databricks.SQLStatement.status
+      type: Unknown
+      description: The status of the statement.
+    - contextPath: Databricks.SQLStatement.manifest
+      type: Unknown
+      description: The result manifest.
+    - contextPath: Databricks.SQLStatement.result
+      type: Unknown
+      description: The result data.
+
+  - name: databricks-sql-statement-get-status
+    description: Gets the status and results of a SQL statement.
+    arguments:
+    - name: statement_id
+      required: true
+      description: The ID of the statement.
+    outputs:
+    - contextPath: Databricks.SQLStatement.statement_id
+      type: String
+      description: The ID of the statement.
+    - contextPath: Databricks.SQLStatement.status
+      type: Unknown
+      description: The status of the statement.
+    - contextPath: Databricks.SQLStatement.manifest
+      type: Unknown
+      description: The result manifest.
+    - contextPath: Databricks.SQLStatement.result
+      type: Unknown
+      description: The result data.
+
+  - name: databricks-sql-statement-get-result-chunk
+    description: Gets a result chunk of a SQL statement.
+    arguments:
+    - name: statement_id
+      required: true
+      description: The ID of the statement.
+    - name: chunk_index
+      required: true
+      description: The index of the result chunk.
+    outputs:
+    - contextPath: Databricks.SQLResultChunk.chunk_index
+      type: Number
+      description: The chunk index.
+    - contextPath: Databricks.SQLResultChunk.row_offset
+      type: Number
+      description: The row offset of this chunk.
+    - contextPath: Databricks.SQLResultChunk.row_count
+      type: Number
+      description: The number of rows in this chunk.
+    - contextPath: Databricks.SQLResultChunk.data_array
+      type: Unknown
+      description: The data array.
+
+  - name: databricks-sql-statement-cancel
+    description: Cancels a running SQL statement.
+    arguments:
+    - name: statement_id
+      required: true
+      description: The ID of the statement to cancel.
+    outputs: []
+
+  - name: databricks-sql-query-get
+    description: Retrieves a saved SQL query.
+    arguments:
+    - name: query_id
+      required: true
+      description: The ID of the query.
+    outputs:
+    - contextPath: Databricks.SQLQuery.id
+      type: String
+      description: The unique identifier of the query.
+    - contextPath: Databricks.SQLQuery.name
+      type: String
+      description: The name of the query.
+    - contextPath: Databricks.SQLQuery.query
+      type: String
+      description: The SQL text of the query.
+    - contextPath: Databricks.SQLQuery.description
+      type: String
+      description: The description of the query.
+    - contextPath: Databricks.SQLQuery.warehouse_id
+      type: String
+      description: The warehouse ID for the query.
+    - contextPath: Databricks.SQLQuery.parent_path
+      type: String
+      description: The parent path of the query.
+
+  - name: databricks-sql-query-list
+    description: Lists saved SQL queries.
+    arguments:
+    - name: page_size
+      required: false
+      description: Number of queries per page.
+    - name: page_token
+      required: false
+      description: Pagination token for the next page.
+    outputs:
+    - contextPath: Databricks.SQLQuery.id
+      type: String
+      description: The unique identifier of the query.
+    - contextPath: Databricks.SQLQuery.name
+      type: String
+      description: The name of the query.
+    - contextPath: Databricks.SQLQuery.query
+      type: String
+      description: The SQL text of the query.
+    - contextPath: Databricks.SQLQuery.description
+      type: String
+      description: The description of the query.
+    - contextPath: Databricks.SQLQuery.warehouse_id
+      type: String
+      description: The warehouse ID for the query.
+
+  - name: databricks-sql-query-create
+    description: Creates a new saved SQL query.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the query.
+    - name: query
+      required: true
+      description: The SQL text.
+    - name: warehouse_id
+      required: true
+      description: The warehouse to use.
+    - name: description
+      required: false
+      description: The description of the query.
+    - name: parent_path
+      required: false
+      description: The parent path for the query.
+    outputs:
+    - contextPath: Databricks.SQLQuery.id
+      type: String
+      description: The ID of the newly created query.
+
+  - name: databricks-sql-query-update
+    description: Updates a saved SQL query.
+    arguments:
+    - name: query_id
+      required: true
+      description: The ID of the query to update.
+    - name: name
+      required: false
+      description: New name for the query.
+    - name: query
+      required: false
+      description: New SQL text.
+    - name: description
+      required: false
+      description: New description.
+    - name: warehouse_id
+      required: false
+      description: New warehouse ID.
+    outputs:
+    - contextPath: Databricks.SQLQuery.id
+      type: String
+      description: The ID of the updated query.
+
+  - name: databricks-sql-query-delete
+    description: Deletes a saved SQL query.
+    arguments:
+    - name: query_id
+      required: true
+      description: The ID of the query to delete.
+    outputs: []
+
+  - name: databricks-sql-alert-list
+    description: Lists all SQL alerts.
+    arguments: []
+    outputs:
+    - contextPath: Databricks.SQLAlert.id
+      type: String
+      description: The unique identifier of the alert.
+    - contextPath: Databricks.SQLAlert.display_name
+      type: String
+      description: The display name of the alert.
+    - contextPath: Databricks.SQLAlert.query_id
+      type: String
+      description: The query ID associated with the alert.
+    - contextPath: Databricks.SQLAlert.state
+      type: String
+      description: The current state of the alert.
+    - contextPath: Databricks.SQLAlert.lifecycle_state
+      type: String
+      description: The lifecycle state of the alert.
+    - contextPath: Databricks.SQLAlert.owner_user_name
+      type: String
+      description: The owner of the alert.
+    - contextPath: Databricks.SQLAlert.create_time
+      type: Date
+      description: When the alert was created.
+    - contextPath: Databricks.SQLAlert.update_time
+      type: Date
+      description: When the alert was last updated.
+
+  - name: databricks-sql-alert-get
+    description: Retrieves a SQL alert.
+    arguments:
+    - name: alert_id
+      required: true
+      description: The ID of the alert.
+    outputs:
+    - contextPath: Databricks.SQLAlert.id
+      type: String
+      description: The unique identifier of the alert.
+    - contextPath: Databricks.SQLAlert.display_name
+      type: String
+      description: The display name of the alert.
+    - contextPath: Databricks.SQLAlert.query_id
+      type: String
+      description: The query ID associated with the alert.
+    - contextPath: Databricks.SQLAlert.condition
+      type: Unknown
+      description: The alert condition.
+    - contextPath: Databricks.SQLAlert.state
+      type: String
+      description: The current state of the alert.
+    - contextPath: Databricks.SQLAlert.lifecycle_state
+      type: String
+      description: The lifecycle state of the alert.
+    - contextPath: Databricks.SQLAlert.owner_user_name
+      type: String
+      description: The owner of the alert.
+    - contextPath: Databricks.SQLAlert.create_time
+      type: Date
+      description: When the alert was created.
+    - contextPath: Databricks.SQLAlert.update_time
+      type: Date
+      description: When the alert was last updated.
+
+  - name: databricks-sql-alert-create
+    description: Creates a new SQL alert.
+    arguments:
+    - name: display_name
+      required: true
+      description: The display name of the alert.
+    - name: query_id
+      required: true
+      description: The query ID to monitor.
+    - name: condition
+      required: true
+      description: The alert condition as a JSON string.
+    outputs:
+    - contextPath: Databricks.SQLAlert.id
+      type: String
+      description: The ID of the newly created alert.
+
+  - name: databricks-sql-alert-update
+    description: Updates a SQL alert.
+    arguments:
+    - name: alert_id
+      required: true
+      description: The ID of the alert to update.
+    - name: display_name
+      required: false
+      description: New display name for the alert.
+    - name: query_id
+      required: false
+      description: New query ID.
+    - name: condition
+      required: false
+      description: New condition as a JSON string.
+    outputs:
+    - contextPath: Databricks.SQLAlert.id
+      type: String
+      description: The ID of the updated alert.
+
+  - name: databricks-sql-alert-delete
+    description: Deletes a SQL alert.
+    arguments:
+    - name: alert_id
+      required: true
+      description: The ID of the alert to delete.
+    outputs: []
+
+  - name: databricks-sql-query-history-list
+    description: Lists SQL query execution history.
+    arguments:
+    - name: max_results
+      required: false
+      description: Maximum number of results to return.
+    - name: start_time_ms
+      required: false
+      description: Start time in milliseconds since epoch.
+    - name: end_time_ms
+      required: false
+      description: End time in milliseconds since epoch.
+    - name: statuses
+      required: false
+      isArray: true
+      description: Filter by statuses.
+      auto: PREDEFINED
+      predefined:
+      - QUEUED
+      - RUNNING
+      - CANCELED
+      - FAILED
+      - FINISHED
+    outputs:
+    - contextPath: Databricks.SQLQueryHistory.query_id
+      type: String
+      description: The query execution ID.
+    - contextPath: Databricks.SQLQueryHistory.query_text
+      type: String
+      description: The SQL text that was executed.
+    - contextPath: Databricks.SQLQueryHistory.status
+      type: String
+      description: The execution status.
+    - contextPath: Databricks.SQLQueryHistory.user_name
+      type: String
+      description: The user who ran the query.
+    - contextPath: Databricks.SQLQueryHistory.warehouse_id
+      type: String
+      description: The warehouse used for execution.
+    - contextPath: Databricks.SQLQueryHistory.duration
+      type: Number
+      description: The execution duration in milliseconds.
+
+  - name: databricks-serving-endpoint-list
+    description: Lists all serving endpoints.
+    arguments: []
+    outputs:
+    - contextPath: Databricks.ServingEndpoint.name
+      type: String
+      description: The name of the endpoint.
+    - contextPath: Databricks.ServingEndpoint.creator
+      type: String
+      description: The creator of the endpoint.
+    - contextPath: Databricks.ServingEndpoint.creation_timestamp
+      type: Date
+      description: When the endpoint was created.
+    - contextPath: Databricks.ServingEndpoint.state
+      type: Unknown
+      description: The state of the endpoint.
+    - contextPath: Databricks.ServingEndpoint.config
+      type: Unknown
+      description: The endpoint configuration.
+
+  - name: databricks-serving-endpoint-get
+    description: Retrieves a serving endpoint.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the endpoint.
+    outputs:
+    - contextPath: Databricks.ServingEndpoint.name
+      type: String
+      description: The name of the endpoint.
+    - contextPath: Databricks.ServingEndpoint.creator
+      type: String
+      description: The creator of the endpoint.
+    - contextPath: Databricks.ServingEndpoint.creation_timestamp
+      type: Date
+      description: When the endpoint was created.
+    - contextPath: Databricks.ServingEndpoint.state
+      type: Unknown
+      description: The state of the endpoint.
+    - contextPath: Databricks.ServingEndpoint.config
+      type: Unknown
+      description: The endpoint configuration.
+
+  - name: databricks-serving-endpoint-create
+    description: Creates a new serving endpoint.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the endpoint.
+    - name: config
+      required: true
+      description: The endpoint configuration as a JSON string.
+    outputs:
+    - contextPath: Databricks.ServingEndpoint.name
+      type: String
+      description: The name of the created endpoint.
+
+  - name: databricks-serving-endpoint-update-config
+    description: Updates the configuration of a serving endpoint.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the endpoint.
+    - name: served_entities
+      required: true
+      description: JSON string of served entity configurations.
+    outputs:
+    - contextPath: Databricks.ServingEndpoint.name
+      type: String
+      description: The name of the updated endpoint.
+
+  - name: databricks-serving-endpoint-delete
+    description: Deletes a serving endpoint.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the endpoint to delete.
+    outputs: []
+
+  - name: databricks-serving-endpoint-query
+    description: Queries a serving endpoint for predictions.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the endpoint.
+    - name: inputs
+      required: true
+      description: JSON string of input data.
+    outputs:
+    - contextPath: Databricks.ServingEndpointResponse.predictions
+      type: Unknown
+      description: The prediction results.
+
+  - name: databricks-serving-endpoint-get-logs
+    description: Retrieves logs for a served model.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the serving endpoint.
+    - name: served_model_name
+      required: true
+      description: The name of the served model.
+    outputs:
+    - contextPath: Databricks.ServingEndpointLogs.logs
+      type: String
+      description: The model logs.
+
+  - name: databricks-vector-search-endpoint-list
+    description: Lists all vector search endpoints.
+    arguments: []
+    outputs:
+    - contextPath: Databricks.VectorSearchEndpoint.name
+      type: String
+      description: The name of the endpoint.
+    - contextPath: Databricks.VectorSearchEndpoint.endpoint_type
+      type: String
+      description: The type of the endpoint.
+    - contextPath: Databricks.VectorSearchEndpoint.state
+      type: String
+      description: The state of the endpoint.
+
+  - name: databricks-vector-search-endpoint-get
+    description: Retrieves a vector search endpoint.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the endpoint.
+    outputs:
+    - contextPath: Databricks.VectorSearchEndpoint.name
+      type: String
+      description: The name of the endpoint.
+    - contextPath: Databricks.VectorSearchEndpoint.endpoint_type
+      type: String
+      description: The type of the endpoint.
+    - contextPath: Databricks.VectorSearchEndpoint.state
+      type: String
+      description: The state of the endpoint.
+    - contextPath: Databricks.VectorSearchEndpoint.num_indexes
+      type: Number
+      description: The number of indexes.
+    - contextPath: Databricks.VectorSearchEndpoint.creator
+      type: String
+      description: The creator of the endpoint.
+
+  - name: databricks-vector-search-endpoint-create
+    description: Creates a new vector search endpoint.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the endpoint.
+    - name: endpoint_type
+      required: true
+      description: The type of the endpoint.
+    outputs:
+    - contextPath: Databricks.VectorSearchEndpoint.name
+      type: String
+      description: The name of the created endpoint.
+
+  - name: databricks-vector-search-endpoint-delete
+    description: Deletes a vector search endpoint.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the endpoint to delete.
+    outputs: []
+
+  - name: databricks-vector-search-endpoint-get-metrics
+    description: Retrieves metrics for a vector search endpoint.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the endpoint.
+    outputs:
+    - contextPath: Databricks.VectorSearchMetrics.metrics
+      type: Unknown
+      description: The endpoint metrics.
+
+  - name: databricks-mlflow-metric-history
+    description: Gets the history of a metric for a run.
+    arguments:
+    - name: run_id
+      required: true
+      description: The ID of the MLflow run.
+    - name: metric_key
+      required: true
+      description: The metric key to retrieve history for.
+    outputs:
+    - contextPath: Databricks.MLflowMetric.key
+      type: String
+      description: The metric key.
+    - contextPath: Databricks.MLflowMetric.value
+      type: Number
+      description: The metric value.
+    - contextPath: Databricks.MLflowMetric.timestamp
+      type: Date
+      description: When the metric was logged.
+    - contextPath: Databricks.MLflowMetric.step
+      type: Number
+      description: The step number.
+
+  - name: databricks-mlflow-model-list
+    description: Lists registered MLflow models.
+    arguments:
+    - name: max_results
+      required: false
+      description: Maximum number of models to return.
+    - name: page_token
+      required: false
+      description: Pagination token.
+    outputs:
+    - contextPath: Databricks.MLflowModel.name
+      type: String
+      description: The name of the model.
+    - contextPath: Databricks.MLflowModel.creation_timestamp
+      type: Date
+      description: When the model was created.
+    - contextPath: Databricks.MLflowModel.last_updated_timestamp
+      type: Date
+      description: When the model was last updated.
+    - contextPath: Databricks.MLflowModel.user_id
+      type: String
+      description: The user who created the model.
+    - contextPath: Databricks.MLflowModel.description
+      type: String
+      description: The model description.
+
+  - name: databricks-mlflow-model-get
+    description: Retrieves a registered MLflow model.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the model.
+    outputs:
+    - contextPath: Databricks.MLflowModel.name
+      type: String
+      description: The name of the model.
+    - contextPath: Databricks.MLflowModel.creation_timestamp
+      type: Date
+      description: When the model was created.
+    - contextPath: Databricks.MLflowModel.last_updated_timestamp
+      type: Date
+      description: When the model was last updated.
+    - contextPath: Databricks.MLflowModel.user_id
+      type: String
+      description: The user who created the model.
+    - contextPath: Databricks.MLflowModel.description
+      type: String
+      description: The model description.
+    - contextPath: Databricks.MLflowModel.latest_versions
+      type: Unknown
+      description: The latest versions of the model.
+
+  - name: databricks-mlflow-model-version-create
+    description: Creates a new model version.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the registered model.
+    - name: source
+      required: true
+      description: The source path for the model artifacts.
+    - name: run_id
+      required: false
+      description: The MLflow run ID.
+    - name: description
+      required: false
+      description: Description for the model version.
+    outputs:
+    - contextPath: Databricks.MLflowModelVersion.name
+      type: String
+      description: The model name.
+    - contextPath: Databricks.MLflowModelVersion.version
+      type: String
+      description: The version number.
+    - contextPath: Databricks.MLflowModelVersion.creation_timestamp
+      type: Date
+      description: When the version was created.
+    - contextPath: Databricks.MLflowModelVersion.current_stage
+      type: String
+      description: The current stage.
+    - contextPath: Databricks.MLflowModelVersion.source
+      type: String
+      description: The source path.
+    - contextPath: Databricks.MLflowModelVersion.run_id
+      type: String
+      description: The associated run ID.
+    - contextPath: Databricks.MLflowModelVersion.status
+      type: String
+      description: The version status.
+
+  - name: databricks-mlflow-model-version-get
+    description: Retrieves a specific model version.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the registered model.
+    - name: version
+      required: true
+      description: The version number.
+    outputs:
+    - contextPath: Databricks.MLflowModelVersion.name
+      type: String
+      description: The model name.
+    - contextPath: Databricks.MLflowModelVersion.version
+      type: String
+      description: The version number.
+    - contextPath: Databricks.MLflowModelVersion.creation_timestamp
+      type: Date
+      description: When the version was created.
+    - contextPath: Databricks.MLflowModelVersion.current_stage
+      type: String
+      description: The current stage.
+    - contextPath: Databricks.MLflowModelVersion.source
+      type: String
+      description: The source path.
+    - contextPath: Databricks.MLflowModelVersion.run_id
+      type: String
+      description: The associated run ID.
+    - contextPath: Databricks.MLflowModelVersion.status
+      type: String
+      description: The version status.
+
+  - name: databricks-mlflow-model-version-search
+    description: Searches model versions.
+    arguments:
+    - name: filter
+      required: false
+      description: Filter string for searching versions.
+    - name: max_results
+      required: false
+      description: Maximum number of results.
+    - name: order_by
+      required: false
+      description: Ordering specification.
+    - name: page_token
+      required: false
+      description: Pagination token.
+    outputs:
+    - contextPath: Databricks.MLflowModelVersion.name
+      type: String
+      description: The model name.
+    - contextPath: Databricks.MLflowModelVersion.version
+      type: String
+      description: The version number.
+    - contextPath: Databricks.MLflowModelVersion.creation_timestamp
+      type: Date
+      description: When the version was created.
+    - contextPath: Databricks.MLflowModelVersion.current_stage
+      type: String
+      description: The current stage.
+    - contextPath: Databricks.MLflowModelVersion.source
+      type: String
+      description: The source path.
+    - contextPath: Databricks.MLflowModelVersion.run_id
+      type: String
+      description: The associated run ID.
+    - contextPath: Databricks.MLflowModelVersion.status
+      type: String
+      description: The version status.
+
+  - name: databricks-mlflow-model-version-delete
+    description: Deletes a model version.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the registered model.
+    - name: version
+      required: true
+      description: The version number to delete.
+    outputs: []
+
+  - name: databricks-mlflow-model-version-transition-stage
+    description: Transitions a model version to a new stage.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the registered model.
+    - name: version
+      required: true
+      description: The version number.
+    - name: stage
+      required: true
+      description: The target stage.
+      auto: PREDEFINED
+      predefined:
+      - None
+      - Staging
+      - Production
+      - Archived
+    outputs:
+    - contextPath: Databricks.MLflowModelVersion.name
+      type: String
+      description: The model name.
+    - contextPath: Databricks.MLflowModelVersion.version
+      type: String
+      description: The version number.
+    - contextPath: Databricks.MLflowModelVersion.current_stage
+      type: String
+      description: The new current stage.
+
+  - name: databricks-catalog-get
+    description: Retrieves a Unity Catalog catalog.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the catalog.
+    outputs:
+    - contextPath: Databricks.Catalog.name
+      type: String
+      description: The name of the catalog.
+    - contextPath: Databricks.Catalog.owner
+      type: String
+      description: The owner of the catalog.
+    - contextPath: Databricks.Catalog.comment
+      type: String
+      description: The catalog comment.
+    - contextPath: Databricks.Catalog.metastore_id
+      type: String
+      description: The metastore ID.
+    - contextPath: Databricks.Catalog.created_at
+      type: Date
+      description: When the catalog was created.
+    - contextPath: Databricks.Catalog.created_by
+      type: String
+      description: Who created the catalog.
+
+  - name: databricks-catalog-list
+    description: Lists all Unity Catalog catalogs.
+    arguments: []
+    outputs:
+    - contextPath: Databricks.Catalog.name
+      type: String
+      description: The name of the catalog.
+    - contextPath: Databricks.Catalog.owner
+      type: String
+      description: The owner of the catalog.
+    - contextPath: Databricks.Catalog.comment
+      type: String
+      description: The catalog comment.
+    - contextPath: Databricks.Catalog.metastore_id
+      type: String
+      description: The metastore ID.
+    - contextPath: Databricks.Catalog.created_at
+      type: Date
+      description: When the catalog was created.
+    - contextPath: Databricks.Catalog.created_by
+      type: String
+      description: Who created the catalog.
+
+  - name: databricks-catalog-create
+    description: Creates a new Unity Catalog catalog.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the catalog.
+    - name: comment
+      required: false
+      description: A comment for the catalog.
+    outputs:
+    - contextPath: Databricks.Catalog.name
+      type: String
+      description: The name of the created catalog.
+
+  - name: databricks-catalog-update
+    description: Updates a Unity Catalog catalog.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the catalog to update.
+    - name: new_name
+      required: false
+      description: New name for the catalog.
+    - name: comment
+      required: false
+      description: New comment.
+    - name: owner
+      required: false
+      description: New owner.
+    outputs:
+    - contextPath: Databricks.Catalog.name
+      type: String
+      description: The updated catalog name.
+
+  - name: databricks-catalog-delete
+    description: Deletes a Unity Catalog catalog.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the catalog to delete.
+    - name: force
+      required: false
+      description: Whether to force delete.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs: []
+
+  - name: databricks-schema-get
+    description: Retrieves a Unity Catalog schema.
+    arguments:
+    - name: full_name
+      required: true
+      description: The full name of the schema (catalog.schema).
+    outputs:
+    - contextPath: Databricks.Schema.name
+      type: String
+      description: The name of the schema.
+    - contextPath: Databricks.Schema.catalog_name
+      type: String
+      description: The parent catalog name.
+    - contextPath: Databricks.Schema.owner
+      type: String
+      description: The owner of the schema.
+    - contextPath: Databricks.Schema.comment
+      type: String
+      description: The schema comment.
+    - contextPath: Databricks.Schema.full_name
+      type: String
+      description: The full name of the schema.
+    - contextPath: Databricks.Schema.created_at
+      type: Date
+      description: When the schema was created.
+
+  - name: databricks-schema-list
+    description: Lists schemas in a catalog.
+    arguments:
+    - name: catalog_name
+      required: true
+      description: The name of the catalog.
+    outputs:
+    - contextPath: Databricks.Schema.name
+      type: String
+      description: The name of the schema.
+    - contextPath: Databricks.Schema.catalog_name
+      type: String
+      description: The parent catalog name.
+    - contextPath: Databricks.Schema.owner
+      type: String
+      description: The owner of the schema.
+    - contextPath: Databricks.Schema.comment
+      type: String
+      description: The schema comment.
+    - contextPath: Databricks.Schema.full_name
+      type: String
+      description: The full name of the schema.
+    - contextPath: Databricks.Schema.created_at
+      type: Date
+      description: When the schema was created.
+
+  - name: databricks-schema-create
+    description: Creates a new schema in a catalog.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the schema.
+    - name: catalog_name
+      required: true
+      description: The parent catalog name.
+    - name: comment
+      required: false
+      description: A comment for the schema.
+    outputs:
+    - contextPath: Databricks.Schema.full_name
+      type: String
+      description: The full name of the created schema.
+
+  - name: databricks-schema-update
+    description: Updates a schema.
+    arguments:
+    - name: full_name
+      required: true
+      description: The full name of the schema to update.
+    - name: new_name
+      required: false
+      description: New name for the schema.
+    - name: comment
+      required: false
+      description: New comment.
+    - name: owner
+      required: false
+      description: New owner.
+    outputs:
+    - contextPath: Databricks.Schema.full_name
+      type: String
+      description: The updated schema full name.
+
+  - name: databricks-schema-delete
+    description: Deletes a schema.
+    arguments:
+    - name: full_name
+      required: true
+      description: The full name of the schema to delete.
+    outputs: []
+
+  - name: databricks-table-get
+    description: Retrieves a Unity Catalog table.
+    arguments:
+    - name: full_name
+      required: true
+      description: The full name of the table (catalog.schema.table).
+    outputs:
+    - contextPath: Databricks.Table.name
+      type: String
+      description: The name of the table.
+    - contextPath: Databricks.Table.catalog_name
+      type: String
+      description: The parent catalog.
+    - contextPath: Databricks.Table.schema_name
+      type: String
+      description: The parent schema.
+    - contextPath: Databricks.Table.table_type
+      type: String
+      description: The type of table.
+    - contextPath: Databricks.Table.data_source_format
+      type: String
+      description: The data source format.
+    - contextPath: Databricks.Table.owner
+      type: String
+      description: The owner of the table.
+    - contextPath: Databricks.Table.created_at
+      type: Date
+      description: When the table was created.
+
+  - name: databricks-table-list
+    description: Lists tables in a schema.
+    arguments:
+    - name: catalog_name
+      required: true
+      description: The catalog name.
+    - name: schema_name
+      required: true
+      description: The schema name.
+    - name: max_results
+      required: false
+      description: Maximum number of results.
+    - name: page_token
+      required: false
+      description: Pagination token.
+    outputs:
+    - contextPath: Databricks.Table.name
+      type: String
+      description: The name of the table.
+    - contextPath: Databricks.Table.catalog_name
+      type: String
+      description: The parent catalog.
+    - contextPath: Databricks.Table.schema_name
+      type: String
+      description: The parent schema.
+    - contextPath: Databricks.Table.table_type
+      type: String
+      description: The type of table.
+    - contextPath: Databricks.Table.data_source_format
+      type: String
+      description: The data source format.
+    - contextPath: Databricks.Table.owner
+      type: String
+      description: The owner of the table.
+    - contextPath: Databricks.Table.created_at
+      type: Date
+      description: When the table was created.
+
+  - name: databricks-table-delete
+    description: Deletes a table.
+    arguments:
+    - name: full_name
+      required: true
+      description: The full name of the table to delete.
+    outputs: []
+
+  - name: databricks-table-exists
+    description: Checks if a table exists.
+    arguments:
+    - name: full_name
+      required: true
+      description: The full name of the table.
+    outputs:
+    - contextPath: Databricks.TableExists.table_exists
+      type: Boolean
+      description: Whether the table exists.
+
+  - name: databricks-table-summaries
+    description: Lists table summaries in a catalog.
+    arguments:
+    - name: catalog_name
+      required: true
+      description: The catalog name.
+    - name: schema_name_pattern
+      required: false
+      description: Pattern to filter schema names.
+    - name: table_name_pattern
+      required: false
+      description: Pattern to filter table names.
+    - name: max_results
+      required: false
+      description: Maximum number of results.
+    - name: page_token
+      required: false
+      description: Pagination token.
+    outputs:
+    - contextPath: Databricks.TableSummary.full_name
+      type: String
+      description: The full name of the table.
+    - contextPath: Databricks.TableSummary.table_type
+      type: String
+      description: The type of table.
+
+  - name: databricks-volume-get
+    description: Retrieves a Unity Catalog volume.
+    arguments:
+    - name: full_name
+      required: true
+      description: The full name of the volume (catalog.schema.volume).
+    outputs:
+    - contextPath: Databricks.Volume.name
+      type: String
+      description: The name of the volume.
+    - contextPath: Databricks.Volume.catalog_name
+      type: String
+      description: The parent catalog.
+    - contextPath: Databricks.Volume.schema_name
+      type: String
+      description: The parent schema.
+    - contextPath: Databricks.Volume.volume_type
+      type: String
+      description: The volume type.
+    - contextPath: Databricks.Volume.storage_location
+      type: String
+      description: The storage location.
+    - contextPath: Databricks.Volume.owner
+      type: String
+      description: The owner of the volume.
+    - contextPath: Databricks.Volume.created_at
+      type: Date
+      description: When the volume was created.
+
+  - name: databricks-volume-list
+    description: Lists volumes in a schema.
+    arguments:
+    - name: catalog_name
+      required: true
+      description: The catalog name.
+    - name: schema_name
+      required: true
+      description: The schema name.
+    outputs:
+    - contextPath: Databricks.Volume.name
+      type: String
+      description: The name of the volume.
+    - contextPath: Databricks.Volume.catalog_name
+      type: String
+      description: The parent catalog.
+    - contextPath: Databricks.Volume.schema_name
+      type: String
+      description: The parent schema.
+    - contextPath: Databricks.Volume.volume_type
+      type: String
+      description: The volume type.
+    - contextPath: Databricks.Volume.storage_location
+      type: String
+      description: The storage location.
+    - contextPath: Databricks.Volume.owner
+      type: String
+      description: The owner of the volume.
+    - contextPath: Databricks.Volume.created_at
+      type: Date
+      description: When the volume was created.
+
+  - name: databricks-volume-create
+    description: Creates a new Unity Catalog volume.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the volume.
+    - name: catalog_name
+      required: true
+      description: The parent catalog.
+    - name: schema_name
+      required: true
+      description: The parent schema.
+    - name: volume_type
+      required: true
+      description: The volume type.
+      auto: PREDEFINED
+      predefined:
+      - MANAGED
+      - EXTERNAL
+    - name: storage_location
+      required: false
+      description: The storage location for EXTERNAL volumes.
+    outputs:
+    - contextPath: Databricks.Volume.name
+      type: String
+      description: The name of the created volume.
+
+  - name: databricks-volume-update
+    description: Updates a Unity Catalog volume.
+    arguments:
+    - name: full_name
+      required: true
+      description: The full name of the volume to update.
+    - name: new_name
+      required: false
+      description: New name.
+    - name: comment
+      required: false
+      description: New comment.
+    - name: owner
+      required: false
+      description: New owner.
+    outputs:
+    - contextPath: Databricks.Volume.name
+      type: String
+      description: The updated volume name.
+
+  - name: databricks-volume-delete
+    description: Deletes a Unity Catalog volume.
+    arguments:
+    - name: full_name
+      required: true
+      description: The full name of the volume to delete.
+    outputs: []
+
+  - name: databricks-grant-get
+    description: Gets the permissions on a securable object.
+    arguments:
+    - name: securable_type
+      required: true
+      description: The type of securable object.
+    - name: full_name
+      required: true
+      description: The full name of the securable object.
+    outputs:
+    - contextPath: Databricks.Grant.principal
+      type: String
+      description: The principal.
+    - contextPath: Databricks.Grant.privileges
+      type: Unknown
+      description: The granted privileges.
+
+  - name: databricks-grant-update
+    description: Updates permissions on a securable object.
+    arguments:
+    - name: securable_type
+      required: true
+      description: The type of securable object.
+    - name: full_name
+      required: true
+      description: The full name of the securable object.
+    - name: changes
+      required: true
+      description: JSON string of permission changes.
+    outputs: []
+
+  - name: databricks-user-get
+    description: Retrieves a workspace user.
+    arguments:
+    - name: user_id
+      required: true
+      description: The ID of the user.
+    outputs:
+    - contextPath: Databricks.User.id
+      type: String
+      description: The user ID.
+    - contextPath: Databricks.User.userName
+      type: String
+      description: The username.
+    - contextPath: Databricks.User.displayName
+      type: String
+      description: The display name.
+    - contextPath: Databricks.User.active
+      type: Boolean
+      description: Whether the user is active.
+
+  - name: databricks-user-list
+    description: Lists workspace users.
+    arguments:
+    - name: filter
+      required: false
+      description: SCIM filter expression.
+    - name: count
+      required: false
+      description: Maximum number of results.
+    - name: startIndex
+      required: false
+      description: Start index for pagination.
+    outputs:
+    - contextPath: Databricks.User.id
+      type: String
+      description: The user ID.
+    - contextPath: Databricks.User.userName
+      type: String
+      description: The username.
+    - contextPath: Databricks.User.displayName
+      type: String
+      description: The display name.
+    - contextPath: Databricks.User.active
+      type: Boolean
+      description: Whether the user is active.
+
+  - name: databricks-user-create
+    description: Creates a new workspace user.
+    arguments:
+    - name: user_name
+      required: true
+      description: The username (email address).
+    - name: display_name
+      required: false
+      description: The display name.
+    outputs:
+    - contextPath: Databricks.User.id
+      type: String
+      description: The ID of the created user.
+
+  - name: databricks-user-update
+    description: Updates a workspace user.
+    arguments:
+    - name: user_id
+      required: true
+      description: The ID of the user to update.
+    - name: user_name
+      required: false
+      description: New username.
+    - name: display_name
+      required: false
+      description: New display name.
+    - name: active
+      required: false
+      description: Whether the user is active.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs: []
+
+  - name: databricks-user-delete
+    description: Deletes a workspace user.
+    arguments:
+    - name: user_id
+      required: true
+      description: The ID of the user to delete.
+    outputs: []
+
+  - name: databricks-group-get
+    description: Retrieves a workspace group.
+    arguments:
+    - name: group_id
+      required: true
+      description: The ID of the group.
+    outputs:
+    - contextPath: Databricks.Group.id
+      type: String
+      description: The group ID.
+    - contextPath: Databricks.Group.displayName
+      type: String
+      description: The display name.
+    - contextPath: Databricks.Group.members
+      type: Unknown
+      description: The group members.
+
+  - name: databricks-group-list
+    description: Lists workspace groups.
+    arguments:
+    - name: filter
+      required: false
+      description: SCIM filter expression.
+    - name: count
+      required: false
+      description: Maximum number of results.
+    - name: startIndex
+      required: false
+      description: Start index for pagination.
+    outputs:
+    - contextPath: Databricks.Group.id
+      type: String
+      description: The group ID.
+    - contextPath: Databricks.Group.displayName
+      type: String
+      description: The display name.
+    - contextPath: Databricks.Group.members
+      type: Unknown
+      description: The group members.
+
+  - name: databricks-group-create
+    description: Creates a new workspace group.
+    arguments:
+    - name: display_name
+      required: true
+      description: The display name for the group.
+    outputs:
+    - contextPath: Databricks.Group.id
+      type: String
+      description: The ID of the created group.
+
+  - name: databricks-group-update
+    description: Updates a workspace group.
+    arguments:
+    - name: group_id
+      required: true
+      description: The ID of the group to update.
+    - name: display_name
+      required: false
+      description: New display name.
+    outputs: []
+
+  - name: databricks-group-delete
+    description: Deletes a workspace group.
+    arguments:
+    - name: group_id
+      required: true
+      description: The ID of the group to delete.
+    outputs: []
+
+  - name: databricks-service-principal-get
+    description: Retrieves a service principal.
+    arguments:
+    - name: sp_id
+      required: true
+      description: The ID of the service principal.
+    outputs:
+    - contextPath: Databricks.ServicePrincipal.id
+      type: String
+      description: The service principal ID.
+    - contextPath: Databricks.ServicePrincipal.applicationId
+      type: String
+      description: The application ID.
+    - contextPath: Databricks.ServicePrincipal.displayName
+      type: String
+      description: The display name.
+    - contextPath: Databricks.ServicePrincipal.active
+      type: Boolean
+      description: Whether the service principal is active.
+
+  - name: databricks-service-principal-list
+    description: Lists service principals.
+    arguments:
+    - name: filter
+      required: false
+      description: SCIM filter expression.
+    - name: count
+      required: false
+      description: Maximum number of results.
+    - name: startIndex
+      required: false
+      description: Start index for pagination.
+    outputs:
+    - contextPath: Databricks.ServicePrincipal.id
+      type: String
+      description: The service principal ID.
+    - contextPath: Databricks.ServicePrincipal.applicationId
+      type: String
+      description: The application ID.
+    - contextPath: Databricks.ServicePrincipal.displayName
+      type: String
+      description: The display name.
+    - contextPath: Databricks.ServicePrincipal.active
+      type: Boolean
+      description: Whether the service principal is active.
+
+  - name: databricks-service-principal-create
+    description: Creates a new service principal.
+    arguments:
+    - name: application_id
+      required: true
+      description: The application ID.
+    - name: display_name
+      required: false
+      description: The display name.
+    outputs:
+    - contextPath: Databricks.ServicePrincipal.id
+      type: String
+      description: The ID of the created service principal.
+
+  - name: databricks-service-principal-update
+    description: Updates a service principal.
+    arguments:
+    - name: sp_id
+      required: true
+      description: The ID of the service principal to update.
+    - name: display_name
+      required: false
+      description: New display name.
+    - name: active
+      required: false
+      description: Whether the service principal is active.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs: []
+
+  - name: databricks-service-principal-delete
+    description: Deletes a service principal.
+    arguments:
+    - name: sp_id
+      required: true
+      description: The ID of the service principal to delete.
+    outputs: []
+
+  - name: databricks-permissions-get
+    description: Gets permissions on a workspace object.
+    arguments:
+    - name: object_type
+      required: true
+      description: The type of object.
+    - name: object_id
+      required: true
+      description: The ID of the object.
+    outputs:
+    - contextPath: Databricks.Permission.object_id
+      type: String
+      description: The object ID.
+    - contextPath: Databricks.Permission.object_type
+      type: String
+      description: The object type.
+    - contextPath: Databricks.Permission.access_control_list
+      type: Unknown
+      description: The access control list.
+
+  - name: databricks-permissions-set
+    description: Replaces permissions on a workspace object.
+    arguments:
+    - name: object_type
+      required: true
+      description: The type of object.
+    - name: object_id
+      required: true
+      description: The ID of the object.
+    - name: access_control_list
+      required: true
+      description: JSON string of the access control list.
+    outputs: []
+
+  - name: databricks-permissions-update
+    description: Partially updates permissions on a workspace object.
+    arguments:
+    - name: object_type
+      required: true
+      description: The type of object.
+    - name: object_id
+      required: true
+      description: The ID of the object.
+    - name: access_control_list
+      required: true
+      description: JSON string of the access control list.
+    outputs: []
+
+  - name: databricks-token-list
+    description: Lists all valid tokens for the user.
+    arguments: []
+    outputs:
+    - contextPath: Databricks.Token.token_id
+      type: String
+      description: The token ID.
+    - contextPath: Databricks.Token.creation_time
+      type: Date
+      description: When the token was created.
+    - contextPath: Databricks.Token.expiry_time
+      type: Date
+      description: When the token expires.
+    - contextPath: Databricks.Token.comment
+      type: String
+      description: The token comment.
+
+  - name: databricks-token-create
+    description: Creates a new personal access token.
+    arguments:
+    - name: comment
+      required: false
+      description: A comment for the token.
+    - name: lifetime_seconds
+      required: false
+      description: Lifetime of the token in seconds.
+    outputs:
+    - contextPath: Databricks.Token.token_id
+      type: String
+      description: The ID of the new token.
+    - contextPath: Databricks.Token.token_value
+      type: String
+      description: The value of the new token.
+
+  - name: databricks-token-update
+    description: Updates a token comment.
+    arguments:
+    - name: token_id
+      required: true
+      description: The ID of the token to update.
+    - name: comment
+      required: false
+      description: New comment for the token.
+    outputs: []
+
+  - name: databricks-token-delete
+    description: Revokes a personal access token.
+    arguments:
+    - name: token_id
+      required: true
+      description: The ID of the token to revoke.
+    outputs: []
+
+  - name: databricks-secret-put
+    description: Stores a secret value in a scope.
+    arguments:
+    - name: scope
+      required: true
+      description: The name of the secret scope.
+    - name: key
+      required: true
+      description: The secret key name.
+    - name: string_value
+      required: false
+      description: The secret value.
+    outputs: []
+
+  - name: databricks-secret-delete
+    description: Deletes a secret from a scope.
+    arguments:
+    - name: scope
+      required: true
+      description: The name of the secret scope.
+    - name: key
+      required: true
+      description: The secret key name.
+    outputs: []
+
+  - name: databricks-secret-list
+    description: Lists secrets in a scope.
+    arguments:
+    - name: scope
+      required: true
+      description: The name of the secret scope.
+    outputs:
+    - contextPath: Databricks.Secret.key
+      type: String
+      description: The secret key name.
+    - contextPath: Databricks.Secret.last_updated_timestamp
+      type: Date
+      description: When the secret was last updated.
+
+  - name: databricks-secret-scope-create
+    description: Creates a new secret scope.
+    arguments:
+    - name: scope
+      required: true
+      description: The name of the scope to create.
+    - name: initial_manage_principal
+      required: false
+      description: The initial principal to manage the scope.
+    outputs: []
+
+  - name: databricks-secret-scope-list
+    description: Lists all secret scopes.
+    arguments: []
+    outputs:
+    - contextPath: Databricks.SecretScope.name
+      type: String
+      description: The name of the scope.
+    - contextPath: Databricks.SecretScope.backend_type
+      type: String
+      description: The backend type of the scope.
+
+  - name: databricks-secret-scope-delete
+    description: Deletes a secret scope.
+    arguments:
+    - name: scope
+      required: true
+      description: The name of the scope to delete.
+    outputs: []
+
+  - name: databricks-secret-acl-get
+    description: Gets the ACL for a principal on a scope.
+    arguments:
+    - name: scope
+      required: true
+      description: The name of the secret scope.
+    - name: principal
+      required: true
+      description: The principal name.
+    outputs:
+    - contextPath: Databricks.SecretACL.principal
+      type: String
+      description: The principal.
+    - contextPath: Databricks.SecretACL.permission
+      type: String
+      description: The permission level.
+
+  - name: databricks-secret-acl-list
+    description: Lists ACLs on a secret scope.
+    arguments:
+    - name: scope
+      required: true
+      description: The name of the secret scope.
+    outputs:
+    - contextPath: Databricks.SecretACL.principal
+      type: String
+      description: The principal.
+    - contextPath: Databricks.SecretACL.permission
+      type: String
+      description: The permission level.
+
+  - name: databricks-secret-acl-put
+    description: Creates or updates an ACL on a secret scope.
+    arguments:
+    - name: scope
+      required: true
+      description: The name of the secret scope.
+    - name: principal
+      required: true
+      description: The principal name.
+    - name: permission
+      required: true
+      description: The permission level.
+      auto: PREDEFINED
+      predefined:
+      - READ
+      - WRITE
+      - MANAGE
+    outputs: []
+
+  - name: databricks-secret-acl-delete
+    description: Deletes an ACL from a secret scope.
+    arguments:
+    - name: scope
+      required: true
+      description: The name of the secret scope.
+    - name: principal
+      required: true
+      description: The principal name.
+    outputs: []
+
+  - name: databricks-dashboard-get
+    description: Retrieves a Lakeview dashboard.
+    arguments:
+    - name: dashboard_id
+      required: true
+      description: The ID of the dashboard.
+    outputs:
+    - contextPath: Databricks.Dashboard.dashboard_id
+      type: String
+      description: The unique identifier of the dashboard.
+    - contextPath: Databricks.Dashboard.display_name
+      type: String
+      description: The display name of the dashboard.
+    - contextPath: Databricks.Dashboard.warehouse_id
+      type: String
+      description: The associated warehouse.
+    - contextPath: Databricks.Dashboard.path
+      type: String
+      description: The workspace path.
+    - contextPath: Databricks.Dashboard.create_time
+      type: Date
+      description: When the dashboard was created.
+    - contextPath: Databricks.Dashboard.update_time
+      type: Date
+      description: When the dashboard was last updated.
+
+  - name: databricks-dashboard-list
+    description: Lists Lakeview dashboards.
+    arguments:
+    - name: page_size
+      required: false
+      description: Number of dashboards per page.
+    - name: page_token
+      required: false
+      description: Pagination token.
+    outputs:
+    - contextPath: Databricks.Dashboard.dashboard_id
+      type: String
+      description: The unique identifier of the dashboard.
+    - contextPath: Databricks.Dashboard.display_name
+      type: String
+      description: The display name of the dashboard.
+    - contextPath: Databricks.Dashboard.warehouse_id
+      type: String
+      description: The associated warehouse.
+    - contextPath: Databricks.Dashboard.path
+      type: String
+      description: The workspace path.
+    - contextPath: Databricks.Dashboard.create_time
+      type: Date
+      description: When the dashboard was created.
+    - contextPath: Databricks.Dashboard.update_time
+      type: Date
+      description: When the dashboard was last updated.
+
+  - name: databricks-dashboard-create
+    description: Creates a new Lakeview dashboard.
+    arguments:
+    - name: display_name
+      required: true
+      description: The display name of the dashboard.
+    - name: warehouse_id
+      required: true
+      description: The warehouse to use.
+    - name: parent_path
+      required: false
+      description: The parent workspace path.
+    - name: serialized_dashboard
+      required: false
+      description: The dashboard definition as a JSON string.
+    outputs:
+    - contextPath: Databricks.Dashboard.dashboard_id
+      type: String
+      description: The ID of the created dashboard.
+
+  - name: databricks-dashboard-update
+    description: Updates a Lakeview dashboard.
+    arguments:
+    - name: dashboard_id
+      required: true
+      description: The ID of the dashboard to update.
+    - name: display_name
+      required: false
+      description: New display name.
+    - name: warehouse_id
+      required: false
+      description: New warehouse ID.
+    - name: serialized_dashboard
+      required: false
+      description: New dashboard definition as a JSON string.
+    outputs:
+    - contextPath: Databricks.Dashboard.dashboard_id
+      type: String
+      description: The updated dashboard ID.
+
+  - name: databricks-dashboard-delete
+    description: Trashes a Lakeview dashboard.
+    arguments:
+    - name: dashboard_id
+      required: true
+      description: The ID of the dashboard to trash.
+    outputs: []
+
+  - name: databricks-dashboard-migrate
+    description: Migrates a classic SQL dashboard to Lakeview.
+    arguments:
+    - name: source_dashboard_id
+      required: true
+      description: The ID of the classic dashboard to migrate.
+    outputs:
+    - contextPath: Databricks.Dashboard.dashboard_id
+      type: String
+      description: The ID of the migrated dashboard.
+
+  - name: databricks-dashboard-publish
+    description: Publishes a draft Lakeview dashboard.
+    arguments:
+    - name: dashboard_id
+      required: true
+      description: The ID of the dashboard to publish.
+    - name: warehouse_id
+      required: false
+      description: The warehouse to use for the published dashboard.
+    - name: embed_credentials
+      required: false
+      description: Whether to embed credentials.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs: []
+
+  - name: databricks-global-init-script-get
+    description: Retrieves a global init script.
+    arguments:
+    - name: script_id
+      required: true
+      description: The ID of the init script.
+    outputs:
+    - contextPath: Databricks.GlobalInitScript.script_id
+      type: String
+      description: The unique identifier of the script.
+    - contextPath: Databricks.GlobalInitScript.name
+      type: String
+      description: The name of the script.
+    - contextPath: Databricks.GlobalInitScript.position
+      type: Number
+      description: The position in the execution order.
+    - contextPath: Databricks.GlobalInitScript.enabled
+      type: Boolean
+      description: Whether the script is enabled.
+    - contextPath: Databricks.GlobalInitScript.created_at
+      type: Date
+      description: When the script was created.
+    - contextPath: Databricks.GlobalInitScript.created_by
+      type: String
+      description: Who created the script.
+    - contextPath: Databricks.GlobalInitScript.script
+      type: String
+      description: The base64-encoded script content.
+
+  - name: databricks-global-init-script-list
+    description: Lists all global init scripts.
+    arguments: []
+    outputs:
+    - contextPath: Databricks.GlobalInitScript.script_id
+      type: String
+      description: The unique identifier of the script.
+    - contextPath: Databricks.GlobalInitScript.name
+      type: String
+      description: The name of the script.
+    - contextPath: Databricks.GlobalInitScript.position
+      type: Number
+      description: The position in the execution order.
+    - contextPath: Databricks.GlobalInitScript.enabled
+      type: Boolean
+      description: Whether the script is enabled.
+    - contextPath: Databricks.GlobalInitScript.created_at
+      type: Date
+      description: When the script was created.
+    - contextPath: Databricks.GlobalInitScript.created_by
+      type: String
+      description: Who created the script.
+
+  - name: databricks-global-init-script-create
+    description: Creates a new global init script.
+    arguments:
+    - name: name
+      required: true
+      description: The name of the script.
+    - name: script
+      required: true
+      description: Base64-encoded script content.
+    - name: position
+      required: false
+      description: Position in the execution order.
+    - name: enabled
+      required: false
+      description: Whether the script is enabled.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Databricks.GlobalInitScript.script_id
+      type: String
+      description: The ID of the created script.
+
+  - name: databricks-global-init-script-update
+    description: Updates a global init script.
+    arguments:
+    - name: script_id
+      required: true
+      description: The ID of the script to update.
+    - name: name
+      required: false
+      description: New name for the script.
+    - name: script
+      required: false
+      description: New base64-encoded script content.
+    - name: position
+      required: false
+      description: New position.
+    - name: enabled
+      required: false
+      description: Whether the script is enabled.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs: []
+
+  - name: databricks-global-init-script-delete
+    description: Deletes a global init script.
+    arguments:
+    - name: script_id
+      required: true
+      description: The ID of the script to delete.
+    outputs: []
+
+  - name: databricks-ip-access-list-get
+    description: Retrieves an IP access list.
+    arguments:
+    - name: ip_access_list_id
+      required: true
+      description: The ID of the IP access list.
+    outputs:
+    - contextPath: Databricks.IPAccessList.list_id
+      type: String
+      description: The unique identifier of the list.
+    - contextPath: Databricks.IPAccessList.label
+      type: String
+      description: The label of the list.
+    - contextPath: Databricks.IPAccessList.list_type
+      type: String
+      description: The list type (ALLOW or BLOCK).
+    - contextPath: Databricks.IPAccessList.ip_addresses
+      type: Unknown
+      description: The IP addresses in the list.
+    - contextPath: Databricks.IPAccessList.address_count
+      type: Number
+      description: Number of addresses in the list.
+    - contextPath: Databricks.IPAccessList.created_at
+      type: Date
+      description: When the list was created.
+    - contextPath: Databricks.IPAccessList.enabled
+      type: Boolean
+      description: Whether the list is enabled.
+
+  - name: databricks-ip-access-list-list
+    description: Lists all IP access lists.
+    arguments: []
+    outputs:
+    - contextPath: Databricks.IPAccessList.list_id
+      type: String
+      description: The unique identifier of the list.
+    - contextPath: Databricks.IPAccessList.label
+      type: String
+      description: The label of the list.
+    - contextPath: Databricks.IPAccessList.list_type
+      type: String
+      description: The list type (ALLOW or BLOCK).
+    - contextPath: Databricks.IPAccessList.ip_addresses
+      type: Unknown
+      description: The IP addresses in the list.
+    - contextPath: Databricks.IPAccessList.address_count
+      type: Number
+      description: Number of addresses in the list.
+    - contextPath: Databricks.IPAccessList.created_at
+      type: Date
+      description: When the list was created.
+    - contextPath: Databricks.IPAccessList.enabled
+      type: Boolean
+      description: Whether the list is enabled.
+
+  - name: databricks-ip-access-list-create
+    description: Creates a new IP access list.
+    arguments:
+    - name: label
+      required: true
+      description: The label for the list.
+    - name: list_type
+      required: true
+      description: The list type.
+      auto: PREDEFINED
+      predefined:
+      - ALLOW
+      - BLOCK
+    - name: ip_addresses
+      required: true
+      isArray: true
+      description: IP addresses or CIDR ranges.
+    outputs:
+    - contextPath: Databricks.IPAccessList.list_id
+      type: String
+      description: The ID of the created list.
+
+  - name: databricks-ip-access-list-update
+    description: Updates an IP access list.
+    arguments:
+    - name: ip_access_list_id
+      required: true
+      description: The ID of the list to update.
+    - name: label
+      required: false
+      description: New label.
+    - name: list_type
+      required: false
+      description: New list type.
+      auto: PREDEFINED
+      predefined:
+      - ALLOW
+      - BLOCK
+    - name: ip_addresses
+      required: false
+      isArray: true
+      description: New IP addresses or CIDR ranges.
+    - name: enabled
+      required: false
+      description: Whether the list is enabled.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs: []
+
+  - name: databricks-ip-access-list-delete
+    description: Deletes an IP access list.
+    arguments:
+    - name: ip_access_list_id
+      required: true
+      description: The ID of the list to delete.
+    outputs: []
+
+fromversion: 6.10.0
+tests:
+- No tests
