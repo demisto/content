@@ -223,7 +223,7 @@ def test_ipv4_cidr_regex_full_prefix_length(cidr: str, expected_value: str):
      - The ipv4cidrRegex is applied via re.search.
     Then:
      - The full CIDR value including the complete prefix length is matched,
-       not a truncated single-digit prefix (regression for XSUP-75295).
+       not a truncated single-digit prefix.
     """
     import re
 
