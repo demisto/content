@@ -28,7 +28,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
     | Use system proxy settings |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
-    | Close Mirrored XSOAR Incident | When selected, marking the Jira issue as resolved will be mirrored in Cortex XSOAR, and will close the corresponding incident. Please make sure the \`Resolved\` field in your Jira instance is configured in order for this to work properly, if not, it will rely on if the status of the issue is changed to \`Done\`. | False |
+    | Close Mirrored XSOAR Incident | When selected, marking the Jira issue as resolved will be mirrored in Cortex XSOAR, and will close the corresponding incident. This works for any workflow status whose category is \`Done\` (Jira automatically categorizes every status, including custom ones, as \`To Do\`, \`In Progress\`, or \`Done\`), or, failing that, if the \`Resolved\` field is populated. | False |
     | Mirroring Direction |  | False |
     | Attachment Entry Tag to Jira | Add this tag to an entry to mirror it as an attachment to Jira. | False |
     | Attachment Entry Tag from Jira | Add this tag to an entry to mirror it as an attachment from Jira. | False |
@@ -3029,7 +3029,7 @@ match.
 7. **Comment Entry Tag to Jira**: Choose a tag to add to an entry in order to mirror it as a comment in Jira.
 8. **Fetch Comments**: Fetch comments for Jira ticket.
 9. **Fetch Attachments**: Fetch attachments for Jira ticket.
-10. **Close Mirrored XSOAR Incident**: Marking the Jira issue as resolved will be mirrored in Cortex XSOAR, and will close the corresponding incident. Please make sure the `Resolved` field in your Jira instance is configured in order for this to work properly, if not, it will rely on if the status of the issue is changed to `Done`.
+10. **Close Mirrored XSOAR Incident**: Marking the Jira issue as resolved will be mirrored in Cortex XSOAR, and will close the corresponding incident. This works for any workflow status whose category is `Done` (Jira automatically categorizes every status, including custom ones, as `To Do`, `In Progress`, or `Done`), or, failing that, if the `Resolved` field is populated.
 
 #### Simple Mirroring flow
 
