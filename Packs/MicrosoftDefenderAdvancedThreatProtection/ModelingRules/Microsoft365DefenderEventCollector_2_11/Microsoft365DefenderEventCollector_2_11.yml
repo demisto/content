@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: MicrosoftDefenderAdvancedThreatProtection_ModelingRule
+name: MicrosoftDefenderAdvancedThreatProtection Modeling Rule
+rules: ''
+schema: ''
+tags: Microsoft 365 Defender
+supportedModules:
+- xsiam
