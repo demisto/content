@@ -2,10 +2,11 @@
     "name": "Tessian",
     "description": "Tessian's complete cloud email security platform defends customers against advanced phishing threats, and protects their sensitive data on email.",
     "support": "partner",
-    "currentVersion": "1.0.10",
+    "currentVersion": "1.1.0",
     "author": "Tessian",
-    "url": "",
+    "url": "https://www.proofpoint.com/us/products/tessian",
     "email": "support@tessian.com",
+    "created": "2022-05-16T00:00:00Z",
     "categories": [
         "Analytics & SIEM"
     ],
@@ -15,7 +16,8 @@
         "phishing",
         "email",
         "security",
-        "tessian"
+        "tessian",
+        "proofpoint"
     ],
     "marketplaces": [
         "xsoar",
@@ -29,5 +31,6 @@
     "supportedModules": [
         "agentix",
         "xsiam"
-    ]
+    ],
+    "defaultDataSource": "TessianEventCollector"
 }
