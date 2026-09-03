@@ -1184,6 +1184,32 @@ def get_drilldown_timeframe(notable_data, raw) -> tuple[str, str]:
     return earliest_offset, latest_offset
 
 
+def escape_invalid_backslashes_in_drilldown_json(drilldown_search):
+    """Escapes backslashes that are not part of a valid JSON escape sequence.
+
+    Splunk may place placeholder values that contain a single backslash directly into the
+    drilldown search JSON payload (e.g. ``object="PRE\\Admin"`` or
+    ``user="NT SERVICE\\WinCollect"``). Such a lone backslash followed by a character that is
+    not a valid JSON escape (``"``, ``\\``, ``/``, ``b``, ``f``, ``n``, ``r``, ``t`` or ``u``)
+    makes the whole payload invalid JSON, so ``json.loads`` raises ``Invalid \\escape`` before any
+    later escaping can run (XSUP-75731).
+
+    This function doubles only those "invalid" backslashes so the payload becomes valid JSON,
+    while leaving valid escape sequences (including ``\\uXXXX``) untouched. It is applied before
+    ``json.loads``; the SPL-level re-escaping of backslashes happens afterwards in
+    ``escape_backslashes_in_field_filters``.
+
+    Args:
+        drilldown_search (str): The raw drilldown search JSON string.
+
+    Returns:
+        str: The drilldown search JSON string with invalid backslash escapes doubled.
+    """
+    # A backslash is "valid" only when followed by one of the JSON escape chars. Any other
+    # backslash (including one at the very end of the string) is doubled so json.loads accepts it.
+    return re.sub(r'\\(?!["\\/bfnrtu])', r"\\\\", drilldown_search)
+
+
 def escape_invalid_chars_in_drilldown_json(drilldown_search):
     """Goes over the drilldown search, and replace the unescaped or invalid chars.
 
@@ -1193,6 +1219,10 @@ def escape_invalid_chars_in_drilldown_json(drilldown_search):
     Returns:
         str: The escaped drilldown search.
     """
+    # escape lone backslashes (invalid JSON escapes) coming from placeholder values such as
+    # 'object="PRE\Admin"' so json.loads can parse the payload (XSUP-75731)
+    drilldown_search = escape_invalid_backslashes_in_drilldown_json(drilldown_search)
+
     # escape the " of string from the form of 'some_key="value"' which the " char are invalid in json value
     for unescaped_val in re.findall(r"(?<==)\"[^\"]*\"", drilldown_search):
         escaped_val = unescaped_val.replace('"', '\\"')
