@@ -1750,6 +1750,7 @@ Retrieves a list of persistent disks contained within the specified zone. Requir
 | GCP.Compute.Disks.sourceStorageObject | String | The full Google Cloud Storage URI where the disk image is stored. |
 | GCP.Compute.Disks.storagePool | String | The storage pool in which the disk is created. |
 | GCP.Compute.DisksNextToken | String | Next page token for pagination. |
+| GCP.Compute.DisksWarning | Unknown | An informational warning returned by the API, containing the code, message, and data fields. For example, NO_RESULTS_ON_PAGE when the page holds no results. |
 
 ### gcp-compute-disks-aggregated-list
 
@@ -1824,6 +1825,7 @@ Retrieves an aggregated list of persistent disks across all zones in the project
 | GCP.Compute.Disks.sourceStorageObject | String | The full Google Cloud Storage URI where the disk image is stored. |
 | GCP.Compute.Disks.storagePool | String | The storage pool in which the disk is created. |
 | GCP.Compute.DisksAggregatedNextToken | String | Next page token for pagination. |
+| GCP.Compute.DisksAggregatedWarning | Unknown | An informational warning returned by the API, containing the code, message, and data fields. For example, NO_RESULTS_ON_PAGE when the page holds no results. |
 
 ### gcp-compute-disk-get
 
@@ -2186,6 +2188,7 @@ Retrieves a list of disk types available in the specified zone. Required permiss
 | GCP.Compute.DiskTypes.selfLink | String | Server-defined URL for the disk type resource. |
 | GCP.Compute.DiskTypes.deprecated | Unknown | The deprecation status associated with this disk type, containing the state, replacement, deprecated, obsolete, and deleted fields. |
 | GCP.Compute.DiskTypesNextToken | String | Next page token for pagination. |
+| GCP.Compute.DiskTypesWarning | Unknown | An informational warning returned by the API, containing the code, message, and data fields. For example, NO_RESULTS_ON_PAGE when the page holds no results. |
 
 ### gcp-compute-disk-types-aggregated-list
 
@@ -2222,6 +2225,7 @@ Retrieves an aggregated list of disk types across all zones in the project. Requ
 | GCP.Compute.DiskTypes.selfLink | String | Server-defined URL for the disk type resource. |
 | GCP.Compute.DiskTypes.deprecated | Unknown | The deprecation status associated with this disk type, containing the state, replacement, deprecated, obsolete, and deleted fields. |
 | GCP.Compute.DiskTypesAggregatedNextToken | String | Next page token for pagination. |
+| GCP.Compute.DiskTypesAggregatedWarning | Unknown | An informational warning returned by the API, containing the code, message, and data fields. For example, NO_RESULTS_ON_PAGE when the page holds no results. |
 
 ### gcp-compute-disk-type-get
 

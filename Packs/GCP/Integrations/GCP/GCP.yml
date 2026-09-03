@@ -660,6 +660,9 @@ script:
     - contextPath: GCP.Compute.DisksNextToken
       description: Next page token for pagination.
       type: String
+    - contextPath: GCP.Compute.DisksWarning
+      description: An informational warning returned by the API, containing the code, message, and data fields. For example, NO_RESULTS_ON_PAGE when the page holds no results.
+      type: Unknown
   - name: gcp-compute-disks-aggregated-list
     description: "Retrieves an aggregated list of persistent disks across all zones in the project. Required permission: compute.disks.list."
     arguments:
@@ -827,6 +830,9 @@ script:
     - contextPath: GCP.Compute.DisksAggregatedNextToken
       description: Next page token for pagination.
       type: String
+    - contextPath: GCP.Compute.DisksAggregatedWarning
+      description: An informational warning returned by the API, containing the code, message, and data fields. For example, NO_RESULTS_ON_PAGE when the page holds no results.
+      type: Unknown
   - name: gcp-compute-disk-get
     description: "Returns a specified persistent disk. Required permission: compute.disks.get."
     arguments:
@@ -1525,6 +1531,9 @@ script:
     - contextPath: GCP.Compute.DiskTypesNextToken
       description: Next page token for pagination.
       type: String
+    - contextPath: GCP.Compute.DiskTypesWarning
+      description: An informational warning returned by the API, containing the code, message, and data fields. For example, NO_RESULTS_ON_PAGE when the page holds no results.
+      type: Unknown
   - name: gcp-compute-disk-types-aggregated-list
     description: "Retrieves an aggregated list of disk types across all zones in the project. Required permission: compute.diskTypes.list."
     arguments:
@@ -1578,6 +1587,9 @@ script:
     - contextPath: GCP.Compute.DiskTypesAggregatedNextToken
       description: Next page token for pagination.
       type: String
+    - contextPath: GCP.Compute.DiskTypesAggregatedWarning
+      description: An informational warning returned by the API, containing the code, message, and data fields. For example, NO_RESULTS_ON_PAGE when the page holds no results.
+      type: Unknown
   - name: gcp-compute-disk-type-get
     description: "Returns the specified disk type. Required permission: compute.diskTypes.get."
     arguments:

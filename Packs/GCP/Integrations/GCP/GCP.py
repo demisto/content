@@ -1387,8 +1387,9 @@ def compute_disks_list(creds: Credentials, args: dict[str, Any]) -> CommandResul
             'order_by' and 'next_token'.
 
     Returns:
-        CommandResults: Object containing the list of disks under `GCP.Compute.Disks`
-        and the pagination token under `GCP.Compute.DisksNextToken`.
+        CommandResults: Object containing the list of disks under `GCP.Compute.Disks`,
+        the pagination token under `GCP.Compute.DisksNextToken` and, when the API returns
+        one, the informational warning under `GCP.Compute.DisksWarning`.
     """
     project_id = args.get("project_id")
     zone = extract_zone_name(args.get("zone"))
@@ -1411,7 +1412,11 @@ def compute_disks_list(creds: Credentials, args: dict[str, Any]) -> CommandResul
 
     items = response.get("items", [])
     next_token = response.get("nextPageToken")
-    demisto.debug(f"[GCP] Disks list for project {project_id}, zone {zone}: {len(items)} disks, {bool(next_token)=}")
+    warning = response.get("warning")
+    demisto.debug(
+        f"[GCP] Disks list for project {project_id}, zone {zone}: {len(items)} disks, "
+        f"{bool(next_token)=}, {warning.get('code') if warning else None=}"
+    )
     readable_output = tableToMarkdown(
         "GCP Compute Disks",
         items,
@@ -1420,9 +1425,13 @@ def compute_disks_list(creds: Credentials, args: dict[str, Any]) -> CommandResul
         removeNull=True,
     )
 
+    compute_outputs: dict[str, Any] = {"DisksNextToken": next_token}
+    if warning:
+        compute_outputs["DisksWarning"] = warning
+
     outputs = {
         "GCP.Compute.Disks(val.id && val.id == obj.id)": items,
-        "GCP.Compute(true)": {"DisksNextToken": next_token},
+        "GCP.Compute(true)": compute_outputs,
     }
     return CommandResults(
         readable_output=readable_output,
@@ -1441,8 +1450,9 @@ def compute_disks_aggregated_list(creds: Credentials, args: dict[str, Any]) -> C
             and 'next_token'.
 
     Returns:
-        CommandResults: Object containing the aggregated list of disks under `GCP.Compute.Disks`
-        and the pagination token under `GCP.Compute.DisksAggregatedNextToken`.
+        CommandResults: Object containing the aggregated list of disks under `GCP.Compute.Disks`,
+        the pagination token under `GCP.Compute.DisksAggregatedNextToken` and, when the API returns
+        one, the informational warning under `GCP.Compute.DisksAggregatedWarning`.
     """
     project_id = args.get("project_id")
     limit = arg_to_number(args.get("limit")) or 50
@@ -1466,7 +1476,12 @@ def compute_disks_aggregated_list(creds: Credentials, args: dict[str, Any]) -> C
         items.extend(scoped_list.get("disks", []) or [])
 
     next_token = response.get("nextPageToken")
-    demisto.debug(f"[GCP] Disks aggregated list for project {project_id}: {len(items)} disks, {bool(next_token)=}")
+    # Per-scope warnings are not collected, as the API reports NO_RESULTS_ON_PAGE for every scope holding no disks.
+    warning = response.get("warning")
+    demisto.debug(
+        f"[GCP] Disks aggregated list for project {project_id}: {len(items)} disks, "
+        f"{bool(next_token)=}, {warning.get('code') if warning else None=}"
+    )
     readable_output = tableToMarkdown(
         "GCP Compute Disks",
         items,
@@ -1475,9 +1490,13 @@ def compute_disks_aggregated_list(creds: Credentials, args: dict[str, Any]) -> C
         removeNull=True,
     )
 
+    compute_outputs: dict[str, Any] = {"DisksAggregatedNextToken": next_token}
+    if warning:
+        compute_outputs["DisksAggregatedWarning"] = warning
+
     outputs = {
         "GCP.Compute.Disks(val.id && val.id == obj.id)": items,
-        "GCP.Compute(true)": {"DisksAggregatedNextToken": next_token},
+        "GCP.Compute(true)": compute_outputs,
     }
     return CommandResults(
         readable_output=readable_output,
@@ -1786,8 +1805,9 @@ def compute_disk_types_list(creds: Credentials, args: dict[str, Any]) -> Command
             'order_by' and 'next_token'.
 
     Returns:
-        CommandResults: Object containing the list of disk types under `GCP.Compute.DiskTypes`
-        and the pagination token under `GCP.Compute.DiskTypesNextToken`.
+        CommandResults: Object containing the list of disk types under `GCP.Compute.DiskTypes`,
+        the pagination token under `GCP.Compute.DiskTypesNextToken` and, when the API returns
+        one, the informational warning under `GCP.Compute.DiskTypesWarning`.
     """
     project_id = args.get("project_id")
     zone = extract_zone_name(args.get("zone"))
@@ -1810,7 +1830,11 @@ def compute_disk_types_list(creds: Credentials, args: dict[str, Any]) -> Command
 
     items = response.get("items", [])
     next_token = response.get("nextPageToken")
-    demisto.debug(f"[GCP] Disk types list for project {project_id}, zone {zone}: {len(items)} disk types, {bool(next_token)=}")
+    warning = response.get("warning")
+    demisto.debug(
+        f"[GCP] Disk types list for project {project_id}, zone {zone}: {len(items)} disk types, "
+        f"{bool(next_token)=}, {warning.get('code') if warning else None=}"
+    )
     readable_output = tableToMarkdown(
         "GCP Compute Disk Types",
         items,
@@ -1819,9 +1843,13 @@ def compute_disk_types_list(creds: Credentials, args: dict[str, Any]) -> Command
         removeNull=True,
     )
 
+    compute_outputs: dict[str, Any] = {"DiskTypesNextToken": next_token}
+    if warning:
+        compute_outputs["DiskTypesWarning"] = warning
+
     outputs = {
         "GCP.Compute.DiskTypes(val.id && val.id == obj.id)": items,
-        "GCP.Compute(true)": {"DiskTypesNextToken": next_token},
+        "GCP.Compute(true)": compute_outputs,
     }
     return CommandResults(
         readable_output=readable_output,
@@ -1841,7 +1869,8 @@ def compute_disk_types_aggregated_list(creds: Credentials, args: dict[str, Any])
 
     Returns:
         CommandResults: Object containing the aggregated list of disk types under
-        `GCP.Compute.DiskTypes` and the pagination token under `GCP.Compute.DiskTypesAggregatedNextToken`.
+        `GCP.Compute.DiskTypes`, the pagination token under `GCP.Compute.DiskTypesAggregatedNextToken`
+        and, when the API returns one, the informational warning under `GCP.Compute.DiskTypesAggregatedWarning`.
     """
     project_id = args.get("project_id")
     limit = arg_to_number(args.get("limit")) or 50
@@ -1865,7 +1894,12 @@ def compute_disk_types_aggregated_list(creds: Credentials, args: dict[str, Any])
         items.extend(scoped_list.get("diskTypes", []) or [])
 
     next_token = response.get("nextPageToken")
-    demisto.debug(f"[GCP] Disk types aggregated list for project {project_id}: {len(items)} disk types, {bool(next_token)=}")
+    # Per-scope warnings are not collected, as the API reports NO_RESULTS_ON_PAGE for every scope holding no disk types.
+    warning = response.get("warning")
+    demisto.debug(
+        f"[GCP] Disk types aggregated list for project {project_id}: {len(items)} disk types, "
+        f"{bool(next_token)=}, {warning.get('code') if warning else None=}"
+    )
     readable_output = tableToMarkdown(
         "GCP Compute Disk Types",
         items,
@@ -1874,9 +1908,13 @@ def compute_disk_types_aggregated_list(creds: Credentials, args: dict[str, Any])
         removeNull=True,
     )
 
+    compute_outputs: dict[str, Any] = {"DiskTypesAggregatedNextToken": next_token}
+    if warning:
+        compute_outputs["DiskTypesAggregatedWarning"] = warning
+
     outputs = {
         "GCP.Compute.DiskTypes(val.id && val.id == obj.id)": items,
-        "GCP.Compute(true)": {"DiskTypesAggregatedNextToken": next_token},
+        "GCP.Compute(true)": compute_outputs,
     }
     return CommandResults(
         readable_output=readable_output,
