@@ -410,7 +410,7 @@ def fetch_incidents(
         uid_to_fetch_from = max(uid_to_fetch_from, mail.id)
         # Skip None dates so max() never compares a datetime with None (UID cursor still tracks progress).
         if mail.date is None:
-            demisto.debug(f"Email with UID {mail.id} has no parseable Date header; excluded from date cursor.")
+            demisto.debug(f"[MailListenerV2] Email with UID {mail.id} has no parseable Date header; excluded from date cursor.")
         candidate_dates = [date for date in (time_to_fetch_from, mail.date) if date is not None]
         if candidate_dates:
             time_to_fetch_from = max(candidate_dates)
