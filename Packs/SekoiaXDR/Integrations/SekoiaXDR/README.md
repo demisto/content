@@ -842,6 +842,11 @@ Command to run a query and get its result. This is a combination of 3 commands: 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+
+```!sekoia-xdr-run-query query_definition="{\"ql_query\": \"events | limit 5\"}" result_format=csv```
+
 ### sekoia-xdr-execute-query
 
 ***
@@ -870,6 +875,30 @@ Command to create a query run on Sekoia XDR, after this execute "sekoia-xdr-get-
 | SekoiaXDR.QueryRun.task_id | string | Task UUID. | 
 | SekoiaXDR.QueryRun.uuid | string | Query Run UUID. | 
 
+#### Command example
+
+```!sekoia-xdr-execute-query query_definition="{\"ql_query\": \"events | limit 5\"}"```
+
+#### Context Example
+
+```json
+{
+    "SekoiaXDR": {
+        "QueryRun": {
+            "task_id": "eccb7dac-58bd-4d22-8f62-feb94dfdd57b",
+            "uuid": "8d466b50-d963-44bd-85f8-e461cca13832"       
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+### Triggered query execution:
+|task_id|uuid|
+|---|---|
+| eccb7dac-58bd-4d22-8f62-feb94dfdd57b | 8d466b50-d963-44bd-85f8-e461cca13832 |
+
 ### sekoia-xdr-get-query-run
 
 ***
@@ -887,18 +916,49 @@ Gets the query run status.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| SekoiaXDR.QueryRun.community_uuid | string | Community UUID. | 
-| SekoiaXDR.QueryRun.created_at | date | Created at. | 
-| SekoiaXDR.QueryRun.created_by | string | Created by. | 
-| SekoiaXDR.QueryRun.duration | number | Duration. | 
-| SekoiaXDR.QueryRun.error | string | Error. | 
-| SekoiaXDR.QueryRun.parent_slug | string | Parent slug. | 
-| SekoiaXDR.QueryRun.parent_type | string | Parent type. | 
-| SekoiaXDR.QueryRun.parent_uuid | string | Parent UUID. | 
-| SekoiaXDR.QueryRun.status | string | Status. | 
-| SekoiaXDR.QueryRun.total | number | Total. | 
+| **Path**                           | **Type** | **Description**  |
+|------------------------------------|----------|------------------|
+| SekoiaXDR.QueryRun.community_uuid  | string   | Community UUID.  | 
+| SekoiaXDR.QueryRun.created_at      | date     | Created at.      | 
+| SekoiaXDR.QueryRun.created_by      | string   | Created by.      | 
+| SekoiaXDR.QueryRun.created_by_type | string   | Created by type. | 
+| SekoiaXDR.QueryRun.duration        | number   | Duration.        | 
+| SekoiaXDR.QueryRun.error           | string   | Error.           | 
+| SekoiaXDR.QueryRun.parent_slug     | string   | Parent slug.     | 
+| SekoiaXDR.QueryRun.parent_type     | string   | Parent type.     | 
+| SekoiaXDR.QueryRun.parent_uuid     | string   | Parent UUID.     | 
+| SekoiaXDR.QueryRun.status          | string   | Status.          | 
+| SekoiaXDR.QueryRun.total           | number   | Total.           | 
+
+#### Command example
+
+```!sekoia-xdr-get-query-run query_run_uuid=8ff54bcf-210a-40e9-9241-9f179834e7aa```
+
+#### Context Example
+
+```json
+{
+    "SekoiaXDR": {
+        "QueryRun": {
+            "community_uuid": "359994fa-0905-408b-baaa-a26e2272cffc",
+            "created_at": "2026-07-31T11:02:35.980580Z",
+            "created_by": "d741767b-6b0f-44af-8b48-e736613ca4f8",
+            "created_by_type": "apikey",
+            "duration": 432,
+            "status": "finished",
+            "total": 5
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Status of the query run 4c7e69fb-9a64-4463-a065-ba5fad0aa507:
+>|community_uuid|created_at|created_by|created_by_type|duration|error|parent_slug|parent_type|parent_uuid|status|total|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 359994fa-0905-408b-baaa-a26e2272cffc | 2026-07-31T11:02:35.980580Z | d741767b-6b0f-44af-8b48-e736613ca4f8 | apikey | 432 |  |  |  |  | finished | 5 |
+
 
 ### sekoia-xdr-download-query-result
 
@@ -919,6 +979,10 @@ Downloads the query result as a file.
 #### Context Output
 
 There is no context output for this command.
+
+#### Command example
+
+```!sekoia-xdr-download-query-result query_run_uuid=8ff54bcf-210a-40e9-9241-9f179834e7aa result_format=csv```
 
 ## Incident Mirroring
 

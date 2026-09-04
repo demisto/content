@@ -1249,6 +1249,9 @@ script:
     - contextPath: SekoiaXDR.QueryRun.created_by
       description: Created by.
       type: string
+    - contextPath: SekoiaXDR.QueryRun.created_by_type
+      description: Created by type.
+      type: string
     - contextPath: SekoiaXDR.QueryRun.duration
       description: Duration.
       type: number
