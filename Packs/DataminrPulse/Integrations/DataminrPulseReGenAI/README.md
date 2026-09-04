@@ -64,7 +64,7 @@ Dataminr has been the global leader in AI for risk detection since 2009. Datamin
 | Alert Type | Filters the incoming alerts with the provided alert type. Default All. | False |
 | Max Fetch | The maximum number of alerts to fetch each time. If the value is greater than 100, it will be considered as 100. The maximum is 100. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | False |
-| Create relationships |  Create relationships between indicators as part of enrichment. | False |
+| Create relationships | Create relationships between indicators as part of enrichment. | False |
 | Trust any certificate (not secure) | Indicates whether to allow connections without verifying the SSL certificate's validity. | False |
 | Use system proxy settings | Indicates whether to use XSOAR's system proxy settings to connect to the API. | False |
 | Incident type |  | False |
@@ -568,6 +568,284 @@ Note: The "from" and "to" arguments should not be included on the first executio
 >|from|to|
 >|---|---|
 >| DUMMY_CURSOR02 | DUMMY_CURSOR01 |
+
+### dataminrpulse-ioc-enrich
+
+***
+Enrich the "IP", "URL", and "File" indicators with relevant data.
+
+The indicators are created in the native threat intelligence indicators view from the IP, URL, and File (MD5, SHA1,
+SHA256) IOCs of the Dataminr alerts, which are extracted from the following source fields:
+
+| **IOC Type** | **Dataminr API Source Field Path** |
+| --- | --- |
+| IP | metadata.cyber.addresses\[\].ip, intelAgents\[\].summary\[\].data.ipAddress |
+| URL | metadata.cyber.URL\[\].name, intelAgents\[\].summary\[\].data.url, intelAgents\[\].summary\[\].data.URL |
+| File | metadata.cyber.hashValues\[\].value |
+
+The verdict of the IOC is translated from the type of the alert. The "Flash" and the "Urgent" alerts are mapped to
+**Malicious**, the "Alert" alerts are mapped to **Suspicious**, and any other alert type is mapped to **Unknown**.
+
+The first seen, the last seen, and the source time stamp of the IOC are taken from the "alertTimestamp" of the alert.
+When the same IOC value is present in multiple alerts, a single IOC is created holding the earliest first seen time
+stamp, the latest last seen time stamp, the highest verdict, and the IDs of all the alerts it was seen in.
+
+The IP addresses are validated, so the place holder values reported by the source are skipped. Both the IPv4 and the
+IPv6 addresses are supported. The File IOCs whose hash type can not be resolved from the type reported by the source or
+from the length of the value are skipped as well, while the syntax of the URLs is not validated.
+
+#### Base Command
+
+`dataminrpulse-ioc-enrich`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ioc_json_data | Raw response of the "alerts" coming through the "dataminrpulse-alerts-get" command. Accepts a single alert object, a list of alerts, or the list of the IOCs available in the "ioc_indicators" label of the incident. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DataminrPulse.IOC.type | String | The type of the IOC. Can be one of the IP, URL, or File. |
+| DataminrPulse.IOC.value | String | The value of the IOC. |
+| DataminrPulse.IOC.verdict | String | The verdict of the IOC. Can be one of the Malicious, Suspicious, Benign, or Unknown. |
+| DataminrPulse.IOC.score | Number | The DBot score of the IOC. |
+| DataminrPulse.IOC.firstSeen | Date | The time stamp of the earliest alert the IOC was seen in. |
+| DataminrPulse.IOC.lastSeen | Date | The time stamp of the latest alert the IOC was seen in. |
+| DataminrPulse.IOC.sourceTimeStamp | Date | The publication time stamp of the Dataminr alert the IOC was extracted from. |
+| DataminrPulse.IOC.feed | String | The feed which created the IOC. |
+| DataminrPulse.IOC.alertIds | String | The IDs of the Dataminr alerts the IOC was extracted from. |
+| DataminrPulse.IOC.alertTypes | String | The types of the Dataminr alerts the IOC was extracted from. |
+| DataminrPulse.IOC.relatedMalware | String | The malware reported in the same Dataminr alerts as the IOC. |
+| DataminrPulse.IOC.relatedThreatActors | String | The threat actors reported in the same Dataminr alerts as the IOC. |
+| DataminrPulse.IOC.port | Number | The port associated with the IP address. |
+| DataminrPulse.IOC.hashType | String | The type of the hash. Can be one of the md5, sha1, or sha256. |
+| IP.Address | String | The IP address. |
+| IP.Port | String | The port associated with the IP address. |
+| IP.FirstSeenBySource | String | The time stamp of the earliest alert the IP address was seen in. |
+| IP.LastSeenBySource | String | The time stamp of the latest alert the IP address was seen in. |
+| URL.Data | String | The URL. |
+| URL.FirstSeenBySource | String | The time stamp of the earliest alert the URL was seen in. |
+| URL.LastSeenBySource | String | The time stamp of the latest alert the URL was seen in. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.FirstSeenBySource | String | The time stamp of the earliest alert the file hash was seen in. |
+| File.LastSeenBySource | String | The time stamp of the latest alert the file hash was seen in. |
+| DBotScore.Indicator | string | The indicator that was tested. |
+| DBotScore.Reliability | string | The reliability of the vendor. |
+| DBotScore.Score | number | The actual score. |
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
+
+#### Command example
+
+```!dataminrpulse-ioc-enrich ioc_json_data="${DataminrPulse.Alerts}"```
+
+#### Context Example
+
+```json
+{
+    "DataminrPulse": {
+        "IOC": [
+            {
+                "alertIds": [
+                    "DUMMY_ALERT_ID_1",
+                    "DUMMY_ALERT_ID_2"
+                ],
+                "alertTypes": [
+                    "Alert",
+                    "Flash"
+                ],
+                "feed": "Dataminr Pulse",
+                "firstSeen": "2026-05-18T14:22:00Z",
+                "lastSeen": "2026-05-19T09:10:00Z",
+                "port": 22,
+                "relatedMalware": [
+                    "Malware: [DUMMY_MALWARE]"
+                ],
+                "relatedThreatActors": [
+                    "Threat Actor: [DUMMY_ACTOR]"
+                ],
+                "score": 3,
+                "sourceTimeStamp": "2026-05-19T09:10:00Z",
+                "type": "IP",
+                "value": "0.0.0.1",
+                "verdict": "Malicious"
+            },
+            {
+                "alertIds": [
+                    "DUMMY_ALERT_ID_1"
+                ],
+                "alertTypes": [
+                    "Alert"
+                ],
+                "feed": "Dataminr Pulse",
+                "firstSeen": "2026-05-18T14:22:00Z",
+                "lastSeen": "2026-05-18T14:22:00Z",
+                "relatedMalware": [
+                    "Malware: [DUMMY_MALWARE]"
+                ],
+                "relatedThreatActors": [
+                    "Threat Actor: [DUMMY_ACTOR]"
+                ],
+                "score": 2,
+                "sourceTimeStamp": "2026-05-18T14:22:00Z",
+                "type": "URL",
+                "value": "http://malicious.example.com/payload",
+                "verdict": "Suspicious"
+            },
+            {
+                "alertIds": [
+                    "DUMMY_ALERT_ID_1"
+                ],
+                "alertTypes": [
+                    "Alert"
+                ],
+                "feed": "Dataminr Pulse",
+                "firstSeen": "2026-05-18T14:22:00Z",
+                "hashType": "sha256",
+                "lastSeen": "2026-05-18T14:22:00Z",
+                "relatedMalware": [
+                    "Malware: [DUMMY_MALWARE]"
+                ],
+                "relatedThreatActors": [
+                    "Threat Actor: [DUMMY_ACTOR]"
+                ],
+                "score": 2,
+                "sourceTimeStamp": "2026-05-18T14:22:00Z",
+                "type": "File",
+                "value": "JUNK_HASH_VALUE_SHA256",
+                "verdict": "Suspicious"
+            }
+        ]
+    },
+    "DBotScore": [
+        {
+            "Indicator": "0.0.0.1",
+            "Reliability": "A - Completely reliable",
+            "Score": 3,
+            "Type": "ip",
+            "Vendor": "DataminrPulse"
+        },
+        {
+            "Indicator": "http://malicious.example.com/payload",
+            "Reliability": "A - Completely reliable",
+            "Score": 2,
+            "Type": "url",
+            "Vendor": "DataminrPulse"
+        },
+        {
+            "Indicator": "JUNK_HASH_VALUE_SHA256",
+            "Reliability": "A - Completely reliable",
+            "Score": 2,
+            "Type": "file",
+            "Vendor": "DataminrPulse"
+        }
+    ],
+    "IP": [
+        {
+            "Address": "0.0.0.1",
+            "FirstSeenBySource": "2026-05-18T14:22:00Z",
+            "LastSeenBySource": "2026-05-19T09:10:00Z",
+            "Malicious": {
+                "Vendor": "DataminrPulse"
+            },
+            "Port": 22,
+            "Relationships": [
+                {
+                    "EntityA": "0.0.0.1",
+                    "EntityAType": "IP",
+                    "EntityB": "Malware: [DUMMY_MALWARE]",
+                    "EntityBType": "Dataminr Pulse Malware Indicator",
+                    "Relationship": "indicator-of"
+                },
+                {
+                    "EntityA": "0.0.0.1",
+                    "EntityAType": "IP",
+                    "EntityB": "Threat Actor: [DUMMY_ACTOR]",
+                    "EntityBType": "Dataminr Pulse Threat Actor Indicator",
+                    "Relationship": "indicator-of"
+                }
+            ]
+        }
+    ],
+    "URL": [
+        {
+            "Data": "http://malicious.example.com/payload",
+            "FirstSeenBySource": "2026-05-18T14:22:00Z",
+            "LastSeenBySource": "2026-05-18T14:22:00Z",
+            "Relationships": [
+                {
+                    "EntityA": "http://malicious.example.com/payload",
+                    "EntityAType": "URL",
+                    "EntityB": "Malware: [DUMMY_MALWARE]",
+                    "EntityBType": "Dataminr Pulse Malware Indicator",
+                    "Relationship": "indicator-of"
+                },
+                {
+                    "EntityA": "http://malicious.example.com/payload",
+                    "EntityAType": "URL",
+                    "EntityB": "Threat Actor: [DUMMY_ACTOR]",
+                    "EntityBType": "Dataminr Pulse Threat Actor Indicator",
+                    "Relationship": "indicator-of"
+                }
+            ]
+        }
+    ],
+    "File": [
+        {
+            "FirstSeenBySource": "2026-05-18T14:22:00Z",
+            "Hashes": [
+                {
+                    "type": "SHA256",
+                    "value": "JUNK_HASH_VALUE_SHA256"
+                }
+            ],
+            "LastSeenBySource": "2026-05-18T14:22:00Z",
+            "SHA256": "JUNK_HASH_VALUE_SHA256",
+            "Relationships": [
+                {
+                    "EntityA": "JUNK_HASH_VALUE_SHA256",
+                    "EntityAType": "File",
+                    "EntityB": "Malware: [DUMMY_MALWARE]",
+                    "EntityBType": "Dataminr Pulse Malware Indicator",
+                    "Relationship": "indicator-of"
+                },
+                {
+                    "EntityA": "JUNK_HASH_VALUE_SHA256",
+                    "EntityAType": "File",
+                    "EntityB": "Threat Actor: [DUMMY_ACTOR]",
+                    "EntityBType": "Dataminr Pulse Threat Actor Indicator",
+                    "Relationship": "indicator-of"
+                }
+            ]
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### IOC
+>
+>|Type|Value|Verdict|First Seen|Last Seen|Source Time Stamp|Alert IDs|Alert Types|Feed|Related Malware|Related Threat Actors|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| IP | 0.0.0.1 | Malicious | 2026-05-18T14:22:00Z | 2026-05-19T09:10:00Z | 2026-05-19T09:10:00Z | DUMMY_ALERT_ID_1, DUMMY_ALERT_ID_2 | Alert, Flash | Dataminr Pulse | Malware: [DUMMY_MALWARE] | Threat Actor: [DUMMY_ACTOR] |
+
+>### IOC
+>
+>|Type|Value|Verdict|First Seen|Last Seen|Source Time Stamp|Alert IDs|Alert Types|Feed|Related Malware|Related Threat Actors|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| URL | http://malicious.example.com/payload | Suspicious | 2026-05-18T14:22:00Z | 2026-05-18T14:22:00Z | 2026-05-18T14:22:00Z | DUMMY_ALERT_ID_1 | Alert | Dataminr Pulse | Malware: [DUMMY_MALWARE] | Threat Actor: [DUMMY_ACTOR] |
+
+>### IOC
+>
+>|Type|Value|Verdict|First Seen|Last Seen|Source Time Stamp|Alert IDs|Alert Types|Feed|Related Malware|Related Threat Actors|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| File | JUNK_HASH_VALUE_SHA256 | Suspicious | 2026-05-18T14:22:00Z | 2026-05-18T14:22:00Z | 2026-05-18T14:22:00Z | DUMMY_ALERT_ID_1 | Alert | Dataminr Pulse | Malware: [DUMMY_MALWARE] | Threat Actor: [DUMMY_ACTOR] |
 
 ## Migration Guide
 

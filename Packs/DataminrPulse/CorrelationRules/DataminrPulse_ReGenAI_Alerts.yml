@@ -1,0 +1,23 @@
+global_rule_id: Dataminr Pulse ReGenAI Alerts
+name: Dataminr Pulse ReGenAI Alerts
+severity: User Defined
+xql_query: "dataset = dataminr_pulse_regenai_generic_alert_raw\n| filter _alert_data != null\n| alter alert_severity = json_extract_scalar(_alert_data, \"$.severity\")\n| alter alert_category = json_extract_scalar(_alert_data, \"$.alert_category\")\n| alter alert_name = json_extract_scalar(_alert_data, \"$.alert_name\")\n| alter alert_description = json_extract_scalar(_alert_data, \"$.alert_description\")"
+description: Creates alerts from Dataminr Pulse ReGenAI generic alert events, using the severity and category reported by Dataminr.
+alert_name: $alert_name
+alert_category: User Defined
+alert_description: $alert_description
+alert_fields: {}
+execution_mode: REAL_TIME
+search_window:
+crontab:
+suppression_enabled: false
+suppression_duration:
+suppression_fields:
+dataset: alerts
+user_defined_severity: alert_severity
+user_defined_category: alert_category
+mitre_defs: {}
+investigation_query_link:
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+fromversion: 6.10.0
