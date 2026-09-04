@@ -1,0 +1,154 @@
+comment: |-
+  Ad-hoc entry point for Tenzai exposure validation. On the first click it gathers exposure
+  context (optionally enriching from the ASM service, or parsing the socket from the exposure
+  name), creates a Tenzai validation scan (folding in the Cortex issue Description), and marks
+  the issue Running. It then polls (via ScheduledCommand) until the scan is terminal and writes
+  the verdict — status, exploit validation, assessment details, reproduction, fix guidance,
+  credit usage, reference URL — back onto the issue.
+commonfields:
+  id: StartAgenticValidation
+  version: -1
+name: StartAgenticValidation
+args:
+- name: service_id
+  description: The ASM ExternalService id (asmserviceid). Used to enrich the target when 'target' is not provided.
+- name: target
+  description: The exposure target (IP address or FQDN). If omitted, it is derived by enriching the ASM service.
+- name: exposure_name
+  description: A human-readable name for the exposure (typically the issue/alert name).
+- name: issue_description
+  description: The Cortex issue Description, folded into the Tenzai application guidelines for the scan.
+- name: supporting_data
+  description: Free-text context (inferred CVEs, attack-surface rule, classification) for the assessment objective.
+- name: alert_internal_id
+  description: The Cortex issue/alert id to correlate the results back to.
+- name: application_type
+  description: Optional Tenzai application type hint.
+  auto: PREDEFINED
+  predefined:
+  - WEB_APP
+  - NETWORK_SERVICE
+  - NETWORK_HOST
+- name: port
+  description: The exposed service port.
+- name: protocol
+  description: The exposed service protocol.
+- name: service_classification
+  description: The ASM service classification.
+- name: category
+  description: Whether the exposure is a CVE or a misconfiguration. Inferred from the CVE id when omitted.
+  auto: PREDEFINED
+  predefined:
+  - cve
+  - misconfiguration
+- name: cve_id
+  description: The CVE identifier for the exposure. Auto-filled from the ASM service's inferred CVEs when omitted.
+- name: rule_id
+  description: The external source's rule identifier for the exposure (e.g. a Cortex attack-surface rule id).
+- name: severity
+  description: Severity as reported by Cortex (free text), attached to the exposure reference.
+- name: cwe
+  description: The CWE identifier for the exposure when Cortex supplies one.
+- name: guidelines
+  description: Optional analyst guidelines for this assessment (free text). Appended to the synthesized scan guidelines; the exposure focus and the single-target scope lock are always kept.
+- name: scan_id_internal
+  description: Internal use only — the scan id carried across scheduled poll re-runs. Not for manual use.
+  hidden: true
+- name: poll_count
+  description: Internal use only — the poll iteration carried across scheduled poll re-runs. Not for manual use.
+  hidden: true
+- name: terminal_retry_count
+  description: Internal use only — the post-terminal enrichment-retry iteration carried across scheduled poll re-runs. Not for manual use.
+  hidden: true
+- name: write_only
+  description: Internal use only — when true (the playbook path, after its own poll), fetch the verdict and persist it via the shared writer; reschedules only to wait for lead enrichment, never to poll scan status. Requires scan_id_internal.
+  hidden: true
+- name: alert_id
+  description: Internal use only — the Cortex alert id carried across the poll loop to scope the verdict to this alert's lead. Not for manual use.
+  hidden: true
+- name: cve
+  description: Internal use only — the exposure CVE carried across the poll loop for lead correlation. Not for manual use.
+  hidden: true
+- name: rule_id
+  description: Internal use only — the Cortex rule id carried across the poll loop for lead correlation. Not for manual use.
+  hidden: true
+- name: poll
+  description: Whether the script drives the poll loop and writes the verdict itself (default true, for the ad-hoc button). The playbook passes false and owns polling/write-back.
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  defaultValue: "true"
+outputs:
+- contextPath: Tenzai.Scan.id
+  description: The Tenzai validation scan id.
+  type: String
+- contextPath: Tenzai.Scan.status
+  description: The scan status (Running while polling; Complete or Error when terminal).
+  type: String
+- contextPath: Tenzai.Scan.validated
+  description: Whether the exposure was validated as exploitable (set on terminal completion).
+  type: Boolean
+- contextPath: Tenzai.Scan.evidence
+  description: Markdown assessment details (set on terminal completion).
+  type: String
+- contextPath: Tenzai.Scan.reproduction
+  description: Markdown reproduction steps (set on terminal completion).
+  type: String
+- contextPath: Tenzai.Scan.guidance
+  description: Remediation or mitigation guidance (set on terminal completion).
+  type: String
+- contextPath: Tenzai.Scan.creditUsage
+  description: Approximate Tenzai credit/ACU cost of the scan (set on terminal completion).
+  type: Number
+- contextPath: Tenzai.Scan.referenceUrl
+  description: Deep link to the scan results in Tenzai (set on terminal completion).
+  type: String
+- contextPath: Tenzai.Scan.applicationId
+  description: The Tenzai application id the scan ran under (set on terminal completion).
+  type: String
+- contextPath: Tenzai.Scan.duration
+  description: Wall-clock duration of the scan, in whole seconds (set on terminal completion).
+  type: Number
+- contextPath: Tenzai.Scan.exposureStatus
+  description: The exposure lead's terminal status (e.g. MATERIALIZED, INVALIDATED, BLOCKED) — the literal lead status shown in the panel's Status cell (set on terminal completion).
+  type: String
+- contextPath: Tenzai.Scan.startedAt
+  description: When the assessment started, as a full ISO-8601 timestamp (the exposure lead's earliest OPEN status-history entry; set on terminal completion).
+  type: Date
+- contextPath: Tenzai.Scan.cwe
+  description: The exposure lead's CWE classification, e.g. CWE-79 (set on terminal completion).
+  type: String
+- contextPath: Tenzai.Scan.owaspCategory
+  description: The exposure lead's OWASP category, e.g. A03 (set on terminal completion).
+  type: String
+- contextPath: Tenzai.Scan.leadRationale
+  description: Markdown Description/Conclusion narrative for a CVE exposure lead (set on terminal completion).
+  type: String
+- contextPath: Tenzai.Scan.timeline
+  description: The exposure lead's status history — one entry per status change (status + time; set on terminal completion).
+  type: Unknown
+- contextPath: Tenzai.Scan.alertId
+  description: The originating Cortex alert id the exposure lead was seeded with (carried so the playbook can scope the verdict to this alert's lead).
+  type: String
+- contextPath: Tenzai.Scan.cve
+  description: The CVE id the exposure lead was seeded with, when the exposure is a CVE.
+  type: String
+- contextPath: Tenzai.Scan.ruleId
+  description: The Cortex rule id the exposure lead was seeded with, when supplied.
+  type: String
+polling: true
+timeout: 3m0s
+scripttarget: 0
+subtype: python3
+type: python
+runas: DBotWeakRole
+dockerimage: demisto/python3:3.12.8.3296088
+enabled: true
+runonce: false
+script: ''
+tags:
+- incident-action-button
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

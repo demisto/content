@@ -1,0 +1,51 @@
+{
+    "rule_id": "Tenzai_layout_rule",
+    "layout_id": "Tenzai Issue Layout",
+    "rule_name": "Tenzai Layout Rule",
+    "description": "Applies the Tenzai Issue Layout to High/Critical ASM-discovered exposures eligible for Tenzai validation (matches the Tenzai Agentic Issue Validation trigger).",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "OR": [
+                        {
+                            "SEARCH_FIELD": "alert_category",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "VULNERABILITY"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_category",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "CONFIGURATION"
+                        }
+                    ]
+                },
+                {
+                    "OR": [
+                        {
+                            "SEARCH_FIELD": "severity",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "SEV_050_CRITICAL"
+                        },
+                        {
+                            "SEARCH_FIELD": "severity",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "SEV_040_HIGH"
+                        }
+                    ]
+                },
+                {
+                    "SEARCH_FIELD": "alert_domain",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "DOMAIN_POSTURE"
+                },
+                {
+                    "SEARCH_FIELD": "xdm.finding_sources",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "CORTEX_ATTACK_SURFACE_MANAGEMENT"
+                }
+            ]
+        }
+    },
+    "fromVersion": "6.10.0"
+}
