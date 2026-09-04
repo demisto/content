@@ -299,7 +299,7 @@ def get_analysis_history(params: dict, args: dict) -> None:  # pragma: no cover
     )
 
 
-def create_indicators(report: dict, task_uuid: str, root_url: str) -> None:  # pragma: no cover
+def create_indicators(report: list, task_uuid: str, root_url: str) -> tuple[list[dict], str, str]:  # pragma: no cover
     """
     Excludes IOCs from the analysis report. Sends them to Threat Intel
 
@@ -491,10 +491,14 @@ def main():  # pragma: no cover
             return_results(result)
         else:
             raise NotImplementedError(f"Command {demisto.command()} is not implemented")
-    except RunTimeException as exception:
-        return_error(exception.description, error=str(exception.json))
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}", error=traceback.format_exc())
+        if isinstance(e, RunTimeException):
+            message = e.description
+            error = str(e.json)
+        else:
+            message = f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
+            error = traceback.format_exc()
+        return_error(message, error=error)
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:
