@@ -1,0 +1,46 @@
+{
+    "name": "Imperva Incapsula Event Collector v2",
+    "description": "Collects CEF security, DDoS, and traffic access logs from Imperva Incapsula Cloud WAF into Cortex XSIAM datasets.",
+    "support": "community",
+    "currentVersion": "2.1.1",
+    "author": "Prima Secondary Ramadhan",
+    "url": "https://github.com/primasr",
+    "email": "prima.s.r.2001@gmail.com",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "SIEM",
+        "Security",
+        "WAF",
+        "Imperva",
+        "Incapsula",
+        "CEF",
+        "Event Collector"
+    ],
+    "useCases": [
+        "Continuously ingest Imperva Incapsula Cloud WAF security and access logs into Cortex XSIAM.",
+        "Monitor web application security, bot traffic, and DDoS mitigation events in real-time.",
+        "Inspect Imperva log index and fetch status with automatic state management."
+    ],
+    "keywords": [
+        "imperva",
+        "incapsula",
+        "waf",
+        "cef",
+        "security",
+        "collector",
+        "logs",
+        "event collector",
+        "siem"
+    ],
+    "marketplaces": [
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "primasr"
+    ],
+    "defaultDataSource": "ImpervaIncapsulaEventCollector_v2",
+    "dependencies": {},
+    "displayedImages": []
+}
