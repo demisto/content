@@ -1740,9 +1740,7 @@ def run_query_command(args: dict[str, Any], client: Client) -> PollResult:
             response=None,
             continue_to_poll=True,
             args_for_next_run=(args | {"query_run_uuid": query_run_uuid}),
-            partial_result=CommandResults(
-                readable_output=f"Query is still running. Current state: {query_run_status}."
-            ),
+            partial_result=CommandResults(readable_output=f"Query is still running. Current state: {query_run_status}."),
         )
 
     filename = "result.csv" if result_format == "csv" else "result.jsonl"

@@ -816,7 +816,6 @@ Command that performs a HTTP request to Sekoia using the integration authenticat
 
 There is no context output for this command.
 
-
 ### sekoia-xdr-run-query
 
 ***
@@ -830,14 +829,14 @@ Command to run a query and get its result. This is a combination of 3 commands: 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query_definition | Query definition in JSON. | Required | 
-| result_format | File format for the result. Possible values are: csv, jsonl. | Required | 
-| query_parameters | Query parameters in JSON. | Optional | 
-| query_uuid | Query UUID. | Optional | 
-| parent_uuid | Parent UUID. | Optional | 
-| parent_slug | Parent slug. | Optional | 
-| parent_type | Parent type. Possible values are: notebook, query, task, agent_run, alert, case. | Optional | 
-| community_uuid | Community UUID. | Optional | 
+| query_definition | Query definition in JSON. | Required |
+| result_format | File format for the result. Possible values are: csv, jsonl. | Required |
+| query_parameters | Query parameters in JSON. | Optional |
+| query_uuid | Query UUID. | Optional |
+| parent_uuid | Parent UUID. | Optional |
+| parent_slug | Parent slug. | Optional |
+| parent_type | Parent type. Possible values are: notebook, query, task, agent_run, alert, case. | Optional |
+| community_uuid | Community UUID. | Optional |
 
 #### Context Output
 
@@ -860,20 +859,20 @@ Command to create a query run on Sekoia XDR, after this execute "sekoia-xdr-get-
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query_definition | Query definition in JSON. | Required | 
-| query_parameters | Query parameters in JSON. | Optional | 
-| query_uuid | Query UUID. | Optional | 
-| parent_uuid | Parent UUID. | Optional | 
-| parent_slug | Parent slug. | Optional | 
-| parent_type | Parent type. Possible values are: notebook, query, task, agent_run, alert, case. | Optional | 
-| community_uuid | Community UUID. | Optional | 
+| query_definition | Query definition in JSON. | Required |
+| query_parameters | Query parameters in JSON. | Optional |
+| query_uuid | Query UUID. | Optional |
+| parent_uuid | Parent UUID. | Optional |
+| parent_slug | Parent slug. | Optional |
+| parent_type | Parent type. Possible values are: notebook, query, task, agent_run, alert, case. | Optional |
+| community_uuid | Community UUID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SekoiaXDR.QueryRun.task_id | string | Task UUID. | 
-| SekoiaXDR.QueryRun.uuid | string | Query Run UUID. | 
+| SekoiaXDR.QueryRun.task_id | string | Task UUID. |
+| SekoiaXDR.QueryRun.uuid | string | Query Run UUID. |
 
 #### Command example
 
@@ -894,7 +893,8 @@ Command to create a query run on Sekoia XDR, after this execute "sekoia-xdr-get-
 
 #### Human Readable Output
 
-### Triggered query execution:
+### Triggered query execution
+
 |task_id|uuid|
 |---|---|
 | eccb7dac-58bd-4d22-8f62-feb94dfdd57b | 8d466b50-d963-44bd-85f8-e461cca13832 |
@@ -912,23 +912,23 @@ Gets the query run status.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query_run_uuid | Query run UUID. | Required | 
+| query_run_uuid | Query run UUID. | Required |
 
 #### Context Output
 
 | **Path**                           | **Type** | **Description**  |
 |------------------------------------|----------|------------------|
-| SekoiaXDR.QueryRun.community_uuid  | string   | Community UUID.  | 
-| SekoiaXDR.QueryRun.created_at      | date     | Created at.      | 
-| SekoiaXDR.QueryRun.created_by      | string   | Created by.      | 
-| SekoiaXDR.QueryRun.created_by_type | string   | Created by type. | 
-| SekoiaXDR.QueryRun.duration        | number   | Duration.        | 
-| SekoiaXDR.QueryRun.error           | string   | Error.           | 
-| SekoiaXDR.QueryRun.parent_slug     | string   | Parent slug.     | 
-| SekoiaXDR.QueryRun.parent_type     | string   | Parent type.     | 
-| SekoiaXDR.QueryRun.parent_uuid     | string   | Parent UUID.     | 
-| SekoiaXDR.QueryRun.status          | string   | Status.          | 
-| SekoiaXDR.QueryRun.total           | number   | Total.           | 
+| SekoiaXDR.QueryRun.community_uuid  | string   | Community UUID.  |
+| SekoiaXDR.QueryRun.created_at      | date     | Created at.      |
+| SekoiaXDR.QueryRun.created_by      | string   | Created by.      |
+| SekoiaXDR.QueryRun.created_by_type | string   | Created by type. |
+| SekoiaXDR.QueryRun.duration        | number   | Duration.        |
+| SekoiaXDR.QueryRun.error           | string   | Error.           |
+| SekoiaXDR.QueryRun.parent_slug     | string   | Parent slug.     |
+| SekoiaXDR.QueryRun.parent_type     | string   | Parent type.     |
+| SekoiaXDR.QueryRun.parent_uuid     | string   | Parent UUID.     |
+| SekoiaXDR.QueryRun.status          | string   | Status.          |
+| SekoiaXDR.QueryRun.total           | number   | Total.           |
 
 #### Command example
 
@@ -954,11 +954,11 @@ Gets the query run status.
 
 #### Human Readable Output
 
->### Status of the query run 4c7e69fb-9a64-4463-a065-ba5fad0aa507:
+>### Status of the query run 4c7e69fb-9a64-4463-a065-ba5fad0aa507
+>
 >|community_uuid|created_at|created_by|created_by_type|duration|error|parent_slug|parent_type|parent_uuid|status|total|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 359994fa-0905-408b-baaa-a26e2272cffc | 2026-07-31T11:02:35.980580Z | d741767b-6b0f-44af-8b48-e736613ca4f8 | apikey | 432 |  |  |  |  | finished | 5 |
-
 
 ### sekoia-xdr-download-query-result
 
@@ -973,8 +973,8 @@ Downloads the query result as a file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query_run_uuid | Query run UUID. | Required | 
-| result_format | File format for the result. Possible values are: csv, jsonl. | Required | 
+| query_run_uuid | Query run UUID. | Required |
+| result_format | File format for the result. Possible values are: csv, jsonl. | Required |
 
 #### Context Output
 
