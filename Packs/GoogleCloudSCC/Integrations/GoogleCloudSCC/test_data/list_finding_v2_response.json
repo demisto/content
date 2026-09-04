@@ -1,0 +1,961 @@
+{
+    "listFindingsResults": [
+        {
+            "finding": {
+                "name": "organizations/284002401341/sources/5473473300599573546/findings/f8e7d6c5b4a3928170615243aabbccdd",
+                "canonicalName": "projects/593109727002/sources/5473473300599573546/findings/f8e7d6c5b4a3928170615243aabbccdd",
+                "parent": "organizations/284002401341/sources/5473473300599573546",
+                "resourceName": "//compute.googleapis.com/projects/prod-web-app-284002/zones/us-central1-a/instances/web-server-01",
+                "state": "ACTIVE",
+                "category": "Malware: Bad IP",
+                "externalUri": "https://console.cloud.google.com/security/command-center/findings",
+                "sourceProperties": {
+                    "dst_zipcode": "78701",
+                    "browser": "Chrome",
+                    "dst_region": "Texas",
+                    "userkey": "jdoe@example.com",
+                    "traffic_type": "CloudApp",
+                    "count": "1",
+                    "dst_longitude": -97.7431,
+                    "src_region": "California",
+                    "app": "Google Drive",
+                    "dst_latitude": 30.2672,
+                    "object": "quarterly-report.xlsx",
+                    "src_latitude": 37.7749,
+                    "sv": "vpn",
+                    "os": "Windows 10",
+                    "src_geoip_src": "MaxMind",
+                    "dst_location": "Austin",
+                    "device": "Windows Device",
+                    "srcip": "0.0.0.1"
+                },
+                "securityMarks": {
+                    "name": "organizations/284002401341/sources/5473473300599573546/findings/f8e7d6c5b4a3928170615243aabbccdd/securityMarks",
+                    "marks": {
+                        "team": "secops"
+                    },
+                    "canonicalName": "projects/593109727002/sources/5473473300599573546/findings/f8e7d6c5b4a3928170615243aabbccdd/securityMarks"
+                },
+                "eventTime": "2024-11-15T09:42:18Z",
+                "createTime": "2024-11-15T09:42:20.531Z",
+                "severity": "CRITICAL",
+                "mute": "UNMUTED",
+                "muteInfo": {
+                    "staticMute": {
+                        "state": "UNMUTED",
+                        "applyTime": "2024-11-15T09:42:20Z"
+                    },
+                    "dynamicMuteRecords": [
+                        {
+                            "muteConfig": "organizations/284002401341/muteConfigs/low-severity-mute",
+                            "matchTime": "2024-11-15T09:42:20Z"
+                        }
+                    ]
+                },
+                "findingClass": "THREAT",
+                "indicator": {
+                    "ipAddresses": [
+                        "0.0.0.1"
+                    ],
+                    "domains": [
+                        "malicious-c2.example.com"
+                    ],
+                    "signatures": [
+                        {
+                            "signatureType": "SIGNATURE_TYPE_PROCESS",
+                            "memoryHashSignature": {
+                                "binaryFamily": "Linux.Generic",
+                                "detections": [
+                                    {
+                                        "binary": "cryptominer",
+                                        "percentPagesMatched": 0.87
+                                    }
+                                ]
+                            },
+                            "yaraRuleSignature": {
+                                "yaraRule": "rule_crypto_miner_generic"
+                            }
+                        }
+                    ],
+                    "uris": [
+                        "http://malicious-c2.example.com/gate.php"
+                    ]
+                },
+                "vulnerability": {
+                    "cve": {
+                        "id": "CVE-2021-44228",
+                        "references": [
+                            {
+                                "source": "NVD",
+                                "uri": "https://nvd.nist.gov/vuln/detail/CVE-2021-44228"
+                            }
+                        ],
+                        "cvssv3": {
+                            "baseScore": 10.0,
+                            "attackVector": "ATTACK_VECTOR_NETWORK",
+                            "attackComplexity": "ATTACK_COMPLEXITY_LOW",
+                            "privilegesRequired": "PRIVILEGES_REQUIRED_NONE",
+                            "userInteraction": "USER_INTERACTION_NONE",
+                            "scope": "SCOPE_CHANGED",
+                            "confidentialityImpact": "IMPACT_HIGH",
+                            "integrityImpact": "IMPACT_HIGH",
+                            "availabilityImpact": "IMPACT_HIGH"
+                        },
+                        "upstreamFixAvailable": true,
+                        "impact": "HIGH",
+                        "exploitationActivity": "WIDE",
+                        "observedInTheWild": true,
+                        "zeroDay": false,
+                        "exploitReleaseDate": "2021-12-10T00:00:00Z",
+                        "firstExploitationDate": "2021-12-10T00:00:00Z"
+                    },
+                    "offendingPackage": {
+                        "packageName": "log4j-core",
+                        "cpeUri": "cpe:2.3:a:apache:log4j:2.14.1:*:*:*:*:*:*:*",
+                        "packageType": "MAVEN",
+                        "packageVersion": "2.14.1"
+                    },
+                    "fixedPackage": {
+                        "packageName": "log4j-core",
+                        "cpeUri": "cpe:2.3:a:apache:log4j:2.17.1:*:*:*:*:*:*:*",
+                        "packageType": "MAVEN",
+                        "packageVersion": "2.17.1"
+                    },
+                    "securityBulletin": {
+                        "bulletinId": "GCP-2021-021",
+                        "submissionTime": "2021-12-10T00:00:00Z",
+                        "suggestedUpgradeVersion": "2.17.1"
+                    },
+                    "providerRiskScore": "95",
+                    "reachable": true,
+                    "cwes": [
+                        {
+                            "id": "CWE-502",
+                            "references": [
+                                {
+                                    "source": "MITRE",
+                                    "uri": "https://dummyuser1@dummy.com/data/definitions/502.html"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "muteUpdateTime": "2024-11-15T09:42:20Z",
+                "externalSystems": {
+                    "jira": {
+                        "name": "organizations/284002401341/sources/5473473300599573546/findings/f8e7d6c5b4a3928170615243aabbccdd/externalSystems/jira",
+                        "assignees": [
+                            "jdoe@example.com"
+                        ],
+                        "externalUid": "SEC-1042",
+                        "status": "In Progress",
+                        "externalSystemUpdateTime": "2024-11-15T10:15:00Z",
+                        "caseUri": "https://example.atlassian.net/browse/SEC-1042",
+                        "casePriority": "P1",
+                        "caseSla": "2024-11-16T09:42:18Z",
+                        "caseCreateTime": "2024-11-15T09:45:00Z",
+                        "caseCloseTime": "2024-11-15T18:00:00Z",
+                        "ticketInfo": {
+                            "id": "SEC-1042",
+                            "assignee": "jdoe@example.com",
+                            "description": "Investigate malware bad IP on web-server-01",
+                            "uri": "https://example.atlassian.net/browse/SEC-1042",
+                            "status": "In Progress",
+                            "updateTime": "2024-11-15T10:15:00Z"
+                        }
+                    }
+                },
+                "mitreAttack": {
+                    "primaryTactic": "COMMAND_AND_CONTROL",
+                    "primaryTechniques": [
+                        "APPLICATION_LAYER_PROTOCOL"
+                    ],
+                    "additionalTactics": [
+                        "EXFILTRATION"
+                    ],
+                    "additionalTechniques": [
+                        "EXFILTRATION_OVER_C2_CHANNEL"
+                    ],
+                    "version": "14"
+                },
+                "access": {
+                    "principalEmail": "compute-sa@prod-web-app-284002.iam.gserviceaccount.com",
+                    "callerIp": "0.0.0.1",
+                    "callerIpGeo": {
+                        "regionCode": "US"
+                    },
+                    "userAgentFamily": "curl",
+                    "userAgent": "curl/7.68.0",
+                    "serviceName": "compute.googleapis.com",
+                    "methodName": "v1.compute.instances.get",
+                    "principalSubject": "serviceAccount:compute-sa@prod-web-app-284002.iam.gserviceaccount.com",
+                    "serviceAccountKeyName": "projects/prod-web-app-284002/serviceAccounts/compute-sa@prod-web-app-284002.iam.gserviceaccount.com/keys/a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6",
+                    "serviceAccountDelegationInfo": [
+                        {
+                            "principalEmail": "admin@example.com",
+                            "principalSubject": "user:admin@example.com"
+                        }
+                    ],
+                    "userName": "compute-sa"
+                },
+                "connections": [
+                    {
+                        "destinationIp": "0.0.0.1",
+                        "destinationPort": 443,
+                        "sourceIp": "10.128.0.4",
+                        "sourcePort": 51820,
+                        "protocol": "TCP"
+                    }
+                ],
+                "muteInitiator": "jdoe@example.com",
+                "processes": [
+                    {
+                        "name": "cryptominer",
+                        "binary": {
+                            "path": "/tmp/.x/cryptominer",
+                            "size": "4587520",
+                            "sha256": "3a7bd3e2360a3d9f9c5f8b1a2c4d6e8f0a1b2c3d4e5f60718293a4b5c6d7e8f9",
+                            "hashedSize": "4587520",
+                            "partiallyHashed": false,
+                            "contents": "ELF binary (truncated)",
+                            "diskPath": {
+                                "partitionUuid": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+                                "relativePath": "/tmp/.x/cryptominer"
+                            },
+                            "operations": [
+                                {
+                                    "type": "OPEN"
+                                }
+                            ],
+                            "fileLoadState": "LOADED_BY_PROCESS"
+                        },
+                        "libraries": [
+                            {
+                                "path": "/lib/x86_64-linux-gnu/libc.so.6",
+                                "size": "2029224",
+                                "sha256": "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08",
+                                "hashedSize": "2029224",
+                                "partiallyHashed": false,
+                                "contents": "shared library",
+                                "diskPath": {
+                                    "partitionUuid": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+                                    "relativePath": "/lib/x86_64-linux-gnu/libc.so.6"
+                                },
+                                "operations": [
+                                    {
+                                        "type": "OPEN"
+                                    }
+                                ],
+                                "fileLoadState": "LOADED_BY_PROCESS"
+                            }
+                        ],
+                        "script": {
+                            "path": "/tmp/.x/run.sh",
+                            "size": "512",
+                            "sha256": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae",
+                            "hashedSize": "512",
+                            "partiallyHashed": false,
+                            "contents": "#!/bin/sh (truncated)",
+                            "diskPath": {
+                                "partitionUuid": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+                                "relativePath": "/tmp/.x/run.sh"
+                            },
+                            "operations": [
+                                {
+                                    "type": "OPEN"
+                                }
+                            ],
+                            "fileLoadState": "LOADED_BY_PROCESS"
+                        },
+                        "args": [
+                            "/tmp/.x/cryptominer",
+                            "--pool",
+                            "malicious-c2.example.com:443"
+                        ],
+                        "argumentsTruncated": false,
+                        "envVariables": [
+                            {
+                                "name": "PATH",
+                                "val": "/usr/local/bin:/usr/bin:/bin"
+                            }
+                        ],
+                        "envVariablesTruncated": false,
+                        "pid": "48213",
+                        "parentPid": "1",
+                        "userId": "0"
+                    }
+                ],
+                "contacts": {
+                    "security": {
+                        "contacts": [
+                            {
+                                "email": "security@example.com"
+                            }
+                        ]
+                    }
+                },
+                "compliances": [
+                    {
+                        "standard": "cis",
+                        "version": "1.3",
+                        "ids": [
+                            "4.1"
+                        ]
+                    }
+                ],
+                "parentDisplayName": "Event Threat Detection",
+                "description": "A connection to a known malicious IP address was detected from a Compute Engine instance.",
+                "exfiltration": {
+                    "sources": [
+                        {
+                            "name": "//bigquery.googleapis.com/projects/prod-web-app-284002/datasets/customer_data",
+                            "components": [
+                                "customers"
+                            ]
+                        }
+                    ],
+                    "targets": [
+                        {
+                            "name": "//bigquery.googleapis.com/projects/attacker-project/datasets/exfil",
+                            "components": [
+                                "customers_copy"
+                            ]
+                        }
+                    ],
+                    "totalExfiltratedBytes": "1048576"
+                },
+                "iamBindings": [
+                    {
+                        "action": "ADD",
+                        "role": "roles/owner",
+                        "member": "user:attacker@example.com"
+                    }
+                ],
+                "nextSteps": "Isolate the instance and rotate potentially compromised credentials.",
+                "moduleName": "MALWARE_BAD_IP",
+                "containers": [
+                    {
+                        "name": "web-app",
+                        "uri": "gcr.io/prod-web-app-284002/web-app@sha256:3a7bd3e2360a3d9f9c5f8b1a2c4d6e8f0a1b2c3d4e5f60718293a4b5c6d7e8f9",
+                        "imageId": "sha256:3a7bd3e2360a3d9f9c5f8b1a2c4d6e8f0a1b2c3d4e5f60718293a4b5c6d7e8f9",
+                        "labels": [
+                            {
+                                "name": "app",
+                                "value": "web"
+                            }
+                        ],
+                        "createTime": "2024-11-10T08:00:00Z"
+                    }
+                ],
+                "kubernetes": {
+                    "pods": [
+                        {
+                            "ns": "default",
+                            "name": "web-app-7d9f8c5b4-x2k9p",
+                            "labels": [
+                                {
+                                    "name": "app",
+                                    "value": "web"
+                                }
+                            ],
+                            "containers": [
+                                {
+                                    "name": "web-app",
+                                    "uri": "gcr.io/prod-web-app-284002/web-app@sha256:3a7bd3e2360a3d9f9c5f8b1a2c4d6e8f0a1b2c3d4e5f60718293a4b5c6d7e8f9",
+                                    "imageId": "sha256:3a7bd3e2360a3d9f9c5f8b1a2c4d6e8f0a1b2c3d4e5f60718293a4b5c6d7e8f9",
+                                    "labels": [
+                                        {
+                                            "name": "app",
+                                            "value": "web"
+                                        }
+                                    ],
+                                    "createTime": "2024-11-10T08:00:00Z"
+                                }
+                            ]
+                        }
+                    ],
+                    "nodes": [
+                        {
+                            "name": "gke-prod-cluster-default-pool-a1b2c3d4-node1"
+                        }
+                    ],
+                    "nodePools": [
+                        {
+                            "name": "default-pool",
+                            "nodes": [
+                                {
+                                    "name": "gke-prod-cluster-default-pool-a1b2c3d4-node1"
+                                }
+                            ]
+                        }
+                    ],
+                    "roles": [
+                        {
+                            "kind": "ROLE",
+                            "ns": "default",
+                            "name": "pod-reader"
+                        }
+                    ],
+                    "bindings": [
+                        {
+                            "ns": "default",
+                            "name": "read-pods",
+                            "role": {
+                                "kind": "ROLE",
+                                "ns": "default",
+                                "name": "pod-reader"
+                            },
+                            "subjects": [
+                                {
+                                    "kind": "USER",
+                                    "ns": "default",
+                                    "name": "jdoe@example.com"
+                                }
+                            ]
+                        }
+                    ],
+                    "accessReviews": [
+                        {
+                            "group": "apps",
+                            "ns": "default",
+                            "name": "deployments",
+                            "resource": "deployments",
+                            "subresource": "",
+                            "verb": "create",
+                            "version": "v1"
+                        }
+                    ],
+                    "objects": [
+                        {
+                            "group": "apps",
+                            "kind": "Deployment",
+                            "ns": "default",
+                            "name": "web-app",
+                            "containers": [
+                                {
+                                    "name": "web-app",
+                                    "uri": "gcr.io/prod-web-app-284002/web-app@sha256:3a7bd3e2360a3d9f9c5f8b1a2c4d6e8f0a1b2c3d4e5f60718293a4b5c6d7e8f9",
+                                    "imageId": "sha256:3a7bd3e2360a3d9f9c5f8b1a2c4d6e8f0a1b2c3d4e5f60718293a4b5c6d7e8f9",
+                                    "labels": [
+                                        {
+                                            "name": "app",
+                                            "value": "web"
+                                        }
+                                    ],
+                                    "createTime": "2024-11-10T08:00:00Z"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "database": {
+                    "name": "//cloudsql.googleapis.com/projects/prod-web-app-284002/instances/app-db",
+                    "displayName": "app-db",
+                    "userName": "app_user",
+                    "query": "SELECT * FROM customers",
+                    "grantees": [
+                        "app_user"
+                    ],
+                    "version": "POSTGRES_14"
+                },
+                "attackExposure": {
+                    "score": 8.7,
+                    "latestCalculationTime": "2024-11-15T09:45:00Z",
+                    "attackExposureResult": "organizations/284002401341/simulations/1234567890/attackExposureResults/f8e7d6c5",
+                    "state": "CALCULATED",
+                    "exposedHighValueResourcesCount": 3,
+                    "exposedMediumValueResourcesCount": 5,
+                    "exposedLowValueResourcesCount": 12
+                },
+                "files": [
+                    {
+                        "path": "/tmp/.x/cryptominer",
+                        "size": "4587520",
+                        "sha256": "3a7bd3e2360a3d9f9c5f8b1a2c4d6e8f0a1b2c3d4e5f60718293a4b5c6d7e8f9",
+                        "hashedSize": "4587520",
+                        "partiallyHashed": false,
+                        "contents": "ELF binary (truncated)",
+                        "diskPath": {
+                            "partitionUuid": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+                            "relativePath": "/tmp/.x/cryptominer"
+                        },
+                        "operations": [
+                            {
+                                "type": "OPEN"
+                            }
+                        ],
+                        "fileLoadState": "LOADED_BY_PROCESS"
+                    }
+                ],
+                "cloudDlpInspection": {
+                    "inspectJob": "projects/prod-web-app-284002/locations/us-central1/dlpJobs/i-1234567890",
+                    "infoType": "CREDIT_CARD_NUMBER",
+                    "infoTypeCount": "42",
+                    "fullScan": true
+                },
+                "cloudDlpDataProfile": {
+                    "dataProfile": "projects/prod-web-app-284002/locations/us-central1/tableProfiles/customer_data",
+                    "parentType": "ORGANIZATION",
+                    "infoTypes": [
+                        {
+                            "name": "EMAIL_ADDRESS",
+                            "version": "stable",
+                            "sensitivityScore": {
+                                "score": "SENSITIVITY_MODERATE"
+                            }
+                        }
+                    ]
+                },
+                "kernelRootkit": {
+                    "name": "Suspicious kernel modification",
+                    "unexpectedCodeModification": true,
+                    "unexpectedReadOnlyDataModification": false,
+                    "unexpectedFtraceHandler": false,
+                    "unexpectedKprobeHandler": false,
+                    "unexpectedKernelCodePages": true,
+                    "unexpectedSystemCallHandler": true,
+                    "unexpectedInterruptHandler": false,
+                    "unexpectedProcessesInRunqueue": false
+                },
+                "orgPolicies": [
+                    {
+                        "name": "organizations/284002401341/policies/compute.requireOsLogin"
+                    }
+                ],
+                "job": {
+                    "name": "projects/prod-web-app-284002/locations/us-central1/jobs/scan-job",
+                    "state": "FAILED",
+                    "errorCode": 13,
+                    "location": "us-central1"
+                },
+                "application": {
+                    "baseUri": "https://app.example.com",
+                    "fullUri": "https://app.example.com/login"
+                },
+                "ipRules": {
+                    "direction": "INGRESS",
+                    "sourceIpRanges": [
+                        "0.0.0.0/0"
+                    ],
+                    "destinationIpRanges": [
+                        "0.0.0.1/20"
+                    ],
+                    "exposedServices": [
+                        "ssh"
+                    ],
+                    "allowed": {
+                        "ipRules": [
+                            {
+                                "protocol": "tcp",
+                                "portRanges": [
+                                    {
+                                        "min": "22",
+                                        "max": "22"
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    "denied": {
+                        "ipRules": [
+                            {
+                                "protocol": "tcp",
+                                "portRanges": [
+                                    {
+                                        "min": "3389",
+                                        "max": "3389"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                },
+                "backupDisasterRecovery": {
+                    "backupTemplate": "gold-template",
+                    "policies": [
+                        "daily-backup"
+                    ],
+                    "host": "web-server-01",
+                    "applications": [
+                        "web-app"
+                    ],
+                    "storagePool": "primary-pool",
+                    "policyOptions": [
+                        "retention=30d"
+                    ],
+                    "profile": "production-profile",
+                    "appliance": "backup-appliance-01",
+                    "backupType": "INCREMENTAL",
+                    "backupCreateTime": "2024-11-14T02:00:00Z"
+                },
+                "securityPosture": {
+                    "name": "organizations/284002401341/locations/global/postures/production-posture",
+                    "revisionId": "a1b2c3d4",
+                    "postureDeploymentResource": "organizations/284002401341",
+                    "postureDeployment": "organizations/284002401341/locations/global/postureDeployments/prod-deployment",
+                    "changedPolicy": "compute.requireOsLogin",
+                    "policySet": "cis-benchmark",
+                    "policy": "os-login-required",
+                    "policyDriftDetails": [
+                        {
+                            "field": "enforce",
+                            "expectedValue": "true",
+                            "detectedValue": "false"
+                        }
+                    ]
+                },
+                "logEntries": [
+                    {
+                        "cloudLoggingEntry": {
+                            "insertId": "1a2b3c4d5e",
+                            "logId": "cloudaudit.googleapis.com%2Factivity",
+                            "resourceContainer": "projects/prod-web-app-284002",
+                            "timestamp": "2024-11-15T09:42:18Z"
+                        }
+                    }
+                ],
+                "loadBalancers": [
+                    {
+                        "name": "web-lb-frontend"
+                    }
+                ],
+                "cloudArmor": {
+                    "securityPolicy": {
+                        "name": "web-security-policy",
+                        "type": "CLOUD_ARMOR",
+                        "preview": false
+                    },
+                    "requests": {
+                        "ratio": 0.92,
+                        "shortTermAllowed": 1500,
+                        "longTermAllowed": 42000,
+                        "longTermDenied": 3800
+                    },
+                    "adaptiveProtection": {
+                        "confidence": 0.95
+                    },
+                    "attack": {
+                        "volumePpsLong": "150000",
+                        "volumeBpsLong": "1200000000",
+                        "classification": "HTTP_FLOOD",
+                        "volumePps": 180000,
+                        "volumeBps": 1450000000
+                    },
+                    "threatVector": "L7 HTTP flood",
+                    "duration": "300s"
+                },
+                "notebook": {
+                    "name": "projects/prod-web-app-284002/locations/us-central1/instances/analytics-notebook",
+                    "service": "Vertex AI Workbench",
+                    "lastAuthor": "analyst@example.com",
+                    "notebookUpdateTime": "2024-11-14T16:30:00Z"
+                },
+                "toxicCombination": {
+                    "attackExposureScore": 9.1,
+                    "relatedFindings": [
+                        "organizations/284002401341/sources/5473473300599573546/findings/aa11bb22cc33dd44ee55ff6677889900"
+                    ]
+                },
+                "groupMemberships": [
+                    {
+                        "groupType": "GROUP_TYPE_TOXIC_COMBINATION",
+                        "groupId": "toxic-combo-001"
+                    }
+                ],
+                "disk": {
+                    "name": "//compute.googleapis.com/projects/prod-web-app-284002/zones/us-central1-a/disks/web-server-01"
+                },
+                "dataAccessEvents": [
+                    {
+                        "eventId": "evt-1001",
+                        "principalEmail": "compute-sa@prod-web-app-284002.iam.gserviceaccount.com",
+                        "operation": "READ",
+                        "eventTime": "2024-11-15T09:40:00Z"
+                    }
+                ],
+                "dataFlowEvents": [
+                    {
+                        "eventId": "evt-2001",
+                        "principalEmail": "compute-sa@prod-web-app-284002.iam.gserviceaccount.com",
+                        "operation": "READ",
+                        "violatedLocation": "us-central1",
+                        "eventTime": "2024-11-15T09:41:00Z"
+                    }
+                ],
+                "networks": [
+                    {
+                        "name": "//compute.googleapis.com/projects/prod-web-app-284002/global/networks/prod-vpc"
+                    }
+                ],
+                "dataRetentionDeletionEvents": [
+                    {
+                        "eventDetectionTime": "2024-11-15T09:42:18Z",
+                        "dataObjectCount": "1500",
+                        "maxRetentionAllowed": "7776000s",
+                        "minRetentionAllowed": "86400s",
+                        "eventType": "EVENT_TYPE_MAX_TTL_EXCEEDED"
+                    }
+                ],
+                "affectedResources": {
+                    "count": "3"
+                },
+                "aiModel": {
+                    "name": "text-bison",
+                    "domain": "NLP",
+                    "library": "TensorFlow",
+                    "location": "us-central1",
+                    "publisher": "Google",
+                    "deploymentPlatform": "VERTEX_AI",
+                    "displayName": "Text Bison",
+                    "usageCategory": "TEXT_GENERATION"
+                },
+                "chokepoint": {
+                    "relatedFindings": [
+                        "organizations/284002401341/sources/5473473300599573546/findings/aa11bb22cc33dd44ee55ff6677889900"
+                    ]
+                },
+                "complianceDetails": {
+                    "frameworks": [
+                        {
+                            "name": "cis_gcp_v1.3",
+                            "displayName": "CIS Google Cloud Platform Foundation Benchmark v1.3",
+                            "category": [
+                                "SECURITY_BENCHMARKS"
+                            ],
+                            "type": "FRAMEWORK_TYPE_BUILT_IN",
+                            "controls": [
+                                {
+                                    "controlName": "4.1",
+                                    "displayName": "Ensure instances are not configured to use the default service account"
+                                }
+                            ]
+                        }
+                    ],
+                    "cloudControl": {
+                        "cloudControlName": "restrict-default-service-account",
+                        "type": "BUILT_IN",
+                        "policyType": "ORG_POLICY",
+                        "version": 1
+                    },
+                    "cloudControlDeploymentNames": [
+                        "organizations/284002401341/locations/global/cloudControlDeployments/restrict-default-sa"
+                    ]
+                },
+                "vertexAi": {
+                    "datasets": [
+                        {
+                            "name": "projects/prod-web-app-284002/locations/us-central1/datasets/1234567890",
+                            "displayName": "training-dataset",
+                            "source": "bq://prod-web-app-284002.ml_data.training"
+                        }
+                    ],
+                    "pipelines": [
+                        {
+                            "name": "projects/prod-web-app-284002/locations/us-central1/pipelineJobs/train-pipeline",
+                            "displayName": "train-pipeline"
+                        }
+                    ]
+                },
+                "cryptoKeyName": "projects/prod-web-app-284002/locations/us-central1/keyRings/app-keyring/cryptoKeys/app-key",
+                "artifactGuardPolicies": {
+                    "resourceId": "gcr.io/prod-web-app-284002/web-app",
+                    "failingPolicies": [
+                        {
+                            "type": "VULNERABILITY",
+                            "policyId": "block-critical-cves",
+                            "failureReason": "Image contains critical CVE-2021-44228"
+                        }
+                    ]
+                },
+                "secret": {
+                    "type": "GCP_API_KEY",
+                    "status": {
+                        "lastUpdatedTime": "2024-11-15T09:42:18Z",
+                        "validity": "SECRET_VALIDITY_UNSUPPORTED"
+                    },
+                    "environmentVariable": {
+                        "key": "API_TOKEN"
+                    },
+                    "filePath": {
+                        "path": "/app/config/.env"
+                    }
+                },
+                "externalExposure": {
+                    "privateIpAddress": "10.128.0.4",
+                    "privatePort": "8080",
+                    "exposedService": "http",
+                    "publicIpAddress": "0.0.0.1",
+                    "publicPort": "443",
+                    "exposedEndpoint": "0.0.0.1:443",
+                    "loadBalancerFirewallPolicy": "allow-https",
+                    "serviceFirewallPolicy": "allow-http-8080",
+                    "forwardingRule": "web-forwarding-rule",
+                    "backendService": "web-backend",
+                    "instanceGroup": "web-instance-group",
+                    "networkEndpointGroup": "web-neg",
+                    "hostnameUri": "app.example.com",
+                    "pscServiceAttachment": "web-psc-attachment",
+                    "pscNetworkAttachment": "web-psc-network",
+                    "internalBackendService": "internal-web-backend",
+                    "backendBucket": "web-static-bucket",
+                    "exposedApplication": "web-app",
+                    "networkIngressFirewallPolicy": "allow-ingress-https",
+                    "httpResponse": [
+                        {
+                            "statusCode": "200",
+                            "path": "/login"
+                        }
+                    ],
+                    "networkPathInsightsGenerationTime": "2024-11-15T09:42:18Z"
+                },
+                "policyViolationSummary": {
+                    "policyViolationsCount": "5",
+                    "conformantResourcesCount": "120",
+                    "evaluationErrorsCount": "0",
+                    "outOfScopeResourcesCount": "3"
+                },
+                "agentDataAccessEvents": [
+                    {
+                        "eventId": "evt-3001",
+                        "principalSubject": "serviceAccount:compute-sa@prod-web-app-284002.iam.gserviceaccount.com",
+                        "operation": "READ",
+                        "eventTime": "2024-11-15T09:42:00Z"
+                    }
+                ],
+                "discoveredWorkload": {
+                    "workloadType": "MCP_SERVER",
+                    "confidence": "CONFIDENCE_HIGH",
+                    "detectedRelevantPackages": true,
+                    "detectedRelevantKeywords": true,
+                    "detectedRelevantHardware": false
+                }
+            },
+            "resource": {
+                "name": "//compute.googleapis.com/projects/prod-web-app-284002/zones/us-central1-a/instances/web-server-01",
+                "displayName": "web-server-01",
+                "type": "google.compute.Instance",
+                "cloudProvider": "GOOGLE_CLOUD_PLATFORM",
+                "service": "compute.googleapis.com",
+                "location": "us-central1-a",
+                "resourcePath": {
+                    "nodes": [
+                        {
+                            "nodeType": "GCP_ORGANIZATION",
+                            "id": "organizations/284002401341",
+                            "displayName": "example.com"
+                        }
+                    ]
+                },
+                "resourcePathString": "org/example.com/project/prod-web-app-284002/instance/web-server-01",
+                "application": {
+                    "name": "//apphub.googleapis.com/projects/prod-web-app-284002/locations/us-central1/applications/web-app",
+                    "attributes": {
+                        "criticality": {
+                            "type": "MISSION_CRITICAL"
+                        },
+                        "environment": {
+                            "type": "PRODUCTION"
+                        },
+                        "developerOwners": [
+                            {
+                                "email": "dev-team@example.com"
+                            }
+                        ],
+                        "operatorOwners": [
+                            {
+                                "email": "ops-team@example.com"
+                            }
+                        ],
+                        "businessOwners": [
+                            {
+                                "email": "product-owner@example.com"
+                            }
+                        ]
+                    }
+                },
+                "adcApplication": {
+                    "name": "//apphub.googleapis.com/projects/prod-web-app-284002/locations/us-central1/applications/web-app",
+                    "attributes": {
+                        "criticality": {
+                            "type": "MISSION_CRITICAL"
+                        },
+                        "environment": {
+                            "type": "PRODUCTION"
+                        },
+                        "developerOwners": [
+                            {
+                                "email": "dev-team@example.com"
+                            }
+                        ],
+                        "operatorOwners": [
+                            {
+                                "email": "ops-team@example.com"
+                            }
+                        ],
+                        "businessOwners": [
+                            {
+                                "email": "product-owner@example.com"
+                            }
+                        ]
+                    }
+                },
+                "adcApplicationTemplate": {
+                    "name": "web-app-template"
+                },
+                "adcSharedTemplate": {
+                    "name": "shared-web-template"
+                },
+                "gcpMetadata": {
+                    "project": "//cloudresourcemanager.googleapis.com/projects/593109727002",
+                    "projectDisplayName": "prod-web-app-284002",
+                    "parent": "//cloudresourcemanager.googleapis.com/folders/456789012345",
+                    "parentDisplayName": "production-folder",
+                    "folders": [
+                        {
+                            "resourceFolder": "//cloudresourcemanager.googleapis.com/folders/456789012345",
+                            "resourceFolderDisplayName": "production-folder"
+                        }
+                    ],
+                    "organization": "//cloudresourcemanager.googleapis.com/organizations/284002401341"
+                },
+                "awsMetadata": {
+                    "organization": {
+                        "id": "o-a1b2c3d4e5"
+                    },
+                    "organizationalUnits": [
+                        {
+                            "id": "ou-a1b2-c3d4e5f6",
+                            "name": "production"
+                        }
+                    ],
+                    "account": {
+                        "id": "123456789012",
+                        "name": "prod-account"
+                    }
+                },
+                "azureMetadata": {
+                    "managementGroups": [
+                        {
+                            "id": "mg-production",
+                            "displayName": "Production"
+                        }
+                    ],
+                    "subscription": {
+                        "id": "a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d",
+                        "displayName": "prod-subscription"
+                    },
+                    "resourceGroup": {
+                        "id": "rg-web-prod",
+                        "name": "web-prod-rg"
+                    },
+                    "tenant": {
+                        "id": "b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e",
+                        "displayName": "example-tenant"
+                    }
+                }
+            }
+        }
+    ],
+    "nextPageToken": "CiAKHnByb2plY3RzLzU5MzEwOTcyNzAwMg",
+    "totalSize": "1"
+}
