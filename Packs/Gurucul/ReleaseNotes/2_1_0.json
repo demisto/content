@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Cases are no longer fetched. Configure Fetch type to Incidents or Alerts and set Mapper (incoming) and Incident type before re-enabling fetch (new instances default to GRAIncident-Mapper and GRAIncident). Existing GRACase incidents remain actionable via gra-case-* commands. GRA nomenclature now uses Data Source instead of Resource."
+}

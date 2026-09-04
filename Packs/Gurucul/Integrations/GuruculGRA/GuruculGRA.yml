@@ -58,12 +58,30 @@ configuration:
   type: 0
   section: Collect
   required: false
+  additionalinfo: The first-fetch time window is used only when no maxIncidentId/maxAlertId cursor exists yet. Later fetches use the ID cursor only.
 - display: Maximum number of incidents per fetch
   name: max_fetch
   defaultvalue: "25"
   type: 0
   section: Collect
   required: false
+- display: Fetch type
+  name: fetch_type
+  type: 15
+  section: Collect
+  required: false
+  defaultvalue: Incidents
+  options:
+  - Incidents
+  - Alerts
+  additionalinfo: The objects to import from GRA. Cases are no longer fetched. Legacy GRACase incidents remain actionable via gra-case-* commands. Use a separate instance for Alerts. Default Fetch type is Incidents. New instances default to Mapper (incoming) GRAIncident-Mapper and Incident type GRAIncident. On an Alerts instance, set Fetch type to Alerts, Mapper (incoming) to GRAAlert-Mapper, and Incident type to GRAAlert. After the first bootstrap, fetch continues with maxIncidentId or maxAlertId only.
+- display: GRA server timezone
+  name: gra_server_timezone
+  defaultvalue: UTC
+  type: 0
+  section: Collect
+  required: false
+  additionalinfo: Timezone of the GRA server (IANA id, for example UTC). Used when fetching Incidents and Alerts. Not used for First fetch time. Default UTC.
 script:
   script: ''
   type: python
@@ -153,8 +171,8 @@ script:
     - contextPath: Gra.Accounts.description
       description: Description.
       type: string
-    - contextPath: Gra.Accounts.resource
-      description: Resource.
+    - contextPath: Gra.Accounts.datasourcename
+      description: Data Source Name.
       type: string
     - contextPath: Gra.Accounts.domain
       description: Domain.
@@ -176,6 +194,7 @@ script:
       type: date
     description: Retrieve list of all accounts.
   - name: gra-fetch-active-resource-accounts
+    deprecated: true
     arguments:
     - name: resource_name
       required: true
@@ -230,7 +249,63 @@ script:
     - contextPath: Gra.Active.Resource.Accounts.updated_on
       description: Updated On.
       type: date
-    description: Retrieve list of all active accounts for specified resource.
+    description: Deprecated. Use ***gra-fetch-active-datasource-accounts*** instead. Retrieve list of all active accounts for specified resource.
+  - name: gra-fetch-active-datasource-accounts
+    arguments:
+    - name: datasource_name
+      required: true
+      description: Data Source Name.
+      defaultValue: Windows Security
+    - name: page
+      required: true
+      description: Page No.
+      defaultValue: "1"
+    - name: max
+      required: true
+      default: true
+      description: Per page record count.
+      defaultValue: "25"
+    outputs:
+    - contextPath: Gra.Active.Datasource.Accounts.id
+      description: ID.
+      type: number
+    - contextPath: Gra.Active.Datasource.Accounts.name
+      description: Name.
+      type: string
+    - contextPath: Gra.Active.Datasource.Accounts.type
+      description: Type.
+      type: string
+    - contextPath: Gra.Active.Datasource.Accounts.created_on
+      description: Created On.
+      type: date
+    - contextPath: Gra.Active.Datasource.Accounts.department
+      description: Department.
+      type: string
+    - contextPath: Gra.Active.Datasource.Accounts.description
+      description: Description.
+      type: string
+    - contextPath: Gra.Active.Datasource.Accounts.datasourcename
+      description: Data Source Name.
+      type: string
+    - contextPath: Gra.Active.Datasource.Accounts.domain
+      description: Domain.
+      type: string
+    - contextPath: Gra.Active.Datasource.Accounts.high_risk
+      description: High Risk.
+      type: string
+    - contextPath: Gra.Active.Datasource.Accounts.is_orphan
+      description: Is Orphan.
+      type: string
+    - contextPath: Gra.Active.Datasource.Accounts.is_reassigned
+      description: Is Reassigned.
+      type: string
+    - contextPath: Gra.Active.Datasource.Accounts.risk_score
+      description: Risk Score.
+      type: number
+    - contextPath: Gra.Active.Datasource.Accounts.updated_on
+      description: Updated On.
+      type: date
+    description: Retrieve list of all active accounts for specified data source.
   - name: gra-fetch-user-accounts
     arguments:
     - name: employee_id
@@ -264,8 +339,8 @@ script:
     - contextPath: Gra.User.Accounts.description
       description: Description.
       type: string
-    - contextPath: Gra.User.Accounts.resource
-      description: Resource.
+    - contextPath: Gra.User.Accounts.datasourcename
+      description: Data Source Name.
       type: string
     - contextPath: Gra.User.Accounts.domain
       description: Domain.
@@ -287,6 +362,7 @@ script:
       type: date
     description: Retrieve list of all active accounts and details for specified user identity.
   - name: gra-fetch-resource-highrisk-accounts
+    deprecated: true
     arguments:
     - name: resource_name
       required: true
@@ -341,7 +417,63 @@ script:
     - contextPath: Gra.Resource.Highrisk.Accounts.updated_on
       description: Updated On.
       type: date
-    description: Retrieve high risk accounts for specified resource.
+    description: Deprecated. Use ***gra-fetch-datasource-highrisk-accounts*** instead. Retrieve high risk accounts for specified resource.
+  - name: gra-fetch-datasource-highrisk-accounts
+    arguments:
+    - name: datasource_name
+      required: true
+      description: Data Source Name.
+      defaultValue: Windows Security
+    - name: page
+      required: true
+      description: Page No.
+      defaultValue: "1"
+    - name: max
+      required: true
+      default: true
+      description: Per page record count.
+      defaultValue: "25"
+    outputs:
+    - contextPath: Gra.Datasource.Highrisk.Accounts.id
+      description: Id.
+      type: number
+    - contextPath: Gra.Datasource.Highrisk.Accounts.name
+      description: Name.
+      type: string
+    - contextPath: Gra.Datasource.Highrisk.Accounts.type
+      description: Type.
+      type: string
+    - contextPath: Gra.Datasource.Highrisk.Accounts.created_on
+      description: Created On.
+      type: date
+    - contextPath: Gra.Datasource.Highrisk.Accounts.department
+      description: Department.
+      type: string
+    - contextPath: Gra.Datasource.Highrisk.Accounts.description
+      description: Description.
+      type: string
+    - contextPath: Gra.Datasource.Highrisk.Accounts.datasourcename
+      description: Data Source Name.
+      type: string
+    - contextPath: Gra.Datasource.Highrisk.Accounts.domain
+      description: Domain.
+      type: string
+    - contextPath: Gra.Datasource.Highrisk.Accounts.high_risk
+      description: High Risk.
+      type: string
+    - contextPath: Gra.Datasource.Highrisk.Accounts.is_orphan
+      description: Is Orphan.
+      type: string
+    - contextPath: Gra.Datasource.Highrisk.Accounts.is_reassigned
+      description: Is Reassigned.
+      type: string
+    - contextPath: Gra.Datasource.Highrisk.Accounts.risk_score
+      description: Risk Score.
+      type: number
+    - contextPath: Gra.Datasource.Highrisk.Accounts.updated_on
+      description: Updated On.
+      type: date
+    description: Retrieve high risk accounts for specified data source.
   - name: gra-fetch-hpa
     arguments:
     - name: page
@@ -372,8 +504,8 @@ script:
     - contextPath: Gra.Hpa.description
       description: Description.
       type: string
-    - contextPath: Gra.Hpa.resource
-      description: Resource.
+    - contextPath: Gra.Hpa.datasourcename
+      description: Data Source Name.
       type: string
     - contextPath: Gra.Hpa.domain
       description: Domain.
@@ -395,6 +527,7 @@ script:
       type: date
     description: Retrieve list of all high risk privileged accounts.
   - name: gra-fetch-resource-hpa
+    deprecated: true
     arguments:
     - name: resource_name
       required: true
@@ -449,7 +582,63 @@ script:
     - contextPath: Gra.Resource.Hpa.updated_on
       description: Updated On.
       type: date
-    description: Retrieve all high privileged accounts for specified resource.
+    description: Deprecated. Use ***gra-fetch-datasource-hpa*** instead. Retrieve all high privileged accounts for specified resource.
+  - name: gra-fetch-datasource-hpa
+    arguments:
+    - name: datasource_name
+      required: true
+      description: Data Source Name.
+      defaultValue: Windows Security
+    - name: page
+      required: true
+      description: Page No.
+      defaultValue: "1"
+    - name: max
+      required: true
+      default: true
+      description: Per page record count.
+      defaultValue: "25"
+    outputs:
+    - contextPath: Gra.Datasource.Hpa.id
+      description: Id.
+      type: number
+    - contextPath: Gra.Datasource.Hpa.name
+      description: Name.
+      type: string
+    - contextPath: Gra.Datasource.Hpa.type
+      description: Type.
+      type: string
+    - contextPath: Gra.Datasource.Hpa.created_on
+      description: Created On.
+      type: date
+    - contextPath: Gra.Datasource.Hpa.department
+      description: Department.
+      type: string
+    - contextPath: Gra.Datasource.Hpa.description
+      description: Description.
+      type: string
+    - contextPath: Gra.Datasource.Hpa.datasourcename
+      description: Data Source Name.
+      type: string
+    - contextPath: Gra.Datasource.Hpa.domain
+      description: Domain.
+      type: string
+    - contextPath: Gra.Datasource.Hpa.high_risk
+      description: High Risk.
+      type: string
+    - contextPath: Gra.Datasource.Hpa.is_orphan
+      description: Is Orphan.
+      type: string
+    - contextPath: Gra.Datasource.Hpa.is_reassigned
+      description: Is Reassigned.
+      type: string
+    - contextPath: Gra.Datasource.Hpa.risk_score
+      description: Risk Score.
+      type: number
+    - contextPath: Gra.Datasource.Hpa.updated_on
+      description: Updated On.
+      type: date
+    description: Retrieve all high privileged accounts for specified data source.
   - name: gra-fetch-orphan-accounts
     arguments:
     - name: page
@@ -480,8 +669,8 @@ script:
     - contextPath: Gra.Orphan.Accounts.description
       description: Description.
       type: string
-    - contextPath: Gra.Orphan.Accounts.resource
-      description: Resource.
+    - contextPath: Gra.Orphan.Accounts.datasourcename
+      description: Data Source Name.
       type: string
     - contextPath: Gra.Orphan.Accounts.domain
       description: Domain.
@@ -503,6 +692,7 @@ script:
       type: date
     description: Retrieve list of all orphan / rogue accounts.
   - name: gra-fetch-resource-orphan-accounts
+    deprecated: true
     arguments:
     - name: resource_name
       required: true
@@ -557,7 +747,63 @@ script:
     - contextPath: Gra.Resource.Orphan.Accounts.updated_on
       description: Updated On.
       type: date
-    description: Retrieve all orphan / rogue accounts for specified resource.
+    description: Deprecated. Use ***gra-fetch-datasource-orphan-accounts*** instead. Retrieve all orphan / rogue accounts for specified resource.
+  - name: gra-fetch-datasource-orphan-accounts
+    arguments:
+    - name: datasource_name
+      required: true
+      description: Data Source Name.
+      defaultValue: Windows Security
+    - name: page
+      required: true
+      default: true
+      description: Page No.
+      defaultValue: "1"
+    - name: max
+      required: true
+      description: Per page record count.
+      defaultValue: "25"
+    outputs:
+    - contextPath: Gra.Datasource.Orphan.Accounts.id
+      description: Id.
+      type: number
+    - contextPath: Gra.Datasource.Orphan.Accounts.name
+      description: Name.
+      type: string
+    - contextPath: Gra.Datasource.Orphan.Accounts.type
+      description: Type.
+      type: string
+    - contextPath: Gra.Datasource.Orphan.Accounts.created_on
+      description: Created On.
+      type: date
+    - contextPath: Gra.Datasource.Orphan.Accounts.department
+      description: Department.
+      type: string
+    - contextPath: Gra.Datasource.Orphan.Accounts.description
+      description: Description.
+      type: string
+    - contextPath: Gra.Datasource.Orphan.Accounts.datasourcename
+      description: Data Source Name.
+      type: string
+    - contextPath: Gra.Datasource.Orphan.Accounts.domain
+      description: Domain.
+      type: string
+    - contextPath: Gra.Datasource.Orphan.Accounts.high_risk
+      description: High Risk.
+      type: string
+    - contextPath: Gra.Datasource.Orphan.Accounts.is_orphan
+      description: Is Orphan.
+      type: string
+    - contextPath: Gra.Datasource.Orphan.Accounts.is_reassigned
+      description: Is Reassigned.
+      type: string
+    - contextPath: Gra.Datasource.Orphan.Accounts.risk_score
+      description: Risk Score.
+      type: number
+    - contextPath: Gra.Datasource.Orphan.Accounts.updated_on
+      description: Updated On.
+      type: date
+    description: Retrieve all orphan / rogue accounts for specified data source.
   - name: gra-user-activities
     arguments:
     - name: employee_id
@@ -579,8 +825,8 @@ script:
     - contextPath: Gra.User.Activity.account_name
       description: Account Name.
       type: string
-    - contextPath: Gra.User.Activity.resource_name
-      description: Resource Name.
+    - contextPath: Gra.User.Activity.datasource_name
+      description: Data Source Name.
       type: string
     - contextPath: Gra.User.Activity.event_desc
       description: Event Desc.
@@ -733,6 +979,7 @@ script:
       type: string
     description: Retrieve list of all high risk users.
   - name: gra-cases
+    deprecated: true
     arguments:
     - name: status
       required: true
@@ -787,7 +1034,7 @@ script:
     - contextPath: Gra.Cases.anomalies
       description: Anomalies.
       type: string
-    description: Retrieve list of all cases for specified status.
+    description: Deprecated. GRA Cases are no longer imported by this integration. This command remains available for existing GRACase incidents. Retrieve list of all cases for specified status.
   - name: gra-user-anomalies
     arguments:
     - name: employee_id
@@ -807,6 +1054,7 @@ script:
       type: string
     description: Retrieve list of anomalies for specified user.
   - name: gra-case-action
+    deprecated: true
     arguments:
     - name: action
       required: true
@@ -840,8 +1088,9 @@ script:
     - contextPath: Gra.Case.Action.Message
       description: Message.
       type: string
-    description: Close a case and update the anomaly status as Closed / Risk Managed / Model Reviewed.
+    description: Deprecated. GRA Cases are no longer imported by this integration. This command remains available for existing GRACase incidents. Close a case and update the anomaly status as Closed / Risk Managed / Model Reviewed.
   - name: gra-case-action-anomaly
+    deprecated: true
     arguments:
     - name: action
       required: true
@@ -881,7 +1130,7 @@ script:
     - contextPath: Gra.Case.Action.Anomaly.anomalyName
       description: Anomaly Name.
       type: string
-    description: Close an anomaly or anomalies within a case and update the anomaly status as Closed / Risk Managed / Model Reviewed.
+    description: Deprecated. GRA Cases are no longer imported by this integration. This command remains available for existing GRACase incidents. Close an anomaly or anomalies within a case and update the anomaly status as Closed / Risk Managed / Model Reviewed.
   - name: gra-investigate-anomaly-summary
     arguments:
     - name: modelName
@@ -898,8 +1147,8 @@ script:
     - contextPath: Gra.Investigate.Anomaly.Summary.entityCount
       description: Entity Count.
       type: string
-    - contextPath: Gra.Investigate.Anomaly.Summary.resourceCount
-      description: Resource Count.
+    - contextPath: Gra.Investigate.Anomaly.Summary.datasourceCount
+      description: Data Source Count.
       type: string
     - contextPath: Gra.Investigate.Anomaly.Summary.records
       description: Records.
@@ -916,8 +1165,11 @@ script:
     - contextPath: Gra.Investigate.Anomaly.Summary.chainDetails
       description: Chain Details.
       type: string
-    - contextPath: Gra.Investigate.Anomaly.Summary.resourceName
-      description: Resource Name.
+    - contextPath: Gra.Investigate.Anomaly.Summary.datasourcename
+      description: Data Source Name.
+      type: string
+    - contextPath: Gra.Investigate.Anomaly.Summary.datasource
+      description: Data Source (nested anomalous-account rows).
       type: string
     - contextPath: Gra.Investigate.Anomaly.Summary.type
       description: Type.
@@ -972,6 +1224,7 @@ script:
       type: string
     description: Retrieve analytical features for specified entity value, model name and dates.
   - name: gra-cases-anomaly
+    deprecated: true
     arguments:
     - name: caseId
       description: GRA Case Id.
@@ -998,12 +1251,370 @@ script:
     - contextPath: Gra.Cases.anomalies.status
       description: Current status of anomaly.
       type: String
-    description: Retrieve anomalies for specified case id.
+    description: Deprecated. GRA Cases are no longer imported by this integration. This command remains available for existing GRACase incidents. Retrieve anomalies for specified case id.
   - name: gra-validate-api
     description: Verifies the Gurucul platform's operational status by assessing system health, reviewing logs, and checking key performance indicators for any errors.
+  - name: gra-incidents
+    arguments:
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - CLOSED
+      - RISK ACCEPTED
+      - REOPENED
+      - ALL
+      description: The status.
+      defaultValue: OPEN
+    - name: page
+      required: true
+      description: The page number.
+      defaultValue: "1"
+    - name: max
+      required: true
+      description: The per page record count.
+      defaultValue: "25"
+    outputs:
+    - contextPath: Gra.Incidents.entityId
+      description: The entity id.
+      type: number
+    - contextPath: Gra.Incidents.entityTypeId
+      description: The entity type id.
+      type: number
+    - contextPath: Gra.Incidents.entity
+      description: The entity.
+      type: string
+    - contextPath: Gra.Incidents.incidentId
+      description: The incident id.
+      type: number
+    - contextPath: Gra.Incidents.openDate
+      description: The open date.
+      type: date
+    - contextPath: Gra.Incidents.ownerId
+      description: The owner id.
+      type: number
+    - contextPath: Gra.Incidents.ownerType
+      description: The owner type.
+      type: string
+    - contextPath: Gra.Incidents.ownerName
+      description: The owner name.
+      type: string
+    - contextPath: Gra.Incidents.riskDate
+      description: The risk date.
+      type: date
+    - contextPath: Gra.Incidents.status
+      description: The status.
+      type: string
+    - contextPath: Gra.Incidents.anomalies
+      description: The anomalies.
+      type: string
+    description: Retrieves the list of all GRA incidents for the specified status.
+  - name: gra-incident-action
+    arguments:
+    - name: action
+      required: true
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - closeIncident
+      - modelReviewIncident
+      - riskManageIncident
+      description: The action.
+      defaultValue: closeIncident
+    - name: incidentId
+      required: true
+      description: The incident id.
+    - name: subOption
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - True Incident
+      - Correct Detection
+      - Tuning Required
+      - Others
+      description: The sub option.
+      defaultValue: True Incident
+    - name: incidentComment
+      required: true
+      description: The incident comment.
+    - name: riskAcceptDate
+      description: The risk Accept Date in yyyy-MM-dd format (riskManageIncident only).
+    outputs:
+    - contextPath: Gra.Incident.Action.Message
+      description: The message.
+      type: string
+    description: Closes a GRA incident and updates anomaly status as Closed / Risk Managed / Model Reviewed.
+  - name: gra-incident-action-anomaly
+    arguments:
+    - name: action
+      required: true
+      default: true
+      auto: PREDEFINED
+      predefined:
+      - closeIncidentAnomaly
+      - modelReviewIncidentAnomaly
+      - riskAcceptIncidentAnomaly
+      description: The action.
+      defaultValue: closeIncidentAnomaly
+    - name: incidentId
+      required: true
+      description: The incident id.
+    - name: anomalyNames
+      required: true
+      description: The anomaly names.
+    - name: subOption
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - True Incident
+      - Correct Detection
+      - Tuning Required
+      - Others
+      description: The sub option.
+      defaultValue: True Incident
+    - name: incidentComment
+      required: true
+      description: The incident comment.
+    - name: riskAcceptDate
+      description: The risk Accept Date in yyyy-MM-dd format (riskAcceptIncidentAnomaly only).
+    outputs:
+    - contextPath: Gra.Incident.Action.Anomaly.Message
+      description: The message.
+      type: string
+    description: Closes anomalies within a GRA incident.
+  - name: gra-incidents-anomaly
+    arguments:
+    - name: incidentId
+      description: The gRA Incident Id.
+      required: true
+    outputs:
+    - contextPath: Gra.Incidents.anomalies.anomalyName
+      description: The incident Anomaly name.
+      type: string
+    - contextPath: Gra.Incidents.anomalies.status
+      description: The current status of anomaly.
+      type: string
+    - contextPath: Gra.Incidents.anomalies.datasourcename
+      description: The data source name.
+      type: string
+    - contextPath: Gra.Incidents.anomalies.assignee
+      description: The assignee name.
+      type: string
+    - contextPath: Gra.Incidents.anomalies.assigneeType
+      description: The assignee type (User/Role).
+      type: string
+    - contextPath: Gra.Incidents.anomalies.riskScore
+      description: The risk score for anomaly.
+      type: number
+    - contextPath: Gra.Incidents.anomalies.riskAcceptedDate
+      description: The risk accepted date of anomaly.
+      type: date
+    description: Retrieves anomalies for the specified incident id.
+  - name: gra-alerts
+    arguments:
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - CLOSED
+      - IN PROGRESS
+      - ALL
+      description: The status.
+      defaultValue: OPEN
+    - name: startDate
+      required: true
+      description: The start Date (yyyy-MM-dd HH:mm:ss).
+    - name: endDate
+      required: true
+      description: The end Date (yyyy-MM-dd HH:mm:ss).
+    - name: page
+      required: true
+      description: The page number.
+      defaultValue: "1"
+    - name: max
+      required: true
+      description: The per page record count.
+      defaultValue: "25"
+    outputs:
+    - contextPath: Gra.Alerts.alertId
+      description: The alert id.
+      type: number
+    - contextPath: Gra.Alerts.anomalyName
+      description: The anomaly name.
+      type: string
+    - contextPath: Gra.Alerts.entityId
+      description: The entity id.
+      type: number
+    - contextPath: Gra.Alerts.entityTypeId
+      description: The entity type id.
+      type: number
+    - contextPath: Gra.Alerts.entity
+      description: The entity.
+      type: string
+    - contextPath: Gra.Alerts.statusName
+      description: The status.
+      type: string
+    - contextPath: Gra.Alerts.detectionTimestamp
+      description: The detection timestamp.
+      type: date
+    - contextPath: Gra.Alerts.severity
+      description: The severity.
+      type: number
+    - contextPath: Gra.Alerts.datasourcename
+      description: The data source name.
+      type: string
+    - contextPath: Gra.Alerts.riskScore
+      description: The risk score.
+      type: number
+    - contextPath: Gra.Alerts.graweblink
+      description: The GRA weblink.
+      type: string
+    description: Retrieves the list of GRA alerts for the specified status and date range.
+  - name: gra-alert-get
+    arguments:
+    - name: id
+      required: true
+      description: The alert id.
+    outputs:
+    - contextPath: Gra.Alert.alertId
+      description: The alert id.
+      type: number
+    - contextPath: Gra.Alert.anomalyName
+      description: The anomaly name.
+      type: string
+    - contextPath: Gra.Alert.entityId
+      description: The entity id.
+      type: number
+    - contextPath: Gra.Alert.entity
+      description: The entity.
+      type: string
+    - contextPath: Gra.Alert.statusName
+      description: The status.
+      type: string
+    - contextPath: Gra.Alert.detectionTimestamp
+      description: The detection timestamp.
+      type: date
+    - contextPath: Gra.Alert.severity
+      description: The severity.
+      type: number
+    - contextPath: Gra.Alert.datasourcename
+      description: The data source name.
+      type: string
+    - contextPath: Gra.Alert.riskScore
+      description: The risk score.
+      type: number
+    - contextPath: Gra.Alert.graweblink
+      description: The GRA weblink.
+      type: string
+    - contextPath: Gra.Alert.analyticalFeatures
+      description: The analytical features.
+      type: string
+    description: Retrieves a single GRA alert by id.
+  - name: gra-alert-action
+    arguments:
+    - name: action
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - closeAlert
+      - inProgressAlert
+      - assignAlert
+      - addCommentOnAlert
+      description: The action.
+      defaultValue: closeAlert
+    - name: alertId
+      required: true
+      description: The alert id.
+    - name: alertComment
+      required: true
+      description: The alert comment.
+    - name: incidentType
+      auto: PREDEFINED
+      predefined:
+      - Incident
+      - Not An Incident
+      description: The value required for closeAlert. Use Incident or Not An Incident.
+    - name: subStatus
+      description: 'The required for closeAlert. When incidentType=Incident: True Positive, Benign Positive, Policy Violation. When incidentType=Not An Incident: Model Review, Disable Model, False Positive.'
+    - name: assigneeType
+      auto: PREDEFINED
+      predefined:
+      - GRA_USER
+      - GRA_USER_ROLE
+      description: The value required for assignAlert.
+    - name: assigneeName
+      description: The value required for assignAlert.
+    outputs:
+    - contextPath: Gra.Alert.Action.Message
+      description: The message.
+      type: string
+    description: 'The perform an action on a GRA alert (close, in progress, assign, comment). Reopen is not supported. For closeAlert subStatus: Incident → True Positive, Benign Positive, Policy Violation; Not An Incident → Model Review, Disable Model, False Positive. Prefer gra-alert-comment / gra-alert-assign / gra-alert-in-progress for simpler War Room use.'
+  - name: gra-alert-comment
+    arguments:
+    - name: alertId
+      required: true
+      description: The alert id.
+    - name: alertComment
+      required: true
+      description: The comment to add on the alert.
+    outputs:
+    - contextPath: Gra.Alert.Action.Message
+      description: The message.
+      type: string
+    description: Adds a comment on a GRA alert (wrapper for addCommentOnAlert).
+  - name: gra-alert-assign
+    arguments:
+    - name: alertId
+      required: true
+      description: The alert id.
+    - name: assigneeType
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - GRA_USER
+      - GRA_USER_ROLE
+      description: The assignee type.
+    - name: assigneeName
+      required: true
+      description: The assignee name (GRA user or role).
+    - name: alertComment
+      required: true
+      description: The comment for the assign action.
+    outputs:
+    - contextPath: Gra.Alert.Action.Message
+      description: The message.
+      type: string
+    description: Assigns a GRA alert (wrapper for assignAlert).
+  - name: gra-alert-in-progress
+    arguments:
+    - name: alertId
+      required: true
+      description: The alert id.
+    - name: alertComment
+      required: true
+      description: The comment for setting the alert In Progress.
+    outputs:
+    - contextPath: Gra.Alert.Action.Message
+      description: The message.
+      type: string
+    description: Sets a GRA alert to In Progress (wrapper for inProgressAlert).
+  - name: gra-alert-update-history
+    arguments:
+    - name: alertId
+      required: true
+      description: The alert id.
+    outputs:
+    - contextPath: Gra.Alert.History.alertDetails
+      description: The alert update history details.
+      type: Unknown
+    description: Retrieves update history for a GRA alert.
   dockerimage: demisto/python3:3.12.13.7444307
   isfetch: true
   subtype: python3
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
+defaultmapperin: GRAIncident-Mapper
+defaultIncidentType: GRAIncident

@@ -50,8 +50,8 @@ def test_gra_fetch_accounts(requests_mock):
     from GuruculGRA import Client, fetch_record_command
 
     mock_response = util_load_json("test_data/gra-fetch-accounts.json")
-    requests_mock.get("https://test.com/api/accounts", json=mock_response)
-    api_url = "/accounts"
+    requests_mock.get("https://test.com/api/v1/accounts", json=mock_response)
+    api_url = "/v1/accounts"
     params = {"page": 1, "max": 10}
     client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
     response = fetch_record_command(client, api_url, "Gra.Accounts", "id", params)
@@ -104,8 +104,8 @@ def test_gra_fetch_user_accounts(requests_mock):
     from GuruculGRA import Client, fetch_record_command
 
     mock_response = util_load_json("test_data/gra-fetch-user-accounts.json")
-    requests_mock.get("https://test.com/api/users/AB1234/accounts", json=mock_response)
-    api_url = "/users/AB1234/accounts"
+    requests_mock.get("https://test.com/api/v1/users/accounts", json=mock_response)
+    api_url = "/v1/users/accounts"
     params = {"page": 1, "max": 10}
     client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
     response = fetch_record_command(client, api_url, "Gra.User.Accounts", "id", params)
@@ -158,8 +158,8 @@ def test_gra_fetch_hpa(requests_mock):
     from GuruculGRA import Client, fetch_record_command
 
     mock_response = util_load_json("test_data/gra-fetch-hpa.json")
-    requests_mock.get("https://test.com/api/accounts/highprivileged", json=mock_response)
-    api_url = "/accounts/highprivileged"
+    requests_mock.get("https://test.com/api/v1/accounts/highprivileged", json=mock_response)
+    api_url = "/v1/accounts/highprivileged"
     params = {"page": 1, "max": 10}
     client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
     response = fetch_record_command(client, api_url, "Gra.Hpa", "id", params)
@@ -212,8 +212,8 @@ def test_gra_fetch_orphan_accounts(requests_mock):
     from GuruculGRA import Client, fetch_record_command
 
     mock_response = util_load_json("test_data/gra-fetch-orphan-accounts.json")
-    requests_mock.get("https://test.com/api/accounts/orphan", json=mock_response)
-    api_url = "/accounts/orphan"
+    requests_mock.get("https://test.com/api/v1/accounts/orphan", json=mock_response)
+    api_url = "/v1/accounts/orphan"
     params = {"page": 1, "max": 10}
     client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
     response = fetch_record_command(client, api_url, "Gra.Orphan.Accounts", "id", params)
@@ -266,8 +266,8 @@ def test_gra_user_activities(requests_mock):
     from GuruculGRA import Client, fetch_record_command
 
     mock_response = util_load_json("test_data/gra-user-activities.json")
-    requests_mock.get("https://test.com/api/user/AB1234/activity", json=mock_response)
-    api_url = "/user/AB1234/activity"
+    requests_mock.get("https://test.com/api/v1/user/activity", json=mock_response)
+    api_url = "/v1/user/activity"
     params = {"page": 1, "max": 10}
     client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
     response = fetch_record_command(client, api_url, "Gra.User.Activity", "id", params)
@@ -474,8 +474,8 @@ def test_gra_investigate_anomaly_summary(requests_mock):
     from GuruculGRA import Client, fetch_record_command
 
     mock_response = util_load_json("test_data/gra-investigate-anomaly-summary.json")
-    requests_mock.get("https://test.com/api/investigateAnomaly/anomalySummary/ModelName", json=mock_response)
-    investigateAnomaly_url = "/investigateAnomaly/anomalySummary/ModelName"
+    requests_mock.get("https://test.com/api/investigateAnomaly/v1/anomalySummary", json=mock_response)
+    investigateAnomaly_url = "/investigateAnomaly/v1/anomalySummary"
     client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
     response = fetch_record_command(client, investigateAnomaly_url, "Gra.Investigate.Anomaly.Summary", "modelId", None)
     mock_response_array = []
@@ -502,8 +502,8 @@ def test_gra_analytical_features_entity_value(requests_mock):
     from GuruculGRA import Client, fetch_record_command
 
     mock_response = util_load_json("test_data/gra-analytical-features-entity-value.json")
-    requests_mock.get("https://test.com/api/profile/analyticalFeatures/entityValue", json=mock_response)
-    investigateAnomaly_url = "/profile/analyticalFeatures/entityValue"
+    requests_mock.get("https://test.com/api/profile/analyticalFeatures", json=mock_response)
+    investigateAnomaly_url = "/profile/analyticalFeatures"
     client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
     response = fetch_record_command(client, investigateAnomaly_url, "Gra.Analytical.Features.Entity.Value", "entityID", None)
     mock_response_array = []
@@ -511,3 +511,562 @@ def test_gra_analytical_features_entity_value(requests_mock):
     assert response.outputs == mock_response_array
     assert response.outputs_prefix == "Gra.Analytical.Features.Entity.Value"
     assert response.outputs_key_field == "entityID"
+
+
+def test_fetch_gra_incidents_bootstrap_uses_dates(requests_mock):
+    """First incident fetch uses date window and stores maxIncidentId."""
+    from GuruculGRA import Client, fetch_gra_incidents
+
+    mock_response = util_load_json("test_data/gra-incidents.json")
+    requests_mock.get("https://test.com/api/incidents/v1/opendate", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    first_fetch_time = 1600000000
+
+    next_run, incidents = fetch_gra_incidents(client, max_results=25, last_run={}, first_fetch_time=first_fetch_time)
+
+    assert len(incidents) == 2
+    assert next_run == {"maxIncidentId": 34}
+    assert "last_fetch" not in next_run
+    request = requests_mock.request_history[0]
+    assert "startdate" in request.qs
+    assert "enddate" in request.qs
+    assert "maxincidentid" not in request.qs
+    raw = json.loads(incidents[0]["rawJSON"])
+    assert raw["anomalies"][0]["datasourcename"] == "resourceName1"
+
+
+def test_fetch_gra_incidents_later_run_uses_max_id_only(requests_mock):
+    """Subsequent incident fetch sends maxIncidentId without dates."""
+    from GuruculGRA import Client, fetch_gra_incidents
+
+    mock_response = util_load_json("test_data/gra-incidents.json")
+    requests_mock.get("https://test.com/api/incidents/v1/opendate", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+
+    next_run, incidents = fetch_gra_incidents(client, max_results=25, last_run={"maxIncidentId": 30}, first_fetch_time=1600000000)
+
+    assert len(incidents) == 2
+    assert next_run == {"maxIncidentId": 34}
+    request = requests_mock.request_history[0]
+    assert request.qs["maxincidentid"] == ["30"]
+    assert "startdate" not in request.qs
+    assert "enddate" not in request.qs
+
+
+def test_fetch_gra_incidents_migrates_max_case_id(requests_mock):
+    """Upgrade path: maxCaseId is reused as maxIncidentId when Incident cursor is missing."""
+    from GuruculGRA import Client, fetch_gra_incidents
+
+    mock_response = util_load_json("test_data/gra-incidents.json")
+    requests_mock.get("https://test.com/api/incidents/v1/opendate", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+
+    next_run, incidents = fetch_gra_incidents(
+        client, max_results=25, last_run={"maxCaseId": 30, "last_fetch": 1600000000}, first_fetch_time=1600000000
+    )
+
+    assert len(incidents) == 2
+    assert next_run == {"maxIncidentId": 34}
+    request = requests_mock.request_history[0]
+    assert request.qs["maxincidentid"] == ["30"]
+    assert "startdate" not in request.qs
+    assert "enddate" not in request.qs
+
+
+def test_fetch_gra_incidents_empty_preserves_max_id(requests_mock):
+    """Empty page keeps the previous maxIncidentId cursor."""
+    from GuruculGRA import Client, fetch_gra_incidents
+
+    requests_mock.get("https://test.com/api/incidents/v1/opendate", json=[])
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+
+    next_run, incidents = fetch_gra_incidents(client, max_results=25, last_run={"maxIncidentId": 50}, first_fetch_time=1600000000)
+
+    assert incidents == []
+    assert next_run == {"maxIncidentId": 50}
+
+
+def test_fetch_gra_incidents_pages_until_short_page(requests_mock):
+    """max_fetch is page size; drain pages with a stable cursor; last-run max is across all pages."""
+    from GuruculGRA import Client, fetch_gra_incidents
+
+    page1 = [
+        {"incidentId": 31, "entity": "a", "openDate": "10/13/2020 18:12:59"},
+        {"incidentId": 32, "entity": "b", "openDate": "10/13/2020 18:12:59"},
+    ]
+    page2 = [
+        {"incidentId": 33, "entity": "c", "openDate": "10/13/2020 18:12:59"},
+        {"incidentId": 34, "entity": "d", "openDate": "10/13/2020 18:12:59"},
+    ]
+    page3 = [{"incidentId": 35, "entity": "e", "openDate": "10/13/2020 18:12:59"}]
+    requests_mock.get(
+        "https://test.com/api/incidents/v1/opendate",
+        [{"json": page1}, {"json": page2}, {"json": page3}],
+    )
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+
+    next_run, incidents = fetch_gra_incidents(client, max_results=2, last_run={"maxIncidentId": 30}, first_fetch_time=1600000000)
+
+    assert len(incidents) == 5
+    assert next_run == {"maxIncidentId": 35}
+    assert [req.qs["page"][0] for req in requests_mock.request_history] == ["1", "2", "3"]
+    assert all(req.qs["maxincidentid"] == ["30"] for req in requests_mock.request_history)
+
+
+def test_fetch_gra_alerts_bootstrap_uses_dates(requests_mock):
+    """First alert fetch uses date window and stores maxAlertId."""
+    from GuruculGRA import Client, fetch_gra_alerts
+
+    mock_response = util_load_json("test_data/gra-alerts.json")
+    requests_mock.get("https://test.com/api/alerts/v1/OPEN", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+
+    next_run, incidents = fetch_gra_alerts(client, max_results=25, last_run={}, first_fetch_time=1600000000)
+
+    assert len(incidents) == 1
+    assert next_run == {"maxAlertId": 101}
+    assert "last_fetch_alert" not in next_run
+    request = requests_mock.request_history[0]
+    assert "startdate" in request.qs
+    assert "enddate" in request.qs
+    assert "maxalertid" not in request.qs
+    raw = json.loads(incidents[0]["rawJSON"])
+    assert raw["datasourcename"] == "Okta"
+    assert "analyticalFeatures" not in raw
+
+
+def test_fetch_gra_alerts_later_run_uses_max_id_only(requests_mock):
+    """Subsequent alert fetch sends maxAlertId without dates."""
+    from GuruculGRA import Client, fetch_gra_alerts
+
+    mock_response = util_load_json("test_data/gra-alerts.json")
+    requests_mock.get("https://test.com/api/alerts/v1/OPEN", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+
+    next_run, incidents = fetch_gra_alerts(client, max_results=25, last_run={"maxAlertId": 100}, first_fetch_time=1600000000)
+
+    assert len(incidents) == 1
+    assert next_run == {"maxAlertId": 101}
+    request = requests_mock.request_history[0]
+    assert request.qs["maxalertid"] == ["100"]
+    assert "startdate" not in request.qs
+    assert "enddate" not in request.qs
+
+
+def test_fetch_gra_alerts_pages_until_short_page(requests_mock):
+    """max_fetch is page size; drain pages with a stable cursor; last-run max is across all pages."""
+    from GuruculGRA import Client, fetch_gra_alerts
+
+    def _alert(alert_id: int) -> dict:
+        return {
+            "alertId": alert_id,
+            "anomalyName": f"a{alert_id}",
+            "entity": "jdoe",
+            "detectionTimestamp": "2026-07-12T08:15:00",
+        }
+
+    requests_mock.get(
+        "https://test.com/api/alerts/v1/OPEN",
+        [
+            {"json": [_alert(101), _alert(102)]},
+            {"json": [_alert(103), _alert(104)]},
+            {"json": [_alert(105)]},
+        ],
+    )
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+
+    next_run, incidents = fetch_gra_alerts(client, max_results=2, last_run={"maxAlertId": 100}, first_fetch_time=1600000000)
+
+    assert len(incidents) == 5
+    assert next_run == {"maxAlertId": 105}
+    assert [req.qs["page"][0] for req in requests_mock.request_history] == ["1", "2", "3"]
+    assert all(req.qs["maxalertid"] == ["100"] for req in requests_mock.request_history)
+
+
+def test_gra_incidents(requests_mock):
+    """Unit test for gra-incidents list command."""
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = util_load_json("test_data/gra-incidents.json")
+    requests_mock.get("https://test.com/api/incidents/v1/OPEN", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    response = fetch_record_command(client, "/incidents/v1/OPEN", "Gra.Incidents", "incidentId", {"page": 1, "max": 10})
+    assert response.outputs == mock_response
+    assert response.outputs_prefix == "Gra.Incidents"
+    assert response.outputs_key_field == "incidentId"
+
+
+def test_gra_incident_action(requests_mock):
+    """Unit test for gra-incident-action POST command."""
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = util_load_json("test_data/gra-incident-action.json")
+    requests_mock.post("https://test.com/api/incidents/closeIncident", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    post_url = json.dumps({"incidentId": 33, "subOption": "True Incident", "incidentComment": "closed"})
+    response = fetch_record_command(
+        client, "/incidents/closeIncident", "Gra.Incident.Action", "incidentId", {"page": 1, "max": 10}, post_url
+    )
+    assert response.outputs == mock_response
+    assert response.outputs_prefix == "Gra.Incident.Action"
+    assert response.outputs_key_field == "incidentId"
+
+
+def test_gra_incident_action_anomaly(requests_mock):
+    """Unit test for gra-incident-action-anomaly POST command."""
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = util_load_json("test_data/gra-incident-action-anomaly.json")
+    requests_mock.post("https://test.com/api/incidents/closeIncidentAnomaly", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    post_url = json.dumps(
+        {
+            "incidentId": 33,
+            "anomalyNames": "anomalyName1",
+            "subOption": "True Incident",
+            "incidentComment": "closed",
+        }
+    )
+    response = fetch_record_command(
+        client,
+        "/incidents/closeIncidentAnomaly",
+        "Gra.Incident.Action.Anomaly",
+        "incidentId",
+        {"page": 1, "max": 10},
+        post_url,
+    )
+    assert response.outputs == mock_response
+    assert response.outputs_prefix == "Gra.Incident.Action.Anomaly"
+    assert response.outputs_key_field == "incidentId"
+
+
+def test_gra_incidents_anomaly(requests_mock):
+    """Unit test for gra-incidents-anomaly list command."""
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = util_load_json("test_data/gra-incidents-anomaly.json")
+    requests_mock.get("https://test.com/api/v1/anomalies/33", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    response = fetch_record_command(client, "/v1/anomalies/33", "Gra.Incidents.anomalies", "incidentId", {"page": 1, "max": 10})
+    assert response.outputs == mock_response
+    assert response.outputs_prefix == "Gra.Incidents.anomalies"
+    assert response.outputs_key_field == "incidentId"
+
+
+def test_gra_alerts(requests_mock):
+    """Unit test for gra-alerts list command."""
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = util_load_json("test_data/gra-alerts.json")
+    requests_mock.get("https://test.com/api/alerts/v1/OPEN", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    response = fetch_record_command(client, "/alerts/v1/OPEN", "Gra.Alerts", "alertId", {"page": 1, "max": 10})
+    assert response.outputs == mock_response
+    assert response.outputs[0]["datasourcename"] == "Okta"
+    assert "analyticalFeatures" not in response.outputs[0]
+    assert response.outputs_prefix == "Gra.Alerts"
+    assert response.outputs_key_field == "alertId"
+
+
+def test_gra_alert_get(requests_mock):
+    """Unit test for gra-alert-get command."""
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = util_load_json("test_data/gra-alert-get.json")
+    requests_mock.get("https://test.com/api/alerts/v1/getAlert", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    response = fetch_record_command(client, "/alerts/v1/getAlert", "Gra.Alert", "alertId", {"id": 101})
+    assert response.outputs == mock_response
+    assert response.outputs[0]["datasourcename"] == "Okta"
+    assert "datasourcename" in response.outputs[0]["analyticalFeatures"]
+    assert response.outputs_prefix == "Gra.Alert"
+    assert response.outputs_key_field == "alertId"
+
+
+def test_gra_alert_action(requests_mock):
+    """Unit test for gra-alert-action POST command."""
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = util_load_json("test_data/gra-alert-action.json")
+    requests_mock.post("https://test.com/api/alerts/closeAlert", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    post_url = json.dumps(
+        {
+            "alertId": 101,
+            "alertComment": "closed",
+            "incidentType": "Incident",
+            "subStatus": "True Positive",
+        }
+    )
+    response = fetch_record_command(client, "/alerts/closeAlert", "Gra.Alert.Action", "alertId", {"page": 1, "max": 10}, post_url)
+    assert response.outputs == mock_response
+    assert response.outputs_prefix == "Gra.Alert.Action"
+    assert response.outputs_key_field == "alertId"
+
+
+def test_gra_alert_comment(requests_mock):
+    """Unit test for gra-alert-comment thin wrapper POST path."""
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = util_load_json("test_data/gra-alert-action.json")
+    requests_mock.post("https://test.com/api/alerts/addCommentOnAlert", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    post_url = json.dumps({"alertId": 101, "alertComment": "note"})
+    response = fetch_record_command(
+        client, "/alerts/addCommentOnAlert", "Gra.Alert.Action", "alertId", {"page": 1, "max": 10}, post_url
+    )
+    assert response.outputs == mock_response
+    assert response.outputs_prefix == "Gra.Alert.Action"
+    assert response.outputs_key_field == "alertId"
+
+
+def test_fetch_gra_alerts_empty_preserves_max_id(requests_mock):
+    """Empty alert page keeps the previous maxAlertId cursor."""
+    from GuruculGRA import Client, fetch_gra_alerts
+
+    requests_mock.get("https://test.com/api/alerts/v1/OPEN", json=[])
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+
+    next_run, incidents = fetch_gra_alerts(client, max_results=25, last_run={"maxAlertId": 100}, first_fetch_time=1600000000)
+
+    assert incidents == []
+    assert next_run == {"maxAlertId": 100}
+
+
+def test_fetch_gra_alerts_occurred_uses_asia_kolkata(requests_mock):
+    """Naive GRA detectionTimestamp is parsed in GRA server timezone for occurred and mapper rawJSON."""
+    from GuruculGRA import Client, fetch_gra_alerts
+
+    mock_response = [
+        {
+            "alertId": 1,
+            "anomalyName": "Change Password Cases",
+            "entity": "user3437",
+            "detectionTimestamp": "08/28/2026 10:44:44",
+        }
+    ]
+    requests_mock.get("https://test.com/api/alerts/v1/OPEN", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+
+    _, incidents = fetch_gra_alerts(
+        client, max_results=25, last_run={"maxAlertId": 0}, first_fetch_time=1600000000, gra_timezone="Asia/Kolkata"
+    )
+
+    raw = json.loads(incidents[0]["rawJSON"])
+    assert "05:14:44" in incidents[0]["occurred"]
+    assert "05:14:44" in raw["detectionTimestamp"]
+
+
+def test_fetch_gra_alerts_occurred_utc_keeps_wall_clock(requests_mock):
+    """Default UTC treats naive GRA detectionTimestamp as UTC wall-clock."""
+    from GuruculGRA import Client, fetch_gra_alerts
+
+    mock_response = [
+        {
+            "alertId": 1,
+            "anomalyName": "Change Password Cases",
+            "entity": "user3437",
+            "detectionTimestamp": "08/28/2026 10:44:44",
+        }
+    ]
+    requests_mock.get("https://test.com/api/alerts/v1/OPEN", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+
+    _, incidents = fetch_gra_alerts(client, max_results=25, last_run={"maxAlertId": 0}, first_fetch_time=1600000000)
+
+    raw = json.loads(incidents[0]["rawJSON"])
+    assert "10:44:44" in incidents[0]["occurred"]
+    assert "10:44:44" in raw["detectionTimestamp"]
+
+
+def test_fetch_gra_incidents_open_date_uses_asia_kolkata(requests_mock):
+    """Naive GRA openDate and riskDate are parsed in GRA server timezone."""
+    from GuruculGRA import Client, fetch_gra_incidents
+
+    mock_response = [
+        {
+            "incidentId": 33,
+            "entity": "Parry Zanelli",
+            "openDate": "10/13/2020 18:12:59",
+            "riskDate": "10/13/2020 18:12:59",
+        }
+    ]
+    requests_mock.get("https://test.com/api/incidents/v1/opendate", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+
+    _, incidents = fetch_gra_incidents(
+        client, max_results=25, last_run={"maxIncidentId": 0}, first_fetch_time=1600000000, gra_timezone="Asia/Kolkata"
+    )
+
+    raw = json.loads(incidents[0]["rawJSON"])
+    assert "12:42:59" in incidents[0]["occurred"]
+    assert "12:42:59" in raw["openDate"]
+    assert "12:42:59" in raw["riskDate"]
+
+
+def test_fetch_incidents_routes_to_alerts(requests_mock):
+    """fetch_incidents with fetch_type=Alerts uses the alert fetch path."""
+    from GuruculGRA import Client, fetch_incidents
+
+    mock_response = util_load_json("test_data/gra-alerts.json")
+    requests_mock.get("https://test.com/api/alerts/v1/OPEN", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+
+    next_run, incidents = fetch_incidents(
+        client=client,
+        max_results=25,
+        last_run={},
+        first_fetch_time=1600000000,
+        fetch_type="Alerts",
+    )
+
+    assert len(incidents) == 1
+    assert next_run == {"maxAlertId": 101}
+
+
+def test_gra_alert_assign(requests_mock):
+    """Unit test for gra-alert-assign POST command."""
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = util_load_json("test_data/gra-alert-action.json")
+    requests_mock.post("https://test.com/api/alerts/assignAlert", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    post_url = json.dumps(
+        {
+            "alertId": 101,
+            "alertComment": "assigned",
+            "assigneeType": "GRA_USER",
+            "assigneeName": "analyst1",
+        }
+    )
+    response = fetch_record_command(
+        client, "/alerts/assignAlert", "Gra.Alert.Action", "alertId", {"page": 1, "max": 10}, post_url
+    )
+    assert response.outputs == mock_response
+    assert response.outputs_prefix == "Gra.Alert.Action"
+    assert response.outputs_key_field == "alertId"
+
+
+def test_gra_alert_in_progress(requests_mock):
+    """Unit test for gra-alert-in-progress POST command."""
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = util_load_json("test_data/gra-alert-action.json")
+    requests_mock.post("https://test.com/api/alerts/inProgressAlert", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    post_url = json.dumps({"alertId": 101, "alertComment": "working"})
+    response = fetch_record_command(
+        client, "/alerts/inProgressAlert", "Gra.Alert.Action", "alertId", {"page": 1, "max": 10}, post_url
+    )
+    assert response.outputs == mock_response
+    assert response.outputs_prefix == "Gra.Alert.Action"
+    assert response.outputs_key_field == "alertId"
+
+
+def test_gra_alert_update_history(requests_mock):
+    """Unit test for gra-alert-update-history command."""
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = [{"alertDetails": [{"actionName": "Comment", "comment": "note", "addedDate": "2026-07-12T08:15:00"}]}]
+    requests_mock.get("https://test.com/api/alerts/getAlertUpdateHistory", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    response = fetch_record_command(client, "/alerts/getAlertUpdateHistory", "Gra.Alert.History", "alertId", {"alertId": 101})
+    assert response.outputs == mock_response
+    assert response.outputs_prefix == "Gra.Alert.History"
+    assert response.outputs_key_field == "alertId"
+
+
+def test_gra_fetch_active_datasource_accounts(requests_mock):
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = util_load_json("test_data/gra-fetch-active-datasource-accounts.json")
+    requests_mock.get("https://test.com/api/datasources/accounts", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    response = fetch_record_command(
+        client,
+        "/datasources/accounts",
+        "Gra.Active.Datasource.Accounts",
+        "id",
+        {"page": 1, "max": 10, "datasourcename": "Linux"},
+    )
+    assert response.outputs == mock_response
+    assert response.outputs_prefix == "Gra.Active.Datasource.Accounts"
+    assert response.outputs[0]["datasourcename"] == "Linux"
+    assert requests_mock.request_history[0].qs["datasourcename"][0].lower() == "linux"
+
+
+def test_gra_fetch_datasource_highrisk_accounts(requests_mock):
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = util_load_json("test_data/gra-fetch-active-datasource-accounts.json")
+    requests_mock.get("https://test.com/api/datasources/accounts/highrisk", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    response = fetch_record_command(
+        client,
+        "/datasources/accounts/highrisk",
+        "Gra.Datasource.Highrisk.Accounts",
+        "id",
+        {"page": 1, "max": 10, "datasourcename": "Linux"},
+    )
+    assert response.outputs_prefix == "Gra.Datasource.Highrisk.Accounts"
+    assert response.outputs[0]["datasourcename"] == "Linux"
+
+
+def test_gra_fetch_datasource_hpa(requests_mock):
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = util_load_json("test_data/gra-fetch-hpa.json")
+    requests_mock.get("https://test.com/api/datasources/accounts/highprivileged", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    response = fetch_record_command(
+        client,
+        "/datasources/accounts/highprivileged",
+        "Gra.Datasource.Hpa",
+        "id",
+        {"page": 1, "max": 10, "datasourcename": "Linux"},
+    )
+    assert response.outputs_prefix == "Gra.Datasource.Hpa"
+    assert "datasourcename" in response.outputs[0]
+
+
+def test_gra_fetch_datasource_orphan_accounts(requests_mock):
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = util_load_json("test_data/gra-fetch-orphan-accounts.json")
+    requests_mock.get("https://test.com/api/datasources/accounts/orphan", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    response = fetch_record_command(
+        client,
+        "/datasources/accounts/orphan",
+        "Gra.Datasource.Orphan.Accounts",
+        "id",
+        {"page": 1, "max": 10, "datasourcename": "Windows Security"},
+    )
+    assert response.outputs_prefix == "Gra.Datasource.Orphan.Accounts"
+    assert "datasourcename" in response.outputs[0]
+
+
+def test_gra_user_activities_uses_datasource_name_key(requests_mock):
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = util_load_json("test_data/gra-user-activities.json")
+    requests_mock.get("https://test.com/api/v1/user/activity", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    response = fetch_record_command(
+        client, "/v1/user/activity", "Gra.User.Activity", "employee_id", {"page": 1, "max": 10, "id": "AB1234"}
+    )
+    assert response.outputs[0]["datasource_name"] == "Windows Security"
+    assert "resource_name" not in response.outputs[0]
+
+
+def test_legacy_resource_accounts_route_unchanged(requests_mock):
+    from GuruculGRA import Client, fetch_record_command
+
+    mock_response = util_load_json("test_data/gra-fetch-active-resource-accounts.json")
+    requests_mock.get("https://test.com/api/resources/Linux/accounts", json=mock_response)
+    client = Client(base_url="https://test.com/api", verify=False, headers={"Authentication": "Bearer some_api_key"})
+    response = fetch_record_command(
+        client, "/resources/Linux/accounts", "Gra.Active.Resource.Accounts", "id", {"page": 1, "max": 10}
+    )
+    assert response.outputs_prefix == "Gra.Active.Resource.Accounts"
+    assert response.outputs[0]["resource"] == "Linux"

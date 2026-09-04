@@ -22,7 +22,8 @@ def displayAnalyticalFeatures():
         if label["value"] is not None and label["type"] == "entity":
             entityValue = label["value"]
 
-    anomalies = incident["CustomFields"]["gracaseanomalydetails"]
+    custom_fields = incident.get("CustomFields") or {}
+    anomalies = custom_fields.get("gracaseanomalydetails") or custom_fields.get("graincidentanomalydetails") or []
     if int(entityTypeId) > 0:
         for anomalyDetailString in anomalies:
             anomalyName = ""
