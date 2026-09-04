@@ -58,7 +58,10 @@ def test_anomaly_status_change_triggers_set_incident(mocker):
     calls = GRAIncidentAnomaliesDisplay.execute_command.call_args_list
     assert calls[0][0] == ("gra-incidents-anomaly", {"incidentId": "33", "using": "instance_name"})
     assert calls[1][0][0] == "setIncident"
-    assert calls[1][0][1]["graincidentanomalydetails"][0]["status"] == "Closed"
+    grid_row = calls[1][0][1]["graincidentanomalydetails"][0]
+    assert grid_row["status"] == "Closed"
+    assert grid_row["riskaccepteddate"] == ""
+    assert grid_row["assigneetype"] == "User"
     return_results_mocker.assert_called_once_with(
         "There is 1 anomaly update identified for this incident. " "Refresh Analytical Features for updated attributes list."
     )

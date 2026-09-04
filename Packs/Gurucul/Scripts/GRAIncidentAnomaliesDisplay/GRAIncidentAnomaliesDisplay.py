@@ -4,6 +4,14 @@ import demistomock as demisto
 from CommonServerPython import *
 
 
+def _grid_cell(value):
+    if value is None:
+        return ""
+    if isinstance(value, str) and value.strip().lower() in {"null", "none"}:
+        return ""
+    return value
+
+
 def get_anomalies_by_incident_id():
     incident = demisto.incident()
 
@@ -25,13 +33,13 @@ def get_anomalies_by_incident_id():
             for anomaly in res:
                 if anomaly is not None:
                     new_anomaly = {
-                        "anomalyname": anomaly.get("anomalyName"),
-                        "riskaccepteddate": anomaly.get("riskAcceptedDate"),
-                        "datasourcename": anomaly.get("datasourcename"),
-                        "riskscore": anomaly.get("riskScore"),
-                        "assignee": anomaly.get("assignee"),
-                        "assigneetype": anomaly.get("assigneeType"),
-                        "status": anomaly.get("status"),
+                        "anomalyname": _grid_cell(anomaly.get("anomalyName")),
+                        "riskaccepteddate": _grid_cell(anomaly.get("riskAcceptedDate")),
+                        "datasourcename": _grid_cell(anomaly.get("datasourcename")),
+                        "riskscore": _grid_cell(anomaly.get("riskScore")),
+                        "assignee": _grid_cell(anomaly.get("assignee")),
+                        "assigneetype": _grid_cell(anomaly.get("assigneeType")),
+                        "status": _grid_cell(anomaly.get("status")),
                     }
                     updated_anomalies.append(new_anomaly)
 

@@ -540,6 +540,27 @@ def test_analytical_api_date_range_iso_utc_to_kolkata():
     assert to_date == "2026-08-28 23:59:59"
 
 
+def test_anomaly_grid_row_keeps_gra_value_case_and_blanks_null():
+    from GuruculGRA import _anomaly_grid_row
+
+    row = _anomaly_grid_row(
+        {
+            "anomalyName": "deleted access key",
+            "assignee": "graadmin",
+            "assigneeType": "role",
+            "datasourcename": "3com",
+            "riskAcceptedDate": None,
+            "riskScore": 91,
+            "status": "Open",
+        }
+    )
+    assert row["anomalyname"] == "deleted access key"
+    assert row["assigneetype"] == "role"
+    assert row["status"] == "Open"
+    assert row["riskaccepteddate"] == ""
+    assert row["riskscore"] == 91
+
+
 def test_fetch_gra_incidents_bootstrap_uses_dates(requests_mock):
     """First incident fetch uses date window and stores maxIncidentId."""
     from GuruculGRA import Client, fetch_gra_incidents
@@ -559,7 +580,12 @@ def test_fetch_gra_incidents_bootstrap_uses_dates(requests_mock):
     assert "enddate" in request.qs
     assert "maxincidentid" not in request.qs
     raw = json.loads(incidents[0]["rawJSON"])
-    assert raw["anomalies"][0]["datasourcename"] == "resourceName1"
+    anomaly = raw["anomalies"][0]
+    assert anomaly["datasourcename"] == "resourceName1"
+    assert anomaly["anomalyname"] == "anomalyName1"
+    assert "anomalyName" not in anomaly
+    assert anomaly["status"] == "Open"
+    assert anomaly["riskaccepteddate"] == ""
 
 
 def test_fetch_gra_incidents_later_run_uses_max_id_only(requests_mock):

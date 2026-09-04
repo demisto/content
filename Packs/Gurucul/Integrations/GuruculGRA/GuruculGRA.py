@@ -102,6 +102,33 @@ def _rewrite_gra_date_fields(record: dict[str, Any], keys: list[str], gra_timezo
         record[key] = _occurred_from_gra_date(raw, gra_timezone)
 
 
+def _grid_cell(value: Any) -> Any:
+    if value is None:
+        return ""
+    if isinstance(value, str) and value.strip().lower() in {"null", "none"}:
+        return ""
+    return value
+
+
+def _anomaly_grid_row(anomaly: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "anomalyname": _grid_cell(anomaly.get("anomalyName")),
+        "assignee": _grid_cell(anomaly.get("assignee")),
+        "assigneetype": _grid_cell(anomaly.get("assigneeType")),
+        "datasourcename": _grid_cell(anomaly.get("datasourcename")),
+        "riskaccepteddate": _grid_cell(anomaly.get("riskAcceptedDate")),
+        "riskscore": _grid_cell(anomaly.get("riskScore")),
+        "status": _grid_cell(anomaly.get("status")),
+    }
+
+
+def _reshape_incident_anomalies_for_grid(record: dict[str, Any]) -> None:
+    anomalies = record.get("anomalies")
+    if not isinstance(anomalies, list):
+        return
+    record["anomalies"] = [_anomaly_grid_row(a) for a in anomalies if isinstance(a, dict)]
+
+
 def _analytical_api_day(raw_value: Any, gra_timezone: str = "UTC") -> str:
     """Return yyyy-MM-dd for the GRA analytical-features API (Case wall-clock, War Room day, or UTC ISO in GRA TZ)."""
     raw = str(raw_value).strip()
@@ -200,6 +227,7 @@ def fetch_gra_incidents(
 
             record["incidentType"] = "GRAIncident"
             _rewrite_gra_date_fields(record, ["openDate", "riskDate"], gra_timezone)
+            _reshape_incident_anomalies_for_grid(record)
             incidents.append(
                 {
                     "name": record.get("entity"),

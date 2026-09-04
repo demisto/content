@@ -1279,9 +1279,36 @@ script:
     - contextPath: Gra.Incidents.status
       description: The status.
       type: string
+    - contextPath: Gra.Incidents.riskScore
+      description: The risk score.
+      type: number
+    - contextPath: Gra.Incidents.graweblink
+      description: The GRA weblink.
+      type: string
     - contextPath: Gra.Incidents.anomalies
       description: The anomalies.
       type: string
+    - contextPath: Gra.Incidents.anomalies.anomalyName
+      description: The incident Anomaly name.
+      type: string
+    - contextPath: Gra.Incidents.anomalies.status
+      description: The current status of anomaly.
+      type: string
+    - contextPath: Gra.Incidents.anomalies.datasourcename
+      description: The data source name.
+      type: string
+    - contextPath: Gra.Incidents.anomalies.assignee
+      description: The assignee name.
+      type: string
+    - contextPath: Gra.Incidents.anomalies.assigneeType
+      description: The assignee type (User/Role).
+      type: string
+    - contextPath: Gra.Incidents.anomalies.riskScore
+      description: The risk score for anomaly.
+      type: number
+    - contextPath: Gra.Incidents.anomalies.riskAcceptedDate
+      description: The risk accepted date of anomaly.
+      type: date
     description: Retrieves the list of all GRA incidents for the specified status.
   - name: gra-incident-action
     arguments:
@@ -1444,6 +1471,24 @@ script:
     - contextPath: Gra.Alerts.graweblink
       description: The GRA weblink.
       type: string
+    - contextPath: Gra.Alerts.incidentType
+      description: The incident type.
+      type: string
+    - contextPath: Gra.Alerts.assigneeIds
+      description: The assignee ids.
+      type: string
+    - contextPath: Gra.Alerts.assigneeType
+      description: The assignee type.
+      type: string
+    - contextPath: Gra.Alerts.assignee
+      description: The assignee.
+      type: string
+    - contextPath: Gra.Alerts.classifierList
+      description: The classifier list.
+      type: string
+    - contextPath: Gra.Alerts.subStatusName
+      description: The sub status name.
+      type: string
     description: Retrieves the list of GRA alerts for the specified status and date range.
   - name: gra-alert-get
     arguments:
@@ -1459,6 +1504,9 @@ script:
       type: string
     - contextPath: Gra.Alert.entityId
       description: The entity id.
+      type: number
+    - contextPath: Gra.Alert.entityTypeId
+      description: The entity type id.
       type: number
     - contextPath: Gra.Alert.entity
       description: The entity.
@@ -1481,8 +1529,29 @@ script:
     - contextPath: Gra.Alert.graweblink
       description: The GRA weblink.
       type: string
+    - contextPath: Gra.Alert.incidentType
+      description: The incident type.
+      type: string
+    - contextPath: Gra.Alert.assigneeIds
+      description: The assignee ids.
+      type: string
+    - contextPath: Gra.Alert.assigneeType
+      description: The assignee type.
+      type: string
+    - contextPath: Gra.Alert.assignee
+      description: The assignee.
+      type: string
+    - contextPath: Gra.Alert.classifierList
+      description: The classifier list.
+      type: string
+    - contextPath: Gra.Alert.subStatusName
+      description: The sub status name.
+      type: string
     - contextPath: Gra.Alert.analyticalFeatures
       description: The analytical features.
+      type: string
+    - contextPath: Gra.Alert.analyticalFeatureValues
+      description: The analytical feature values.
       type: string
     description: Retrieves a single GRA alert by id.
   - name: gra-alert-action
@@ -1579,9 +1648,39 @@ script:
       required: true
       description: The alert id.
     outputs:
+    - contextPath: Gra.Alert.History.count
+      description: The number of history entries.
+      type: number
     - contextPath: Gra.Alert.History.alertDetails
       description: The alert update history details.
       type: Unknown
+    - contextPath: Gra.Alert.History.alertDetails.firstName
+      description: The first name.
+      type: string
+    - contextPath: Gra.Alert.History.alertDetails.lastName
+      description: The last name.
+      type: string
+    - contextPath: Gra.Alert.History.alertDetails.addedDate
+      description: The added date.
+      type: date
+    - contextPath: Gra.Alert.History.alertDetails.eventBy
+      description: The event by.
+      type: string
+    - contextPath: Gra.Alert.History.alertDetails.addedBy
+      description: The added by.
+      type: string
+    - contextPath: Gra.Alert.History.alertDetails.id
+      description: The history entry id.
+      type: number
+    - contextPath: Gra.Alert.History.alertDetails.profilePicturePath
+      description: The profile picture path.
+      type: string
+    - contextPath: Gra.Alert.History.alertDetails.actionName
+      description: The action name.
+      type: string
+    - contextPath: Gra.Alert.History.alertDetails.comment
+      description: The comment.
+      type: string
     description: Retrieves update history for a GRA alert.
   dockerimage: demisto/python3:3.12.13.7444307
   isfetch: true

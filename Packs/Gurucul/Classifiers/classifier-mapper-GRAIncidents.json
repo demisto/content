@@ -38,20 +38,7 @@
                         "accessor": "",
                         "filters": [],
                         "root": "anomalies",
-                        "transformers": [
-                            {
-                                "args": {},
-                                "operator": "Stringify"
-                            },
-                            {
-                                "args": {},
-                                "operator": "toLowerCase"
-                            },
-                            {
-                                "args": {},
-                                "operator": "ParseJSON"
-                            }
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
@@ -182,20 +169,7 @@
                         "accessor": "",
                         "filters": [],
                         "root": "anomalies",
-                        "transformers": [
-                            {
-                                "args": {},
-                                "operator": "Stringify"
-                            },
-                            {
-                                "args": {},
-                                "operator": "toLowerCase"
-                            },
-                            {
-                                "args": {},
-                                "operator": "ParseJSON"
-                            }
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 }
