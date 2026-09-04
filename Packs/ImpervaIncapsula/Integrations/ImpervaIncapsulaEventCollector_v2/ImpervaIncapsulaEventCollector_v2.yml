@@ -1,0 +1,148 @@
+category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: ImpervaIncapsulaEventCollector_v2
+  version: -1
+name: ImpervaIncapsulaEventCollector_v2
+display: Imperva Incapsula Event Collector v2
+description: Collects CEF (Common Event Format) web security and traffic logs from
+  the Imperva Incapsula Log Server into Cortex XSIAM.
+configuration:
+- display: Log Server Base URL
+  name: url
+  type: 0
+  required: true
+  defaultvalue: https://logs.incapsula.com/
+  section: Connect
+  additionalinfo: The base URL of the Imperva Log Server (e.g., https://logs.incapsula.com/).
+- display: API ID
+  name: api_id
+  type: 0
+  required: true
+  section: Connect
+  additionalinfo: The API ID used to authenticate with the Imperva Log Server.
+- display: API Key
+  name: api_key
+  type: 4
+  required: true
+  section: Connect
+  additionalinfo: The API Key used to authenticate with the Imperva Log Server.
+- display: Trust any certificate (insecure)
+  name: insecure
+  type: 8
+  required: false
+  defaultvalue: true
+  section: Connect
+  additionalinfo: When selected, HTTPS certificate validation will be skipped.
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  defaultvalue: false
+  section: Connect
+  additionalinfo: When selected, system HTTP(S) proxy settings will be used.
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  required: false
+  defaultvalue: true
+  section: Collect
+  additionalinfo: Enable automatic background collection of Imperva CEF security logs into Cortex XSIAM.
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  defaultvalue: '1'
+  advanced: true
+  section: Collect
+  additionalinfo: Time interval (in minutes) between consecutive fetch-events executions.
+- display: Max Logs Per Fetch
+  name: max_logs
+  type: 0
+  required: false
+  defaultvalue: '10'
+  section: Collect
+  additionalinfo: 'Maximum number of log files to process per fetch execution cycle (default: 10).'
+- display: Starting File ID
+  name: starting_file_id
+  type: 0
+  required: false
+  defaultvalue: '0'
+  section: Collect
+  additionalinfo: 'The file ID from which to start ingesting logs (e.g. 0 or 304510). Only logs with IDs greater than this value will be processed.'
+script:
+  commands:
+  - deprecated: false
+    description: Tests API connectivity, URL, and authentication credentials. Returns 'ok' if successful.
+    name: test-module
+    arguments: []
+    outputs: []
+  - deprecated: false
+    description: Manual command to list available log files from logs.index from the CLI.
+    name: imperva-v2-get-logs-index
+    arguments:
+    - name: limit
+      isArray: false
+      description: 'Number of recent files to return (default: 50).'
+      required: false
+      secret: false
+      default: false
+      defaultValue: '50'
+    outputs:
+    - contextPath: Imperva.LogIndex.total_files
+      description: Total count of files currently listed on the server.
+      type: Number
+    - contextPath: Imperva.LogIndex.files
+      description: List of log file names from the index.
+      type: Unknown
+  - deprecated: false
+    description: Fetches and previews CEF events from the Imperva Log Server on demand from the CLI.
+    name: imperva-incapsula-get-events
+    arguments:
+    - name: limit
+      isArray: false
+      description: 'Maximum number of log files to process (default: 1).'
+      required: false
+      secret: false
+      default: false
+      defaultValue: '1'
+    - name: should_push_events
+      isArray: false
+      description: If true, pushes extracted events into the XSIAM dataset. Otherwise, only displays them in the War Room.
+      required: false
+      secret: false
+      default: false
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: file_id
+      isArray: false
+      description: Specific log file ID or filename to download and inspect.
+      required: false
+      secret: false
+      default: false
+    outputs:
+    - contextPath: Imperva.Events.total_events
+      description: Total number of CEF events parsed from the log files.
+      type: Number
+    - contextPath: Imperva.Events.files_processed
+      description: List of log files processed during the command execution.
+      type: Unknown
+    - contextPath: Imperva.Events.sample_events
+      description: Sample CEF event strings parsed from the downloaded logs.
+      type: Unknown
+  dockerimage: demisto/python3:3.10.12.66339
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+fromversion: 6.8.0
+tests:
+- No tests
