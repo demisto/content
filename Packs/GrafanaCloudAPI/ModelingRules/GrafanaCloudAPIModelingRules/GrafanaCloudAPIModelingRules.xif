@@ -66,7 +66,7 @@ filter
         tmp_m_editor, tmp_m_expired, tmp_m_revoked),
     xdm.event.description = concat(
         "Grafana service account ", coalesce(tmp_name, "unknown"),
-        " at role ", coalesce(tmp_role, "none"),
+        " at role ", if(tmp_role = "", "none", tmp_role),
         " holds ", coalesce(to_string(tmp_token_count), "0"), " token(s) [",
         tmp_token_names, "], oldest created ", coalesce(to_string(tmp_oldest), "n/a"))
 ;
@@ -184,9 +184,9 @@ filter
     xdm.target.url = if(tmp_url = "", null, tmp_url),
     xdm.event.description = concat(
         "Grafana data source ", coalesce(tmp_name, "unknown"),
-        " of type ", coalesce(tmp_type_name, tmp_type),
-        " via ", coalesce(tmp_access, "unknown"), " access to ",
-        coalesce(tmp_url, "no url"),
+        " of type ", if(tmp_type_name = "", tmp_type, tmp_type_name),
+        " via ", if(tmp_access = "", "unknown", tmp_access), " access to ",
+        if(tmp_url = "", "no url", tmp_url),
         " database=", tmp_database)
 ;
 
@@ -310,8 +310,8 @@ filter
         tmp_m_synced, tmp_m_provisioned, tmp_m_external_idp, tmp_m_never_seen),
     xdm.event.description = concat(
         "Grafana organisation member ", coalesce(tmp_login, "unknown"),
-        " at role ", coalesce(tmp_role, "none"),
-        " from ", coalesce(tmp_labels, "local"),
+        " at role ", if(tmp_role = "", "none", tmp_role),
+        " from ", if(tmp_labels = "", "local", tmp_labels),
         ", created ", coalesce(to_string(tmp_created), "n/a"),
         ", last seen ", coalesce(to_string(tmp_last_seen), "never"))
 ;

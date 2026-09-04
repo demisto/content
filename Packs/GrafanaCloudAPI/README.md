@@ -78,6 +78,10 @@ ecosystem.
 ## Version History (Managed by GoCortex Spellbook)
 
 <!-- spellbook:version-history:start -->
+### 1.0.21
+
+- Test the defaulted temps for an empty string so the description fallbacks can be reached, matching the form the rule already uses when it assigns them.
+
 ### 1.0.20
 
 - Stop advertising the pack into a marketplace its own integrations exclude.
