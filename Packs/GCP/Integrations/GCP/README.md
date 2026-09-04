@@ -1675,3 +1675,587 @@ Removes an email from the BigQuery dataset policy. Required Permissions: bigquer
 | GCP.BigQuery.Datasets.resourceTags | String | The tags attached to this dataset. |
 | GCP.BigQuery.Datasets.storageBillingModel | String | The billing model that will be applied to the dataset. |
 | GCP.BigQuery.Datasets.catalogSource | String | The origin of the dataset. |
+
+### gcp-compute-disks-list
+
+***
+Retrieves a list of persistent disks contained within the specified zone. Required permission: compute.disks.list.
+
+#### Base Command
+
+`gcp-compute-disks-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone for this request. | Required |
+| limit | Maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| next_token | Token for pagination. Set it to the value of GCP.Compute.DisksNextToken returned by a previous request to get the next page of results. | Optional |
+| filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator \(=, !=, &gt;, or &lt;\), and a value, which can be a string, number, or boolean. For example, to exclude a disk named example-disk, use name != example-disk. | Optional |
+| order_by | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using creationTimestamp desc. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Disks.id | String | Unique identifier for the disk resource. |
+| GCP.Compute.Disks.name | String | Name of the disk resource. |
+| GCP.Compute.Disks.kind | String | Type of the resource, for example compute\#disk. |
+| GCP.Compute.Disks.description | String | An optional description of the disk. |
+| GCP.Compute.Disks.status | String | The status of disk creation, such as READY or CREATING. |
+| GCP.Compute.Disks.sizeGb | String | Size of the persistent disk, specified in GB. |
+| GCP.Compute.Disks.type | String | URL of the disk type resource describing which disk type is used by this disk. |
+| GCP.Compute.Disks.zone | String | URL of the zone where the disk resides. |
+| GCP.Compute.Disks.region | String | URL of the region where the disk resides. Only applicable for regional resources. |
+| GCP.Compute.Disks.creationTimestamp | Date | Creation timestamp of the disk in RFC3339 text format. |
+| GCP.Compute.Disks.lastAttachTimestamp | Date | Last attach timestamp of the disk in RFC3339 text format. |
+| GCP.Compute.Disks.lastDetachTimestamp | Date | Last detach timestamp of the disk in RFC3339 text format. |
+| GCP.Compute.Disks.users | Unknown | Links to the users of the disk, meaning the instances the disk is attached to. |
+| GCP.Compute.Disks.licenses | Unknown | A list of publicly visible licenses attached to the disk. |
+| GCP.Compute.Disks.licenseCodes | Unknown | Integer license codes indicating which licenses are attached to the disk. |
+| GCP.Compute.Disks.guestOsFeatures | Unknown | A list of features to enable on the guest operating system, each containing a type field. |
+| GCP.Compute.Disks.labels | Unknown | Labels applied to the disk as key-value pairs. |
+| GCP.Compute.Disks.labelFingerprint | String | Fingerprint for the labels applied to the disk, used for optimistic locking. |
+| GCP.Compute.Disks.sourceImage | String | The source image used to create this disk. |
+| GCP.Compute.Disks.sourceImageId | String | The ID value of the image used to create this disk. |
+| GCP.Compute.Disks.sourceSnapshot | String | The source snapshot used to create this disk. |
+| GCP.Compute.Disks.sourceSnapshotId | String | The unique ID of the snapshot used to create this disk. |
+| GCP.Compute.Disks.diskEncryptionKey | Unknown | The customer-supplied encryption key of the disk, containing the rawKey, kmsKeyName, and sha256 fields. |
+| GCP.Compute.Disks.sourceImageEncryptionKey | Unknown | The customer-supplied encryption key of the source image, containing the rawKey, kmsKeyName, and sha256 fields. |
+| GCP.Compute.Disks.sourceSnapshotEncryptionKey | Unknown | The customer-supplied encryption key of the source snapshot, containing the rawKey, kmsKeyName, and sha256 fields. |
+| GCP.Compute.Disks.replicaZones | Unknown | URLs of the zones where the disk is replicated to. Only applicable for regional resources. |
+| GCP.Compute.Disks.physicalBlockSizeBytes | String | Physical block size of the persistent disk, in bytes. |
+| GCP.Compute.Disks.selfLink | String | Server-defined URL for the disk resource. |
+| GCP.Compute.Disks.accessMode | String | The access mode of the disk, such as READ_WRITE_SINGLE, READ_WRITE_MANY, or READ_ONLY_MANY. |
+| GCP.Compute.Disks.architecture | String | The architecture of the disk. Valid values are ARM64 or X86_64. |
+| GCP.Compute.Disks.asyncPrimaryDisk | Unknown | The disk asynchronously replicated into this disk, containing the consistencyGroupPolicy and disk fields. |
+| GCP.Compute.Disks.asyncSecondaryDisks | Unknown | A list of disks this disk is asynchronously replicated to. |
+| GCP.Compute.Disks.enableConfidentialCompute | Boolean | Whether this disk is using confidential compute mode. |
+| GCP.Compute.Disks.locationHint | String | An opaque location hint used to place the disk close to other resources. |
+| GCP.Compute.Disks.options | String | Internal use only. |
+| GCP.Compute.Disks.provisionedIops | String | The number of I/O operations per second provisioned for the disk. |
+| GCP.Compute.Disks.provisionedThroughput | String | The throughput in MB per second provisioned for the disk. |
+| GCP.Compute.Disks.resourcePolicies | Unknown | Resource policies applied to this disk for automatic snapshot creations. |
+| GCP.Compute.Disks.resourceStatus | Unknown | Status information for the disk resource. |
+| GCP.Compute.Disks.satisfiesPzi | Boolean | Whether the disk satisfies physical zone isolation. Reserved for future use. |
+| GCP.Compute.Disks.satisfiesPzs | Boolean | Whether the disk satisfies physical zone separation. Reserved for future use. |
+| GCP.Compute.Disks.sourceConsistencyGroupPolicy | String | URL of the DiskConsistencyGroupPolicy for a secondary disk that was created using a consistency group. |
+| GCP.Compute.Disks.sourceConsistencyGroupPolicyId | String | ID of the DiskConsistencyGroupPolicy for a secondary disk that was created using a consistency group. |
+| GCP.Compute.Disks.sourceDisk | String | The source disk used to create this disk. |
+| GCP.Compute.Disks.sourceDiskId | String | The unique ID of the disk used to create this disk. |
+| GCP.Compute.Disks.sourceInstantSnapshot | String | The source instant snapshot used to create this disk. |
+| GCP.Compute.Disks.sourceInstantSnapshotId | String | The unique ID of the instant snapshot used to create this disk. |
+| GCP.Compute.Disks.sourceStorageObject | String | The full Google Cloud Storage URI where the disk image is stored. |
+| GCP.Compute.Disks.storagePool | String | The storage pool in which the disk is created. |
+| GCP.Compute.DisksNextToken | String | Next page token for pagination. |
+| GCP.Compute.DisksWarning | Unknown | An informational warning returned by the API, containing the code, message, and data fields. For example, NO_RESULTS_ON_PAGE when the page holds no results. |
+
+### gcp-compute-disks-aggregated-list
+
+***
+Retrieves an aggregated list of persistent disks across all zones in the project. Required permission: compute.disks.list.
+
+#### Base Command
+
+`gcp-compute-disks-aggregated-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| limit | Maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| next_token | Token for pagination. Set it to the value of GCP.Compute.DisksAggregatedNextToken returned by a previous request to get the next page of results. | Optional |
+| filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator \(=, !=, &gt;, or &lt;\), and a value, which can be a string, number, or boolean. For example, to exclude a disk named example-disk, use name != example-disk. | Optional |
+| order_by | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using creationTimestamp desc. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Disks.id | String | Unique identifier for the disk resource. |
+| GCP.Compute.Disks.name | String | Name of the disk resource. |
+| GCP.Compute.Disks.kind | String | Type of the resource, for example compute\#disk. |
+| GCP.Compute.Disks.description | String | An optional description of the disk. |
+| GCP.Compute.Disks.status | String | The status of disk creation, such as READY or CREATING. |
+| GCP.Compute.Disks.sizeGb | String | Size of the persistent disk, specified in GB. |
+| GCP.Compute.Disks.type | String | URL of the disk type resource describing which disk type is used by this disk. |
+| GCP.Compute.Disks.zone | String | URL of the zone where the disk resides. |
+| GCP.Compute.Disks.region | String | URL of the region where the disk resides. Only applicable for regional resources. |
+| GCP.Compute.Disks.creationTimestamp | Date | Creation timestamp of the disk in RFC3339 text format. |
+| GCP.Compute.Disks.lastAttachTimestamp | Date | Last attach timestamp of the disk in RFC3339 text format. |
+| GCP.Compute.Disks.lastDetachTimestamp | Date | Last detach timestamp of the disk in RFC3339 text format. |
+| GCP.Compute.Disks.users | Unknown | Links to the users of the disk, meaning the instances the disk is attached to. |
+| GCP.Compute.Disks.licenses | Unknown | A list of publicly visible licenses attached to the disk. |
+| GCP.Compute.Disks.licenseCodes | Unknown | Integer license codes indicating which licenses are attached to the disk. |
+| GCP.Compute.Disks.guestOsFeatures | Unknown | A list of features to enable on the guest operating system, each containing a type field. |
+| GCP.Compute.Disks.labels | Unknown | Labels applied to the disk as key-value pairs. |
+| GCP.Compute.Disks.labelFingerprint | String | Fingerprint for the labels applied to the disk, used for optimistic locking. |
+| GCP.Compute.Disks.sourceImage | String | The source image used to create this disk. |
+| GCP.Compute.Disks.sourceImageId | String | The ID value of the image used to create this disk. |
+| GCP.Compute.Disks.sourceSnapshot | String | The source snapshot used to create this disk. |
+| GCP.Compute.Disks.sourceSnapshotId | String | The unique ID of the snapshot used to create this disk. |
+| GCP.Compute.Disks.diskEncryptionKey | Unknown | The customer-supplied encryption key of the disk, containing the rawKey, kmsKeyName, and sha256 fields. |
+| GCP.Compute.Disks.sourceImageEncryptionKey | Unknown | The customer-supplied encryption key of the source image, containing the rawKey, kmsKeyName, and sha256 fields. |
+| GCP.Compute.Disks.sourceSnapshotEncryptionKey | Unknown | The customer-supplied encryption key of the source snapshot, containing the rawKey, kmsKeyName, and sha256 fields. |
+| GCP.Compute.Disks.replicaZones | Unknown | URLs of the zones where the disk is replicated to. Only applicable for regional resources. |
+| GCP.Compute.Disks.physicalBlockSizeBytes | String | Physical block size of the persistent disk, in bytes. |
+| GCP.Compute.Disks.selfLink | String | Server-defined URL for the disk resource. |
+| GCP.Compute.Disks.accessMode | String | The access mode of the disk, such as READ_WRITE_SINGLE, READ_WRITE_MANY, or READ_ONLY_MANY. |
+| GCP.Compute.Disks.architecture | String | The architecture of the disk. Valid values are ARM64 or X86_64. |
+| GCP.Compute.Disks.asyncPrimaryDisk | Unknown | The disk asynchronously replicated into this disk, containing the consistencyGroupPolicy and disk fields. |
+| GCP.Compute.Disks.asyncSecondaryDisks | Unknown | A list of disks this disk is asynchronously replicated to. |
+| GCP.Compute.Disks.enableConfidentialCompute | Boolean | Whether this disk is using confidential compute mode. |
+| GCP.Compute.Disks.locationHint | String | An opaque location hint used to place the disk close to other resources. |
+| GCP.Compute.Disks.options | String | Internal use only. |
+| GCP.Compute.Disks.provisionedIops | String | The number of I/O operations per second provisioned for the disk. |
+| GCP.Compute.Disks.provisionedThroughput | String | The throughput in MB per second provisioned for the disk. |
+| GCP.Compute.Disks.resourcePolicies | Unknown | Resource policies applied to this disk for automatic snapshot creations. |
+| GCP.Compute.Disks.resourceStatus | Unknown | Status information for the disk resource. |
+| GCP.Compute.Disks.satisfiesPzi | Boolean | Whether the disk satisfies physical zone isolation. Reserved for future use. |
+| GCP.Compute.Disks.satisfiesPzs | Boolean | Whether the disk satisfies physical zone separation. Reserved for future use. |
+| GCP.Compute.Disks.sourceConsistencyGroupPolicy | String | URL of the DiskConsistencyGroupPolicy for a secondary disk that was created using a consistency group. |
+| GCP.Compute.Disks.sourceConsistencyGroupPolicyId | String | ID of the DiskConsistencyGroupPolicy for a secondary disk that was created using a consistency group. |
+| GCP.Compute.Disks.sourceDisk | String | The source disk used to create this disk. |
+| GCP.Compute.Disks.sourceDiskId | String | The unique ID of the disk used to create this disk. |
+| GCP.Compute.Disks.sourceInstantSnapshot | String | The source instant snapshot used to create this disk. |
+| GCP.Compute.Disks.sourceInstantSnapshotId | String | The unique ID of the instant snapshot used to create this disk. |
+| GCP.Compute.Disks.sourceStorageObject | String | The full Google Cloud Storage URI where the disk image is stored. |
+| GCP.Compute.Disks.storagePool | String | The storage pool in which the disk is created. |
+| GCP.Compute.DisksAggregatedNextToken | String | Next page token for pagination. |
+| GCP.Compute.DisksAggregatedWarning | Unknown | An informational warning returned by the API, containing the code, message, and data fields. For example, NO_RESULTS_ON_PAGE when the page holds no results. |
+
+### gcp-compute-disk-get
+
+***
+Returns a specified persistent disk. Required permission: compute.disks.get.
+
+#### Base Command
+
+`gcp-compute-disk-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone for this request. | Required |
+| resource_name | Name of the persistent disk to return. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Disks.id | String | Unique identifier for the disk resource. |
+| GCP.Compute.Disks.name | String | Name of the disk resource. |
+| GCP.Compute.Disks.kind | String | Type of the resource, for example compute\#disk. |
+| GCP.Compute.Disks.description | String | An optional description of the disk. |
+| GCP.Compute.Disks.status | String | The status of disk creation, such as READY or CREATING. |
+| GCP.Compute.Disks.sizeGb | String | Size of the persistent disk, specified in GB. |
+| GCP.Compute.Disks.type | String | URL of the disk type resource describing which disk type is used by this disk. |
+| GCP.Compute.Disks.zone | String | URL of the zone where the disk resides. |
+| GCP.Compute.Disks.region | String | URL of the region where the disk resides. Only applicable for regional resources. |
+| GCP.Compute.Disks.creationTimestamp | Date | Creation timestamp of the disk in RFC3339 text format. |
+| GCP.Compute.Disks.lastAttachTimestamp | Date | Last attach timestamp of the disk in RFC3339 text format. |
+| GCP.Compute.Disks.lastDetachTimestamp | Date | Last detach timestamp of the disk in RFC3339 text format. |
+| GCP.Compute.Disks.users | Unknown | Links to the users of the disk, meaning the instances the disk is attached to. |
+| GCP.Compute.Disks.licenses | Unknown | A list of publicly visible licenses attached to the disk. |
+| GCP.Compute.Disks.licenseCodes | Unknown | Integer license codes indicating which licenses are attached to the disk. |
+| GCP.Compute.Disks.guestOsFeatures | Unknown | A list of features to enable on the guest operating system, each containing a type field. |
+| GCP.Compute.Disks.labels | Unknown | Labels applied to the disk as key-value pairs. |
+| GCP.Compute.Disks.labelFingerprint | String | Fingerprint for the labels applied to the disk, used for optimistic locking. |
+| GCP.Compute.Disks.sourceImage | String | The source image used to create this disk. |
+| GCP.Compute.Disks.sourceImageId | String | The ID value of the image used to create this disk. |
+| GCP.Compute.Disks.sourceSnapshot | String | The source snapshot used to create this disk. |
+| GCP.Compute.Disks.sourceSnapshotId | String | The unique ID of the snapshot used to create this disk. |
+| GCP.Compute.Disks.diskEncryptionKey | Unknown | The customer-supplied encryption key of the disk, containing the rawKey, kmsKeyName, and sha256 fields. |
+| GCP.Compute.Disks.sourceImageEncryptionKey | Unknown | The customer-supplied encryption key of the source image, containing the rawKey, kmsKeyName, and sha256 fields. |
+| GCP.Compute.Disks.sourceSnapshotEncryptionKey | Unknown | The customer-supplied encryption key of the source snapshot, containing the rawKey, kmsKeyName, and sha256 fields. |
+| GCP.Compute.Disks.replicaZones | Unknown | URLs of the zones where the disk is replicated to. Only applicable for regional resources. |
+| GCP.Compute.Disks.physicalBlockSizeBytes | String | Physical block size of the persistent disk, in bytes. |
+| GCP.Compute.Disks.selfLink | String | Server-defined URL for the disk resource. |
+| GCP.Compute.Disks.accessMode | String | The access mode of the disk, such as READ_WRITE_SINGLE, READ_WRITE_MANY, or READ_ONLY_MANY. |
+| GCP.Compute.Disks.architecture | String | The architecture of the disk. Valid values are ARM64 or X86_64. |
+| GCP.Compute.Disks.asyncPrimaryDisk | Unknown | The disk asynchronously replicated into this disk, containing the consistencyGroupPolicy and disk fields. |
+| GCP.Compute.Disks.asyncSecondaryDisks | Unknown | A list of disks this disk is asynchronously replicated to. |
+| GCP.Compute.Disks.enableConfidentialCompute | Boolean | Whether this disk is using confidential compute mode. |
+| GCP.Compute.Disks.locationHint | String | An opaque location hint used to place the disk close to other resources. |
+| GCP.Compute.Disks.options | String | Internal use only. |
+| GCP.Compute.Disks.provisionedIops | String | The number of I/O operations per second provisioned for the disk. |
+| GCP.Compute.Disks.provisionedThroughput | String | The throughput in MB per second provisioned for the disk. |
+| GCP.Compute.Disks.resourcePolicies | Unknown | Resource policies applied to this disk for automatic snapshot creations. |
+| GCP.Compute.Disks.resourceStatus | Unknown | Status information for the disk resource. |
+| GCP.Compute.Disks.satisfiesPzi | Boolean | Whether the disk satisfies physical zone isolation. Reserved for future use. |
+| GCP.Compute.Disks.satisfiesPzs | Boolean | Whether the disk satisfies physical zone separation. Reserved for future use. |
+| GCP.Compute.Disks.sourceConsistencyGroupPolicy | String | URL of the DiskConsistencyGroupPolicy for a secondary disk that was created using a consistency group. |
+| GCP.Compute.Disks.sourceConsistencyGroupPolicyId | String | ID of the DiskConsistencyGroupPolicy for a secondary disk that was created using a consistency group. |
+| GCP.Compute.Disks.sourceDisk | String | The source disk used to create this disk. |
+| GCP.Compute.Disks.sourceDiskId | String | The unique ID of the disk used to create this disk. |
+| GCP.Compute.Disks.sourceInstantSnapshot | String | The source instant snapshot used to create this disk. |
+| GCP.Compute.Disks.sourceInstantSnapshotId | String | The unique ID of the instant snapshot used to create this disk. |
+| GCP.Compute.Disks.sourceStorageObject | String | The full Google Cloud Storage URI where the disk image is stored. |
+| GCP.Compute.Disks.storagePool | String | The storage pool in which the disk is created. |
+
+### gcp-compute-disk-insert
+
+***
+Creates a persistent disk in the specified project and zone. A disk can be created from a source image, from a source snapshot, or as an empty disk by omitting both. Required permission: compute.disks.create.
+
+#### Base Command
+
+`gcp-compute-disk-insert`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone for this request. | Required |
+| resource_name | Name of the disk to create. The name must be 1-63 characters long and match the regular expression \[a-z\](\[-a-z0-9\]\*\[a-z0-9\])?, meaning the first character must be a lowercase letter and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required |
+| disk_type | The full or partial URL of the disk type resource describing which disk type to use to create the disk. A bare disk type name is not accepted. For example: projects/project/zones/zone/diskTypes/pd-standard or zones/zone/diskTypes/pd-ssd. If not provided, the project default disk type is used. | Optional |
+| size_gb | Size of the persistent disk, specified in GB. Acceptable values are 1 to 65536, inclusive. When specified together with source_image or source_snapshot, the value must not be less than the size of the source. | Optional |
+| description | An optional description of the disk. | Optional |
+| source_snapshot | The source snapshot used to create this disk, provided as a partial or full URL to the resource. | Optional |
+| source_image | The source image used to create this disk, provided as a partial or full URL to the resource. | Optional |
+| licenses | A comma-separated list of publicly visible licenses to attach to the disk. | Optional |
+| guest_os_features | A comma-separated list of features to enable on the guest operating system. Applicable only for bootable images. | Optional |
+| disk_encryption_key_raw_key | Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64, used to encrypt or decrypt this disk. | Optional |
+| disk_encryption_key_kms_key_name | The name of the encryption key for this disk that is stored in Google Cloud KMS. | Optional |
+| source_image_encryption_key_raw_key | Specifies a 256-bit customer-supplied encryption key of the source image, encoded in RFC 4648 base64. | Optional |
+| source_image_encryption_key_kms_key_name | The name of the encryption key of the source image that is stored in Google Cloud KMS. | Optional |
+| source_snapshot_encryption_key_raw_key | Specifies a 256-bit customer-supplied encryption key of the source snapshot, encoded in RFC 4648 base64. | Optional |
+| source_snapshot_encryption_key_kms_key_name | The name of the encryption key of the source snapshot that is stored in Google Cloud KMS. | Optional |
+| labels | Labels to apply to this disk, in the format key=abc,value=123;key=def,value=456. | Optional |
+| label_fingerprint | A fingerprint of the labels being applied to this disk, used for optimistic locking. An up-to-date fingerprint hash must always be provided, otherwise the request fails with error 412 conditionNotMet. | Optional |
+| replica_zones | A comma-separated list of URLs of the zones where the disk should be replicated to. Only applicable for regional resources. | Optional |
+| license_codes | A comma-separated list of integer license codes indicating which licenses are attached to this disk. | Optional |
+| physical_block_size_bytes | Physical block size of the persistent disk, in bytes. If not provided, a default value is used. Currently supported sizes are 4096 and 16384. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation. |
+| GCP.Compute.Operations.name | String | Name of the operation resource. |
+| GCP.Compute.Operations.kind | String | Type of the resource, for example compute\#operation. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.progress | Number | An optional progress indicator that ranges from 0 to 100. |
+| GCP.Compute.Operations.zone | String | The URL of the zone where the operation resides. |
+| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. |
+| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.selfLink | String | Server-defined URL for the operation resource. |
+| GCP.Compute.Operations.insertTime | Date | The time that this operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | Date | The time that this operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | Date | The time that this operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error | Unknown | The errors generated during processing of the operation, containing an errors list with the code, location, and message fields. |
+| GCP.Compute.Operations.warnings | Unknown | The warnings generated during processing of the operation, each containing the code, message, and data fields. |
+| GCP.Compute.Operations.clientOperationId | String | The value of the request ID if one was provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.description | String | A textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.httpErrorMessage | String | If the operation fails, the HTTP error message that was returned, such as NOT FOUND. |
+| GCP.Compute.Operations.httpErrorStatusCode | Number | If the operation fails, the HTTP error status code that was returned, for example 404 when the resource was not found. |
+| GCP.Compute.Operations.operationGroupId | String | An ID that represents a group of operations, such as when a group of operations results from a bulk request. |
+| GCP.Compute.Operations.region | String | The URL of the region where the operation resides. Only applicable when performing regional operations. |
+| GCP.Compute.Operations.statusMessage | String | An optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | String | The user who requested the operation, for example user@example.com. |
+
+### gcp-compute-disk-delete
+
+***
+Deletes the specified persistent disk. Deleting a disk removes its data permanently and is irreversible. Snapshots previously created from the disk are not deleted and must be deleted separately. Required permission: compute.disks.delete.
+
+#### Base Command
+
+`gcp-compute-disk-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone for this request. | Required |
+| resource_name | Name of the persistent disk to delete. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation. |
+| GCP.Compute.Operations.name | String | Name of the operation resource. |
+| GCP.Compute.Operations.kind | String | Type of the resource, for example compute\#operation. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.progress | Number | An optional progress indicator that ranges from 0 to 100. |
+| GCP.Compute.Operations.zone | String | The URL of the zone where the operation resides. |
+| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. |
+| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.selfLink | String | Server-defined URL for the operation resource. |
+| GCP.Compute.Operations.insertTime | Date | The time that this operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | Date | The time that this operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | Date | The time that this operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error | Unknown | The errors generated during processing of the operation, containing an errors list with the code, location, and message fields. |
+| GCP.Compute.Operations.warnings | Unknown | The warnings generated during processing of the operation, each containing the code, message, and data fields. |
+| GCP.Compute.Operations.clientOperationId | String | The value of the request ID if one was provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.description | String | A textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.httpErrorMessage | String | If the operation fails, the HTTP error message that was returned, such as NOT FOUND. |
+| GCP.Compute.Operations.httpErrorStatusCode | Number | If the operation fails, the HTTP error status code that was returned, for example 404 when the resource was not found. |
+| GCP.Compute.Operations.operationGroupId | String | An ID that represents a group of operations, such as when a group of operations results from a bulk request. |
+| GCP.Compute.Operations.region | String | The URL of the region where the operation resides. Only applicable when performing regional operations. |
+| GCP.Compute.Operations.statusMessage | String | An optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | String | The user who requested the operation, for example user@example.com. |
+
+### gcp-compute-disk-resize
+
+***
+Resizes the specified persistent disk. The disk size can only be increased. Required permission: compute.disks.resize.
+
+#### Base Command
+
+`gcp-compute-disk-resize`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone for this request. | Required |
+| resource_name | Name of the persistent disk to resize. | Required |
+| size_gb | The new size of the persistent disk, specified in GB. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation. |
+| GCP.Compute.Operations.name | String | Name of the operation resource. |
+| GCP.Compute.Operations.kind | String | Type of the resource, for example compute\#operation. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.progress | Number | An optional progress indicator that ranges from 0 to 100. |
+| GCP.Compute.Operations.zone | String | The URL of the zone where the operation resides. |
+| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. |
+| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.selfLink | String | Server-defined URL for the operation resource. |
+| GCP.Compute.Operations.insertTime | Date | The time that this operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | Date | The time that this operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | Date | The time that this operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error | Unknown | The errors generated during processing of the operation, containing an errors list with the code, location, and message fields. |
+| GCP.Compute.Operations.warnings | Unknown | The warnings generated during processing of the operation, each containing the code, message, and data fields. |
+| GCP.Compute.Operations.clientOperationId | String | The value of the request ID if one was provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.description | String | A textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.httpErrorMessage | String | If the operation fails, the HTTP error message that was returned, such as NOT FOUND. |
+| GCP.Compute.Operations.httpErrorStatusCode | Number | If the operation fails, the HTTP error status code that was returned, for example 404 when the resource was not found. |
+| GCP.Compute.Operations.operationGroupId | String | An ID that represents a group of operations, such as when a group of operations results from a bulk request. |
+| GCP.Compute.Operations.region | String | The URL of the region where the operation resides. Only applicable when performing regional operations. |
+| GCP.Compute.Operations.statusMessage | String | An optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | String | The user who requested the operation, for example user@example.com. |
+
+### gcp-compute-disk-labels-set
+
+***
+Sets the labels on a persistent disk. Required permission: compute.disks.setLabels.
+
+#### Base Command
+
+`gcp-compute-disk-labels-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone for this request. | Required |
+| resource_name | Name of the persistent disk to set the labels on. | Required |
+| labels | The labels to set for this disk, in the format key=abc,value=123;key=def,value=456. | Required |
+| label_fingerprint | The fingerprint of the previous set of labels for this disk, used to detect conflicts. Run gcp-compute-disk-get to retrieve the latest fingerprint. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation. |
+| GCP.Compute.Operations.name | String | Name of the operation resource. |
+| GCP.Compute.Operations.kind | String | Type of the resource, for example compute\#operation. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.progress | Number | An optional progress indicator that ranges from 0 to 100. |
+| GCP.Compute.Operations.zone | String | The URL of the zone where the operation resides. |
+| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. |
+| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.selfLink | String | Server-defined URL for the operation resource. |
+| GCP.Compute.Operations.insertTime | Date | The time that this operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | Date | The time that this operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | Date | The time that this operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error | Unknown | The errors generated during processing of the operation, containing an errors list with the code, location, and message fields. |
+| GCP.Compute.Operations.warnings | Unknown | The warnings generated during processing of the operation, each containing the code, message, and data fields. |
+| GCP.Compute.Operations.clientOperationId | String | The value of the request ID if one was provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.description | String | A textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.httpErrorMessage | String | If the operation fails, the HTTP error message that was returned, such as NOT FOUND. |
+| GCP.Compute.Operations.httpErrorStatusCode | Number | If the operation fails, the HTTP error status code that was returned, for example 404 when the resource was not found. |
+| GCP.Compute.Operations.operationGroupId | String | An ID that represents a group of operations, such as when a group of operations results from a bulk request. |
+| GCP.Compute.Operations.region | String | The URL of the region where the operation resides. Only applicable when performing regional operations. |
+| GCP.Compute.Operations.statusMessage | String | An optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | String | The user who requested the operation, for example user@example.com. |
+
+### gcp-compute-disk-snapshot-create
+
+***
+Creates a snapshot of a specified persistent disk. Required permissions: compute.disks.createSnapshot, compute.snapshots.create.
+
+#### Base Command
+
+`gcp-compute-disk-snapshot-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone for this request. | Required |
+| resource_name | Name of the persistent disk to snapshot. | Required |
+| snapshot_name | Name of the snapshot to create. | Required |
+| description | An optional description of the snapshot. | Optional |
+| snapshot_encryption_key_raw_key | Specifies a 256-bit customer-supplied encryption key for the snapshot, encoded in RFC 4648 base64. | Optional |
+| snapshot_encryption_key_kms_key_name | The name of the encryption key for the snapshot that is stored in Google Cloud KMS. | Optional |
+| source_disk_encryption_key_raw_key | Specifies a 256-bit customer-supplied encryption key of the source disk, encoded in RFC 4648 base64. | Optional |
+| source_disk_encryption_key_kms_key_name | The name of the encryption key of the source disk that is stored in Google Cloud KMS. | Optional |
+| labels | Labels to apply to this snapshot, in the format key=abc,value=123;key=def,value=456. | Optional |
+| label_fingerprint | A fingerprint of the labels being applied to this snapshot, used for optimistic locking. An up-to-date fingerprint hash must always be provided, otherwise the request fails with error 412 conditionNotMet. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation. |
+| GCP.Compute.Operations.name | String | Name of the operation resource. |
+| GCP.Compute.Operations.kind | String | Type of the resource, for example compute\#operation. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.progress | Number | An optional progress indicator that ranges from 0 to 100. |
+| GCP.Compute.Operations.zone | String | The URL of the zone where the operation resides. |
+| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. For a create snapshot operation, this points to the persistent disk that the snapshot was created from. |
+| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.selfLink | String | Server-defined URL for the operation resource. |
+| GCP.Compute.Operations.insertTime | Date | The time that this operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | Date | The time that this operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | Date | The time that this operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error | Unknown | The errors generated during processing of the operation, containing an errors list with the code, location, and message fields. |
+| GCP.Compute.Operations.warnings | Unknown | The warnings generated during processing of the operation, each containing the code, message, and data fields. |
+| GCP.Compute.Operations.clientOperationId | String | The value of the request ID if one was provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.description | String | A textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.httpErrorMessage | String | If the operation fails, the HTTP error message that was returned, such as NOT FOUND. |
+| GCP.Compute.Operations.httpErrorStatusCode | Number | If the operation fails, the HTTP error status code that was returned, for example 404 when the resource was not found. |
+| GCP.Compute.Operations.operationGroupId | String | An ID that represents a group of operations, such as when a group of operations results from a bulk request. |
+| GCP.Compute.Operations.region | String | The URL of the region where the operation resides. Only applicable when performing regional operations. |
+| GCP.Compute.Operations.statusMessage | String | An optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | String | The user who requested the operation, for example user@example.com. |
+
+### gcp-compute-disk-types-list
+
+***
+Retrieves a list of disk types available in the specified zone. Required permission: compute.diskTypes.list.
+
+#### Base Command
+
+`gcp-compute-disk-types-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone for this request. | Required |
+| limit | Maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| next_token | Token for pagination. Set it to the value of GCP.Compute.DiskTypesNextToken returned by a previous request to get the next page of results. | Optional |
+| filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator \(=, !=, &gt;, or &lt;\), and a value, which can be a string, number, or boolean. For example, to exclude a disk type named pd-standard, use name != pd-standard. | Optional |
+| order_by | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using creationTimestamp desc. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.DiskTypes.id | String | The unique identifier for the disk type resource. |
+| GCP.Compute.DiskTypes.name | String | Name of the disk type resource. |
+| GCP.Compute.DiskTypes.kind | String | Type of the resource, for example compute\#diskType. |
+| GCP.Compute.DiskTypes.description | String | An optional description of the disk type. |
+| GCP.Compute.DiskTypes.validDiskSize | String | An optional textual description of the valid disk size, such as 10GB-10TB. |
+| GCP.Compute.DiskTypes.defaultDiskSizeGb | String | Server-defined default disk size in GB. |
+| GCP.Compute.DiskTypes.zone | String | URL of the zone where the disk type resides. |
+| GCP.Compute.DiskTypes.region | String | URL of the region where the disk type resides. Only applicable for regional resources. |
+| GCP.Compute.DiskTypes.creationTimestamp | Date | Creation timestamp of the disk type in RFC3339 text format. |
+| GCP.Compute.DiskTypes.selfLink | String | Server-defined URL for the disk type resource. |
+| GCP.Compute.DiskTypes.deprecated | Unknown | The deprecation status associated with this disk type, containing the state, replacement, deprecated, obsolete, and deleted fields. |
+| GCP.Compute.DiskTypesNextToken | String | Next page token for pagination. |
+| GCP.Compute.DiskTypesWarning | Unknown | An informational warning returned by the API, containing the code, message, and data fields. For example, NO_RESULTS_ON_PAGE when the page holds no results. |
+
+### gcp-compute-disk-types-aggregated-list
+
+***
+Retrieves an aggregated list of disk types across all zones in the project. Required permission: compute.diskTypes.list.
+
+#### Base Command
+
+`gcp-compute-disk-types-aggregated-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| limit | Maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| next_token | Token for pagination. Set it to the value of GCP.Compute.DiskTypesAggregatedNextToken returned by a previous request to get the next page of results. | Optional |
+| filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator \(=, !=, &gt;, or &lt;\), and a value, which can be a string, number, or boolean. For example, to exclude a disk type named pd-standard, use name != pd-standard. | Optional |
+| order_by | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using creationTimestamp desc. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.DiskTypes.id | String | The unique identifier for the disk type resource. |
+| GCP.Compute.DiskTypes.name | String | Name of the disk type resource. |
+| GCP.Compute.DiskTypes.kind | String | Type of the resource, for example compute\#diskType. |
+| GCP.Compute.DiskTypes.description | String | An optional description of the disk type. |
+| GCP.Compute.DiskTypes.validDiskSize | String | An optional textual description of the valid disk size, such as 10GB-10TB. |
+| GCP.Compute.DiskTypes.defaultDiskSizeGb | String | Server-defined default disk size in GB. |
+| GCP.Compute.DiskTypes.zone | String | URL of the zone where the disk type resides. |
+| GCP.Compute.DiskTypes.region | String | URL of the region where the disk type resides. Only applicable for regional resources. |
+| GCP.Compute.DiskTypes.creationTimestamp | Date | Creation timestamp of the disk type in RFC3339 text format. |
+| GCP.Compute.DiskTypes.selfLink | String | Server-defined URL for the disk type resource. |
+| GCP.Compute.DiskTypes.deprecated | Unknown | The deprecation status associated with this disk type, containing the state, replacement, deprecated, obsolete, and deleted fields. |
+| GCP.Compute.DiskTypesAggregatedNextToken | String | Next page token for pagination. |
+| GCP.Compute.DiskTypesAggregatedWarning | Unknown | An informational warning returned by the API, containing the code, message, and data fields. For example, NO_RESULTS_ON_PAGE when the page holds no results. |
+
+### gcp-compute-disk-type-get
+
+***
+Returns the specified disk type. Required permission: compute.diskTypes.get.
+
+#### Base Command
+
+`gcp-compute-disk-type-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone for this request. | Required |
+| resource_name | Name of the disk type to return. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.DiskTypes.id | String | The unique identifier for the disk type resource. |
+| GCP.Compute.DiskTypes.name | String | Name of the disk type resource. |
+| GCP.Compute.DiskTypes.kind | String | Type of the resource, for example compute\#diskType. |
+| GCP.Compute.DiskTypes.description | String | An optional description of the disk type. |
+| GCP.Compute.DiskTypes.validDiskSize | String | An optional textual description of the valid disk size, such as 10GB-10TB. |
+| GCP.Compute.DiskTypes.defaultDiskSizeGb | String | Server-defined default disk size in GB. |
+| GCP.Compute.DiskTypes.zone | String | URL of the zone where the disk type resides. |
+| GCP.Compute.DiskTypes.region | String | URL of the region where the disk type resides. Only applicable for regional resources. |
+| GCP.Compute.DiskTypes.creationTimestamp | Date | Creation timestamp of the disk type in RFC3339 text format. |
+| GCP.Compute.DiskTypes.selfLink | String | Server-defined URL for the disk type resource. |
+| GCP.Compute.DiskTypes.deprecated | Unknown | The deprecation status associated with this disk type, containing the state, replacement, deprecated, obsolete, and deleted fields. |
