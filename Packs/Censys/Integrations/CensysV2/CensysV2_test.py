@@ -2220,3 +2220,148 @@ def test_run_polling_command_initiate_related_infra_job(client, requests_mock):
     assert result[0].outputs.get("status") == "initiated"
     assert result[0].outputs.get("job_id") == "00000000-0000-0000-0000-000000000001"
     assert result[1].scheduled_command is not None
+
+
+def test_ip_command_host_enrichment_success(client, requests_mock):
+    """
+    Given:
+        - An IP address and the "use_host_enrichment" parameter enabled.
+    When:
+        - Running the ip command.
+    Then:
+        - Ensure the host data is retrieved from the host enrichment endpoint.
+        - Ensure the command results contain the expected context output and human readable output.
+    """
+    args = {"ip": "0.0.0.1"}
+    params = {"use_host_enrichment": True}
+    enrichment_res = util_load_json("ip_enrichment_response.json")
+    context_data = util_load_json("ip_enrichment_context_output.json")
+    with open("test_data/ip_enrichment_success_hr.md") as f:
+        hr_output = f.read()
+
+    enrichment_mock = requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['HOST_ENRICHMENT'].format('0.0.0.1')}", json=enrichment_res)
+
+    results = ip_command(client, args, params)
+
+    assert enrichment_mock.call_count == 1
+    assert results[0].outputs_prefix == "Censys.IP"
+    assert results[0].outputs == context_data["ip_enrichment_success"]
+    assert results[0].readable_output == hr_output
+
+
+@pytest.mark.parametrize("failure_response", [{"status_code": 404, "json": {"error": "Not Found"}}, {"json": {"result": {}}}])
+def test_ip_command_host_enrichment_with_fallback_to_search(client, requests_mock, failure_response, capfd):
+    """
+    Given:
+        - Two IP addresses and the "use_host_enrichment" parameter enabled.
+        - The host enrichment endpoint succeeds for the first IP address and fails for the second one,
+          either with an error status code or with a response that has no "resource" object.
+    When:
+        - Running the ip command.
+    Then:
+        - Ensure the enriched IP address is taken from the host enrichment endpoint, with the reputation
+          data calculated from its labels.
+        - Ensure the failed IP address falls back to the search endpoint.
+    """
+    args = {"ip": "0.0.0.1,0.0.0.2"}
+    params = {
+        "use_host_enrichment": True,
+        "integration_reliability": "C - Fairly reliable",
+        "malicious_labels": "malicious",
+        "malicious_labels_threshold": 1,
+    }
+    enrichment_res = util_load_json("ip_enrichment_response.json")
+    enrichment_res["result"]["resource"]["labels"] = [{"value": "malicious"}]
+    requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['HOST_ENRICHMENT'].format('0.0.0.1')}", json=enrichment_res)
+    requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['HOST_ENRICHMENT'].format('0.0.0.2')}", **failure_response)
+    search_res = util_load_json("ip_command_response.json")
+    search_res["result"]["hits"][0]["host_v1"]["resource"]["ip"] = "0.0.0.2"
+    search_mock = requests_mock.post(f"{CENSYS_API_URL}/{ENDPOINTS['SEARCH_QUERY']}", json=search_res)
+
+    with capfd.disabled():
+        results = ip_command(client, args, params)
+
+    assert search_mock.call_count == 1
+    assert search_mock.last_request.json()["query"] == 'host.ip="0.0.0.2"'
+    assert results[0].outputs_prefix == "Censys.IP"
+    assert results[0].indicator.ip == "0.0.0.1"
+    assert results[0].indicator.dbot_score.score == Common.DBotScore.BAD
+    assert [result.outputs["ip"] for result in results if result.outputs_prefix == "Censys.IP"] == ["0.0.0.1", "0.0.0.2"]
+    # The enriched IP is flagged as enriched, while the IP that fell back to the search endpoint is not.
+    assert [result.outputs["HostEnrichmentUsed"] for result in results if result.outputs_prefix == "Censys.IP"] == [True, False]
+
+
+@pytest.mark.parametrize("arg_value, use_argument", [("True", True), ("False", False)])
+def test_ip_command_use_enrichment_endpoint_argument(client, requests_mock, arg_value, use_argument):
+    """
+    Given:
+        - An IP address and the "use_enrichment_endpoint" argument, with the opposite value of the parameter.
+    When:
+        - Running the ip command.
+    Then:
+        - Ensure the argument takes precedence over the parameter.
+    """
+    args = {"ip": "0.0.0.1", "use_enrichment_endpoint": arg_value}
+    params = {"use_host_enrichment": not use_argument}
+    enrichment_mock = requests_mock.get(
+        f"{CENSYS_API_URL}/{ENDPOINTS['HOST_ENRICHMENT'].format('0.0.0.1')}",
+        json=util_load_json("ip_enrichment_response.json"),
+    )
+    search_res = util_load_json("ip_command_response.json")
+    search_res["result"]["hits"][0]["host_v1"]["resource"]["ip"] = "0.0.0.1"
+    search_mock = requests_mock.post(f"{CENSYS_API_URL}/{ENDPOINTS['SEARCH_QUERY']}", json=search_res)
+
+    results = ip_command(client, args, params)
+
+    assert enrichment_mock.call_count == int(use_argument)
+    assert search_mock.call_count == int(not use_argument)
+    assert results[0].outputs["ip"] == "0.0.0.1"
+
+
+def test_ip_command_search_invalid_hits(client, mocker):
+    """
+    Given:
+        - An IP address.
+        - The search endpoint returns a response in which "hits" is not a list.
+    When:
+        - Running the ip command.
+    Then:
+        - Ensure the error is handled and reported in the results.
+    """
+    args = {"ip": "0.0.0.1"}
+    params: dict = {}
+    mocker.patch("CensysV2.censys_search_with_pagination", return_value={"result": {"hits": {}}})
+
+    results = ip_command(client, args, params)
+
+    assert "Unexpected response: 'hits' path not found" in results[0].readable_output
+
+
+def test_ip_command_host_enrichment_all_ips_fail(client, requests_mock, capfd):
+    """
+    Given:
+        - Two IP addresses and the "use_host_enrichment" parameter enabled.
+        - The host enrichment endpoint fails for both IP addresses.
+    When:
+        - Running the ip command.
+    Then:
+        - Ensure both IP addresses fall back to the search endpoint in a single query.
+    """
+    args = {"ip": "0.0.0.1,0.0.0.2"}
+    params = {"use_host_enrichment": True}
+    failure_response = {"status_code": 404, "json": {"error": "Not Found"}}
+    requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['HOST_ENRICHMENT'].format('0.0.0.1')}", **failure_response)
+    requests_mock.get(f"{CENSYS_API_URL}/{ENDPOINTS['HOST_ENRICHMENT'].format('0.0.0.2')}", **failure_response)
+    search_res = util_load_json("ip_command_response.json")
+    second_hit = util_load_json("ip_command_response.json")["result"]["hits"][0]
+    search_res["result"]["hits"].append(second_hit)
+    search_res["result"]["hits"][0]["host_v1"]["resource"]["ip"] = "0.0.0.1"
+    search_res["result"]["hits"][1]["host_v1"]["resource"]["ip"] = "0.0.0.2"
+    search_mock = requests_mock.post(f"{CENSYS_API_URL}/{ENDPOINTS['SEARCH_QUERY']}", json=search_res)
+
+    with capfd.disabled():
+        results = ip_command(client, args, params)
+
+    assert search_mock.call_count == 1
+    assert search_mock.last_request.json()["query"] == 'host.ip="0.0.0.1" or host.ip="0.0.0.2"'
+    assert [result.outputs["ip"] for result in results if result.outputs_prefix == "Censys.IP"] == ["0.0.0.1", "0.0.0.2"]

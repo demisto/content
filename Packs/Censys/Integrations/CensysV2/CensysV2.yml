@@ -182,6 +182,12 @@ configuration:
   required: false
   additionalinfo: The minimum number of labels that define an IP as suspicious.
   section: Collect
+- display: Use enrichment API for the ip command
+  name: use_host_enrichment
+  type: 8
+  required: false
+  section: Collect
+  additionalinfo: When set to True, the "ip" command retrieves ip data from the Censys host enrichment API.
 - display: Source Reliability
   name: integration_reliability
   defaultvalue: C - Fairly reliable
@@ -464,6 +470,13 @@ script:
       isArray: true
       type: textArea
       default: true
+    - name: use_enrichment_endpoint
+      description: "Whether to retrieve the ip data from the Censys host enrichment API.\n\nNote: This argument overrides the \"Use enrichment API for the ip command\" configuration parameter."
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+      required: false
     description: Runs reputation on IPs.
     outputs:
     - contextPath: Censys.IP.services.port
@@ -556,6 +569,189 @@ script:
     - contextPath: Censys.IP.whois.network.cidrs
       description: WHOIS network CIDR blocks associated with the IP address.
       type: String
+    - contextPath: Censys.IP.autonomous_system.organization
+      description: The organization of the autonomous system associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.location.registered_country
+      description: The registered country name of the location associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.location.registered_country_code
+      description: The registered country code of the location associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.reputation.score
+      description: The reputation score of the IP address.
+      type: Number
+    - contextPath: Censys.IP.reputation.score_level
+      description: The reputation score level of the IP address.
+      type: String
+    - contextPath: Censys.IP.reputation.model_version
+      description: The version of the model that calculated the reputation score of the IP address.
+      type: String
+    - contextPath: Censys.IP.reputation.evidence.category
+      description: The category of the reputation evidence of the IP address.
+      type: String
+    - contextPath: Censys.IP.reputation.evidence.evidence_score
+      description: The score of the reputation evidence of the IP address.
+      type: Number
+    - contextPath: Censys.IP.reputation.evidence.additional_fields.field
+      description: The name of the additional field of the reputation evidence of the IP address.
+      type: String
+    - contextPath: Censys.IP.reputation.evidence.additional_fields.value
+      description: The value of the additional field of the reputation evidence of the IP address.
+      type: String
+    - contextPath: Censys.IP.reputation.evidence.external_signals.source
+      description: The source of the external signal of the reputation evidence of the IP address.
+      type: String
+    - contextPath: Censys.IP.reputation.evidence.external_signals.description
+      description: The description of the external signal of the reputation evidence of the IP address.
+      type: String
+    - contextPath: Censys.IP.reputation.evidence.external_signals.tlp
+      description: The Traffic Light Protocol (TLP) of the external signal of the reputation evidence of the IP address.
+      type: String
+    - contextPath: Censys.IP.reputation.evidence.threats.threat_id
+      description: The ID of the threat of the reputation evidence of the IP address.
+      type: String
+    - contextPath: Censys.IP.reputation.evidence.threats.threat_types
+      description: The types of the threat of the reputation evidence of the IP address.
+      type: String
+    - contextPath: Censys.IP.reputation.evidence.threats.last_observed_time
+      description: The time the threat of the reputation evidence of the IP address was last observed.
+      type: Date
+    - contextPath: Censys.IP.greynoise.actor
+      description: The GreyNoise actor associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.greynoise.classification
+      description: The GreyNoise classification of the IP address.
+      type: String
+    - contextPath: Censys.IP.greynoise.last_observed_time
+      description: The time the IP address was last observed by GreyNoise.
+      type: Date
+    - contextPath: Censys.IP.network.source
+      description: The source of the network classification of the IP address.
+      type: String
+    - contextPath: Censys.IP.network.hosting
+      description: Whether the IP address belongs to a hosting provider.
+      type: Boolean
+    - contextPath: Censys.IP.network.mobile
+      description: Whether the IP address belongs to a mobile network.
+      type: Boolean
+    - contextPath: Censys.IP.network.mobile_info.carrier_name
+      description: The name of the mobile carrier of the IP address.
+      type: String
+    - contextPath: Censys.IP.network.mobile_info.mcc
+      description: The Mobile Country Code (MCC) of the mobile network of the IP address.
+      type: String
+    - contextPath: Censys.IP.network.mobile_info.mnc
+      description: The Mobile Network Code (MNC) of the mobile network of the IP address.
+      type: String
+    - contextPath: Censys.IP.network.satellite
+      description: Whether the IP address belongs to a satellite network.
+      type: Boolean
+    - contextPath: Censys.IP.privacy.source
+      description: The source of the privacy classification of the IP address.
+      type: String
+    - contextPath: Censys.IP.privacy.anonymous
+      description: Whether the IP address is used for anonymization.
+      type: Boolean
+    - contextPath: Censys.IP.privacy.proxy
+      description: Whether the IP address is a proxy.
+      type: Boolean
+    - contextPath: Censys.IP.privacy.relay
+      description: Whether the IP address is a relay.
+      type: Boolean
+    - contextPath: Censys.IP.privacy.vpn
+      description: Whether the IP address is a VPN.
+      type: Boolean
+    - contextPath: Censys.IP.privacy.tor
+      description: Whether the IP address is a Tor node.
+      type: Boolean
+    - contextPath: Censys.IP.privacy.service_provider
+      description: The privacy service providers associated with the IP address.
+      type: String
+    - contextPath: Censys.IP.privacy.tor_info.relays.nickname
+      description: The nickname of the Tor relay of the IP address.
+      type: String
+    - contextPath: Censys.IP.privacy.tor_info.relays.fingerprint
+      description: The fingerprint of the Tor relay of the IP address.
+      type: String
+    - contextPath: Censys.IP.privacy.tor_info.relays.flags
+      description: The flags of the Tor relay of the IP address.
+      type: String
+    - contextPath: Censys.IP.privacy.tor_info.relays.exit_addresses
+      description: The exit addresses of the Tor relay of the IP address.
+      type: String
+    - contextPath: Censys.IP.privacy.tor_info.relays.bridge
+      description: Whether the Tor relay of the IP address is a bridge.
+      type: Boolean
+    - contextPath: Censys.IP.privacy.tor_info.relays.version
+      description: The version of the Tor relay of the IP address.
+      type: String
+    - contextPath: Censys.IP.privacy.tor_info.relays.platform
+      description: The platform of the Tor relay of the IP address.
+      type: String
+    - contextPath: Censys.IP.privacy.tor_info.relays.contact
+      description: The contact of the Tor relay of the IP address.
+      type: String
+    - contextPath: Censys.IP.third_party.mallory.uuid
+      description: The UUID of the MalloryAI record of the IP address.
+      type: String
+    - contextPath: Censys.IP.third_party.mallory.first_seen_at
+      description: The time the IP address was first seen by MalloryAI.
+      type: Date
+    - contextPath: Censys.IP.third_party.mallory.last_seen_at
+      description: The time the IP address was last seen by MalloryAI.
+      type: Date
+    - contextPath: Censys.IP.third_party.mallory.source_count
+      description: The number of MalloryAI sources that reported the IP address.
+      type: Number
+    - contextPath: Censys.IP.third_party.mallory.verdict_summary.malicious
+      description: The number of MalloryAI sources that reported the IP address as malicious.
+      type: Number
+    - contextPath: Censys.IP.third_party.mallory.verdict_summary.suspicious
+      description: The number of MalloryAI sources that reported the IP address as suspicious.
+      type: Number
+    - contextPath: Censys.IP.third_party.mallory.observable.name
+      description: The name of the MalloryAI observable of the IP address.
+      type: String
+    - contextPath: Censys.IP.third_party.mallory.observable.type
+      description: The type of the MalloryAI observable of the IP address.
+      type: String
+    - contextPath: Censys.IP.third_party.mallory.observable.description
+      description: The description of the MalloryAI observable of the IP address.
+      type: String
+    - contextPath: Censys.IP.third_party.mallory.opinions.verdict
+      description: The verdict of the MalloryAI opinion of the IP address.
+      type: String
+    - contextPath: Censys.IP.third_party.mallory.opinions.confidence
+      description: The confidence of the MalloryAI opinion of the IP address.
+      type: String
+    - contextPath: Censys.IP.third_party.mallory.opinions.source
+      description: The source of the MalloryAI opinion of the IP address.
+      type: String
+    - contextPath: Censys.IP.third_party.mallory.opinions.description
+      description: The description of the MalloryAI opinion of the IP address.
+      type: String
+    - contextPath: Censys.IP.third_party.mallory.opinions.published_at
+      description: The time the MalloryAI opinion of the IP address was published.
+      type: Date
+    - contextPath: Censys.IP.third_party.mallory.opinions.reference_url
+      description: The reference URL of the MalloryAI opinion of the IP address.
+      type: String
+    - contextPath: Censys.IP.third_party.mallory.opinions.attributes.tags
+      description: The tags of the MalloryAI opinion of the IP address.
+      type: String
+    - contextPath: Censys.IP.third_party.mallory.opinions.attributes.associated_malware
+      description: The malware associated with the MalloryAI opinion of the IP address.
+      type: String
+    - contextPath: Censys.IP.third_party.mallory.opinions.attributes.associated_threat_actors
+      description: The threat actors associated with the MalloryAI opinion of the IP address.
+      type: String
+    - contextPath: Censys.IP.third_party.mallory.opinions.attributes.associated_vulnerabilities
+      description: The vulnerabilities associated with the MalloryAI opinion of the IP address.
+      type: String
+    - contextPath: Censys.IP.HostEnrichmentUsed
+      description: Whether the host enrichment API was used to retrieve the data.
+      type: Boolean
     - contextPath: IP.Address
       description: The IP address.
     - contextPath: IP.ASN
@@ -1260,7 +1456,7 @@ script:
     - contextPath: Censys.RelatedInfrastructure.ioc_value
       description: The value of the IOC.
       type: String
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.14.12343672
   runonce: false
   script: '-'
   subtype: python3
