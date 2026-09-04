@@ -816,6 +816,32 @@ Command that performs a HTTP request to Sekoia using the integration authenticat
 
 There is no context output for this command.
 
+
+### sekoia-xdr-run-query
+
+***
+Command to run a query and get its result. This is a combination of 3 commands: sekoia-xdr-execute-query, sekoia-xdr-get-query-run and sekoia-xdr-download-query-result.
+
+#### Base Command
+
+`sekoia-xdr-run-query`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_definition | Query definition in JSON. | Required | 
+| result_format | File format for the result. Possible values are: csv, jsonl. | Required | 
+| query_parameters | Query parameters in JSON. | Optional | 
+| query_uuid | Query UUID. | Optional | 
+| parent_uuid | Parent UUID. | Optional | 
+| parent_slug | Parent slug. | Optional | 
+| parent_type | Parent type. Possible values are: notebook, query, task, agent_run, alert, case. | Optional | 
+| community_uuid | Community UUID. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
 ### sekoia-xdr-execute-query
 
 ***
@@ -841,9 +867,8 @@ Command to create a query run on Sekoia XDR, after this execute "sekoia-xdr-get-
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SekoiaXDR.QueryRun.task_id | unknown | Task UUID. | 
-| SekoiaXDR.QueryRun.uuid | unknown | Query Run UUID. | 
-
+| SekoiaXDR.QueryRun.task_id | string | Task UUID. | 
+| SekoiaXDR.QueryRun.uuid | string | Query Run UUID. | 
 
 ### sekoia-xdr-get-query-run
 
@@ -863,17 +888,17 @@ Gets the query run status.
 #### Context Output
 
 | **Path** | **Type** | **Description** |
-| --- | --- |-----------------|
-| SekoiaXDR.QueryRun.community_uuid | unknown | Community UUID. | 
-| SekoiaXDR.QueryRun.created_at | unknown | Created at.     | 
-| SekoiaXDR.QueryRun.created_by | unknown | Created by.     | 
-| SekoiaXDR.QueryRun.duration | unknown | Duration.       | 
-| SekoiaXDR.QueryRun.error | unknown | Error.          | 
-| SekoiaXDR.QueryRun.parent_slug | unknown | Parent slug.    | 
-| SekoiaXDR.QueryRun.parent_type | unknown | Parent type.    | 
-| SekoiaXDR.QueryRun.parent_uuid | unknown | Parent UUID.    | 
-| SekoiaXDR.QueryRun.status | unknown | Status.         | 
-| SekoiaXDR.QueryRun.total | unknown | Total.          | 
+| --- | --- | --- |
+| SekoiaXDR.QueryRun.community_uuid | string | Community UUID. | 
+| SekoiaXDR.QueryRun.created_at | date | Created at. | 
+| SekoiaXDR.QueryRun.created_by | string | Created by. | 
+| SekoiaXDR.QueryRun.duration | number | Duration. | 
+| SekoiaXDR.QueryRun.error | string | Error. | 
+| SekoiaXDR.QueryRun.parent_slug | string | Parent slug. | 
+| SekoiaXDR.QueryRun.parent_type | string | Parent type. | 
+| SekoiaXDR.QueryRun.parent_uuid | string | Parent UUID. | 
+| SekoiaXDR.QueryRun.status | string | Status. | 
+| SekoiaXDR.QueryRun.total | number | Total. | 
 
 ### sekoia-xdr-download-query-result
 
@@ -890,32 +915,6 @@ Downloads the query result as a file.
 | --- | --- | --- |
 | query_run_uuid | Query run UUID. | Required | 
 | result_format | File format for the result. Possible values are: csv, jsonl. | Required | 
-
-#### Context Output
-
-There is no context output for this command.
-
-### sekoia-xdr-run-query
-
-***
-Command to run a query and get its result. This is a combination of 3 commands: sekoia-xdr-execute-query, sekoia-xdr-get-query-run and sekoia-xdr-download-query-result.
-
-#### Base Command
-
-`sekoia-xdr-run-query`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| query_definition | Query definition in JSON. | Required | 
-| result_format | File format for the result. Possible values are: csv, jsonl. | Required | 
-| query_parameters | Query parameters in JSON. | Optional | 
-| query_uuid | Query UUID. | Optional | 
-| parent_uuid | Parent UUID. | Optional | 
-| parent_slug | Parent slug. | Optional | 
-| parent_type | Parent type. Possible values are: notebook, query, task, agent_run, alert, case. | Optional | 
-| community_uuid | Community UUID. | Optional | 
 
 #### Context Output
 

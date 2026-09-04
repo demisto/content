@@ -1229,8 +1229,10 @@ script:
     outputs:
     - contextPath: SekoiaXDR.QueryRun.task_id
       description: Task UUID.
+      type: string
     - contextPath: SekoiaXDR.QueryRun.uuid
       description: Query Run UUID.
+      type: string
   - name: sekoia-xdr-get-query-run
     description: Gets the query run status.
     arguments:
@@ -1240,24 +1242,34 @@ script:
     outputs:
     - contextPath: SekoiaXDR.QueryRun.community_uuid
       description: Community UUID.
+      type: string
     - contextPath: SekoiaXDR.QueryRun.created_at
       description: Created at.
+      type: date
     - contextPath: SekoiaXDR.QueryRun.created_by
       description: Created by.
+      type: string
     - contextPath: SekoiaXDR.QueryRun.duration
       description: Duration.
+      type: number
     - contextPath: SekoiaXDR.QueryRun.error
       description: Error.
+      type: string
     - contextPath: SekoiaXDR.QueryRun.parent_slug
       description: Parent slug.
+      type: string
     - contextPath: SekoiaXDR.QueryRun.parent_type
       description: Parent type.
+      type: string
     - contextPath: SekoiaXDR.QueryRun.parent_uuid
       description: Parent UUID.
+      type: string
     - contextPath: SekoiaXDR.QueryRun.status
       description: Status.
+      type: string
     - contextPath: SekoiaXDR.QueryRun.total
       description: Total.
+      type: number
   - name: sekoia-xdr-download-query-result
     arguments:
     - name: query_run_uuid
