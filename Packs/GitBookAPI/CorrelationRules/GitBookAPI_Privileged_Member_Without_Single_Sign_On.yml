@@ -1,0 +1,60 @@
+name: GitBook API - Privileged Member Without Single Sign-On - by GoCortexIO
+description: Reports a GitBook administrator or owner who signs in with GitBook credentials rather than through the identity provider. The account holds the highest privilege in the organisation while its credential sits outside the controls the identity provider applies to every other account.
+severity: SEV_030_MEDIUM
+xql_query: |-
+  // PROVENANCE
+  //   Pattern:   a privileged account authenticating outside the identity provider, so
+  //              the joiner, mover and leaver controls that govern every other account do
+  //              not reach it, and neither does whatever the provider enforces on sign-in.
+  //   Basis:     ORIGINAL, and recorded as such after an explicit search. Advisory review
+  //              found NO external rule set and NO published incident for a privileged
+  //              account bypassing the identity provider in a SaaS product.
+  //   Analogy:   reasoned from service accounts held to a weaker authentication standard
+  //              than people, which IS corroborated and sits behind a state-sponsored
+  //              intrusion advisory. That shape concerns accounts where a second factor is
+  //              unavailable, which is a WEAKER claim than this one: here the stronger path
+  //              exists in the same organisation and this account is not on it. The analogy
+  //              is named rather than cited, because a named analogy can be argued with and
+  //              a loose technique reference implies support that does not exist.
+  //   ATT&CK:    T1078 https://attack.mitre.org/techniques/T1078/
+  //   Threshold: none. The account either authenticates through the identity provider or it
+  //              does not, and one such account is the finding.
+  //
+  //   WORKLIST, NOT AN ALERT. Nothing has happened. This reports a standing configuration,
+  //   and GitBook exposes no audit log, so no rule here can say who changed it or when.
+  datamodel dataset = gitbook_members_raw
+  | filter xdm.target.resource.sub_type in ("admin", "owner")
+      and xdm.source.user.is_disabled = false
+      and xdm.target.resource.value != null
+      and xdm.target.resource.value != "single sign-on"
+  // Snapshot feed: the same member is re-sent every run, so keep only the newest record
+  // per person or one account would be reported once per collection.
+  | sort desc _time
+  | dedup xdm.source.user.identifier
+  | fields xdm.source.user.identifier, xdm.source.user.username, xdm.source.user.upn, xdm.target.resource.sub_type, xdm.target.resource.value, xdm.target.resource.parent_id, xdm.event.description
+alert_name: GitBook $xdm.target.resource.sub_type $xdm.source.user.username signs in without single sign-on
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: The GitBook account $xdm.source.user.username ($xdm.source.user.upn) holds the $xdm.target.resource.sub_type role in organisation $xdm.target.resource.parent_id and authenticates using $xdm.target.resource.value rather than through the identity provider. Read this as posture rather than as an incident. The account holds the highest privilege available in the organisation while its credential sits outside the identity provider, so whatever that provider enforces on sign-in, and whatever it does when somebody leaves, does not reach this account. Establish whether single sign-on is available to this person and simply not enforced for them, which is the common case and the easy fix, or whether they are deliberately kept off it, which is worth recording as an accepted exception rather than rediscovering at the next review. Note that this pack cannot tell you when the account was created or by whom, because GitBook exposes no audit log.
+alert_domain: DOMAIN_POSTURE
+mitre_defs:
+  TA0001 - Initial Access:
+  - T1078 - Valid Accounts
+suppression_fields:
+- xdm.source.user.identifier
+global_rule_id: 8b2e5f37-4a90-4d16-8c72-6e1b9d3f5a48
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 24 hours
+timezone: Australia/Melbourne
+crontab: '23 6 * * *'
+suppression_enabled: true
+suppression_duration: 168 hours
+dataset: alerts
+investigation_query_link: datamodel dataset = gitbook_members_raw | filter xdm.source.user.identifier = "$xdm.source.user.identifier"
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0
