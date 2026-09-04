@@ -726,8 +726,9 @@ def map_asimily_asset_entity_from_asimily_assets_json(client: Client, incident, 
     incident["customFields"]["asimilydevicenasport"] = raw_data.get("nasPort")
 
     location_map = raw_data.get("locationMap") or {}
+    last_located_at = location_map.get("lastLocatedAt")
     incident["customFields"]["asimilydevicelocationlastlocatedat"] = (
-        format_date(dateparser.parse(location_map.get("lastLocatedAt"))) if location_map.get("lastLocatedAt") else None
+        format_date(dateparser.parse(str(last_located_at))) if last_located_at else None
     )
     incident["customFields"]["asimilydevicelocationaccesspoint"] = location_map.get("accessPoint")
     incident["customFields"]["asimilydevicelocationcampus"] = location_map.get("campus")
