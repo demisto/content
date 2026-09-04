@@ -1,0 +1,57 @@
+name: Cloudflare - Bulk DNS Record Deletion - by GoCortexIO
+description: Detects an actor deleting many distinct Cloudflare DNS records in a short window, a destructive or service-disrupting action. Machine and automation identities are included deliberately, since bulk deletion by an automation credential is the shape a stolen API token produces.
+severity: SEV_040_HIGH
+xql_query: |-
+  // PROVENANCE
+  //   Pattern:   destructive change to authoritative DNS.
+  //   Basis:     partial. Published work covers records being REPOINTED and certificates
+  //              issued off the redirected validation path, a different motive. It supports
+  //              watching the DNS change surface, not deletion specifically.
+  //              https://labs.watchtowr.com/we-spent-20-to-achieve-rce-and-accidentally-became-the-admins-of-mobi/
+  //   ATT&CK:    T1565, T1584.001
+  //   Threshold: chosen operating point, not measured.
+  //   Note:      machine identities are NOT excluded. Bulk deletion by an automation
+  //              credential is the shape a stolen API token produces. Exclude noisy accounts
+  //              in the product, where the exclusion stays visible.
+  datamodel dataset = cloudflare_account_audit_raw
+  | alter event_verb = lowercase(to_string(xdm.event.original_event_type)),
+          actor_class = coalesce(to_string(xdm.source.user.identity_type), "UNKNOWN")
+  | filter (event_verb contains "del" or event_verb contains "remove")
+      and xdm.target.resource.type = "dns.record"
+  | comp count_distinct(xdm.target.resource.id) as deleted_record_count,
+         values(xdm.target.resource.id) as deleted_record_ids,
+         count() as delete_event_count,
+         min(_time) as first_deletion_time,
+         max(_time) as last_deletion_time
+       by xdm.event.type, xdm.source.cloud.project, xdm.source.user.username, xdm.source.user.identifier, xdm.source.user.upn, xdm.source.user.user_type, xdm.source.user.identity_type, xdm.source.ipv4, xdm.target.resource.type, xdm.target.resource.name
+  | filter deleted_record_count >= 10
+  | alter dns_zone = xdm.target.resource.name
+  | fields xdm.event.type, xdm.source.cloud.project, xdm.source.user.username, xdm.source.user.identifier, xdm.source.user.upn, xdm.source.user.user_type, xdm.source.user.identity_type, xdm.source.ipv4, xdm.target.resource.type, xdm.target.resource.name, dns_zone, deleted_record_count, delete_event_count, deleted_record_ids, first_deletion_time, last_deletion_time
+alert_name: Cloudflare bulk DNS record deletion - $deleted_record_count records in $dns_zone
+alert_category: User Defined
+user_defined_category: xdm.alert.category
+alert_description: A large number of distinct Cloudflare DNS records were deleted from a single zone, which may indicate data manipulation, service disruption or destruction of resources. The affected zone, the deleted record identifiers and the deletion time window are included in the alert. Where any part of this turns out to be redirection rather than plain deletion, note that a certificate obtained while the records pointed elsewhere REMAINS VALID afterwards. Restoring the records does not revoke it, so remediation has to include finding and revoking any certificate issued for these names during the window, which is a separate action from fixing the zone.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0040 - Impact:
+  - T1565 - Data Manipulation
+suppression_fields:
+- xdm.source.cloud.project
+- xdm.source.user.username
+- xdm.target.resource.name
+global_rule_id: 49daf49b-2403-4073-a728-3bd4216d69d0
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 1 hours
+timezone: Australia/Melbourne
+crontab: '*/10 * * * *'
+suppression_enabled: true
+suppression_duration: 1 hours
+dataset: alerts
+investigation_query_link: dataset = cloudflare_account_audit_raw | filter json_extract_scalar(resource, "$.type") = "dns.record" and json_extract_scalar(metadata, "$.zone_name") = $xdm.target.resource.name
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0
