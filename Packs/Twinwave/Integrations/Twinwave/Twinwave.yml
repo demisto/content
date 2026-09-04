@@ -29,6 +29,19 @@ configuration:
   required: true
   type: 4
   section: Connect
+- defaultvalue: "api.twinwave.io"
+  display: Twinwave API host
+  name: api-host
+  type: 15
+  required: false
+  additionalinfo: Select the Twinwave API host. HTTPS is used automatically.
+  options:
+  - api.twinwave.io
+  - api.global2.twinwave.io
+  - api.eu1.twinwave.io
+  - api.apac1.twinwave.io
+  - api.ind1.twinwave.io
+  - api.uk1.twinwave.io
 - defaultvalue: "10"
   display: Number of jobs to first fetch
   name: first_fetch
@@ -41,16 +54,16 @@ configuration:
   type: 0
   required: false
   section: Collect
-- defaultvalue: all
-  display: Filter incidents by submission source.
+- display: Filter incidents by submission source.
   name: source
+  type: 15
+  required: false
+  section: Collect
+  defaultvalue: all
   options:
   - all
   - ui
   - api
-  type: 15
-  required: false
-  section: Collect
 - display: Filter UI incidents by username. Exact match only. (Cannot use if source is all or api)
   name: username
   type: 0
@@ -103,6 +116,8 @@ script:
       name: priority
     - description: An optional profile name that defines the analysis behavior to be used during the analysis for this job. Profiles names map to behaviors like identifying what collection of engines will be used. If no profile name is submitted the system will use the default profile.
       name: profile
+    - description: Optional override for the filename reported to Twinwave. Providing an accurate name (with extension) can help the analysis treat the file as the correct type. If omitted, the name of the War Room file entry is used.
+      name: filename
     description: Submit File for Scanning.
     name: twinwave-submit-file
     outputs:
@@ -134,6 +149,19 @@ script:
       type: Unknown
     - contextPath: Twinwave.JobSummary.Tasks.JobID
       description: Job ID associated to the task.
+      type: Unknown
+  - arguments:
+    - name: job_id
+      required: true
+      description: The job ID.
+    description: Download a completed job's PDF report to the War Room.
+    name: twinwave-download-job-pdf
+    outputs:
+    - contextPath: File.Name
+      description: Name of the PDF report.
+      type: Unknown
+    - contextPath: File.EntryID
+      description: Entry ID of the PDF report.
       type: Unknown
   - arguments:
     - name: job_id
@@ -174,7 +202,7 @@ script:
     - name: task_id
       required: true
       description: The task ID.
-    description: Get a Task's Raw Forensics.
+    description: "Get a Task's Raw Forensics."
     name: twinwave-get-task-raw-forensics
     outputs:
     - contextPath: Twinwave.TaskRawForensics
@@ -219,7 +247,8 @@ script:
       description: Supported Types.
       type: Unknown
   - arguments:
-    - description: Specify the string to search for in the specified field. (E.g. .exe or example.com).
+    - description: |-
+        Specify the string to search for in the specified field. (E.g. .exe or example.com).
       name: term
     - description: 'Enum: "filename" "url" "tag" "sha256" "md5".'
       name: field

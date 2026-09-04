@@ -11,13 +11,29 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-API_HOST = "https://api.twinwave.io"
 API_VERSION = "v1"
 EXPIRE_SECONDS = 86400
+PDF_SIGNATURE = b"%PDF-"
+DEFAULT_API_HOST = "api.twinwave.io"
+USER_AGENT = "Twinwave XSOAR Integration"
+SUPPORTED_API_HOSTS = {
+    "api.twinwave.io",
+    "api.global2.twinwave.io",
+    "api.eu1.twinwave.io",
+    "api.apac1.twinwave.io",
+    "api.ind1.twinwave.io",
+    "api.uk1.twinwave.io",
+}
 
 
 class AuthenticationException(Exception):
     pass
+
+
+def get_api_url(api_host: str, version: str = API_VERSION) -> str:
+    if api_host not in SUPPORTED_API_HOSTS:
+        raise ValueError(f"Unsupported Twinwave API host: {api_host}")
+    return f"https://{api_host}/{version}"
 
 
 class Client(BaseClient):
@@ -25,22 +41,27 @@ class Client(BaseClient):
     Client to connect to the API
     """
 
-    def __init__(self, api_token, verify, proxy, host=API_HOST, version=API_VERSION):
-        self.host = f"{host}/{version}"
+    def __init__(self, api_token, verify, proxy, api_host=DEFAULT_API_HOST, version=API_VERSION):
+        self.host = get_api_url(api_host, version)
         self.api_token = api_token
         self._verify = verify
         self._proxy = proxy
 
     def get_token(self):
         auth_url = f"{self.host}/accesstoken"
-        resp = requests.get(auth_url, verify=self._verify, proxies=self._proxy)
+        resp = requests.get(
+            auth_url,
+            headers={"User-Agent": USER_AGENT},
+            verify=self._verify,
+            proxies=self._proxy,
+        )
         if resp.ok:
             return resp.json()
         else:
             raise AuthenticationException("Error getting access token, Please check the username and password")
 
     def get_header(self):
-        return {"X-API-KEY": self.api_token}
+        return {"X-API-KEY": self.api_token, "User-Agent": USER_AGENT}
 
     def get_recent_jobs(self, num_jobs=10, username=None, source=None, state=None):
         url = f"{self.host}/jobs/recent"
@@ -67,6 +88,17 @@ class Client(BaseClient):
         resp = requests.get(url, headers=self.get_header(), verify=self._verify, proxies=self._proxy)
         resp.raise_for_status()
         return resp.json()
+
+    def download_job_pdf(self, job_id: str) -> bytes:
+        url = f"{self.host}/jobs/{job_id}/pdfreport"
+        resp = requests.get(
+            url,
+            headers=self.get_header(),
+            verify=self._verify,
+            proxies=self._proxy,
+        )
+        resp.raise_for_status()
+        return resp.content
 
     def get_task_normalized_forensics(self, job_id, task_id):
         url = f"{self.host}/jobs/{job_id}/tasks/{task_id}/forensics"
@@ -257,8 +289,9 @@ def submit_file(client, args):
     Submit the File
     """
     file_entry_id = args.get("entry_id")
-    file_path = demisto.getFilePath(file_entry_id)["path"]
-    file_name = demisto.getFilePath(file_entry_id)["name"]
+    file_info = demisto.getFilePath(file_entry_id)
+    file_path = file_info["path"]
+    file_name = args.get("filename") or file_info["name"]
     engines = argToList(args.get("engines", "[]"))
     priority = args.get("priority", 10)
     profile = args.get("profile")
@@ -498,6 +531,19 @@ def get_job_normalized_forensics(client, args):
     )
 
 
+def download_job_pdf(client: Client, args: dict) -> dict:
+    job_id = args.get("job_id")
+    job_summary = client.get_job(job_id=job_id)
+    if isinstance(job_summary, dict) and str(job_summary.get("State", "")).casefold() == "inprogress":
+        raise ValueError("The PDF report cannot be downloaded while the job is in progress")
+
+    pdf_data = client.download_job_pdf(job_id=job_id)
+    if not pdf_data.startswith(PDF_SIGNATURE):
+        raise ValueError("Downloaded PDF report is empty or is not a PDF")
+
+    return fileResult(f"Twinwave job report {job_id}.pdf", data=pdf_data)
+
+
 def get_task_normalized_forensics(client, args):
     """
     Task Normalized Forensics
@@ -583,12 +629,13 @@ def main():
     params = demisto.params()
 
     api_token = params.get("api-token")
+    api_host = params.get("api-host") or DEFAULT_API_HOST
     verify_certificate = not params.get("insecure", False)
     proxy = handle_proxy()
 
     LOG(f"Command being called is {demisto.command()}")
     try:
-        client = Client(api_token=api_token, verify=verify_certificate, proxy=proxy)
+        client = Client(api_token=api_token, verify=verify_certificate, proxy=proxy, api_host=api_host)
 
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
@@ -615,6 +662,9 @@ def main():
 
         elif demisto.command() == "twinwave-get-job-summary":
             return_results(get_job_summary(client, demisto.args()))
+
+        elif demisto.command() == "twinwave-download-job-pdf":
+            return_results(download_job_pdf(client, demisto.args()))
 
         elif demisto.command() == "twinwave-get-job-normalized-forensics":
             return_results(get_job_normalized_forensics(client, demisto.args()))
