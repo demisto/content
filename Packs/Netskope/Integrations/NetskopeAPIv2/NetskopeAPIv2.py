@@ -937,11 +937,11 @@ def fetch_incidents(client: Client, params: dict[str, Any]):
 
     event_types = argToList(params.get("event_types"))
     alert_query = params.get("alerts_query")
-    alert_max_fetch = arg_to_number(params["max_fetch"]) or MAX_LIMIT
+    alert_max_fetch = arg_to_number(params.get("max_fetch") or 50) or MAX_LIMIT
 
     num_event_types = len(event_types) if event_types else 1
     max_fetch_per_event_type = MAX_FETCH_PER_EVENT_TYPE // num_event_types
-    if event_types and (event_max_fetch := arg_to_number(params["max_events_fetch"])) is not None:
+    if event_types and (event_max_fetch := arg_to_number(params.get("max_events_fetch") or 50)) is not None:
         max_fetch_per_event_type = event_max_fetch // (len(event_types))
 
     if params.get("fetch_events") and event_types:
@@ -1352,7 +1352,7 @@ def fetch_dlp_incidents_as_incidents(
         set_demisto_integration_context("dlp_incidents_to_update", [], "override")
 
     end_time_number = date_to_seconds_timestamp(datetime.now())
-    max_fetch = int(params["max_dlp_incidents_fetch"])
+    max_fetch = int(params.get("max_dlp_incidents_fetch") or 50)
 
     hourly_timestamps = get_hourly_timestamps(
         start_time=last_run_timestamp,

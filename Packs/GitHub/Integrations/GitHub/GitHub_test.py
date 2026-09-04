@@ -10,6 +10,11 @@ from GitHub import (
     get_branch_command,
     get_path_data,
     github_releases_list_command,
+    github_list_organization_repositories_command,
+    github_list_actions_caches_command,
+    github_delete_actions_cache_command,
+    github_list_actions_artifacts_command,
+    github_delete_actions_artifact_command,
     http_request,
     list_all_projects_command,
     list_branch_pull_requests,
@@ -613,6 +618,98 @@ def test_http_request():
     assert not mock_req.last_request.text
 
 
+@pytest.mark.parametrize(
+    "response_json, expected_error_message",
+    [
+        pytest.param(
+            {"message": "Validation Failed", "errors": ["Custom string error"]},
+            "Error: Custom string error. Validation Failed",
+            id="errors_is_a_list_of_strings",
+        ),
+        pytest.param(
+            {"message": "Validation Failed", "errors": "Custom string error"},
+            "Error in API call to the GitHub Integration [422] - Unprocessable Entity. Validation Failed",
+            id="errors_is_a_string",
+        ),
+        pytest.param(
+            {"message": "Validation Failed", "errors": []},
+            "Error in API call to the GitHub Integration [422] - Unprocessable Entity. Validation Failed",
+            id="errors_is_an_empty_list",
+        ),
+        pytest.param(
+            {"message": "Validation Failed", "errors": [{"code": "unrecognized_code", "field": "title"}]},
+            "Error in API call to the GitHub Integration [422] - Unprocessable Entity. Validation Failed",
+            id="errors_is_a_list_of_dicts_with_an_unrecognized_code",
+        ),
+        pytest.param(
+            {
+                "message": "Validation Failed",
+                "errors": [{"code": "missing_field", "field": "title"}],
+                "documentation_url": "https://docs.github.com",
+            },
+            'Error: the field: "title" requires a value. Validation Failed see: https://docs.github.com',
+            id="errors_is_a_list_of_dicts_with_a_missing_field_code",
+        ),
+        pytest.param(
+            {"message": "Validation Failed", "errors": [{"code": "invalid", "field": "q", "message": "invalid query"}]},
+            "Error: invalid query - invalid query. Validation Failed",
+            id="errors_is_a_list_of_dicts_with_an_invalid_query_code",
+        ),
+        pytest.param(
+            {"message": "Validation Failed", "errors": [{"code": "missing", "resource": "Issue"}]},
+            "Error: Issue does not exist. Validation Failed",
+            id="errors_is_a_list_of_dicts_with_a_missing_resource_code",
+        ),
+    ],
+)
+def test_http_request_error_handling(response_json, expected_error_message):
+    """
+    Given:
+      - An error response (status code >= 400) from the GitHub API, where the 'errors' field is either
+        a list of strings, a plain string, an empty list, or a list of error objects.
+    When:
+      - Calling the 'http_request' function.
+    Then:
+      - Ensure a DemistoException with the expected message is raised, and that non-dict 'errors' values
+        do not raise an AttributeError (calling '.get()' on a str).
+    """
+    GitHub.BASE_URL = REGULAR_BASE_URL
+    GitHub.USE_SSL = ""
+    GitHub.HEADERS = {}
+
+    with (
+        requests_mock.Mocker() as m,
+        pytest.raises(DemistoException) as exception_info,
+    ):
+        m.get(f"{REGULAR_BASE_URL}/test", json=response_json, status_code=422, reason="Unprocessable Entity")
+        http_request("GET", "/test")
+
+    assert str(exception_info.value) == expected_error_message
+
+
+def test_http_request_error_handling_non_json_response():
+    """
+    Given:
+      - An error response (status code >= 400) from the GitHub API with a body that is not valid JSON.
+    When:
+      - Calling the 'http_request' function.
+    Then:
+      - Ensure a DemistoException with the generic error message is raised.
+    """
+    GitHub.BASE_URL = REGULAR_BASE_URL
+    GitHub.USE_SSL = ""
+    GitHub.HEADERS = {}
+
+    with (
+        requests_mock.Mocker() as m,
+        pytest.raises(DemistoException) as exception_info,
+    ):
+        m.get(f"{REGULAR_BASE_URL}/test", text="<html>Bad Gateway</html>", status_code=502, reason="Bad Gateway")
+        http_request("GET", "/test")
+
+    assert str(exception_info.value) == "Error in API call to GitHub Integration [502] - Bad Gateway"
+
+
 def test_github_revoke_credentials_success(mocker):
     """
     Given:
@@ -690,3 +787,151 @@ def test_github_revoke_credentials_too_many(mocker):
 
     with pytest.raises(DemistoException, match="maximum of 1000 credentials"):
         GitHub.github_revoke_credentials_command()
+
+
+def test_list_organization_repositories_command(requests_mock, mocker):
+    """
+    Given:
+        Organization name and default args.
+    When:
+        Calling github-list-organization-repositories.
+    Then:
+        Ensure expected CommandResults are returned with GitHub.Repository prefix.
+    """
+    mocker.patch.object(demisto, "args", return_value={"organization": "my-org"})
+    GitHub.TOKEN, GitHub.USE_SSL = "", ""
+    GitHub.HEADERS = {}
+    GitHub.BASE_URL = REGULAR_BASE_URL
+    GitHub.USER = "test"
+
+    test_data = load_test_data("./test_data/list_org_repos_response.json")
+    requests_mock.get(
+        f"{REGULAR_BASE_URL}/orgs/my-org/repos",
+        json=test_data,
+    )
+    mocker_results = mocker.patch("GitHub.return_results")
+    github_list_organization_repositories_command()
+
+    command_results: CommandResults = mocker_results.call_args[0][0]
+    assert command_results.outputs_prefix == "GitHub.Repository"
+    assert command_results.outputs_key_field == "id"
+    assert len(command_results.outputs) == 2
+    assert command_results.outputs[0]["name"] == "repo-alpha"
+
+
+def test_list_actions_caches_command(requests_mock, mocker):
+    """
+    Given:
+        Owner, repository, and default args.
+    When:
+        Calling github-list-actions-caches.
+    Then:
+        Ensure expected CommandResults are returned with GitHub.ActionsCache prefix.
+    """
+    mocker.patch.object(demisto, "args", return_value={"owner": "my-org", "repository": "my-repo"})
+    GitHub.TOKEN, GitHub.USE_SSL = "", ""
+    GitHub.HEADERS = {}
+    GitHub.BASE_URL = REGULAR_BASE_URL
+    GitHub.USER = "test"
+    GitHub.REPOSITORY = "hello-world"
+
+    test_data = load_test_data("./test_data/list_actions_caches_response.json")
+    requests_mock.get(
+        f"{REGULAR_BASE_URL}/repos/my-org/my-repo/actions/caches",
+        json=test_data,
+    )
+    mocker_results = mocker.patch("GitHub.return_results")
+    github_list_actions_caches_command()
+
+    command_results: CommandResults = mocker_results.call_args[0][0]
+    assert command_results.outputs_prefix == "GitHub.ActionsCache"
+    assert command_results.outputs_key_field == "id"
+    assert len(command_results.outputs) == 2
+    assert command_results.outputs[0]["key"] == "npm-cache-linux-abc123"
+
+
+def test_delete_actions_cache_command(requests_mock, mocker):
+    """
+    Given:
+        Owner, repository, and cache_id.
+    When:
+        Calling github-delete-actions-cache.
+    Then:
+        Ensure DELETE request is sent and success message is returned.
+    """
+    mocker.patch.object(demisto, "args", return_value={"owner": "my-org", "repository": "my-repo", "cache_id": "501"})
+    GitHub.TOKEN, GitHub.USE_SSL = "", ""
+    GitHub.HEADERS = {}
+    GitHub.BASE_URL = REGULAR_BASE_URL
+    GitHub.USER = "test"
+    GitHub.REPOSITORY = "hello-world"
+
+    requests_mock.delete(
+        f"{REGULAR_BASE_URL}/repos/my-org/my-repo/actions/caches/501",
+        status_code=204,
+    )
+    mocker_results = mocker.patch("GitHub.return_results")
+    github_delete_actions_cache_command()
+
+    result = mocker_results.call_args[0][0]
+    assert "501" in result
+    assert "deleted successfully" in result
+
+
+def test_list_actions_artifacts_command(requests_mock, mocker):
+    """
+    Given:
+        Owner, repository, and default args.
+    When:
+        Calling github-list-actions-artifacts.
+    Then:
+        Ensure expected CommandResults are returned with GitHub.ActionsArtifact prefix.
+    """
+    mocker.patch.object(demisto, "args", return_value={"owner": "my-org", "repository": "my-repo"})
+    GitHub.TOKEN, GitHub.USE_SSL = "", ""
+    GitHub.HEADERS = {}
+    GitHub.BASE_URL = REGULAR_BASE_URL
+    GitHub.USER = "test"
+    GitHub.REPOSITORY = "hello-world"
+
+    test_data = load_test_data("./test_data/list_actions_artifacts_response.json")
+    requests_mock.get(
+        f"{REGULAR_BASE_URL}/repos/my-org/my-repo/actions/artifacts",
+        json=test_data,
+    )
+    mocker_results = mocker.patch("GitHub.return_results")
+    github_list_actions_artifacts_command()
+
+    command_results: CommandResults = mocker_results.call_args[0][0]
+    assert command_results.outputs_prefix == "GitHub.ActionsArtifact"
+    assert command_results.outputs_key_field == "id"
+    assert len(command_results.outputs) == 2
+    assert command_results.outputs[0]["name"] == "build-output"
+
+
+def test_delete_actions_artifact_command(requests_mock, mocker):
+    """
+    Given:
+        Owner, repository, and artifact_id.
+    When:
+        Calling github-delete-actions-artifact.
+    Then:
+        Ensure DELETE request is sent and success message is returned.
+    """
+    mocker.patch.object(demisto, "args", return_value={"owner": "my-org", "repository": "my-repo", "artifact_id": "801"})
+    GitHub.TOKEN, GitHub.USE_SSL = "", ""
+    GitHub.HEADERS = {}
+    GitHub.BASE_URL = REGULAR_BASE_URL
+    GitHub.USER = "test"
+    GitHub.REPOSITORY = "hello-world"
+
+    requests_mock.delete(
+        f"{REGULAR_BASE_URL}/repos/my-org/my-repo/actions/artifacts/801",
+        status_code=204,
+    )
+    mocker_results = mocker.patch("GitHub.return_results")
+    github_delete_actions_artifact_command()
+
+    result = mocker_results.call_args[0][0]
+    assert "801" in result
+    assert "deleted successfully" in result

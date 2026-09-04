@@ -1,3 +1,5 @@
+display: CyberArk EPM Event Collector
+name: CyberArkEPMEventCollector
 category: Analytics & SIEM
 provider: CyberArk
 sectionorder:
@@ -7,10 +9,39 @@ commonfields:
   id: CyberArkEPMEventCollector
   version: -1
 configuration:
-- additionalinfo: 'SAML example: https://login.epm.cyberark.com/SAML/Logon.'
-  display: SAML/EPM Logon URL
-  name: url
+- display: Authentication Method
+  name: authentication_method
+  additionalinfo: The authentication method to use when connecting to CyberArk EPM.
   required: true
+  defaultvalue: EPM
+  type: 15
+  options:
+  - Idira OAuth
+  - EPM
+  - SAML
+  section: Connect
+- display: Server URL (only for Idira Oauth)
+  additionalinfo: 'The Server URL. Required for OAuth 2.0 only. For example: https://example.epm.cyberark.com/.'
+  name: server_url
+  required: false
+  type: 0
+  section: Connect
+- display: SAML/EPM Logon URL
+  additionalinfo: 'The SAML/EPM login URL. Required for EPM and SAML authentication methods only. SAML example: https://login.epm.cyberark.com/SAML/Logon.'
+  name: url
+  required: false
+  type: 0
+  section: Connect
+- display: Identity URL
+  additionalinfo: 'The CyberArk Identity FQDN, for example https://<sub-domain>.id.cyberark.cloud. Required for Idira OAuth authentication only. Used only to obtain the OAuth token; must not include a /oauth2/token suffix.'
+  name: identity_url
+  required: false
+  type: 0
+  section: Connect
+- display: Web App ID
+  additionalinfo: 'The registered OAuth2 web-app identifier in CyberArk Identity Administration, used as a URL path segment on the token endpoint (/oauth2/token/<web_app_id>). Required for Idira OAuth authentication only.'
+  name: web_app_id
+  required: false
   type: 0
   section: Connect
 - display: Username
@@ -19,31 +50,31 @@ configuration:
   type: 9
   section: Connect
 - display: Set name
-  additionalinfo: A comma-separated list of set names.
+  additionalinfo: 'A comma-separated list of set names to collect events from. Required for all authentication methods (EPM, SAML, and Idira OAuth).'
   name: set_name
   required: true
   type: 0
   section: Connect
-- additionalinfo: 'Required for local(EPM) authentication only. See how to get the application ID https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID'
-  display: Application ID
+- display: Application ID
+  additionalinfo: 'The application ID for local (EPM) authentication. For information on how to obtain the application ID, see https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID'
   name: application_id
   required: false
   type: 0
   section: Connect
-- additionalinfo: 'Required for SAML authentication only, Example for OKTA: https://[COMPANY_NAME].okta.com/api/v1/authn. See how to get the Authentication URL https://developer.okta.com/docs/reference/api/authn/#authentication-operations'
+- display: Authentication URL
+  additionalinfo: 'The authentication URL for SAML authentication. For Okta, use the format https://[COMPANY_NAME].okta.com/api/v1/authn. For information on how to obtain the authentication URL, see https://developer.okta.com/docs/reference/api/authn/#authentication-operations'
   advanced: true
-  display: Authentication URL
   name: authentication_url
   required: false
   type: 0
   section: Connect
-- additionalinfo: 'Required for SAML authentication only, Example for OKTA: https://[COMPANY_NAME].okta.com/home/[APP_NAME]/[APP_ID].'
+- display: Application URL
   advanced: true
-  display: Application URL
   name: application_url
   required: false
   type: 0
   section: Connect
+  additionalinfo: 'The authentication URL for SAML authentication. For Okta, use the format  https://[COMPANY_NAME].okta.com/home/[APP_NAME]/[APP_ID].'
 - display: Trust any certificate (not secure)
   advanced: true
   name: insecure
@@ -51,21 +82,21 @@ configuration:
   type: 8
   section: Connect
 - display: Use system proxy settings
-  advanced: true
   name: proxy
   required: false
   type: 8
   section: Connect
-- defaultvalue: '5000'
-  display: Maximum number of events per fetch
+  advanced: true
+- display: Maximum number of events per fetch
+  defaultvalue: '5000'
   name: max_fetch
   required: false
   type: 0
   section: Collect
-- defaultvalue: 'false'
-  display: Enable admin audits events
+- display: Enable admin audits events
   name: enable_admin_audits
   required: false
+  defaultvalue: 'false'
   type: 8
   section: Collect
 - display: Policy Audit Events
@@ -92,11 +123,12 @@ configuration:
   - Skipped
   section: Collect
 - display: Detailed Events
-  additionalinfo: A comma-separated list of detailed events event type to fetch
+  defaultvalue: 'AttackAttempt,AttackBlock,SuspiciousActivityAttempt,SuspiciousActivityblock'
   name: raw_events_event_type
-  required: false
-  defaultvalue: AttackAttempt,AttackBlock,SuspiciousActivityAttempt,SuspiciousActivityblock
+  additionalinfo: A comma-separated list of detailed event types to fetch.
   type: 16
+  required: false
+  section: Collect
   options:
   - AttackAttempt
   - AttackBlock
@@ -113,10 +145,21 @@ configuration:
   - Block
   - Access
   - Skipped
+- display: Fetch events
+  defaultvalue: 'false'
+  name: isFetchEvents
+  type: 8
+  required: false
   section: Collect
-description: CyberArk EPM Event Collector fetches events.
-display: CyberArk EPM Event Collector
-name: CyberArkEPMEventCollector
+  additionalinfo: Whether to fetch events.
+- display: Events Fetch Interval
+  defaultvalue: '1'
+  name: eventFetchInterval
+  type: 19
+  required: false
+  advanced: true
+  section: Collect
+description: Collects policy audits, admin audits, and detailed (raw) events from CyberArk Endpoint Privilege Manager (EPM).
 script:
   commands:
   - arguments:
@@ -168,10 +211,10 @@ script:
       name: limit
     - description: Date to return results from. (in ISO format '01-01-24T00:00:00.123Z').
       name: from_date
-    description: Gets events from Cyber Ark EPM.
+    description: Gets events from Cyber Ark EPM. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     execution: false
     name: cyberarkepm-get-events
-  dockerimage: demisto/btfl-soup:1.0.1.6977863
+  dockerimage: demisto/btfl-soup:1.0.1.10120494
   isfetchevents: true
   runonce: false
   script: ''
@@ -182,6 +225,43 @@ marketplaces:
 - marketplacev2
 - platform
 fromversion: 8.2.0
+triggers:
+- conditions:
+  - name: authentication_method
+    operator: equal
+    value: Idira OAuth
+  effects:
+  - name: identity_url
+    action:
+      required: true
+  - name: web_app_id
+    action:
+      required: true
+  - name: server_url
+    action:
+      required: true
+- conditions:
+  - name: authentication_method
+    operator: equal
+    value: EPM
+  effects:
+  - name: url
+    action:
+      required: true
+- conditions:
+  - name: authentication_method
+    operator: equal
+    value: SAML
+  effects:
+  - name: url
+    action:
+      required: true
+  - name: authentication_url
+    action:
+      required: true
+  - name: application_url
+    action:
+      required: true
 tests:
 - No tests (auto formatted)
 supportedModules:

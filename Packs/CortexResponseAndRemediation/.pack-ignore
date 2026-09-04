@@ -567,3 +567,6 @@ ignore=TR101
 
 [file:silent-Trigger_-_Remote_WMI_Process_Execution_Test.json]
 ignore=TR101
+
+[file:pack_metadata.json]
+ignore=PA134

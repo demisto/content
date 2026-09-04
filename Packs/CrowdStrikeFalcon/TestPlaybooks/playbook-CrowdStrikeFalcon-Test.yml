@@ -85,7 +85,7 @@ tasks:
       extended_data:
         simple: "Yes"
       filter:
-        simple: created_timestamp:>'2020-03-05T15:25:00Z'
+        simple: created_timestamp:>'2020-03-05T15:25:00Z'+product:'epp'+type:'ldt'
     separatecontext: false
     continueonerrortype: ""
     view: |-

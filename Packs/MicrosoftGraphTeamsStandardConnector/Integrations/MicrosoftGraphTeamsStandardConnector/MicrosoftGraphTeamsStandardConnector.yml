@@ -1,0 +1,112 @@
+name: MicrosoftGraphTeamsStandardConnector
+display: Microsoft Graph Teams (Standard Connector)
+description: 'This integration is configured automatically as part of the Microsoft 365 Standard Connector. Do not configure this integration directly — set it up from the connector page instead.'
+category: Messaging and Conferencing
+provider: Microsoft
+sectionorder:
+- Connect
+commonfields:
+  id: MicrosoftGraphTeamsStandardConnector
+  version: -1
+configuration:
+- defaultvalue: https://graph.microsoft.com
+  display: Server URL
+  name: url
+  required: false
+  type: 0
+  section: Connect
+  additionalinfo: The Microsoft Graph server URL.
+- display: Tenant ID
+  name: tenant_id
+  required: true
+  type: 4
+  hiddenusername: true
+  section: Connect
+  additionalinfo: The Microsoft Entra ID tenant ID of the registered application.
+- display: Client ID
+  name: client_id
+  required: true
+  type: 4
+  hiddenusername: true
+  section: Connect
+  additionalinfo: The application (client) ID of the registered application.
+- display: Client Secret
+  name: secret
+  required: true
+  type: 4
+  hiddenusername: true
+  section: Connect
+  additionalinfo: The client secret of the registered application.
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+  additionalinfo: Whether to trust any certificate presented by the server.
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+  additionalinfo: Whether to route requests through the system proxy.
+script:
+  commands:
+  - arguments:
+    - description: The chat ID hosting the message. Provide either 'chat_id' or 'team_id' plus 'channel_id'.
+      name: chat_id
+    - description: The team ID hosting the channel message. Required together with 'channel_id' when targeting a channel message or reply.
+      name: team_id
+    - description: The channel ID hosting the message. Required together with 'team_id' when targeting a channel message or reply.
+      name: channel_id
+    - description: The parent message ID when targeting a channel reply. Only supported for channel messages, not chat messages.
+      name: parent_message_id
+    - description: The ID of the message to update.
+      name: message_id
+      required: true
+    - auto: PREDEFINED
+      description: The action taken on the message by the DLP provider.
+      name: dlp_action
+      predefined:
+      - NoAction
+      - BlockAccess
+      - BlockAccessExternal
+    - description: The general explanatory text shown to the user in the policy tip.
+      name: policy_tip_general_text
+    - description: The reviewer actions available on the flagged message. Omit to let Microsoft Graph apply its default (permanent) behavior.
+      name: verdict_details
+    - description: The billing model appended as the model query parameter when provided.
+      name: payment_model
+    description: Applies a data loss prevention (DLP) policy violation to a Microsoft Teams message. Targets a chat message, a channel message, or a channel reply.
+    name: msgraph-teams-message-update-policy-violation
+    outputs:
+    - contextPath: MSGraphTeams.TeamsMessagePolicyViolation.messageId
+      description: The ID of the message the policy violation was applied to.
+      type: String
+    - contextPath: MSGraphTeams.TeamsMessagePolicyViolation.chatId
+      description: The chat ID hosting the message (when targeting a chat message).
+      type: String
+    - contextPath: MSGraphTeams.TeamsMessagePolicyViolation.teamId
+      description: The team ID hosting the message (when targeting a channel message).
+      type: String
+    - contextPath: MSGraphTeams.TeamsMessagePolicyViolation.channelId
+      description: The channel ID hosting the message (when targeting a channel message).
+      type: String
+    - contextPath: MSGraphTeams.TeamsMessagePolicyViolation.parentMessageId
+      description: The parent message ID (when targeting a channel reply).
+      type: String
+    - contextPath: MSGraphTeams.TeamsMessagePolicyViolation.dlpAction
+      description: The DLP action applied to the message.
+      type: String
+    - contextPath: MSGraphTeams.TeamsMessagePolicyViolation.verdictDetails
+      description: The reviewer actions available on the flagged message.
+      type: String
+  dockerimage: demisto/crypto:1.0.0.11658507
+  script: ''
+  subtype: python3
+  type: python
+  runonce: false
+fromversion: 8.15.0
+tests:
+- No tests (auto formatted)

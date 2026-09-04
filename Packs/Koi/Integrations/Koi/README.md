@@ -6,7 +6,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### koi-get-events
 
 ***
-Gets events from KOI. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and API request limitation exceeding.
+Gets events from KOI. This command is used for developing/debugging. Use with caution, as it can create events, leading to event duplication and exceeding API request limitations.
 
 #### Base Command
 
@@ -20,7 +20,7 @@ Gets events from KOI. This command is used for developing/debugging and is to be
 | limit | The maximum number of events to return per type. Default is 50. | Optional |
 | start_time | Filter events created at or after this time. Supports ISO 8601 format or relative time expressions (e.g., "3 days ago", "2024-01-01T00:00:00Z"). | Optional |
 | end_time | Filter events created at or before this time. Supports ISO 8601 format or relative time expressions (e.g., "now", "2024-01-01T00:00:00Z"). | Optional |
-| should_push_events | If true, the command creates events in XSIAM; otherwise, it only displays them. Possible values are: true, false. Default is false. | Optional |
+| should_push_events | The flag that indicates whether to push events to Cortex XSIAM. Pushing events is supported on Cortex XSIAM only. When set to false, or on non-XSIAM platforms, events are displayed without being pushed. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 

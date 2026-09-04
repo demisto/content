@@ -16,29 +16,29 @@
               "SEARCH_VALUE": "network"
             },
             {
-                "SEARCH_FIELD": "policy_type",
-                "SEARCH_TYPE": "EQ",
-                "SEARCH_VALUE": "api"
+              "SEARCH_FIELD": "policy_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "api"
             },
             {
-                "SEARCH_FIELD": "policy_type",
-                "SEARCH_TYPE": "EQ",
-                "SEARCH_VALUE": "anomaly"
+              "SEARCH_FIELD": "policy_type",
+              "SEARCH_TYPE": "EQ",
+              "SEARCH_VALUE": "anomaly"
             }
           ]
         },
         {
-            "SEARCH_FIELD": "category",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "Incident"
+          "SEARCH_FIELD": "category",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Incident"
         }
       ]
     }
   },
   "supportedModules": [
-        "xsiam",
-        "edr",
-        "cloud",
-        "cloud_runtime_security"
-    ]
+    "xsiam",
+    "edr",
+    "cloud",
+    "cloud_runtime_security"
+  ]
 }

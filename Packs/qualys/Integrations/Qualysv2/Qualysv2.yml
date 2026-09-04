@@ -46,6 +46,16 @@ configuration:
   - xpanse
   supportedModules:
   - xsiam
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  hidden:
+  - xsoar
+  - xpanse
+  supportedModules:
+  - xsiam
 - defaultvalue: 3 days
   section: Collect
   display: Event first fetch time
@@ -84,6 +94,17 @@ configuration:
   - xpanse
   supportedModules:
   - xsiam
+- display: Fetch assets and vulnerabilities
+  name: isFetchAssets
+  type: 8
+  section: Collect
+  required: false
+  hidden:
+  - xsoar
+  - xpanse
+  supportedModules:
+  - xsiam
+  - exposure_management
 - additionalinfo: The fetch interval for assets and vulnerabilities. It is recommended to set it to 24 hours. Interval lower then 1 hour is not supported.
   defaultvalue: 1440
   display: Assets and Vulnerabilities Fetch Interval
@@ -97,6 +118,7 @@ configuration:
   - xpanse
   supportedModules:
   - xsiam
+  - exposure_management
 description: Qualys Vulnerability Management lets you create, run, manage reports and to fetch Activity Logs, Assets and Vulnerabilities, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
 display: Qualys VMDR
 name: QualysV2
@@ -2890,7 +2912,7 @@ script:
     - contextPath: Qualys.QID
       description: All the Qualys QID (Qualys ID) associated with a specified CVE.
       type: unknown
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetchevents: true
   isfetchassets: true
   runonce: false

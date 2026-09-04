@@ -16,6 +16,7 @@ import dateparser
 
 import pytz
 import requests
+from packaging.version import InvalidVersion, Version
 
 from splunklib import client, results
 from splunklib.binding import AuthenticationError, HTTPError, namespace
@@ -57,6 +58,7 @@ DEFAULT_STATUSES = {
 # =========== Mirroring Mechanism Globals ===========
 MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
 OUTGOING_MIRRORED_FIELDS = ["note", "status", "owner", "urgency", "reviewer", "disposition"]
+ES_APP_NAME = "SplunkEnterpriseSecuritySuite"
 
 # === Note Tag Globals ===
 NOTE_TAG_TO_SPLUNK = params.get("note_tag_to_splunk", "FROM XSOAR")
@@ -2002,8 +2004,12 @@ def get_fields_query_part(
 def get_finding_field_and_value(
     raw_field: str, finding_data: dict[str, Any], raw: dict[str, Any] | None = None
 ) -> tuple[str, Any]:
-    """Gets the value by the name of the raw_field. We don't search for equivalence because raw field
-    can be "threat_match_field|s" while the field is "threat_match_field".
+    """Gets the value by the name of the raw_field. The raw field may contain a Splunk
+    formatting suffix (e.g. "threat_match_field|s") while the actual field is "threat_match_field",
+    so we compare against the base field name (the part before the first "|").
+
+    We must NOT use a loose substring match here, because that causes field-name collisions
+    (e.g. the field "src" would wrongly match the raw field "src_ip").
 
     Args:
         raw_field (str): The raw field
@@ -2015,12 +2021,11 @@ def get_finding_field_and_value(
     """
     if not raw:
         raw = raw_to_dict(finding_data.get("_raw", ""))
-    for field_name in finding_data:
-        if field_name in raw_field:
-            return field_name, finding_data[field_name]
-    for field_name in raw:
-        if field_name in raw_field:
-            return field_name, raw[field_name]
+    base_field = raw_field.split("|")[0].strip()
+    if base_field in finding_data:
+        return base_field, finding_data[base_field]
+    if base_field in raw:
+        return base_field, raw[base_field]
     demisto.error(f"Field {raw_field} was not found in the finding.")
     return "", ""
 
@@ -2133,6 +2138,39 @@ def escape_invalid_chars_in_drilldown_json(drilldown_search: str) -> str:
     return drilldown_search
 
 
+def escape_backslashes_in_field_filters(search: str) -> str:
+    """Re-escapes backslashes inside the value of `field="value"` filters in an SPL search.
+
+    When a drilldown search arrives as a JSON string, ``json.loads`` decodes ``\\\\`` to a single
+    backslash. Splunk SPL, however, requires backslashes inside a double-quoted filter value to be
+    escaped (doubled) in order to match.
+
+    To stay safe, this only touches values of genuine ``field="value"`` filters - the quoted value must
+    be directly preceded by a field-name token and ``=`` (e.g. ``TaskName="..."``). This deliberately
+    excludes regex/string literals that follow ``(`` or ``,`` inside SPL functions such as
+    ``eval x=replace(field,"(\\)","\\\\")`` and leaves free-text / ``rex`` regex quoted strings
+    untouched. It is idempotent - values that are already correctly escaped (``\\\\``) are left
+    unchanged.
+
+    Args:
+        search (str): The decoded SPL drilldown search.
+
+    Returns:
+        str: The SPL search with backslashes escaped inside field filter values.
+    """
+
+    def _escape(match: re.Match) -> str:
+        prefix = match.group(1)  # the field name, '=' and any surrounding whitespace
+        value = match.group(2)  # the value between the double quotes
+        normalized = value.replace("\\\\", "\\")  # normalize already-doubled backslashes
+        escaped = normalized.replace("\\", "\\\\")  # then double every backslash (idempotent)
+        return f'{prefix}"{escaped}"'
+
+    # Anchor on a field-name token so only real `field="value"` filters match. This avoids
+    # over-escaping regex literals inside function calls like replace(field,"(\\)","\\\\").
+    return re.sub(r'([\w.]+\s*=\s*)"([^"]*)"', _escape, search)
+
+
 def parse_drilldown_searches(drilldown_searches: list[str]) -> list[dict[str, Any]]:
     """Goes over the drilldown searches list, parses each drilldown search and converts it to a python dictionary.
 
@@ -2143,7 +2181,13 @@ def parse_drilldown_searches(drilldown_searches: list[str]) -> list[dict[str, An
         list[dict]: A list of the drilldown searches dictionaries.
     """
     demisto.debug("There are multiple drilldown searches to enrich, parsing each drilldown search object")
-    searches = []
+    searches: list[dict] = []
+
+    def _fix_search_backslashes(search_obj: dict[str, Any]) -> dict[str, Any]:
+        # Re-escape backslashes in the SPL search after json.loads collapsed them (XSUP-70829)
+        if isinstance(search_obj, dict) and isinstance(search_obj.get("search"), str):
+            search_obj["search"] = escape_backslashes_in_field_filters(search_obj["search"])
+        return search_obj
 
     for drilldown_search in drilldown_searches:
         try:
@@ -2151,9 +2195,9 @@ def parse_drilldown_searches(drilldown_searches: list[str]) -> list[dict[str, An
             drilldown_search = escape_invalid_chars_in_drilldown_json(drilldown_search)
             search = json.loads(drilldown_search)
             if isinstance(search, list):
-                searches.extend(search)
+                searches.extend(_fix_search_backslashes(s) for s in search)
             else:
-                searches.append(search)
+                searches.append(_fix_search_backslashes(search))
         except json.JSONDecodeError as e:
             demisto.error(
                 f"Caught an exception while parsing a drilldown search object."
@@ -3249,13 +3293,84 @@ def get_modified_remote_data_command(
             demisto.info(f"mirror-in: the number of mirrored investigations reached the limit of: {MIRROR_LIMIT}")
 
     # Persist the cache of events (findings + investigations) processed in this run
-    # for the next iteration. Done once after both blocks to avoid an extra
-    # set_integration_context round-trip.
-    integration_context[PROCESSED_MIRRORED_EVENTS] = list(current_run_processed_events)
-    set_integration_context(integration_context)
+    # for the next iteration. Re-read the integration context immediately before
+    # writing so we don't clobber updates other containers made to OTHER keys
+    # between the initial get_integration_context() (early in this function) and now.
+    # The PROCESSED_MIRRORED_EVENTS key itself is intentionally overwritten with this run's set.
+    latest_context = get_integration_context()
+    latest_context[PROCESSED_MIRRORED_EVENTS] = list(current_run_processed_events)
+    set_integration_context(latest_context)
 
     res = SplunkGetModifiedRemoteDataResponse(modified_findings_data=modified_data, entries=entries)
     return_results(res)
+
+
+def get_enterprise_security_version(service: client.Service) -> str:
+    """Retrieves the installed Splunk Enterprise Security (ES) app version.
+
+    Args:
+        service (splunklib.client.Service): Splunk service object.
+
+    Returns:
+        str: The ES app version (e.g. "8.2.0"), or "unknown" if it could not be determined.
+    """
+    try:
+        es_app = service.apps[ES_APP_NAME]
+        return es_app.content.get("version", "unknown")
+    except Exception as e:
+        demisto.debug(f"Could not determine Enterprise Security version: {e!s}\n{traceback.format_exc()}")
+        return "unknown"
+
+
+def is_es_version(version: str, target_version: str) -> bool:
+    """Return True when ``version`` matches ``target_version`` on major/minor.
+
+    Uses ``packaging.version.Version`` for robust semantic comparison, relying
+    on the library's own ``.major``/``.minor`` properties, and checks that the
+    major/minor of ``version`` equals that of ``target_version`` (so for
+    ``target_version="8.2"``, the values ``8.2``, ``8.2.0``, ``8.2.5`` all
+    match, while ``8.3.0`` does not). Returns False when either version is
+    unparseable (e.g. "unknown"). Used to gate version-specific behaviour such
+    as the finding_time (notable_time) handling on ES ``8.2.x``.
+    """
+    try:
+        parsed, target = Version(version), Version(target_version)
+        return (parsed.major, parsed.minor) == (target.major, target.minor)
+    except InvalidVersion:
+        return False
+
+
+def get_finding_time_for_es_notable_time(service: client.Service, data: dict[str, Any] | None) -> str | None:
+    """Return the finding's event time to use as ``_time`` on ES ``>=8.2 <8.3``.
+
+    On ES 8.2.x the v2 investigations update endpoint requires the finding's
+    original event time (``_time``). On 8.3+ this is not needed. The
+    finding's time is mirrored into the incident as the ``notable_time`` field
+    (mapped from the incident's ``occurred`` in the outgoing mapper), so no
+    extra Splunk query is required.
+
+    Args:
+        service: Splunk service object (used only to read the ES version).
+        data: The mirrored incident data from ``UpdateRemoteSystemArgs.data``.
+
+    Returns:
+        The finding time string to pass as ``finding_time``, or ``None`` when the
+        ES version is out of range or no time is available in the data.
+    """
+    es_version = get_enterprise_security_version(service)
+    if not is_es_version(es_version, "8.2"):
+        return None
+
+    finding_time = (data or {}).get("notable_time")
+    if not finding_time:
+        demisto.debug(
+            f"mirror-out: ES version {es_version} is 8.2.x but no 'time' field found in "
+            "the mirrored data; proceeding without finding_time."
+        )
+        return None
+
+    demisto.debug(f"mirror-out: ES version {es_version} is 8.2.x; using finding_time={finding_time}.")
+    return str(finding_time)
 
 
 def update_remote_system_command(
@@ -3280,7 +3395,12 @@ def update_remote_system_command(
     delta = parsed_args.delta
     entity_id = parsed_args.remote_incident_id
     entries = parsed_args.entries
-    demisto.debug(f"mirroring args: entries:{parsed_args.entries} delta:{parsed_args.delta}")
+    demisto.debug(f"mirroring args: entries:{parsed_args.entries} delta:{parsed_args.delta} data:{parsed_args.data}")
+    # On ES >=8.2 <8.3 the v2 investigations update endpoint requires the finding's
+    # original event time (_time). The notable_time is mapped from the the incident's `occured`
+    # so it's available in `parsed_args.delta`.
+    # return None on ES 8.3+ (or when unavailable), preserving the existing behaviour.
+    finding_time = get_finding_time_for_es_notable_time(service, parsed_args.data)
     if parsed_args.incident_changed and delta:
         demisto.debug(f"Got the following delta keys {list(delta.keys())} to update incident corresponding to entity {entity_id}")
 
@@ -3312,6 +3432,7 @@ def update_remote_system_command(
                     urgency=changed_data.get("urgency"),
                     status=changed_data.get("status"),
                     disposition=changed_data.get("disposition"),
+                    finding_time=finding_time,
                 )
                 demisto.debug(f"update-remote-system for entity {entity_id} via v2 API: {response_info}")
 
@@ -4096,6 +4217,249 @@ def update_investigation_or_finding(
     result = json.loads(response_data)
     demisto.debug(f"Successfully updated investigation/finding {investigation_or_finding_id}: {result}")
     return result
+
+
+# --------------------------------------------------------------------------- #
+# Splunk ES (Mission Control) REST helpers and investigation commands         #
+# --------------------------------------------------------------------------- #
+
+
+def _es_rest_request(
+    service: client.Service,
+    method: str,
+    path: str,
+    body: dict | None = None,
+    query: dict | None = None,
+) -> dict | list:
+    """Perform a request against the Splunk ES (Mission Control) public REST API.
+
+    Reuses the connected ``splunklib`` ``Service`` object's ``post``/``get`` methods so the
+    same authentication, session and namespace as the rest of the integration are used.
+
+    Args:
+        service: A connected ``splunklib.client.Service`` instance.
+        method: HTTP verb. One of ``GET`` or ``POST``.
+        path: Path under the ES public namespace (e.g. ``public/v2/investigations``).
+        body: Optional JSON-serializable body for POST requests.
+        query: Optional query string parameters for GET requests.
+
+    Returns:
+        Parsed JSON response (dict or list). Empty responses are returned as an empty dict.
+
+    Raises:
+        DemistoException: On HTTP errors or non-JSON responses.
+    """
+    # Ensure the service points at the Mission Control namespace used by all ES API calls.
+    service.namespace = namespace(app="missioncontrol", owner="nobody")
+    method_upper = method.upper()
+    demisto.debug(f"ES REST request: {method_upper} {path} body={body} query={query}")
+    try:
+        if method_upper == "GET":
+            response = service.get(path, **(query or {}))
+        elif method_upper == "POST":
+            response = service.post(path, body=json.dumps(body or {}))
+        else:
+            raise DemistoException(f"Unsupported HTTP method for ES REST helper: {method}")
+    except HTTPError as exc:
+        raise DemistoException(f"Splunk ES REST request failed ({method_upper} {path}): {exc!s}") from exc
+
+    raw = response.body.read() if hasattr(response, "body") else b""
+    if not raw:
+        return {}
+    try:
+        return json.loads(raw)
+    except ValueError:
+        # Some endpoints return a plain string body (e.g. confirmation messages).
+        return {"raw_response": raw.decode("utf-8", errors="replace")}
+
+
+# Fields forwarded as-is in the POST /public/v2/investigations create payload.
+INVESTIGATION_CREATE_FIELDS = (
+    "name",
+    "description",
+    "investigation_type",
+    "status",
+    "disposition",
+    "owner",
+    "urgency",
+    "sensitivity",
+)
+
+
+def _build_investigation_create_payload(args: dict) -> dict:
+    """Build the JSON payload for ``POST /public/v2/investigations`` from command args.
+
+    Forwards only the fields in ``INVESTIGATION_CREATE_FIELDS``: ``name``, ``description``,
+    ``investigation_type``, ``status``, ``disposition``, ``owner``, ``urgency``, ``sensitivity``.
+    ``name`` is required.
+    """
+    payload: dict[str, Any] = {}
+    for key in INVESTIGATION_CREATE_FIELDS:
+        value = args.get(key)
+        if value:
+            payload[key] = value
+    if "name" not in payload:
+        raise DemistoException("`name` is a required argument for splunk-investigation-create.")
+    return payload
+
+
+def _format_investigation_for_hr(item: dict) -> dict:
+    """Build a curated, human-readable projection of an investigation dict.
+
+    Only fields useful in the war-room table are returned, with friendly Title Case
+    keys; epoch-seconds timestamps (``create_time`` / ``update_time``) are converted
+    to ISO-8601 UTC via :func:`timestamp_to_datestring`. Raw ``outputs`` are not
+    affected by this projection.
+    """
+
+    def _to_iso(value: Any) -> str | None:
+        if value in (None, "", 0):
+            return None
+        try:
+            return timestamp_to_datestring(int(float(value)) * 1000, date_format="%Y-%m-%dT%H:%M:%SZ", is_utc=True)
+        except (TypeError, ValueError) as exc:
+            demisto.debug(f"_format_investigation_for_hr: cannot format {value!r}: {exc!s}")
+            return None
+
+    return {
+        "Investigation ID": item.get("investigation_id"),
+        "Investigation GUID": item.get("investigation_guid"),
+        "Name": item.get("name"),
+        "Status": item.get("status_name"),
+        "Disposition": item.get("disposition_name"),
+        "Owner": item.get("owner"),
+        "Urgency": item.get("urgency"),
+        "Sensitivity": item.get("sensitivity"),
+        "Findings Count": item.get("count_findings"),
+        "Risk Score": item.get("risk_score"),
+        "Create Time": _to_iso(item.get("create_time")),
+        "Update Time": _to_iso(item.get("update_time")),
+    }
+
+
+# Ordered headers for the splunk-investigation-list HR table.
+INVESTIGATION_HR_HEADERS = [
+    "Investigation ID",
+    "Name",
+    "Status",
+    "Disposition",
+    "Owner",
+    "Urgency",
+    "Update Time",
+]
+
+
+def splunk_create_investigation_command(service: client.Service, args: dict) -> CommandResults:
+    """Create a new investigation in Splunk ES via ``POST /public/v2/investigations``.
+
+    Returns the new investigation's GUID in the ``Splunk.Investigation`` context.
+    """
+    payload = _build_investigation_create_payload(args)
+    response = _es_rest_request(service, "POST", "public/v2/investigations", body=payload)
+
+    response_dict = response if isinstance(response, dict) else {}
+    investigation_guid = response_dict.get("investigation_guid")
+    readable = tableToMarkdown(
+        "Investigation created successfully",
+        {"Investigation GUID": investigation_guid},
+        headers=["Investigation GUID"],
+        removeNull=True,
+    )
+    return CommandResults(
+        outputs_prefix="Splunk.Investigation",
+        outputs_key_field="investigation_guid",
+        outputs=response_dict or None,
+        readable_output=readable,
+        raw_response=response,
+    )
+
+
+# Scalar query parameters accepted by GET /public/v2/investigations.
+INVESTIGATION_LIST_SCALAR_PARAMS = (
+    "limit",
+    "offset",
+    "sort",
+    "create_time_min",
+    "create_time_max",
+    "update_time_min",
+    "update_time_max",
+)
+
+# Multi-value (isArray: true) query parameters for GET /public/v2/investigations.
+# Each is parsed with ``argToList()`` and re-serialized as a CSV string for the API.
+INVESTIGATION_LIST_LIST_PARAMS = (
+    "ids",
+    "disposition",
+    "status",
+    "owner",
+    "urgency",
+    "sensitivity",
+)
+
+
+def splunk_list_investigations_command(service: client.Service, args: dict) -> CommandResults:
+    """List investigations via ``GET /public/v2/investigations``.
+
+    This command supports the full set of list-investigations query filters
+    (``investigation_ids``, ``limit``, ``offset``, ``sort``, ``disposition``, ``status``,
+    ``owner``, ``urgency``, ``sensitivity``, ``create_time_min``/``max``,
+    ``update_time_min``/``max``).
+    Multi-value arguments (``investigation_ids``, ``disposition``, ``status``, ``owner``,
+    ``urgency``, ``sensitivity``) are parsed with ``argToList()`` and forwarded to the
+    matching Splunk query parameter as a CSV string (e.g., ``ids=id1,id2``,
+    ``urgency=high,critical``). Investigation IDs accept either the GUID or the display
+    ID (``ES-00001``).
+    """
+
+    if "investigation_ids" in args:
+        args["ids"] = args.get("investigation_ids")
+
+    query: dict[str, Any] = {key: args.get(key) for key in INVESTIGATION_LIST_SCALAR_PARAMS}
+    for key in INVESTIGATION_LIST_LIST_PARAMS:
+        values = argToList(args.get(key))
+        if values:
+            query[key] = ",".join(str(v) for v in values)
+    query = assign_params(**query)
+    demisto.debug(f"splunk-investigation-list: GET public/v2/investigations query={query}")
+    response = _es_rest_request(service, "GET", "public/v2/investigations", query=query)
+
+    # Normalize the response into a list of investigation dicts.
+    investigations: list[dict] = []
+    if isinstance(response, list):
+        investigations = [item for item in response if isinstance(item, dict)]
+    elif isinstance(response, dict):
+        for value in response.values():
+            if isinstance(value, list):
+                investigations = [item for item in value if isinstance(item, dict)]
+                break
+        if not investigations and ("investigation_guid" in response or "investigation_id" in response):
+            investigations = [response]
+
+    if not investigations:
+        return CommandResults(readable_output="No investigations found for the provided filters.")
+
+    hr_rows = [_format_investigation_for_hr(item) for item in investigations]
+    ids_list = argToList(args.get("ids"))
+    count = len(investigations)
+    noun = "Investigation" if count == 1 else "Investigations"
+    if ids_list:
+        title = f"Splunk ES — {count} {noun} Found ({', '.join(ids_list)})"
+    else:
+        title = f"Splunk ES — {count} {noun} Found"
+    readable = tableToMarkdown(
+        title,
+        hr_rows,
+        headers=INVESTIGATION_HR_HEADERS,
+        removeNull=True,
+    )
+    outputs: dict | list = investigations[0] if len(investigations) == 1 else investigations
+    return CommandResults(
+        outputs_prefix="Splunk.Investigation",
+        outputs_key_field="investigation_guid",
+        outputs=outputs,
+        readable_output=readable,
+        raw_response=response,
+    )
 
 
 def _fetch_modified_investigations_page(
@@ -5235,6 +5599,166 @@ def kv_store_collection_create_transform(service: client.Service, args: dict[str
     return CommandResults(readable_output=f"KV store collection transforms {collection_name} created successfully")
 
 
+def parse_key_value_pairs(key_value_pairs: str | None) -> dict[str, Any]:
+    """Parses the key_value_pairs argument (a JSON object string) into a dict of stanza attributes."""
+    if not key_value_pairs:
+        return {}
+    try:
+        parsed = json.loads(key_value_pairs)
+    except (ValueError, TypeError) as e:
+        raise DemistoException(
+            'The "key_value_pairs" argument must be a valid JSON object string, '
+            'e.g. {"external_type": "kvstore", "collection": "my_collection"}.'
+        ) from e
+    if not isinstance(parsed, dict):
+        raise DemistoException('The "key_value_pairs" argument must be a JSON object (dict), not a list or scalar.')
+    return parsed
+
+
+def get_configuration_file(service: client.Service, conf_file_name: str) -> client.ConfigurationFile:
+    """Returns the ConfigurationFile object for the given conf file name, raising a clear error if not found."""
+    try:
+        return service.confs[conf_file_name]
+    except KeyError as e:
+        raise DemistoException(f"Configuration file '{conf_file_name}' was not found.") from e
+
+
+def splunk_configuration_file_list(service: client.Service, args: dict[str, Any]) -> CommandResults:
+    """Lists the configuration (.conf) files available in the given Splunk app namespace."""
+    app = args.get("app", "search")
+    limit = arg_to_number(args.get("limit"))
+    if limit is None:
+        limit = 50
+    conf_files = [{"FileName": conf.name, "App": app} for conf in service.confs.list(count=limit)]
+    readable_output = tableToMarkdown(
+        name=f"Configuration files in app '{app}'", t=conf_files, headers=["FileName", "App"], removeNull=True
+    )
+    return CommandResults(
+        outputs_prefix="Splunk.ConfigurationFile",
+        outputs_key_field="FileName",
+        outputs=conf_files,
+        readable_output=readable_output,
+        raw_response=conf_files,
+    )
+
+
+def splunk_configuration_file_create(service: client.Service, args: dict[str, Any]) -> CommandResults:
+    """Creates a new, empty configuration (.conf) file in the given Splunk app namespace."""
+    conf_file_name = args["conf_file_name"]
+    app = args.get("app", "search")
+    service.confs.create(conf_file_name)
+    return CommandResults(readable_output=f"Configuration file '{conf_file_name}' in app '{app}' was created successfully.")
+
+
+def splunk_configuration_stanza_create(service: client.Service, args: dict[str, Any]) -> CommandResults:
+    """Creates a new stanza (configuration entry) in a Splunk .conf file, optionally with attributes."""
+    conf_file_name = args["conf_file"]
+    stanza_name = args["stanza_name"]
+    key_value_pairs = parse_key_value_pairs(args.get("key_value_pairs"))
+    conf_file = get_configuration_file(service, conf_file_name)
+    stanza = conf_file.create(stanza_name)
+    if key_value_pairs:
+        stanza.submit(key_value_pairs)
+    return CommandResults(
+        readable_output=f"Stanza '{stanza_name}' in configuration file '{conf_file_name}' was created successfully."
+    )
+
+
+def splunk_configuration_stanza_list(service: client.Service, args: dict[str, Any]) -> CommandResults:
+    """Lists the stanzas in a .conf file, or returns the key/value content of a single stanza when stanza_name is given."""
+    conf_file_name = args["conf_file"]
+    stanza_name = args.get("stanza_name")
+    app = args.get("app", "search")
+    owner = args.get("owner", "nobody")
+    limit = arg_to_number(args.get("limit"))
+    if limit is None:
+        limit = 50
+    conf_file = get_configuration_file(service, conf_file_name)
+
+    if stanza_name:
+        if stanza_name not in conf_file:
+            raise DemistoException(f"Stanza '{stanza_name}' was not found in configuration file '{conf_file_name}'.")
+        stanza = conf_file[stanza_name]
+        content = dict(stanza.content.items())
+        access = getattr(stanza, "access", None) or {}
+        outputs = {
+            "StanzaName": stanza.name,
+            "App": access.get("app", app),
+            "Owner": access.get("owner", owner),
+            "Sharing": access.get("sharing"),
+            "Content": content,
+        }
+        readable_output = tableToMarkdown(
+            name=f"Stanza '{stanza_name}' in configuration file '{conf_file_name}'", t=content, removeNull=True
+        )
+        return CommandResults(
+            outputs_prefix="Splunk.ConfigurationStanza",
+            outputs_key_field="StanzaName",
+            outputs=outputs,
+            readable_output=readable_output,
+            raw_response=content,
+        )
+
+    stanzas = []
+    for stanza in conf_file.list(count=limit):
+        access = getattr(stanza, "access", None) or {}
+        stanzas.append(
+            {
+                "StanzaName": stanza.name,
+                "App": access.get("app", app),
+                "Owner": access.get("owner", owner),
+                "Sharing": access.get("sharing"),
+            }
+        )
+    readable_output = tableToMarkdown(
+        name=f"Stanzas in configuration file '{conf_file_name}'",
+        t=stanzas,
+        headers=["StanzaName", "App", "Owner", "Sharing"],
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        outputs_prefix="Splunk.ConfigurationStanza",
+        outputs_key_field="StanzaName",
+        outputs=stanzas,
+        readable_output=readable_output,
+        raw_response=stanzas,
+    )
+
+
+def splunk_configuration_stanza_update(service: client.Service, args: dict[str, Any]) -> CommandResults:
+    """Upserts attributes on an existing stanza in a Splunk .conf file (existing keys overwritten, others untouched)."""
+    conf_file_name = args["conf_file"]
+    stanza_name = args["stanza_name"]
+    key_value_pairs = parse_key_value_pairs(args.get("key_value_pairs"))
+    if not key_value_pairs:
+        raise DemistoException('The "key_value_pairs" argument is required and must contain at least one attribute to update.')
+    conf_file = get_configuration_file(service, conf_file_name)
+    if stanza_name not in conf_file:
+        raise DemistoException(f"Stanza '{stanza_name}' was not found in configuration file '{conf_file_name}'.")
+    conf_file[stanza_name].submit(key_value_pairs)
+    return CommandResults(
+        readable_output=f"Stanza '{stanza_name}' in configuration file '{conf_file_name}' was updated successfully."
+    )
+
+
+def splunk_configuration_stanza_delete(service: client.Service, args: dict[str, Any]) -> CommandResults:
+    """Deletes a stanza (configuration entry) from a Splunk .conf file via the configs/conf-{file} REST endpoint.
+
+    This complements splunk-kv-store-collection-delete-entry, which removes records from the KV Store
+    but leaves the corresponding stanza in the .conf file (e.g. transforms.conf) intact.
+    """
+    conf_file_name = args["conf_file"]
+    stanza_name = args["stanza_name"]
+    conf_file = get_configuration_file(service, conf_file_name)
+    if stanza_name not in conf_file:
+        raise DemistoException(f"Stanza '{stanza_name}' was not found in configuration file '{conf_file_name}'.")
+    conf_file.delete(stanza_name)
+    return CommandResults(
+        readable_output=f"Stanza '{stanza_name}' in configuration file '{conf_file_name}' was deleted successfully."
+    )
+
+
 def batch_kv_upload(kv_data_service_client: client.KVStoreCollectionData, json_data: str) -> dict[str, Any]:
     if json_data.startswith("[") and json_data.endswith("]"):
         record: Record = kv_data_service_client._post(
@@ -5512,12 +6036,32 @@ def main() -> None:  # pragma: no cover
     elif command == "splunk-update-investigation" and service is not None:
         service.namespace = namespace(app="missioncontrol", owner="nobody")
         return_results(splunk_update_investigation_command(service, args))
+    elif command == "splunk-investigation-create" and service is not None:
+        return_results(splunk_create_investigation_command(service, args))
+    elif command == "splunk-investigation-list" and service is not None:
+        return_results(splunk_list_investigations_command(service, args))
     elif command == "splunk-submit-event-hec":
         splunk_submit_event_hec_command(params, service, args)
     elif command == "splunk-job-status":
         return_results(splunk_job_status(service, args))
     elif command == "splunk-job-share":
         return_results(splunk_job_share(service, args))
+    elif command.startswith("splunk-configuration-") and service is not None:
+        # All configuration commands share the same namespace scoping (app + owner), so it is set once here.
+        service.namespace = namespace(app=args.get("app", "search"), owner=args.get("owner", "nobody"), sharing="app")
+
+        if command == "splunk-configuration-file-list":
+            return_results(splunk_configuration_file_list(service, args))
+        elif command == "splunk-configuration-file-create":
+            return_results(splunk_configuration_file_create(service, args))
+        elif command == "splunk-configuration-stanza-create":
+            return_results(splunk_configuration_stanza_create(service, args))
+        elif command == "splunk-configuration-stanza-list":
+            return_results(splunk_configuration_stanza_list(service, args))
+        elif command == "splunk-configuration-stanza-update":
+            return_results(splunk_configuration_stanza_update(service, args))
+        elif command == "splunk-configuration-stanza-delete":
+            return_results(splunk_configuration_stanza_delete(service, args))
     elif command.startswith("splunk-kv-") and service is not None:
         app = args.get("app_name", "search")
         service.namespace = namespace(app=app, owner="nobody", sharing="app")

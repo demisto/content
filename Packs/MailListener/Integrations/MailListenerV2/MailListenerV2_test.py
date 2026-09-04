@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 from freezegun import freeze_time
 import pytest
 
@@ -232,7 +232,19 @@ def mock_email():
     with patch.object(Email, "__init__", lambda a, b, c, d, e: None):
         email = Email("data", False, False, 0)
         email.id = 0
-        email.date = 0
+        email.date = datetime(year=2020, month=10, day=1, tzinfo=UTC)
+        return email
+
+
+def mock_email_without_date(mail_id=0):
+    """Build a mock Email whose Date header could not be parsed, so its date is None."""
+    from unittest.mock import patch
+    from MailListenerV2 import Email
+
+    with patch.object(Email, "__init__", lambda a, b, c, d, e: None):
+        email = Email("data", False, False, 0)
+        email.id = mail_id
+        email.date = None
         return email
 
 
@@ -580,14 +592,7 @@ LINE2
         ),
         # credentials with human readable text
         (
-            "text1 "
-            "text2 "
-            "-----BEGIN EC PRIVATE KEY----- "
-            "LINE1 "
-            "LINE2 "
-            "-----END EC PRIVATE KEY----- "
-            "text1 "
-            "text2",
+            "text1 text2 -----BEGIN EC PRIVATE KEY----- LINE1 LINE2 -----END EC PRIVATE KEY----- text1 text2",
             """text1 text2
 -----BEGIN EC PRIVATE KEY-----
 LINE1
@@ -638,6 +643,7 @@ def test_fetch_incidents__last_uid_as_int(mocker):
         delete_processed=False,
         limit=10,
         save_file=False,
+        date_fetch=False,
     )
     assert isinstance(fetch_mail_mocker.call_args[1]["uid_to_fetch_from"], int)
     assert isinstance(next_run["last_uid"], str)
@@ -669,6 +675,7 @@ def test_fetch_incidents__last_uid_as_string(mocker):
         delete_processed=False,
         limit=10,
         save_file=False,
+        date_fetch=False,
     )
     assert isinstance(fetch_mail_mocker.call_args[1]["uid_to_fetch_from"], int)
     assert isinstance(next_run["last_uid"], str)
@@ -700,8 +707,90 @@ def test_fetch_incidents__last_uid_was_zero(mocker):
         delete_processed=False,
         limit=10,
         save_file=False,
+        date_fetch=False,
     )
-    assert next_run is None
+    assert next_run == {"last_date": "2022-01-01T00:00:00+00:00"}
+
+
+def test_fetch_incidents__email_without_date(mocker):
+    """
+    Given:
+        - A fetched email whose Date header could not be parsed (Email.date is None),
+          together with a dated email, while fetching by date (date_fetch=True) with an existing last_date.
+    When:
+        - Fetching incidents.
+    Then:
+        - Ensure the fetch does not raise a TypeError from max(datetime, None),
+          the undated email is still returned as an incident, and the date cursor
+          advances to the newest available (dated) email.
+    """
+    from MailListenerV2 import fetch_incidents
+
+    mocker.patch("MailListenerV2.Email.convert_to_incident", return_value={})
+    dated_email = mock_email()
+    dated_email.id = 6
+    undated_email = mock_email_without_date(mail_id=7)
+    mocker.patch("MailListenerV2.fetch_mails", return_value=([dated_email, undated_email], [dated_email, undated_email], 7))
+
+    next_run, incidents = fetch_incidents(
+        client=mocker.Mock(),
+        last_run={"last_uid": "5", "last_date": "2020-01-01T00:00:00+00:00"},
+        first_fetch_time="2022-01-01 00:00:00",
+        include_raw_body=False,
+        with_headers=False,
+        permitted_from_addresses="test@example.com",
+        permitted_from_domains="example.com",
+        delete_processed=False,
+        limit=10,
+        save_file=False,
+        date_fetch=True,
+    )
+    # Both emails are ingested (undated one is not dropped).
+    assert len(incidents) == 2
+    # Cursor advanced to the dated email's date, ignoring the None date.
+    assert next_run["last_date"] == "2020-10-01T00:00:00+00:00"
+    assert next_run["last_uid"] == "7"
+
+
+def test_fetch_incidents__only_email_without_date(mocker):
+    """
+    Given:
+        - The only fetched email has no parseable Date header (Email.date is None),
+          with date_fetch disabled and no prior last_date. In this first-fetch path
+          time_to_fetch_from is initialized from first_fetch_time, while mail.date is None.
+    When:
+        - Fetching incidents.
+    Then:
+        - Ensure the fetch does not raise (the None mail.date is ignored in the max()),
+          the undated email is still ingested, and the date cursor keeps the
+          first_fetch_time value while the UID cursor advances.
+    """
+    import demistomock as demisto
+    from MailListenerV2 import fetch_incidents
+
+    mocker.patch("MailListenerV2.Email.convert_to_incident", return_value={})
+    debug_mocker = mocker.patch.object(demisto, "debug")
+    undated_email = mock_email_without_date(mail_id=7)
+    mocker.patch("MailListenerV2.fetch_mails", return_value=([undated_email], [undated_email], 7))
+
+    next_run, incidents = fetch_incidents(
+        client=mocker.Mock(),
+        last_run={"last_uid": "5"},
+        first_fetch_time="2022-01-01 00:00:00",
+        include_raw_body=False,
+        with_headers=False,
+        permitted_from_addresses="test@example.com",
+        permitted_from_domains="example.com",
+        delete_processed=False,
+        limit=10,
+        save_file=False,
+        date_fetch=False,
+    )
+    assert len(incidents) == 1
+    assert next_run["last_date"] == "2022-01-01T00:00:00+00:00"
+    assert next_run["last_uid"] == "7"
+    # Ensure we logged evidence that the email had no parseable Date header.
+    assert any("has no parseable Date header" in str(call.args[0]) for call in debug_mocker.call_args_list if call.args)
 
 
 def test_fetch_mails__mail_id_is_greater(mocker):

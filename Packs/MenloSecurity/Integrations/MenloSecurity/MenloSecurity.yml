@@ -69,10 +69,10 @@ configuration:
 - display: Maximum number of events per fetch per log type
   name: max_events_per_fetch_per_type
   type: 0
-  defaultvalue: "5000"
+  defaultvalue: "10000"
   required: false
   section: Collect
-  additionalinfo: "Maximum number of events to fetch per log type per fetch cycle. Recommended limit: 5,000."
+  additionalinfo: "The maximum number of events to fetch per log type per fetch cycle."
 script:
   script: ""
   type: python
@@ -104,7 +104,7 @@ script:
       predefined:
       - "True"
       - "False"
-  dockerimage: demisto/fastapi:0.125.0.9094740
+  dockerimage: demisto/fastapi:0.125.0.10158186
   isfetchevents: true
   subtype: python3
 fromversion: 8.2.0

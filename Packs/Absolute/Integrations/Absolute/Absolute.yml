@@ -817,7 +817,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/auth-utils:1.0.0.3639076
+  dockerimage: demisto/auth-utils:1.0.0.10133006
   isfetchevents: true
   isfetchevents:xsoar: false
 fromversion: 6.0.0

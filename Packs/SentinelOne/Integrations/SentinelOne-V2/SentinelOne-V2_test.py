@@ -1241,6 +1241,90 @@ def test_create_star_rule(mocker, requests_mock):
     assert command_results.outputs == {}
 
 
+def test_create_star_rule_with_query_lang(mocker, requests_mock):
+    """
+    Given: Valid args for sentinelone-create-star-rule with query_lang set to "2.0".
+    When: Running the command.
+    Then: queryLang is included in the request payload with value "2.0".
+    """
+    raw_star_rule_response = util_load_json("test_data/create_star_rule_response.json")
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/cloud-detection/rules", json=raw_star_rule_response)
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-create-star-rule")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "name": "sample",
+            "description": "description",
+            "query": "sample query",
+            "query_type": "events",
+            "rule_severity": "Low",
+            "account_ids": "1234567890",
+            "group_ids": "1234567890",
+            "site_ids": "123456789",
+            "expiration_mode": "Permanent",
+            "expiration_date": "",
+            "network_quarantine": "true",
+            "treatAsThreat": "suspicious",
+            "query_lang": "2.0",
+        },
+    )
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    request_body = requests_mock.last_request.json()
+    assert request_body.get("data", {}).get("queryLang") == "2.0"
+
+
+def test_update_star_rule_with_query_lang(mocker, requests_mock):
+    """
+    Given: Valid args for sentinelone-update-star-rule with query_lang set to "1.0".
+    When: Running the command.
+    Then: queryLang is included in the request payload with value "1.0".
+    """
+    raw_star_rule_response = util_load_json("test_data/create_star_rule_response.json")
+    requests_mock.put(
+        "https://usea1.sentinelone.net/web/api/v2.1/cloud-detection/rules/225494730938493804",
+        json=raw_star_rule_response,
+    )
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-update-star-rule")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "rule_id": "225494730938493804",
+            "name": "sample",
+            "description": "description",
+            "query": "sample query",
+            "query_type": "events",
+            "rule_severity": "Low",
+            "account_ids": "1234567890",
+            "group_ids": "1234567890",
+            "site_ids": "123456789",
+            "expiration_mode": "Permanent",
+            "expiration_date": "",
+            "network_quarantine": "true",
+            "treatAsThreat": "suspicious",
+            "query_lang": "1.0",
+        },
+    )
+    mocker.patch.object(sentinelone_v2, "return_results")
+    main()
+
+    request_body = requests_mock.last_request.json()
+    assert request_body.get("data", {}).get("queryLang") == "1.0"
+
+
 def test_enable_star_rules(mocker, requests_mock):
     requests_mock.put("https://usea1.sentinelone.net/web/api/v2.1/cloud-detection/rules/enable", json={"data": {"affected": 1}})
     mocker.patch.object(
@@ -2429,3 +2513,80 @@ def test_update_uam_alert_verdict(mocker, requests_mock):
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
     assert command_results.outputs == [{"ID": UAM_ALERT_ID, "AnalystVerdict": "True positive - Ransomware", "Updated": True}]
+
+
+def test_export_full_threat_timeline(mocker, requests_mock):
+    """
+    Given
+        - required argument i.e threat_id
+    When
+        - running sentinelone-export-full-threat-timeline command
+    Then
+        - returns CommandResults and a file entry with the exported timeline content
+    """
+    requests_mock.get(
+        "https://usea1.sentinelone.net/web/api/v2.1/threats/12345/timeline",
+        [
+            {"json": {"data": [{"id": "evt-1"}], "pagination": {"nextCursor": "cursor-1"}}},
+            {"json": {"data": [{"id": "evt-2"}], "pagination": {"nextCursor": None}}},
+        ],
+    )
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-export-full-threat-timeline")
+    mocker.patch.object(demisto, "args", return_value={"threat_id": "12345"})
+    mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results, file_result = call[0].args[0]
+
+    assert command_results.outputs_prefix == "SentinelOne.Export.Timeline"
+    assert command_results.outputs["ThreatId"] == "12345"
+    assert command_results.outputs["Filename"] == "12345_timeline.json"
+
+    assert len(requests_mock.request_history) == 2
+    assert all(req.method == "GET" for req in requests_mock.request_history)
+
+
+def test_export_threat_events(mocker, requests_mock):
+    """
+    Given
+        - required argument i.e threat_id
+    When
+        - running sentinelone-export-threat-events command
+    Then
+        - returns CommandResults and a file entry with the exported events content
+    """
+    requests_mock.get(
+        "https://usea1.sentinelone.net/web/api/v2.1/export/threats/12345/explore/events",
+        json={"data": [{"id": "evt-1", "eventName": "event-1"}]},
+    )
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-export-threat-events")
+    mocker.patch.object(demisto, "args", return_value={"threat_id": "12345"})
+    mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results, file_result = call[0].args[0]
+
+    assert command_results.outputs_prefix == "SentinelOne.Export.Events"
+    assert command_results.outputs["ThreatId"] == "12345"
+    assert command_results.outputs["Filename"] == "threats_12345.json"
+
+    assert len(requests_mock.request_history) == 1
+    assert requests_mock.request_history[0].method == "GET"
+    assert requests_mock.request_history[0].qs.get("format") == ["json"]
+    assert requests_mock.request_history[0].qs.get("eventtypes") == ["events"]
