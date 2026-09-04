@@ -1,6 +1,6 @@
-# Cyble Threat Intelligence – Cortex XSOAR Integration
+# Cyble Threat Intelligence – Cortex Integration
 
-This integration enables Cortex XSOAR to ingest and query Indicators of
+This integration enables Cortex to ingest and query Indicators of
 Compromise (IOCs) from the **Cyble Vision API**.
 It supports two capabilities:
 
@@ -9,15 +9,15 @@ It supports two capabilities:
 
 ---
 
-## Overview
+## What does this pack do?
 
 The Cyble Vision platform provides enriched, high-fidelity threat
 intelligence including malware associations, threat actor links,
 behaviour tags, risk scoring, and more.
-This integration allows XSOAR to:
+This integration allows Cortex to:
 
 * Pull fresh IOCs at scheduled intervals
-* Tag, score, and store indicators in the Cortex XSOAR indicator store
+* Tag, score, and store indicators in the Cortex indicator store
 * Support analyst lookups for a single IOC via the command line or
   playbooks
 
@@ -30,17 +30,17 @@ This integration allows XSOAR to:
 | Parameter                    | Description                                                        | Example                              |
 |------------------------------| ------------------------------------------------------------------ | ------------------------------------ |
 | **Base URL**                 | Cyble Vision API endpoint                                          | `https://api.cyble.ai/engine/api/v4` |
-| **API Key (Access Token)**   | Cyble Vision API Bearer token                                      | *(stored securely in XSOAR)*         |
-| **First fetch time (hours)** | Number of hours to fetch backward on first run                     | `2`                                  |
+| **API Key (Access Token)**   | Cyble Vision API Bearer token                                      | *(stored securely in Cortex)*         |
+| **First fetch time (hours)** | Number of hours to fetch backward on first run                     | `1`                                  |
 |                              | (1–3 hours allowed)                                                |                                      |
 | **Indicator Fetch Limit**    | Maximum indicators per API page                                    | `100`                                |
 
 ### Fetch Behavior
 
-* Fetch is performed **in 1-hour chunks** until the full range is covered.
+* The integration fetches indicators **in 15-minute chunks** until the full range is covered.
 * Each page of IOCs is inserted immediately using
   `demisto.createIndicators`.
-* Fetch uses a retry mechanism (up to 5 attempts per page).
+* Fetch uses the built-in HTTP client retry mechanism for transient API errors.
 * `last_run` is updated after every chunk.
 * Supported fetch window: **1–3 hours** (anything outside is
   automatically corrected).
@@ -96,12 +96,12 @@ Prefix: `CybleIntel.IOCLookup`
 
 ## 📌 2. fetch-indicators
 
-Fetch IOCs from Cyble Vision and insert them into XSOAR's indicator store.
+Fetch IOCs from Cyble Vision and insert them into the Cortex indicator store.
 
 ### **Execution**
 
 This command is **not run manually**.
-It is used by the XSOAR engine when *Fetches Indicators* is enabled.
+It is used by the Cortex engine when *Fetches Indicators* is enabled.
 
 ### Behavior
 
@@ -119,7 +119,7 @@ It is used by the XSOAR engine when *Fetches Indicators* is enabled.
   * `cyblerelatedmalware`
   * `cyblerelatedthreatactors`
 
-* Automatically maps each IOC into XSOAR Indicator fields.
+* Automatically maps each IOC into Cortex Indicator fields.
 * Updates `last_run` after each successful chunk.
 
 ## Known Limitations
