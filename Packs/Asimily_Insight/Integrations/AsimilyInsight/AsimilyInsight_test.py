@@ -45,6 +45,75 @@ def test_get_asset_details_command(mocker, mock_params):
     assert any("asimilydeviceid" in d for d in result.outputs)
 
 
+def test_get_asset_details_command_maps_nas_and_location_fields(mocker, mock_params):
+    mocker.patch("AsimilyInsight.demisto.command", return_value="asimily-get-asset-details")
+    mocker.patch("AsimilyInsight.demisto.args", return_value={"limit": "1"})
+    mocker.patch("AsimilyInsight.demisto.params", return_value=mock_params)
+
+    mocker.patch("AsimilyInsight.Client.get_asset_applications_by_mac_addr", return_value=["App1"])
+    mocker.patch(
+        "AsimilyInsight.Client.force_get_asset_details",
+        return_value=(
+            1,
+            [
+                {
+                    "deviceID": "123",
+                    "macAddr": "00:11:22:33:44:55",
+                    "hostName": "host",
+                    "v4IpAddrs": ["1.2.3.4"],
+                    "nasIP": "10.0.0.1",
+                    "nasPort": "Gi1/0/1",
+                    "locationMap": {
+                        "lastLocatedAt": "2025-09-04T18:57:00",
+                        "accessPoint": "arubaLabAp1",
+                        "campus": "Asimily Sunnyvale Campus",
+                        "building": "Asimily Lab",
+                        "floor": 1,
+                    },
+                }
+            ],
+        ),
+    )
+    mock_return = mocker.patch("AsimilyInsight.return_results")
+
+    from AsimilyInsight import main
+
+    main()
+
+    result = mock_return.call_args[0][0]
+    asset = result.outputs[0]
+    assert asset["asimilydevicenasip"] == "10.0.0.1"
+    assert asset["asimilydevicenasport"] == "Gi1/0/1"
+    assert asset["asimilydevicelocationaccesspoint"] == "arubaLabAp1"
+    assert asset["asimilydevicelocationcampus"] == "Asimily Sunnyvale Campus"
+    assert asset["asimilydevicelocationbuilding"] == "Asimily Lab"
+    assert asset["asimilydevicelocationfloor"] == 1
+    assert asset["asimilydevicelocationlastlocatedat"]
+
+
+def test_get_asset_details_command_missing_nas_and_location_fields(mocker, mock_params):
+    mocker.patch("AsimilyInsight.demisto.command", return_value="asimily-get-asset-details")
+    mocker.patch("AsimilyInsight.demisto.args", return_value={"limit": "1"})
+    mocker.patch("AsimilyInsight.demisto.params", return_value=mock_params)
+
+    mocker.patch("AsimilyInsight.Client.get_asset_applications_by_mac_addr", return_value=["App1"])
+    mocker.patch(
+        "AsimilyInsight.Client.force_get_asset_details",
+        return_value=(1, [{"deviceID": "123", "macAddr": "00:11:22:33:44:55", "hostName": "host", "v4IpAddrs": ["1.2.3.4"]}]),
+    )
+    mock_return = mocker.patch("AsimilyInsight.return_results")
+
+    from AsimilyInsight import main
+
+    main()
+
+    asset = mock_return.call_args[0][0].outputs[0]
+    assert asset["asimilydevicenasip"] is None
+    assert asset["asimilydevicenasport"] is None
+    assert asset["asimilydevicelocationaccesspoint"] is None
+    assert asset["asimilydevicelocationlastlocatedat"] is None
+
+
 def test_get_asset_anomalies_command(mocker, mock_params):
     mocker.patch("AsimilyInsight.demisto.command", return_value="asimily-get-asset-anomalies")
     mocker.patch("AsimilyInsight.demisto.args", return_value={"limit": "1"})
