@@ -13,9 +13,9 @@ their identity comes from an external provider, and when they were last seen.
     GET /api/org/users
 
 This endpoint IGNORES pagination and returns the whole membership in a single
-request, so it is never paged. Note that the instance it was characterised
-against had one member, so the inference rests on page 2 returning that same
-record rather than nothing. It is worth re-checking on a larger organisation.
+request, so it is never paged. That inference rests on a small membership, where
+page 2 returns the same record rather than nothing, so it is worth re-checking
+against a larger organisation.
 
 The wider `/api/users` endpoint covers every user across all organisations, but
 it needs the `users:read` permission which a normal Admin service account does

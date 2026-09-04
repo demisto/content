@@ -1,4 +1,4 @@
-# Grafana Cloud
+# Grafana Cloud API
 
 Integrates the Grafana API with the Cortex Platform, collecting the identity, credential and
 connection inventory from a Grafana instance into Cortex Platform datasets, mapping it to the XDM
@@ -78,6 +78,38 @@ ecosystem.
 ## Version History (Managed by GoCortex Spellbook)
 
 <!-- spellbook:version-history:start -->
+### 1.0.20
+
+- Stop advertising the pack into a marketplace its own integrations exclude.
+
+### 1.0.19
+
+- Say the source does not expose the fact, rather than describing what the feed carries.
+
+### 1.0.18
+
+- Count only a usable token as a standing credential, and stop asserting that a data source holds no stored credential when the API never says so.
+
+### 1.0.17
+
+- Name the marketplace category, so the pack is filed rather than listed uncategorised.
+
+### 1.0.16
+
+- Point the contributor file at the project address rather than a personal one, and state what the rule does rather than how it was checked.
+
+### 1.0.15
+
+- Name the field the model actually populates so the alert gets a category, justify the suppression key against the model, and capture the dataset corpus.
+
+### 1.0.14
+
+- Cite the rule sets and ATT&CK pages that corroborate the non-expiring service account token rule, so the corroboration claim can be checked rather than taken on trust.
+
+### 1.0.13
+
+- Name the pack Grafana Cloud API, matching the other API-sourced packs, and ship the provenance recorded on the service account token rule. That rule now states its basis as a library pattern corroborated by external rule sets rather than by any recorded incident, and records that the age test is a collection window rather than a derived threshold.
+
 ### 1.0.12
 
 - Apply the upstream formatter output, so the committed source matches what the contribution pipeline produces and a submission is not failed for a purely cosmetic difference.
@@ -94,7 +126,7 @@ ecosystem.
 
 ### 1.0.9
 
-- Added modelling rules for all three datasets, so the Grafana inventory is queryable through the Cortex XDM data model rather than only as raw columns. Verified on the tenant: row parity between raw and `datamodel` on all three, with no unmodelled records.
+- Added modelling rules for all three datasets, so the Grafana inventory is queryable through the Cortex XDM data model rather than only as raw columns. Row parity between raw and `datamodel` holds on all three, with no unmodelled records.
 - Each object is modelled as a cloud resource with its identity, and the posture facts are carried into `xdm.target.resource.value` as a marker set. Raw columns cannot be read in `datamodel` mode, so a correlation that needs to know a token has no expiry, a data source stores a credential, or an account is externally provisioned can only do so if that fact is mapped at ingest.
 - Each marker restates something the Grafana API reports. None asserts a severity or an intent, which stays with the correlation rules.
 - The authentication story is deliberately not mapped on any of the three. The Grafana instance API exposes no sign-in events, so there is no logon, session or source address to map, and an authentication story here would be an invention. Each rule header states this so the omission is not later read as an oversight.

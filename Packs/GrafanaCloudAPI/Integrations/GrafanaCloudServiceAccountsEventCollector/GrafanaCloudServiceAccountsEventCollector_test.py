@@ -107,6 +107,27 @@ def test_token_without_expiry_is_counted():
     assert got["tokens_without_expiry"] == 1
 
 
+def test_a_revoked_or_expired_token_is_not_counted_as_standing():
+    """tokens_without_expiry describes a credential that never stops working.
+
+    A revoked or already-expired token cannot authenticate, so counting it here reports a dead
+    credential as a live standing one. The three tests used to be independent, so a revoked
+    token carrying no expiry incremented BOTH this and tokens_revoked, and the correlation that
+    reads this field alerted on a credential nobody could use.
+    """
+    got = collector.summarise_tokens(
+        [
+            _token("live", expiration=None),
+            _token("revoked", expiration=None, isRevoked=True),
+            _token("expired", expiration=None, hasExpired=True),
+        ]
+    )
+    assert got["token_count"] == 3
+    assert got["tokens_without_expiry"] == 1, "only the usable token is a standing credential"
+    assert got["tokens_revoked"] == 1
+    assert got["tokens_expired"] == 1
+
+
 def test_expired_revoked_and_unused_tokens_are_counted():
     got = collector.summarise_tokens(
         [

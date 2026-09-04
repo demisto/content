@@ -13,8 +13,8 @@ go. The inventory answers what this Grafana can reach and how it authenticates.
 
     GET /api/datasources
 
-This endpoint IGNORES pagination. Proven on a live instance: ``perpage=1``
-returned all fifteen records. It is requested once and never paged, because a
+This endpoint IGNORES pagination: ``perpage=1`` returns the whole inventory
+rather than a single row. It is requested once and never paged, because a
 page loop over it would re-send the same records indefinitely.
 
 Credential VALUES are never returned by this endpoint and are never collected.

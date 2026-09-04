@@ -144,7 +144,13 @@ filter
     tmp_has_url = has_url
 | alter
     tmp_m_basic = if(tmp_basic_auth = true, "basic_auth|", ""),
-    tmp_m_nocred = if(tmp_basic_auth = true, "", "no_stored_credential|"),
+    // NO no_stored_credential MARKER. It was derived from basicAuth being false, which does
+    // not carry that meaning: Grafana holds data source credentials in secureJsonData -- API
+    // keys, tokens, passwords -- independently of basic auth, and the API never returns them
+    // or any flag saying whether they exist. A source holding an API token was therefore
+    // marked as holding no credential, a silent FALSE NEGATIVE on the exact posture question
+    // this rule exists to answer. The absence of the marker now means "not known", which is
+    // the truth. Do not re-derive it from another field; the source does not expose one.
     tmp_m_url = if(tmp_has_url = true, "has_backend_url|", ""),
     tmp_m_readonly = if(tmp_read_only = true, "read_only|", ""),
     tmp_m_editable = if(tmp_read_only = true, "", "editable|"),
@@ -173,7 +179,7 @@ filter
     xdm.target.resource.name = tmp_name,
     xdm.target.resource.sub_type = if(tmp_type = "", null, tmp_type),
     xdm.target.resource.value = concat(
-        tmp_m_basic, tmp_m_nocred, tmp_m_url, tmp_m_readonly, tmp_m_editable,
+        tmp_m_basic, tmp_m_url, tmp_m_readonly, tmp_m_editable,
         tmp_m_default, tmp_m_direct, tmp_m_proxy),
     xdm.target.url = if(tmp_url = "", null, tmp_url),
     xdm.event.description = concat(

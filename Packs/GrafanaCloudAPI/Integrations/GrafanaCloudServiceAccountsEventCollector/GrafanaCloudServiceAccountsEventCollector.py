@@ -48,8 +48,8 @@ SOURCE_LOG_TYPE = "service_account"
 DEFAULT_MAX_FETCH = 5000
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
-# The search endpoint pages from ONE, not zero. Proven on a live instance:
-# page=0 and page=1 return the same records.
+# The search endpoint pages from ONE, not zero: page=0 and page=1 return the
+# same records.
 FIRST_PAGE = 1
 PAGE_SIZE = 100
 
@@ -115,11 +115,18 @@ def summarise_tokens(tokens: list) -> dict:
         name = token.get("name")
         if name:
             names.append(str(name))
-        if not token.get("expiration"):
+        expired = bool(token.get("hasExpired"))
+        revoked = bool(token.get("isRevoked"))
+        # A token with no expiry is only a STANDING CREDENTIAL while it can still be used.
+        # Counting a revoked or already-expired token here reports a credential that cannot
+        # authenticate as one that never stops being able to, which is the opposite of the
+        # posture this field exists to describe. The three tests were independent before, so
+        # a revoked token with no expiry incremented both this and tokens_revoked.
+        if not token.get("expiration") and not expired and not revoked:
             summary["tokens_without_expiry"] += 1
-        if token.get("hasExpired"):
+        if expired:
             summary["tokens_expired"] += 1
-        if token.get("isRevoked"):
+        if revoked:
             summary["tokens_revoked"] += 1
         if not token.get("lastUsedAt"):
             summary["tokens_never_used"] += 1
