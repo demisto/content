@@ -599,6 +599,84 @@ class Client(BaseClient):
         response = self._http_request(method="GET", url_suffix=endpoint_url, params=params, ok_codes=ok_codes)
         return response.get("data", {})
 
+    def get_unified_exclusions_request(
+        self,
+        ids: list | None = None,
+        account_ids: list | None = None,
+        site_ids: list | None = None,
+        os_types: list | None = None,
+        mode_type: list | None = None,
+        value_contains: str | None = None,
+        exclusion_name_contains: str | None = None,
+        include_children: bool | None = None,
+        include_parents: bool | None = None,
+        tenant: bool | None = None,
+        limit: int = 10,
+        cursor: str | None = None,
+    ) -> dict:
+        params = assign_params(
+            ids=ids,
+            accountids=account_ids,
+            siteids=site_ids,
+            ostypes=os_types,
+            modetype=mode_type,
+            value__contains=value_contains,
+            exclusionname__contains=exclusion_name_contains,
+            includechildren=include_children,
+            includeparents=include_parents,
+            tenant=tenant,
+            limit=limit,
+            cursor=cursor,
+        )
+        return self._http_request(method="GET", url_suffix="unified-exclusions", params=params)
+
+    def create_unified_exclusion_request(
+        self,
+        exclusion_name: str,
+        os_type: str,
+        mode_type: str,
+        exclusion_type: str,
+        value: str,
+        scope_level: str,
+        reason: str,
+        scope_level_id: str | None = None,
+        description: str | None = None,
+        threat_type: str | None = None,
+        engines: str | None = None,
+        path_exclusion_type: str | None = None,
+        sha256_value: str | None = None,
+        child_process: bool | None = None,
+    ) -> dict:
+        payload = {
+            "filter": assign_params(
+                scopeLevel=scope_level,
+                scopeLevelId=scope_level_id,
+            ),
+            "data": assign_params(
+                exclusionName=exclusion_name,
+                osType=os_type,
+                modeType=mode_type,
+                type=exclusion_type,
+                value=value,
+                reason=reason,
+                description=description,
+                threatType=threat_type,
+                engines=engines,
+                pathExclusionType=path_exclusion_type,
+                sha256Value=sha256_value,
+                childProcess=child_process,
+            ),
+        }
+        response = self._http_request(method="POST", url_suffix="unified-exclusions", json_data=payload)
+        if "data" in response:
+            return response.get("data")[0]
+        return {}
+
+    def delete_unified_exclusion_request(self, exclusions: list[dict]) -> dict:
+        body = {"data": {"exclusions": exclusions}}
+        response = self._http_request(method="DELETE", url_suffix="unified-exclusions", json_data=body, ok_codes=[200])
+        return response.get("data") or {}
+
     def create_exclusion_item_request(
         self,
         exclusion_type,
@@ -3530,6 +3608,176 @@ def get_white_list_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def get_unified_exclusions_command(client: Client, args: dict) -> CommandResults:
+    """
+    List all unified exclusions matching the input filter (v2.1 unified-exclusions endpoint).
+    """
+    context_entries = []
+
+    ids = argToList(args.get("ids", []))
+    account_ids = argToList(args.get("account_ids", []))
+    site_ids = argToList(args.get("site_ids", []))
+    os_types = argToList(args.get("os_types", []))
+    mode_type = argToList(args.get("mode_type", []))
+    value_contains = args.get("value_contains")
+    exclusion_name_contains = args.get("exclusion_name_contains")
+    include_children = argToBoolean(args.get("include_children", False))
+    include_parents = argToBoolean(args.get("include_parents", False))
+    tenant = argToBoolean(args.get("tenant")) if args.get("tenant") else None
+    limit = int(args.get("limit", 10))
+    cursor = args.get("cursor")
+
+    response = client.get_unified_exclusions_request(
+        ids=ids or None,
+        account_ids=account_ids or None,
+        site_ids=site_ids or None,
+        os_types=os_types or None,
+        mode_type=mode_type or None,
+        value_contains=value_contains,
+        exclusion_name_contains=exclusion_name_contains,
+        include_children=include_children,
+        include_parents=include_parents,
+        tenant=tenant,
+        limit=limit,
+        cursor=cursor,
+    )
+
+    exclusion_items = response.get("data", [])
+
+    for exclusion_item in exclusion_items:
+        context_entries.append(
+            {
+                "ID": exclusion_item.get("id"),
+                "Name": exclusion_item.get("exclusionName"),
+                "Type": exclusion_item.get("type"),
+                "ModeType": exclusion_item.get("modeType"),
+                "Value": exclusion_item.get("value"),
+                "OsType": exclusion_item.get("osType"),
+                "Description": exclusion_item.get("description"),
+                "Source": exclusion_item.get("source"),
+                "CreatedAt": exclusion_item.get("createdAt"),
+                "UpdatedAt": exclusion_item.get("updatedAt"),
+                "UserName": exclusion_item.get("userName"),
+                "ThreatType": exclusion_item.get("threatType"),
+                "Engines": exclusion_item.get("engines"),
+            }
+        )
+
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Sentinel One - Listing unified exclusion items",
+            context_entries,
+            removeNull=True,
+            metadata="Provides summary information and details for all the unified exclusion items"
+            " that matched your search criteria.",
+        ),
+        outputs_prefix="SentinelOne.UnifiedExclusions",
+        outputs_key_field="ID",
+        outputs=context_entries,
+        raw_response=response,
+    )
+
+
+def create_unified_exclusion_command(client: Client, args: dict) -> CommandResults:
+    """
+    Create a unified exclusion using type + value (e.g. path, hash, certificate).
+    Uses the v2.1 unified-exclusions endpoint.
+    """
+    exclusion_name = args["exclusion_name"]
+    os_type = args["os_type"]
+    mode_type = args["mode_type"]
+    exclusion_type = args["exclusion_type"]
+    value = args["value"]
+    scope_level = args["scope_level"]
+    scope_level_id = args.get("scope_level_id")
+    reason = args["reason"]
+    description = args.get("description")
+    threat_type = args.get("threat_type")
+    engines = args.get("engines")
+    path_exclusion_type = args.get("path_exclusion_type")
+    sha256_value = args.get("sha256_value")
+    child_process = argToBoolean(args.get("child_process")) if args.get("child_process") else None
+
+    if scope_level != "tenant" and not scope_level_id:
+        raise DemistoException("scope_level_id is required for non-tenant scope levels.")
+
+    new_item = client.create_unified_exclusion_request(
+        exclusion_name=exclusion_name,
+        os_type=os_type,
+        mode_type=mode_type,
+        exclusion_type=exclusion_type,
+        value=value,
+        scope_level=scope_level,
+        reason=reason,
+        scope_level_id=scope_level_id,
+        description=description,
+        threat_type=threat_type,
+        engines=engines,
+        path_exclusion_type=path_exclusion_type,
+        sha256_value=sha256_value,
+        child_process=child_process,
+    )
+
+    context_entry: dict = {}
+    title = "Sentinel One - Create Unified Exclusion"
+
+    if new_item:
+        title += "\nThe exclusion item was successfully created."
+        context_entry = {
+            "ID": new_item.get("id"),
+            "Name": new_item.get("exclusionName"),
+            "Type": new_item.get("type"),
+            "Value": new_item.get("value"),
+            "ModeType": new_item.get("modeType"),
+            "OsType": new_item.get("osType"),
+            "Description": new_item.get("description"),
+            "ThreatType": new_item.get("threatType"),
+            "Engines": new_item.get("engines"),
+            "PathExclusionType": new_item.get("pathExclusionType"),
+            "Sha256Value": new_item.get("sha256Value"),
+            "Source": new_item.get("source"),
+            "ScopeName": new_item.get("scopeName"),
+            "ScopePath": new_item.get("scopePath"),
+            "CreatedAt": new_item.get("createdAt"),
+            "UpdatedAt": new_item.get("updatedAt"),
+            "UserName": new_item.get("userName"),
+        }
+
+    return CommandResults(
+        readable_output=tableToMarkdown(title, context_entry, removeNull=True, headerTransform=pascalToSpace),
+        outputs_prefix="SentinelOne.UnifiedExclusions",
+        outputs_key_field="ID",
+        outputs=context_entry,
+        raw_response=new_item,
+    )
+
+
+def delete_unified_exclusion_command(client: Client, args: dict) -> CommandResults:
+    """
+    Delete unified exclusion items by IDs and types (v2.1 unified-exclusions endpoint).
+    """
+    ids = argToList(args.get("ids", []))
+    types = argToList(args.get("exclusion_types", []))
+
+    if not ids:
+        raise DemistoException("You must provide at least one exclusion ID to delete.")
+    if len(ids) != len(types):
+        raise DemistoException("The number of ids and exclusion_types must match.")
+
+    exclusions = [{"id": exc_id, "type": exc_type} for exc_id, exc_type in zip(ids, types)]
+
+    response = client.delete_unified_exclusion_request(exclusions=exclusions)
+
+    affected = response.get("affected", 0)
+
+    return CommandResults(
+        readable_output=f"Sentinel One - Unified Exclusions Deleted\n{affected} exclusion item(s) successfully deleted.",
+        outputs_prefix="SentinelOne.UnifiedExclusions.Deleted",
+        outputs={"Affected": affected},
+        raw_response=response,
+    )
+
+
 def get_item_ids_from_whitelist(client: Client, item: str, exclusion_type: str, os_type: str = None) -> list[str | None]:
     """
     Return the IDs of the hash from the white. Helper function for remove_item_from_whitelist
@@ -6035,6 +6283,9 @@ def main():
             "sentinelone-update-uam-alert-verdict": update_uam_alert_analyst_verdict,
             "sentinelone-export-full-threat-timeline": export_full_threat_timeline,
             "sentinelone-export-threat-events": export_threat_events,
+            "sentinelone-get-unified-exclusions": get_unified_exclusions_command,
+            "sentinelone-create-unified-exclusion": create_unified_exclusion_command,
+            "sentinelone-delete-unified-exclusions": delete_unified_exclusion_command,
         },
         "commands_with_params": {
             "get-remote-data": get_remote_data_command,

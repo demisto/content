@@ -2334,3 +2334,119 @@ Exports the threat's full timeline as a JSON File. Relevant for API version 2.1.
 | --- | --- | --- |
 | SentinelOne.Export.Timeline.ThreatId | String | The threat ID. |
 | SentinelOne.Export.Timeline.Filename | String | The name of the file containing the Timeline. |
+
+### sentinelone-get-unified-exclusions
+
+***
+Lists all unified exclusions that match the specified input filter. Relevant for API version 2.1.
+
+#### Base Command
+
+`sentinelone-get-unified-exclusions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | List of exclusion IDs to filter by, for example: "225494730938493804,225494730938493915". | Optional |
+| account_ids | List of Account IDs to filter by, for example: "225494730938493804,225494730938493915". | Optional |
+| site_ids | List of Site IDs to filter by, for example: "225494730938493804,225494730938493915". | Optional |
+| os_types | List of OS types to filter by. Possible values are: windows, windows_legacy, macos, linux. | Optional |
+| mode_type | List of exclusion mode types to filter by. Possible values are: suppression, agent_interoperability, binary_vault, endpoint, all. | Optional |
+| value_contains | Free-text filter by exclusion value. | Optional |
+| exclusion_name_contains | Free-text filter by exclusion name. | Optional |
+| include_children | Return exclusions from children scope levels. Default is false. | Optional |
+| include_parents | Return exclusions from parent scope levels. Default is false. | Optional |
+| tenant | Set to true to filter for tenant scope only. | Optional |
+| limit | Maximum number of items to return (1-1000). Default is 10. | Optional |
+| cursor | Cursor position returned by the last request, used to paginate beyond 1000 items. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.UnifiedExclusions.ID | String | The exclusion item ID. |
+| SentinelOne.UnifiedExclusions.Name | String | The exclusion item name. |
+| SentinelOne.UnifiedExclusions.Type | String | The exclusion type. |
+| SentinelOne.UnifiedExclusions.Value | String | Value of the exclusion item. |
+| SentinelOne.UnifiedExclusions.OsType | String | Operating system type of the exclusion item. |
+| SentinelOne.UnifiedExclusions.ModeType | String | The exclusion mode type. |
+| SentinelOne.UnifiedExclusions.Description | String | Description of the exclusion item. |
+| SentinelOne.UnifiedExclusions.Source | String | Source of the exclusion item. |
+| SentinelOne.UnifiedExclusions.CreatedAt | Date | Timestamp when the exclusion item was created. |
+| SentinelOne.UnifiedExclusions.UpdatedAt | Date | Timestamp when the exclusion item was last updated. |
+| SentinelOne.UnifiedExclusions.UserName | String | Username of the user who created the exclusion item. |
+| SentinelOne.UnifiedExclusions.ThreatType | String | Threat type associated with the exclusion item. |
+| SentinelOne.UnifiedExclusions.Engines | String | Engines associated with the exclusion item. |
+
+### sentinelone-create-unified-exclusion
+
+***
+Creates a new unified exclusion using a type and value (e.g. path, hash, certificate). Relevant for API version 2.1.
+
+#### Base Command
+
+`sentinelone-create-unified-exclusion`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| exclusion_name | Name of the exclusion item. | Required |
+| os_type | Operating system type. Possible values are: windows, windows_legacy, macos, linux. | Required |
+| mode_type | Exclusion mode type. Possible values are: suppression, agent_interoperability, binary_vault, all. | Required |
+| exclusion_type | Exclusion type that determines how the value is interpreted. Possible values are: file_type, path, white_hash, certificate, browser. | Required |
+| value | The exclusion value, for example a file path or hash. | Required |
+| scope_level | Scope level for the exclusion. Possible values are: group, site, account, tenant. | Required |
+| scope_level_id | ID of the scope (group, site, or account). Not required when scope_level is tenant. | Optional |
+| reason | Reason for creating the exclusion. Possible values are: performance_issue, false_positive, other. | Required |
+| description | Description of the exclusion item. | Optional |
+| threat_type | Threat type associated with the exclusion, for example "EDR". | Optional |
+| engines | Engine associated with the exclusion, for example "suppress". | Optional |
+| path_exclusion_type | Path exclusion type. Applies to path exclusions only. Possible values are: file, folder, subfolder. | Optional |
+| sha256_value | SHA-256 value associated with the exclusion. | Optional |
+| child_process | Whether the exclusion applies to child processes. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.UnifiedExclusions.ID | String | The created exclusion item ID. |
+| SentinelOne.UnifiedExclusions.Name | String | The exclusion item name. |
+| SentinelOne.UnifiedExclusions.Type | String | The exclusion type (e.g. path, white_hash). |
+| SentinelOne.UnifiedExclusions.Value | String | The exclusion value. |
+| SentinelOne.UnifiedExclusions.ModeType | String | The exclusion mode type (e.g. suppression). |
+| SentinelOne.UnifiedExclusions.OsType | String | Operating system type of the exclusion item. |
+| SentinelOne.UnifiedExclusions.Description | String | Description of the exclusion item. |
+| SentinelOne.UnifiedExclusions.ThreatType | String | Threat type associated with the exclusion item. |
+| SentinelOne.UnifiedExclusions.Engines | String | Engine associated with the exclusion item. |
+| SentinelOne.UnifiedExclusions.PathExclusionType | String | Path exclusion type (e.g. file, folder). |
+| SentinelOne.UnifiedExclusions.Sha256Value | String | SHA-256 value associated with the exclusion item. |
+| SentinelOne.UnifiedExclusions.Source | String | Source of the exclusion item. |
+| SentinelOne.UnifiedExclusions.ScopeName | String | Scope name of the exclusion item. |
+| SentinelOne.UnifiedExclusions.ScopePath | String | Full scope path of the exclusion item. |
+| SentinelOne.UnifiedExclusions.CreatedAt | Date | Timestamp when the exclusion item was created. |
+| SentinelOne.UnifiedExclusions.UpdatedAt | Date | Timestamp when the exclusion item was last updated. |
+| SentinelOne.UnifiedExclusions.UserName | String | Username of the user who created the exclusion item. |
+
+### sentinelone-delete-unified-exclusions
+
+***
+Deletes unified exclusion items by their IDs and types. Relevant for API version 2.1.
+
+#### Base Command
+
+`sentinelone-delete-unified-exclusions`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of unified exclusion IDs to delete, for example: "225494730938493804,225494730938493915". | Required |
+| exclusion_types | A comma-separated list of exclusion types corresponding to each ID (must match the order of ids). Possible values are: browser, certificate, commandline, container_native, file_type, idr, path, white_hash. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SentinelOne.UnifiedExclusions.Deleted.Affected | Number | Number of exclusion items successfully deleted. |
