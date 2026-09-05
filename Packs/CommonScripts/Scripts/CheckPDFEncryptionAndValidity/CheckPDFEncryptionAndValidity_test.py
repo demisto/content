@@ -2,10 +2,10 @@ import logging
 from unittest.mock import MagicMock
 from unittest.mock import patch
 from CommonServerPython import *
-from CheckPDFEncryptionAndValidity import check_PDF_encryption_and_validity
+from CheckPDFEncryptionAndValidity import check_PDF_encryption_and_validity, suppress_pypdf2_stderr_logs
 
 
-def test_file_openable():
+def test_file_openable() -> None:
     """
     Given: A readable pdf file that is not encrypted
     When: running check_PDF_encryption_and_validity
@@ -25,7 +25,7 @@ def test_file_openable():
         assert "Error" not in str(result.outputs)
 
 
-def test_file_not_openable():
+def test_file_not_openable() -> None:
     """
     Given: A not readable pdf file
     When: running check_PDF_encryption_and_validity
@@ -49,13 +49,17 @@ def test_file_not_openable():
     assert "Error" in str(result.outputs)
 
 
-def test_pypdf2_warning_is_not_written_to_stderr(capsys):
+def test_pypdf2_warning_is_not_written_to_stderr(capsys) -> None:
     """
     Given: A malformed but readable PDF, which makes PyPDF2 emit a recoverable warning log record
         (for example 'incorrect startxref pointer'), and no logging handler configured (no debug-mode).
-    When: The PyPDF2 logger emits the record.
-    Then: Nothing is written to stderr, so the server does not report the successful run as failed.
+    When: suppress_pypdf2_stderr_logs was called and the PyPDF2 logger emits the record.
+    Then: A NullHandler is registered on the PyPDF2 logger and nothing is written to stderr, so the server
+        does not report the successful run as failed.
     """
+    suppress_pypdf2_stderr_logs()
+
     logging.getLogger("PyPDF2._reader").warning("incorrect startxref pointer(3)")
 
+    assert any(isinstance(handler, logging.NullHandler) for handler in logging.getLogger("PyPDF2").handlers)
     assert capsys.readouterr().err == ""

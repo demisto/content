@@ -5,12 +5,17 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import PyPDF2
 
-# PyPDF2 reports recoverable, non-fatal issues (for example "incorrect startxref pointer", which PyPDF2
-# fixes on its own) via the logging module. When the script does not run in debug-mode, no handler is
-# configured, so Python falls back to `logging.lastResort` which writes to stderr - and the server treats
-# any stderr output as a script failure. Registering a NullHandler stops the fallback to stderr, while in
-# debug-mode the record still propagates to the root logger and is written to the log as before.
-logging.getLogger("PyPDF2").addHandler(logging.NullHandler())
+
+def suppress_pypdf2_stderr_logs() -> None:
+    """Prevents PyPDF2 log records from being written to stderr.
+
+    PyPDF2 reports recoverable, non-fatal issues (for example "incorrect startxref pointer", which PyPDF2
+    fixes on its own) via the logging module. When the script does not run in debug-mode, no handler is
+    configured, so Python falls back to `logging.lastResort` which writes to stderr - and the server treats
+    any stderr output as a script failure. Registering a NullHandler stops the fallback to stderr, while in
+    debug-mode the record still propagates to the root logger and is written to the log as before.
+    """
+    logging.getLogger("PyPDF2").addHandler(logging.NullHandler())
 
 
 def check_PDF_encryption_and_validity(entry_id) -> CommandResults:
@@ -65,6 +70,7 @@ def check_PDF_encryption_and_validity(entry_id) -> CommandResults:
 
 
 def main():  # pragma: no cover
+    suppress_pypdf2_stderr_logs()
     args = demisto.args()
     entry_id = args.get("EntryID")
 
