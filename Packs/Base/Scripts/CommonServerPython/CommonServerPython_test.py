@@ -1803,6 +1803,454 @@ def test_return_error_get_modified_remote_data_not_implemented(mocker):
     assert demisto.results.call_args[0][0]['Contents'] == err_msg
 
 
+# ── is_caller_agentix tests ──────────────────────────────────────────
+
+def test_is_caller_agentix_true(mocker):
+    """
+    Given
+    - demisto.caller() returns 'agentix'
+    When
+    - is_caller_agentix is called
+    Then
+    - It returns True
+    """
+    from CommonServerPython import is_caller_agentix, AGENTIX_CALLER
+    mocker.patch.object(demisto, 'caller', create=True, return_value=AGENTIX_CALLER)
+    assert is_caller_agentix() is True
+
+
+def test_is_caller_agentix_false_other_caller(mocker):
+    """
+    Given
+    - demisto.caller() returns a non-agentix value
+    When
+    - is_caller_agentix is called
+    Then
+    - It returns False
+    """
+    from CommonServerPython import is_caller_agentix
+    mocker.patch.object(demisto, 'caller', create=True, return_value='playbook')
+    assert is_caller_agentix() is False
+
+
+def test_is_caller_agentix_no_caller_method(mocker):
+    """
+    Given
+    - demisto has no 'caller' attribute (older server)
+    When
+    - is_caller_agentix is called
+    Then
+    - It returns False without raising
+    """
+    from CommonServerPython import is_caller_agentix
+    if hasattr(demisto, 'caller'):
+        mocker.patch.object(demisto, 'caller', create=True, side_effect=AttributeError)
+    assert is_caller_agentix() is False
+
+
+# ── CortexError.build_message tests ─────────────────────────────────
+
+def test_content_error_build_message_missing_arg():
+    """
+    Given
+    - A CortexMissingArgError built with an argument name
+    When
+    - build_message is called
+    Then
+    - It returns the unified, auto-generated message
+    """
+    from CommonServerPython import CortexMissingArgError, RetryGuidance
+    err = CortexMissingArgError('time')
+    expected = "Required argument 'time' was not provided. " + RetryGuidance.hint(RetryGuidance.RETRY_AFTER_FIX)
+    assert err.build_message() == expected
+    assert str(err) == expected
+    # Retry guidance is exposed via details / ExtendedPayload.
+    assert err.details['retry_guidance'] == RetryGuidance.RETRY_AFTER_FIX
+    assert err.details['retryable'] is True
+
+
+def test_content_error_build_message_missing_arg_require_one():
+    """
+    Given
+    - A CortexMissingArgError built with a list of argument names (default require_one)
+    When
+    - build_message is called
+    Then
+    - It returns an "at least one of" message with a retry-after-fix hint
+    """
+    from CommonServerPython import CortexMissingArgError, CortexErrorCode, RetryGuidance
+    err = CortexMissingArgError(['endpoint_id', 'endpoint_ip', 'endpoint_hostname'])
+    assert err.build_message() == (
+        "At least one of the following arguments must be provided: "
+        "'endpoint_id', 'endpoint_ip', 'endpoint_hostname'. "
+        + RetryGuidance.hint(RetryGuidance.RETRY_AFTER_FIX)
+    )
+    assert err.error_code == CortexErrorCode.MISSING_ARGUMENT
+    assert err.details['arguments'] == ['endpoint_id', 'endpoint_ip', 'endpoint_hostname']
+    assert err.details['require_one'] is True
+
+
+def test_content_error_build_message_missing_arg_require_all():
+    """
+    Given
+    - A CortexMissingArgError built with a list of names and require_one=False
+    When
+    - build_message is called
+    Then
+    - It returns an "all required" message
+    """
+    from CommonServerPython import CortexMissingArgError, RetryGuidance
+    err = CortexMissingArgError(['user_id', 'token'], require_one=False)
+    assert err.build_message() == (
+        "The following required arguments were not provided: 'user_id', 'token'. "
+        + RetryGuidance.hint(RetryGuidance.RETRY_AFTER_FIX)
+    )
+    assert err.details['require_one'] is False
+
+
+def test_content_error_build_message_invalid_arg():
+    from CommonServerPython import CortexInvalidArgError
+    err = CortexInvalidArgError('mode', value='fast', allowed_values=['slow', 'medium'])
+    msg = err.build_message()
+    assert "Invalid value for argument 'mode'" in msg
+    assert "got 'fast'" in msg
+    assert "Allowed values: slow, medium" in msg
+
+
+def test_content_error_build_message_resource_not_found():
+    from CommonServerPython import CortexResourceNotFoundError, RetryGuidance
+    fix_hint = RetryGuidance.hint(RetryGuidance.RETRY_AFTER_FIX)
+    err = CortexResourceNotFoundError('endpoint', identifier='abc-123')
+    assert err.build_message() == "endpoint 'abc-123' not found " + fix_hint
+    err_no_id = CortexResourceNotFoundError('incident')
+    assert err_no_id.build_message() == "incident not found " + fix_hint
+
+
+def test_content_error_build_message_custom_overrides_auto():
+    """
+    Given
+    - A CortexMissingArgError with an explicit custom message
+    When
+    - build_message is called
+    Then
+    - The custom message is returned instead of the auto-generated one
+    """
+    from CommonServerPython import CortexMissingArgError
+    err = CortexMissingArgError('time', override_message='Please provide the time argument.')
+    assert err.build_message() == 'Please provide the time argument.'
+
+
+def test_content_error_build_message_conflicting_args_mutually_exclusive():
+    """
+    Given
+    - A CortexConflictingArgsError with mutually exclusive arguments
+    When
+    - build_message is called
+    Then
+    - The message explains the conflict and the valid resolution
+    """
+    from CommonServerPython import CortexConflictingArgsError
+    err = CortexConflictingArgsError(arguments=['start_time', 'last_n_days'])
+    msg = err.build_message()
+    assert "Conflicting arguments: 'start_time', 'last_n_days'." in msg
+    assert "mutually exclusive" in msg
+    assert "Provide only one of: 'start_time', 'last_n_days'." in msg
+
+
+def test_content_error_build_message_conflicting_args_reason_resolution():
+    from CommonServerPython import CortexConflictingArgsError
+    err = CortexConflictingArgsError(
+        arguments=['a', 'b'],
+        reason='a requires b to be empty.',
+        resolution='Provide a without b, or b without a.',
+    )
+    msg = err.build_message()
+    assert "Conflicting arguments: 'a', 'b'." in msg
+    assert 'a requires b to be empty.' in msg
+    assert 'Provide a without b, or b without a.' in msg
+
+
+def test_content_error_build_message_conflicting_args_custom_message():
+    from CommonServerPython import CortexConflictingArgsError
+    err = CortexConflictingArgsError('Totally custom conflict text', arguments=['a', 'b'])
+    assert err.build_message() == 'Totally custom conflict text'
+
+
+def test_content_error_build_message_api_error_with_status():
+    from CommonServerPython import CortexExternalApiError
+    err = CortexExternalApiError(status_code=500)
+    msg = err.build_message()
+    assert 'external API' in msg
+    assert '(HTTP 500)' in msg
+
+
+def test_content_error_build_message_auth_default():
+    from CommonServerPython import CortexAuthError, CortexErrorCode, RetryGuidance
+    err = CortexAuthError()
+    assert err.build_message() == (
+        "Authentication failed. Check your credentials or API key. "
+        + RetryGuidance.hint(RetryGuidance.NOT_RETRYABLE)
+    )
+    assert err.error_code == CortexErrorCode.AUTH_ERROR
+    assert err.details['retry_guidance'] == RetryGuidance.NOT_RETRYABLE
+    assert err.details['retryable'] is False
+
+
+def test_content_error_build_message_rate_limit_retry_after():
+    from CommonServerPython import CortexRateLimitError
+    err = CortexRateLimitError(retry_after=30)
+    msg = err.build_message()
+    assert "rate limit exceeded" in msg
+    assert "Retry after 30 seconds." in msg
+    assert err.details.get('retry_after_seconds') == 30
+
+
+def test_content_error_build_message_timeout_and_connection_defaults():
+    from CommonServerPython import CortexTimeoutError, CortexConnectionError, RetryGuidance
+    later_hint = RetryGuidance.hint(RetryGuidance.RETRY_LATER)
+    assert CortexTimeoutError().build_message() == "The request timed out. Please try again. " + later_hint
+    assert CortexConnectionError().build_message() == \
+        "Unable to connect to the service. Check network connectivity. " + later_hint
+    assert CortexTimeoutError().details['retryable'] is True
+
+
+def test_content_error_build_message_simple_defaults():
+    """
+    Given
+    - The simple CortexError subclasses without an explicit message
+    When
+    - build_message is called
+    Then
+    - Each returns its category-specific default message (with retry hint where applicable)
+    """
+    from CommonServerPython import (
+        CortexParseError, CortexPermissionError, CortexExecutionError, RetryGuidance,
+    )
+    not_retryable = RetryGuidance.hint(RetryGuidance.NOT_RETRYABLE)
+    assert CortexParseError().build_message() == \
+        "Failed to parse the response received from the API. " + not_retryable
+    assert CortexPermissionError().build_message() == \
+        "Permission denied. You do not have the required permissions to perform this action. " + not_retryable
+    # CortexExecutionError has no retry guidance -> no hint appended.
+    assert CortexExecutionError().build_message() == "The command or script execution failed."
+
+
+def test_content_error_retry_guidance_exposed_in_details():
+    """
+    Given
+    - CortexError subclasses with different retry guidance
+    When
+    - The error is constructed
+    Then
+    - details carries the retry_guidance and retryable flag for agent consumption
+    """
+    from CommonServerPython import (
+        CortexInvalidArgError, CortexRateLimitError, CortexPermissionError,
+        CortexExecutionError, RetryGuidance,
+    )
+    invalid = CortexInvalidArgError('x', value='y')
+    assert invalid.details['retry_guidance'] == RetryGuidance.RETRY_AFTER_FIX
+    assert invalid.details['retryable'] is True
+
+    rate = CortexRateLimitError()
+    assert rate.details['retry_guidance'] == RetryGuidance.RETRY_LATER
+    assert rate.details['retryable'] is True
+
+    perm = CortexPermissionError()
+    assert perm.details['retry_guidance'] == RetryGuidance.NOT_RETRYABLE
+    assert perm.details['retryable'] is False
+
+    # No guidance -> no retry keys in details.
+    execution = CortexExecutionError()
+    assert 'retry_guidance' not in execution.details
+    assert 'retryable' not in execution.details
+
+
+def test_content_error_api_auth_status_not_retryable():
+    """
+    Given
+    - A CortexExternalApiError with a 403 status code (auto-classified as auth)
+    When
+    - The error is constructed
+    Then
+    - Its retry guidance becomes NOT_RETRYABLE
+    """
+    from CommonServerPython import CortexExternalApiError, CortexErrorCode, RetryGuidance
+    err = CortexExternalApiError(status_code=403)
+    assert err.error_code == CortexErrorCode.AUTH_ERROR
+    assert err.retry_guidance == RetryGuidance.NOT_RETRYABLE
+    assert err.details['retryable'] is False
+
+
+def test_content_error_simple_subclass_custom_message_overrides_default():
+    from CommonServerPython import CortexExecutionError
+    err = CortexExecutionError('Custom execution failure detail')
+    assert err.build_message() == 'Custom execution failure detail'
+
+
+# ── return_error message-selection tests ─────────────────────────────
+
+def test_return_error_agentix_uses_auto_message(mocker):
+    """
+    Given
+    - Caller is Agentix and a CortexError is passed as error
+    When
+    - return_error is called with an explicit (different) message
+    Then
+    - The automatic, unified message from the CortexError is surfaced
+    """
+    from CommonServerPython import return_error, CortexMissingArgError, RetryGuidance
+    mocker.patch('CommonServerPython.is_caller_agentix', return_value=True)
+    mocker.patch.object(demisto, 'results')
+    with pytest.raises(SystemExit):
+        return_error('A human-friendly explanation', error=CortexMissingArgError('time'))
+    contents = demisto.results.call_args[0][0]['Contents']
+    assert contents == "Required argument 'time' was not provided. " + RetryGuidance.hint(RetryGuidance.RETRY_AFTER_FIX)
+
+
+def test_return_error_agentix_ignores_custom_message_uses_auto(mocker):
+    """
+    Given
+    - Caller is Agentix and a CortexError is constructed WITH a custom message
+    When
+    - return_error is called (with any explicit message)
+    Then
+    - The automatic, unified message is surfaced, NOT the custom message stored on the error
+    """
+    from CommonServerPython import return_error, CortexMissingArgError, RetryGuidance
+    mocker.patch('CommonServerPython.is_caller_agentix', return_value=True)
+    mocker.patch.object(demisto, 'results')
+    error = CortexMissingArgError('time', override_message='Original backward-compatible message')
+    # Sanity: build_message returns the custom message, auto_message ignores it
+    assert error.build_message() == 'Original backward-compatible message'
+    assert error.auto_message() == "Required argument 'time' was not provided. " + \
+        RetryGuidance.hint(RetryGuidance.RETRY_AFTER_FIX)
+    with pytest.raises(SystemExit):
+        return_error('A human-friendly explanation', error=error)
+    contents = demisto.results.call_args[0][0]['Contents']
+    assert contents == "Required argument 'time' was not provided. " + RetryGuidance.hint(RetryGuidance.RETRY_AFTER_FIX)
+
+
+def test_return_error_non_agentix_prefers_explicit_message(mocker):
+    """
+    Given
+    - Caller is not Agentix and a CortexError is passed as error
+    When
+    - return_error is called with an explicit message
+    Then
+    - The explicit message is surfaced (not the automatic one)
+    """
+    from CommonServerPython import return_error, CortexMissingArgError
+    mocker.patch('CommonServerPython.is_caller_agentix', return_value=False)
+    mocker.patch.object(demisto, 'results')
+    with pytest.raises(SystemExit):
+        return_error('A human-friendly explanation', error=CortexMissingArgError('time'))
+    contents = demisto.results.call_args[0][0]['Contents']
+    assert contents == 'A human-friendly explanation'
+
+
+def test_return_error_non_agentix_falls_back_to_auto(mocker):
+    """
+    Given
+    - Caller is not Agentix, a CortexError is passed, and no explicit message
+    When
+    - return_error is called with an empty message
+    Then
+    - The automatic, unified message is surfaced
+    """
+    from CommonServerPython import return_error, CortexMissingArgError, RetryGuidance
+    mocker.patch('CommonServerPython.is_caller_agentix', return_value=False)
+    mocker.patch.object(demisto, 'results')
+    with pytest.raises(SystemExit):
+        return_error('', error=CortexMissingArgError('time'))
+    contents = demisto.results.call_args[0][0]['Contents']
+    assert contents == "Required argument 'time' was not provided. " + RetryGuidance.hint(RetryGuidance.RETRY_AFTER_FIX)
+
+
+def test_return_error_agentix_no_content_error_uses_message(mocker):
+    """
+    Given
+    - Caller is Agentix but no CortexError is available
+    When
+    - return_error is called with a plain message
+    Then
+    - The explicit message is surfaced as a fallback
+    """
+    from CommonServerPython import return_error
+    mocker.patch('CommonServerPython.is_caller_agentix', return_value=True)
+    mocker.patch.object(demisto, 'results')
+    with pytest.raises(SystemExit):
+        return_error('Plain error message')
+    contents = demisto.results.call_args[0][0]['Contents']
+    assert contents == 'Plain error message'
+
+
+def test_return_error_extended_payload_includes_retry_guidance_not_retryable(mocker):
+    """
+    Given
+    - A CortexError whose category is NOT retryable (e.g. auth error)
+    When
+    - return_error is called with that error
+    Then
+    - The error entry's ExtendedPayload carries the error_code and a
+      retryable=False flag, so an LLM agent can decide not to retry.
+    - The retry_guidance text is NOT included (it is already in the message).
+    """
+    from CommonServerPython import (
+        return_error, CortexAuthError,
+        EXTENDED_PAYLOAD_ERROR_CODE_KEY, EXTENDED_PAYLOAD_RETRY_GUIDANCE_KEY,
+        EXTENDED_PAYLOAD_RETRYABLE_KEY,
+    )
+    mocker.patch.object(demisto, 'results')
+    with pytest.raises(SystemExit):
+        return_error('Authentication failed', error=CortexAuthError())
+    extended_payload = demisto.results.call_args[0][0]['ExtendedPayload']
+    assert extended_payload[EXTENDED_PAYLOAD_ERROR_CODE_KEY] == CortexAuthError.error_code
+    assert extended_payload[EXTENDED_PAYLOAD_RETRYABLE_KEY] is False
+    assert EXTENDED_PAYLOAD_RETRY_GUIDANCE_KEY not in extended_payload
+
+
+def test_return_error_extended_payload_includes_retryable_true(mocker):
+    """
+    Given
+    - A CortexError whose category IS retryable (e.g. rate limit)
+    When
+    - return_error is called with that error
+    Then
+    - The error entry's ExtendedPayload carries a retryable=True flag, and the
+      retry_guidance text is NOT included (it is already in the message).
+    """
+    from CommonServerPython import (
+        return_error, CortexRateLimitError,
+        EXTENDED_PAYLOAD_RETRY_GUIDANCE_KEY, EXTENDED_PAYLOAD_RETRYABLE_KEY,
+    )
+    mocker.patch.object(demisto, 'results')
+    with pytest.raises(SystemExit):
+        return_error('Rate limited', error=CortexRateLimitError())
+    extended_payload = demisto.results.call_args[0][0]['ExtendedPayload']
+    assert extended_payload[EXTENDED_PAYLOAD_RETRYABLE_KEY] is True
+    assert EXTENDED_PAYLOAD_RETRY_GUIDANCE_KEY not in extended_payload
+
+
+def test_content_error_api_error_appends_original_api_error_to_message():
+    """
+    Given
+    - A CortexExternalApiError carrying the original API response body (bytes)
+    When
+    - The automatic message is built
+    Then
+    - The original API error body is appended (decoded cleanly) to the built
+      message rather than exposed as a separate field.
+    """
+    from CommonServerPython import CortexExternalApiError
+    err = CortexExternalApiError(status_code=500, response_body=b'{"error": {"message": "boom"}}')
+    auto = err.auto_message()
+    assert "(HTTP 500)" in auto
+    assert 'Original API error: {"error": {"message": "boom"}}' in auto
+    # The raw bytes repr must NOT leak into the message.
+    assert "b'" not in auto
+
+
 def test_indicator_type_by_server_version_6_2(mocker, clear_version_cache):
     """
     Given
@@ -2895,13 +3343,77 @@ class TestBaseClient:
             Then
             -  An unsuccessful request returns a DemistoException regardless the bad status code.
         """
-        from CommonServerPython import DemistoException
-        with pytest.raises(DemistoException, match='{}'.format(status)):
+        with pytest.raises(CommonServerPython.DemistoException, match='{}'.format(status)):
             self.client._http_request(method,
                                       '',
                                       full_url='http://httpbin.org/status/{}'.format(status),
                                       retries=3,
                                       status_list_to_retry=[400, 401, 500])
+
+    def test_implement_retry_without_backoff_jitter_support(self, mocker):
+        """
+        Given:
+            - A BaseClient instance
+            - The installed urllib3's Retry class does not support the `backoff_jitter`
+              parameter (as is the case for urllib3 < 1.26.9)
+        When:
+            - _implement_retry is called with retries > 0
+        Then:
+            - Retry is called without the backoff_jitter kwarg (no TypeError is raised)
+            - The https:// adapter is mounted on the session with the configured retry object
+        """
+        from urllib3.util import Retry as RealRetry
+
+        class RetryDefaultNoJitter:
+            allowed_methods = frozenset(['GET'])
+            # No backoff_jitter attribute, simulating an older urllib3 version
+
+        mock_retry_class = mocker.MagicMock(name='Retry')
+        mock_retry_class.DEFAULT = RetryDefaultNoJitter
+        mock_retry_class.return_value = mocker.MagicMock(spec=RealRetry)
+
+        mocker.patch.object(CommonServerPython, 'Retry', mock_retry_class)
+
+        client = CommonServerPython.BaseClient('https://example.com/api/v2/', ok_codes=(200, 201))
+
+        # Should not raise TypeError even though backoff_jitter is requested
+        client._implement_retry(retries=3, backoff_jitter=0.5)
+
+        mock_retry_class.assert_called_once()
+        assert 'backoff_jitter' not in mock_retry_class.call_args.kwargs
+
+        adapter = client._session.adapters.get('https://')
+        assert adapter is not None
+        assert adapter.max_retries is mock_retry_class.return_value
+
+    def test_implement_retry_with_backoff_jitter_support(self, mocker):
+        """
+        Given:
+            - A BaseClient instance
+            - The installed urllib3's Retry class supports the `backoff_jitter` parameter
+        When:
+            - _implement_retry is called with retries > 0 and a backoff_jitter value
+        Then:
+            - Retry is called with the backoff_jitter kwarg set to the given value
+        """
+        from urllib3.util import Retry as RealRetry
+
+        class RetryDefaultWithJitter:
+            allowed_methods = frozenset(['GET'])
+            backoff_jitter = 0.0
+
+        mock_retry_class = mocker.MagicMock(name='Retry')
+        mock_retry_class.DEFAULT = RetryDefaultWithJitter
+        mock_retry_class.return_value = mocker.MagicMock(spec=RealRetry)
+
+        mocker.patch.object(CommonServerPython, 'Retry', mock_retry_class)
+
+        client = CommonServerPython.BaseClient('https://example.com/api/v2/', ok_codes=(200, 201))
+
+        client._implement_retry(retries=3, backoff_jitter=0.5)
+
+        mock_retry_class.assert_called_once()
+        assert mock_retry_class.call_args.kwargs.get('backoff_jitter') == 0.5
 
     def test_http_request_json(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))

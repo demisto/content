@@ -116,7 +116,7 @@ def test_call():
     mock_admin_api.get_authentication_log.return_value = mock_response
     client.admin_api = mock_admin_api
     client.params.mintime = {LogType.AUTHENTICATION: {"min_time": "16843543575", "next_offset": []}}
-    client.params.fetch_delay = "0"
+    client.params.fetch_delay = 0
     _, metadata = client.call([LogType.AUTHENTICATION])
     assert metadata == {"next_offset": ["1532951895000", "af0ba235-0b33-23c8-bc23-a31aa0231de8"], "total_objects": 1}
 

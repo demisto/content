@@ -10,6 +10,23 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
+# Commands that require a configured mailbox (mailbox_to_fetch).
+# Because this integration uses delegated permissions against a single mailbox,
+# these commands cannot run without it.
+COMMANDS_REQUIRING_MAILBOX = {
+    "fetch-incidents",
+    "msgraph-mail-create-folder",
+    "msgraph-mail-delete-rule",
+    "msgraph-mail-get-attachment",
+    "msgraph-mail-get-email-as-eml",
+    "msgraph-mail-get-rule",
+    "msgraph-mail-list-attachments",
+    "msgraph-mail-list-child-folders",
+    "msgraph-mail-list-emails",
+    "msgraph-mail-list-folders",
+    "msgraph-mail-move-email",
+}
+
 
 class MsGraphListenerClient(MsGraphMailBaseClient):
     """
@@ -180,6 +197,12 @@ def main():  # pragma: no cover
         args = demisto.args()
         command = demisto.command()
         LOG(f"Command being called is {command}")
+
+        if command in COMMANDS_REQUIRING_MAILBOX and not mailbox_to_fetch:
+            raise DemistoException(
+                'The "Email address to associate for this integration" parameter is required for '
+                f'the "{command}" command. Please configure it on the integration instance.'
+            )
 
         if command == "test-module":
             if managed_identities_client_id:
