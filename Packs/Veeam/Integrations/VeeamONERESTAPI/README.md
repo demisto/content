@@ -13,6 +13,7 @@ This integration was integrated and tested with version 12.2.0 of Veeam ONE.
 | Fetch incidents |  | False |
 | First fetch time |  | False |
 | Triggered Alarms Per Request | The maximum number of triggered alarms that can be fetched during command execution. | False |
+| API Request Timeout (Seconds) |  | False |
 | Incidents Fetch Interval |  | False |
 | Incident type |  | False |
 
@@ -24,7 +25,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### veeam-vone-get-triggered-alarms
 
 ***
-Get All Triggered Alarms
+Get All Triggered Alarms.
 
 #### Base Command
 
@@ -59,7 +60,7 @@ Get All Triggered Alarms
 ### veeam-vone-resolve-triggered-alarms
 
 ***
-Resolve Triggered Alarms
+Resolve Triggered Alarms.
 
 #### Base Command
 

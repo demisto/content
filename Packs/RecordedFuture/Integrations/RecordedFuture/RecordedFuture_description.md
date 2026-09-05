@@ -61,4 +61,18 @@ The following data points are collected as part of Collective Insights:
     * Takes a context, such as phishing or malware and one or more IOC as input.
     * Outputs a verdict (true/false) and related evidence (risk rules) for this context.
 
+---
+
+## Verdict / DBotScore mapping
+Reputation and intelligence lookups translate the Recorded Future risk score into a Cortex DBotScore:
+
+| Condition | Verdict | DBotScore |
+| --- | --- | --- |
+| Risk score at or above the configured Malicious threshold | Malicious | 3 (Bad) |
+| Risk score at or above the configured Suspicious threshold | Suspicious | 2 |
+| Recorded Future reports "No Risk Observed" (the `noKnownRisk` risk rule, available for files, URLs and domains) | Benign | 1 (Good) |
+| No risk data available | Unknown | 0 |
+
+Note: the Benign verdict is signal-driven (it requires the "No Risk Observed" risk rule), not threshold-driven. An indicator that simply has no risk data remains Unknown rather than Benign.
+
 Copyright 2020-2022 Recorded Future, Inc.

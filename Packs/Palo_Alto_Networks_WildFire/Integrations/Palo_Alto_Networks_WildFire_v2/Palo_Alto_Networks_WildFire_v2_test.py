@@ -919,3 +919,49 @@ def test_url_upload_uses_files_arg_for_multipart(mocker, func_name, url_dict_key
     # Defensive: ensure no hand-rolled body string snuck back in.
     assert kwargs.get("body") is None
     assert kwargs.get("headers") is None
+
+
+@pytest.mark.parametrize(
+    "api_response, expected_verdict_count",
+    [
+        pytest.param(
+            {"sha256": "abc123", "md5": "def456", "verdict": "1"},
+            1,
+            id="single_hash_dict_response",
+        ),
+        pytest.param(
+            [
+                {"sha256": "abc123", "md5": "def456", "verdict": "1"},
+                {"sha256": "xyz789", "md5": "uvw012", "verdict": "0"},
+            ],
+            2,
+            id="multiple_hashes_list_response",
+        ),
+    ],
+)
+def test_wildfire_get_verdicts_normalizes_single_hash_response(mocker, api_response, expected_verdict_count):
+    """
+    Given:
+        - The WildFire /get/verdicts API returns either a dict (single hash) or a list (multiple hashes).
+    When:
+        - wildfire_get_verdicts is called.
+    Then:
+        - verdicts_data is always returned as a list, regardless of the API response shape.
+    """
+    import Palo_Alto_Networks_WildFire_v2 as wf
+
+    mocker.patch.object(wf, "URL", "https://wildfire.example.com/publicapi")
+    mocker.patch.object(wf, "URL_DICT", {"verdicts": "/get/verdicts"})
+    mocker.patch.object(wf, "BODY_DICT", {"apikey": "test-api-key"})
+    mocker.patch.object(
+        wf,
+        "http_request",
+        return_value={"wildfire": {"get-verdict-info": api_response}},
+    )
+    mocker.patch("builtins.open", mocker.mock_open(read_data=b"hash_data"))
+    mocker.patch("shutil.rmtree")
+
+    _result, verdicts_data = wf.wildfire_get_verdicts("/tmp/fake_hash_file")
+
+    assert isinstance(verdicts_data, list)
+    assert len(verdicts_data) == expected_verdict_count

@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
 provider: Fortinet
 commonfields:
   id: Lacework
@@ -8,18 +11,22 @@ configuration:
   name: lacework_account
   required: true
   type: 0
+  section: Connect
 - display: Lacework Sub-Account Name (If Required)
   name: lacework_subaccount
   type: 0
   required: false
+  section: Connect
 - display: Lacework API Key
   name: lacework_api_key
   required: true
   type: 4
+  section: Connect
 - display: Lacework API Secret
   name: lacework_api_secret
   required: true
   type: 4
+  section: Connect
 - defaultvalue: high
   display: Lacework Alert Severity Threshold
   name: lacework_event_severity
@@ -31,14 +38,24 @@ configuration:
   - informational
   required: true
   type: 15
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  advanced: true
+  section: Collect
 - defaultvalue: '7'
   display: Lacework Alert History to Import (in days)
   name: lacework_event_history
@@ -52,6 +69,7 @@ configuration:
   - '7'
   type: 15
   required: false
+  section: Collect
 description: Lacework provides end-to-end cloud security automation for AWS, Azure, and GCP with a comprehensive view of risks across cloud workloads and containers.
 display: Lacework
 name: Lacework
@@ -856,7 +874,7 @@ script:
     - contextPath: Lacework.Vulnerability.Host.vulnHash
       description: A unique hash of all data contained in the vulnerability.
       type: String
-  dockerimage: demisto/lacework:1.0.0.117192
+  dockerimage: demisto/lacework:1.0.0.10133006
   isfetch: true
   runonce: false
   script: '-'
