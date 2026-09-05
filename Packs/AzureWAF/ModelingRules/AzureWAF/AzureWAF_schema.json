@@ -2,7 +2,7 @@
     "msft_azure_waf_raw": {
         "type": {
             "type": "string",
-            "is_array": true
+            "is_array": false
         },
         "transactionid": {
             "type": "string",
