@@ -49,7 +49,7 @@ def test_file_not_openable() -> None:
     assert "Error" in str(result.outputs)
 
 
-def test_pypdf2_warning_is_not_written_to_stderr(capsys) -> None:
+def test_pypdf2_warning_is_not_written_to_stderr(capfd) -> None:
     """
     Given: A malformed but readable PDF, which makes PyPDF2 emit a recoverable warning log record
         (for example 'incorrect startxref pointer'), and no logging handler configured (no debug-mode).
@@ -62,4 +62,4 @@ def test_pypdf2_warning_is_not_written_to_stderr(capsys) -> None:
     logging.getLogger("PyPDF2._reader").warning("incorrect startxref pointer(3)")
 
     assert any(isinstance(handler, logging.NullHandler) for handler in logging.getLogger("PyPDF2").handlers)
-    assert capsys.readouterr().err == ""
+    assert capfd.readouterr().err == ""
