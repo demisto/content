@@ -21,6 +21,8 @@ ALERTS = "alerts"
 ENDPOINTS = {ALERTS: "/v7/alerts", AUDIT: "/v7/audit-user-events"}
 DATE_KEYS = {ALERTS: "startDate", AUDIT: "date"}
 RESPONSE_MAPPING_KEY = {ALERTS: "alerts", AUDIT: "auditEvents"}
+# Prefix used for all fetch-related debug logs, so they can be easily filtered/searched in the logs (e.g. "grep FETCH-DEBUG").
+FETCH_LOG_PREFIX = "CiscoThousandEyes FETCH-DEBUG:"
 
 """ CLIENT CLASS """
 
@@ -56,7 +58,10 @@ def get_events(
     """
     start_date, end_date = calculate_fetch_dates(start_date, last_run.get(fetch_type, {}), end_date)
     last_run = last_run.get(fetch_type, {})
-    demisto.debug(f"start fetching {fetch_type} type. with last_run: {last_run}")
+    demisto.debug(
+        f"{FETCH_LOG_PREFIX} [{fetch_type}] Starting fetch. time_frame: {start_date} -> {end_date}, "
+        f"fetch_limit: {fetch_limit}, last_run: {last_run}"
+    )
 
     next_page_url = last_run.get("next_page", "")
     pagination_offset = last_run.get("offset", 0)
@@ -75,10 +80,14 @@ def get_events(
         if next_page_url := response.get("_links", {}).get("next", {}).get("href"):
             has_next = True
         current_batch_events = response.get(RESPONSE_MAPPING_KEY.get(fetch_type), [])
+        demisto.debug(f"{FETCH_LOG_PREFIX} [{fetch_type}] Received {len(current_batch_events)} events from {request_url}")
         deduplicate_events(current_batch_events, params.get("startDate"), DATE_KEYS.get(fetch_type, ""))
         fetched_events.extend(current_batch_events[pagination_offset:])
         if len(fetched_events) >= fetch_limit:
-            demisto.debug(f"We reached the fetch limit . limit is: {fetch_limit}. received: {len(fetched_events)} events.")
+            demisto.debug(
+                f"{FETCH_LOG_PREFIX} [{fetch_type}] Reached the fetch limit. time_frame: {start_date} -> {end_date}, "
+                f"limit: {fetch_limit}, total fetched so far: {len(fetched_events)}."
+            )
             fetched_events = fetched_events[:fetch_limit]
             return fetched_events, prepare_next_run(
                 fetch_type=fetch_type,
@@ -93,10 +102,17 @@ def get_events(
     # Events are fetched in descending order by date.
     # For new fetches (not paginated), use the latest event's date as the "last_fetch".
     # For paginated fetches, retain the "last_fetch" from the previous batch.
+    # If no events were found in this window, advance the checkpoint to "end_date" (the point up to which we've
+    # confirmed there's nothing new) instead of losing the checkpoint, which would otherwise collapse the next
+    # fetch window down to "now minus 1 minute" and silently skip any events that occurred in the meantime.
     last_fetch = (
         last_run.get("last_fetch")
         if last_run.get("next_page")
-        else (fetched_events[0].get(DATE_KEYS.get(fetch_type, "")) if fetched_events else params.get("last_fetch"))
+        else (fetched_events[0].get(DATE_KEYS.get(fetch_type, "")) if fetched_events else end_date)
+    )
+    demisto.debug(
+        f"{FETCH_LOG_PREFIX} [{fetch_type}] Finished fetch. time_frame: {start_date} -> {end_date}, "
+        f"total fetched: {len(fetched_events)}, next last_fetch checkpoint: {last_fetch}"
     )
     return fetched_events, {"last_fetch": last_fetch}
 
@@ -318,6 +334,12 @@ def fetch_events(
     last_run = demisto.getLastRun()
     is_new_fetch = "nextTrigger" not in last_run
 
+    demisto.debug(
+        f"{FETCH_LOG_PREFIX} fetch_events invoked. requested time_frame: {start_date or '<calculated>'} -> "
+        f"{end_date or '<calculated>'}, max_fetch_alerts: {max_fetch_alerts}, max_fetch_audits: {max_fetch_audits}, "
+        f"is_new_fetch: {is_new_fetch}, last_run: {last_run}"
+    )
+
     if is_new_fetch or last_run.get(ALERTS, {}).get("next_page"):
         alert_events, alert_next_run = get_events(
             client, ALERTS, start_date=start_date, end_date=end_date, fetch_limit=max_fetch_alerts, last_run=last_run
@@ -333,7 +355,10 @@ def fetch_events(
     next_run: Dict[str, Any] = {ALERTS: alert_next_run, AUDIT: audit_next_run}
     if any(d.get("next_page") for d in (alert_next_run, audit_next_run)):
         next_run["nextTrigger"] = "0"
-    demisto.debug(f"Setting next run {next_run}.")
+    demisto.debug(
+        f"{FETCH_LOG_PREFIX} fetch_events finished. total fetched: {len(events)} "
+        f"(alerts: {len(alert_events)}, audits: {len(audit_events)}). Setting next run: {next_run}."
+    )
     return next_run, events
 
 
