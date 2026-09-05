@@ -9,7 +9,7 @@ FRONT_DOOR_API_VERSION = "2022-05-01"
 
 GET_COMMAND_DATA = [
     (
-        {"policy_name": "pol1", "verbose": "false", "limit": "20"},  # args, case: default resource_group
+        {"policy_name": "pol1", "verbose": "false", "limit": "10"},  # args, case: default resource_group
         {
             "method": "GET",
             "full_url": "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/\
