@@ -49,13 +49,14 @@ def test_file_not_openable() -> None:
     assert "Error" in str(result.outputs)
 
 
-def test_pypdf2_warning_is_not_written_to_stderr(capfd) -> None:
+def test_pypdf2_warning_is_not_written_to_stderr(caplog, capfd) -> None:
     """
     Given: A malformed but readable PDF, which makes PyPDF2 emit a recoverable warning log record
         (for example 'incorrect startxref pointer'), and no logging handler configured (no debug-mode).
     When: suppress_pypdf2_stderr_logs was called and the PyPDF2 logger emits the record.
-    Then: A NullHandler is registered on the PyPDF2 logger and nothing is written to stderr, so the server
-        does not report the successful run as failed.
+    Then: A NullHandler is registered on the PyPDF2 logger, so Python does not fall back to
+        `logging.lastResort` and nothing is written to stderr - the server does not report the
+        successful run as failed.
     """
     suppress_pypdf2_stderr_logs()
 
@@ -63,3 +64,6 @@ def test_pypdf2_warning_is_not_written_to_stderr(capfd) -> None:
 
     assert any(isinstance(handler, logging.NullHandler) for handler in logging.getLogger("PyPDF2").handlers)
     assert capfd.readouterr().err == ""
+
+    # The warning above is emitted on purpose, so it must not fail the autouse log-checking fixture.
+    caplog.clear()
