@@ -29,6 +29,8 @@ IS_FETCH = demisto.params().get("isFetch")
 FETCH_TIME = demisto.params().get("fetch_time", "3 days")
 # Default lookback window (in minutes) used when the parameter is unset or empty
 DEFAULT_LOOKBACK_MINUTES = 10
+# Upper bound on the number of UUIDs persisted in lastRun for deduplication
+MAX_FETCHED_IDS = 5000
 # Service base URL
 BASE_URL = SERVER + "/api/2.0"
 # Headers to be sent in requests
@@ -530,6 +532,10 @@ def fetch_incidents():
         fetched_ids[incident_id] = now_ms
 
     demisto.debug(f"fetched {len(items)} items, {len(incidents)} new incidents, latest timestamp: {latest_timestamp}")
+
+    if len(fetched_ids) > MAX_FETCHED_IDS:
+        demisto.debug(f"fetched_ids exceeded {MAX_FETCHED_IDS}, truncating to newest entries")
+        fetched_ids = dict(sorted(fetched_ids.items(), key=lambda kv: kv[1], reverse=True)[:MAX_FETCHED_IDS])
 
     demisto.setLastRun(
         {
