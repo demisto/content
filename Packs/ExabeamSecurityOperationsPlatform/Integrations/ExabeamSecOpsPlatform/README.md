@@ -464,3 +464,13 @@ Add a new note to the specified case.
 #### Context Output
 
 There is no context output for this command.
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require the **Cortex XSIAM** license:
+
+- Fetch events
+
+</~PLATFORM>

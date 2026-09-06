@@ -1,0 +1,7 @@
+fromversion: 8.15.0
+id: JiraEventCollector
+name: JiraEventCollector
+rules: ''
+schema: ''
+supportedModules:
+- xsiam

@@ -648,6 +648,7 @@ tasks:
       type:
         simple: docx
     separatecontext: false
+    skipunavailable: true
     view: |-
       {
         "position": {

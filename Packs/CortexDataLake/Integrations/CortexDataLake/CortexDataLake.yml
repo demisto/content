@@ -33,7 +33,7 @@ configuration:
   display: ""
   section: Connect
 - displaypassword: Authentication Token
-  additionalinfo: The API Key to use for connection
+  additionalinfo: The API key used for OProxy authentication.
   name: credentials_refresh_token
   hiddenusername: true
   type: 9
@@ -47,6 +47,14 @@ configuration:
   section: Connect
   required: false
   display: ""
+- displaypassword: Client Secret
+  additionalinfo: The client secret used for Cortex GW SCM authentication.
+  name: credentials_client_secret
+  hiddenusername: true
+  type: 9
+  required: false
+  display: ""
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -4189,7 +4197,7 @@ script:
     - contextPath: SLS.Logging.GlobalProtect.VendorName
       description: The vendor that produced the data.
     description: Searches the GlobalProtect VPN log table.
-  dockerimage: demisto/python_pancloud_v2:1.0.0.10133006
+  dockerimage: demisto/python_pancloud_v2:1.0.0.11206988
   isfetch: true
   runonce: false
   script: ''

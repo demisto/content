@@ -1,0 +1,19 @@
+commonfields:
+  id: AnthropicClaudeApiModule
+  version: -1
+name: AnthropicClaudeApiModule
+script: ''
+type: python
+subtype: python3
+tags:
+- infra
+- server
+comment: Provides common Anthropic Claude Compliance API code shared by the AnthropicClaude and AnthropicClaudeStandardConnector integrations.
+system: true
+scripttarget: 0
+dependson: {}
+timeout: 0s
+dockerimage: demisto/parse-emails:0.1.48.10569905
+fromversion: 6.10.0
+tests:
+- No tests
