@@ -1506,13 +1506,20 @@ def get_agent(api_key_source: str, token: str) -> str:
     return ""
 
 
+# Values that mean "nothing was configured" but arrive as a non-empty string.
+# UCP can deliver a blank optional secret as the literal "null" (a JSON null that was
+# stringified upstream) and Go renders a nil as "<nil>". These are not credentials.
+_NON_TOKEN_SENTINELS = frozenset({"null", "none", "nil", "undefined", "<nil>"})
+
+
 def clean_token(value: Any) -> str:
     """
     Normalize a configured secret into a usable token string.
 
     A blank optional secret can reach the integration as None, an empty/whitespace-only
-    string, or a mask placeholder made only of asterisks (for example "****"). All of
-    these mean "no token was configured" and must not be treated as a real API key.
+    string, a mask placeholder made only of asterisks (for example "****"), or a
+    stringified null such as "null" or "<nil>". All of these mean "no token was
+    configured" and must not be treated as a real API key.
 
     Args:
         value: The raw value read from the instance configuration.
@@ -1521,7 +1528,7 @@ def clean_token(value: Any) -> str:
         The stripped token, or an empty string when no real token was configured.
     """
     stripped = (value or "").strip()
-    if not stripped or set(stripped) == {"*"}:
+    if not stripped or set(stripped) == {"*"} or stripped.lower() in _NON_TOKEN_SENTINELS:
         return ""
     return stripped
 

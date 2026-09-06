@@ -781,6 +781,14 @@ def test_get_agent(api_key_source, is_xsiam_platform, is_version_ge_8, token, ex
         ("*", "", "single_asterisk_mask_is_treated_as_no_token"),
         ("  ****  ", "", "padded_mask_placeholder_is_treated_as_no_token"),
         ("abc****", "abc****", "token_merely_containing_asterisks_is_kept"),
+        ("null", "", "stringified_json_null_is_treated_as_no_token"),
+        ("NULL", "", "stringified_null_is_case_insensitive"),
+        ("  null  ", "", "padded_stringified_null_is_treated_as_no_token"),
+        ("None", "", "stringified_python_none_is_treated_as_no_token"),
+        ("<nil>", "", "go_nil_rendering_is_treated_as_no_token"),
+        ("undefined", "", "stringified_undefined_is_treated_as_no_token"),
+        ("nullkey123456789", "nullkey123456789", "token_merely_starting_with_null_is_kept"),
+        ("a" * 32, "a" * 32, "real_32_char_key_is_kept"),
     ],
 )
 def test_clean_token(raw_value, expected_token, test_id):
