@@ -2968,7 +2968,7 @@ def compute_address_get(creds: Credentials, args: dict[str, Any]) -> CommandResu
         CommandResults: Object containing the address details under `GCP.Compute.Addresses`.
     """
     project_id = args.get("project_id")
-    region = args.get("region")
+    region = extract_region_name(args.get("region"))
     address = args.get("address")
 
     compute = GCPServices.COMPUTE.build(creds)
@@ -3009,7 +3009,7 @@ def compute_address_list(creds: Credentials, args: dict[str, Any]) -> CommandRes
         with `GCP.Compute.Addresses` and `GCP.Compute.AddressesNextToken` context outputs.
     """
     project_id = args.get("project_id")
-    region = args.get("region")
+    region = extract_region_name(args.get("region"))
     limit = arg_to_number(args.get("limit")) or 50
     next_token_arg = args.get("next_token")
     filter_expression = args.get("filter")
@@ -3150,7 +3150,7 @@ def compute_address_insert(creds: Credentials, args: dict[str, Any]) -> CommandR
         with `GCP.Compute.Operations` context output.
     """
     project_id = args.get("project_id")
-    region = args.get("region")
+    region = extract_region_name(args.get("region"))
     name = args.get("name")
 
     body: dict[str, Any] = {
@@ -3202,7 +3202,7 @@ def compute_address_delete(creds: Credentials, args: dict[str, Any]) -> CommandR
         with `GCP.Compute.Operations` context output.
     """
     project_id = args.get("project_id")
-    region = args.get("region")
+    region = extract_region_name(args.get("region"))
     address = args.get("address")
 
     compute = GCPServices.COMPUTE.build(creds)
