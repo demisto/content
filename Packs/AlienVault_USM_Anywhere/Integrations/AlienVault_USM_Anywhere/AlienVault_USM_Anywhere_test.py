@@ -279,3 +279,185 @@ class TestFetchIncidents:
         )
         assert last_run["timestamp"] == date_to_timestamp(newest_occurred_time)
         assert set(last_run["fetched_ids"]) == {"duplicate-alarm-1", "duplicate-alarm-2"}
+
+    def test_skips_duplicates(self, mocker, requests_mock):
+        """Only alarms absent from the dedup cache are turned into incidents.
+
+        Given: An API page containing one alarm already present in fetched_ids and one new alarm.
+
+        When: Running fetch_incidents.
+
+        Then: Only the new alarm becomes an incident, while the persisted cache retains both UUIDs.
+
+        """
+        from CommonServerPython import date_to_timestamp
+
+        duplicate_time = self.WATERMARK_TIME + timedelta(minutes=10)
+        new_time = self.WATERMARK_TIME + timedelta(minutes=20)
+        last_fetch = date_to_timestamp(self.WATERMARK_TIME)
+        now_ms = date_to_timestamp(datetime.now())
+
+        mocker.patch.object(demisto, "params", return_value=self.params())
+        mocker.patch.object(
+            demisto,
+            "getLastRun",
+            return_value={"timestamp": last_fetch, "fetched_ids": {"already-fetched": now_ms}},
+        )
+        mocker.patch.object(demisto, "setLastRun")
+        mocker.patch.object(demisto, "incidents")
+        from AlienVault_USM_Anywhere import fetch_incidents
+
+        requests_mock.get(
+            self.alarms_url(),
+            json=self.alarms_response(
+                [
+                    self.alarm("already-fetched", duplicate_time),
+                    self.alarm("brand-new", new_time),
+                ]
+            ),
+        )
+
+        fetch_incidents()
+
+        created_incidents = demisto.incidents.call_args[0][0]
+        assert [incident["name"] for incident in created_incidents] == ["Alarm: brand-new"]
+
+        last_run = demisto.setLastRun.call_args[0][0]
+        # The new UUID joins the cache so it is suppressed next cycle.
+        assert set(last_run["fetched_ids"]) == {"already-fetched", "brand-new"}
+        assert last_run["timestamp"] == date_to_timestamp(new_time)
+
+    def test_skips_item_without_uuid(self, mocker, requests_mock):
+        """Alarms missing a UUID are ignored and never influence the watermark.
+
+        Given: An API page containing an alarm with no UUID that occurred later than a
+               valid alarm in the same page.
+
+        When: Running fetch_incidents.
+
+        Then: Only the alarm with a UUID becomes an incident, and the persisted timestamp
+              reflects that alarm rather than the later UUID-less one.
+
+        """
+        from CommonServerPython import date_to_timestamp
+
+        valid_time = self.WATERMARK_TIME + timedelta(minutes=10)
+        # Later than the valid alarm, so leaking it into the watermark would be visible.
+        no_uuid_time = self.WATERMARK_TIME + timedelta(minutes=45)
+        last_fetch = date_to_timestamp(self.WATERMARK_TIME)
+
+        mocker.patch.object(demisto, "params", return_value=self.params())
+        mocker.patch.object(demisto, "getLastRun", return_value={"timestamp": last_fetch, "fetched_ids": {}})
+        mocker.patch.object(demisto, "setLastRun")
+        mocker.patch.object(demisto, "incidents")
+        from AlienVault_USM_Anywhere import fetch_incidents
+
+        requests_mock.get(
+            self.alarms_url(),
+            json=self.alarms_response(
+                [
+                    self.alarm("valid-alarm", valid_time),
+                    self.alarm(None, no_uuid_time),
+                ]
+            ),
+        )
+
+        fetch_incidents()
+
+        created_incidents = demisto.incidents.call_args[0][0]
+        assert [incident["name"] for incident in created_incidents] == ["Alarm: valid-alarm"]
+
+        last_run = demisto.setLastRun.call_args[0][0]
+        assert last_run["timestamp"] == date_to_timestamp(valid_time)
+        assert set(last_run["fetched_ids"]) == {"valid-alarm"}
+
+    def test_evicts_stale_ids(self, mocker, requests_mock):
+        """UUIDs older than the retention window are dropped from the persisted cache.
+
+        Given: A dedup cache holding one entry well outside the retention window
+               (lookback + 60 minutes) and one recent entry.
+
+        When: Running fetch_incidents.
+
+        Then: The stale UUID is evicted from fetched_ids and the recent one is kept.
+
+        """
+        from CommonServerPython import date_to_timestamp
+
+        retention_minutes = self.LOOKBACK_MINUTES + 60
+        last_fetch = date_to_timestamp(self.WATERMARK_TIME)
+
+        now = datetime.now()
+        recent_ms = date_to_timestamp(now)
+        # Comfortably beyond retention so the entry is unambiguously expired.
+        stale_ms = date_to_timestamp(now - timedelta(minutes=retention_minutes + 30))
+
+        mocker.patch.object(demisto, "params", return_value=self.params())
+        mocker.patch.object(
+            demisto,
+            "getLastRun",
+            return_value={
+                "timestamp": last_fetch,
+                "fetched_ids": {"stale-uuid": stale_ms, "recent-uuid": recent_ms},
+            },
+        )
+        mocker.patch.object(demisto, "setLastRun")
+        mocker.patch.object(demisto, "incidents")
+        from AlienVault_USM_Anywhere import fetch_incidents
+
+        # No alarms returned, so the persisted cache reflects eviction alone.
+        requests_mock.get(self.alarms_url(), json=self.alarms_response([]))
+
+        fetch_incidents()
+
+        persisted_ids = demisto.setLastRun.call_args[0][0]["fetched_ids"]
+        assert "stale-uuid" not in persisted_ids
+        assert "recent-uuid" in persisted_ids
+
+    def test_caps_fetched_ids(self, mocker, requests_mock):
+        """The persisted dedup cache is capped, keeping the newest entries.
+
+        Given: A dedup cache already larger than MAX_FETCHED_IDS, where entries carry
+               increasing timestamps.
+
+        When: Running fetch_incidents.
+
+        Then: The persisted cache is truncated to MAX_FETCHED_IDS entries and the oldest
+              UUIDs are discarded, since they are closest to expiring anyway.
+
+        """
+        from AlienVault_USM_Anywhere import MAX_FETCHED_IDS
+        from CommonServerPython import date_to_timestamp
+
+        last_fetch = date_to_timestamp(self.WATERMARK_TIME)
+
+        # All entries stay inside the retention window so eviction cannot interfere,
+        # while increasing offsets make the newest/oldest ordering unambiguous.
+        now = datetime.now()
+        overflow = 10
+        oversized_cache = {
+            f"cached-uuid-{index:05d}": date_to_timestamp(now - timedelta(seconds=MAX_FETCHED_IDS + overflow - index))
+            for index in range(MAX_FETCHED_IDS + overflow)
+        }
+
+        mocker.patch.object(demisto, "params", return_value=self.params())
+        mocker.patch.object(
+            demisto,
+            "getLastRun",
+            return_value={"timestamp": last_fetch, "fetched_ids": oversized_cache},
+        )
+        mocker.patch.object(demisto, "setLastRun")
+        mocker.patch.object(demisto, "incidents")
+        from AlienVault_USM_Anywhere import fetch_incidents
+
+        # No alarms returned, so the persisted cache reflects truncation alone.
+        requests_mock.get(self.alarms_url(), json=self.alarms_response([]))
+
+        fetch_incidents()
+
+        persisted_ids = demisto.setLastRun.call_args[0][0]["fetched_ids"]
+        assert len(persisted_ids) == MAX_FETCHED_IDS
+
+        # The oldest entries carry the lowest indexes, so those are the ones dropped.
+        assert "cached-uuid-00000" not in persisted_ids
+        assert f"cached-uuid-{MAX_FETCHED_IDS + overflow - 1:05d}" in persisted_ids
