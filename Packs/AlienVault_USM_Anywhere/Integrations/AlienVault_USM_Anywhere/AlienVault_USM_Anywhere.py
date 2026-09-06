@@ -27,8 +27,8 @@ USE_SSL = not demisto.params().get("insecure", False)
 IS_FETCH = demisto.params().get("isFetch")
 # How much time before the first fetch to retrieve incidents
 FETCH_TIME = demisto.params().get("fetch_time", "3 days")
-FETCH_LIMIT = int(demisto.params().get("fetch_limit"))
-LOOKBACK_MINUTES = int(demisto.params().get("lookback", 10))
+# Default lookback window (in minutes) used when the parameter is unset or empty
+DEFAULT_LOOKBACK_MINUTES = 10
 # Service base URL
 BASE_URL = SERVER + "/api/2.0"
 # Headers to be sent in requests
@@ -485,9 +485,10 @@ def fetch_incidents():
             last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
     limit = dict_value_to_int(demisto.params(), "fetch_limit") or 10
+    lookback_minutes = arg_to_number(demisto.params().get("lookback")) or DEFAULT_LOOKBACK_MINUTES
 
     # Apply lookback window
-    start_fetch = max(0, int(last_fetch) - (LOOKBACK_MINUTES * 60 * 1000))
+    start_fetch = max(0, int(last_fetch) - (lookback_minutes * 60 * 1000))
     demisto.debug(f"last fetch is: {last_fetch}, fetch from is: {start_fetch}")
     demisto.debug(f"previously fetched ids: {fetched_ids}")
     items = search_alarms(start_time=start_fetch, direction="asc", limit=limit)
@@ -498,7 +499,7 @@ def fetch_incidents():
     now_ms = int(time.time() * 1000)
 
     # Keep IDs only inside lookback window (+1h safety buffer)
-    retention_ms = (LOOKBACK_MINUTES + 60) * 60 * 1000
+    retention_ms = (lookback_minutes + 60) * 60 * 1000
 
     # Remove expired cached UUIDs
     fetched_ids = {uuid: ts for uuid, ts in fetched_ids.items() if now_ms - ts <= retention_ms}
