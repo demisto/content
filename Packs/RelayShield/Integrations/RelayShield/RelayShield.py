@@ -316,7 +316,7 @@ def main() -> None:
 
         reliability = params.get("integrationReliability") or DBotScoreReliability.B
         if not DBotScoreReliability.is_valid_type(reliability):
-            raise DemistoException(DBotScoreReliability.get_error_message())
+            raise DemistoException("RelayShield error: Please provide a valid value for the Source Reliability parameter.")
 
         client = Client(base_url=base_url, api_key=api_key, verify=verify_certificate, proxy=proxy)
 
