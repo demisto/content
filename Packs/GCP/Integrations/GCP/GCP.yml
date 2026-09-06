@@ -248,7 +248,7 @@ script:
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: limit
       defaultValue: '50'
-      description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive."
+      description: "Maximum number of results to return. Acceptable values are 1 to 500, inclusive."
     - name: page_token
       description: Token for pagination.
       required: false
@@ -338,7 +338,7 @@ script:
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: limit
       defaultValue: '50'
-      description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive."
+      description: "Maximum number of results to return. Acceptable values are 1 to 500, inclusive."
     - name: page_token
       description: Token for pagination.
     - name: filter
@@ -508,7 +508,7 @@ script:
       description: If true, match against external NAT IPs; otherwise internal NIC IPs.
     - name: limit
       defaultValue: '50'
-      description: "Maximum number of results to return. Acceptable values are 0 to 500, inclusive."
+      description: "Maximum number of results to return. Acceptable values are 1 to 500, inclusive."
     - name: page_token
       description: Token for pagination.
     outputs:
@@ -3385,7 +3385,7 @@ script:
       required: false
       required:platform: true
     - defaultValue: '50'
-      description: 'The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 0 to 50, inclusive.'
+      description: 'The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
       name: limit
     - description: A filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <.  For example, if you are filtering Compute Engine instances, you can exclude instances named example-instance by specifying name != example-instance.
       name: filters
@@ -3664,7 +3664,7 @@ script:
     - description: A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a Compute Engine instance named example-instance, use name != example-instance.
       name: filters
     - defaultValue: '50'
-      description: 'The maximum number of results per page that should be returned. Acceptable values are 0 to 500, inclusive.'
+      description: 'The maximum number of results per page that should be returned. Acceptable values are 1 to 500, inclusive.'
       name: limit
     - description: Sorts list results in a specific order. By default, results are returned in alphanumerical order based on the resource name.  You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc".
       name: order_by
