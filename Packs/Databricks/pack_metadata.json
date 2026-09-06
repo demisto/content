@@ -1,0 +1,37 @@
+{
+    "name": "Databricks",
+    "description": "Comprehensive integration with Databricks workspace APIs for managing clusters, jobs, SQL, pipelines, Unity Catalog, MLflow, IAM, and more.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Jon Huebner",
+    "url": "https://docs.databricks.com/api/workspace/",
+    "email": "jhuebner@paloaltonetworks.com",
+    "githubUser": ["jhueby"],
+    "created": "2026-08-31T00:00:00Z",
+    "categories": [
+        "Analytics & SIEM",
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Databricks",
+        "Data Lake",
+        "Machine Learning",
+        "SQL Analytics"
+    ],
+    "useCases": [],
+    "keywords": [
+        "databricks",
+        "spark",
+        "delta lake",
+        "unity catalog",
+        "mlflow"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "supportedModules": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
