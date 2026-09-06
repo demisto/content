@@ -79,6 +79,9 @@ configuration:
   type: 8
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Email address from which to fetch incidents
   additionalinfo: For example, "example@mail.com"
   name: mailbox_to_fetch
@@ -118,6 +121,19 @@ configuration:
   type: 13
   section: Connect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: ID or Client ID
   name: _auth_id
   type: 0

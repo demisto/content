@@ -275,11 +275,6 @@
             "fromversion": "6.1.0"
         },
         {
-            "integrations": "Bitbucket",
-            "playbookID": "Test_Bitbucket",
-            "fromversion": "6.5.0"
-        },
-        {
             "playbookID": "MapRangeValuesTest"
         },
         {
@@ -6140,7 +6135,8 @@
         "ForcepointSecurityManagementCenter_test": "No instance",
         "AnsibleTower_Test_playbook": "Instance not working",
         "playbook_TrendmicroCAS_Test": "Authentication token not found",
-        "PaloAltoNetworks_DeviceSecurity-Test": "No instance"
+        "PaloAltoNetworks_DeviceSecurity-Test": "No instance",
+        "Test_Bitbucket": "No instance"
     },
     "skipped_integrations": {
         "qualys_fim": "No Instance",
