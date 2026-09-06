@@ -729,13 +729,13 @@ def storage_bucket_list(creds: Credentials, args: dict[str, Any]) -> CommandResu
             outputs_prefix="GCP.Storage.Bucket",
             outputs=buckets,
             outputs_key_field=["name", "id"],
-            raw_response=buckets,
+            raw_response=response,
         )
-    else:
+    else:  # command_name == "gcp-storage-buckets-list"
         return CommandResults(
             readable_output=hr,
             outputs=outputs,
-            raw_response=buckets,
+            raw_response=response,
         )
 
 
@@ -773,7 +773,7 @@ def storage_bucket_get(creds: Credentials, args: dict[str, Any]) -> CommandResul
         readable_output=hr,
         outputs_prefix="GCP.Storage.Buckets",
         outputs=response,
-        outputs_key_field=["name", "id"],
+        outputs_key_field="name",
         raw_response=response,
     )
 
