@@ -49,8 +49,60 @@ filter source_log_type = "syslog transactions"
     xdm.network.application_protocol = protocol_layer, 
     xdm.session_context_id = session_con_id;
 
+// Outbound HTTP Log
+filter source_log_type = "outbound_http_log"
+|alter
+    int_response_status = to_integer(response_status),
+    int_request_length = to_integer(request_length),
+    int_response_length = to_integer(response_length),
+    int_response_time = to_integer(response_time)
+| alter
+    xdm.event.id = sys_id,
+    xdm.event.type = source_log_type,
+    xdm.event.duration = int_response_time,
+    xdm.event.description = to_string(object_create("Transaction Name", transaction_name, "Session ID", session_id, "Sequence", sequence, "Log Level", log_level)),
+    xdm.session_context_id = transaction_id,
+    xdm.network.http.url = url,
+    xdm.network.http.path = path,
+    xdm.network.application_protocol = protocol,
+    xdm.network.http.method = if(
+        method = "GET", XDM_CONST.HTTP_METHOD_GET,
+        method = "POST", XDM_CONST.HTTP_METHOD_POST,
+        method = "PUT", XDM_CONST.HTTP_METHOD_PUT,
+        method = "DELETE", XDM_CONST.HTTP_METHOD_DELETE,
+        method = "PATCH", XDM_CONST.HTTP_METHOD_PATCH,
+        method = "HEAD", XDM_CONST.HTTP_METHOD_HEAD,
+        method = "OPTIONS", XDM_CONST.HTTP_METHOD_OPTIONS,
+        method = null, null,
+        method),
+    xdm.network.http.response_code = if(
+        int_response_status = 100, XDM_CONST.HTTP_RSP_CODE_CONTINUE,
+        int_response_status = 200, XDM_CONST.HTTP_RSP_CODE_OK,
+        int_response_status = 201, XDM_CONST.HTTP_RSP_CODE_CREATED,
+        int_response_status = 202, XDM_CONST.HTTP_RSP_CODE_ACCEPTED,
+        int_response_status = 204, XDM_CONST.HTTP_RSP_CODE_NO_CONTENT,
+        int_response_status = 301, XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY,
+        int_response_status = 302, XDM_CONST.HTTP_RSP_CODE_FOUND,
+        int_response_status = 304, XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED,
+        int_response_status = 400, XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST,
+        int_response_status = 401, XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED,
+        int_response_status = 403, XDM_CONST.HTTP_RSP_CODE_FORBIDDEN,
+        int_response_status = 404, XDM_CONST.HTTP_RSP_CODE_NOT_FOUND,
+        int_response_status = 409, XDM_CONST.HTTP_RSP_CODE_CONFLICT,
+        int_response_status = 429, XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS,
+        int_response_status = 500, XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR,
+        int_response_status = 502, XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY,
+        int_response_status = 503, XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE,
+        int_response_status = 504, XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT,
+        null),
+    xdm.source.sent_bytes = if(int_request_length >= 0, int_request_length, null),
+    xdm.target.sent_bytes = if(int_response_length >= 0, int_response_length, null),
+    xdm.source.user.username = sys_created_by,
+    xdm.source.identity.username = sys_created_by,
+    xdm.target.host.hostname = hostname;
+
 // Audit Logs
-filter source_log_type not in ("syslog transactions", "case")
+filter source_log_type not in ("syslog transactions", "case","outbound_http_log")
 |alter // sys_audit: https://docs.servicenow.com/bundle/vancouver-platform-security/page/administer/time/concept/exploring-auditing.html#d227507e148
     xdm.database.tables = arraycreate(tablename), // Table that the audit record is for (for example, "incident")
     xdm.event.type = "AUDIT", 
