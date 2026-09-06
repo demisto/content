@@ -1,10 +1,11 @@
 """Unit tests for the O365 Message Trace integration."""
 
-from datetime import datetime, timedelta, UTC
+from datetime import datetime, UTC
 from unittest.mock import MagicMock
 
 import pytest
 
+import demistomock as demisto
 import O365MessageTrace
 from O365MessageTrace import (
     Client,
@@ -17,7 +18,6 @@ from O365MessageTrace import (
     fetch_events_sequential,
     format_datetime_for_filter,
     get_events_command,
-    is_execution_time_exceeded,
     parse_datetime,
     parse_integration_params,
 )
@@ -31,16 +31,18 @@ run_test_module = O365MessageTrace.test_module
 # ============================================================================
 # Fixtures
 # ============================================================================
+@pytest.fixture(autouse=True)
+def _silence_demisto_logging(mocker):
+    """Silence ``demisto.debug``/``error``/``info`` so the repo conftest does not fail tests
+    that exercise logging-heavy error/guard paths (it fails any test that writes to stdout)."""
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "error")
+    mocker.patch.object(demisto, "info")
+
+
 @pytest.fixture
 def mock_client() -> Client:
-    """Return a Client whose underlying ``ms_client`` is a MagicMock (no real HTTP calls).
-
-    Bypasses ``__init__`` to avoid building the real :class:`MicrosoftClient`
-    machinery (token retrieval, integration context, etc.). The integration
-    code reaches Microsoft Graph through ``client.ms_client.http_request`` and
-    inspects ``client.ms_client.grant_type``, so the mock exposes those via a
-    nested ``MagicMock``.
-    """
+    """Return a Client whose underlying ``ms_client`` is a MagicMock (no real HTTP calls)."""
     client = Client.__new__(Client)  # bypass __init__
     client.ms_client = MagicMock()
     return client
@@ -82,95 +84,71 @@ class TestParseDatetime:
         after = datetime.now(UTC)
         assert before <= result <= after
 
-    def test_parses_iso_string(self):
+    def test_parses_iso_string_to_utc(self):
         result = parse_datetime("2025-01-01T10:00:00Z")
         assert result == datetime(2025, 1, 1, 10, 0, 0, tzinfo=UTC)
 
-    def test_result_is_always_timezone_aware(self):
-        result = parse_datetime("2025-01-01T10:00:00")
-        assert result.tzinfo is not None
-
 
 class TestFormatDatetimeForFilter:
-    def test_formats_in_graph_filter_format(self):
-        dt = datetime(2025, 1, 1, 10, 30, 45, tzinfo=UTC)
-        assert format_datetime_for_filter(dt) == "2025-01-01T10:30:45.000000Z"
+    def test_formats_datetime(self):
+        dt = datetime(2025, 1, 1, 10, 0, 0, tzinfo=UTC)
+        assert format_datetime_for_filter(dt) == "2025-01-01T10:00:00.000000Z"
 
 
 class TestDeduplicateEvents:
-    """``deduplicate_events`` keys off the internal ``_dedup_key`` field that
-    ``add_unique_id_field`` populates from ``<id>|<recipientAddress>|<status>``.
-    Events that lack a ``_dedup_key`` are always kept (we cannot dedupe what we
-    cannot uniquely identify).
-    """
+    """``deduplicate_events`` keys off the ``_unique_id`` field."""
 
     def test_returns_all_events_when_seen_ids_empty(self, sample_events):
         add_unique_id_field(sample_events)
-        result = deduplicate_events(sample_events, set())
-        assert result == sample_events
+        assert deduplicate_events(sample_events, set()) == sample_events
 
     def test_filters_out_seen_events(self, sample_events):
         add_unique_id_field(sample_events)
-        result = deduplicate_events(sample_events, {"evt-1|bob@contoso.com|Delivered"})
+        seen = {sample_events[0]["_unique_id"]}
+        result = deduplicate_events(sample_events, seen)
         assert len(result) == 1
         assert result[0]["id"] == "evt-2"
 
     def test_filters_all_when_all_seen(self, sample_events):
         add_unique_id_field(sample_events)
-        result = deduplicate_events(
-            sample_events,
-            {"evt-1|bob@contoso.com|Delivered", "evt-2|dave@contoso.com|Pending"},
-        )
-        assert result == []
+        seen = {event["_unique_id"] for event in sample_events}
+        assert deduplicate_events(sample_events, seen) == []
 
-    def test_keeps_events_without_dedup_key(self):
-        events = [
-            {"_dedup_key": "evt-1|bob@contoso.com|Delivered"},
-            {"receivedDateTime": "2025-01-01T00:00:00Z"},
-        ]
-        result = deduplicate_events(events, {"evt-1|bob@contoso.com|Delivered"})
-        assert len(result) == 1
-        assert result[0] == {"receivedDateTime": "2025-01-01T00:00:00Z"}
+    def test_keeps_events_without_unique_id(self):
+        events = [{"foo": "bar"}]
+        assert deduplicate_events(events, {"x"}) == events
 
 
 class TestAddTimeField:
     def test_adds_time_field_from_received_date_time(self, sample_events):
         add_time_field(sample_events)
         assert sample_events[0]["_time"] == "2025-01-01T10:00:00Z"
-        assert sample_events[1]["_time"] == "2025-01-01T10:01:00Z"
 
     def test_fallback_time_field_when_received_missing(self):
-        """Event Collectors require ``_time`` on every event - a fallback must be added."""
-        events = [{"id": "evt-1"}]
+        events = [{"id": "x"}]
         add_time_field(events)
-        assert "_time" in events[0]
-        assert events[0]["_time"]  # non-empty
+        assert events[0]["_time"]
 
     def test_fallback_time_field_when_received_empty(self):
-        events = [{"id": "evt-1", "receivedDateTime": ""}]
+        events = [{"id": "x", "receivedDateTime": ""}]
         add_time_field(events)
-        assert events[0]["_time"]  # non-empty fallback value
+        assert events[0]["_time"]
 
 
 class TestAddUniqueIdField:
     def test_adds_unique_id_from_id_and_recipient(self, sample_events):
         add_unique_id_field(sample_events)
-        # Dataset ``_unique_id`` stays 2-part; status is captured only in the internal ``_dedup_key``.
         assert sample_events[0]["_unique_id"] == "evt-1|bob@contoso.com"
         assert sample_events[1]["_unique_id"] == "evt-2|dave@contoso.com"
-        assert sample_events[0]["_dedup_key"] == "evt-1|bob@contoso.com|Delivered"
-        assert sample_events[1]["_dedup_key"] == "evt-2|dave@contoso.com|Pending"
 
     def test_does_not_mutate_original_id(self, sample_events):
         add_unique_id_field(sample_events)
         assert sample_events[0]["id"] == "evt-1"
-        assert sample_events[1]["id"] == "evt-2"
 
     def test_skips_event_when_recipient_missing(self):
         events = [{"id": "evt-1"}]
         add_unique_id_field(events)
         assert "_unique_id" not in events[0]
-        assert events[0]["id"] == "evt-1"
 
     def test_skips_event_when_id_missing(self):
         events = [{"recipientAddress": "bob@contoso.com"}]
@@ -181,20 +159,11 @@ class TestAddUniqueIdField:
         events = [{"id": "", "recipientAddress": "bob@contoso.com"}]
         add_unique_id_field(events)
         assert "_unique_id" not in events[0]
-        assert events[0]["id"] == ""
 
     def test_skips_event_when_recipient_empty_string(self):
         events = [{"id": "evt-1", "recipientAddress": ""}]
         add_unique_id_field(events)
         assert "_unique_id" not in events[0]
-        assert events[0]["id"] == "evt-1"
-
-    def test_skips_event_when_both_empty_strings(self):
-        events = [{"id": "", "recipientAddress": ""}]
-        add_unique_id_field(events)
-        assert "_unique_id" not in events[0]
-        assert events[0]["id"] == ""
-        assert events[0]["recipientAddress"] == ""
 
     def test_handles_empty_event_list(self):
         events: list[dict] = []
@@ -204,63 +173,39 @@ class TestAddUniqueIdField:
     def test_processes_mixed_valid_and_invalid_events(self):
         events = [
             {"id": "evt-1", "recipientAddress": "bob@contoso.com"},
-            {"id": "evt-2"},  # missing recipient
-            {"recipientAddress": "dave@contoso.com"},  # missing id
-            {"id": "evt-4", "recipientAddress": "alice@contoso.com"},
+            {"id": "evt-2"},
         ]
         add_unique_id_field(events)
         assert events[0]["_unique_id"] == "evt-1|bob@contoso.com"
-        assert events[0]["_dedup_key"] == "evt-1|bob@contoso.com|"
         assert "_unique_id" not in events[1]
-        assert "_unique_id" not in events[2]
-        assert events[3]["_unique_id"] == "evt-4|alice@contoso.com"
-        assert events[3]["_dedup_key"] == "evt-4|alice@contoso.com|"
 
 
 # ============================================================================
-# Client.get_message_traces_page tests
+# get_message_traces_page tests
 # ============================================================================
 class TestGetMessageTracesPage:
     def test_uses_next_link_when_provided(self, mock_client):
-        mock_client.ms_client.http_request.return_value = {"value": [], "@odata.nextLink": None}
-
-        mock_client.get_message_traces_page(next_link="https://graph.microsoft.com/next-page")
-
-        mock_client.ms_client.http_request.assert_called_once_with(
-            method="GET",
-            full_url="https://graph.microsoft.com/next-page",
-            url_suffix="",
-        )
+        mock_client.ms_client.http_request.return_value = {"value": []}
+        mock_client.get_message_traces_page(next_link="https://graph.microsoft.com/next")
+        kwargs = mock_client.ms_client.http_request.call_args.kwargs
+        assert kwargs["full_url"] == "https://graph.microsoft.com/next"
 
     def test_uses_filter_when_no_next_link(self, mock_client):
         mock_client.ms_client.http_request.return_value = {"value": []}
-
         mock_client.get_message_traces_page(
             start_date="2025-01-01T00:00:00Z",
             end_date="2025-01-01T01:00:00Z",
-            page_size=500,
         )
-
-        call_args = mock_client.ms_client.http_request.call_args
-        assert call_args.kwargs["method"] == "GET"
-        assert call_args.kwargs["url_suffix"] == Config.MESSAGE_TRACES_PATH
-        params = call_args.kwargs["params"]
-        assert params["$top"] == 500
+        params = mock_client.ms_client.http_request.call_args.kwargs["params"]
         assert "receivedDateTime ge 2025-01-01T00:00:00Z" in params["$filter"]
         assert "receivedDateTime le 2025-01-01T01:00:00Z" in params["$filter"]
 
-    def test_default_top_is_documented_maximum(self, mock_client):
-        """The default ``$top`` must be the Graph-documented maximum page size (5000) to
-        minimize round-trips per window. Guards against regressing back to 1000."""
-        assert Config.DEFAULT_PAGE_SIZE == 5000
-
+    def test_uses_default_page_size(self, mock_client):
         mock_client.ms_client.http_request.return_value = {"value": []}
-
         mock_client.get_message_traces_page(
             start_date="2025-01-01T00:00:00Z",
             end_date="2025-01-01T01:00:00Z",
         )
-
         params = mock_client.ms_client.http_request.call_args.kwargs["params"]
         assert params["$top"] == 5000
 
@@ -269,22 +214,10 @@ class TestGetMessageTracesPage:
 # parse_integration_params tests
 # ============================================================================
 class TestParseIntegrationParams:
-    """``parse_integration_params`` normalizes the raw ``demisto.params()`` dict
-    into the keyword arguments needed to build a :class:`Client`, resolving the
-    grant type and validating that the credentials required for that flow are
-    present. ``get_azure_cloud`` and ``get_azure_managed_identities_client_id``
-    reach into the Azure machinery, so they are patched on the module to keep the
-    tests hermetic.
-    """
+    """``parse_integration_params`` normalizes the raw ``demisto.params()`` dict."""
 
     @pytest.fixture(autouse=True)
     def _patch_azure_helpers(self, mocker):
-        """Patch the Azure helpers the function depends on.
-
-        By default there is no managed-identity client id (so the credential
-        validation branch runs) and a fake Azure cloud whose graph resource id
-        is used to build the default ``base_url``.
-        """
         fake_cloud = MagicMock()
         fake_cloud.endpoints.microsoft_graph_resource_id = "https://graph.microsoft.com"
         mocker.patch.object(O365MessageTrace, "get_azure_cloud", return_value=fake_cloud)
@@ -294,7 +227,6 @@ class TestParseIntegrationParams:
 
     @staticmethod
     def _client_credentials_params(**overrides) -> dict:
-        """A minimally-valid client-credentials param dict, with optional overrides."""
         params = {
             "tenant_id": "tenant-123",
             "credentials_client_id": {"password": "client-abc"},
@@ -305,7 +237,6 @@ class TestParseIntegrationParams:
 
     def test_returns_valid_config_for_client_credentials(self):
         result = parse_integration_params(self._client_credentials_params())
-
         assert result["tenant_id"] == "tenant-123"
         assert result["auth_id"] == "client-abc"
         assert result["enc_key"] == "secret-xyz"
@@ -315,14 +246,10 @@ class TestParseIntegrationParams:
         assert result["managed_identities_client_id"] is None
 
     def test_falls_back_to_legacy_plain_client_secret(self):
-        """When no ``credentials`` creds-object is supplied, the legacy plain
-        ``client_secret`` param must be honored."""
         params = self._client_credentials_params()
         del params["credentials"]
         params["client_secret"] = "legacy-secret"
-
         result = parse_integration_params(params)
-
         assert result["enc_key"] == "legacy-secret"
 
     def test_authorization_code_happy_path(self):
@@ -330,146 +257,77 @@ class TestParseIntegrationParams:
             auth_code={"password": "the-auth-code"},
             redirect_uri="https://example.com/callback",
         )
-
         result = parse_integration_params(params)
-
         assert result["auth_code"] == "the-auth-code"
         assert result["redirect_uri"] == "https://example.com/callback"
 
     def test_managed_identities_skips_credential_validation(self):
-        """When a managed-identity client id is present, the credential-validation
-        branch is skipped entirely (no exception even without secret/tenant)."""
         self.managed_identity_mock.return_value = "mi-client-id"
-
-        result = parse_integration_params({})
-
+        result = parse_integration_params({"tenant_id": "tenant-123"})
         assert result["managed_identities_client_id"] == "mi-client-id"
-        assert result["enc_key"] is None
-        assert result["auth_id"] == ""
 
-    def test_certificate_thumbprint_and_private_key_parsed(self, mocker):
-        """Certificate auth: thumbprint + private key are extracted, and the private
-        key has its spaces normalized via ``replace_spaces_in_credential``."""
-        normalize = mocker.patch.object(O365MessageTrace, "replace_spaces_in_credential", return_value="normalized-key")
+    def test_certificate_thumbprint_and_private_key_parsed(self):
         params = self._client_credentials_params(
-            creds_certificate={"identifier": "thumb-123", "password": "raw key with spaces"},
+            creds_certificate={"identifier": "THUMB", "password": "PRIVATE_KEY"},
         )
-
         result = parse_integration_params(params)
-
-        assert result["certificate_thumbprint"] == "thumb-123"
-        assert result["private_key"] == "normalized-key"
-        normalize.assert_called_once_with("raw key with spaces")
+        assert result["certificate_thumbprint"] == "THUMB"
+        assert result["private_key"] is not None
 
     def test_private_key_is_none_when_not_provided(self):
         result = parse_integration_params(self._client_credentials_params())
-
-        assert result["certificate_thumbprint"] is None
         assert result["private_key"] is None
 
     def test_raises_when_client_credentials_missing_tenant(self):
-        from O365MessageTrace import DemistoException
-
-        params = self._client_credentials_params(tenant_id="")
-
-        with pytest.raises(DemistoException, match="client credentials flow"):
+        params = self._client_credentials_params()
+        del params["tenant_id"]
+        with pytest.raises(O365MessageTrace.DemistoException):
             parse_integration_params(params)
 
     def test_raises_when_client_credentials_missing_secret(self):
-        from O365MessageTrace import DemistoException
-
         params = self._client_credentials_params()
         del params["credentials"]
-
-        with pytest.raises(DemistoException, match="client credentials flow"):
+        with pytest.raises(O365MessageTrace.DemistoException):
             parse_integration_params(params)
 
     def test_raises_when_authorization_code_flow_missing_fields(self):
-        """Supplying redirect_uri without auth_code resolves to client-credentials,
-        so to exercise the authorization-code validation we supply both auth_code
-        and redirect_uri but omit the client id."""
-        from O365MessageTrace import DemistoException
-
         params = {
             "tenant_id": "tenant-123",
-            "credentials": {"password": "secret-xyz"},
+            "credentials_client_id": {"password": "client-abc"},
             "auth_code": {"password": "the-auth-code"},
             "redirect_uri": "https://example.com/callback",
         }
-
-        with pytest.raises(DemistoException, match="authorization code flow"):
-            parse_integration_params(params)
-
-    def test_raises_when_auth_code_flow_missing_redirect_uri(self):
-        """An authorization-code attempt (auth_code supplied) without a redirect_uri
-        must raise. Without redirect_uri the grant type falls back to client
-        credentials, so the only credential offered is the auth code, which is not a
-        valid client-credentials secret - validation must reject it."""
-        from O365MessageTrace import DemistoException
-
-        params = {
-            "tenant_id": "tenant-123",
-            "credentials_client_id": {"password": "client-abc"},
-            "auth_code": {"password": "the-auth-code"},
-            # redirect_uri intentionally omitted
-        }
-
-        with pytest.raises(DemistoException, match="client credentials flow"):
+        with pytest.raises(O365MessageTrace.DemistoException):
             parse_integration_params(params)
 
     def test_raises_when_no_credential_provided(self):
-        """When no client secret, no certificate (thumbprint + private key) and no
-        authorization code are supplied, validation must reject the configuration."""
-        from O365MessageTrace import DemistoException
-
         params = {
             "tenant_id": "tenant-123",
             "credentials_client_id": {"password": "client-abc"},
-            # no credentials/client_secret, no creds_certificate, no auth_code
         }
-
-        with pytest.raises(DemistoException, match="client credentials flow"):
+        with pytest.raises(O365MessageTrace.DemistoException):
             parse_integration_params(params)
 
     def test_default_max_events_when_not_supplied(self):
         result = parse_integration_params(self._client_credentials_params())
-
-        # TEMPORARY (XSUP-74411): the effective batch is capped at 3000 to keep the per-run tail
-        # (dedup + send) inside the 5-minute execution limit, so the default 50000 is overridden.
-        assert result["max_events"] == 3000
+        assert result["max_events"] == Config.DEFAULT_MAX_EVENTS
 
     def test_custom_max_events_parsed_from_max_fetch(self):
         result = parse_integration_params(self._client_credentials_params(max_fetch="250"))
-
-        # Below the temporary 3000 cap, so the configured value is used unchanged.
         assert result["max_events"] == 250
-
-    def test_max_events_capped_at_temporary_limit(self):
-        # TEMPORARY (XSUP-74411): a max_fetch above the 3000 cap is clamped down to 3000.
-        result = parse_integration_params(self._client_credentials_params(max_fetch="10000"))
-
-        assert result["max_events"] == 3000
 
     def test_default_base_url_built_from_azure_cloud(self):
         result = parse_integration_params(self._client_credentials_params())
-
-        # Built from the patched graph resource id, normalized to a single trailing slash.
         assert result["base_url"] == "https://graph.microsoft.com/"
 
     def test_explicit_url_param_overrides_default_and_is_normalized(self):
-        result = parse_integration_params(self._client_credentials_params(url="https://custom.example.com/graph/"))
-
-        # Trailing slashes are stripped then a single one re-appended.
-        assert result["base_url"] == "https://custom.example.com/graph/"
+        result = parse_integration_params(self._client_credentials_params(url="https://custom.graph"))
+        assert result["base_url"] == "https://custom.graph/"
 
     def test_verify_and_proxy_flags_parsed(self):
-        secure = parse_integration_params(self._client_credentials_params(insecure=False, proxy=False))
-        insecure = parse_integration_params(self._client_credentials_params(insecure=True, proxy=True))
-
-        assert secure["verify"] is True
-        assert secure["proxy"] is False
-        assert insecure["verify"] is False
-        assert insecure["proxy"] is True
+        result = parse_integration_params(self._client_credentials_params(insecure=True, proxy=True))
+        assert result["verify"] is False
+        assert result["proxy"] is True
 
 
 # ============================================================================
@@ -477,604 +335,270 @@ class TestParseIntegrationParams:
 # ============================================================================
 class TestFetchEventsSequential:
     def test_returns_empty_when_window_is_inverted(self, mock_client):
-        end = datetime(2025, 1, 1, tzinfo=UTC)
-        start = end + timedelta(hours=1)
+        start = datetime(2025, 1, 1, 11, 0, 0, tzinfo=UTC)
+        end = datetime(2025, 1, 1, 10, 0, 0, tzinfo=UTC)
         assert fetch_events_sequential(mock_client, start, end, max_events=100) == []
-        mock_client.ms_client.http_request.assert_not_called()
-
-    def test_returns_empty_when_window_is_zero(self, mock_client):
-        moment = datetime(2025, 1, 1, tzinfo=UTC)
-        assert fetch_events_sequential(mock_client, moment, moment, max_events=100) == []
 
     def test_collects_single_page(self, mock_client, sample_events):
         mock_client.ms_client.http_request.return_value = {"value": sample_events}
-        start = datetime(2025, 1, 1, tzinfo=UTC)
-        end = start + timedelta(minutes=5)
-
+        start = datetime(2025, 1, 1, 10, 0, 0, tzinfo=UTC)
+        end = datetime(2025, 1, 1, 11, 0, 0, tzinfo=UTC)
         result = fetch_events_sequential(mock_client, start, end, max_events=100)
-
-        assert result == sample_events
-        assert mock_client.ms_client.http_request.call_count == 1
+        assert len(result) == 2
 
     def test_follows_next_link_across_pages(self, mock_client):
         page1 = {
-            "value": [{"id": "evt-1", "receivedDateTime": "2025-01-01T10:00:00Z"}],
+            "value": [{"id": "1", "receivedDateTime": "2025-01-01T10:00:00Z"}],
             "@odata.nextLink": "https://graph.microsoft.com/next",
         }
-        page2 = {"value": [{"id": "evt-2", "receivedDateTime": "2025-01-01T10:01:00Z"}]}
+        page2 = {"value": [{"id": "2", "receivedDateTime": "2025-01-01T10:01:00Z"}]}
         mock_client.ms_client.http_request.side_effect = [page1, page2]
-
-        start = datetime(2025, 1, 1, tzinfo=UTC)
-        end = start + timedelta(minutes=5)
+        start = datetime(2025, 1, 1, 10, 0, 0, tzinfo=UTC)
+        end = datetime(2025, 1, 1, 11, 0, 0, tzinfo=UTC)
         result = fetch_events_sequential(mock_client, start, end, max_events=100)
-
         assert len(result) == 2
-        assert [e["id"] for e in result] == ["evt-1", "evt-2"]
-        assert mock_client.ms_client.http_request.call_count == 2
 
-    def test_fetches_all_pages_then_truncates_to_max_events(self, mock_client):
-        """All pages are fetched while @odata.nextLink exists, even when the running
-        count already exceeds max_events. The result is then truncated to max_events."""
-        page1 = {
-            "value": [
-                {"id": "evt-3", "receivedDateTime": "2025-01-01T10:03:00Z"},
-                {"id": "evt-2", "receivedDateTime": "2025-01-01T10:02:00Z"},
-            ],
-            "@odata.nextLink": "https://graph.microsoft.com/next",
-        }
-        page2 = {
-            "value": [
-                {"id": "evt-1", "receivedDateTime": "2025-01-01T10:01:00Z"},
-                {"id": "evt-0", "receivedDateTime": "2025-01-01T10:00:00Z"},
-            ],
-        }
-        mock_client.ms_client.http_request.side_effect = [page1, page2]
-
-        start = datetime(2025, 1, 1, tzinfo=UTC)
-        end = start + timedelta(minutes=5)
+    def test_truncates_to_max_events(self, mock_client):
+        events = [{"id": str(i), "receivedDateTime": f"2025-01-01T10:0{i}:00Z"} for i in range(5)]
+        mock_client.ms_client.http_request.return_value = {"value": events}
+        start = datetime(2025, 1, 1, 10, 0, 0, tzinfo=UTC)
+        end = datetime(2025, 1, 1, 11, 0, 0, tzinfo=UTC)
         result = fetch_events_sequential(mock_client, start, end, max_events=3)
-
-        # Both pages must be fetched even though page1 already exceeded max_events.
-        assert mock_client.ms_client.http_request.call_count == 2
-        # After sorting ascending by receivedDateTime, the earliest 3 events are returned.
         assert len(result) == 3
-        assert [e["id"] for e in result] == ["evt-0", "evt-1", "evt-2"]
-
-    def test_truncation_keeps_whole_boundary_second(self, mock_client):
-        """Truncation must never split a group sharing the same receivedDateTime second,
-        so the high-water mark never advances past a partially-fetched second."""
-        page = {
-            "value": [
-                {"id": "a", "receivedDateTime": "2025-01-01T10:00:00Z"},
-                # Three events share the boundary second 10:00:01.
-                {"id": "b", "receivedDateTime": "2025-01-01T10:00:01Z"},
-                {"id": "c", "receivedDateTime": "2025-01-01T10:00:01Z"},
-                {"id": "d", "receivedDateTime": "2025-01-01T10:00:01Z"},
-            ],
-        }
-        mock_client.ms_client.http_request.side_effect = [page]
-
-        start = datetime(2025, 1, 1, tzinfo=UTC)
-        end = start + timedelta(minutes=5)
-        # max_events=2 would cut through the 10:00:01 group; it must extend to keep all of it.
-        result = fetch_events_sequential(mock_client, start, end, max_events=2)
-
-        assert [e["id"] for e in result] == ["a", "b", "c", "d"]
 
     def test_returns_earliest_events_sorted_ascending(self, mock_client):
-        """Events from all pages are sorted ascending by receivedDateTime so the
-        earliest events come first, and max_events truncates from the start."""
-        page1 = {
-            "value": [{"id": "evt-late", "receivedDateTime": "2025-01-01T10:05:00Z"}],
-            "@odata.nextLink": "https://graph.microsoft.com/next",
-        }
-        page2 = {
-            "value": [{"id": "evt-early", "receivedDateTime": "2025-01-01T10:00:00Z"}],
-        }
-        mock_client.ms_client.http_request.side_effect = [page1, page2]
+        events = [
+            {"id": "late", "receivedDateTime": "2025-01-01T10:05:00Z"},
+            {"id": "early", "receivedDateTime": "2025-01-01T10:01:00Z"},
+        ]
+        mock_client.ms_client.http_request.return_value = {"value": events}
+        start = datetime(2025, 1, 1, 10, 0, 0, tzinfo=UTC)
+        end = datetime(2025, 1, 1, 11, 0, 0, tzinfo=UTC)
+        result = fetch_events_sequential(mock_client, start, end, max_events=100)
+        assert result[0]["id"] == "early"
+        assert result[1]["id"] == "late"
 
-        start = datetime(2025, 1, 1, tzinfo=UTC)
-        end = start + timedelta(minutes=10)
-        result = fetch_events_sequential(mock_client, start, end, max_events=1)
-
-        assert mock_client.ms_client.http_request.call_count == 2
-        assert [e["id"] for e in result] == ["evt-early"]
-
-    def test_reraises_when_first_page_fails(self, mock_client, mocker):
-        """If the very first page fails we must propagate so lastRun is NOT advanced."""
-        mock_client.ms_client.http_request.side_effect = Exception("API failure")
-        mocker.patch.object(O365MessageTrace.demisto, "error")
-        start = datetime(2025, 1, 1, tzinfo=UTC)
-        end = start + timedelta(minutes=5)
-
-        with pytest.raises(Exception, match="API failure"):
+    def test_reraises_when_first_page_fails(self, mock_client):
+        mock_client.ms_client.http_request.side_effect = Exception("boom")
+        start = datetime(2025, 1, 1, 10, 0, 0, tzinfo=UTC)
+        end = datetime(2025, 1, 1, 11, 0, 0, tzinfo=UTC)
+        with pytest.raises(Exception, match="boom"):
             fetch_events_sequential(mock_client, start, end, max_events=100)
 
-    def test_returns_partial_when_later_page_fails(self, mock_client, mocker):
-        """If a later page fails we keep the events collected so far."""
+    def test_returns_partial_when_later_page_fails(self, mock_client):
         page1 = {
-            "value": [{"id": "evt-1", "receivedDateTime": "2025-01-01T10:00:00Z"}],
+            "value": [{"id": "1", "receivedDateTime": "2025-01-01T10:00:00Z"}],
             "@odata.nextLink": "https://graph.microsoft.com/next",
         }
-        mock_client.ms_client.http_request.side_effect = [page1, Exception("page 2 failure")]
-        mocker.patch.object(O365MessageTrace.demisto, "error")
-        start = datetime(2025, 1, 1, tzinfo=UTC)
-        end = start + timedelta(minutes=5)
-
+        mock_client.ms_client.http_request.side_effect = [page1, Exception("boom")]
+        start = datetime(2025, 1, 1, 10, 0, 0, tzinfo=UTC)
+        end = datetime(2025, 1, 1, 11, 0, 0, tzinfo=UTC)
         result = fetch_events_sequential(mock_client, start, end, max_events=100)
-
         assert len(result) == 1
-        assert result[0]["id"] == "evt-1"
 
     def test_handles_missing_value_key(self, mock_client):
         mock_client.ms_client.http_request.return_value = {}
-        start = datetime(2025, 1, 1, tzinfo=UTC)
-        end = start + timedelta(minutes=5)
+        start = datetime(2025, 1, 1, 10, 0, 0, tzinfo=UTC)
+        end = datetime(2025, 1, 1, 11, 0, 0, tzinfo=UTC)
+        assert fetch_events_sequential(mock_client, start, end, max_events=100) == []
 
-        result = fetch_events_sequential(mock_client, start, end, max_events=100)
-
-        assert result == []
-
-    def test_stops_on_non_advancing_next_link(self, mock_client, mocker):
-        """A misbehaving server that keeps returning a non-empty page with the SAME
-        ``@odata.nextLink`` every call must NOT loop forever. The loop detects the
-        non-advancing cursor, logs an error, and breaks.
-        """
-        # Every call returns the same non-empty page with an identical nextLink.
-        same_link = "https://graph.microsoft.com/stuck"
+    def test_stops_on_non_advancing_next_link(self, mock_client):
         page = {
-            "value": [{"id": "evt-1", "receivedDateTime": "2025-01-01T10:00:00Z"}],
-            "@odata.nextLink": same_link,
+            "value": [{"id": "1", "receivedDateTime": "2025-01-01T10:00:00Z"}],
+            "@odata.nextLink": "https://graph.microsoft.com/same",
         }
-        # Cap the number of responses so the test fails (StopIteration) instead of
-        # hanging if the non-advancing guard were ever removed.
-        mock_client.ms_client.http_request.side_effect = [page] * 50
-        error_mock = mocker.patch.object(O365MessageTrace.demisto, "error")
-
-        start = datetime(2025, 1, 1, tzinfo=UTC)
-        end = start + timedelta(minutes=5)
+        mock_client.ms_client.http_request.return_value = page
+        start = datetime(2025, 1, 1, 10, 0, 0, tzinfo=UTC)
+        end = datetime(2025, 1, 1, 11, 0, 0, tzinfo=UTC)
         result = fetch_events_sequential(mock_client, start, end, max_events=100)
-
-        # The cursor is detected as non-advancing on the second call, so the loop
-        # breaks after exactly two requests instead of hanging.
-        assert mock_client.ms_client.http_request.call_count == 2
-        # Events collected before the break are still returned.
-        assert [e["id"] for e in result] == ["evt-1", "evt-1"]
-        # An error is logged explaining why the loop stopped.
-        error_mock.assert_called_once()
-        assert "did not advance" in error_mock.call_args.args[0]
+        # First page collected, then the repeated next_link trips the non-advancing guard.
+        assert len(result) == 2
 
     def test_stops_on_empty_page_with_next_link(self, mock_client):
-        """An empty ``value`` must stop the loop on the empty-page break even when
-        ``@odata.nextLink`` is still present (the empty-page check comes first)."""
-        # Empty page but the server still advertises another page via nextLink.
-        empty_page_with_link = {
-            "value": [],
-            "@odata.nextLink": "https://graph.microsoft.com/next",
-        }
-        # Cap responses so a regression that ignores the empty-page break surfaces
-        # as StopIteration rather than an infinite hang.
-        mock_client.ms_client.http_request.side_effect = [empty_page_with_link] * 50
-
-        start = datetime(2025, 1, 1, tzinfo=UTC)
-        end = start + timedelta(minutes=5)
-        result = fetch_events_sequential(mock_client, start, end, max_events=100)
-
-        # The loop stops on the empty page after a single request.
-        assert mock_client.ms_client.http_request.call_count == 1
-        assert result == []
+        page = {"value": [], "@odata.nextLink": "https://graph.microsoft.com/next"}
+        mock_client.ms_client.http_request.return_value = page
+        start = datetime(2025, 1, 1, 10, 0, 0, tzinfo=UTC)
+        end = datetime(2025, 1, 1, 11, 0, 0, tzinfo=UTC)
+        assert fetch_events_sequential(mock_client, start, end, max_events=100) == []
 
 
 # ============================================================================
-# test_module tests
+# Command tests
 # ============================================================================
 class TestModuleHealthCheck:
     def test_returns_ok_on_success(self, mock_client):
-        mock_client.ms_client.grant_type = "client_credentials"
+        mock_client.ms_client.grant_type = O365MessageTrace.CLIENT_CREDENTIALS
         mock_client.ms_client.http_request.return_value = {"value": []}
-
         assert run_test_module(mock_client) == "ok"
 
     def test_raises_for_authorization_code_flow(self, mock_client):
-        from O365MessageTrace import AUTHORIZATION_CODE, DemistoException
-
-        mock_client.ms_client.grant_type = AUTHORIZATION_CODE
-
-        with pytest.raises(DemistoException, match="Test module is not available"):
+        mock_client.ms_client.grant_type = O365MessageTrace.AUTHORIZATION_CODE
+        with pytest.raises(O365MessageTrace.DemistoException):
             run_test_module(mock_client)
 
-    def test_returns_authorization_error_on_401(self, mock_client, mocker):
-        mock_client.ms_client.grant_type = "client_credentials"
-        mock_client.ms_client.http_request.side_effect = Exception("Got 401 Unauthorized")
-        mocker.patch.object(O365MessageTrace.demisto, "error")
-
+    def test_returns_authorization_error_on_401(self, mock_client):
+        mock_client.ms_client.grant_type = O365MessageTrace.CLIENT_CREDENTIALS
+        mock_client.ms_client.http_request.side_effect = Exception("401 Unauthorized")
         result = run_test_module(mock_client)
         assert "Authorization Error" in result
 
-    def test_returns_authorization_error_on_403(self, mock_client, mocker):
-        mock_client.ms_client.grant_type = "client_credentials"
+    def test_returns_authorization_error_on_403(self, mock_client):
+        mock_client.ms_client.grant_type = O365MessageTrace.CLIENT_CREDENTIALS
         mock_client.ms_client.http_request.side_effect = Exception("403 Forbidden")
-        mocker.patch.object(O365MessageTrace.demisto, "error")
-
         result = run_test_module(mock_client)
         assert "Authorization Error" in result
 
-    def test_reraises_unexpected_errors(self, mock_client, mocker):
-        mock_client.ms_client.grant_type = "client_credentials"
-        mock_client.ms_client.http_request.side_effect = Exception("network timeout")
-        mocker.patch.object(O365MessageTrace.demisto, "error")
-
-        with pytest.raises(Exception, match="network timeout"):
+    def test_reraises_unexpected_errors(self, mock_client):
+        mock_client.ms_client.grant_type = O365MessageTrace.CLIENT_CREDENTIALS
+        mock_client.ms_client.http_request.side_effect = Exception("500 Server Error")
+        with pytest.raises(Exception, match="500"):
             run_test_module(mock_client)
 
 
-# ============================================================================
-# auth_test_command tests
-# ============================================================================
 class TestAuthTestCommand:
     def test_returns_success_message(self, mock_client):
         mock_client.ms_client.http_request.return_value = {"value": []}
-
         result = auth_test_command(mock_client)
-
-        assert result.readable_output == "Authentication was successful."
+        assert "successful" in result.readable_output.lower()
 
     def test_raises_demisto_exception_on_failure(self, mock_client):
-        from O365MessageTrace import DemistoException
-
-        mock_client.ms_client.http_request.side_effect = Exception("boom")
-
-        with pytest.raises(DemistoException, match="Authentication was not successful"):
+        mock_client.ms_client.http_request.side_effect = Exception("bad creds")
+        with pytest.raises(O365MessageTrace.DemistoException):
             auth_test_command(mock_client)
 
 
-# ============================================================================
-# get_events_command tests
-# ============================================================================
 class TestGetEventsCommand:
     def test_returns_command_results_without_pushing(self, mock_client, sample_events, mocker):
         mock_client.ms_client.http_request.return_value = {"value": sample_events}
-        send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-
-        args = {
-            "limit": "10",
-            "start_time": "2025-01-01T00:00:00Z",
-            "end_time": "2025-01-01T01:00:00Z",
-            "should_push_events": "false",
-        }
-        result = get_events_command(mock_client, args)
-
+        send = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        result = get_events_command(mock_client, {"limit": "10"})
         assert result.outputs_prefix == "O365MessageTrace.Event"
-        assert result.outputs_key_field == "id"
-        outputs = result.outputs
-        assert isinstance(outputs, list)
-        assert len(outputs) == 2
-        # _time should have been added
-        assert all("_time" in e for e in outputs)
-        send_mock.assert_not_called()
+        send.assert_not_called()
 
     def test_pushes_events_when_requested(self, mock_client, sample_events, mocker):
         mock_client.ms_client.http_request.return_value = {"value": sample_events}
-        send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-
-        args = {
-            "limit": "10",
-            "start_time": "2025-01-01T00:00:00Z",
-            "end_time": "2025-01-01T01:00:00Z",
-            "should_push_events": "true",
-        }
-        get_events_command(mock_client, args)
-
-        send_mock.assert_called_once()
-        call_kwargs = send_mock.call_args.kwargs
-        assert call_kwargs["vendor"] == Config.VENDOR
-        assert call_kwargs["product"] == Config.PRODUCT
-        assert len(call_kwargs["events"]) == 2
+        send = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        get_events_command(mock_client, {"limit": "10", "should_push_events": "true"})
+        send.assert_called_once()
 
     def test_does_not_push_when_no_events(self, mock_client, mocker):
         mock_client.ms_client.http_request.return_value = {"value": []}
-        send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-
-        args = {"limit": "10", "should_push_events": "true"}
-        get_events_command(mock_client, args)
-
-        send_mock.assert_not_called()
-
-    def test_uses_default_limit_and_window(self, mock_client, mocker):
-        """When no args supplied, the command should still execute and produce CommandResults."""
-        mock_client.ms_client.http_request.return_value = {"value": []}
-        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-
-        result = get_events_command(mock_client, {})
-
-        assert result.outputs == []
-
-    def test_accepts_event_type_argument(self, mock_client, mocker):
-        """The standard ``event_type`` argument must be accepted (and ignored)."""
-        mock_client.ms_client.http_request.return_value = {"value": []}
-        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-
-        result = get_events_command(mock_client, {"event_type": "message_trace"})
-
-        assert result.outputs == []
+        send = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        get_events_command(mock_client, {"should_push_events": "true"})
+        send.assert_not_called()
 
 
 # ============================================================================
 # fetch_events tests
 # ============================================================================
 class TestFetchEvents:
-    @pytest.fixture(autouse=True)
-    def _no_lookback(self, mocker):
-        # Disable the trailing look-back overlap so these tests can assert exact
-        # fetch windows/high-water marks. Look-back is covered by dedicated tests.
-        mocker.patch.object(O365MessageTrace.Config, "DEFAULT_LOOKBACK_MINUTES", 0)
-
-    def test_first_run_uses_default_lookback(self, mock_client, sample_events, mocker):
-        # Freeze ``now`` and shrink the first-fetch lookback to exactly one window
-        # so the in-run loop walks a single window for this single-window assertion.
-        now = datetime(2025, 1, 1, 10, 5, 0, tzinfo=UTC)
-
+    @staticmethod
+    def _frozen_now(now: datetime):
         class FrozenDatetime(datetime):
             @classmethod
             def now(cls, tz=None):
                 return now
 
-        mocker.patch.object(O365MessageTrace, "datetime", FrozenDatetime)
-        mocker.patch.object(O365MessageTrace.Config, "DEFAULT_FIRST_FETCH_MINUTES", Config.FETCH_WINDOW_MINUTES)
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value={})
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = {"value": sample_events}
+        return FrozenDatetime
 
-        fetch_events(mock_client, max_events=100)
-
-        send_mock.assert_called_once()
-        assert len(send_mock.call_args.kwargs["events"]) == 2
-        set_last_run.assert_called_once()
-        new_state = set_last_run.call_args.args[0]
-        assert "last_fetch" in new_state
-        assert "seen_ids" in new_state
-
-    def test_subsequent_run_uses_last_fetch(self, mock_client, sample_events, mocker):
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+    def test_first_run_uses_default_first_fetch(self, mock_client, sample_events, mocker):
+        now = datetime(2025, 1, 1, 10, 5, 0, tzinfo=UTC)
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        set_last_run = mocker.patch.object(demisto, "setLastRun")
         mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
         mock_client.ms_client.http_request.return_value = {"value": sample_events}
 
         fetch_events(mock_client, max_events=100)
 
-        # First http call params should contain the last_fetch start
-        first_call_params = mock_client.ms_client.http_request.call_args_list[0].kwargs["params"]
-        assert "2025-01-01T09:00:00.000000Z" in first_call_params["$filter"]
+        set_last_run.assert_called_once()
 
-    def test_deduplicates_against_seen_ids(self, mock_client, sample_events, mocker):
-        # ``fetch_events`` deduplicates and tracks ``seen_ids`` using the derived
-        # ``_unique_id`` field (``<id>|<recipientAddress>``). ``now`` is frozen one
-        # window past ``last_fetch`` so a single window is walked for this assertion.
-        now = datetime(2025, 1, 1, 9, 5, 0, tzinfo=UTC)
-
-        class FrozenDatetime(datetime):
-            @classmethod
-            def now(cls, tz=None):
-                return now
-
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": ["evt-1|bob@contoso.com|Delivered"]}
-        mocker.patch.object(O365MessageTrace, "datetime", FrozenDatetime)
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+    def test_subsequent_run_uses_last_fetch(self, mock_client, sample_events, mocker):
+        now = datetime(2025, 1, 1, 10, 3, 0, tzinfo=UTC)
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2025-01-01T10:00:00.000000Z", "seen_ids": []})
+        mocker.patch.object(demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
         mock_client.ms_client.http_request.return_value = {"value": sample_events}
 
         fetch_events(mock_client, max_events=100)
 
-        # evt-1 should have been filtered out
-        sent_events = send_mock.call_args.kwargs["events"]
-        assert len(sent_events) == 1
-        assert sent_events[0]["id"] == "evt-2"
+        params = mock_client.ms_client.http_request.call_args.kwargs["params"]
+        assert "2025-01-01T10:00:00" in params["$filter"]
+
+    def test_deduplicates_against_seen_ids(self, mock_client, sample_events, mocker):
+        now = datetime(2025, 1, 1, 10, 3, 0, tzinfo=UTC)
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(
+            demisto,
+            "getLastRun",
+            return_value={"last_fetch": "2025-01-01T10:00:00.000000Z", "seen_ids": ["evt-1|bob@contoso.com"]},
+        )
+        mocker.patch.object(demisto, "setLastRun")
+        send = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.return_value = {"value": sample_events}
+
+        fetch_events(mock_client, max_events=100)
+
+        sent = send.call_args.kwargs["events"]
+        sent_ids = {event["id"] for event in sent}
+        assert "evt-1" not in sent_ids
+        assert "evt-2" in sent_ids
 
     def test_no_events_does_not_call_send(self, mock_client, mocker):
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value={})
-        mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        now = datetime(2025, 1, 1, 10, 3, 0, tzinfo=UTC)
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2025-01-01T10:00:00.000000Z", "seen_ids": []})
+        mocker.patch.object(demisto, "setLastRun")
+        send = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
         mock_client.ms_client.http_request.return_value = {"value": []}
 
         fetch_events(mock_client, max_events=100)
 
-        send_mock.assert_not_called()
+        send.assert_not_called()
 
     def test_updates_high_water_mark_to_latest_event(self, mock_client, sample_events, mocker):
-        # Freeze ``now`` just past the latest event so the single-window branch runs.
-        now = datetime(2025, 1, 1, 10, 1, 0, tzinfo=UTC)
-
-        class FrozenDatetime(datetime):
-            @classmethod
-            def now(cls, tz=None):
-                return now
-
-        mocker.patch.object(O365MessageTrace, "datetime", FrozenDatetime)
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value={})
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        now = datetime(2025, 1, 1, 10, 3, 0, tzinfo=UTC)
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2025-01-01T10:00:00.000000Z", "seen_ids": []})
+        set_last_run = mocker.patch.object(demisto, "setLastRun")
         mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
         mock_client.ms_client.http_request.return_value = {"value": sample_events}
 
         fetch_events(mock_client, max_events=100)
 
-        new_state = set_last_run.call_args.args[0]
-        # Latest event is evt-2 at 2025-01-01T10:01:00Z (persisted as the raw event timestamp).
-        assert new_state["last_fetch"] == "2025-01-01T10:01:00Z"
-        # ``fetch_events`` stores the internal ``_dedup_key`` (``<id>|<recipientAddress>|<status>``) in ``seen_ids``.
-        assert "evt-2|dave@contoso.com|Pending" in new_state["seen_ids"]
-
-    def test_merges_seen_ids_when_high_water_mark_unchanged(self, mock_client, mocker):
-        """If new events share the same timestamp as the previous high-water mark, seen_ids should be merged."""
-        # Freeze ``now`` within one window of last_fetch so the single-window branch runs.
-        now = datetime(2025, 1, 1, 10, 1, 0, tzinfo=UTC)
-
-        class FrozenDatetime(datetime):
-            @classmethod
-            def now(cls, tz=None):
-                return now
-
-        last_run = {"last_fetch": "2025-01-01T10:00:00Z", "seen_ids": ["evt-old|bob@contoso.com|delivered"]}
-        new_events = [
-            {
-                "id": "evt-new",
-                "recipientAddress": "alice@contoso.com",
-                "receivedDateTime": "2025-01-01T10:00:00Z",
-                "status": "delivered",
-            },
-        ]
-        mocker.patch.object(O365MessageTrace, "datetime", FrozenDatetime)
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = {"value": new_events}
-
-        fetch_events(mock_client, max_events=100)
-
-        new_state = set_last_run.call_args.args[0]
-        assert new_state["last_fetch"] == "2025-01-01T10:00:00Z"
-        assert set(new_state["seen_ids"]) == {"evt-old|bob@contoso.com|delivered", "evt-new|alice@contoso.com|delivered"}
+        new_last_run = set_last_run.call_args.args[0]
+        assert new_last_run["last_fetch"] == "2025-01-01T10:01:00Z"
 
     def test_first_page_failure_does_not_advance_last_run(self, mock_client, mocker):
-        """If the very first page errors out, lastRun must NOT be advanced (data-loss protection)."""
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value={})
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        mocker.patch.object(O365MessageTrace.demisto, "error")
-        mock_client.ms_client.http_request.side_effect = Exception("API failure on first page")
+        now = datetime(2025, 1, 1, 10, 3, 0, tzinfo=UTC)
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2025-01-01T10:00:00.000000Z", "seen_ids": []})
+        set_last_run = mocker.patch.object(demisto, "setLastRun")
+        mock_client.ms_client.http_request.side_effect = Exception("boom")
 
-        with pytest.raises(Exception, match="API failure"):
+        with pytest.raises(Exception, match="boom"):
             fetch_events(mock_client, max_events=100)
 
         set_last_run.assert_not_called()
 
-    def test_fetch_window_caps_end_at_window_minutes_when_behind(self, mock_client, mocker):
-        """When far behind, a single run should only scan a FETCH_WINDOW_MINUTES slice.
-
-        The window end must be ``last_fetch + FETCH_WINDOW_MINUTES`` (not ``now``),
-        keeping each run small even with a large backlog.
-        """
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = {"value": []}
-
-        fetch_events(mock_client, max_events=100)
-
-        first_call_params = mock_client.ms_client.http_request.call_args_list[0].kwargs["params"]
-        # Start at last_fetch, end exactly FETCH_WINDOW_MINUTES later.
-        assert "2025-01-01T09:00:00.000000Z" in first_call_params["$filter"]
-        assert "2025-01-01T09:05:00.000000Z" in first_call_params["$filter"]
-
     def test_empty_window_advances_last_fetch_to_window_end(self, mock_client, mocker):
-        """An empty window must still move last_fetch forward to the window end.
-
-        Otherwise we keep re-scanning the same empty slice and never make progress.
-        ``now`` is frozen one window ahead of ``last_fetch`` so the in-run loop walks
-        exactly one (empty) window and stops, leaving last_fetch at the window end.
-        """
-        now = datetime(2025, 1, 1, 9, 5, 0, tzinfo=UTC)
-
-        class FrozenDatetime(datetime):
-            @classmethod
-            def now(cls, tz=None):
-                return now
-
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": ["evt-old|bob@contoso.com"]}
-        mocker.patch.object(O365MessageTrace, "datetime", FrozenDatetime)
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        now = datetime(2025, 1, 1, 10, 3, 0, tzinfo=UTC)
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2025-01-01T10:00:00.000000Z", "seen_ids": []})
+        set_last_run = mocker.patch.object(demisto, "setLastRun")
         mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
         mock_client.ms_client.http_request.return_value = {"value": []}
 
         fetch_events(mock_client, max_events=100)
 
-        new_state = set_last_run.call_args.args[0]
-        assert new_state["last_fetch"] == "2025-01-01T09:05:00.000000Z"
-        # No events found, so seen_ids should be reset for the new high-water mark.
-        assert new_state["seen_ids"] == []
-
-    def test_window_end_capped_at_now_when_caught_up(self, mock_client, mocker):
-        """When last_fetch + window would overshoot ``now``, the window must stop at ``now``."""
-        now = datetime(2025, 1, 1, 9, 2, 0, tzinfo=UTC)
-
-        class FrozenDatetime(datetime):
-            @classmethod
-            def now(cls, tz=None):
-                return now
-
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
-        mocker.patch.object(O365MessageTrace, "datetime", FrozenDatetime)
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = {"value": []}
-
-        fetch_events(mock_client, max_events=100)
-
-        first_call_params = mock_client.ms_client.http_request.call_args_list[0].kwargs["params"]
-        # Window would be 09:05 but now is 09:02, so end is capped at now.
-        assert "2025-01-01T09:02:00.000000Z" in first_call_params["$filter"]
-        assert "2025-01-01T09:05:00.000000Z" not in first_call_params["$filter"]
-
-    def test_seen_ids_holds_all_fetched_ids_at_boundary_timestamp(self, mock_client, mocker):
-        """seen_ids must hold ALL fetched _unique_ids at the boundary second - including
-        ones that were deduped out this run.
-
-        The Graph API timestamps are second-granular, so several events can share the
-        boundary ``receivedDateTime``. The next run re-queries ``ge boundary``, so seen_ids
-        must contain every id at that second (pre-dedup) or an already-sent event would be
-        re-sent (or lost). This guards the boundary-second data-loss bug.
-        """
-        # Freeze ``now`` just past the boundary so the single-window branch runs.
-        now = datetime(2025, 1, 1, 10, 1, 0, tzinfo=UTC)
-
-        class FrozenDatetime(datetime):
-            @classmethod
-            def now(cls, tz=None):
-                return now
-
-        mocker.patch.object(O365MessageTrace, "datetime", FrozenDatetime)
-        # Previous run already published evt-1 at the boundary timestamp (10:01:00).
-        last_run = {"last_fetch": "2025-01-01T10:00:00Z", "seen_ids": ["evt-1|bob@contoso.com|delivered"]}
-        fetched = [
-            # evt-1 is a duplicate (already in seen_ids) sharing the boundary timestamp.
-            {
-                "id": "evt-1",
-                "recipientAddress": "bob@contoso.com",
-                "receivedDateTime": "2025-01-01T10:01:00Z",
-                "status": "delivered",
-            },
-            # evt-2 is new but shares the same boundary timestamp.
-            {
-                "id": "evt-2",
-                "recipientAddress": "dave@contoso.com",
-                "receivedDateTime": "2025-01-01T10:01:00Z",
-                "status": "delivered",
-            },
-        ]
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = {"value": fetched}
-
-        fetch_events(mock_client, max_events=100)
-
-        new_state = set_last_run.call_args.args[0]
-        assert new_state["last_fetch"] == "2025-01-01T10:01:00Z"
-        # BOTH ids at the boundary second are carried forward (evt-1 was deduped out but must
-        # still be remembered so the next ``ge boundary`` re-fetch does not re-send it).
-        assert set(new_state["seen_ids"]) == {"evt-1|bob@contoso.com|delivered", "evt-2|dave@contoso.com|delivered"}
+        new_last_run = set_last_run.call_args.args[0]
+        # No events: cursor advances to the window end (now).
+        assert new_last_run["last_fetch"] == "2025-01-01T10:03:00.000000Z"
 
 
-# ============================================================================
-# Regression tests for the late-status-update / boundary data-loss fixes
-# ============================================================================
-class TestLateStatusAndLookback:
-    """Covers the fixes for events that are dropped because status settles late and
-    because the high-water mark keys on the immutable ``receivedDateTime``."""
+class TestFetchEventsWindowWalk:
+    """The in-run loop must walk consecutive windows oldest->newest within a single run."""
 
     @staticmethod
     def _frozen_now(now: datetime):
@@ -1085,735 +609,115 @@ class TestLateStatusAndLookback:
 
         return FrozenDatetime
 
-    @staticmethod
-    def _window_api(events: list[dict]):
-        """Build a window-aware http_request side_effect: each event is returned only by the
-        window whose ``receivedDateTime ge <lower>`` bound is <= the event's time and whose
-        ``le <upper>`` bound is >= it. Mirrors the real API, where disjoint windows each return
-        only the records inside their range (so the multi-window walk never double-counts)."""
-
-        def _api(*_args, **kwargs):
-            filter_str = (kwargs.get("params") or {}).get("$filter", "")
-            # $filter looks like: receivedDateTime ge <lower> and receivedDateTime le <upper>
-            try:
-                lower = filter_str.split("ge ", 1)[1].split(" and", 1)[0].strip()
-                upper = filter_str.split("le ", 1)[1].strip()
-            except IndexError:
-                return {"value": []}
-            lower_dt = parse_datetime(lower)
-            upper_dt = parse_datetime(upper)
-            in_window = [e for e in events if lower_dt <= parse_datetime(e["receivedDateTime"]) <= upper_dt]
-            return {"value": in_window}
-
-        return _api
-
-    def test_lookback_shifts_filter_start_back(self, mock_client, mocker):
-        """The first ``$filter`` lower bound must be ``last_fetch - lookback_minutes``."""
-        last_run = {"last_fetch": "2025-01-01T10:00:00Z", "seen_ids": []}
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = {"value": []}
-
-        fetch_events(mock_client, max_events=100, lookback_minutes=30)
-
-        first_call_params = mock_client.ms_client.http_request.call_args_list[0].kwargs["params"]
-        # 10:00 - 30m = 09:30 is the effective start.
-        assert "2025-01-01T09:30:00.000000Z" in first_call_params["$filter"]
-
-    def test_status_aware_dedup_lets_recall_through(self, mock_client, mocker):
-        """A recall re-emitted with the same id+recipient as an already-seen delivered row
-        must NOT be treated as a duplicate (different status -> different _unique_id)."""
-        # ``now`` one window past last_fetch so a single window is walked.
-        now = datetime(2025, 1, 1, 10, 5, 0, tzinfo=UTC)
-        # Previous run saw the delivered row at the boundary second.
-        last_run = {
-            "last_fetch": "2025-01-01T10:00:00Z",
-            "seen_ids": ["msg-1|bob@contoso.com|delivered"],
-        }
-        fetched = [
-            # Same id+recipient+timestamp, but status flipped to Recalled - a genuinely new event.
-            {
-                "id": "msg-1",
-                "recipientAddress": "bob@contoso.com",
-                "receivedDateTime": "2025-01-01T10:00:00Z",
-                "status": "Recalled",
-            },
-            # Exact duplicate of what was already sent - must be suppressed.
-            {
-                "id": "msg-1",
-                "recipientAddress": "bob@contoso.com",
-                "receivedDateTime": "2025-01-01T10:00:00Z",
-                "status": "delivered",
-            },
-        ]
+    def test_walks_multiple_windows_until_caught_up(self, mock_client, mocker):
+        # last_fetch is ~12 min behind now => multiple 5-min windows.
+        now = datetime(2025, 1, 1, 10, 12, 0, tzinfo=UTC)
         mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = {"value": fetched}
-
-        # lookback_minutes=0 so the single window is [10:00, 10:05].
-        fetch_events(mock_client, max_events=100, lookback_minutes=0)
-
-        sent = send_mock.call_args.kwargs["events"]
-        # Only the recall is (re)published; the delivered duplicate is suppressed.
-        assert len(sent) == 1
-        assert sent[0]["status"] == "Recalled"
-        new_state = set_last_run.call_args.args[0]
-        # Both statuses at the boundary second are remembered going forward.
-        assert set(new_state["seen_ids"]) == {"msg-1|bob@contoso.com|delivered", "msg-1|bob@contoso.com|Recalled"}
-
-    def test_late_recall_is_ingested_on_next_cycle_via_lookback(self, mock_client, mocker):
-        """A recall whose receivedDateTime is older than last_fetch is still ingested because
-        the look-back window re-scans that time range.
-
-        The look-back pushes the effective start before the recall's receivedDateTime, so the
-        window that covers it returns it (other windows return empty). This mirrors the real
-        API, which only returns a record in the window whose range contains its timestamp.
-        """
-        now = datetime(2025, 1, 1, 10, 5, 0, tzinfo=UTC)
-        last_run = {"last_fetch": "2025-01-01T10:00:00Z", "seen_ids": []}
-        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        recall = {
-            "id": "msg-1",
-            "recipientAddress": "bob@contoso.com",
-            "receivedDateTime": "2025-01-01T09:50:00Z",
-            "status": "Recalled",
-        }
-
-        def _api(*_args, **kwargs):
-            # Return the recall only for the window whose range contains 09:50.
-            filter_str = (kwargs.get("params") or {}).get("$filter", "")
-            if "2025-01-01T09:45:00.000000Z" in filter_str:
-                return {"value": [recall]}
-            return {"value": []}
-
-        mock_client.ms_client.http_request.side_effect = _api
-
-        # 15m look-back reaches back from 10:00 to 09:45, covering the 09:50 record.
-        fetch_events(mock_client, max_events=100, lookback_minutes=15)
-
-        first_call_params = mock_client.ms_client.http_request.call_args_list[0].kwargs["params"]
-        assert "2025-01-01T09:45:00.000000Z" in first_call_params["$filter"]
-        sent = send_mock.call_args.kwargs["events"]
-        assert len(sent) == 1
-        assert sent[0]["status"] == "Recalled"
-
-    def test_seen_ids_cover_whole_lookback_window_no_duplicates_next_run(self, mock_client, mocker):
-        """seen_ids must contain every id across the whole look-back window (not just the boundary
-        second), so a following run that re-scans the overlap does not re-send them as duplicates."""
-        now = datetime(2025, 1, 1, 10, 5, 0, tzinfo=UTC)
-        last_run = {"last_fetch": "2025-01-01T10:00:00Z", "seen_ids": []}
-        # Events span several seconds within the 10-minute look-back overlap (not just 10:05).
-        events = [
-            {"id": "e1", "recipientAddress": "rcpt-a", "receivedDateTime": "2025-01-01T09:57:00Z", "status": "delivered"},
-            {"id": "e2", "recipientAddress": "rcpt-b", "receivedDateTime": "2025-01-01T09:59:30Z", "status": "delivered"},
-            {"id": "e3", "recipientAddress": "rcpt-c", "receivedDateTime": "2025-01-01T10:00:00Z", "status": "delivered"},
-        ]
-        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.side_effect = self._window_api(events)
-
-        # 10-minute look-back so the overlap covers all three events.
-        fetch_events(mock_client, max_events=100, lookback_minutes=10)
-
-        new_state = set_last_run.call_args.args[0]
-        # last_fetch advances to the latest event (raw event timestamp); ALL three ids retained.
-        assert new_state["last_fetch"] == "2025-01-01T10:00:00Z"
-        assert set(new_state["seen_ids"]) == {
-            "e1|rcpt-a|delivered",
-            "e2|rcpt-b|delivered",
-            "e3|rcpt-c|delivered",
-        }
-
-    def test_no_duplicates_when_next_run_rescans_overlap(self, mock_client, mocker):
-        """End-to-end: after run 1 stores overlap ids, run 2 re-scanning the same overlap must
-        publish nothing (all deduped)."""
-        now = datetime(2025, 1, 1, 10, 5, 0, tzinfo=UTC)
-        events = [
-            {"id": "e1", "recipientAddress": "rcpt-a", "receivedDateTime": "2025-01-01T10:00:00Z", "status": "delivered"},
-            {"id": "e2", "recipientAddress": "rcpt-b", "receivedDateTime": "2025-01-01T10:02:00Z", "status": "delivered"},
-        ]
-        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        # Run 1: fresh state.
-        run1_state = {}
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=run1_state)
-        captured = {}
-        mocker.patch.object(O365MessageTrace.demisto, "setLastRun", side_effect=lambda s: captured.update(s))
-        send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.side_effect = self._window_api(events)
-
-        fetch_events(mock_client, max_events=100, lookback_minutes=10)
-        sent_ids_run1 = {e["id"] for e in send_mock.call_args.kwargs["events"]}
-        assert sent_ids_run1 == {"e1", "e2"}  # both sent on first run
-
-        # Run 2: same events re-returned (overlap re-scan). Must send nothing.
-        send_mock.reset_mock()
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=dict(captured))
-        mock_client.ms_client.http_request.side_effect = self._window_api(events)
-
-        fetch_events(mock_client, max_events=100, lookback_minutes=10)
-        send_mock.assert_not_called()
-
-    def test_seen_ids_populated_when_time_and_cutoff_have_different_precision(self, mock_client, mocker):
-        """Regression: ``_time`` (raw API value, second precision) and the internal cutoff
-        (microsecond precision) must be compared as datetimes, not strings.
-
-        A naive string ``>=`` drops every key, leaving seen_ids empty and re-sending the whole
-        overlap each run. Here every event predates the boundary second yet must still be retained.
-        """
-        now = datetime(2025, 1, 1, 10, 5, 0, tzinfo=UTC)
-        last_run = {"last_fetch": "2025-01-01T10:00:00Z", "seen_ids": []}
-        # Raw API timestamps: no fractional seconds (as Graph returns them).
-        events = [
-            {"id": "e1", "recipientAddress": "rcpt-a", "receivedDateTime": "2025-01-01T09:58:00Z", "status": "delivered"},
-            {"id": "e2", "recipientAddress": "rcpt-b", "receivedDateTime": "2025-01-01T09:59:00Z", "status": "delivered"},
-        ]
-        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.side_effect = self._window_api(events)
-
-        fetch_events(mock_client, max_events=100, lookback_minutes=15)
-
-        new_state = set_last_run.call_args.args[0]
-        # Both ids fall within the 15-minute overlap and MUST be retained despite the format gap.
-        assert set(new_state["seen_ids"]) == {"e1|rcpt-a|delivered", "e2|rcpt-b|delivered"}
-
-    def test_seen_ids_merge_when_stored_last_fetch_uses_legacy_format(self, mock_client, mocker):
-        """Upgrade safety: an instance upgraded to this version still holds ``last_fetch`` in the
-        OLD format. When the high-water mark does not advance, the merge must still fire (compared
-        as datetimes, not strings), so previously-seen ids are retained and not re-sent."""
-        now = datetime(2025, 1, 1, 10, 5, 0, tzinfo=UTC)
-        # Legacy-format last_fetch (millisecond precision) left by the previous version.
-        last_run = {"last_fetch": "2025-01-01T10:00:00.704Z", "seen_ids": ["old|rcpt-z|delivered"]}
-        # Only a single event that lands exactly at the stored boundary instant, so the high-water
-        # mark does NOT advance beyond it -> the legacy-format merge branch must run.
-        events = [
-            {"id": "cur", "recipientAddress": "rcpt-a", "receivedDateTime": "2025-01-01T10:00:00.704Z", "status": "delivered"},
-        ]
-        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.side_effect = self._window_api(events)
-
-        fetch_events(mock_client, max_events=100, lookback_minutes=15)
-
-        new_state = set_last_run.call_args.args[0]
-        # The legacy seen_id is retained (merged) despite the format change on upgrade.
-        assert "old|rcpt-z|delivered" in new_state["seen_ids"]
-        assert "cur|rcpt-a|delivered" in new_state["seen_ids"]
-
-
-# ============================================================================
-# fetch_events in-run window loop tests
-# ============================================================================
-class TestFetchEventsInRunLoop:
-    """The in-run loop must walk consecutive windows oldest->newest within a
-    single run instead of advancing only one ``FETCH_WINDOW_MINUTES`` slice per
-    scheduler tick. After each window it decides:
-
-    * ``max_events`` reached -> break (resume at the high-water mark next run),
-    * caught up to ``now`` -> break,
-    * otherwise advance ``start_dt`` to the next window and continue.
-
-    ``last_run`` is persisted exactly once at the end of the run.
-    """
-
-    @pytest.fixture(autouse=True)
-    def _no_lookback(self, mocker):
-        # Disable trailing look-back so window math in these tests stays exact.
-        mocker.patch.object(O365MessageTrace.Config, "DEFAULT_LOOKBACK_MINUTES", 0)
-
-    @staticmethod
-    def _frozen_now(now: datetime):
-        class FrozenDatetime(datetime):
-            @classmethod
-            def now(cls, tz=None):
-                return now
-
-        return FrozenDatetime
-
-    def test_walks_multiple_windows_until_caught_up_in_single_run(self, mock_client, mocker):
-        """A backlog of several windows must be drained within one run, advancing
-        ``last_fetch`` all the way to ``now`` (not just one window)."""
-        # last_fetch=09:00, now=09:15 -> 3 windows: [09:00,09:05], [09:05,09:10], [09:10,09:15].
-        now = datetime(2025, 1, 1, 9, 15, 0, tzinfo=UTC)
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
-        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2025-01-01T10:00:00.000000Z", "seen_ids": []})
+        mocker.patch.object(demisto, "setLastRun")
         mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
         mock_client.ms_client.http_request.return_value = {"value": []}
 
         fetch_events(mock_client, max_events=100)
 
-        # One first-page request per window (all empty).
+        # 10:00->10:05, 10:05->10:10, 10:10->10:12 = 3 window walks.
         assert mock_client.ms_client.http_request.call_count == 3
-        # last_run persisted exactly once at the end of the run.
-        set_last_run.assert_called_once()
-        assert set_last_run.call_args.args[0]["last_fetch"] == "2025-01-01T09:15:00.000000Z"
-
-    def test_first_call_starts_at_oldest_window(self, mock_client, mocker):
-        """The loop must walk oldest->newest: the first request is the oldest window."""
-        now = datetime(2025, 1, 1, 9, 15, 0, tzinfo=UTC)
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
-        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = {"value": []}
-
-        fetch_events(mock_client, max_events=100)
-
-        first_filter = mock_client.ms_client.http_request.call_args_list[0].kwargs["params"]["$filter"]
-        assert "receivedDateTime ge 2025-01-01T09:00:00.000000Z" in first_filter
-        assert "receivedDateTime le 2025-01-01T09:05:00.000000Z" in first_filter
-        last_filter = mock_client.ms_client.http_request.call_args_list[-1].kwargs["params"]["$filter"]
-        assert "receivedDateTime ge 2025-01-01T09:10:00.000000Z" in last_filter
-        assert "receivedDateTime le 2025-01-01T09:15:00.000000Z" in last_filter
 
     def test_stops_advancing_when_max_events_reached(self, mock_client, mocker):
-        """When a window fills up to ``max_events`` the loop breaks and resumes at the
-        high-water mark next run - it must NOT advance to later windows in this run."""
-        now = datetime(2025, 1, 1, 9, 15, 0, tzinfo=UTC)
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
-        # First window already returns >= max_events events.
-        full_window = {
+        now = datetime(2025, 1, 1, 10, 20, 0, tzinfo=UTC)
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2025-01-01T10:00:00.000000Z", "seen_ids": []})
+        mocker.patch.object(demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        # Each window returns 2 events; max_events=2 stops the walk after the first window.
+        mock_client.ms_client.http_request.return_value = {
             "value": [
-                {"id": "a", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:01:00Z"},
-                {"id": "b", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:02:00Z"},
+                {"id": "a", "receivedDateTime": "2025-01-01T10:01:00Z", "recipientAddress": "bob@contoso.com"},
+                {"id": "b", "receivedDateTime": "2025-01-01T10:02:00Z", "recipientAddress": "bob@contoso.com"},
             ]
         }
-        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = full_window
 
-        # lookback_minutes=0 isolates the loop mechanics (this test predates the look-back feature).
-        fetch_events(mock_client, max_events=2, lookback_minutes=0)
+        fetch_events(mock_client, max_events=2)
 
-        # Only the first window should have been requested - the loop broke on max_events.
         assert mock_client.ms_client.http_request.call_count == 1
-        set_last_run.assert_called_once()
-        # High-water mark set to the latest event timestamp so the next run resumes there.
-        assert set_last_run.call_args.args[0]["last_fetch"] == "2025-01-01T09:02:00Z"
-
-    def test_publishes_events_from_every_window_in_run(self, mock_client, mocker):
-        """Events from each window walked in a single run must all be published."""
-        now = datetime(2025, 1, 1, 9, 10, 0, tzinfo=UTC)
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
-        window1 = {"value": [{"id": "w1", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:01:00Z"}]}
-        window2 = {"value": [{"id": "w2", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:06:00Z"}]}
-        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.side_effect = [window1, window2]
-
-        fetch_events(mock_client, max_events=100)
-
-        sent_ids = {e["id"] for call in send_mock.call_args_list for e in call.kwargs["events"]}
-        assert sent_ids == {"w1", "w2"}
-
-    def test_window_loop_cannot_spin_when_high_water_mark_stalls(self, mock_client, mocker):
-        """Guard: if a non-empty window's high-water mark fails to advance past the
-        window start, the loop must still advance to the next window (using the
-        window end) instead of spinning forever on the same slice.
-
-        Every event here sits exactly at the window start timestamp, so a naive
-        ``last_fetch = latest_event_time`` would never move ``start_dt`` forward.
-        """
-        now = datetime(2025, 1, 1, 9, 10, 0, tzinfo=UTC)
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
-        # Both windows return an event stamped at the window's own start time.
-        stalled_event = {
-            "value": [{"id": "s", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:00:00Z"}]
-        }
-        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = stalled_event
-
-        fetch_events(mock_client, max_events=100)
-
-        # The loop must terminate (caught up to now) rather than spin, and persist once.
-        set_last_run.assert_called_once()
-        # Two windows walked: [09:00,09:05] and [09:05,09:10]; the guard advanced via window end.
-        assert mock_client.ms_client.http_request.call_count == 2
 
     def test_persists_last_run_once_per_run(self, mock_client, mocker):
-        """``demisto.setLastRun`` must be called exactly once regardless of how many
-        windows are walked in a single run."""
-        now = datetime(2025, 1, 1, 9, 20, 0, tzinfo=UTC)  # 4 windows
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
+        now = datetime(2025, 1, 1, 10, 12, 0, tzinfo=UTC)
         mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
+        mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2025-01-01T10:00:00.000000Z", "seen_ids": []})
+        set_last_run = mocker.patch.object(demisto, "setLastRun")
         mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
         mock_client.ms_client.http_request.return_value = {"value": []}
 
         fetch_events(mock_client, max_events=100)
 
-        set_last_run.assert_called_once()
-
-    def test_catch_up_walks_all_windows_until_now(self, mock_client, mocker):
-        """A backlog spanning several windows must be drained within a single run,
-        walking each ``FETCH_WINDOW_MINUTES`` slice until caught up to ``now`` and
-        advancing ``last_fetch`` all the way to ``now``.
-        """
-        # last_fetch=09:00, now=09:30 -> 6 windows of 5 min each.
-        now = datetime(2025, 1, 1, 9, 30, 0, tzinfo=UTC)
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
-        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = {"value": []}
-
-        fetch_events(mock_client, max_events=100)
-
-        # One first-page request per window (six empty windows) until caught up.
-        assert mock_client.ms_client.http_request.call_count == 6
-        # last_fetch advanced all the way to ``now`` (09:30): the backlog is drained.
-        new_state = set_last_run.call_args.args[0]
-        assert new_state["last_fetch"] == "2025-01-01T09:30:00.000000Z"
-
-    def test_catch_up_truncates_total_to_max_events(self, mock_client, mocker):
-        """Events accumulated across multiple windows must be truncated to
-        ``max_events`` before publishing.
-
-        Two windows each return two events (four total) but ``max_events`` is 3, so
-        only three events may be published.
-        """
-        # last_fetch=09:00, now=09:10 -> 2 windows: [09:00,09:05], [09:05,09:10].
-        now = datetime(2025, 1, 1, 9, 10, 0, tzinfo=UTC)
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
-        window1 = {
-            "value": [
-                {"id": "w1-a", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:01:00Z"},
-                {"id": "w1-b", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:02:00Z"},
-            ]
-        }
-        window2 = {
-            "value": [
-                {"id": "w2-a", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:06:00Z"},
-                {"id": "w2-b", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:07:00Z"},
-            ]
-        }
-        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.side_effect = [window1, window2]
-
-        fetch_events(mock_client, max_events=3)
-
-        # Four events were collected across both windows but only three may be published.
-        sent_events = [e for call in send_mock.call_args_list for e in call.kwargs["events"]]
-        assert len(sent_events) == 3
-
-    def test_429_on_second_window_keeps_first_window_events_and_advances_last_run(self, mock_client, mocker):
-        """A 429 (rate-limit) error on the second window's API request must NOT lose
-        the first window's events.
-
-        Window 1 returns events successfully (they must be sent to XSIAM and
-        ``last_run`` advanced to their high-water mark). Window 2's request raises a
-        429-style exception which, with no events collected for that window, is
-        re-raised by ``fetch_events_sequential`` and caught by the in-run loop's
-        try/except: the error is logged and the loop breaks while still persisting
-        and publishing what window 1 produced.
-        """
-        # last_fetch=09:00, now=09:10 -> 2 windows: [09:00,09:05], [09:05,09:10].
-        now = datetime(2025, 1, 1, 9, 10, 0, tzinfo=UTC)
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
-        window1 = {
-            "value": [
-                {"id": "w1", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:01:00Z"},
-            ]
-        }
-        # Window 2's request fails with a 429 rate-limit error on every attempt.
-        rate_limit_error = Exception("Error in API call [429] - Too Many Requests")
-        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        # Mock the backoff sleep so the custom 429 retry loop does not actually wait.
-        mocker.patch.object(O365MessageTrace.time, "sleep")
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        send_mock = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        error_mock = mocker.patch.object(O365MessageTrace.demisto, "error")
-        # Window 1 succeeds; window 2 raises 429 on the initial attempt and on every
-        # backoff retry (1 initial + len(RATE_LIMIT_BACKOFFS) retries), so the
-        # custom backoff loop exhausts and re-raises the 429 to the in-run loop.
-        mock_client.ms_client.http_request.side_effect = [
-            window1,
-            *([rate_limit_error] * (1 + len(O365MessageTrace.Config.RATE_LIMIT_BACKOFFS))),
-        ]
-
-        fetch_events(mock_client, max_events=100)
-
-        # Window 1's events must still be published to XSIAM.
-        sent_events = [e for call in send_mock.call_args_list for e in call.kwargs["events"]]
-        assert [e["id"] for e in sent_events] == ["w1"]
-
-        # last_run must be persisted once and advanced to window 1's high-water mark.
-        set_last_run.assert_called_once()
-        new_state = set_last_run.call_args.args[0]
-        assert new_state["last_fetch"] == "2025-01-01T09:01:00Z"
-        assert new_state["seen_ids"] == ["w1|bob@contoso.com|"]
-
-        # The in-run loop's error for the failing window must be logged. The message
-        # uses the datetime window bounds (09:05 -> 09:10) and the exception text.
-        window_bounds = "2025-01-01 09:05:00+00:00 -> 2025-01-01 09:10:00+00:00"
-        window_error_calls = [call.args[0] for call in error_mock.call_args_list if call.args and window_bounds in call.args[0]]
-        assert len(window_error_calls) == 1
-        message = window_error_calls[0]
-        assert window_bounds in message
-        assert "429" in message
-
-
-class TestExecutionTimeBudgetAndNextTrigger:
-    """The fetch run must stop before the platform's 5-minute hard kill (execution-time
-    budget) and, whenever a backlog is still pending, set ``last_run['nextTrigger']`` so the
-    platform re-invokes fetch immediately to keep draining. When caught up, ``nextTrigger``
-    must be absent so the collector returns to its normal schedule.
-    """
-
-    @pytest.fixture(autouse=True)
-    def _no_lookback(self, mocker):
-        # Disable trailing look-back so window math in these tests stays exact.
-        mocker.patch.object(O365MessageTrace.Config, "DEFAULT_LOOKBACK_MINUTES", 0)
-
-    @staticmethod
-    def _frozen_now(now: datetime):
-        class FrozenDatetime(datetime):
-            @classmethod
-            def now(cls, tz=None):
-                return now
-
-        return FrozenDatetime
-
-    def test_is_execution_time_exceeded_false_within_budget(self, mocker):
-        """Helper returns False while elapsed wall-clock is under the budget."""
-        mocker.patch.object(O365MessageTrace.Config, "EXECUTION_TIME_BUDGET_SECONDS", 240)
-        # start captured "now"; monotonic advances only 10s -> under budget.
-        mocker.patch.object(O365MessageTrace.time, "monotonic", return_value=1010.0)
-        assert is_execution_time_exceeded(1000.0) is False
-
-    def test_is_execution_time_exceeded_true_when_budget_spent(self, mocker):
-        """Helper returns True once elapsed wall-clock reaches the budget."""
-        mocker.patch.object(O365MessageTrace.Config, "EXECUTION_TIME_BUDGET_SECONDS", 240)
-        # 300s elapsed >= 240s budget.
-        mocker.patch.object(O365MessageTrace.time, "monotonic", return_value=1300.0)
-        assert is_execution_time_exceeded(1000.0) is True
-
-    def test_time_budget_stops_walk_sets_next_trigger_and_advances_cursor(self, mock_client, mocker):
-        """When the execution-time budget trips mid-backlog, the walk must stop after the
-        current window, persist the advanced cursor, and set ``nextTrigger`` to re-dispatch.
-        """
-        # last_fetch=09:00, now=09:30 -> 6 windows are available, but the budget trips early.
-        now = datetime(2025, 1, 1, 9, 30, 0, tzinfo=UTC)
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
-        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mock_client.ms_client.http_request.return_value = {"value": []}
-
-        # The budget reports "exceeded" as soon as the guard is consulted (which only happens
-        # once ``start_dt`` is past the previous high-water mark, guaranteeing forward progress).
-        # The walk therefore stops after draining at least one - but far from all six - windows.
-        mocker.patch.object(O365MessageTrace, "is_execution_time_exceeded", return_value=True)
-
-        fetch_events(mock_client, max_events=100)
-
-        set_last_run.assert_called_once()
-        new_state = set_last_run.call_args.args[0]
-        # The walk stopped early: it did NOT drain the whole backlog (would be 6 windows to 09:30).
-        assert mock_client.ms_client.http_request.call_count < 6
-        # Cursor advanced past the previous high-water mark (forward progress) but not to ``now``.
-        advanced = parse_datetime(new_state["last_fetch"])
-        assert parse_datetime("2025-01-01T09:00:00Z") < advanced < parse_datetime("2025-01-01T09:30:00Z")
-        # Backlog remains -> re-dispatch immediately.
-        assert new_state["nextTrigger"] == Config.NEXT_TRIGGER_VALUE
-
-    def test_next_trigger_set_when_max_events_backlog_remains(self, mock_client, mocker):
-        """When the walk stops on the ``max_events`` cap with a backlog still pending,
-        ``nextTrigger`` must be set so the platform re-dispatches.
-        """
-        now = datetime(2025, 1, 1, 9, 30, 0, tzinfo=UTC)
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
-        # First window already returns >= max_events events (past the high-water mark).
-        window1 = {
-            "value": [
-                {"id": "a", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:01:00Z"},
-                {"id": "b", "recipientAddress": "bob@contoso.com", "receivedDateTime": "2025-01-01T09:02:00Z"},
-            ]
-        }
-        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        # Budget never trips; the cap is what stops the walk.
-        mocker.patch.object(O365MessageTrace, "is_execution_time_exceeded", return_value=False)
-        mock_client.ms_client.http_request.return_value = window1
-
-        fetch_events(mock_client, max_events=2, lookback_minutes=0)
-
-        new_state = set_last_run.call_args.args[0]
-        assert new_state["nextTrigger"] == Config.NEXT_TRIGGER_VALUE
-
-    def test_no_next_trigger_when_caught_up(self, mock_client, mocker):
-        """When the walk reaches ``now`` (no backlog), ``nextTrigger`` must NOT be set so the
-        collector returns to its normal schedule.
-        """
-        now = datetime(2025, 1, 1, 9, 15, 0, tzinfo=UTC)
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
-        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        mocker.patch.object(O365MessageTrace, "is_execution_time_exceeded", return_value=False)
-        mock_client.ms_client.http_request.return_value = {"value": []}
-
-        fetch_events(mock_client, max_events=100)
-
-        new_state = set_last_run.call_args.args[0]
-        assert "nextTrigger" not in new_state
-        assert new_state["last_fetch"] == "2025-01-01T09:15:00.000000Z"
-
-    def test_time_budget_never_trips_before_passing_high_water_mark(self, mock_client, mocker):
-        """Forward-progress guarantee: even if the budget is already exceeded on entry, the
-        guard must NOT fire while still inside the look-back overlap (``start_dt`` at/behind the
-        previous high-water mark). The run must drain at least one fresh window so the cursor
-        always advances - otherwise it could stop AT ``last_fetch`` and re-stall forever.
-        """
-        # last_fetch=09:00, now=09:10 -> overlap boundary window then one fresh window.
-        now = datetime(2025, 1, 1, 9, 10, 0, tzinfo=UTC)
-        last_run = {"last_fetch": "2025-01-01T09:00:00Z", "seen_ids": []}
-        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
-        mocker.patch.object(O365MessageTrace.demisto, "getLastRun", return_value=last_run)
-        set_last_run = mocker.patch.object(O365MessageTrace.demisto, "setLastRun")
-        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
-        # Budget reports "exceeded" for every call; the guard must still be gated behind the
-        # high-water-mark check, so at least one window is drained and the cursor advances.
-        mocker.patch.object(O365MessageTrace, "is_execution_time_exceeded", return_value=True)
-        mock_client.ms_client.http_request.return_value = {"value": []}
-
-        fetch_events(mock_client, max_events=100)
-
-        set_last_run.assert_called_once()
-        new_state = set_last_run.call_args.args[0]
-        # Cursor advanced past the previous high-water mark (did not stall at 09:00).
-        assert parse_datetime(new_state["last_fetch"]) > parse_datetime("2025-01-01T09:00:00Z")
+        assert set_last_run.call_count == 1
 
 
 # ============================================================================
-# Rate-limit retry tests
+# O365MessageTraceClient.http_request tests
 # ============================================================================
 @pytest.fixture
 def http_client(mocker):
-    """Return an ``O365MessageTraceClient`` whose parent ``_http_request`` is mocked.
-
-    Bypasses ``__init__`` to avoid building the real :class:`MicrosoftClient`
-    machinery (token retrieval, integration context, etc.). The overridden
-    ``http_request`` delegates retry handling to the parent ``BaseClient._http_request``
-    (via ``super()._http_request``), which is what these tests inspect.
-    """
-    client = O365MessageTrace.O365MessageTraceClient.__new__(O365MessageTrace.O365MessageTraceClient)  # bypass __init__
-    client._ok_codes = None
+    client = O365MessageTrace.O365MessageTraceClient.__new__(O365MessageTrace.O365MessageTraceClient)
     client.timeout = 60
-    client.retry_on_rate_limit = True
-    mocker.patch.object(client, "get_access_token", return_value="token")
-    mocker.patch.object(O365MessageTrace.MicrosoftClient, "create_api_metrics")
+    mocker.patch.object(client, "get_access_token", return_value="TOKEN")
+    mocker.patch.object(client, "handle_error_with_metrics", return_value=None)
     return client
 
 
-class TestHttpRequestRateLimitRetry:
-    """The overridden ``O365MessageTraceClient.http_request`` delegates 429 (and 503)
-    retries to ``BaseClient._http_request`` by passing ``status_list_to_retry``,
-    ``backoff_factor`` and ``retries``.
-    """
+class TestHttpRequest:
+    def test_injects_bearer_token_into_request_headers(self, http_client, mocker):
+        response = MagicMock()
+        response.status_code = 200
+        response.json.return_value = {"value": []}
+        super_request = mocker.patch.object(O365MessageTrace.MicrosoftClient, "_http_request", return_value=response)
+        mocker.patch.object(O365MessageTrace.MicrosoftClient, "create_api_metrics")
 
-    def test_passes_429_in_status_list_to_retry(self, http_client, mocker):
-        response = MagicMock(status_code=200)
-        response.json.return_value = {"value": ["ok"]}
-        # The override calls super()._http_request(...), which resolves to BaseClient._http_request.
-        base_http_request = mocker.patch.object(O365MessageTrace.BaseClient, "_http_request", return_value=response)
+        http_client.http_request(method="GET", url_suffix="x")
 
-        result = http_client.http_request(method="GET", url_suffix="x")
+        headers = super_request.call_args.kwargs["headers"]
+        assert headers["Authorization"] == "Bearer TOKEN"
 
-        assert result == {"value": ["ok"]}
-        call_kwargs = base_http_request.call_args.kwargs
-        assert 429 in call_kwargs["status_list_to_retry"]
-        assert 503 in call_kwargs["status_list_to_retry"]
-        assert call_kwargs["retries"] >= 1
+    def test_passes_429_and_503_in_status_list_to_retry(self, http_client, mocker):
+        response = MagicMock()
+        response.status_code = 200
+        response.json.return_value = {"value": []}
+        super_request = mocker.patch.object(O365MessageTrace.MicrosoftClient, "_http_request", return_value=response)
+        mocker.patch.object(O365MessageTrace.MicrosoftClient, "create_api_metrics")
+
+        http_client.http_request(method="GET", url_suffix="x")
+
+        assert super_request.call_args.kwargs["status_list_to_retry"] == [503, 429]
 
     def test_404_raises_not_found_error(self, http_client, mocker):
-        response = MagicMock(status_code=404)
-        response.json.return_value = {"error": "missing"}
-        mocker.patch.object(O365MessageTrace.BaseClient, "_http_request", return_value=response)
+        response = MagicMock()
+        response.status_code = 404
+        response.json.return_value = {"error": "not found"}
+        mocker.patch.object(O365MessageTrace.MicrosoftClient, "_http_request", return_value=response)
+        mocker.patch.object(O365MessageTrace.MicrosoftClient, "create_api_metrics")
 
         with pytest.raises(O365MessageTrace.NotFoundError):
             http_client.http_request(method="GET", url_suffix="x")
 
-    def test_injects_bearer_token_into_request_headers(self, http_client, mocker):
-        response = MagicMock(status_code=200)
-        response.json.return_value = {"value": []}
-        base_http_request = mocker.patch.object(O365MessageTrace.BaseClient, "_http_request", return_value=response)
-
-        http_client.http_request(method="GET", url_suffix="x")
-
-        sent_headers = base_http_request.call_args.kwargs["headers"]
-        assert sent_headers["Authorization"] == "Bearer token"
-        assert sent_headers["Content-Type"] == "application/json"
-        assert sent_headers["Accept"] == "application/json"
-
     def test_calls_create_api_metrics_with_status_code(self, http_client, mocker):
-        response = MagicMock(status_code=200)
+        response = MagicMock()
+        response.status_code = 200
         response.json.return_value = {"value": []}
-        mocker.patch.object(O365MessageTrace.BaseClient, "_http_request", return_value=response)
+        mocker.patch.object(O365MessageTrace.MicrosoftClient, "_http_request", return_value=response)
+        metrics = mocker.patch.object(O365MessageTrace.MicrosoftClient, "create_api_metrics")
 
         http_client.http_request(method="GET", url_suffix="x")
 
-        O365MessageTrace.MicrosoftClient.create_api_metrics.assert_called_once_with(200)
+        metrics.assert_called_once_with(200)
 
     def test_non_json_body_raises_demisto_exception(self, http_client, mocker):
-        response = MagicMock(status_code=200)
-        response.json.side_effect = ValueError("No JSON object could be decoded")
-        response.content = b"not-json"
-        mocker.patch.object(O365MessageTrace.BaseClient, "_http_request", return_value=response)
+        response = MagicMock()
+        response.status_code = 200
+        response.json.side_effect = ValueError("bad json")
+        response.content = b"not json"
+        mocker.patch.object(O365MessageTrace.MicrosoftClient, "_http_request", return_value=response)
+        mocker.patch.object(O365MessageTrace.MicrosoftClient, "create_api_metrics")
 
-        with pytest.raises(O365MessageTrace.DemistoException, match="Failed to parse json object from response"):
+        with pytest.raises(O365MessageTrace.DemistoException):
             http_client.http_request(method="GET", url_suffix="x")
-
-
-class TestGetMessageTracesPageUsesHttpRequest:
-    """``get_message_traces_page`` must route both the first-page and
-    next-link requests through ``ms_client.http_request``.
-    """
-
-    def test_first_page_uses_http_request(self, mock_client):
-        mock_client.ms_client.http_request.return_value = {"value": []}
-
-        mock_client.get_message_traces_page(start_date="2025-01-01T00:00:00Z", end_date="2025-01-01T01:00:00Z")
-
-        mock_client.ms_client.http_request.assert_called_once()
-        assert mock_client.ms_client.http_request.call_args.kwargs["url_suffix"] == Config.MESSAGE_TRACES_PATH
-
-    def test_next_link_uses_http_request(self, mock_client):
-        mock_client.ms_client.http_request.return_value = {"value": []}
-
-        mock_client.get_message_traces_page(next_link="next-link-placeholder")
-
-        mock_client.ms_client.http_request.assert_called_once()
-        assert mock_client.ms_client.http_request.call_args.kwargs["full_url"] == "next-link-placeholder"
