@@ -34,6 +34,11 @@ _PY_TREE = ast.parse(_PY_SOURCE)
 # command handler. They are exempt from the per-handler verbatim arg check.
 PLATFORM_STANDARD_ARGS = {"project_id", "account_id"}
 
+# Polling arguments consumed by the @polling_function decorator (and the shared
+# polling-args validation helper) rather than by the handler body itself. They are
+# exempt from the per-handler verbatim arg check.
+POLLING_STANDARD_ARGS = {"interval_in_seconds", "polling_timeout", "hide_polling_output"}
+
 
 def test_parse_firewall_rule_valid_input():
     """
@@ -6196,6 +6201,75 @@ def test_get_credentials_marketplace_no_project_id_anywhere_raises(mocker):
         get_credentials(args, params)
 
 
+@pytest.mark.parametrize(
+    "region_input, expected_region",
+    [
+        ("us-central1", "us-central1"),
+        ("  us-central1  ", "us-central1"),
+        ("https://www.googleapis.com/compute/v1/projects/test-project/regions/us-central1", "us-central1"),
+    ],
+)
+def test_extract_region_name_valid_input(region_input, expected_region):
+    """
+    Given: A bare region name, a padded region name or a full GCP region URL.
+    When: extract_region_name is called.
+    Then: The bare region name is returned.
+    """
+    from GCP import extract_region_name
+
+    assert extract_region_name(region_input) == expected_region
+
+
+@pytest.mark.parametrize("region_input", [None, "", "   "])
+def test_extract_region_name_empty_input_raises(region_input):
+    """
+    Given: An empty, blank or missing region input.
+    When: extract_region_name is called.
+    Then: A DemistoException is raised.
+    """
+    from GCP import extract_region_name, DemistoException
+
+    with pytest.raises(DemistoException, match="The region argument cannot be empty"):
+        extract_region_name(region_input)
+
+
+@pytest.mark.parametrize(
+    "polling_args",
+    [
+        {},
+        {"interval_in_seconds": "15", "polling_timeout": "120"},
+    ],
+)
+def test_validate_polling_args_valid_input(polling_args):
+    """
+    Given: Missing polling arguments, or positive interval_in_seconds and polling_timeout arguments.
+    When: _validate_polling_args is called.
+    Then: No exception is raised.
+    """
+    from GCP import _validate_polling_args
+
+    _validate_polling_args(polling_args)
+
+
+@pytest.mark.parametrize(
+    "polling_args, expected_error",
+    [
+        ({"interval_in_seconds": "-5"}, "The interval_in_seconds argument must be a positive number"),
+        ({"polling_timeout": "-1"}, "The polling_timeout argument must be a positive number"),
+    ],
+)
+def test_validate_polling_args_non_positive_input_raises(polling_args, expected_error):
+    """
+    Given: A negative interval_in_seconds or polling_timeout argument.
+    When: _validate_polling_args is called.
+    Then: A DemistoException naming the invalid argument is raised.
+    """
+    from GCP import _validate_polling_args, DemistoException
+
+    with pytest.raises(DemistoException, match=expected_error):
+        _validate_polling_args(polling_args)
+
+
 # gcp-compute-zone-operation-wait / gcp-compute-region-operation-wait / gcp-compute-global-operation-wait
 def test_gcp_compute_zone_operation_wait_done(mocker):
     """
@@ -6224,7 +6298,7 @@ def test_gcp_compute_zone_operation_wait_done(mocker):
     mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
 
     args = {"project_id": "test-project", "zone": "us-central1-a", "operation_name": "operation-123"}
-    result = gcp_compute_zone_operation_wait(mock_creds, args)
+    result = gcp_compute_zone_operation_wait(args, mock_creds)
 
     mock_zone_operations.get.assert_called_once_with(project="test-project", zone="us-central1-a", operation="operation-123")
     assert result.scheduled_command is None
@@ -6240,7 +6314,7 @@ def test_gcp_compute_zone_operation_wait_not_done_schedules_poll(mocker):
     When: gcp_compute_zone_operation_wait is called.
     Then: A ScheduledCommand is returned so the command polls again with the same arguments.
     """
-    from GCP import gcp_compute_zone_operation_wait
+    from GCP import DEFAULT_INTERVAL_IN_SECONDS, DEFAULT_TIMEOUT_POLLING_COMMAND, gcp_compute_zone_operation_wait
 
     mock_compute = mocker.Mock()
     mock_zone_operations = mocker.Mock()
@@ -6254,16 +6328,16 @@ def test_gcp_compute_zone_operation_wait_not_done_schedules_poll(mocker):
         "project_id": "test-project",
         "zone": "us-central1-a",
         "operation_name": "operation-123",
-        "interval_in_seconds": "15",
-        "polling_timeout": "120",
     }
-    result = gcp_compute_zone_operation_wait(mock_creds, args)
+    result = gcp_compute_zone_operation_wait(args, mock_creds)
 
     assert result.scheduled_command is not None
     assert result.scheduled_command._command == "gcp-compute-zone-operation-wait"
-    assert result.scheduled_command._next_run == "15"
-    assert result.scheduled_command._timeout == "120"
     assert result.scheduled_command._args == args
+    # The polling_function decorator hides the polling message on the following runs.
+    assert args["hide_polling_output"] is True
+    assert result.scheduled_command._next_run == str(DEFAULT_INTERVAL_IN_SECONDS)
+    assert result.scheduled_command._timeout == str(DEFAULT_TIMEOUT_POLLING_COMMAND)
     assert "Current status: RUNNING" in result.readable_output
 
 
@@ -6290,7 +6364,7 @@ def test_gcp_compute_zone_operation_wait_done_with_error_raises(mocker):
     args = {"project_id": "test-project", "zone": "us-central1-a", "operation_name": "operation-123"}
 
     with pytest.raises(DemistoException, match="Operation operation-123 completed with an error"):
-        gcp_compute_zone_operation_wait(mock_creds, args)
+        gcp_compute_zone_operation_wait(args, mock_creds)
 
 
 def test_gcp_compute_zone_operation_wait_extracts_zone_from_url(mocker):
@@ -6314,7 +6388,7 @@ def test_gcp_compute_zone_operation_wait_extracts_zone_from_url(mocker):
         "zone": "https://www.googleapis.com/compute/v1/projects/test-project/zones/us-central1-a",
         "operation_name": "operation-123",
     }
-    gcp_compute_zone_operation_wait(mock_creds, args)
+    gcp_compute_zone_operation_wait(args, mock_creds)
 
     mock_zone_operations.get.assert_called_once_with(project="test-project", zone="us-central1-a", operation="operation-123")
 
@@ -6341,7 +6415,7 @@ def test_gcp_compute_zone_operation_wait_non_positive_polling_args_raise(mocker,
     args = {"project_id": "test-project", "zone": "us-central1-a", "operation_name": "operation-123"} | polling_args
 
     with pytest.raises(DemistoException, match=expected_error):
-        gcp_compute_zone_operation_wait(mock_creds, args)
+        gcp_compute_zone_operation_wait(args, mock_creds)
     mock_compute.zoneOperations.assert_not_called()
 
 
@@ -6371,7 +6445,7 @@ def test_gcp_compute_region_operation_wait_done(mocker):
     mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
 
     args = {"project_id": "test-project", "region": "us-central1", "operation_name": "operation-456"}
-    result = gcp_compute_region_operation_wait(mock_creds, args)
+    result = gcp_compute_region_operation_wait(args, mock_creds)
 
     mock_region_operations.get.assert_called_once_with(project="test-project", region="us-central1", operation="operation-456")
     assert result.scheduled_command is None
@@ -6401,7 +6475,7 @@ def test_gcp_compute_region_operation_wait_extracts_region_from_url(mocker):
         "region": "https://www.googleapis.com/compute/v1/projects/test-project/regions/us-central1",
         "operation_name": "operation-456",
     }
-    gcp_compute_region_operation_wait(mock_creds, args)
+    gcp_compute_region_operation_wait(args, mock_creds)
 
     mock_region_operations.get.assert_called_once_with(project="test-project", region="us-central1", operation="operation-456")
 
@@ -6423,7 +6497,7 @@ def test_gcp_compute_region_operation_wait_not_done_schedules_poll(mocker):
     mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
 
     args = {"project_id": "test-project", "region": "us-central1", "operation_name": "operation-456"}
-    result = gcp_compute_region_operation_wait(mock_creds, args)
+    result = gcp_compute_region_operation_wait(args, mock_creds)
 
     assert result.scheduled_command is not None
     assert result.scheduled_command._command == "gcp-compute-region-operation-wait"
@@ -6454,7 +6528,7 @@ def test_gcp_compute_region_operation_wait_done_with_error_raises(mocker):
     args = {"project_id": "test-project", "region": "us-central1", "operation_name": "operation-456"}
 
     with pytest.raises(DemistoException, match="Operation operation-456 completed with an error"):
-        gcp_compute_region_operation_wait(mock_creds, args)
+        gcp_compute_region_operation_wait(args, mock_creds)
 
 
 def test_gcp_compute_global_operation_wait_done(mocker):
@@ -6476,7 +6550,7 @@ def test_gcp_compute_global_operation_wait_done(mocker):
     mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
 
     args = {"project_id": "test-project", "operation_name": "operation-789"}
-    result = gcp_compute_global_operation_wait(mock_creds, args)
+    result = gcp_compute_global_operation_wait(args, mock_creds)
 
     mock_global_operations.get.assert_called_once_with(project="test-project", operation="operation-789")
     assert result.scheduled_command is None
@@ -6501,7 +6575,7 @@ def test_gcp_compute_global_operation_wait_not_done_schedules_poll(mocker):
     mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
 
     args = {"project_id": "test-project", "operation_name": "operation-789"}
-    result = gcp_compute_global_operation_wait(mock_creds, args)
+    result = gcp_compute_global_operation_wait(args, mock_creds)
 
     assert result.scheduled_command is not None
     assert result.scheduled_command._command == "gcp-compute-global-operation-wait"
@@ -6531,7 +6605,7 @@ def test_gcp_compute_global_operation_wait_done_with_error_raises(mocker):
     args = {"project_id": "test-project", "operation_name": "operation-789"}
 
     with pytest.raises(DemistoException, match="Operation operation-789 completed with an error"):
-        gcp_compute_global_operation_wait(mock_creds, args)
+        gcp_compute_global_operation_wait(args, mock_creds)
 
 
 # ---------------------------------------------------------------------------
@@ -6846,6 +6920,9 @@ def test_yml_args_match_py_handler_verbatim():
         for arg_name in _YML_SPEC[command_name]["args"]:
             if arg_name in PLATFORM_STANDARD_ARGS:
                 # Resolved centrally via credentials, not per-handler args.get(...).
+                continue
+            if arg_name in POLLING_STANDARD_ARGS:
+                # Consumed by the @polling_function decorator, not per-handler args.get(...).
                 continue
             if arg_name not in handler_args:
                 mismatches.append(f'{command_name} (handler {handler}) -> args.get("{arg_name}")')

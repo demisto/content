@@ -356,6 +356,12 @@ OPERATION_WAIT_TABLE = ["id", "kind", "name", "operationType", "progress", "zone
 OPERATION_DONE_STATUS = "DONE"  # The terminal status of a Compute Engine long-running operation.
 DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval between polling attempts for wait commands.
 DEFAULT_TIMEOUT_POLLING_COMMAND = 600  # Default timeout for polling commands.
+# Polling commands are decorated with @polling_function and therefore take (args, creds) instead of (creds, args).
+POLLING_COMMANDS = {
+    "gcp-compute-zone-operation-wait",
+    "gcp-compute-region-operation-wait",
+    "gcp-compute-global-operation-wait",
+}
 # taken from GoogleCloudCompute
 FIREWALL_RULE_REGEX = re.compile(r"ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)", flags=re.I)
 KEY_VALUE_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
@@ -2824,34 +2830,47 @@ def gcp_compute_zone_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
     )
 
 
+def _validate_polling_args(args: dict[str, Any]) -> None:
+    """
+    Validates the polling arguments of the Compute Engine operation wait commands.
+
+    Args:
+        args (dict[str, Any]): The command arguments, optionally including 'interval_in_seconds' and 'polling_timeout'.
+
+    Raises:
+        DemistoException: If 'interval_in_seconds' or 'polling_timeout' is not a positive number.
+    """
+    interval = arg_to_number(args.get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS
+    timeout = arg_to_number(args.get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND
+
+    if interval <= 0:
+        raise DemistoException(f"The interval_in_seconds argument must be a positive number. Currently the value is {interval}")
+    if timeout <= 0:
+        raise DemistoException(f"The polling_timeout argument must be a positive number. Currently the value is {timeout}")
+
+
 def _compute_operation_poll_result(
     operations_resource: Any,
     request_kwargs: dict[str, Any],
     command_name: str,
-    args: dict[str, Any],
-    interval: int,
-    timeout: int,
     outputs_prefix: str,
-) -> CommandResults:
+) -> PollResult:
     """
-    Retrieves a Compute Engine long-running operation and schedules another poll while it is not done.
+    Retrieves a Compute Engine long-running operation and keeps polling while it is not done.
 
-    As long as the operation has not reached the ``DONE`` status, the returned CommandResults carries a
-    ScheduledCommand so the server re-runs the command after ``interval`` seconds, until ``timeout`` is reached.
+    As long as the operation has not reached the ``DONE`` status, the returned PollResult instructs the
+    ``polling_function`` decorator to schedule another run of the command.
 
     Args:
         operations_resource (Any): The Compute Engine operations resource to query
             (``zoneOperations()``, ``regionOperations()`` or ``globalOperations()``).
         request_kwargs (dict[str, Any]): The scope keyword arguments of the ``get`` request,
             including the ``operation`` name.
-        command_name (str): The command name used to schedule the next polling run.
-        args (dict[str, Any]): The command arguments, reused for the next polling run.
-        interval (int): The interval in seconds between polling attempts.
-        timeout (int): The timeout in seconds until polling ends.
+        command_name (str): The command name, used for debug logging.
         outputs_prefix (str): The context output prefix of the returned operation.
 
     Returns:
-        CommandResults: The completed operation, or a scheduled command to poll again.
+        PollResult: The completed operation, or an indication to poll again.
 
     Raises:
         DemistoException: If the operation completed with an error.
@@ -2862,13 +2881,11 @@ def _compute_operation_poll_result(
     demisto.debug(f"[GCP] {command_name}: operation {operation_name} status is {status}")
 
     if status != OPERATION_DONE_STATUS:
-        return CommandResults(
-            readable_output=f"Waiting for operation {operation_name} to complete. Current status: {status}.",
-            scheduled_command=ScheduledCommand(
-                command=command_name,
-                next_run_in_seconds=interval,
-                args=args,
-                timeout_in_seconds=timeout,
+        return PollResult(
+            response=None,
+            continue_to_poll=True,
+            partial_result=CommandResults(
+                readable_output=f"Waiting for operation {operation_name} to complete. Current status: {status}."
             ),
         )
 
@@ -2883,37 +2900,41 @@ def _compute_operation_poll_result(
         headerTransform=pascalToSpace,
     )
 
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix=outputs_prefix,
-        outputs_key_field="id",
-        outputs=response,
-        raw_response=response,
+    return PollResult(
+        response=CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=outputs_prefix,
+            outputs_key_field="id",
+            outputs=response,
+            raw_response=response,
+        ),
+        continue_to_poll=False,
     )
 
 
-def gcp_compute_zone_operation_wait(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+@polling_function(
+    name="gcp-compute-zone-operation-wait",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def gcp_compute_zone_operation_wait(args: dict[str, Any], creds: Credentials) -> PollResult:
     """
     Waits for a zonal Compute Engine operation to reach the DONE status.
 
     Args:
-        creds (Credentials): GCP credentials.
         args (dict[str, Any]): Must include 'project_id', 'zone' and 'operation_name', and optionally
             'interval_in_seconds' and 'polling_timeout'.
+        creds (Credentials): GCP credentials.
 
     Returns:
-        CommandResults: The completed operation, or a scheduled command to poll again.
+        PollResult: The completed operation, or an indication to poll again.
     """
+    _validate_polling_args(args)
+
     project_id = args.get("project_id")
     zone = extract_zone_name(args.get("zone"))
     operation_name = args.get("operation_name")
-    interval = arg_to_number(args.get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS
-    timeout = arg_to_number(args.get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND
-
-    if interval <= 0:
-        raise DemistoException(f"The interval_in_seconds argument must be a positive number. Currently the value is {interval}")
-    if timeout <= 0:
-        raise DemistoException(f"The polling_timeout argument must be a positive number. Currently the value is {timeout}")
 
     compute = GCPServices.COMPUTE.build(creds)
 
@@ -2921,35 +2942,33 @@ def gcp_compute_zone_operation_wait(creds: Credentials, args: dict[str, Any]) ->
         operations_resource=compute.zoneOperations(),  # pylint: disable=E1101
         request_kwargs={"project": project_id, "zone": zone, "operation": operation_name},
         command_name="gcp-compute-zone-operation-wait",
-        args=args,
-        interval=interval,
-        timeout=timeout,
         outputs_prefix="GCP.Compute.Operations",
     )
 
 
-def gcp_compute_region_operation_wait(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+@polling_function(
+    name="gcp-compute-region-operation-wait",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def gcp_compute_region_operation_wait(args: dict[str, Any], creds: Credentials) -> PollResult:
     """
     Waits for a regional Compute Engine operation to reach the DONE status.
 
     Args:
-        creds (Credentials): GCP credentials.
         args (dict[str, Any]): Must include 'project_id', 'region' and 'operation_name', and optionally
             'interval_in_seconds' and 'polling_timeout'.
+        creds (Credentials): GCP credentials.
 
     Returns:
-        CommandResults: The completed operation, or a scheduled command to poll again.
+        PollResult: The completed operation, or an indication to poll again.
     """
+    _validate_polling_args(args)
+
     project_id = args.get("project_id")
     region = extract_region_name(args.get("region"))
     operation_name = args.get("operation_name")
-    interval = arg_to_number(args.get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS
-    timeout = arg_to_number(args.get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND
-
-    if interval <= 0:
-        raise DemistoException(f"The interval_in_seconds argument must be a positive number. Currently the value is {interval}")
-    if timeout <= 0:
-        raise DemistoException(f"The polling_timeout argument must be a positive number. Currently the value is {timeout}")
 
     compute = GCPServices.COMPUTE.build(creds)
 
@@ -2957,34 +2976,32 @@ def gcp_compute_region_operation_wait(creds: Credentials, args: dict[str, Any]) 
         operations_resource=compute.regionOperations(),  # pylint: disable=E1101
         request_kwargs={"project": project_id, "region": region, "operation": operation_name},
         command_name="gcp-compute-region-operation-wait",
-        args=args,
-        interval=interval,
-        timeout=timeout,
         outputs_prefix="GCP.Compute.Operations",
     )
 
 
-def gcp_compute_global_operation_wait(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+@polling_function(
+    name="gcp-compute-global-operation-wait",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def gcp_compute_global_operation_wait(args: dict[str, Any], creds: Credentials) -> PollResult:
     """
     Waits for a global Compute Engine operation to reach the DONE status.
 
     Args:
-        creds (Credentials): GCP credentials.
         args (dict[str, Any]): Must include 'project_id' and 'operation_name', and optionally
             'interval_in_seconds' and 'polling_timeout'.
+        creds (Credentials): GCP credentials.
 
     Returns:
-        CommandResults: The completed operation, or a scheduled command to poll again.
+        PollResult: The completed operation, or an indication to poll again.
     """
+    _validate_polling_args(args)
+
     project_id = args.get("project_id")
     operation_name = args.get("operation_name")
-    interval = arg_to_number(args.get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS
-    timeout = arg_to_number(args.get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND
-
-    if interval <= 0:
-        raise DemistoException(f"The interval_in_seconds argument must be a positive number. Currently the value is {interval}")
-    if timeout <= 0:
-        raise DemistoException(f"The polling_timeout argument must be a positive number. Currently the value is {timeout}")
 
     compute = GCPServices.COMPUTE.build(creds)
 
@@ -2992,9 +3009,6 @@ def gcp_compute_global_operation_wait(creds: Credentials, args: dict[str, Any]) 
         operations_resource=compute.globalOperations(),  # pylint: disable=E1101
         request_kwargs={"project": project_id, "operation": operation_name},
         command_name="gcp-compute-global-operation-wait",
-        args=args,
-        interval=interval,
-        timeout=timeout,
         outputs_prefix="GCP.Compute.Operations",
     )
 
@@ -3169,7 +3183,8 @@ def main():  # pragma: no cover
     params = demisto.params()
 
     try:
-        command_map: dict[str, Callable[[Any, dict], Any]] = {
+        # Handlers take (creds, args), except polling handlers (see POLLING_COMMANDS) which take (args, creds).
+        command_map: dict[str, Callable[[Any, Any], Any]] = {
             "test-module": lambda creds, _args: test_module(creds, params),
             # Compute Engine commands
             "gcp-compute-firewall-patch": compute_firewall_patch,
@@ -3247,7 +3262,11 @@ def main():  # pragma: no cover
 
         elif command in command_map:
             creds = get_credentials(args, params)
-            return_results(command_map[command](creds, args))
+            if command in POLLING_COMMANDS:
+                demisto.debug(f"[GCP main] The {command=} is a polling command, calling it with args as the first argument.")
+                return_results(command_map[command](args, creds))
+            else:
+                return_results(command_map[command](creds, args))
         else:
             raise NotImplementedError(f"Command not implemented: {command}")
 
