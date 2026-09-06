@@ -5370,7 +5370,6 @@ script:
     name: cs-falcon-workflow-execution-action
     outputs: []
   dockerimage: demisto/py3-tools:1.0.0.10120494
-  spec: L
   isfetch: true
   isfetch:marketplacev2: false
   isfetch:platform: true
