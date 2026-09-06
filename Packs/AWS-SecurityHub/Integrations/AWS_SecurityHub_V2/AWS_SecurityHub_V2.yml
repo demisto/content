@@ -1,7 +1,7 @@
 name: AWS - Security Hub v2
 display: AWS - Security Hub v2
 category: IT Services
-provider: Amazon Web Services
+provider: Amazon
 sectionorder:
 - Connect
 - Collect
