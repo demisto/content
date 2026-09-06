@@ -39,11 +39,17 @@ configuration:
   required: false
   defaultvalue: 'false'
   section: Collect
+  supportedModules:
+  - xsiam
+  - agentix
 - display: Incident type
   name: incidentType
   type: 13
   required: false
   section: Collect
+  supportedModules:
+  - xsiam
+  - agentix
 - display: Fetch types
   name: fetch_types
   type: 16
@@ -53,12 +59,18 @@ configuration:
   - Failed Jobs
   section: Collect
   additionalinfo: "Types of events to fetch as incidents."
+  supportedModules:
+  - xsiam
+  - agentix
 - display: Maximum incidents per fetch
   name: max_fetch
   type: 0
   required: false
   defaultvalue: '50'
   section: Collect
+  supportedModules:
+  - xsiam
+  - agentix
 - display: First fetch time
   name: first_fetch
   type: 0
@@ -66,6 +78,9 @@ configuration:
   defaultvalue: '3 days'
   section: Collect
   additionalinfo: "e.g., 3 days, 1 week"
+  supportedModules:
+  - xsiam
+  - agentix
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   type: 19
@@ -73,17 +88,16 @@ configuration:
   defaultvalue: '1'
   section: Collect
   advanced: true
+  supportedModules:
+  - xsiam
+  - agentix
 description: Comprehensive integration with Databricks workspace APIs for managing clusters, jobs, SQL, pipelines, Unity Catalog, MLflow, IAM, and more.
 display: Databricks
 name: Databricks
-supportlevelheader: community
-marketplaces:
-- xsoar
-- marketplacev2
 script:
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.11.1940513
+  dockerimage: demisto/fastapi:0.125.0.12689358
   isfetch: true
   script: ''
   runonce: false
