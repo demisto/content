@@ -262,7 +262,6 @@ class PcapParser:
         # Parse the pcap
         logging.getLogger("asyncio").setLevel(logging.ERROR)
         with open(os.devnull, "w") as devnull:
-            sys.stderr = devnull
             try:
                 with pyshark.FileCapture(
                     pcap_file_path,
