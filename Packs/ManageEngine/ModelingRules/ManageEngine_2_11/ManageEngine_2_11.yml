@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: ManageEngine_ModelingRule
-name: ManageEngine Modeling Rule
+id: Manage_Engine_ModelingRule
+name: Manage Engine Modeling Rule
 rules: ''
 schema: ''
 tags: 'Manage Engine'

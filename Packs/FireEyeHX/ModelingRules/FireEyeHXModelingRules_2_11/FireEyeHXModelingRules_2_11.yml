@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: FireEyeHX_ModelingRule
-name: FireEyeHX Modeling Rule
+id: FireEye_HX_ModelingRule
+name: FireEye HX Modeling Rule
 rules: ''
 schema: ''
 supportedModules:
