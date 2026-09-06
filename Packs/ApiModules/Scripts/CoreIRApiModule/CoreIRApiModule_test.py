@@ -1266,6 +1266,68 @@ def test_retrieve_files_command(requests_mock):
     assert res.raw_response == {"action_id": 1773}
 
 
+def test_retrieve_files_command_with_custom_paths_separator(requests_mock):
+    """
+    Given:
+        - endpoint_ids
+        - windows_file_paths containing a literal comma in the path
+        - paths_separator set to ";"
+    When:
+        - A user desires to retrieve a file whose path contains a comma.
+    Then:
+        - Assert the path is sent as a single entry (not split on the comma).
+    """
+    from CoreIRApiModule import CoreClient, retrieve_files_command
+
+    mock_request = requests_mock.post(
+        f"{Core_URL}/public_api/v1/endpoints/file_retrieval/",
+        json={"reply": {"action_id": 1773}},
+    )
+
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+    retrieve_files_command(
+        client,
+        {
+            "endpoint_ids": "aeec6a2cc92e46fab3b6f621722e9916",
+            "windows_file_paths": "C:\\Users\\TrangLe\\Downloads\\test, test\\test.txt",
+            "paths_separator": ";",
+        },
+    )
+
+    sent_files = mock_request.last_request.json()["request_data"]["files"]
+    assert sent_files["windows"] == ["C:\\Users\\TrangLe\\Downloads\\test, test\\test.txt"]
+
+
+def test_retrieve_files_command_default_separator_splits_on_comma(requests_mock):
+    """
+    Given:
+        - endpoint_ids
+        - windows_file_paths with two comma-separated paths and no paths_separator
+    When:
+        - A user retrieves files using the default (comma) separator.
+    Then:
+        - Assert backward compatibility: the value is split into two paths on the comma.
+    """
+    from CoreIRApiModule import CoreClient, retrieve_files_command
+
+    mock_request = requests_mock.post(
+        f"{Core_URL}/public_api/v1/endpoints/file_retrieval/",
+        json={"reply": {"action_id": 1773}},
+    )
+
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+    retrieve_files_command(
+        client,
+        {
+            "endpoint_ids": "aeec6a2cc92e46fab3b6f621722e9916",
+            "windows_file_paths": "C:\\path\\one.txt,C:\\path\\two.txt",
+        },
+    )
+
+    sent_files = mock_request.last_request.json()["request_data"]["files"]
+    assert sent_files["windows"] == ["C:\\path\\one.txt", "C:\\path\\two.txt"]
+
+
 def test_retrieve_files_command_using_general_file_path(requests_mock):
     """
     Given:
@@ -2015,6 +2077,68 @@ def test_get_script_execution_files_command(requests_mock, mocker, request):
 
     response = get_script_execution_result_files_command(client, args)
     assert response["File"] == zip_filename
+    assert zipfile.ZipFile(file_name).namelist() == ["your_file.txt"]
+
+
+def test_get_script_execution_files_command_rbac(mocker, request):
+    """
+    Given:
+        - An XSIAM tenant where FORWARD_USER_RUN_RBAC is True, so requests are forwarded
+          through demisto._apiCall and no requests.Response object is ever available.
+    When:
+        - Running the get-script-execution-result-files command.
+    Then:
+        - Verify the command does not fail and returns a valid ZIP file result.
+    """
+    import base64
+
+    from CoreIRApiModule import CoreClient, get_script_execution_result_files_command
+
+    mocker.patch.object(demisto, "uniqueFile", return_value="test_rbac_file_result")
+    mocker.patch.object(demisto, "investigation", return_value={"id": "1"})
+    file_name = "1_test_rbac_file_result"
+
+    def cleanup():
+        try:
+            os.remove(file_name)
+        except OSError:
+            pass
+
+    request.addfinalizer(cleanup)
+
+    zip_bytes = (
+        b"PK\x03\x04\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00"
+        b"\x00\x00\x00\x00\r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xb6\x81\x00\x00\x00\x00your_file"
+        b".txtPK\x01\x02\x14\x00\x14\x00\x00\x00\x00\x00%\x98>R\x00\x00\x00\x00\x00\x00\x00\x00"
+        b"\x00\x00\x00\x00\r\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xb6\x81\x00\x00\x00\x00your_file"
+        b".txtPK\x05\x06\x00\x00\x00\x00\x01\x00\x01\x00;\x00\x00\x00+\x00\x00\x00\x00\x00"
+    )
+
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch("CoreIRApiModule.ALLOW_RESPONSE_AS_BINARY", new=True)
+    mocker.patch.object(
+        demisto,
+        "_apiCall",
+        side_effect=[
+            {
+                "name": "/api/webapp/public_api/v1/scripts/get_script_execution_results_files",
+                "status": 200,
+                "data": json.dumps({"reply": {"DATA": "https://test.com/download/example-link.zip"}}),
+            },
+            {
+                "name": "/api/webapp/public_api/v1/download/example-link.zip",
+                "status": 200,
+                "data": base64.b64encode(zip_bytes),
+            },
+        ],
+    )
+
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1", headers={})
+    args = {"action_id": "action_id", "endpoint_id": "endpoint_id"}
+
+    response = get_script_execution_result_files_command(client, args)
+
+    assert response["File"] == "action_id.zip"
     assert zipfile.ZipFile(file_name).namelist() == ["your_file.txt"]
 
 

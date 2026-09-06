@@ -42,3 +42,6 @@ ignore=LO107
 
 [file:layoutscontainer-CLOUD_Token_Theft.json]
 ignore=LO107
+
+[file:XCloudAdditionalAlertInformationWidget.yml]
+ignore=GR103

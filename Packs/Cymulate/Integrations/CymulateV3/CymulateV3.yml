@@ -64,6 +64,13 @@ configuration:
   type: 13
   section: Collect
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 description: This integration fetches findings from completed Cymulate assessments as Cortex XSOAR incidents using the V2 Assessment API.
 display: Cymulate v3
 defaultmapperin: Cymulate Assessment Findings - Incoming Mapper

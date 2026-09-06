@@ -30,6 +30,9 @@ configuration:
   additionalinfo: Default is 50. Maximum is 100.
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - name: first_fetch
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
   defaultvalue: 7 days
@@ -109,11 +112,27 @@ configuration:
   name: incidentType
   type: 13
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Fetch incidents
   section: Collect
   name: isFetch
   type: 8
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 script:
   script: ''
   type: python
