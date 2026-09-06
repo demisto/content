@@ -268,3 +268,60 @@ def test_fetch_incidents_caps_max_fetch(client: Client, mocker):
     assert captured["startRow"] == 0
     assert captured["sortParams"] == [{"sort": "asc", "colId": "createdAt"}]
     assert captured["filters"]["other_filters"] == ["open_incidents"]
+
+
+# --------------------------------------------------------------------------- filter wire keys
+
+
+def test_build_filters_body_uses_disposition_filters_wire_key():
+    """The API key is ``disposition_filters``; ``disposition`` is silently ignored."""
+    filters = build_filters_body(disposition=["manual_review"])["filters"]
+
+    assert filters["disposition_filters"] == ["manual_review"]
+    assert "disposition" not in filters
+
+
+def test_build_filters_body_maps_every_filter_to_documented_key():
+    """Lock each argument to the API identifier documented in the Incidents API spec."""
+    filters = build_filters_body(
+        incident_id_filters=["781"],
+        source_filters=["abuse_mailbox"],
+        other_filters=["open_incidents"],
+        verdict_filters=["verdict_manual_review"],
+        disposition=["manual_review"],
+        confidence_filters=["confidence_high"],
+    )["filters"]
+
+    assert filters == {
+        "incident_id_filters": ["781"],
+        "source_filters": ["abuse_mailbox"],
+        "other_filters": ["open_incidents"],
+        "verdict_filters": ["verdict_manual_review"],
+        "disposition_filters": ["manual_review"],
+        "confidence_filters": ["confidence_high"],
+    }
+
+
+def test_build_filters_body_rejects_invalid_disposition():
+    with pytest.raises(Exception, match="disposition"):
+        build_filters_body(disposition=["bogus"])
+
+
+def test_list_incidents_command_sends_disposition_filters(client: Client, mocker):
+    """End-to-end: the command argument reaches the API under the correct key."""
+    captured: dict = {}
+
+    def _capture(self, body):
+        captured.update(body)
+        return {"incidents": []}
+
+    mocker.patch.object(Client, "list_incidents", _capture)
+
+    proofpoint_ctr_incidents_list_command(
+        client,
+        {"disposition": "manual_review", "source_filters": "abuse_mailbox", "limit": "10"},
+    )
+
+    assert captured["filters"]["disposition_filters"] == ["manual_review"]
+    assert captured["filters"]["source_filters"] == ["abuse_mailbox"]
+    assert "disposition" not in captured["filters"]
