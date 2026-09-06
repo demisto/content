@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+from pytest_mock import MockerFixture
 
 from ProofpointCloudThreatResponse import (
     Client,
@@ -273,7 +274,7 @@ def test_fetch_incidents_caps_max_fetch(client: Client, mocker):
 # --------------------------------------------------------------------------- filter wire keys
 
 
-def test_build_filters_body_uses_disposition_filters_wire_key():
+def test_build_filters_body_uses_disposition_filters_wire_key() -> None:
     """The API key is ``disposition_filters``; ``disposition`` is silently ignored."""
     filters = build_filters_body(disposition=["manual_review"])["filters"]
 
@@ -281,7 +282,7 @@ def test_build_filters_body_uses_disposition_filters_wire_key():
     assert "disposition" not in filters
 
 
-def test_build_filters_body_maps_every_filter_to_documented_key():
+def test_build_filters_body_maps_every_filter_to_documented_key() -> None:
     """Lock each argument to the API identifier documented in the Incidents API spec."""
     filters = build_filters_body(
         incident_id_filters=["781"],
@@ -302,16 +303,16 @@ def test_build_filters_body_maps_every_filter_to_documented_key():
     }
 
 
-def test_build_filters_body_rejects_invalid_disposition():
+def test_build_filters_body_rejects_invalid_disposition() -> None:
     with pytest.raises(Exception, match="disposition"):
         build_filters_body(disposition=["bogus"])
 
 
-def test_list_incidents_command_sends_disposition_filters(client: Client, mocker):
+def test_list_incidents_command_sends_disposition_filters(client: Client, mocker: MockerFixture) -> None:
     """End-to-end: the command argument reaches the API under the correct key."""
-    captured: dict = {}
+    captured: dict[str, Any] = {}
 
-    def _capture(self, body):
+    def _capture(self: Client, body: dict[str, Any]) -> dict[str, Any]:
         captured.update(body)
         return {"incidents": []}
 
