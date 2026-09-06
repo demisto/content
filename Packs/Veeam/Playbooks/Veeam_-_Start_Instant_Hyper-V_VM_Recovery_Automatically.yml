@@ -1,10 +1,9 @@
-contentitemexportablefields:
-  contentitemfields: {}
-id: 'Veeam - Start Instant VM Recovery Automatically'
+description: Starts Instant VM Recovery for Microsoft Hyper-V with automatic configuration.
+id: Veeam - Start Instant Hyper-V VM Recovery Automatically
 inputs:
 - description: ""
   key: Instance
-  playbookInputQuery:
+  playbookInputQuery: null
   required: false
   value:
     complex:
@@ -12,15 +11,17 @@ inputs:
       root: incident
 - description: ""
   key: backupObjectId
-  playbookInputQuery:
+  playbookInputQuery: null
   required: false
   value:
     complex:
       accessor: veeambackupobjectid
       root: incident
-name: Veeam - Start Instant VM Recovery Automatically
+name: Veeam - Start Instant Hyper-V VM Recovery Automatically
 outputs: []
+sourceplaybookid: Veeam - Start Instant VM Recovery Automatically
 starttaskid: "0"
+fromversion: "6.10.0"
 tasks:
   "0":
     continueonerrortype: ""
@@ -37,12 +38,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: aa9e28d4-4d01-4e6b-8f09-0a7eaebc0c29
+      id: ff21d8e2-55dc-4267-8d88-ab6a3bd114e4
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: aa9e28d4-4d01-4e6b-8f09-0a7eaebc0c29
+    taskid: ff21d8e2-55dc-4267-8d88-ab6a3bd114e4
     timertriggers: []
     type: start
     view: |-
@@ -60,14 +61,12 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "12"
+      - "44"
     note: false
     quietmode: 0
     scriptarguments:
       limit:
         simple: "1"
-      malwareStatusFilter:
-        simple: Clean
       nameFilter:
         complex:
           accessor: name
@@ -77,7 +76,7 @@ tasks:
       orderColumn:
         simple: CreationTime
       platformNameFilter:
-        simple: VMware
+        simple: HyperV
       using:
         complex:
           root: inputs.Instance
@@ -86,90 +85,20 @@ tasks:
     task:
       brand: VBR REST API
       description: Get all clean restore points (without detected malware activity).
-      id: e97961d7-ed67-4d0a-80b0-5d69b520832c
+      id: 6a764988-5a2f-40b4-8763-00f6857c1dde
       iscommand: true
       name: Get All Restore Points
       script: VBR REST API|||veeam-vbr-get-restore-points
       type: regular
       version: -1
-    taskid: e97961d7-ed67-4d0a-80b0-5d69b520832c
+    taskid: 6a764988-5a2f-40b4-8763-00f6857c1dde
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 50,
-          "y": -40
-        }
-      }
-  "2":
-    continueonerrortype: ""
-    id: "2"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "36"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      antivirusScanEnabled:
-        simple: "true"
-      biosUuidPolicy:
-        simple: preserve
-      folderObjectId:
-        complex:
-          accessor: parsed_value
-          root: Veeam.FOLDER
-      hostObjectId:
-        complex:
-          accessor: parsed_value
-          root: Veeam.HOST
-      overwrite:
-        simple: "false"
-      platform:
-        complex:
-          accessor: platformName
-          root: Veeam.VBR.get_restore_points.data
-      redirectEnabled:
-        simple: "false"
-      restorePointId:
-        complex:
-          accessor: id
-          root: Veeam.VBR.get_restore_points.data
-      restoredVmName:
-        complex:
-          accessor: restored_vm_name
-          root: Veeam.VMNAME
-      using:
-        complex:
-          root: inputs.Instance
-      vCenterName:
-        complex:
-          accessor: vcenter_name
-          root: Veeam.VBR.backup_object
-      virusDetectionAction:
-        simple: AbortRecovery
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: VBR REST API
-      description: Start Customized VM Instant Recovery
-      id: a48e4fc8-26e6-499c-8230-571593c6aeb5
-      iscommand: true
-      name: Start Customized VM Instant Recovery with AV Scan
-      script: VBR REST API|||veeam-vbr-start-instant-recovery-customized
-      type: regular
-      version: -1
-    taskid: a48e4fc8-26e6-499c-8230-571593c6aeb5
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": -750,
-          "y": 650
+          "y": -200
         }
       }
   "6":
@@ -184,13 +113,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 22b5657d-e67b-42e6-83ac-f613c7ff05ac
+      id: 6df7cf9b-e62f-4bac-8c39-55334a40db8c
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: 22b5657d-e67b-42e6-83ac-f613c7ff05ac
+    taskid: 6df7cf9b-e62f-4bac-8c39-55334a40db8c
     timertriggers: []
     type: title
     view: |-
@@ -206,42 +135,24 @@ tasks:
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
-    message:
-      bcc:
-      body:
-        simple: Proceed Instant VM Recovery with antivirus scan?
-      cc:
-      format: ""
-      methods: []
-      replyOptions:
-      - "Yes"
-      - "No"
-      subject:
-      timings:
-        completeafterreplies: 1
-        completeaftersla: false
-        completeafterv2: true
-        retriescount: 2
-        retriesinterval: 360
-      to:
     nexttasks:
       "No":
-      - "31"
-      "YES":
-      - "2"
+      - "42"
+      "Yes":
+      - "41"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Use Antivirus Scan?
-      id: 965c5d31-ab81-446c-8fe0-34e4b98f31ac
+      description: Enables antivirus scan.
+      id: 68e52f12-7c43-4882-80c5-52028dfdd515
       iscommand: false
-      name: Use Antivirus Scan?
+      name: Use AV Scan?
       type: condition
       version: -1
-    taskid: 965c5d31-ab81-446c-8fe0-34e4b98f31ac
+    taskid: 68e52f12-7c43-4882-80c5-52028dfdd515
     timertriggers: []
     type: condition
     view: |-
@@ -259,16 +170,38 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "26"
+      - "39"
     note: false
     quietmode: 0
     scriptarguments:
-      hierarchyType:
-        simple: VmsAndTemplates
+      extend-context:
+        simple: host=name
+      filter:
+        simple: |-
+          {
+              "type": "GroupExpression",
+              "operation": "and",
+              "items": [
+                {
+                  "type": "PredicateExpression",
+                  "operation": "equals",
+                  "property": "platform",
+                  "value": "HyperV"
+                },
+                {
+                  "type": "PredicateExpression",
+                  "operation": "equals",
+                  "property": "type",
+                  "value": "Host"
+                }
+              ]
+            }
       hostname:
         complex:
           accessor: vcenter_name
           root: Veeam.VBR.backup_object
+      ignore-outputs:
+        simple: "true"
       objectName:
         complex:
           accessor: name
@@ -276,28 +209,24 @@ tasks:
       using:
         complex:
           root: inputs.Instance
-      viType:
-        complex:
-          accessor: viType
-          root: Veeam.VBR.backup_object
     separatecontext: false
     skipunavailable: false
     task:
       brand: VBR REST API
-      description: Get Inventory Objects
-      id: 78771c53-f7b8-47e7-883e-da50ce5a64ff
+      description: Gets inventory objects.
+      id: 6d8f61f5-d6bd-4ec9-8042-63f752966716
       iscommand: true
       name: Get Inventory Objects
       script: VBR REST API|||veeam-vbr-get-inventory-objects
       type: regular
       version: -1
-    taskid: 78771c53-f7b8-47e7-883e-da50ce5a64ff
+    taskid: 6d8f61f5-d6bd-4ec9-8042-63f752966716
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 60,
           "y": -1100
         }
       }
@@ -323,14 +252,14 @@ tasks:
     skipunavailable: false
     task:
       brand: VBR REST API
-      description: Get Backup Object
-      id: e60e6ce9-3bf5-4d87-8748-1dab314d4d9f
+      description: Gets a backup object.
+      id: 1e3e58a0-d706-43ea-8c8e-d033fc5df676
       iscommand: true
       name: Get Backup Object
       script: VBR REST API|||veeam-vbr-get-backup-object
       type: regular
       version: -1
-    taskid: e60e6ce9-3bf5-4d87-8748-1dab314d4d9f
+    taskid: 1e3e58a0-d706-43ea-8c8e-d033fc5df676
     timertriggers: []
     type: regular
     view: |-
@@ -348,7 +277,7 @@ tasks:
             value:
               complex:
                 accessor: id
-                root: Veeam.VBR.get_restore_points.data
+                root: Veeam.LatestCleanRestorePoint
           operator: isNotEmpty
           right:
             value: {}
@@ -369,13 +298,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check Restore Point Existence
-      id: 7e82a364-a1d5-412e-835b-03cfbde96a99
+      description: Checks if restore points exist.
+      id: 494027e0-4c87-4a38-8009-783886ffadff
       iscommand: false
       name: Check Restore Point Existence
       type: condition
       version: -1
-    taskid: 7e82a364-a1d5-412e-835b-03cfbde96a99
+    taskid: 494027e0-4c87-4a38-8009-783886ffadff
     timertriggers: []
     type: condition
     view: |-
@@ -416,13 +345,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check Session State
-      id: 79ab3655-f099-46ee-8603-8e423f54ed62
+      description: Checks session state.
+      id: d1f7e17e-bbd1-4bc2-84a8-f37db3121f94
       iscommand: false
       name: Check Session State
       type: condition
       version: -1
-    taskid: 79ab3655-f099-46ee-8603-8e423f54ed62
+    taskid: d1f7e17e-bbd1-4bc2-84a8-f37db3121f94
     timertriggers: []
     type: condition
     view: |-
@@ -447,13 +376,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: b65b44a5-b583-4a47-88f2-0320f71b36d1
+      id: d3190ec8-cbd7-418e-8c2a-a073d5fa09c0
       iscommand: false
       name: Success
       type: title
       version: -1
       description: ''
-    taskid: b65b44a5-b583-4a47-88f2-0320f71b36d1
+    taskid: d3190ec8-cbd7-418e-8c2a-a073d5fa09c0
     timertriggers: []
     type: title
     view: |-
@@ -469,46 +398,31 @@ tasks:
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
-    message:
-      bcc:
-      body:
-        simple: Instant VM Recovery has not been completed.
-      cc:
-      format: ""
-      methods: []
-      replyOptions:
-      - Finish
-      subject:
-      timings:
-        completeafterreplies: 1
-        completeaftersla: false
-        completeafterv2: true
-        retriescount: 2
-        retriesinterval: 360
-      to:
     nexttasks:
       Finish:
       - "6"
+      Get Session Logs:
+      - "43"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Failed
-      id: f41b21b5-50ca-45de-8204-901246cba53d
+      description: Returns an error if Instant VM Recovery has not been completed.
+      id: 1005b4a9-d469-45b1-867f-5454a73b0000
       iscommand: false
       name: Failed
       type: condition
       version: -1
-    taskid: f41b21b5-50ca-45de-8204-901246cba53d
+    taskid: 1005b4a9-d469-45b1-867f-5454a73b0000
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
-          "x": -730,
-          "y": 1680
+          "x": -960,
+          "y": 1550
         }
       }
   "18":
@@ -519,16 +433,15 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "27"
+      - "23"
     note: false
     quietmode: 0
     scriptarguments:
       hierarchyType:
-        simple: HostsAndClusters
+        simple: HostsAndVMs
       hostname:
         complex:
-          accessor: vcenter_name
-          root: Veeam.VBR.backup_object
+          root: host
       objectName:
         complex:
           accessor: name
@@ -537,71 +450,26 @@ tasks:
         complex:
           root: inputs.Instance
       viType:
-        complex:
-          accessor: viType
-          root: Veeam.VBR.backup_object
+        simple: VirtualMachine
     separatecontext: false
     skipunavailable: false
     task:
       brand: VBR REST API
-      description: Get Inventory Objects
-      id: e22b4b01-99f0-4c21-80c3-6a03853aa5ba
+      description: Gets inventory objects.
+      id: e9af2931-87c8-4df9-848c-4650e4586ab7
       iscommand: true
       name: Get Inventory Objects
       script: VBR REST API|||veeam-vbr-get-inventory-objects
       type: regular
       version: -1
-    taskid: e22b4b01-99f0-4c21-80c3-6a03853aa5ba
+    taskid: e9af2931-87c8-4df9-848c-4650e4586ab7
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 50,
-          "y": -600
-        }
-      }
-  "22":
-    conditions:
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: parsed_value
-                root: Veeam.FOLDER
-          operator: isNotEmpty
-      label: "yes"
-    continueonerrortype: ""
-    id: "22"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#default#':
-      - "28"
-      "yes":
-      - "18"
-    note: false
-    quietmode: 0
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Check Folder Availability
-      id: c1e79d26-c7a4-4e8f-8c4a-f9d2a9334045
-      iscommand: false
-      name: Check Folder Availability
-      type: condition
-      version: -1
-    taskid: c1e79d26-c7a4-4e8f-8c4a-f9d2a9334045
-    timertriggers: []
-    type: condition
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": -800
+          "y": -640
         }
       }
   "23":
@@ -611,8 +479,8 @@ tasks:
             iscontext: true
             value:
               complex:
-                accessor: parsed_value
-                root: Veeam.HOST
+                accessor: name
+                root: Veeam.VBR.get_inventory_objects.data
           operator: isNotEmpty
           right:
             value: {}
@@ -633,94 +501,20 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check Host Availability
-      id: 61cc1a28-bfbd-4758-83f3-81627b518338
+      description: Checks if a virtual machine is available.
+      id: 98a6bb5b-fe57-436d-8f13-d618c6cf581e
       iscommand: false
-      name: Check Host Availability
+      name: Check VM Existence
       type: condition
       version: -1
-    taskid: 61cc1a28-bfbd-4758-83f3-81627b518338
+    taskid: 98a6bb5b-fe57-436d-8f13-d618c6cf581e
     timertriggers: []
     type: condition
     view: |-
       {
         "position": {
           "x": 50,
-          "y": -280
-        }
-      }
-  "26":
-    continueonerrortype: ""
-    id: "26"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "22"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      data:
-        complex:
-          accessor: data
-          root: Veeam.VBR.get_inventory_objects
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Get Folder Name
-      id: f7d93bc3-ab7c-4c6d-819f-32028273c99f
-      iscommand: false
-      name: Get Folder Name
-      script: GetFolderName
-      type: regular
-      version: -1
-    taskid: f7d93bc3-ab7c-4c6d-819f-32028273c99f
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": -950
-        }
-      }
-  "27":
-    continueonerrortype: ""
-    id: "27"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "23"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      data:
-        complex:
-          accessor: data
-          root: Veeam.VBR.get_inventory_objects
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: ""
-      description: Get Host Name
-      id: 33218482-06e4-4abe-8dda-8009207e4459
-      iscommand: false
-      name: Get Host Name
-      script: GetHostName
-      type: regular
-      version: -1
-    taskid: 33218482-06e4-4abe-8dda-8009207e4459
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": -450
+          "y": -440
         }
       }
   "28":
@@ -729,42 +523,24 @@ tasks:
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
-    message:
-      bcc:
-      body:
-        simple: Proceed Instant VM Recovery with manual parameter input?
-      cc:
-      format: ""
-      methods: []
-      replyOptions:
-      - "Yes"
-      - "No"
-      subject:
-      timings:
-        completeafterreplies: 1
-        completeaftersla: false
-        completeafterv2: true
-        retriescount: 2
-        retriesinterval: 360
-      to:
     nexttasks:
       "No":
       - "6"
       "Yes":
-      - "35"
+      - "40"
     note: false
     quietmode: 0
     separatecontext: false
     skipunavailable: false
     task:
       brand: ""
-      description: Start Instant VM Recovery Manually?
-      id: 8a470a55-c5aa-4d8c-8b1c-e21be96f3e99
+      description: Starts Instant VM Recovery manually.
+      id: dad2b6ff-4f72-4e52-8c02-80311ff63488
       iscommand: false
       name: Start Instant VM Recovery Manually?
       type: condition
       version: -1
-    taskid: 8a470a55-c5aa-4d8c-8b1c-e21be96f3e99
+    taskid: dad2b6ff-4f72-4e52-8c02-80311ff63488
     timertriggers: []
     type: condition
     view: |-
@@ -780,23 +556,6 @@ tasks:
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
-    message:
-      bcc:
-      body:
-        simple: Go to the Veeam Backup & Replication console to finish the migration process.
-      cc:
-      format: ""
-      methods: []
-      replyOptions:
-      - OK
-      subject:
-      timings:
-        completeafterreplies: 1
-        completeaftersla: false
-        completeafterv2: true
-        retriescount: 2
-        retriesinterval: 360
-      to:
     nexttasks:
       OK:
       - "6"
@@ -806,13 +565,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Finish Migration
-      id: fee24af0-9c82-43ef-8d90-101a26411688
+      description: Go to the Veeam Backup & Replication console to finish the migration
+        process.
+      id: fa8784c0-2a56-4ab3-8659-7f9ed99fd218
       iscommand: false
       name: Finish Migration
       type: condition
       version: -1
-    taskid: fee24af0-9c82-43ef-8d90-101a26411688
+    taskid: fa8784c0-2a56-4ab3-8659-7f9ed99fd218
     timertriggers: []
     type: condition
     view: |-
@@ -822,97 +582,12 @@ tasks:
           "y": 1680
         }
       }
-  "31":
-    continueonerrortype: ""
-    id: "31"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    nexttasks:
-      '#none#':
-      - "36"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      antivirusScanEnabled:
-        simple: "false"
-      biosUuidPolicy:
-        simple: preserve
-      folderObjectId:
-        complex:
-          accessor: parsed_value
-          root: Veeam.FOLDER
-      hostObjectId:
-        complex:
-          accessor: parsed_value
-          root: Veeam.HOST
-      overwrite:
-        simple: "false"
-      platform:
-        complex:
-          accessor: platformName
-          root: Veeam.VBR.get_restore_points.data
-      redirectEnabled:
-        simple: "false"
-      restorePointId:
-        complex:
-          accessor: id
-          root: Veeam.VBR.get_restore_points.data
-      restoredVmName:
-        complex:
-          accessor: restored_vm_name
-          root: Veeam.VMNAME
-      using:
-        complex:
-          root: inputs.Instance
-      vCenterName:
-        complex:
-          accessor: vcenter_name
-          root: Veeam.VBR.backup_object
-    separatecontext: false
-    skipunavailable: false
-    task:
-      brand: VBR REST API
-      description: Start Customized VM Instant Recovery
-      id: 22dc66cc-bd42-4c0a-8957-4227d1526ddb
-      iscommand: true
-      name: Start Customized VM Instant Recovery
-      script: VBR REST API|||veeam-vbr-start-instant-recovery-customized
-      type: regular
-      version: -1
-    taskid: 22dc66cc-bd42-4c0a-8957-4227d1526ddb
-    timertriggers: []
-    type: regular
-    view: |-
-      {
-        "position": {
-          "x": -230,
-          "y": 650
-        }
-      }
   "32":
     continueonerrortype: ""
     id: "32"
     ignoreworker: false
     isautoswitchedtoquietmode: false
     isoversize: false
-    message:
-      bcc:
-      body:
-        simple: No Clean Restore Points Found
-      cc:
-      format: ""
-      methods: []
-      replyOptions:
-      - Finish
-      subject:
-      timings:
-        completeafterreplies: 1
-        completeaftersla: false
-        completeafterv2: true
-        retriescount: 2
-        retriesinterval: 360
-      to:
     nexttasks:
       Finish:
       - "6"
@@ -922,13 +597,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: No Clean Restore Points Found
-      id: 100b2818-b1e7-4886-8f4a-91be215bec53
+      description: Returns an error if no clean restore points have been found.
+      id: b3eb7383-f7ea-458e-8344-27ba7ff9db19
       iscommand: false
       name: No Clean Restore Points Found
       type: condition
       version: -1
-    taskid: 100b2818-b1e7-4886-8f4a-91be215bec53
+    taskid: b3eb7383-f7ea-458e-8344-27ba7ff9db19
     timertriggers: []
     type: condition
     view: |-
@@ -956,21 +631,19 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        - For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations 
-        - For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script
-        - For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script
-      id: 9bb5d1ee-3248-499b-802a-6878ca2d4a2d
+      description: "Delete field from context.\n\nThis automation runs using the default
+        Limited User role, unless you explicitly change the permissions.\nFor more
+        information, see the section about permissions here:\n- For Cortex XSOAR 6
+        see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      id: 6334cd6c-fce3-4406-8c62-07b2899eb59b
       iscommand: false
       name: Clear Context Data
       script: DeleteContext
       type: regular
       version: -1
-    taskid: 9bb5d1ee-3248-499b-802a-6878ca2d4a2d
+    taskid: 6334cd6c-fce3-4406-8c62-07b2899eb59b
     timertriggers: []
     type: regular
     view: |-
@@ -978,50 +651,6 @@ tasks:
         "position": {
           "x": 50,
           "y": -1440
-        }
-      }
-  "35":
-    continueonerrortype: ""
-    id: "35"
-    ignoreworker: false
-    isautoswitchedtoquietmode: false
-    isoversize: false
-    loop:
-      exitCondition: ""
-      iscommand: false
-      max: 100
-      wait: 1
-    nexttasks:
-      '#none#':
-      - "6"
-    note: false
-    quietmode: 0
-    scriptarguments:
-      Instance:
-        complex:
-          root: inputs.Instance
-      backupObjectId:
-        complex:
-          root: inputs.backupObjectId
-    separatecontext: true
-    skipunavailable: false
-    task:
-      brand: ""
-      id: 560a7e17-df26-42d3-80fc-5dfd0c8a059a
-      iscommand: false
-      name: Veeam - Start Instant VM Recovery Manually
-      playbookId: Veeam - Start Instant VM Recovery Manually
-      type: playbook
-      version: -1
-      description: ''
-    taskid: 560a7e17-df26-42d3-80fc-5dfd0c8a059a
-    timertriggers: []
-    type: playbook
-    view: |-
-      {
-        "position": {
-          "x": 730,
-          "y": 380
         }
       }
   "36":
@@ -1049,7 +678,7 @@ tasks:
       Ids:
         complex:
           accessor: id
-          root: Veeam.VBR.start_recovery
+          root: Veeam.VBR.start_hv_recovery
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -1072,13 +701,15 @@ tasks:
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
-      id: 63da0951-8583-4d26-8a48-18609659a171
+
+        NOTE: This playbook should be run only when the playbook's context is using the "Private to sub-playbook" option.
+      id: a60e1532-0bd6-41e6-885c-bac1bf6a18fa
       iscommand: false
       name: GenericPolling
       playbookId: GenericPolling
       type: playbook
       version: -1
-    taskid: 63da0951-8583-4d26-8a48-18609659a171
+    taskid: a60e1532-0bd6-41e6-885c-bac1bf6a18fa
     timertriggers: []
     type: playbook
     view: |-
@@ -1103,7 +734,7 @@ tasks:
       id_:
         complex:
           accessor: id
-          root: Veeam.VBR.start_recovery
+          root: Veeam.VBR.start_hv_recovery
       using:
         complex:
           root: inputs.Instance
@@ -1111,14 +742,14 @@ tasks:
     skipunavailable: false
     task:
       brand: VBR REST API
-      description: Get Session
-      id: afbcadff-877d-4bb8-8f27-2c73a788f9a1
+      description: Gets session data.
+      id: 57e95744-ffa7-4237-8880-d415050c87bc
       iscommand: true
       name: Get Session
       script: VBR REST API|||veeam-vbr-get-session
       type: regular
       version: -1
-    taskid: afbcadff-877d-4bb8-8f27-2c73a788f9a1
+    taskid: 57e95744-ffa7-4237-8880-d415050c87bc
     timertriggers: []
     type: regular
     view: |-
@@ -1148,14 +779,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Get Restored VM Name
-      id: 69daebd1-71c0-40f4-8a19-07dec7a9a669
+      description: Gets the name of the restored virtual machine.
+      id: 903ce489-2106-449e-8675-b8f704510494
       iscommand: false
       name: Get Restored VM Name
       script: GetRestoredVmName
       type: regular
       version: -1
-    taskid: 69daebd1-71c0-40f4-8a19-07dec7a9a669
+    taskid: 903ce489-2106-449e-8675-b8f704510494
     timertriggers: []
     type: regular
     view: |-
@@ -1165,22 +796,294 @@ tasks:
           "y": 295
         }
       }
+  "39":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                root: host
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "39"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "28"
+      "yes":
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check Host Availability.
+      id: 3c9901ce-e300-44c8-8105-95fa30674436
+      iscommand: false
+      name: Check Host Availability
+      type: condition
+      version: -1
+    taskid: 3c9901ce-e300-44c8-8105-95fa30674436
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -900
+        }
+      }
+  "40":
+    continueonerrortype: ""
+    id: "40"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b975c097-8978-468f-8fec-faea7ed96d06
+      iscommand: false
+      name: Veeam - Start Instant Hyper-V VM Recovery Manually
+      playbookId: Veeam - Start Instant Hyper-V VM Recovery Manually
+      type: playbook
+      version: -1
+      description: ''
+    taskid: b975c097-8978-468f-8fec-faea7ed96d06
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 730,
+          "y": 420
+        }
+      }
+  "41":
+    continueonerrortype: ""
+    id: "41"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      antivirusScanEnabled:
+        simple: "true"
+      hostName:
+        complex:
+          accessor: hostName
+          root: Veeam.VBR.get_inventory_objects.data
+      hostObjectId:
+        complex:
+          accessor: parentObjectId
+          root: Veeam.VBR.get_inventory_objects.data
+      overwriteExistingDisks:
+        simple: "true"
+      overwriteExistingVm:
+        simple: "true"
+      preserveUUID:
+        simple: "false"
+      restorePointId:
+        complex:
+          accessor: id
+          root: Veeam.LatestCleanRestorePoint
+      using:
+        complex:
+          root: inputs.Instance
+      virusDetectionAction:
+        simple: AbortRecovery
+      vmName:
+        complex:
+          accessor: restored_vm_name
+          root: Veeam.VMNAME
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Starts Instant Recovery of Microsoft Hyper-V VM to a customized
+        location.
+      id: 0acfceb8-1eb6-4255-8fb0-486c987dc183
+      iscommand: true
+      name: Start Customized HyperV VM Instant Recovery with AV Scan
+      script: VBR REST API|||veeam-vbr-start-instant-recovery-hyperv-vm-customized
+      type: regular
+      version: -1
+    taskid: 0acfceb8-1eb6-4255-8fb0-486c987dc183
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -730,
+          "y": 670
+        }
+      }
+  "42":
+    continueonerrortype: ""
+    id: "42"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "36"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      antivirusScanEnabled:
+        simple: "false"
+      hostName:
+        complex:
+          accessor: hostName
+          root: Veeam.VBR.get_inventory_objects.data
+      hostObjectId:
+        complex:
+          accessor: parentObjectId
+          root: Veeam.VBR.get_inventory_objects.data
+      overwriteExistingDisks:
+        simple: "true"
+      overwriteExistingVm:
+        simple: "true"
+      preserveUUID:
+        simple: "false"
+      restorePointId:
+        complex:
+          accessor: id
+          root: Veeam.LatestCleanRestorePoint
+      using:
+        complex:
+          root: inputs.Instance
+      vmName:
+        complex:
+          accessor: restored_vm_name
+          root: Veeam.VMNAME
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Starts Instant Recovery of Microsoft Hyper-V VM to a customized
+        location.
+      id: b5846c91-5ab2-4f4b-8a20-66a5397f5cb4
+      iscommand: true
+      name: Start Customized HyperV VM Instant Recovery
+      script: VBR REST API|||veeam-vbr-start-instant-recovery-hyperv-vm-customized
+      type: regular
+      version: -1
+    taskid: b5846c91-5ab2-4f4b-8a20-66a5397f5cb4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -300,
+          "y": 670
+        }
+      }
+  "43":
+    continueonerrortype: ""
+    id: "43"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      id_:
+        complex:
+          accessor: id
+          root: Veeam.VBR.get_session
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Returns log records for the specified session.
+      id: ed77cd5a-0aba-4985-8d41-cc9fe97cfc69
+      iscommand: true
+      name: Get Session Logs
+      script: VBR REST API|||veeam-vbr-get-session-logs
+      type: regular
+      version: -1
+    taskid: ed77cd5a-0aba-4985-8d41-cc9fe97cfc69
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -1070,
+          "y": 1820
+        }
+      }
+  "44":
+    continueonerrortype: ""
+    id: "44"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      data:
+        complex:
+          accessor: data
+          root: Veeam.VBR.get_restore_points
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Gets latest clean restore point from array of restore points.
+      id: 947f3e2d-4a8a-4385-8100-3be9bd91051b
+      iscommand: false
+      name: Get Latest Clean Restore Point
+      script: GetLatestCleanRestorePoint
+      type: regular
+      version: -1
+    taskid: 947f3e2d-4a8a-4385-8100-3be9bd91051b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -50
+        }
+      }
 version: -1
-fromversion: 6.10.0
 view: |-
   {
     "linkLabelsPosition": {
-      "28_6_No": 0.46
+      "12_38_yes": 0.55,
+      "28_6_No": 0.36
     },
     "paper": {
       "dimensions": {
         "height": 3565,
-        "width": 1860,
-        "x": -750,
+        "width": 2180,
+        "x": -1070,
         "y": -1570
       }
     }
   }
-description: 'Starts Instant VM Recovery with automatic configuration.'
-tests:
-- No tests (auto formatted)
