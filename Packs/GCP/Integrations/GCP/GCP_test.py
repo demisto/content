@@ -5339,7 +5339,8 @@ def test_gcp_compute_machine_types_list_default_limit(mocker):
     """
     Given: A mocked compute client returning a single machine type.
     When: gcp_compute_machine_types_list is called with only project_id and zone.
-    Then: The API is called with the default limit (maxResults=50) and the machine type is returned in the outputs.
+    Then: The API is called with the default limit (maxResults=50), without the empty arguments,
+          and the machine type is returned in the outputs.
     """
     from GCP import GCPServices, gcp_compute_machine_types_list
 
@@ -5358,9 +5359,7 @@ def test_gcp_compute_machine_types_list_default_limit(mocker):
     args = {"project_id": "test-project", "zone": "us-central1-a"}
     result = gcp_compute_machine_types_list(mock_creds, args)
 
-    mock_machine_types.list.assert_called_once_with(
-        project="test-project", zone="us-central1-a", filter=None, maxResults=50, orderBy=None, pageToken=None
-    )
+    mock_machine_types.list.assert_called_once_with(project="test-project", zone="us-central1-a", maxResults=50)
     assert len(result.outputs["GCP.Compute.MachineTypes(val.id && val.id == obj.id)"]) == 1
     assert "n1-standard-1" in result.readable_output
 
@@ -5480,7 +5479,8 @@ def test_gcp_compute_machine_types_aggregated_list_success(mocker):
     """
     Given: A mocked compute client returning machine types in several zone scopes.
     When: gcp_compute_machine_types_aggregated_list is called with project_id.
-    Then: The machine types of all scopes are flattened into a single list in the outputs.
+    Then: The API is called without the empty arguments and the machine types of all scopes are flattened
+          into a single list in the outputs.
     """
     from GCP import GCPServices, gcp_compute_machine_types_aggregated_list
 
@@ -5506,9 +5506,7 @@ def test_gcp_compute_machine_types_aggregated_list_success(mocker):
     args = {"project_id": "test-project"}
     result = gcp_compute_machine_types_aggregated_list(mock_creds, args)
 
-    mock_machine_types.aggregatedList.assert_called_once_with(
-        project="test-project", filter=None, maxResults=50, orderBy=None, pageToken=None
-    )
+    mock_machine_types.aggregatedList.assert_called_once_with(project="test-project", maxResults=50)
     machine_types = result.outputs["GCP.Compute.MachineTypes(val.id && val.id == obj.id)"]
     assert len(machine_types) == 2
     assert {machine_type["name"] for machine_type in machine_types} == {"n1-standard-1", "n2-standard-4"}

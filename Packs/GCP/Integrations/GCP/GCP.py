@@ -2994,25 +2994,27 @@ def gcp_compute_machine_types_list(creds: Credentials, args: dict[str, Any]) -> 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    project_id = args.get("project_id")
-    zone = extract_zone_name(args.get("zone"))
     limit = arg_to_number(args.get("limit")) or 50
-    filters = args.get("filter")
-    order_by = args.get("order_by")
-    next_token = args.get("next_token")
-
     validate_limit(limit)
 
-    compute = GCPServices.COMPUTE.build(creds)
-    response = (
-        compute.machineTypes()  # pylint: disable=E1101
-        .list(project=project_id, zone=zone, filter=filters, maxResults=limit, orderBy=order_by, pageToken=next_token)
-        .execute()
+    kwargs = remove_empty_elements(
+        {
+            "project": args.get("project_id"),
+            "zone": extract_zone_name(args.get("zone")),
+            "filter": args.get("filter"),
+            "maxResults": limit,
+            "orderBy": args.get("order_by"),
+            "pageToken": args.get("next_token"),
+        }
     )
+    demisto.debug(f"GCP Compute machine types list request arguments: {kwargs}")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.machineTypes().list(**kwargs).execute()  # pylint: disable=E1101
     machine_types = response.get("items", [])
     next_page_token = response.get("nextPageToken")
     demisto.debug(
-        f"GCP Compute machine types list response for {project_id}: "
+        f"GCP Compute machine types list response for {kwargs.get('project')}: "
         f"{len(machine_types)} machine types returned, {next_page_token=}"
     )
 
@@ -3045,20 +3047,22 @@ def gcp_compute_machine_types_aggregated_list(creds: Credentials, args: dict[str
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
-    project_id = args.get("project_id")
     limit = arg_to_number(args.get("limit")) or 50
-    filters = args.get("filter")
-    order_by = args.get("order_by")
-    next_token = args.get("next_token")
-
     validate_limit(limit)
 
-    compute = GCPServices.COMPUTE.build(creds)
-    response = (
-        compute.machineTypes()  # pylint: disable=E1101
-        .aggregatedList(project=project_id, filter=filters, maxResults=limit, orderBy=order_by, pageToken=next_token)
-        .execute()
+    kwargs = remove_empty_elements(
+        {
+            "project": args.get("project_id"),
+            "filter": args.get("filter"),
+            "maxResults": limit,
+            "orderBy": args.get("order_by"),
+            "pageToken": args.get("next_token"),
+        }
     )
+    demisto.debug(f"GCP Compute machine types aggregated list request arguments: {kwargs}")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.machineTypes().aggregatedList(**kwargs).execute()  # pylint: disable=E1101
     machine_types: list[dict[str, Any]] = []
     for scope, scoped_list in response.get("items", {}).items():
         if warning := scoped_list.get("warning"):
@@ -3068,7 +3072,7 @@ def gcp_compute_machine_types_aggregated_list(creds: Credentials, args: dict[str
 
     next_page_token = response.get("nextPageToken")
     demisto.debug(
-        f"GCP Compute machine types aggregated list response for {project_id}: "
+        f"GCP Compute machine types aggregated list response for {kwargs.get('project')}: "
         f"{len(machine_types)} machine types returned, {next_page_token=}"
     )
 
