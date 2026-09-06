@@ -75,6 +75,8 @@ configuration:
   name: lookback
   type: 0
   required: false
+  additionalinfo: The lookback window in minutes to use during the fetch process, to avoid missing incidents.
+  section: Collect
 - defaultvalue: auto-discovery
   display: Time Format e.g. %Y-%m-%dT%H:%M:%SZ. Select "auto-discovery" to try to automatically determine the format.
   name: time_format
