@@ -3353,11 +3353,11 @@ def fetch_incidents(client: Client, params: dict):
     mirror_direction = None if params["mirror_direction"] == "None" else MIRROR_DIRECTION_MAPPING[params["mirror_direction"]]
 
     ticket_types, alert_properties = get_alert_properties(params)
-    fetch_ticket_task = argToBoolean(params["fetch_ticket_task"])
+    fetch_ticket_task = argToBoolean(params.get("fetch_ticket_task", False))
     demisto.debug(f"Starting fetch_incidents {ticket_types=} {alert_properties=} {fetch_ticket_task=}")
 
     # use condition statement to avoid mypy error
-    if (max_fetch := arg_to_number(params["max_fetch"])) is not None:
+    if (max_fetch := arg_to_number(params.get("max_fetch", 100))) is not None:
         max_fetch_per_ticket_type = max_fetch // len(ticket_types)
         demisto.debug(f"fetch-incidents {max_fetch_per_ticket_type=}")
 

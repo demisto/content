@@ -114,8 +114,8 @@ def test_module(client: Client, params) -> str:
     """
     'ok' if test passed, anything else will raise an exception and will fail the test.
     """
-    if argToBoolean(params.get("isFetchEvents")):
-        max_limit_validation(arg_to_number(params.get("max_fetch")))
+    if argToBoolean(params.get("isFetchEvents", False)):
+        max_limit_validation(arg_to_number(params.get("max_fetch", MAX_EVENTS_API_CALL)))
 
     args = {"limit": 1}
     get_events_command(client, args)

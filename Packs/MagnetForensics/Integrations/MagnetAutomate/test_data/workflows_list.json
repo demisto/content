@@ -1,0 +1,20 @@
+[
+  {
+    "id": 9,
+    "name": "Image Workflow",
+    "type": {
+      "name": "Image"
+    },
+    "description": "Description of Image Workflow.",
+    "outputPath": "C:\\testdata\\image\\output"
+  },
+  {
+    "id": 17,
+    "name": "Merge Workflow",
+    "type": {
+      "name": "Merge"
+    },
+    "description": "Description of Merge Workflow.",
+    "outputPath": "C:\\testdata\\merge\\output"
+  }
+]

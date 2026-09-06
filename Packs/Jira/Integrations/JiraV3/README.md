@@ -2348,6 +2348,88 @@ There is no context output for this command.
 
 >Issues were moved to the Sprint successfully
 
+### jira-user-group-search
+
+***
+Gets users and groups that match a query string.
+
+Scope: `read:jira-work`
+
+#### Base Command
+
+`jira-user-group-search`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | The search string to match against users and groups. For users, performs a case-insensitive substring match on display name and email address. For groups, performs a case-sensitive substring match on group name. Note: if a user has hidden their email address, an exact email match is required. | Required |
+| limit | The maximum number of results to return. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Jira.UsersAndGroups.Users | Object | The Users that match the query string. |
+| Jira.UsersAndGroups.Groups | Object | The Groups that match the query string. |
+
+#### Command example
+
+```!jira-user-group-search query="query"```
+
+#### Context Example
+
+```json
+{
+  "groups": {
+    "groups": [
+      {
+        "groupId": "276f955c-63d7-42c8-9520-92d01dca0625",
+        "html": "<b>j</b>dog-developers",
+        "name": "jdog-developers"
+      },
+      {
+        "groupId": "6e87dc72-4f1f-421f-9382-2fee8b652487",
+        "html": "<b>j</b>uvenal-bot",
+        "name": "juvenal-bot"
+      }
+    ],
+    "header": "Showing 20 of 25 matching groups",
+    "total": 25
+  },
+  "users": {
+    "header": "Showing 20 of 25 matching users",
+    "total": 25,
+    "users": [
+      {
+        "accountId": "5b10a2844c20165700ede21g",
+        "accountType": "atlassian",
+        "avatarUrl": "https://avatar-management--avatars.server-location.prod.public.atl-paas.net/initials/MK-5.png?size=16&s=16",
+        "displayName": "Mia Krystof",
+        "html": "<strong>Mi</strong>a Krystof - <strong>mi</strong>a@example.com (<strong>mi</strong>a)",
+        "key": "mia",
+        "name": "mia"
+      }
+    ]
+  }
+}
+```
+
+#### Human Readable Output
+
+>### Users
+>
+>|Account ID|Display Name|Account Type|
+>|---|---|---|
+>| 5b10a2844c20165700ede21g | Mia Krystof | atlassian |
+
+>### Groups
+>
+>|Group ID|Name|
+>|---|---|
+>| 276f955c-63d7-42c8-9520-92d01dca0625 | jdog-developers |
+>| 6e87dc72-4f1f-421f-9382-2fee8b652487 | juvenal-bot |
+
 ### jira-epic-issue-list
 
 ***

@@ -110,7 +110,7 @@ script:
       name: alert_status
     - description: The aggregate alert id.
       name: aggregate_alert_id
-  dockerimage: demisto/sixgill:1.0.0.6979213
+  dockerimage: demisto/sixgill:1.0.0.10120494
   isfetch: true
   runonce: false
   script: '-'

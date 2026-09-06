@@ -560,5 +560,9 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.10.0",
-    "description": "Report Indicator Layout"
+    "description": "Report Indicator Layout",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

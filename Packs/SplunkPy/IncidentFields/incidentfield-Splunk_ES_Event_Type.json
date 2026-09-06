@@ -1,0 +1,42 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Splunk Finding",
+        "Splunk Investigation"
+    ],
+    "caseInsensitive": true,
+    "cliName": "splunkeseventtype",
+    "closeForm": false,
+    "content": true,
+    "description": "The Splunk ES event type tag (Finding or Investigation) used by the classifier to route events to the correct incident type.",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_splunkeseventtype",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Splunk ES Event Type",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "selectValues": [
+        "Finding",
+        "Investigation"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
+}

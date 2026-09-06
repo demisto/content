@@ -1,7 +1,8 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "GIB Compromised Card"
+        "GIB Compromised Card",
+        "GIB Compromised Masked Card"
     ],
     "caseInsensitive": true,
     "cliName": "gibcvv",
@@ -30,6 +31,7 @@
     "itemVersion": "1.4.2",
     "openEnded": false,
     "systemAssociatedTypes": [
-        "GIB Compromised Card"
+        "GIB Compromised Card",
+        "GIB Compromised Masked Card"
     ]
 }

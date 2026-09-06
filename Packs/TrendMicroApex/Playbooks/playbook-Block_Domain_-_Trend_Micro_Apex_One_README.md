@@ -1,5 +1,5 @@
-This playbook blocks domains using Trend Micro Apex One.
-The playbook checks whether the Trend Micro Apex One integration is enabled, whether the Domain input has been provided and if so, blocks the domain.
+This playbook blocks domains using TrendAI™ Apex One.
+The playbook checks whether the TrendAI™ Apex One integration is enabled, whether the Domain input has been provided and if so, blocks the domain.
 
 ## Dependencies
 

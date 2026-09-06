@@ -1,4 +1,6 @@
 {
+  "id": "IronDefense_Event_Notification_layout_rule",
+  "name": "IronDefense Event Notification Layout Rule",
   "rule_id": "IronDefense_Event_Notification_layout_rule",
   "layout_id": "IronDefense Event Notification",
   "description": "",
@@ -7,9 +9,9 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "IronDefense Event Notification"
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "IronDefense Event Notification"
         }
       ]
     }

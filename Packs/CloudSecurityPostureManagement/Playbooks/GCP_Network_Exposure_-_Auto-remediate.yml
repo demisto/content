@@ -1,0 +1,459 @@
+id: GCP Network Exposure - Auto-remediate
+version: -1
+name: GCP Network Exposure - Auto-remediate
+description: |-
+  This playbook automatically remediates Google Compute Engine instances with management ports exposed  to the internet. It adds GCP firewall rules to deny public access on specified ports while allowing internal IP traffic. It also uses network tags to apply rules to resources or adds the required tag to assets if the rule already exists.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e91dfe86-40af-4f41-8f9e-65c3325f2e70
+    type: start
+    task:
+      id: e91dfe86-40af-4f41-8f9e-65c3325f2e70
+      version: -1
+      name: ""
+      description: Playbook Triggered header
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: a16efb64-f213-44a5-8780-76252a4b342c
+    type: regular
+    task:
+      id: a16efb64-f213-44a5-8780-76252a4b342c
+      version: -1
+      name: Get Issue Extended Fields
+      description: Retrieves comprehensive recommendations for an issue, including remediation.
+        steps, playbook suggestions, and recommended actions.
+      script: '|||core-get-issue-recommendations'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      issue_ids:
+        simple: ${issue.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a512fe76-9637-4568-98df-f916a011934b
+    type: condition
+    task:
+      id: a512fe76-9637-4568-98df-f916a011934b
+      version: -1
+      name: Check remediation flag and notification preference
+      description: Checks remediation status and notification preferences to determine the next steps.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      Notify and Resolve:
+      - "11"
+      Resolve:
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: Notify and Resolve
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: remediatedFlag
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.enableNotifications
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+          ignorecase: true
+    - label: Resolve
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: remediatedFlag
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.enableNotifications
+            iscontext: true
+          right:
+            value:
+              simple: "no"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 449.375,
+          "y": 761.875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 63ce6a36-1f75-4670-a0d5-ce2efeefc386
+    type: regular
+    task:
+      id: 63ce6a36-1f75-4670-a0d5-ce2efeefc386
+      version: -1
+      name: Resolve Issue
+      description: commands.local.cmd.set.alert.status
+      script: Builtin|||setIssueStatus
+      type: regular
+      iscommand: true
+      brand: Builtin      
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      status:
+        simple: Resolved - Fixed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1161.875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 361a425d-4bc3-4411-8b79-a7791a53f7c5
+    type: regular
+    task:
+      id: 361a425d-4bc3-4411-8b79-a7791a53f7c5
+      version: -1
+      name: Issue Not Resolved
+      description: Prints text to the War Room (Markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""     
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      value:
+        simple: Issue was not resolved. Please review.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 899.375,
+          "y": 991.875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 90360b36-dc6e-4f8b-8f62-e2b3a5dae2da
+    type: title
+    task:
+      id: 90360b36-dc6e-4f8b-8f62-e2b3a5dae2da
+      version: -1
+      name: Done
+      description: "Section header to mark completion of the playbook."
+      type: title
+      iscommand: false
+      brand: ""     
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1321.875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: e094478b-fbf2-4b68-9662-e0531bf95507
+    type: playbook
+    task:
+      id: e094478b-fbf2-4b68-9662-e0531bf95507
+      version: -1
+      name: GCP - VM Instance Firewall Rule Remediation
+      description: This playbook adds VPC firewall rules to restrict access to private IP address ranges and blocks public internet exposure. It targets only the exposed asset by creating specific Allow and Deny rules to remediate the exposure (for example, for RDP).
+      playbookName: GCP - VM Instance Firewall Rule Remediation
+      type: playbook
+      iscommand: false
+      brand: ""     
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      AssetID:
+        simple: ${issue.asset_ids}
+      RemediationAllowRanges:
+        simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
+      RemotePort:
+        simple: ${Core.IssueRecommendations.network_reachability.externalProbeResults.[0].port}
+      RemoteProtocol:
+        simple: tcp
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 573.75
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: e46b93ef-d96e-4dcd-9304-2a658cff4b83
+    type: playbook
+    task:
+      id: e46b93ef-d96e-4dcd-9304-2a658cff4b83
+      version: -1
+      name: Notify Stakeholders
+      description: This playbook automates stakeholder notifications via Slack v3, Microsoft Teams, or email. It requires active Slack, Microsoft Teams, Mail Sender, or Gmail integrations. If no supported integration is configured, the playbook exits without taking action.
+      playbookName: Notify Stakeholders
+      type: playbook
+      iscommand: false
+      brand: ""   
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      Subject:
+        simple: Issue - ${issue.name} has been resolved
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 13.75,
+          "y": 991.875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 1715ad14-a731-4821-b291-c7848ba96f15
+    type: condition
+    task:
+      id: 1715ad14-a731-4821-b291-c7848ba96f15
+      version: -1
+      name: Is playbook applicable?
+      description: Checks whether the playbook is relevant for the selected issue.
+      type: condition
+      iscommand: false
+      brand: ""   
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: issue.ruleid
+            iscontext: true
+          right:
+            value:
+              simple: fee0d553-78a1-4f35-a00d-704fdf291546
+        - operator: inList
+          left:
+            value:
+              simple: issue.matching_service_rule_id
+            iscontext: true
+          right:
+            value:
+              simple: fee0d553-78a1-4f35-a00d-704fdf291546
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 073fb6bf-d2b3-44cf-8e10-b13c47f4b5c1
+    type: regular
+    task:
+      id: 073fb6bf-d2b3-44cf-8e10-b13c47f4b5c1
+      version: -1
+      name: Print - playbook not applicable
+      description: Prints a message to the War Room that this playbook does not handle remediation for the selected issue.
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: "" 
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      value:
+        simple: The chosen playbook is not applicable to the selected issue. The issue
+          was not remediated and remains unresolved.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1350,
+          "y": 991.875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "12_4_yes": 0.39,
+      "5_6_Resolve": 0.54
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1331.875,
+        "width": 1716.25,
+        "x": 13.75,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: enableNotifications
+  value:
+    simple: "no"
+  required: false
+  description: |-
+    Options: yes/no
+    Whether to notify stakeholders about remediation actions. Recipients must be configured in the Notify Stakeholders sub-playbook header. If no recipients are provided, the playbook pauses to request input.  Default is "no".
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - enableNotifications
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+quiet: true
+adopted: true
+fromversion: 8.0.0

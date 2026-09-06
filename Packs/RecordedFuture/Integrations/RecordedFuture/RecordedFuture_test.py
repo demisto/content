@@ -54,6 +54,59 @@ class TestHelpers:
             assert dbot_score_details.score == expected_score
             assert dbot_score_details.description == expected_description
 
+    def test_translate_score_benign(self):
+        from RecordedFuture import translate_score
+        from CommonServerPython import Common
+
+        # A benign signal with no risk score maps to GOOD.
+        dbot_score_details = translate_score(
+            score=0,
+            threshold_bad=65,
+            threshold_suspicious=25,
+            benign=True,
+        )
+        assert dbot_score_details.score == Common.DBotScore.GOOD
+        assert dbot_score_details.description == "No Risk Observed"
+
+        # Malicious/suspicious scores still take precedence over the benign flag.
+        assert translate_score(score=70, threshold_bad=65, threshold_suspicious=25, benign=True).score == Common.DBotScore.BAD
+        assert (
+            translate_score(score=30, threshold_bad=65, threshold_suspicious=25, benign=True).score == Common.DBotScore.SUSPICIOUS
+        )
+
+        # Without the benign flag, a zero score stays Unknown (None).
+        assert translate_score(score=0, threshold_bad=65, threshold_suspicious=25, benign=False).score == Common.DBotScore.NONE
+
+    def test_is_benign_action(self):
+        from RecordedFuture import is_benign_action
+
+        def action(entity_type, score, evidence):
+            return {
+                "create_indicator": {
+                    "entity": "x",
+                    "entity_type": entity_type,
+                    "score": score,
+                },
+                "CommandResults": {"outputs": {"Evidence": evidence}},
+            }
+
+        no_risk = [{"rule": "No Risk Observed", "ruleid": "noKnownRisk"}]
+        some_risk = [{"rule": "Historically Reported in Threat List", "ruleid": "historicalThreatListMembership"}]
+
+        # noKnownRisk on the eligible types -> benign.
+        assert is_benign_action(action("file", 0, no_risk)) is True
+        assert is_benign_action(action("url", 0, no_risk)) is True
+        assert is_benign_action(action("domain", 0, no_risk)) is True
+
+        # Empty evidence at score 0 is genuine "Unknown", not benign.
+        assert is_benign_action(action("domain", 0, [])) is False
+        # A real risk rule is not benign.
+        assert is_benign_action(action("domain", 24, some_risk)) is False
+        # ip/cve are out of scope even with the signal.
+        assert is_benign_action(action("ip", 0, no_risk)) is False
+        # Defensive: missing CommandResults/outputs must not raise.
+        assert is_benign_action({"create_indicator": {"entity_type": "domain", "score": 0}}) is False
+
     @pytest.mark.parametrize(
         "demisto_params,expected_bad,expected_suspicious",
         [
@@ -1323,6 +1376,7 @@ class TestActions:
             score=15,
             description="mock_description",
             location={"country": "mock_country", "ans": "mock_asn"},
+            benign=False,
         )
 
         assert len(result_actions) == 1
@@ -1380,6 +1434,7 @@ class TestActions:
             entity_type="ip",
             score=15,
             description="mock_indicator_description",
+            benign=False,
         )
 
         assert len(result_actions) == 1

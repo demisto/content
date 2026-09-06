@@ -8,7 +8,7 @@ import stomp
 """ GLOBAL VARS """
 
 HOSTNAME = demisto.params()["hostname"]
-PORT = int(demisto.params()["port"])
+PORT = int(demisto.params().get("port") or 61613)
 USERNAME = demisto.params().get("credentials", {}).get("identifier")
 PASSWORD = demisto.params().get("credentials", {}).get("password")
 CLIENT_CERT = demisto.params().get("client_cert")

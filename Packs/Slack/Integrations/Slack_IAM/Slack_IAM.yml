@@ -75,9 +75,13 @@ configuration:
 - defaultvalue: User Profile - SCIM (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
-  required: true
+  required: false
   type: 0
   section: Connect
+  additionalinfo: Cortex XSOAR only parameter.
+  hidden:
+  - marketplacev2
+  - platform
 description: Integrate with Slack's services to execute CRUD operations for employee lifecycle processes.
 display: Slack IAM
 name: Slack IAM
@@ -361,7 +365,7 @@ script:
     - contextPath: UpdateGroup.errorMessage
       description: Reason why the API failed.
       type: String
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10116658
   runonce: false
   script: '-'
   subtype: python3

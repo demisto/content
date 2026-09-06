@@ -1,3 +1,5 @@
+- NOTE: This playbook is deprecated. Use the `CrowdStrike Falcon - Get Detections by Case` playbook instead.
+
 This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
 This playbook enables getting CrowdStrike Falcon detection details based on the CrowdStrike incident ID.
 

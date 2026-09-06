@@ -59,3 +59,4 @@ Optional types are:
 Supported asset types include:
   - Spotlight
   - CNAPP Alerts
+- Spotlight asset and vulnerability collection retrieves only vulnerabilities updated within the last 100 days, keeping each collection focused on recent data.

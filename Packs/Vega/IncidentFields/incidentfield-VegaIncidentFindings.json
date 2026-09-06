@@ -1,0 +1,30 @@
+{
+    "id": "incident_vegaincidentfindings",
+    "version": -1,
+    "name": "Vega Incident Findings",
+    "ownerOnly": false,
+    "description": "Detailed investigation findings for the Vega incident, one finding per entry.",
+    "cliName": "vegaincidentfindings",
+    "type": "html",
+    "closeForm": false,
+    "editForm": false,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": true,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Vega Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

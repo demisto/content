@@ -839,7 +839,7 @@ tasks:
               applyIfEmpty: {}
               defaultValue:
                 value:
-                  simple: "true"
+                  simple: "false"
       BlockIndicators:
         simple: "True"
       ClearUserSessions:
@@ -879,7 +879,7 @@ tasks:
                 applyIfEmpty: {}
                 defaultValue:
                   value:
-                    simple: "true"
+                    simple: "false"
         BlockIndicators:
           simple: "True"
         ClearUserSessions:

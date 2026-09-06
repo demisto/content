@@ -1,0 +1,34 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "GIB Compromised Masked Card"
+    ],
+    "caseInsensitive": false,
+    "cliName": "gibcardcategory",
+    "closeForm": false,
+    "content": true,
+    "description": "Category of the card",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gibcardcategory",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "GIB Card Category",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "openEnded": false,
+    "systemAssociatedTypes": [
+        "GIB Compromised Masked Card"
+    ]
+}

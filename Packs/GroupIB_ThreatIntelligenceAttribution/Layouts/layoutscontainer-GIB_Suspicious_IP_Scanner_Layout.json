@@ -310,7 +310,7 @@
                                 "fieldId": "gibadmiraltycode",
                                 "height": 22,
                                 "id": "411bba90-71aa-11ef-8c49-f9d8b5e80cf6",
-                                "index": 1,
+                                "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -319,7 +319,7 @@
                                 "fieldId": "gibcredibility",
                                 "height": 22,
                                 "id": "43ee89a0-71aa-11ef-8c49-f9d8b5e80cf6",
-                                "index": 2,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -338,6 +338,15 @@
                                 "height": 22,
                                 "id": "49829b90-71aa-11ef-8c49-f9d8b5e80cf6",
                                 "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gibtlp",
+                                "height": 22,
+                                "id": "c1d7de70-ed28-11f0-9509-45873decf476",
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -445,7 +454,6 @@
     "group": "incident",
     "id": "GIB Suspicious IP Scanner Layout",
     "name": "GIB Suspicious IP Scanner Layout",
-    "system": false,
     "version": -1,
     "fromVersion": "6.10.0"
 }

@@ -52,3 +52,4 @@ def test_extract_domain_from_url(mocker):
     assert res == 'google.com'
     res = Utils.extract_domain_from_url("https://www.google.co.il")  # disable-secrets-detection
     assert res == 'google.co.il'
+

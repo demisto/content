@@ -1,0 +1,13 @@
+{
+    "data": [
+        {
+            "id": "123",
+            "category": "Network Security",
+            "asset_name": "example.com",
+            "severity": "High",
+            "status": "Open",
+            "finding_text": "Sample finding for unit test",
+            "insert_ts": "2099-01-01T00:00:00Z"
+        }
+    ]
+}

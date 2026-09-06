@@ -680,7 +680,8 @@ def test_drilldown_searches_from_label(mocker):
     contents = res.get("Contents")
     assert "Drilldown Configuration Status" in contents
     assert "test_query_from_label" in contents
-    assert "index=main \\| stats count" in contents
+    # Query is rendered verbatim in a fenced code block (pipe is not table-escaped).
+    assert "index=main | stats count" in contents
 
 
 def test_drilldown_searches_priority_custom_fields_over_label(mocker):
@@ -748,3 +749,121 @@ def test_drilldown_searches_from_label_with_enrichment_results(mocker):
     assert "Drilldown Searches Results" in contents
     assert "test_query" in contents
     assert "test_signature1" in contents
+
+
+@pytest.mark.parametrize(
+    "spl_search, expected",
+    [
+        # Single backslashes inside a field="value" filter must be doubled
+        ('field_a="\\foo\\bar"', 'field_a="\\\\foo\\\\bar"'),
+        # Already-doubled values are left unchanged (idempotent)
+        ('field_a="\\\\foo\\\\bar"', 'field_a="\\\\foo\\\\bar"'),
+        # Values without backslashes are untouched
+        ('field_a="10.0.0.1" field_b="abc"', 'field_a="10.0.0.1" field_b="abc"'),
+        # Regex literals inside SPL function calls must NOT be re-escaped
+        (
+            '| eval field_a=replace(field_a,"(\\\\)","\\\\\\\\")',
+            '| eval field_a=replace(field_a,"(\\\\)","\\\\\\\\")',
+        ),
+    ],
+    ids=[
+        "single backslashes are doubled",
+        "already-doubled backslashes are unchanged",
+        "no backslashes are untouched",
+        "eval/replace regex literal is not over-escaped",
+    ],
+)
+def test_escape_backslashes_in_field_filters(spl_search, expected):
+    """
+    Given:
+    - An SPL search string with a field="value" filter, an already-escaped value, a value with no
+      backslashes, and a regex literal inside a function call.
+    When:
+    - SplunkShowDrilldown.escape_backslashes_in_field_filters is called.
+    Then:
+    - Genuine field="value" filters get their backslashes doubled, the operation is idempotent, and
+      regex literals inside function calls are left untouched.
+    """
+    assert SplunkShowDrilldown.escape_backslashes_in_field_filters(spl_search) == expected
+
+
+def test_success_path_displays_escaped_query(mocker):
+    """
+    Given:
+    - A 'Drilldown' label whose query_search value contains a field="value" filter with backslashes
+      (collapsed to single backslashes by the incident JSON round-trip).
+    When:
+    - SplunkShowDrilldown.main is called (multiple-search success path).
+    Then:
+    - The displayed query_search shows doubled backslashes, valid for the Splunk UI.
+    """
+    drilldown_results = [
+        {
+            "query_name": "first drilldown",
+            "query_search": 'search index=idx_a field_a="\\foo\\bar\\baz"',
+            "enrichment_status": "Enrichment successfully handled",
+            "query_results": [{"signature": "sig1"}],
+        }
+    ]
+    incident = {
+        "CustomFields": {},
+        "labels": [
+            {"type": "successful_drilldown_enrichment", "value": "true"},
+            {"type": "Drilldown", "value": json.dumps(drilldown_results)},
+        ],
+    }
+    mocker.patch("demistomock.incident", return_value=incident)
+    res = SplunkShowDrilldown.main()
+    contents = res.get("Contents")
+    # The escaped query is rendered inside a fenced code block so markdown shows backslashes verbatim.
+    assert '```\nsearch index=idx_a field_a="\\\\foo\\\\bar\\\\baz"\n```' in contents
+
+
+def test_fallback_path_displays_escaped_query(mocker):
+    """
+    Given:
+    - No Drilldown enrichment results, but a raw 'drilldown_searches' configuration whose search
+      contains a field="value" filter with single backslashes.
+    When:
+    - SplunkShowDrilldown.main is called (configured-but-no-results fallback path).
+    Then:
+    - The displayed configuration shows the query in a fenced code block with doubled backslashes,
+      valid for the Splunk UI.
+    """
+    drilldown_config = [{"name": "test_query", "search": 'index=idx_a field_a="\\foo\\bar"'}]
+    incident = {
+        "CustomFields": {"splunkdrilldown": json.dumps(drilldown_config)},
+        "labels": [
+            {"type": "successful_drilldown_enrichment", "value": "true"},
+        ],
+    }
+    mocker.patch("demistomock.incident", return_value=incident)
+    res = SplunkShowDrilldown.main()
+    contents = res.get("Contents")
+    # Rendered in a fenced code block so Markdown shows the backslashes verbatim.
+    assert '```\nindex=idx_a field_a="\\\\foo\\\\bar"\n```' in contents
+    assert "test_query" in contents
+
+
+def test_configured_but_no_results_message(mocker):
+    """
+    Given:
+    - A drilldown configuration exists (in CustomFields) but there is no enrichment status label and
+      no Drilldown results (e.g. the search errored on the Splunk side).
+    When:
+    - SplunkShowDrilldown.main is called.
+    Then:
+    - The status must NOT say the drilldown is "not configured"; it should indicate the drilldown is
+      configured but returned no results, and still show the configuration for review.
+    """
+    drilldown_config = [{"name": "test_query", "search": 'index=idx_a field_a="value"'}]
+    incident = {
+        "CustomFields": {"splunkdrilldown": json.dumps(drilldown_config)},
+        "labels": [],
+    }
+    mocker.patch("demistomock.incident", return_value=incident)
+    res = SplunkShowDrilldown.main()
+    contents = res.get("Contents")
+    assert "is not configured" not in contents
+    assert "configured, but no results were returned" in contents
+    assert "test_query" in contents

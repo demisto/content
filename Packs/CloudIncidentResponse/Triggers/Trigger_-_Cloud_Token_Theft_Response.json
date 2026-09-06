@@ -20,12 +20,12 @@
         {
           "SEARCH_FIELD": "alert_name",
           "SEARCH_TYPE": "CONTAINS",
-          "SEARCH_VALUE": "Suspicious usage of AWS Lambda’s token"
+          "SEARCH_VALUE": "Suspicious usage of AWS Lambda\u2019s token"
         },
         {
           "SEARCH_FIELD": "alert_name",
           "SEARCH_TYPE": "CONTAINS",
-          "SEARCH_VALUE": "Suspicious usage of AWS Lambda’s role"
+          "SEARCH_VALUE": "Suspicious usage of AWS Lambda\u2019s role"
         },
         {
           "SEARCH_FIELD": "alert_name",
@@ -89,5 +89,8 @@
         }
       ]
     }
-  }
+  },
+  "supportedModules": [
+    "xsiam"
+  ]
 }

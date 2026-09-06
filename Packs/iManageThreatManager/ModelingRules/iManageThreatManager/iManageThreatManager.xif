@@ -1,0 +1,26 @@
+[MODEL: dataset="imanage_threat_raw"]
+alter
+    tmp_risk_score = to_integer(risk_score),
+    tmp_action_type = lowercase(to_string(action_type)),
+    tmp_action_state = lowercase(to_string(action_state)),
+    tmp_location = if(location != null and trim(to_string(location)) != "", to_string(location)),
+    tmp_email = to_string(email),
+    tmp_source_log_type = to_string(_source_log_type)
+| alter
+    tmp_upn = if(tmp_email != null and tmp_email contains "@", tmp_email),
+    tmp_email_domain = if(tmp_email != null and tmp_email contains "@", arrayindex(split(tmp_email, "@"), 1))
+| alter
+    xdm.alert.original_alert_id = to_string(id),
+    xdm.alert.name = task_name,
+    xdm.alert.description = task_name,
+    xdm.alert.severity = if(tmp_risk_score >= 15, "CRITICAL", tmp_risk_score >= 10, "HIGH", tmp_risk_score >= 5, "MEDIUM", tmp_risk_score >= 1, "LOW", tmp_risk_score = 0, "INFORMATIONAL",null),
+    xdm.source.user.username = user,
+    xdm.source.user.identifier = user,
+    xdm.source.user.upn = tmp_upn,
+    xdm.source.user.domain = tmp_email_domain,
+    xdm.source.location.city = tmp_location,
+    xdm.event.id = to_string(task_id),
+    xdm.event.type = if(tmp_source_log_type = "BehaviorAnalytics", "Behavior Analytics Alert", tmp_source_log_type = "DetectAndProtectAlerts", "Detect and Protect Alert", tmp_source_log_type = "AddressableAlerts", "Addressable Alert", "Alert"),
+    xdm.event.description = to_string(task_name),
+    xdm.event.outcome = if(tmp_action_state = "completed", "SUCCESS", tmp_action_state = "failed", "FAILED", tmp_action_state),
+    xdm.observer.action = if(tmp_action_type = "no_action", "ALERT", tmp_action_type = "warn_user", "ALERT", tmp_action_type = "disable_account", "BLOCK", tmp_action_type);

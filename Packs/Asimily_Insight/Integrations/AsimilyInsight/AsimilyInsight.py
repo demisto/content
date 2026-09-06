@@ -1105,11 +1105,19 @@ def main() -> None:
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
+    source = "PAN XSIAM" if is_xsiam() else "PAN XSOAR"
+
     processed_args = process_params_and_args(params, args, command)
 
     print_debug_msg(f"Command being called is {command}")
     try:
-        client = Client(base_url=base_url, verify=verify_certificate, auth=(user_name, api_key), proxy=proxy)
+        client = Client(
+            base_url=base_url,
+            verify=verify_certificate,
+            auth=(user_name, api_key),
+            proxy=proxy,
+            headers={"source": source},
+        )
 
         if command == "test-module":
             result = test_module(client, params)

@@ -1,0 +1,33 @@
+[
+  {
+    "id": 0,
+    "name": "String Field",
+    "type": "evidence",
+    "elementType": {
+      "CustomFieldInput": {
+        "hintText": "Hint Text",
+        "format": "Alphanumeric",
+        "lineHeight": "1,",
+        "length": 200
+      }
+    },
+    "description": "Input string custom field.",
+    "required": true,
+    "exposeInWorkflow": true,
+    "variableName": "EVIDENCE_STRING_FIELD"
+  },
+  {
+    "id": 1,
+    "name": "Boolean Field",
+    "type": "evidence",
+    "elementType": {
+      "CustomFieldCheckbox": {
+        "defaultValue": false
+      }
+    },
+    "description": "Boolean custom field.",
+    "required": true,
+    "exposeInWorkflow": true,
+    "variableName": "EVIDENCE_BOOLEAN_FIELD"
+  }
+]

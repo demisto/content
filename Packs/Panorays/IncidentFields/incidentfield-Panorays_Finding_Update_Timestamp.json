@@ -1,0 +1,14 @@
+{
+    "cliName": "panoraysfindingupdatets",
+    "description": "The timestamp when the Panorays finding was last updated.",
+    "group": 0,
+    "id": "incident_panoraysfindingupdatets",
+    "name": "Panorays Finding Update Timestamp",
+    "associatedTypes": ["Panorays Finding"],
+    "associatedToAll": false,
+    "type": "shortText",
+    "content": true,
+    "unsearchable": true,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

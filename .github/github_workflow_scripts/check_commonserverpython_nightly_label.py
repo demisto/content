@@ -1,0 +1,203 @@
+"""
+Verifies that PRs which modify CommonServerPython.py (or its JS/PS counterparts that are
+considered runtime-injected helpers) have been validated against the content nightly
+pipeline. The check:
+
+  1. Detects whether the PR touches any of the critical CommonServer* files.
+  2. If yes, ensures the `nightly-run-passed` label is set on the PR (added manually
+     by the developer / reviewer once the content nightly pipeline has run green).
+  3. Posts (or updates) a sticky reminder comment on the PR explaining the
+     requirement to anyone who opens / updates the PR.
+
+Exit codes:
+    0 - No CommonServerPython change OR change exists AND label `nightly-run-passed` is set.
+    1 - CommonServerPython change exists but label `nightly-run-passed` is missing.
+"""
+
+import argparse
+import sys
+from pathlib import PurePosixPath
+
+import urllib3
+from blessings import Terminal  # noqa: F401  (kept for parity with other scripts)
+from github import Github
+from github.PullRequest import PullRequest
+from github.Repository import Repository
+
+from utils import timestamped_print
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+print = timestamped_print  # noqa: A001 - intentional, matches existing scripts
+
+NIGHTLY_RUN_PASSED_LABEL = "nightly-run-passed"
+
+# Folders whose contents MUST be validated against the content nightly pipeline.
+# CommonServerPython is the primary trigger; the other helpers are included
+# because they are runtime-injected the same way and a change to any of them
+# can impact most/all content.
+#
+# We intentionally match on the *whole folder* (via ``PurePosixPath.is_relative_to``)
+# rather than an exact filename list so that companion files (unit tests like
+# ``*_test.py`` / ``*.Tests.ps1``, the entity ``*.yml`` config, ``README.md``,
+# ``conftest.py``, ``test_data/`` fixtures, arbitrarily deep subdirectories,
+# etc.) also trigger the check - any of them can meaningfully affect the
+# runtime-injected helper or its validation.
+#
+# ``PurePosixPath`` (not the OS-native ``Path``) is used deliberately: the
+# filenames we compare against come from GitHub's PR API and are always
+# forward-slash-separated, so we want POSIX semantics regardless of whether the
+# workflow runs on Linux, macOS, or Windows.
+CRITICAL_FOLDERS: tuple[PurePosixPath, ...] = (
+    PurePosixPath("Packs/Base/Scripts/CommonServerPython"),
+    PurePosixPath("Packs/Base/Scripts/CommonServerPowerShell"),
+    PurePosixPath("Packs/Base/Scripts/CommonServer"),
+)
+
+# Marker used to find / update the sticky reminder comment so we don't spam the PR
+# with a new comment on every workflow run. Named 'common-server' rather than
+# 'commonserverpython' because the reminder is triggered by changes to any of
+# the runtime-injected helpers (Python + JS + PowerShell), not just Python.
+COMMENT_MARKER = "<!-- common-server-nightly-reminder -->"
+
+REMINDER_COMMENT_BODY = (
+    f"{COMMENT_MARKER}\n"
+    "### ⚠️ `CommonServerPython` change detected\n\n"
+    "This PR modifies one of the runtime-injected helper scripts "
+    "(`CommonServerPython.py` / `CommonServerPowerShell.ps1` / `CommonServer.js`).\n"
+    "A change here can impact **every integration and script** in the repository, "
+    "so the standard PR pipeline is **not** enough.\n\n"
+    "**Required before merge:**\n"
+    "1. Trigger the **content nightly** pipeline against this branch.\n"
+    "2. Make sure the nightly run is **green** (all jobs passed).\n"
+    f"3. Add the **`{NIGHTLY_RUN_PASSED_LABEL}`** label to this PR so this check turns green.\n\n"
+    "If you believe nightly is not required for this change, please justify it in a PR "
+    "comment and add the label to unblock the check."
+)
+
+
+def arguments_handler() -> argparse.Namespace:
+    """Validates and parses script arguments."""
+    parser = argparse.ArgumentParser(
+        description="Check that PRs touching CommonServerPython have been validated " "by the content nightly pipeline."
+    )
+    parser.add_argument("-p", "--pr_number", required=True, help="The PR number to check.")
+    parser.add_argument(
+        "-g",
+        "--github_token",
+        required=True,
+        help="The GitHub token to authenticate the GitHub client.",
+    )
+    return parser.parse_args()
+
+
+def pr_changes_critical_files(pr: PullRequest) -> list[str]:
+    """
+    Return the list of files modified by the PR that live under any of the
+    :data:`CRITICAL_FOLDERS` (empty if none).
+
+    Matching uses :meth:`pathlib.PurePosixPath.is_relative_to`, which is the
+    canonical "is this path inside that directory?" check - equivalent to a
+    ``<folder>/**`` glob. Any file inside a critical folder (source, test,
+    YAML, README, arbitrarily-nested fixtures, …) counts as a critical
+    change. Sibling folders that merely share a name *prefix*
+    (e.g. ``CommonServerHelper/`` vs ``CommonServer/``) correctly do NOT
+    match, because they are not path-relative to the critical folder.
+    """
+    return [
+        f.filename for f in pr.get_files() if any(PurePosixPath(f.filename).is_relative_to(folder) for folder in CRITICAL_FOLDERS)
+    ]
+
+
+def reminder_comment_already_posted(pr: PullRequest) -> bool:
+    """Return True if a reminder comment (identified by COMMENT_MARKER) already exists on the PR."""
+    return any(COMMENT_MARKER in (comment.body or "") for comment in pr.get_issue_comments())
+
+
+def post_reminder_comment_once(pr: PullRequest) -> None:
+    """
+    Create the sticky reminder comment **only if** none has been posted yet on this PR.
+
+    Idempotency is enforced by looking for the hidden HTML marker
+    `COMMENT_MARKER` inside existing comment bodies. This guarantees the
+    reminder appears exactly once per PR, regardless of how many times the
+    workflow re-runs (synchronize / labeled / unlabeled / reopened events).
+    """
+    if reminder_comment_already_posted(pr):
+        print(
+            f"Reminder comment already present on PR #{pr.number} " f"(marker '{COMMENT_MARKER}' found); not posting a duplicate."
+        )
+        return
+    pr.create_issue_comment(REMINDER_COMMENT_BODY)
+    print(f"Posted CommonServerPython nightly reminder comment on PR #{pr.number} (first time).")
+
+
+def delete_reminder_comment_if_present(pr: PullRequest) -> int:
+    """
+    Delete every previously-posted reminder comment on ``pr`` (identified by
+    :data:`COMMENT_MARKER`) and return how many were removed.
+
+    This is called when the current PR diff **no longer touches any critical
+    folder** - e.g. the developer initially modified ``CommonServerPython.py``
+    (triggering the reminder) and then reverted that change in a follow-up
+    push. Without this cleanup the sticky comment would stay on the PR
+    forever, misleadingly claiming a nightly run is still required.
+
+    Multiple matching comments are handled defensively even though
+    :func:`post_reminder_comment_once` guarantees at most one; race conditions
+    or manual edits could still produce duplicates and we want a clean PR.
+    """
+    deleted = 0
+    for comment in pr.get_issue_comments():
+        if COMMENT_MARKER in (comment.body or ""):
+            comment.delete()
+            deleted += 1
+    if deleted:
+        print(
+            f"Deleted {deleted} stale CommonServerPython nightly reminder comment(s) "
+            f"from PR #{pr.number} (critical files are no longer modified)."
+        )
+    return deleted
+
+
+def main() -> None:
+    options = arguments_handler()
+    pr_number = int(options.pr_number)
+
+    github_client: Github = Github(options.github_token, verify=False)
+    content_repo: Repository = github_client.get_repo("demisto/content")
+    pr: PullRequest = content_repo.get_pull(pr_number)
+
+    changed_critical = pr_changes_critical_files(pr)
+    if not changed_critical:
+        print(f"PR #{pr_number} does not modify CommonServerPython or related helpers. Nothing to enforce.")
+        # Housekeeping: if a previous push touched a critical file and the
+        # reminder was posted, but the current PR diff no longer contains any
+        # critical change (e.g. the developer reverted it), remove the stale
+        # comment so the PR isn't left with a misleading warning.
+        delete_reminder_comment_if_present(pr)
+        sys.exit(0)
+
+    print(
+        f"PR #{pr_number} modifies critical files: {', '.join(changed_critical)}. "
+        "Verifying that the content nightly pipeline has been run and labeled."
+    )
+
+    # Post the reminder comment at most once per PR (idempotent — guarded by COMMENT_MARKER).
+    post_reminder_comment_once(pr)
+
+    pr_label_names = {label.name for label in pr.labels}
+    if NIGHTLY_RUN_PASSED_LABEL in pr_label_names:
+        print(f"Label '{NIGHTLY_RUN_PASSED_LABEL}' is set on PR #{pr_number}. Check passes.")
+        sys.exit(0)
+
+    print(
+        f"ERROR: PR #{pr_number} modifies CommonServerPython (or a runtime helper) but "
+        f"the '{NIGHTLY_RUN_PASSED_LABEL}' label is missing. "
+        "Please run the content nightly pipeline against this branch and, once it "
+        "passes, add the label to unblock this check."
+    )
+    sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

@@ -24,6 +24,7 @@ DOC_REVIEWER_KEY = "DOC_REVIEWER"
 CONTRIBUTION_REVIEWERS_KEY = "CONTRIBUTION_REVIEWERS"
 CONTRIBUTION_SECURITY_REVIEWER_KEY = "CONTRIBUTION_SECURITY_REVIEWER"
 TIM_REVIEWER_KEY = "TIM_REVIEWER"
+MAPPING_REVIEWER_KEY = "MAPPING_REVIEWER"
 
 CONTENT_ROLES_FILENAME = "content_roles.json"
 GITHUB_HIDDEN_DIR = ".github"
@@ -267,6 +268,21 @@ def get_doc_reviewer(content_roles: dict[str, Any]) -> str:
 
     if not (reviewer := content_roles.get(DOC_REVIEWER_KEY)):
         raise ValueError("Cannot get doc reviewer")
+    return reviewer
+
+
+def get_mapping_reviewer(content_roles: dict[str, Any]) -> list[str]:
+    """
+    Retrieve the mapping reviewer from content roles JSON/`dict`.
+
+    Args:
+        - `content_roles` (``dict[str, Any]``): The current content team roles and members.
+
+    Return:
+        - `list[str]` of mapping reviewer GitHub usernames.
+    """
+    if not (reviewer := content_roles.get(MAPPING_REVIEWER_KEY, [])):
+        raise ValueError("Cannot get mapping reviewer")
     return reviewer
 
 

@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The Commvault Cloud integration now requires the new Webhook Listener Credentials parameter when the Forwarding Rule is set to Webhook. Existing instances using the Webhook forwarding rule will fail the connectivity test until credentials are configured on both the integration instance and the Commvault Cloud webhook sender. Instances using Fetch Incidents or the Syslog forwarding rule are not affected."
+}

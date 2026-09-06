@@ -12,6 +12,7 @@
         "GIB Brand Protection Domain",
         "GIB Compromised Account Group",
         "GIB Compromised Card Group",
+        "GIB Compromised Masked Card",
         "GIB Compromised Mule",
         "GIB OSI Vulnerability",
         "GIB Attacks DDOS",
@@ -28,13 +29,14 @@
         "GIB Suspicious IP Socks Proxy",
         "GIB Cybercriminal Threat Actor",
         "GIB Nation-State Cybercriminals Threat Actor",
-        "GIB Nation-State Cybercriminals Threat"
+        "GIB Nation-State Cybercriminals Threat",
+        "GIB SPD"
     ],
     "caseInsensitive": false,
     "cliName": "gibid",
     "closeForm": false,
     "content": true,
-    "description": "ID of event in GIB TIA",
+    "description": "ID of event in GIB TI",
     "editForm": true,
     "group": 0,
     "hidden": false,
@@ -68,6 +70,7 @@
         "GIB Brand Protection Domain",
         "GIB Compromised Account Group",
         "GIB Compromised Card Group",
+        "GIB Compromised Masked Card",
         "GIB Compromised Mule",
         "GIB OSI Vulnerability",
         "GIB Attacks DDOS",
@@ -84,6 +87,7 @@
         "GIB Suspicious IP Socks Proxy",
         "GIB Cybercriminal Threat Actor",
         "GIB Nation-State Cybercriminals Threat Actor",
-        "GIB Nation-State Cybercriminals Threat"
+        "GIB Nation-State Cybercriminals Threat",
+        "GIB SPD"
     ]
 }

@@ -2176,10 +2176,10 @@ script:
     - name: entity_type
       auto: PREDEFINED
       predefined:
-        - Email
-        - SharePointOnline
-        - Teams
-        - DataLossPrevention
+      - Email
+      - SharePointOnline
+      - Teams
+      - DataLossPrevention
       description: The type of entity being exported.
     - name: force_conversion_to_mime
       auto: PREDEFINED
@@ -2765,7 +2765,7 @@ script:
       description: Specifies whether the rule actions include quarantining messages that match the rule.
       type: Boolean
     - contextPath: EWS.MailFlowRule.Guid
-      description: The unique identifier (Globally Unique Identifier) for the mail flow rule.
+      description: The Globally Unique Identifier for the mail flow rule.
       type: string
     - contextPath: EWS.MailFlowRule.OrganizationId
       description: The identifier for the organization where the mail flow rule is configured, typically used in multi-tenant environments.
@@ -2890,6 +2890,177 @@ script:
       description: The rule that you want to enable.
       required: true
     description: Enable a mail flow rule (transport rule) in the organization.
+  - name: ews-mail-flow-rule-create
+    arguments:
+    - name: name
+      description: The unique name of the rule. The maximum length is 64 characters. If the value contains spaces, enclose the value in quotation marks ("). A name must always be provided, either through this argument or as a `Name` key inside the entry_id file. If both are provided, the value from the entry_id file takes precedence.
+      required: false
+    - name: mode
+      description: How the rule operates.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Audit
+      - AuditAndNotify
+      - Enforce
+    - name: priority
+      description: The priority value for the rule that determines the order of rule processing. A lower integer value indicates a higher priority, the value 0 is the highest priority, and rules can't have the same priority value.
+      required: false
+    - name: from
+      description: 'A comma-separated list of senders to look for in messages. You can use any value that uniquely identifies the sender, such as a name, alias, distinguished name, canonical DN, email address, or GUID. If a value contains spaces, enclose it in quotation marks ("). For example, to search for a sender with the name Chris and the alias Tech Writer, use the following syntax: Chris,"Tech Writer".'
+      required: false
+      isArray: true
+    - name: sent_to
+      description: 'A comma-separated list of recipients to look for in messages. You can use any value that uniquely identifies the recipient, such as a name, alias, distinguished name, canonical DN, email address, or GUID. If a value contains spaces, enclose it in quotation marks ("). For example, to search for a recipient with the name Chris and the alias Tech Writer, use the following syntax: Chris,"Tech Writer".'
+      required: false
+      isArray: true
+    - name: subject_contains_words
+      description: 'A comma-separated list of words or phrases to look for in the Subject field of messages. If a value contains spaces, as with a phrase, enclose it in quotation marks ("). For example: Word1,"Phrase with spaces",word2.'
+      required: false
+    - name: except_if_subject_contains_words
+      description: 'A comma-separated list of words or phrases that, when found in the Subject field of messages, exempt the message from the rule. If a value contains spaces, as with a phrase, enclose it in quotation marks ("). For example: Word1,"Phrase with spaces",word2.'
+      required: false
+    - name: reject_message_reason_text
+      description: The explanation text that's used when the rule rejects messages. If the value contains spaces, enclose the value in quotation marks ("). When no entry_id file is provided, at least one of the actions (`reject_message_reason_text`, `quarantine`, or `delete_message`) must be provided.
+      required: false
+    - name: quarantine
+      description: Whether to quarantine messages that match the rule. When no entry_id file is provided, at least one of the actions (`reject_message_reason_text`, `quarantine`, or `delete_message`) must be provided.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: delete_message
+      description: Whether to silently drop messages without an NDR. When no entry_id file is provided, at least one of the actions (`reject_message_reason_text`, `quarantine`, or `delete_message`) must be provided.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: comments
+      description: The descriptive text for the rule (for example, what the rule is used for, or how it has changed over time).
+      required: false
+    - name: entry_id
+      description: 'The War Room entry ID of a JSON file that contains additional rule parameters as a map of parameter name to value (for example, {"Name": "My rule", "ActivationDate": "09/01/2018"}). Use this to set parameters that are not exposed as dedicated command arguments. Values in the file take precedence over the corresponding command arguments. If the `name` argument is not provided, the file must include a `Name` key.'
+      required: false
+    - name: extended_output
+      description: Whether the output will be in verbose format.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: false
+    description: 'Create a transport rule (mail flow rule) in the organization. A name must always be provided, either through the `name` argument or as a `Name` key inside the entry_id file. When no entry_id file is provided, both the `name` argument and at least one action (`reject_message_reason_text`, `quarantine`, or `delete_message`) are required.'
+    outputs:
+    - contextPath: EWS.MailFlowRule.Size
+      description: The size of the mail flow rule in bytes, typically related to the storage or data usage of the rule.
+      type: Number
+    - contextPath: EWS.MailFlowRule.ExpiryDate
+      description: The date and time when the mail flow rule is set to expire and no longer apply (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: EWS.MailFlowRule.Mode
+      description: The operational mode of the rule, indicating whether it is active (`Enforce`), in testing mode (`Test`), or disabled.
+      type: string
+    - contextPath: EWS.MailFlowRule.Quarantine
+      description: Specifies whether the rule actions include quarantining messages that match the rule.
+      type: Boolean
+    - contextPath: EWS.MailFlowRule.Guid
+      description: The Globally Unique Identifier for the mail flow rule.
+      type: string
+    - contextPath: EWS.MailFlowRule.OrganizationId
+      description: The identifier for the organization where the mail flow rule is configured, typically used in multi-tenant environments.
+      type: string
+    - contextPath: EWS.MailFlowRule.DistinguishedName
+      description: The distinguished name of the mail flow rule in the Exchange directory structure.
+      type: string
+    - contextPath: EWS.MailFlowRule.IsValid
+      description: Indicates whether the mail flow rule is valid and functional.
+      type: Boolean
+    - contextPath: EWS.MailFlowRule.Conditions
+      description: The conditions that trigger the mail flow rule, such as specific senders, recipients, or message properties.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.Comments
+      description: Free-form text field for adding comments or notes about the rule, typically used for documentation.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.WhenChanged
+      description: The date and time when the mail flow rule was last modified (e.g., 2024-01-15T12:34:56Z).
+      type: Date
+    - contextPath: EWS.MailFlowRule.Description
+      description: A brief description of the mail flow rule's purpose or functionality.
+      type: string
+    - contextPath: EWS.MailFlowRule.Actions
+      description: The actions taken when a message matches the rule's conditions, such as redirecting, blocking, or adding headers.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.ImmutableId
+      description: A persistent, unchangeable identifier for the mail flow rule, ensuring it remains identifiable across modifications.
+      type: Unknown
+    - contextPath: EWS.MailFlowRule.Identity
+      description: The identity of the rule, often combining the name and unique identifiers, used to reference the rule programmatically.
+      type: string
+    - contextPath: EWS.MailFlowRule.Name
+      description: The user-friendly name of the mail flow rule, typically used for easy identification.
+      type: string
+    - contextPath: EWS.MailFlowRule.CreatedBy
+      description: The user or process that created the mail flow rule.
+      type: string
+    - contextPath: EWS.MailFlowRule.RouteMessageOutboundConnector
+      description: Specifies whether messages matching the rule should be routed through a specific outbound connector.
+      type: Unknown
+  - name: ews-mail-flow-rule-update
+    arguments:
+    - name: identity
+      description: 'The rule that you want to modify. You can use any value that uniquely identifies the rule, such as a name, distinguished name, or GUID. An identity must always be provided, either through this argument or as an `Identity` key inside the entry_id file. If both are provided, the value from the entry_id file takes precedence.'
+      required: false
+    - name: mode
+      description: How the rule operates.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - Audit
+      - AuditAndNotify
+      - Enforce
+    - name: priority
+      description: The priority value for the rule that determines the order of rule processing. A lower integer value indicates a higher priority, the value 0 is the highest priority, and rules can't have the same priority value.
+      required: false
+    - name: from
+      description: 'A comma-separated list of senders to look for in messages. You can use any value that uniquely identifies the sender, such as a name, alias, distinguished name, canonical DN, email address, or GUID. If a value contains spaces, enclose it in quotation marks ("). For example, to search for a sender with the name Chris and the alias Tech Writer, use the following syntax: Chris,"Tech Writer".'
+      required: false
+      isArray: true
+    - name: sent_to
+      description: 'A comma-separated list of recipients to look for in messages. You can use any value that uniquely identifies the recipient, such as a name, alias, distinguished name, canonical DN, email address, or GUID. If a value contains spaces, enclose it in quotation marks ("). For example, to search for a recipient with the name Chris and the alias Tech Writer, use the following syntax: Chris,"Tech Writer".'
+      required: false
+      isArray: true
+    - name: subject_contains_words
+      description: 'A comma-separated list of words or phrases to look for in the Subject field of messages. If a value contains spaces, as with a phrase, enclose it in quotation marks ("). For example: Word1,"Phrase with spaces",word2.'
+      required: false
+    - name: except_if_subject_contains_words
+      description: 'A comma-separated list of words or phrases that, when found in the Subject field of messages, exempt the message from the rule. If a value contains spaces, as with a phrase, enclose it in quotation marks ("). For example: Word1,"Phrase with spaces",word2.'
+      required: false
+    - name: reject_message_reason_text
+      description: The explanation text that's used when the rule rejects messages. If the value contains spaces, enclose the value in quotation marks (").
+      required: false
+    - name: quarantine
+      description: Whether to quarantine messages that match the rule.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: delete_message
+      description: Whether to silently drop messages without an NDR.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: comments
+      description: The descriptive text for the rule (for example, what the rule is used for, or how it has changed over time).
+      required: false
+    - name: entry_id
+      description: 'The War Room entry ID of a JSON file that contains additional rule parameters as a map of parameter name to value (for example, {"Identity": "My rule", "ActivationDate": "09/01/2018"}). Use this to set parameters that are not exposed as dedicated command arguments. Values in the file take precedence over the corresponding command arguments. If the `identity` argument is not provided, the file must include an `Identity` key.'
+      required: false
+    description: 'Modify an existing transport rule (mail flow rule) in the organization. An identity must always be provided, either through the `identity` argument or as an `Identity` key inside the entry_id file. When no entry_id file is provided, the `identity` argument is required.'
   - name: ews-mail-forwarding-disable
     arguments:
     - name: identity
@@ -2898,7 +3069,7 @@ script:
     description: Disable mail forwarding for a given user.
   script: ''
   type: powershell
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.6863931
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.11550820
 fromversion: 5.5.0
 supportsquickactions: true
 tests:

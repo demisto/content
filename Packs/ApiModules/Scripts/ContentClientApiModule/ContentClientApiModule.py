@@ -1364,6 +1364,10 @@ class ContentClient:
             rate_limiter: Optional rate limiting policy.
             circuit_breaker: Optional circuit breaker policy.
             diagnostic_mode: Whether to enable diagnostic logging.
+                WARNING: intended for short, supervised debugging sessions only.
+                Request traces retain full response bodies in memory, so leaving
+                this enabled on high-volume or long-running integrations may
+                exhaust container memory.
             client_name: Name for logging identification.
             is_multithreaded: Whether to enable multithreading support.
             reuse_client: Whether to reuse the HTTP client across sync requests (default: True).

@@ -1,0 +1,17 @@
+{
+    "id": "Darkmon - Critical CVE Pipeline",
+    "name": "Darkmon - Critical CVE Pipeline",
+    "details": "Scheduled trigger for the 'Darkmon - Critical CVE Pipeline' playbook.",
+    "type": "Darkmon Critical CVE",
+    "scheduled": true,
+    "cronView": true,
+    "playbookId": "Darkmon - Critical CVE Pipeline",
+    "fromVersion": "6.8.0",
+    "isFeed": false,
+    "selectedFeeds": [],
+    "isAllFeeds": false,
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
+}

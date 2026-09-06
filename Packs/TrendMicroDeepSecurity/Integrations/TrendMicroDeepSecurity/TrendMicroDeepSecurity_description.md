@@ -1,4 +1,4 @@
-## TrendMicro Deep Security Help
+## TrendAI™ Deep Security™ Help
 
 ### Server URL
 The URL of the TrendMicro console. 

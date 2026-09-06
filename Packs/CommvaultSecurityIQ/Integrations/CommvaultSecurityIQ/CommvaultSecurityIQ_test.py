@@ -1,7 +1,9 @@
 from typing import Any
 from gevent.server import StreamServer
 import demistomock as demisto
+import pytest
 from datetime import datetime
+from fastapi.security import HTTPBasicCredentials
 from CommvaultSecurityIQ import (
     Client,
     disable_data_aging,
@@ -22,6 +24,9 @@ from CommvaultSecurityIQ import (
     get_params,
     validate_inputs,
     add_vm_to_cleanroom,
+    _authenticate_webhook_request,
+    setup_credentials,
+    token_auth,
 )
 
 
@@ -443,3 +448,178 @@ def test_misc_functions():
 def test_validate_inputs():
     client = CommvaultClientMock(base_url="https://webservice_url:81", verify=False, proxy=False)
     validate_inputs(0, client, True, True, False, "")
+
+
+def test_validate_inputs_webhook_requires_listener_credentials(mocker):
+    """
+    Given: Forwarding Rule = Webhook is selected, but no Webhook Listener Credentials are configured.
+    When:  validate_inputs is called (from test-module).
+    Then:  An exception is raised demanding the credentials be set.
+    """
+    client = CommvaultClientMock(base_url="https://webservice_url:81", verify=False, proxy=False)
+    mocker.patch.object(demisto, "params", return_value={})
+    with pytest.raises(Exception, match="Webhook Listener Credentials"):
+        validate_inputs(0, client, True, False, True, "webhook")
+
+
+def test_validate_inputs_webhook_passes_when_credentials_present(mocker):
+    """
+    Given: Forwarding Rule = Webhook with Webhook Listener Credentials configured.
+    When:  validate_inputs is called.
+    Then:  No exception is raised (assuming Azure KeyVault validation passes).
+    """
+    client = CommvaultClientMock(base_url="https://webservice_url:81", verify=False, proxy=False)
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"credentials": {"identifier": "webhook-user", "password": "s3cret"}},
+    )
+    validate_inputs(0, client, True, False, True, "webhook")
+
+
+def test_authenticate_webhook_request_rejects_missing_credentials_param():
+    """
+    Given: No listener credentials are configured on the instance.
+    When:  _authenticate_webhook_request runs (defense-in-depth path).
+    Then:  A 401 Response is returned regardless of what the client sent.
+    """
+    resp = _authenticate_webhook_request(credentials=None, token=None, params={})
+    assert resp is not None
+    assert resp.status_code == 401
+
+
+def test_authenticate_webhook_request_rejects_bad_basic_auth():
+    """
+    Given: Listener configured with Basic Auth and a bad username/password is supplied.
+    When:  _authenticate_webhook_request runs.
+    Then:  A 401 Response is returned.
+    """
+    params = {"credentials": {"identifier": "user", "password": "pass"}}
+    bad = HTTPBasicCredentials(username="user", password="WRONG")
+    resp = _authenticate_webhook_request(credentials=bad, token=None, params=params)
+    assert resp is not None
+    assert resp.status_code == 401
+
+
+def test_authenticate_webhook_request_accepts_good_basic_auth():
+    """
+    Given: Listener configured with Basic Auth and matching credentials are supplied.
+    When:  _authenticate_webhook_request runs.
+    Then:  None is returned (request allowed through).
+    """
+    params = {"credentials": {"identifier": "user", "password": "pass"}}
+    good = HTTPBasicCredentials(username="user", password="pass")
+    assert _authenticate_webhook_request(credentials=good, token=None, params=params) is None
+
+
+def test_authenticate_webhook_request_rejects_missing_basic_auth_when_configured():
+    """
+    Given: Listener configured with Basic Auth but the request carries no credentials at all.
+    When:  _authenticate_webhook_request runs.
+    Then:  A 401 Response is returned.
+    """
+    params = {"credentials": {"identifier": "user", "password": "pass"}}
+    resp = _authenticate_webhook_request(credentials=None, token=None, params=params)
+    assert resp is not None
+    assert resp.status_code == 401
+
+
+def test_authenticate_webhook_request_header_token_modes():
+    """
+    Given: Listener configured with username `_header:X-Token`.
+    When:  _authenticate_webhook_request runs with a wrong token, then a matching token.
+    Then:  401 for wrong token, None for matching token.
+    """
+    params = {"credentials": {"identifier": "_header:X-Token", "password": "secret-token"}}
+    bad = _authenticate_webhook_request(credentials=None, token="WRONG", params=params)
+    assert bad is not None
+    assert bad.status_code == 401
+
+    assert _authenticate_webhook_request(credentials=None, token="secret-token", params=params) is None
+
+
+def test_setup_credentials_rebinds_token_header():
+    """
+    Given: Listener configured with username `_header:X-Custom-Header`.
+    When:  setup_credentials runs at startup.
+    Then:  The APIKeyHeader name is rebound to read from X-Custom-Header.
+    """
+    original_name = token_auth.model.name
+    try:
+        params = {"credentials": {"identifier": "_header:X-Custom-Header", "password": "t"}}
+        setup_credentials(params)
+        assert token_auth.model.name == "X-Custom-Header"
+    finally:
+        token_auth.model.name = original_name
+
+
+def test_authenticate_webhook_request_header_mode_rejects_missing_token():
+    """
+    Given: Listener configured with username `_header:X-Token` (custom-header token mode).
+    When:  A request arrives with no token header at all (token=None) - the attacker case.
+    Then:  A 401 Response is returned (the listener is never left open when no header is sent).
+    """
+    params = {"credentials": {"identifier": "_header:X-Token", "password": "secret-token"}}
+    resp = _authenticate_webhook_request(credentials=None, token=None, params=params)
+    assert resp is not None
+    assert resp.status_code == 401
+
+
+def test_authenticate_webhook_request_header_mode_ignores_basic_auth():
+    """
+    Given: Listener configured in custom-header token mode (`_header:X-Token`).
+    When:  An attacker presents valid-looking HTTP Basic Auth but no matching token header.
+    Then:  A 401 Response is returned - Basic Auth cannot bypass the token requirement
+           (no cross-mode confusion).
+    """
+    params = {"credentials": {"identifier": "_header:X-Token", "password": "secret-token"}}
+    spoofed_basic = HTTPBasicCredentials(username="_header:X-Token", password="secret-token")
+    resp = _authenticate_webhook_request(credentials=spoofed_basic, token=None, params=params)
+    assert resp is not None
+    assert resp.status_code == 401
+
+
+def test_authenticate_webhook_request_header_mode_empty_password_rejects_all():
+    """
+    Given: Listener misconfigured with `_header:X-Token` but an EMPTY password (token).
+    When:  A request arrives with a non-empty token, and again with an empty token.
+    Then:  Both are rejected with 401 - an empty configured token never authorizes a request.
+    """
+    params = {"credentials": {"identifier": "_header:X-Token", "password": ""}}
+    non_empty = _authenticate_webhook_request(credentials=None, token="anything", params=params)
+    assert non_empty is not None
+    assert non_empty.status_code == 401
+
+    empty = _authenticate_webhook_request(credentials=None, token="", params=params)
+    assert empty is not None
+    assert empty.status_code == 401
+
+
+def test_authenticate_webhook_request_basic_mode_empty_password_rejects():
+    """
+    Given: Listener configured for Basic Auth with an EMPTY password.
+    When:  A request supplies a wrong password, and again an empty password.
+    Then:  Both are rejected with 401 - an empty configured password never authorizes.
+    """
+    params = {"credentials": {"identifier": "user", "password": ""}}
+    wrong = _authenticate_webhook_request(
+        credentials=HTTPBasicCredentials(username="user", password="WRONG"), token=None, params=params
+    )
+    assert wrong is not None
+    assert wrong.status_code == 401
+
+
+def test_setup_credentials_basic_auth_leaves_default_header():
+    """
+    Given: Listener configured for plain Basic Auth (no `_header:` prefix).
+    When:  setup_credentials runs at startup.
+    Then:  The APIKeyHeader name is left at its default ("Authorization") - no rebind occurs.
+    """
+    original_name = token_auth.model.name
+    try:
+        token_auth.model.name = "Authorization"
+        params = {"credentials": {"identifier": "webhook-user", "password": "s3cret"}}
+        setup_credentials(params)
+        assert token_auth.model.name == "Authorization"
+    finally:
+        token_auth.model.name = original_name

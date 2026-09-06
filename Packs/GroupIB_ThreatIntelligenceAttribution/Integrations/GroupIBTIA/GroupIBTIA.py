@@ -6,19 +6,21 @@ from CommonServerUserPython import *
 """ IMPORTS """
 
 
+import time
 from json import dumps as json_dumps
 from datetime import datetime
 
-from dateparser import parse as dateparser_parse
+from dateparser import parse as dateparser_parse  # type: ignore[import-untyped]
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings as urllib3_disable_warnings
 from cyberintegrations import TIPoller
+from cyberintegrations.utils import ParserHelper
 from traceback import format_exc
 import re
 from enum import Enum
 from itertools import chain
-from collections.abc import Iterable
-from typing import cast
+from collections.abc import Callable, Iterable
+from typing import Any, TypeAlias, cast
 
 # Disable insecure warnings
 urllib3_disable_warnings(InsecureRequestWarning)
@@ -26,6 +28,14 @@ urllib3_disable_warnings(InsecureRequestWarning)
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+SECONDS_IN_DAY = 86_400
+DEFAULT_DEDUP_LOOKBACK_DAYS = 365
+# Keep the PA built-in storage key for compatibility with CommonServerPython helpers.
+LAST_RUN_SEEN_INCIDENT_IDS_KEY = "found_incident_ids"
+POLLER_PRODUCT_TYPE = "SOAR"
+POLLER_PRODUCT_NAME = "CortexSOAR"
+POLLER_INTEGRATION_NAME = "Group-IB Threat Intelligence"
+POLLER_INTEGRATION_VERSION = "3.0.0"
 
 INDICATORS_TYPES = {
     "compromised/account_group": {
@@ -45,6 +55,22 @@ INDICATORS_TYPES = {
         },
     },
     "compromised/bank_card_group": {
+        "types": {
+            "cnc_url": "URL",
+            "cnc_domain": "Domain",
+            "cnc_ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "cnc_url": {},
+            "cnc_domain": {},
+            "cnc_ipv4_ip": {
+                "cnc_ipv4_asn": "asn",
+                "cnc_ipv4_country_name": "geocountry",
+                "cnc_ipv4_region": "geolocation",
+            },
+        },
+    },
+    "compromised/masked_card": {
         "types": {
             "cnc_url": "URL",
             "cnc_domain": "Domain",
@@ -92,6 +118,16 @@ INDICATORS_TYPES = {
             },
         },
     },
+    "compromised/spd": {
+        "types": {
+            "value_value": "Cryptocurrency Wallet",  # value.value as observable; type in API may vary
+        },
+        "add_fields_types": {
+            "value_value": {
+                "type": "description",  # store API type (e.g. Cryptocurrency Wallet) for context
+            },
+        },
+    },
     "osi/vulnerability": {
         "types": {
             "id": "CVE",
@@ -119,7 +155,10 @@ INDICATORS_TYPES = {
         },
         "add_fields_types": {"contributors_emails": {}, "hash": {}},
     },
-    "attacks/phishing_kit": {"types": {"emails": "Email"}, "add_fields_types": {"emails": {}}},
+    "attacks/phishing_kit": {
+        "types": {"emails": "Email"},
+        "add_fields_types": {"emails": {}},
+    },
     "attacks/phishing_group": {
         "types": {
             "url": "URL",
@@ -274,8 +313,10 @@ INDICATORS_TYPES = {
 PREFIXES = {
     "compromised/account_group": "Compromised Account Group",
     "compromised/bank_card_group": "Compromised Card Group",
+    "compromised/masked_card": "Compromised Masked Card",
     "compromised/breached": "Data Breach",
     "compromised/mule": "Compromised Mule",
+    "compromised/spd": "Compromised SPD",
     "osi/git_repository": "Git Leak",
     "osi/public_leak": "Public Leak",
     "osi/vulnerability": "OSI Vulnerability",
@@ -301,6 +342,8 @@ INCIDENT_CREATED_DATES_MAPPING = {
     "compromised/breached": "uploadTime",
     "compromised/mule": ["dateAdd", "dateIncident"],
     "compromised/bank_card_group": ["dateFirstCompromised", "dateFirstSeen"],
+    "compromised/masked_card": ["dateDetected", "dateCompromised"],
+    "compromised/spd": ["firstSeenAt", "lastSeenAt", "createdAt"],
     "osi/git_repository": "dateDetected",
     "osi/public_leak": "created",
     "osi/vulnerability": "datePublished",
@@ -359,6 +402,7 @@ SET_WITH_ALL_DATE_FIELDS = {
 TABLES_MAPPING = {
     "compromised/account_group": ["events_table"],
     "compromised/bank_card_group": ["threatActor", "compromised_events", "malware"],
+    "compromised/spd": ["events", "sources", "malware", "threatActor"],
     "osi/git_repository": ["files"],
     "osi/public_leak": ["linkList", "matches"],
     "osi/vulnerability": ["cpeTable", "affectedSoftware"],
@@ -384,7 +428,9 @@ PORTAL_LINKS = {
     "compromised/account_group": "https://tap.group-ib.com/cd/accounts?id=",
     "compromised/breached": "https://tap.group-ib.com/cd/breached?id=",
     "compromised/bank_card_group": "https://tap.group-ib.com/cd/cards?id=",
+    "compromised/masked_card": "https://tap.group-ib.com/cd/cards?scope=masked_card&id=",
     "compromised/mule": "https://tap.group-ib.com/cd/mules?id=",
+    "compromised/spd": "https://tap.group-ib.com/cd/suspicious-payment-details?id=",
     "hi/threat": "https://tap.group-ib.com/ta/last-threats?threat=",
     "hi/threat_actor": "https://tap.group-ib.com/ta/actors?ta=",
     "apt/threat": "https://tap.group-ib.com/ta/last-threats?threat=",
@@ -404,11 +450,35 @@ PORTAL_LINKS = {
     "suspicious_ip/vpn": "https://tap.group-ib.com/suspicious/vpn?q=",
 }
 
-COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = ["osi/git_repository", "osi/public_leak", "compromised/breached"]
+COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES = [
+    "osi/git_repository",
+    "osi/public_leak",
+    "compromised/breached",
+]
 
-COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED = ["compromised/breached"]
+COLLECTIONS_REQUIRING_SEARCH_VIA_QUERY_PARAMETER = [
+    "osi/public_leak",
+    "attacks/phishing_group",
+]
 
-COLLECTIONS_REQUIRING_SEARCH_VIA_QUERY_PARAMETER = ["osi/public_leak", "attacks/phishing_group"]
+COMMON_SCORE_MAP = {
+    "unknown": Common.DBotScore.NONE,
+    "good": Common.DBotScore.GOOD,
+    "suspicious": Common.DBotScore.SUSPICIOUS,
+    "bad": Common.DBotScore.BAD,
+}
+
+Reliability: TypeAlias = str
+
+COMMON_RELIABILITY_MAP: dict[str, Reliability] = {
+    "a": DBotScoreReliability.A,
+    "a+": DBotScoreReliability.A_PLUS,
+    "b": DBotScoreReliability.B,
+    "c": DBotScoreReliability.C,
+    "d": DBotScoreReliability.D,
+    "e": DBotScoreReliability.E,
+    "f": DBotScoreReliability.F,
+}
 
 
 class NumberedSeverity(Enum):
@@ -421,6 +491,23 @@ class StringSeverity(Enum):
     LOW = "Low"
     MEDIUM = "Medium"
     HIGH = "High"
+
+
+COLLECTION_COMPROMISED_BREACHED_DB = "compromised/breached"
+COLLECTION_COMPROMISED_SPD = "compromised/spd"
+UNKNOWN_SEVERITY = "Unknown"
+
+INCIDENT_SYSTEM_SEVERITY_MAP = {
+    "green": NumberedSeverity.LOW.value,
+    "orange": NumberedSeverity.MEDIUM.value,
+    "red": NumberedSeverity.HIGH.value,
+}
+
+INCIDENT_CUSTOM_SEVERITY_MAP = {
+    "green": StringSeverity.LOW.value,
+    "orange": StringSeverity.MEDIUM.value,
+    "red": StringSeverity.HIGH.value,
+}
 
 
 MAPPING = {
@@ -475,6 +562,7 @@ MAPPING = {
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
         "indicators": {  # GIB Related Indicators Data
@@ -498,6 +586,7 @@ MAPPING = {
         # Information from Group-IB
         "id": "id",  # GIB ID
         "compromised_events": {  # GIB Compromised Events Table
+            "cvv": "events.cardInfo.cvv",
             "valid_thru_date": "events.cardInfo.validThruDate",
             "valid_thru": "events.cardInfo.validThru",
             "client_ip": "events.client.ipv4.ip",
@@ -526,6 +615,7 @@ MAPPING = {
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
         # Group-IB Dates
@@ -549,6 +639,110 @@ MAPPING = {
             "cnc_ipv4_region": "events.cnc.ipv4.region",
         },
     },
+    "compromised/masked_card": {  # GIB Source:sourceType, severity:systemSeverity
+        "name": "cardInfo.number",
+        "id": "id",  # GIB ID
+        "baseName": "baseName",  # GIB Base Name
+        # Group-IB Card Information
+        "card_bin": "cardInfo.bin",  # GIB Card BIN
+        "cvv": "cardInfo.cvv",  # GIB CVV
+        "card_dump": "cardInfo.dump",  # GIB Card Dump
+        "issuer_country_code": "cardInfo.issuer.countryCode",  # GIB Card Issuer Country Code
+        "issuer_country_name": "cardInfo.issuer.countryName",  # GIB Card Issuer Country Name
+        "issuer": "cardInfo.issuer.issuer",  # GIB Card Issuer
+        "number": "cardInfo.number",  # GIB Card Number
+        "card_pin": "cardInfo.pin",  # GIB Card PIN
+        "payment_system": "cardInfo.system",  # GIB Payment System
+        "card_category": "cardInfo.category",  # GIB Card Category
+        "type": "cardInfo.type",  # GIB Card Type
+        "validThru": "cardInfo.validThru",  # GIB Card Valid Thru
+        "validThruDate": "cardInfo.validThruDate",  # GIB Card Valid Thru Date
+        # END Group-IB Card Information
+        # Group-IB Client Information
+        "client_asn": "client.ipv4.asn",  # GIB Client ASN
+        "client_city": "client.ipv4.city",  # GIB Client City
+        "client_region": "client.ipv4.region",  # GIB Client Region
+        "client_provider": "client.ipv4.provider",  # GIB Client Provider
+        "client_country_code": "client.ipv4.countryCode",  # GIB Client Country Code
+        "client_country_name": "client.ipv4.countryName",  # GIB Client Country Name
+        "client_ip": "client.ipv4.ip",  # GIB Client IP
+        # END Group-IB Client Information
+        # Group-IB CNC Information
+        "cnc": "cnc.cnc",  # GIB CNC
+        "cnc_domain": "cnc.domain",  # GIB CNC Domain
+        "cnc_ip": "cnc.ipv4.ip",  # GIB CNC IP
+        "cnc_asn": "cnc.ipv4.asn",  # GIB CNC ASN
+        "cnc_city": "cnc.ipv4.city",  # GIB CNC City
+        "cnc_region": "cnc.ipv4.region",  # GIB CNC Region
+        "cnc_provider": "cnc.ipv4.provider",  # GIB CNC Provider
+        "cnc_country_code": "cnc.ipv4.countryCode",  # GIB CNC Country Code
+        "cnc_country_name": "cnc.ipv4.countryName",  # GIB CNC Country Name
+        "cnc_url": "cnc.url",  # GIB CNC URL
+        # END Group-IB CNC Information
+        # Group-IB Dates
+        "dateDetected": "dateDetected",  # GIB Date of Detection
+        "dateCompromised": "dateCompromised",  # GIB Date Compromised
+        # END Group-IB Dates
+        # Group-IB Evaluation
+        "evaluation": {
+            "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
+            "credibility": "evaluation.credibility",  # GIB Credibility
+            "reliability": "evaluation.reliability",  # GIB Reliability
+            "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
+            "ttl": "evaluation.ttl",  # GIB TTL
+        },
+        # END Group-IB Evaluation
+        "isDump": "isDump",  # GIB Is Dump
+        "isExpired": "isExpired",  # GIB Is Expired
+        "isMasked": "isMasked",  # GIB Is Masked
+        # Group-IB Malware Information
+        "malware_name": "malware.name",  # GIB Malware Name
+        "malware_id": "malware.id",  # GIB Malware ID
+        "malware_stix_guid": "malware.stixGuid",  # GIB Malware STIX GUID
+        # END Group-IB Malware Information
+        # Group-IB Owner Information
+        "address": "owner.address",  # GIB Address
+        "owner_birthday": "owner.birthday",  # GIB Owner Birthday
+        "owner_country_code": "owner.countryCode",  # GIB Owner Country Code
+        "email": "owner.email",  # GIB Email
+        "owner_name": "owner.name",  # GIB Person
+        "owner_passport": "owner.passport",  # GIB Owner Passport
+        "phone": "owner.phone",  # Phone Number
+        "owner_state": "owner.state",  # GIB Owner State
+        "owner_tax_number": "owner.taxNumber",  # GIB Owner Tax Number
+        "owner_zip": "owner.zip",  # GIB Owner ZIP
+        "owner_city": "owner.city",  # GIB Owner City
+        # END Group-IB Owner Information
+        # Group-IB Price Information
+        "price_currency": "price.currency",  # GIB Price Currency
+        "price_value": "price.value",  # GIB Price Value
+        # END Group-IB Price Information
+        "sourceLink": "sourceLink",  # GIB Source Link
+        "sourceType": "sourceType",  # GIB Source
+        # Group-IB Threat Actor Information
+        "threat_actor_name": "threatActor.name",  # GIB Threat Actor Name
+        "threat_actor_id": "threatActor.id",  # GIB Threat Actor ID
+        "threat_actor_stix_guid": "threatActor.stixGuid",  # GIB Threat Actor STIX GUID
+        "threat_actor_is_apt": "threatActor.isAPT",  # GIB Threat Actor is APT
+        "threat_actor_country": "threatActor.country",  # GIB Threat Actor Country
+        # END Group-IB Threat Actor Information
+        "track": "track",  # GIB Track
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("compromised/masked_card"),
+                "dynamic": "id",
+            }
+        },
+        "indicators": {  # GIB Related Indicators Data
+            "cnc_url": "cnc.url",
+            "cnc_domain": "cnc.domain",
+            "cnc_ipv4_ip": "cnc.ipv4.ip",
+            "cnc_ipv4_asn": "cnc.ipv4.asn",
+            "cnc_ipv4_country_name": "cnc.ipv4.countryName",
+            "cnc_ipv4_region": "cnc.ipv4.region",
+        },
+    },
     "compromised/breached": {  # GIB Source:sourceType, severity:systemSeverity
         "name": "id",
         # Information from Group-IB
@@ -566,6 +760,7 @@ MAPPING = {
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
         # Group-IB Dates
@@ -603,6 +798,7 @@ MAPPING = {
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
         "indicators": {  # GIB Related Indicators Data
@@ -613,6 +809,59 @@ MAPPING = {
             "cnc_ipv4_country_name": "cnc.ipv4.countryName",
             "cnc_ipv4_region": "cnc.ipv4.region",
         },
+    },
+    "compromised/spd": {  # GIB Source:sourceType, severity:systemSeverity
+        "name": "type",
+        # Information from Group-IB
+        "id": "id",  # GIB ID
+        "type": "type",  # GIB SPD Type
+        "serviceType": "serviceType",  # GIB SPD Service Type
+        "ownerName": "ownerName",  # GIB SPD Owner Name
+        "illegalScore": "illegalScore",  # GIB SPD Illegal Score
+        "value": "value.value",  # GIB SPD Value
+        "createdAt": "createdAt",  # GIB Date Created At (gibdatecreatedat)
+        "firstSeenAt": "firstSeenAt",  # GIB Date First Seen (gibdatefirstseen)
+        "lastSeenAt": "lastSeenAt",  # GIB Date Last Seen (gibdatelastseen)
+        "portalLink": {  # GIB Portal Link
+            "__concatenate": {
+                "static": PORTAL_LINKS.get("compromised/spd"),
+                "dynamic": "id",
+            }
+        },
+        "events": {  # GIB SPD Events Table
+            "compromisedAt": "events.compromisedAt",
+            "detectedAt": "events.detectedAt",
+            "sourceName": "events.source.name",
+            "sourceType": "events.source.type",
+            "illegalScore": "events.illegalScore",
+            "malwareId": "events.malware.id",
+            "malwareName": "events.malware.name",
+            "threatActorId": "events.threatActor.id",
+            "threatActorName": "events.threatActor.name",
+        },
+        "sources": {  # GIB SPD Sources Table
+            "name": "sources.name",
+            "type": "sources.type",
+        },
+        "malware": {  # GIB SPD Malware Table
+            "id": "malware.id",
+            "name": "malware.name",
+        },
+        "threatActor": {  # GIB SPD Threat Actor Table
+            "id": "threatActor.id",
+            "name": "threatActor.name",
+        },
+        # END Information from Group-IB
+        # Group-IB Evaluation
+        "evaluation": {
+            "admiraltyCode": "evaluation.admiraltyCode",  # GIB Admiralty Code
+            "credibility": "evaluation.credibility",  # GIB Credibility
+            "reliability": "evaluation.reliability",  # GIB Reliability
+            "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
+            "ttl": "evaluation.ttl",  # GIB TTL
+        },
+        # END Group-IB Evaluation
     },
     "osi/git_repository": {  # GIB Source:sourceType, severity:systemSeverity
         # Information from Group-IB
@@ -646,6 +895,7 @@ MAPPING = {
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
         "indicators": {  # GIB Related Indicators Data
@@ -683,6 +933,7 @@ MAPPING = {
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
     },
@@ -744,6 +995,7 @@ MAPPING = {
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
         "indicators": {  # GIB Related Indicators Data
@@ -785,6 +1037,7 @@ MAPPING = {
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
         # CNC Information from Group-IB
@@ -826,7 +1079,6 @@ MAPPING = {
         },
         # END Group-IB DDOS Request
         "indicators": {  # GIB Related Indicators Data
-            "target_ipv4_ip": "target.ipv4.ip",
             "cnc_url": "cnc.url",
             "cnc_domain": "cnc.domain",
             "cnc_ipv4_ip": "cnc.ipv4.ip",
@@ -860,6 +1112,7 @@ MAPPING = {
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
         # Group-IB Target IP
@@ -924,6 +1177,7 @@ MAPPING = {
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
         # Group-IB Phishing Information
@@ -984,6 +1238,7 @@ MAPPING = {
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
         "indicators": {"emails": "emails"},  # GIB Related Indicators Data
@@ -1007,6 +1262,7 @@ MAPPING = {
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
         "indicators": {  # GIB Related Indicators Data
@@ -1040,6 +1296,7 @@ MAPPING = {
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
         "indicators": {  # GIB Related Indicators Data
@@ -1070,6 +1327,7 @@ MAPPING = {
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
         "indicators": {  # GIB Related Indicators Data
@@ -1100,6 +1358,7 @@ MAPPING = {
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
         "indicators": {  # GIB Related Indicators Data
@@ -1130,6 +1389,7 @@ MAPPING = {
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
         "indicators": {  # GIB Related Indicators Data
@@ -1214,6 +1474,7 @@ MAPPING = {
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
         # Group-IB Cybercriminal Forum Information
@@ -1226,14 +1487,16 @@ MAPPING = {
         "id": "id",  # GIB ID
         "title": "title",  # GIB Cybercriminal Threat Title
         "description": "description",  # GIB Cybercriminal Threat Description
-        "createdAt": "createdAt",  # GIB Date Created At
-        "dateFirstSeen": "dateFirstSeen",  # GIB Date First Seen
-        "dateLastSeen": "dateLastSeen",  # GIB Date Last Seen
         "isTailored": "isTailored",  # GIB Is Tailored
         "expertise": "expertise",  # GIB Cybercriminal Expertises
         "regions": "regions",  # GIB Cybercriminal Regions
         "sectors": "sectors",  # GIB Cybercriminal Sectors
         "reportNumber": "reportNumber",  # GIB Report Number
+        # Group-IB Dates
+        "createdAt": "createdAt",  # GIB Date Created At
+        "dateFirstSeen": "dateFirstSeen",  # GIB Date First Seen
+        "dateLastSeen": "dateLastSeen",  # GIB Date Last Seen
+        # END Group-IB Dates
         "portalLink": {  # GIB Portal Link
             "__concatenate": {
                 "static": PORTAL_LINKS.get("hi/threat"),
@@ -1364,9 +1627,10 @@ MAPPING = {
             "credibility": "evaluation.credibility",  # GIB Credibility
             "reliability": "evaluation.reliability",  # GIB Reliability
             "severity": "evaluation.severity",  # GIB Severity
+            "tlp": "evaluation.tlp",  # GIB TLP
         },
         # END Group-IB Evaluation
-        # Group-IB Cybercriminal Forum Information
+        # Group-IB Nation-State Cybercriminal Forum Information
         "forumsAccounts": {  # GIB Nation-State Cybercriminal Forums Table
             "nickname": "forumsAccounts.nickname",
             "url": "forumsAccounts.url",
@@ -1387,7 +1651,7 @@ MAPPING = {
 
 DEPRECATED_COLLECTIONS = {
     "malware/targeted_malware": "malware/malware",
-    "compromised/masked_cards": "compromised/bank_card_group",
+    "compromised/masked_cards": "compromised/masked_card",
     "compromised/bank_card": "compromised/bank_card_group",
     "compromised/card": "compromised/bank_card_group",
     "compromised/account": "compromised/account_group",
@@ -1415,13 +1679,19 @@ class Client(BaseClient):
             api_url=base_url,
         )
         self.limit = int(limit)
+        self._available_collections: frozenset[str] | None = None
         self.poller.set_product(
-            product_type="SOAR",
-            product_name="CortexSOAR",
-            product_version="unknown",
-            integration_name="Group-IB Threat Intelligence",
-            integration_version="2.1.2",
+            product_type=POLLER_PRODUCT_TYPE,
+            product_name=POLLER_PRODUCT_NAME,
+            product_version=demisto.demistoVersion().get("version", "unknown"),
+            integration_name=POLLER_INTEGRATION_NAME,
+            integration_version=POLLER_INTEGRATION_VERSION,
         )
+
+    def get_available_collections_cached(self) -> frozenset[str]:
+        if self._available_collections is None:
+            self._available_collections = frozenset(self.poller.get_available_collections())
+        return self._available_collections
 
     @staticmethod
     def handle_first_time_fetch(kwargs: dict[str, Any]) -> tuple[str, str | None]:
@@ -1460,11 +1730,10 @@ class Client(BaseClient):
 
         last_fetch, date_from = Client.handle_first_time_fetch(kwargs)
 
-        if collection_name == "compromised/breached":
+        if collection_name == COLLECTION_COMPROMISED_BREACHED_DB:
             hunting_rules = 1
 
-            # we need the isinstance check for BC because it used to be a string
-
+            # Keep BC with old last_fetch values that may not yet be stored as a dict.
             if last_fetch and isinstance(last_fetch, dict):
                 starting_date_from = last_fetch.get("starting_date_from")
                 starting_date_to = last_fetch.get("starting_date_to")
@@ -1473,6 +1742,7 @@ class Client(BaseClient):
                 starting_date_from = date_from
                 starting_date_to = datetime.now().strftime(DATE_FORMAT)
                 date_to = starting_date_to
+
             demisto.debug(
                 "[create_poll_generator] Using search generator for compromised/breached: "
                 f"last_fetch={last_fetch}, date_from={date_from}, date_to={date_to}, "
@@ -1491,59 +1761,56 @@ class Client(BaseClient):
                 "current_date_to": date_to,
             }
 
-        else:
-            if collection_name in COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES:
-                hunting_rules = 1
-            sequpdate_for_generator = last_fetch
-            date_from_for_generator = date_from
-            if not last_fetch and date_from:
-                try:
-                    demisto.debug(
-                        "[create_poll_generator] Resolving initial seqUpdate via sequence_list: "
-                        f"collection={collection_name}, date_from={date_from}, hunting_rules={hunting_rules}"
-                    )
-                    seq_map = self.poller.get_seq_update_dict(
-                        date=date_from,
-                        collection_name=collection_name,
-                        apply_hunting_rules=hunting_rules,
-                    )
-                    resolved_seq = seq_map.get(collection_name)
-                    if resolved_seq:
-                        sequpdate_for_generator = resolved_seq
-                        date_from_for_generator = None
-                        demisto.debug(f"[create_poll_generator] Using resolved seqUpdate={resolved_seq}; dropping date_from")
-                    else:
-                        demisto.debug(
-                            "[create_poll_generator] sequence_list returned empty for collection; fallback to date_from"
-                        )
-                except Exception as e:
-                    demisto.debug(f"[create_poll_generator] sequence_list resolution failed: {e}; fallback to date_from")
-
-            demisto.debug(
-                "[create_poll_generator] Using update generator: "
-                f"collection={collection_name}, sequpdate={sequpdate_for_generator}, date_from={date_from_for_generator}, "
-                f"limit={self.limit}, hunting_rules={hunting_rules}"
-            )
-
-            return (
-                self.poller.create_update_generator(
+        if collection_name in COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES:
+            hunting_rules = 1
+        sequpdate_for_generator = last_fetch
+        date_from_for_generator = date_from
+        if not last_fetch and date_from:
+            try:
+                demisto.debug(
+                    "[create_poll_generator] Resolving initial seqUpdate via sequence_list: "
+                    f"collection={collection_name}, date_from={date_from}, hunting_rules={hunting_rules}"
+                )
+                seq_map = self.poller.get_seq_update_dict(
+                    date=date_from,
                     collection_name=collection_name,
-                    date_from=date_from_for_generator,
-                    sequpdate=sequpdate_for_generator,
-                    limit=self.limit,
                     apply_hunting_rules=hunting_rules,
-                    probable_corporate_access=int(enable_probable_corporate_access),
-                    unique=int(unique),
-                    combolist=int(combolist),
-                ),
-                sequpdate_for_generator,
-            )
+                )
+                resolved_seq = seq_map.get(collection_name)
+                if resolved_seq:
+                    sequpdate_for_generator = resolved_seq
+                    date_from_for_generator = None
+                    demisto.debug(f"[create_poll_generator] Using resolved seqUpdate={resolved_seq}; dropping date_from")
+                else:
+                    demisto.debug("[create_poll_generator] sequence_list returned empty for collection; fallback to date_from")
+            except Exception as e:
+                demisto.debug(f"[create_poll_generator] sequence_list resolution failed: {e}; fallback to date_from")
+
+        demisto.debug(
+            "[create_poll_generator] Using update generator: "
+            f"collection={collection_name}, sequpdate={sequpdate_for_generator}, date_from={date_from_for_generator}, "
+            f"limit={self.limit}, hunting_rules={hunting_rules}"
+        )
+
+        return (
+            self.poller.create_update_generator(
+                collection_name=collection_name,
+                date_from=date_from_for_generator,
+                sequpdate=sequpdate_for_generator,
+                limit=self.limit,
+                apply_hunting_rules=hunting_rules,
+                probable_corporate_access=int(enable_probable_corporate_access),
+                unique=int(unique),
+                combolist=int(combolist),
+            ),
+            sequpdate_for_generator,
+        )
 
     def search_proxy_function(self, query: str) -> list[dict[str, Any]]:
         return self.poller.global_search(query=query)
 
     def get_available_collections_proxy_function(self) -> list:
-        return self.poller.get_available_collections()
+        return list(self.get_available_collections_cached())
 
 
 """ Support functions """
@@ -1620,6 +1887,17 @@ class CommonHelpers:
         return all_empty
 
     @staticmethod
+    def safe_json_one_line(obj: Any) -> str:
+        """
+        Serialize an object to a single-line JSON string for safe War Room/context rendering.
+        Falls back to `str(obj)` if JSON serialization fails.
+        """
+        try:
+            return json.dumps(obj, ensure_ascii=False, separators=(",", ":"), default=str)
+        except Exception:
+            return str(obj)
+
+    @staticmethod
     def date_parse(date: str, arg_name: str) -> str:
         date_from_parsed = dateparser_parse(date)
         if date_from_parsed is None:
@@ -1651,10 +1929,13 @@ class CommonHelpers:
         return data
 
     @staticmethod
-    def custom_generate_portal_link(collection_name: str, incident: dict):
-        if collection_name in COLLECTIONS_FOR_WHICH_THE_PORTAL_LINK_WILL_BE_GENERATED:
-            # generating just for compromised/breached
-            incident["portalLink"] = PORTAL_LINKS.get("compromised/breached", "") + str(incident["emails"][0])
+    def custom_generate_portal_link(collection_name: str, incident: dict) -> dict:
+        if collection_name != COLLECTION_COMPROMISED_BREACHED_DB:
+            return incident
+
+        emails = incident.get("emails")
+        if isinstance(emails, list) and emails:
+            incident["portalLink"] = PORTAL_LINKS.get(COLLECTION_COMPROMISED_BREACHED_DB, "") + str(emails[0])
 
         return incident
 
@@ -1693,12 +1974,12 @@ class IndicatorsHelper:
             return Common.DBotScore(
                 indicator=value,
                 indicator_type=type_,
-                integration_name="GIB TI&A",
+                integration_name="GIB TI",
                 score=score,
             )
 
         indicator: Any = None
-        if ((value is not None and len(value) > 0) or len(fields) > 0) and IndicatorsHelper.check_empty_list(fields) is False:
+        if (value is not None or len(fields) > 0) and IndicatorsHelper.check_empty_list(fields) is False:
             if indicator_type == "IP":
                 indicator = Common.IP(
                     ip=value,
@@ -1723,7 +2004,10 @@ class IndicatorsHelper:
                     dbot_score=calculate_dbot_score(DBotScoreType.FILE),
                 )
             elif indicator_type == "URL":
-                indicator = Common.URL(url=value, dbot_score=calculate_dbot_score(DBotScoreType.URL))
+                indicator = Common.URL(
+                    url=value,
+                    dbot_score=calculate_dbot_score(DBotScoreType.URL),
+                )
             elif indicator_type == "CVE":
                 indicator = Common.CVE(
                     id=value,
@@ -1739,7 +2023,7 @@ class IndicatorsHelper:
         """
         Finds IOCs in the feed and transform them to the appropriate format to ingest them into Demisto.
 
-        :param feed: feed from GIB TI&A.
+        :param feed: feed from GIB TI.
         :param collection_name: which collection this feed belongs to.
         """
 
@@ -1747,19 +2031,18 @@ class IndicatorsHelper:
         if isinstance(feed, dict) and feed.get("indicators", None) is not None:
             indicator_types: dict = INDICATORS_TYPES.get(collection_name, {}).get("types", {})  # type: ignore
             add_fields_types: dict = INDICATORS_TYPES.get(collection_name, {}).get("add_fields_types", {})  # type: ignore
-            if len(add_fields_types.keys()) > 0:
-                fedd_indicators: dict = feed["indicators"]
-                fedd_indicators.update({"severity": feed.get("evaluation", {}).get("severity")})
+            feed_indicators: dict = feed["indicators"]
+            feed_indicators.update({"severity": feed.get("evaluation", {}).get("severity")})
 
             for indicator_type_name, indicator_type in indicator_types.items():
                 add_fields = {}
-                indicator_value = fedd_indicators.get(indicator_type_name)
+                indicator_value = feed_indicators.get(indicator_type_name)
                 if indicator_type_name in add_fields_types:
                     for (
                         additional_field_name,
                         additional_field_type,
                     ) in add_fields_types.get(indicator_type_name).items():  # type: ignore
-                        additional_field_value = fedd_indicators.get(additional_field_name)
+                        additional_field_value = feed_indicators.get(additional_field_name)
                         if additional_field_value is not None:
                             add_fields.update({additional_field_type: additional_field_value})
 
@@ -1781,6 +2064,103 @@ class IndicatorsHelper:
 
         return indicators
 
+    @staticmethod
+    def dbot_from_score(score: Any) -> int:
+        """
+        Convert numeric Group-IB riskScore (0..100) into XSOAR DBotScore.
+
+        Mapping:
+        - None / out of range -> NONE (Unknown)
+        - 0..49 -> GOOD
+        - 50..84 -> SUSPICIOUS
+        - 85..100 -> BAD
+        """
+        if score is None:
+            return Common.DBotScore.NONE
+        if 0 <= score <= 49:
+            return Common.DBotScore.GOOD
+        if 50 <= score <= 84:
+            return Common.DBotScore.SUSPICIOUS
+        if 85 <= score <= 100:
+            return Common.DBotScore.BAD
+        return Common.DBotScore.NONE
+
+    @staticmethod
+    def collect_portions_for_indicator(
+        indicator_name: str,
+        indicator_value: str,
+        path: str,
+        poller: Any,
+        dates_mapping: dict[str, dict[str, str]] | None,
+        sensitive_collections: list[str] | None,
+    ) -> list:
+        """Collect parsed portions for a given path.
+
+        Tolerant to the Group-IB API returning a null body (no matches) and
+        to malformed portion objects: any of those collapses to an empty
+        result, never an exception.
+        """
+        portions = poller.create_update_generator(collection_name=path, query=indicator_value)
+        if portions is None:
+            return []
+        portions_data: list[Any] = []
+        use_dates = path in (sensitive_collections or [])
+        for portion in portions:
+            if portion is None:
+                continue
+            if use_dates and dates_mapping:
+                parsed_portion = portion.parse_portion(keys=dates_mapping.get(path))
+            else:
+                parsed_portion = getattr(portion, "raw_dict", None)
+            if parsed_portion in (None, "", []):
+                continue
+            cleaned_feed = parsed_portion[0] if isinstance(parsed_portion, list) else parsed_portion  # type: ignore
+            portions_data.append(cleaned_feed)
+        return portions_data
+
+    @staticmethod
+    def build_ip_enrichment(
+        poller: Any,
+        indicator_value: str,
+        mapping: dict[str, Any],
+    ) -> dict[str, Any]:
+        """Build scoring and graph IP enrichment block.
+
+        Each upstream call (scoring, graph_ip_search) may legitimately
+        return a 200/null response when the IP is unknown to Group-IB.
+        We swallow these as "no data" rather than letting them bubble up
+        as `AttributeError: 'NoneType' object has no attribute 'get'`.
+        """
+        data: dict[str, Any] = {}
+        try:
+            scoring = poller.scoring(indicator_value) or {}
+            items = (scoring or {}).get("items") or {}
+            score = (items.get(indicator_value) or {}).get("riskScore")
+            data.update({"scoring": {"score": score}})
+        except Exception as exc:
+            demisto.debug(f"[scoring] failed for {indicator_value}: {exc}")
+            data.update({"scoring": {"score": None}})
+
+        try:
+            graph_ip = poller.graph_ip_search(indicator_value)
+            if graph_ip:
+                graph_data = ParserHelper.find_by_template(graph_ip, keys=mapping)
+                data.update({"graph_ip": graph_data})
+        except Exception as e:
+            demisto.debug(f"[graph_ip_search] failed for {indicator_value}: {e}")
+        return data
+
+    @staticmethod
+    def parse_source_reliability(value: str | None) -> Reliability | None:
+        """
+        Parse Source Reliability parameter (e.g. 'A - Completely reliable') into DBotScoreReliability.
+        Returns None if missing or unrecognized.
+        """
+        if not value:
+            return None
+        token = value.split()[0].strip().lower()
+        return COMMON_RELIABILITY_MAP.get(token)
+
 
 class IncidentBuilder:
     fields_list_for_parse = [
@@ -1796,26 +2176,21 @@ class IncidentBuilder:
         self.mapping = mapping
 
     def get_system_severity(self) -> int:
-        severity_map = {
-            "green": NumberedSeverity.LOW.value,
-            "orange": NumberedSeverity.MEDIUM.value,
-            "red": NumberedSeverity.HIGH.value,
-        }
         severity = self.incident.get("evaluation", {}).get("severity")
-        return severity_map.get(severity, 0)
+        return INCIDENT_SYSTEM_SEVERITY_MAP.get(severity, 0)
 
     def get_incident_created_time(self) -> str:
         last_exception = None
         incident_id = self.incident.get("id", None)
-        occured_date_field = INCIDENT_CREATED_DATES_MAPPING.get(self.collection_name, "-")
+        occurred_date_field = INCIDENT_CREATED_DATES_MAPPING.get(self.collection_name, "-")
 
-        if isinstance(occured_date_field, str):
-            occured_date_field = [occured_date_field]
+        if isinstance(occurred_date_field, str):
+            occurred_date_field = [occurred_date_field]
 
-        if not isinstance(occured_date_field, list):
-            raise DemistoException(f"Expected list or string for occured_date_field, got {type(occured_date_field).__name__}")
+        if not isinstance(occurred_date_field, list):
+            raise DemistoException(f"Expected list or string for occurred_date_field, got {type(occurred_date_field).__name__}")
 
-        for variant in occured_date_field:
+        for variant in occurred_date_field:
             try:
                 date_value = self.incident.get(variant, "")
 
@@ -1825,44 +2200,44 @@ class IncidentBuilder:
                     date_value = str(date_value)
                 if not date_value.strip():
                     continue
-                incident_occured_date = dateparser_parse(date_string=date_value)
+                incident_occurred_date = dateparser_parse(date_string=date_value)
 
-                assert incident_occured_date is not None, (
-                    f"{self.incident} incident_occured_date cannot be None, "
-                    f"occured_date_field: {variant}, incident_occured_date: {incident_occured_date}"
+                assert incident_occurred_date is not None, (
+                    f"{self.incident} incident_occurred_date cannot be None, "
+                    f"occurred_date_field: {variant}, incident_occurred_date: {incident_occurred_date}"
                     f"{self.collection_name} {incident_id}"
                 )
-                return incident_occured_date.strftime(DATE_FORMAT)
+                return incident_occurred_date.strftime(DATE_FORMAT)
             except AssertionError as e:
                 last_exception = e
 
         raise AssertionError(
-            f"None of the date fields {occured_date_field} returned a valid date."
+            f"None of the date fields {occurred_date_field} returned a valid date."
             f"Last error: {last_exception} {self.collection_name} {incident_id}"
         )
 
     def get_incident_name(self) -> str:
         name = ""
         prefix = PREFIXES.get(self.collection_name, "")
-        if self.collection_name == "compromised/breached":
+        if self.collection_name == COLLECTION_COMPROMISED_BREACHED_DB:
             names = self.incident["name"]
             if not isinstance(names, list):
                 names = [names]
             name = f"{prefix}: " + ", ".join(names)
+        elif self.collection_name == COLLECTION_COMPROMISED_SPD:
+            # name = type + value
+            ptype = self.incident.get("type") or "Payment data"
+            value_str = self.incident.get("value")
+            name = f"{prefix}: {ptype} {value_str}"
         else:
             name = f"{prefix}: {self.incident['name']}"
 
         return name
 
     def set_custom_severity(self):
-        severity_map = {
-            "green": StringSeverity.LOW.value,
-            "orange": StringSeverity.MEDIUM.value,
-            "red": StringSeverity.HIGH.value,
-        }
         severity = self.incident.get("evaluation", {}).get("severity")
         if severity:
-            self.incident["evaluation"]["severity"] = severity_map.get(severity, "Unknown")
+            self.incident["evaluation"]["severity"] = INCIDENT_CUSTOM_SEVERITY_MAP.get(severity, UNKNOWN_SEVERITY)
 
     @staticmethod
     def date_conversion(date: str):
@@ -1883,7 +2258,7 @@ class IncidentBuilder:
                 if new_value:
                     self.incident[field] = new_value
 
-    def osi_public_leak_mathes_transform_to_grid_table(self, field: str):
+    def osi_public_leak_matches_transform_to_grid_table(self, field: str):
         field_data = self.incident.get(field, {})
         if field_data:
             new_matches = []
@@ -1906,7 +2281,7 @@ class IncidentBuilder:
         if fields_for_modify_in_table:
             for field in fields_for_modify_in_table:
                 if self.collection_name == "osi/public_leak" and field == "matches":
-                    self.osi_public_leak_mathes_transform_to_grid_table(field=field)
+                    self.osi_public_leak_matches_transform_to_grid_table(field=field)
                 else:
                     field_data = self.incident.get(field, {})
 
@@ -1919,6 +2294,9 @@ class IncidentBuilder:
                         clean_data = CommonHelpers.remove_underscore_and_lowercase_keys(
                             transformed_and_replaced_empty_values_data  # type: ignore
                         )
+                        # SPD events: show malware/threatActor id and name as strings (e.g. "MalwareName" not ["MalwareName"])
+                        if self.collection_name == COLLECTION_COMPROMISED_SPD and field == "events":
+                            clean_data = CommonHelpers.transform_list_to_str(clean_data)
 
                         self.incident[field] = clean_data
                     else:
@@ -1936,6 +2314,12 @@ class IncidentBuilder:
             }
         )
 
+        if self.collection_name == "compromised/masked_card":
+            if isinstance(self.incident.get("track"), list):
+                self.incident["track"] = ", ".join(str(value) for value in self.incident["track"])
+            if isinstance(self.incident.get("card_bin"), list):
+                self.incident["card_bin"] = ", ".join(str(value) for value in self.incident["card_bin"])
+
         self.set_custom_severity()
         self.check_dates()
         self.transform_fields_to_grid_table()
@@ -1950,6 +2334,8 @@ class IncidentBuilder:
 
 
 class BuilderCommandResponses:
+    dont_need_transformations = [COLLECTION_COMPROMISED_BREACHED_DB]
+
     def __init__(self, client: Client, collection_name: str, args: dict) -> None:
         self.client = client
         self.collection_name = collection_name
@@ -1977,13 +2363,6 @@ class BuilderCommandResponses:
 
     def get_feed(self) -> dict:
         id_ = str(self.args.get("id"))
-        if self.collection_name in ["threat", "threat_actor"]:
-            flag = self.args.get("isAPT")
-            if flag:
-                self.collection_name = "apt/" + self.collection_name
-            else:
-                self.collection_name = "hi/" + self.collection_name
-
         cleaned_feed = {}
         if self.collection_name in COLLECTIONS_THAT_MAY_NOT_SUPPORT_ID_SEARCH_VIA_UPDATED:
             if self.collection_name in COLLECTIONS_REQUIRING_SEARCH_VIA_QUERY_PARAMETER:
@@ -2018,17 +2397,9 @@ class BuilderCommandResponses:
         self,
         feed: dict[Any, Any],
     ):
-        dont_need_transformations = ["compromised/breached"]
-
-        main_table_data, additional_tables = (
-            feed,
-            (
-                []
-                if self.collection_name in dont_need_transformations
-                else self.transform_additional_fields_to_markdown_tables(feed)
-            ),
-        )
-
+        if self.collection_name in self.dont_need_transformations:
+            return feed, []
+        main_table_data, additional_tables = self.transform_additional_fields_to_markdown_tables(feed)
         return main_table_data, additional_tables
 
     def get_human_readable_feed(self, table: dict[Any, Any], name: str):
@@ -2051,6 +2422,199 @@ class BuilderCommandResponses:
 """ Commands """
 
 
+def _parse_seq_update(value: Any) -> int | None:
+    if value is None:
+        return None
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, int):
+        return value
+    if isinstance(value, float):
+        return int(value)
+    if isinstance(value, str):
+        stripped = value.strip()
+        if stripped.isdigit():
+            return int(stripped)
+    return None
+
+
+def _serialize_seq_update(value: int) -> str:
+    return str(value)
+
+
+def _convert_dedup_lookback_days_to_seconds(dedup_lookback_days: int) -> int:
+    """
+    Convert the user-facing `dedup_lookback_days` parameter into seconds.
+
+    The integration owns its own cache cleanup (see `_prune_seen_incident_ids`)
+    instead of relying on `CommonServerPython.remove_old_incidents_ids`,
+    which applies a hidden `* 2` multiplier and keeps the latest IDs forever.
+    Owning the conversion guarantees a 1:1 contract: an ID added today is
+    dropped exactly `dedup_lookback_days` days later.
+    """
+    return dedup_lookback_days * SECONDS_IN_DAY
+
+
+def _get_dedup_lookback_days_from_params(params: dict) -> int:
+    dedup_lookback_days = params.get("dedup_lookback_days")
+    if dedup_lookback_days in (None, ""):
+        return DEFAULT_DEDUP_LOOKBACK_DAYS
+
+    if isinstance(dedup_lookback_days, bool):
+        raise ValueError("dedup_lookback_days must be an integer number of days.")
+
+    if isinstance(dedup_lookback_days, int):
+        return dedup_lookback_days
+
+    if isinstance(dedup_lookback_days, str):
+        return int(dedup_lookback_days)
+
+    raise ValueError("dedup_lookback_days must be a string or integer value.")
+
+
+def _is_fetch_dedup_enabled(skip_updated_incidents: bool, dedup_lookback_days: int) -> bool:
+    if dedup_lookback_days < 0:
+        raise ValueError("dedup_lookback_days must be greater than or equal to 0.")
+
+    return skip_updated_incidents and dedup_lookback_days > 0
+
+
+def _call_without_common_server_python_lb_debug_logs(func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
+    demisto_module = cast(Any, demisto)
+    original_debug: Callable[..., Any] = demisto.debug
+
+    def _filtered_debug(*debug_args: Any, **debug_kwargs: Any) -> Any:
+        first_arg = debug_args[0] if debug_args else None
+        if isinstance(first_arg, str) and first_arg.startswith("lb:"):
+            return None
+        return original_debug(*debug_args, **debug_kwargs)
+
+    demisto_module.debug = _filtered_debug
+    try:
+        return func(*args, **kwargs)
+    finally:
+        demisto_module.debug = original_debug
+
+
+def _filter_duplicate_fetch_incidents(raw_incidents: list[dict], last_run_state: dict) -> list[dict]:
+    if not raw_incidents:
+        return raw_incidents
+
+    return cast(
+        list[dict],
+        _call_without_common_server_python_lb_debug_logs(
+            filter_incidents_by_duplicates_and_limit,
+            incidents_res=raw_incidents,
+            last_run=last_run_state,
+            fetch_limit=len(raw_incidents),
+            id_field="id",
+        ),
+    )
+
+
+def _prune_seen_incident_ids(
+    seen_ids: dict[str, float],
+    retention_seconds: int,
+    *,
+    now: float | None = None,
+) -> dict[str, float]:
+    """
+    Drop every cached incident ID whose addition timestamp is older than
+    `retention_seconds`.
+
+    The function is pure (no I/O, no demisto calls) and accepts an explicit
+    `now` so it stays trivially testable. It returns a NEW dict and never
+    mutates the input.
+
+    Contract:
+        * `retention_seconds <= 0` -> the entire cache is dropped.
+        * Entries with non-numeric / negative timestamps are treated as
+          "unknown age" and dropped defensively (forward compatible against
+          any future cache schema corruption).
+
+    Trade-off vs `CommonServerPython.remove_old_incidents_ids`:
+        We deliberately do NOT keep "the latest ID forever" - that creates
+        unbounded cache growth when a single ID is never re-fetched and
+        breaks the 1:1 contract with `dedup_lookback_days`.
+    """
+    if retention_seconds <= 0:
+        return {}
+
+    current_time = time.time() if now is None else now
+    threshold = current_time - retention_seconds
+
+    pruned: dict[str, float] = {}
+    for inc_id, addition_time in seen_ids.items():
+        if not isinstance(addition_time, int | float) or addition_time < 0:
+            continue
+        if addition_time >= threshold:
+            pruned[inc_id] = float(addition_time)
+    return pruned
+
+
+def _update_fetch_seen_incident_ids_cache(
+    last_run_state: dict,
+    incidents: list[dict],
+    dedup_lookback_days: int,
+) -> None:
+    """
+    Append the IDs of `incidents` to the deduplication cache and prune
+    entries older than `dedup_lookback_days`.
+
+    The cache layout (`dict[str, float]`, id -> unix seconds) is intentionally
+    identical to the format consumed by
+    `CommonServerPython.filter_incidents_by_duplicates_and_limit`, so that:
+        * forward compatibility holds (XSOAR helpers still read the cache),
+        * backward compatibility holds (legacy state from earlier versions
+          is read transparently).
+
+    Mutates `last_run_state[LAST_RUN_SEEN_INCIDENT_IDS_KEY]` in place.
+    """
+    if not incidents:
+        return
+
+    raw_cache = last_run_state.get(LAST_RUN_SEEN_INCIDENT_IDS_KEY) or {}
+    if not isinstance(raw_cache, dict):
+        raw_cache = {}
+
+    cache: dict[str, float] = {}
+    for inc_id, addition_time in raw_cache.items():
+        if isinstance(addition_time, int | float):
+            cache[str(inc_id)] = float(addition_time)
+
+    now_ts = time.time()
+    for incident in incidents:
+        inc_id = incident.get("id")
+        if inc_id is None:
+            continue
+        cache[str(inc_id)] = now_ts
+
+    retention_seconds = _convert_dedup_lookback_days_to_seconds(dedup_lookback_days)
+    last_run_state[LAST_RUN_SEEN_INCIDENT_IDS_KEY] = _prune_seen_incident_ids(
+        cache,
+        retention_seconds=retention_seconds,
+        now=now_ts,
+    )
+
+
+def _summarize_fetch_last_run_state(last_run_state: dict | None) -> dict[str, Any]:
+    if not isinstance(last_run_state, dict):
+        return {"last_fetch": {}, "seen_incident_ids_cache_size": 0}
+
+    last_fetch = last_run_state.get("last_fetch", {})
+    if not isinstance(last_fetch, dict):
+        last_fetch = {}
+
+    seen_incident_ids_cache = last_run_state.get(LAST_RUN_SEEN_INCIDENT_IDS_KEY, {})
+    if not isinstance(seen_incident_ids_cache, dict):
+        seen_incident_ids_cache = {}
+
+    return {
+        "last_fetch": last_fetch,
+        "seen_incident_ids_cache_size": len(seen_incident_ids_cache),
+    }
+
+
 def test_module(client: Client) -> str:
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
@@ -2058,17 +2622,31 @@ def test_module(client: Client) -> str:
     :param client: GIB_TI client
     :return: 'ok' if test passed, anything else will fail the test.
     """
-    test = client.poller.get_available_collections()
-    if len(test) == 0:
+    if not client.get_available_collections_cached():
         return "There are no collections available"
     return "ok"
 
 
-def collection_availability_check(client: Client, collection_name: str) -> None:
-    if collection_name not in client.poller.get_available_collections():
-        raise Exception(
-            f"Collection {collection_name} is not available from you, "
-            "please disable collection on it or contact Group-IB to grant access"
+def _validate_incident_collections(client: Client, incident_collections: list[str]) -> None:
+    """Validate that requested collections are well-formed and granted to the API user.
+
+    Skips the network round-trip to ``/user/granted_collections`` when the
+    caller passes an empty list: nothing to validate, and dialing out would
+    only add a side-effect (and noise in tests that legitimately pass an
+    empty selection).
+    """
+    if not incident_collections:
+        return
+
+    for collection_name in incident_collections:
+        CommonHelpers.validate_collections(collection_name)
+
+    available = client.get_available_collections_cached()
+    unknown = [c for c in incident_collections if c not in available]
+    if unknown:
+        raise DemistoException(
+            f"The following collections are not available for the current credentials: {', '.join(unknown)}. "
+            "Either remove them from instance settings or request access from Group-IB."
         )
 
 
@@ -2082,11 +2660,13 @@ def fetch_incidents_command(
     combolist: bool = False,
     unique: bool = False,
     enable_probable_corporate_access: bool = False,
+    skip_updated_incidents: bool = False,
+    dedup_lookback_days: int = DEFAULT_DEDUP_LOOKBACK_DAYS,
 ) -> tuple[dict, list]:
     """
     This function will execute each interval (default is 1 minute).
 
-    :param client: GIB_TI&A_Feed client.
+    :param client: GIB_TI_Feed client.
     :param last_run: the greatest sequpdate we fetched from last fetch.
     :param first_fetch_time: if last_run is None then fetch all incidents since first_fetch_time.
     :param incident_collections: list of collections enabled by client.
@@ -2100,21 +2680,42 @@ def fetch_incidents_command(
         f"collections={incident_collections}, max_requests={max_requests}, "
         f"hunting_rules={hunting_rules}, combolist={combolist}, unique={unique}, "
         f"enable_probable_corporate_access={enable_probable_corporate_access}, "
-        f"first_fetch_time={first_fetch_time}"
+        f"first_fetch_time={first_fetch_time}, skip_updated_incidents={skip_updated_incidents}, "
+        f"dedup_lookback_days={dedup_lookback_days}"
+    )
+    dedup_enabled = _is_fetch_dedup_enabled(
+        skip_updated_incidents=skip_updated_incidents,
+        dedup_lookback_days=dedup_lookback_days,
     )
     incidents: list[dict] = []
+    last_run_state = last_run.copy() if isinstance(last_run, dict) else {}
+    demisto.debug(f"[fetch-incidents] Initial last_run summary: {_summarize_fetch_last_run_state(last_run_state)}")
     next_run: dict[str, dict[str, int | Any]] = {"last_fetch": {}}
-    for collection_name in incident_collections:  # noqa: B007
-        collection_availability_check(client=client, collection_name=collection_name)
-        CommonHelpers.validate_collections(collection_name)
-        last_fetch = last_run.get("last_fetch", {}).get(collection_name)
-        demisto.debug(f"[fetch-incidents] Collection={collection_name} previous_last_fetch={last_fetch}")
+    _validate_incident_collections(client=client, incident_collections=incident_collections)
+    for collection_name in incident_collections:
+        last_fetch_raw = None
+        if isinstance(last_run_state, dict):
+            embedded = last_run_state.get("last_fetch")
+            if isinstance(embedded, dict):
+                last_fetch_raw = embedded.get(collection_name)
+            else:
+                last_fetch_raw = last_run_state.get(collection_name)
+        demisto.debug(f"[fetch-incidents] Collection={collection_name} previous_last_fetch={last_fetch_raw}")
         requests_count = 0
         sequpdate = 0
-        portions, last_fetch = client.create_poll_generator(
+
+        if collection_name == COLLECTION_COMPROMISED_BREACHED_DB:
+            last_fetch_for_generator = last_fetch_raw
+        else:
+            last_fetch_int = _parse_seq_update(last_fetch_raw)
+            last_fetch_for_generator = (
+                _serialize_seq_update(last_fetch_int) if isinstance(last_fetch_int, int) and last_fetch_int > 0 else None
+            )
+
+        portions, generator_cursor_raw = client.create_poll_generator(
             collection_name=collection_name,
             hunting_rules=hunting_rules,
-            last_fetch=last_fetch,
+            last_fetch=last_fetch_for_generator,
             first_fetch_time=first_fetch_time,
             enable_probable_corporate_access=enable_probable_corporate_access,
             combolist=combolist,
@@ -2123,6 +2724,12 @@ def fetch_incidents_command(
 
         mapping = MAPPING.get(collection_name, {})
         demisto.debug(f"[fetch-incidents] Collection={collection_name} generator created: {portions}")
+
+        generator_cursor_int = (
+            None if collection_name == COLLECTION_COMPROMISED_BREACHED_DB else _parse_seq_update(generator_cursor_raw)
+        )
+        max_seen_seq_update: int | None = None
+
         for portion in portions:
             sequpdate = portion.sequpdate
             demisto.debug(
@@ -2133,10 +2740,42 @@ def fetch_incidents_command(
             if not isinstance(new_parsed_json, list):
                 raise Exception("new_parsed_json in portion should be a list")
 
+            portion_seq_int = _parse_seq_update(sequpdate)
+            if (
+                isinstance(generator_cursor_int, int)
+                and isinstance(portion_seq_int, int)
+                and portion_seq_int <= generator_cursor_int
+            ):
+                demisto.debug(
+                    f"[fetch-incidents] seqUpdate did not advance (portion_seq={sequpdate}, "
+                    f"cursor_seq={generator_cursor_raw}); skipping portion to avoid duplicates."
+                )
+                break
+
             if new_parsed_json and isinstance(new_parsed_json[0], list):
                 iterable: Iterable[dict] = cast(Iterable[dict], chain.from_iterable(new_parsed_json))
             else:
                 iterable = cast(Iterable[dict], new_parsed_json)
+
+            raw_incidents = [item for item in iterable if isinstance(item, dict) and item.get("id")]
+            if not raw_incidents:
+                demisto.debug(
+                    f"[fetch-incidents] Portion contains no incidents with ids; skipping addition. "
+                    f"collection={collection_name}, seqUpdate={sequpdate}"
+                )
+                continue
+
+            filtered_incidents = (
+                _filter_duplicate_fetch_incidents(raw_incidents=raw_incidents, last_run_state=last_run_state)
+                if dedup_enabled
+                else raw_incidents
+            )
+            skipped_duplicates = len(raw_incidents) - len(filtered_incidents)
+            if skipped_duplicates > 0:
+                demisto.debug(
+                    f"[fetch-incidents] Dedup skipped {skipped_duplicates} already-seen incidents "
+                    f"for collection={collection_name}, seqUpdate={sequpdate}"
+                )
 
             before_count = len(incidents)
             incidents.extend(
@@ -2145,29 +2784,47 @@ def fetch_incidents_command(
                     incident=incident,
                     mapping=mapping,
                 ).build_incident()
-                for incident in iterable
+                for incident in filtered_incidents
             )
             added = len(incidents) - before_count
             demisto.debug(f"[fetch-incidents] Built incidents for portion: added={added}, total={len(incidents)}")
+            if dedup_enabled and filtered_incidents:
+                _update_fetch_seen_incident_ids_cache(
+                    last_run_state=last_run_state,
+                    incidents=filtered_incidents,
+                    dedup_lookback_days=dedup_lookback_days,
+                )
+
+            if isinstance(portion_seq_int, int) and portion_seq_int > 0:
+                max_seen_seq_update = (
+                    portion_seq_int if max_seen_seq_update is None else max(max_seen_seq_update, portion_seq_int)
+                )
 
             requests_count += 1
             if requests_count >= max_requests:
                 break
 
-        if collection_name == "compromised/breached":
-            next_run["last_fetch"][collection_name] = last_fetch
+        if collection_name == COLLECTION_COMPROMISED_BREACHED_DB:
+            next_run["last_fetch"][collection_name] = generator_cursor_raw if isinstance(generator_cursor_raw, dict) else None
         else:
             demisto.debug(f"[fetch-incidents] Final seqUpdate for collection={collection_name}: {sequpdate}")
-            effective_last_fetch = last_fetch
-            if isinstance(sequpdate, int) and sequpdate > 0:
-                if isinstance(last_fetch, int) and last_fetch > 0:
-                    effective_last_fetch = max(last_fetch, sequpdate)
-                else:
-                    effective_last_fetch = sequpdate
+            effective_last_fetch_int: int | None = None
+            if isinstance(max_seen_seq_update, int) and max_seen_seq_update > 0:
+                effective_last_fetch_int = max_seen_seq_update
+            elif isinstance(generator_cursor_int, int) and generator_cursor_int > 0:
+                effective_last_fetch_int = generator_cursor_int
 
-            next_run["last_fetch"][collection_name] = effective_last_fetch
-            demisto.debug(f"[fetch-incidents] Updated next_run for collection={collection_name}: {effective_last_fetch}")
+            next_run["last_fetch"][collection_name] = (
+                _serialize_seq_update(effective_last_fetch_int)
+                if isinstance(effective_last_fetch_int, int) and effective_last_fetch_int > 0
+                else None
+            )
+        demisto.debug(
+            f"[fetch-incidents] Updated next_run for collection={collection_name}: " f"{next_run['last_fetch'][collection_name]}"
+        )
 
+    next_run[LAST_RUN_SEEN_INCIDENT_IDS_KEY] = last_run_state.get(LAST_RUN_SEEN_INCIDENT_IDS_KEY, {})
+    demisto.debug(f"[fetch-incidents] Final next_run summary: {_summarize_fetch_last_run_state(next_run)}")
     return next_run, incidents
 
 
@@ -2175,7 +2832,7 @@ def get_available_collections_command(client: Client, args: dict | None = None):
     """
     Returns list of available collections to context and War Room.
 
-    :param client: GIB_TI&A_Feed client.
+    :param client: GIB_TI_Feed client.
     """
 
     my_collections = client.get_available_collections_proxy_function()
@@ -2185,7 +2842,7 @@ def get_available_collections_command(client: Client, args: dict | None = None):
         headers="collections",
     )
     return CommandResults(
-        outputs_prefix="GIBTIA.OtherInfo",
+        outputs_prefix="GIBTI.OtherInfo",
         outputs_key_field="collections",
         outputs={"collections": my_collections},
         readable_output=readable_output,
@@ -2203,7 +2860,7 @@ def get_info_by_id_command(collection_name: str):
         """
         This function returns additional information to context and War Room.
 
-        :param client: GIB_TI&A_Feed client.
+        :param client: GIB_TI_Feed client.
         :param args: arguments, provided by client.
         """
         results = []
@@ -2214,7 +2871,7 @@ def get_info_by_id_command(collection_name: str):
 
         results.append(
             CommandResults(
-                outputs_prefix="GIBTIA.{}".format(PREFIXES.get(collection_name, "").replace(" ", "")),
+                outputs_prefix="GIBTI.{}".format(PREFIXES.get(collection_name, "").replace(" ", "")),
                 outputs_key_field="id",
                 outputs=feed,
                 readable_output=readable_output,
@@ -2231,9 +2888,15 @@ def get_info_by_id_command(collection_name: str):
 
 def global_search_command(client: Client, args: dict) -> CommandResults:
     query = str(args.get("query"))
+    # `search_proxy_function` (and `global_search` under the hood) may
+    # legitimately return null or an empty list when Group-IB has no
+    # data on the query. Treat both as "no results" instead of letting
+    # `for result in raw_response` raise TypeError.
     raw_response = client.search_proxy_function(query=query)
-    handled_list = []
-    for result in raw_response:
+    handled_list: list[dict[str, Any]] = []
+    for result in raw_response or []:
+        if not isinstance(result, dict):
+            continue
         if result.get("apiPath") in MAPPING:
             apiPath = result.get("apiPath")
             handled_list.append(
@@ -2246,7 +2909,7 @@ def global_search_command(client: Client, args: dict) -> CommandResults:
             )
     if len(handled_list) != 0:
         results = CommandResults(
-            outputs_prefix="GIBTIA.search.global",
+            outputs_prefix="GIBTI.search.global",
             outputs_key_field="query",
             outputs=handled_list,
             readable_output=tableToMarkdown(
@@ -2260,51 +2923,615 @@ def global_search_command(client: Client, args: dict) -> CommandResults:
         )
     else:
         results = CommandResults(
-            outputs_prefix="GIBTIA.search.global",
+            outputs_prefix="GIBTI.search.global",
             raw_response=raw_response,
             ignore_auto_extract=True,
             outputs=[],
-            readable_output="Did not find anything for your query :(",
+            readable_output="No results found for your query.",
         )
     return results
 
 
-def local_search_command(client: Client, args: dict):
-    query, date_from, date_to = (
-        args.get("query"),
-        args.get("date_from", None),
-        args.get("date_to", None),
-    )
-    collection_name = str(args.get("collection_name"))
-    CommonHelpers.validate_collections(collection_name)
-    date_from_parsed = CommonHelpers.date_parse(date=date_from, arg_name="date_from") if date_from is not None else date_from
-    date_to_parsed = CommonHelpers.date_parse(date=date_to, arg_name="date_to") if date_to is not None else date_to
+def local_search_command(client: Client, args: dict) -> CommandResults:
+    def _parse_optional_int(value: Any, arg_name: str) -> int | None:
+        if value is None:
+            return None
+        if isinstance(value, int):
+            return value
+        if isinstance(value, str):
+            stripped = value.strip()
+            if not stripped:
+                return None
+            try:
+                return int(stripped)
+            except ValueError as e:
+                raise DemistoException(f"Invalid '{arg_name}' value: expected int, got {value!r}") from e
+        raise DemistoException(f"Invalid '{arg_name}' type: expected int/str, got {type(value).__name__}")
 
-    portions = client.poller.create_search_generator(
-        collection_name=collection_name,
-        query=query,
-        date_from=date_from_parsed,
-        date_to=date_to_parsed,
+    query = args.get("query")
+    collection_name = str(args.get("collection_name"))
+    include_raw_feed = argToBoolean(args.get("include_raw_feed", False))
+
+    CommonHelpers.validate_collections(collection_name)
+
+    requests_limit = _parse_optional_int(args.get("requests_limit"), "requests_limit") or 1
+    page_size_limit = _parse_optional_int(args.get("page_size_limit"), "page_size_limit")
+    filter_seq_update = _parse_optional_int(args.get("seq_update"), "seq_update")
+
+    demisto.debug(
+        "[local_search] Params: "
+        f"collection={collection_name}, query={query!r}, "
+        f"seq_update={filter_seq_update!r}, requests_limit={requests_limit}, page_size_limit={page_size_limit}, "
+        f"include_raw_feed={include_raw_feed}"
     )
+
+    update_kwargs: dict[str, Any] = {
+        "collection_name": collection_name,
+        "query": query,
+        "limit": page_size_limit,
+    }
+    if filter_seq_update is not None:
+        update_kwargs["sequpdate"] = filter_seq_update
+
+    portions = client.poller.create_update_generator(**update_kwargs)
+
     mapping = MAPPING.get(collection_name, {})
 
-    result_list = []
-    for portion in portions:
-        new_parsed_json = portion.parse_portion(keys=mapping, as_json=False)
+    requests_count = 0
+    result_list: list[dict[str, Any]] = []
+    for portion in portions or []:
+        if portion is None:
+            continue
+        sequpdate = getattr(portion, "sequpdate", None)
+        new_parsed_json = portion.parse_portion(keys=mapping, as_json=False) or []
         for feed in new_parsed_json:
-            name = feed.get("name", None)
-            if name is not None:
-                name = f"Name: {name}"
-            result_list.append({"id": feed.get("id"), "additional_info": name})
+            if not isinstance(feed, dict):
+                continue
+            name = feed.get("name")
+            additional_info = f"Name: {name}" if name else None
+            entry: dict[str, Any] = {
+                "id": feed.get("id"),
+                "additional_info": additional_info,
+                "seqUpdate": sequpdate,
+            }
+            if include_raw_feed:
+                entry["raw_feed"] = CommonHelpers.safe_json_one_line(feed)
+            result_list.append(entry)
+        requests_count += 1
+        if requests_limit is not None and requests_count >= requests_limit:
+            break
 
-    results = CommandResults(
-        outputs_prefix="GIBTIA.search.local",
+    return CommandResults(
+        outputs_prefix="GIBTI.search.local",
         outputs_key_field="id",
         outputs=result_list,
-        readable_output=tableToMarkdown("Search results", t=result_list, headers=["id", "additional_info"]),
+        readable_output=tableToMarkdown(
+            "Search results",
+            t=result_list,
+            headers=["id", "additional_info", "seqUpdate", "raw_feed"],
+        ),
         ignore_auto_extract=True,
     )
-    return results
+
+
+class ReputationCommandProcessor:
+    ALLOWED_PATHS: dict[str, list[str]] = {
+        "file": ["ioc/common"],
+        "domain": [
+            "apt/threat",
+            "apt/threat_actor",
+            "attacks/deface",
+            "hi/open_threats",
+            "ioc/common",
+        ],
+        # "scoring",
+        "ip": [
+            "apt/threat",
+            "apt/threat_actor",
+            "attacks/deface",
+            "hi/open_threats",
+            "ioc/common",
+        ],
+    }
+    SENSITIVE_TO_DATES_COLLECTIONS: dict[str, list[str]] = {
+        "domain": [
+            "attacks/deface",
+            "hi/open_threats",
+            "ioc/common",
+        ],
+    }
+    DATES_MAPPING: dict[str, dict[str, dict[str, str]]] = {
+        "domain": {
+            "attacks/deface": {
+                "date": "date",
+            },
+            "hi/open_threats": {
+                "detected": "detected",
+            },
+            "ioc/common": {"dateLastSeen": "dateLastSeen"},
+        }
+    }
+    RECENT_WINDOW = timedelta(days=365 * 3)
+    DATE_FORMATS = ("%Y-%m-%d", "%Y-%m-%dT%H:%M:%SZ")
+    RELIABILITY_BY_COLLECTION: dict[str, dict[str, Reliability]] = {
+        "file": {
+            "ioc/common": DBotScoreReliability.A,
+        },
+        "domain": {
+            "apt/threat": DBotScoreReliability.A,
+            "apt/threat_actor": DBotScoreReliability.A,
+            "ioc/common": DBotScoreReliability.A,
+            "attacks/deface": DBotScoreReliability.B,
+            "hi/open_threats": DBotScoreReliability.B,
+        },
+        "ip": {
+            "apt/threat": DBotScoreReliability.A,
+            "apt/threat_actor": DBotScoreReliability.A,
+            "ioc/common": DBotScoreReliability.A,
+            "attacks/deface": DBotScoreReliability.B,
+            "hi/open_threats": DBotScoreReliability.B,
+        },
+    }
+    RULES: list[dict[str, Any]] = [
+        # IOC common last 3 years -> BAD
+        {"any_recent": [("ioc/common", "dateLastSeen")], "score": Common.DBotScore.BAD},
+        # open threats / defaces last 3 years -> SUSPICIOUS
+        {
+            "any_recent": [("hi/open_threats", "detected"), ("attacks/deface", "date")],
+            "score": Common.DBotScore.SUSPICIOUS,
+        },
+        # IOC Common >3 years or no date -> SUSPICIOUS (if records exist)
+        {
+            "ioc_stale_or_no_date": ("ioc/common", "dateLastSeen"),
+            "score": Common.DBotScore.SUSPICIOUS,
+        },
+        # no findings -> NONE
+        {"no_findings": True, "score": Common.DBotScore.NONE},
+    ]
+
+    GRAPH_MAPPING = {
+        "ip": {
+            "asn": "whoisSummary.asn",
+            "country": "whoisSummary.country",
+            "descr": "whoisSummary.descr",
+            "isp": "whoisSummary.isp",
+            "netname": "whoisSummary.netname",
+            "phone": "whoisSummary.phone",
+        }
+    }
+
+    def __init__(
+        self,
+        client: Client,
+        args: dict,
+        integration_reliability: Reliability | None = None,
+    ) -> None:
+        self.client = client
+        self.args = args
+        self.integration_reliability = integration_reliability
+
+    def _extract_indicator(self, indicator_name: str, arg_keys: list[str]) -> str:
+        for key in arg_keys:
+            value = self.args.get(key)
+            if value:
+                return str(value)
+        raise DemistoException(f"Argument '{indicator_name}' is required.")
+
+    def _filter_allowed_paths(self, indicator_name: str, exclude: list[str]) -> list[str]:
+        base_paths = self.ALLOWED_PATHS.get(indicator_name, [])
+        if not exclude:
+            return base_paths
+        exclude_set = set(exclude)
+        return [p for p in base_paths if p not in exclude_set]
+
+    def _get_indicator_data(self, indicator_name: str, indicator_value: str, search_data: list) -> dict:
+        data_per_collections: dict[str, Any] = {}
+        allowed_paths = self.ALLOWED_PATHS.get(indicator_name, [])
+        for path, _count in search_data or []:
+            if path not in allowed_paths:
+                continue
+            try:
+                portions_data = IndicatorsHelper.collect_portions_for_indicator(
+                    indicator_name=indicator_name,
+                    indicator_value=indicator_value,
+                    path=path,
+                    poller=self.client.poller,
+                    dates_mapping=self.DATES_MAPPING.get(indicator_name),
+                    sensitive_collections=self.SENSITIVE_TO_DATES_COLLECTIONS.get(indicator_name, []),
+                )
+            except Exception as exc:
+                # A 200/null or generator-yields-None response from any one
+                # collection must not abort the whole indicator lookup. The
+                # collection is treated as "no data" and the other
+                # collections continue to be queried.
+                demisto.debug(f"[reputation] collect_portions_for_indicator({path!r}, {indicator_value!r}) failed: {exc}")
+                portions_data = []
+            data_per_collections[path] = portions_data or []
+
+        if indicator_name == "ip":
+            try:
+                ip_data = IndicatorsHelper.build_ip_enrichment(
+                    poller=self.client.poller,
+                    indicator_value=indicator_value,
+                    mapping=self.GRAPH_MAPPING.get(indicator_name, {}),
+                )
+            except Exception as exc:
+                demisto.debug(f"[reputation] build_ip_enrichment failed for {indicator_value!r}: {exc}")
+                ip_data = {}
+            data_per_collections.update(ip_data or {})
+        return data_per_collections
+
+    def _get_search_data(self, indicator_value):
+        """Return [(apiPath, count), ...] for the indicator, or [] if no data.
+
+        The Group-IB `global_search` endpoint legitimately returns HTTP 200
+        with a `null` body when nothing is known about an indicator (and in
+        rare schema-drift cases a dict instead of a list). Both shapes must
+        produce an empty result — never a TypeError — so the reputation
+        command can still return a clean DBotScore.NONE response.
+        """
+        try:
+            search = self.client.poller.global_search(indicator_value)
+        except Exception as exc:
+            demisto.debug(f"[reputation] global_search failed for {indicator_value!r}: {exc}")
+            return []
+        if search in (None, "", [], {}):
+            demisto.debug(f"[reputation] global_search returned no data for {indicator_value!r}")
+            return []
+        if not isinstance(search, list):
+            demisto.debug(
+                f"[reputation] global_search returned non-list ({type(search).__name__}) "
+                f"for {indicator_value!r}; treating as no data"
+            )
+            return []
+        finding: list[tuple[Any, Any]] = []
+        for found in search:
+            if not isinstance(found, dict):
+                continue
+            finding.append((found.get("apiPath"), found.get("count")))
+        return finding
+
+    def _parse_date(self, s):
+        if not s:
+            return None
+        for fmt in self.DATE_FORMATS:
+            try:
+                return datetime.strptime(s, fmt)
+            except ValueError:
+                pass
+        return None
+
+    def _any_recent(self, items, date_key, now):
+        for it in items or []:
+            dt = self._parse_date((it or {}).get(date_key))
+            if dt and (now - dt) <= self.RECENT_WINDOW:
+                return True
+        return False
+
+    def _any_present(self, items, date_key):
+        return any((it or {}).get(date_key) for it in (items or []))
+
+    def _get_score(self, indicator_name, indicator_data):
+        if indicator_name == "file":
+            # if at least one element is found in ioc/common -> BAD, otherwise NONE
+            score = Common.DBotScore.BAD if indicator_data.get("ioc/common") else Common.DBotScore.NONE
+
+        elif indicator_name == "domain":
+            # Rules:
+            # - IOC common last 3 years -> BAD
+            # - open threats / defaces last 3 years -> SUSPICIOUS
+            # - IOC Common > 3 years or no date -> SUSPICIOUS (if there are records)
+            # - no findings -> NONE
+            now = datetime.utcnow()
+            score = None
+
+            for rule in self.RULES:
+                any_recent = rule.get("any_recent")
+                if any_recent and any(self._any_recent(indicator_data.get(coll), key, now) for coll, key in any_recent):
+                    score = rule["score"]
+                    break
+
+                if rule.get("ioc_stale_or_no_date"):
+                    coll, key = rule["ioc_stale_or_no_date"]
+                    items = indicator_data.get(coll) or []
+                    if items and (not self._any_present(items, key) or not self._any_recent(items, key, now)):
+                        score = rule["score"]
+                        break
+
+                if rule.get("no_findings"):
+                    has_any = any(indicator_data.get(c) for c in ("attacks/deface", "hi/open_threats", "ioc/common"))
+                    if not has_any:
+                        score = rule["score"]
+                        break
+
+            if score is None:
+                score = Common.DBotScore.NONE
+
+        elif indicator_name == "ip":
+            # riskScore mapping to DBotScore:
+            # 0-49 -> GOOD, 50-84 -> SUSPICIOUS, 85-100 -> BAD, None/out-of-range -> NONE
+            scoring = indicator_data.get("scoring", {}).get("score")
+            score = IndicatorsHelper.dbot_from_score(scoring)
+
+        else:
+            score = Common.DBotScore.NONE
+
+        return score
+
+    @staticmethod
+    def _pick_best_reliability(reliabilities: list[Reliability]) -> Reliability | None:
+        """
+        Pick the most trusted reliability deterministically.
+
+        Current policy:
+        - Prefer A over B
+        - Otherwise None
+        """
+        # Use a set to avoid order-dependence and make membership checks explicit.
+        rset = set(reliabilities)
+        if DBotScoreReliability.A in rset:
+            return DBotScoreReliability.A
+        if DBotScoreReliability.B in rset:
+            return DBotScoreReliability.B
+        return None
+
+    def _get_reliability(self, indicator_name: str, indicator_data: dict[str, Any]) -> Reliability | None:
+        if self.integration_reliability:
+            return self.integration_reliability
+        if indicator_name == "file":
+            # if found in ioc/common, always A - Completely reliable : ‘a’:DBotScoreReliability.A
+            reliability = DBotScoreReliability.A if indicator_data.get("ioc/common") else None
+        elif indicator_name == "domain":
+            # Summary:
+            # - A: any match in apt/* or ioc/common
+            # - B: any match in attacks/deface or hi/open_threats
+            #
+            # Detailed mapping:
+            # - nation state (apt/threat, apt/threat_actor) -> A - Completely reliable
+            # - other IOC common (ioc/common) -> A - Completely reliable
+            # - defaces (attacks/deface) -> B - Usually reliable
+            # - open threats (hi/open_threats) -> B - Usually reliable
+            matched_reliabilities = [
+                self.RELIABILITY_BY_COLLECTION.get(indicator_name, {}).get(coll)
+                for coll in self.ALLOWED_PATHS.get(indicator_name, [])
+                if indicator_data.get(coll)
+            ]
+            reliability = self._pick_best_reliability([r for r in matched_reliabilities if r])
+        elif indicator_name == "ip":
+            # Summary:
+            # - A: any match in apt/* or ioc/common
+            # - B: any match in attacks/deface or hi/open_threats
+            #
+            # Detailed mapping:
+            # - nation state (apt/threat, apt/threat_actor) -> A - Completely reliable
+            # - other IOC common (ioc/common) -> A - Completely reliable
+            # - defaces (attacks/deface) -> B - Usually reliable
+            # - open threats (hi/open_threats) -> B - Usually reliable
+            matched_reliabilities = [
+                self.RELIABILITY_BY_COLLECTION.get(indicator_name, {}).get(coll)
+                for coll in self.ALLOWED_PATHS.get(indicator_name, [])
+                if indicator_data.get(coll)
+            ]
+            reliability = self._pick_best_reliability([r for r in matched_reliabilities if r])
+        else:
+            reliability = None
+        return reliability
+
+    def _normalize_graph_ip(self, graph_ip_info: Any) -> dict[str, Any]:
+        """Normalize graph_ip response to a single dict."""
+        if isinstance(graph_ip_info, list):
+            if graph_ip_info:
+                graph_ip_info = graph_ip_info[0] or {}
+            else:
+                graph_ip_info = {}
+        if not isinstance(graph_ip_info, dict):
+            return {}
+        return graph_ip_info
+
+    def _build_ip_enrichment_kwargs(self, graph_ip_info: dict[str, Any]) -> dict[str, Any]:
+        """Build kwargs for Common.IP from graph_ip whois data."""
+        return {
+            "asn": graph_ip_info.get("asn"),
+            "as_owner": graph_ip_info.get("isp"),
+            "geo_country": graph_ip_info.get("country"),
+            "geo_description": graph_ip_info.get("descr") or graph_ip_info.get("netname"),
+            "registrar_abuse_phone": graph_ip_info.get("phone"),
+            "organization_name": graph_ip_info.get("netname"),
+            "description": graph_ip_info.get("descr") or graph_ip_info.get("netname"),
+        }
+
+    @staticmethod
+    def _build_readable_output(
+        title: str,
+        indicator_value: str,
+        score_value: Any,
+        reliability: Any = None,
+        numerical_score: Any = None,
+    ) -> str:
+        table_data = {
+            "Indicator": indicator_value,
+            "Score": {v: k for k, v in COMMON_SCORE_MAP.items()}.get(score_value, score_value),
+        }
+        if reliability is not None:
+            table_data["Reliability"] = reliability
+        if numerical_score is not None:
+            table_data["Numerical Score"] = numerical_score
+
+        return tableToMarkdown(
+            title,
+            table_data,
+            removeNull=True,
+        )
+
+    def run(
+        self,
+        indicator_name: str,
+        indicator_type,
+        arg_keys: list[str] | None = None,
+    ) -> CommandResults:
+        arg_keys = arg_keys or ["value", indicator_name]
+        indicator_value = self._extract_indicator(indicator_name, arg_keys)
+        search_data = self._get_search_data(indicator_value=indicator_value)
+        indicator_data = self._get_indicator_data(indicator_name, indicator_value, search_data)
+        score = self._get_score(indicator_name, indicator_data)
+        reliability = self._get_reliability(indicator_name, indicator_data)
+        graph_ip_info = indicator_data.get("graph_ip") or {}
+        graph_ip_info = self._normalize_graph_ip(graph_ip_info)
+
+        d_bot_score = Common.DBotScore(
+            indicator=indicator_value,
+            indicator_type=indicator_type,
+            integration_name="GroupIBTI",
+            score=score,
+            reliability=reliability,
+        )
+        indicator_obj: Any = None
+        if indicator_name == "ip":
+            indicator_obj = Common.IP(
+                ip=indicator_value,
+                dbot_score=d_bot_score,
+                **self._build_ip_enrichment_kwargs(graph_ip_info),
+            )
+        elif indicator_name == "domain":
+            indicator_obj = Common.Domain(domain=indicator_value, dbot_score=d_bot_score)
+        elif indicator_name == "file":
+            # hash type is not specified; pass as md5 for DBot correlation
+            indicator_obj = Common.File(md5=indicator_value, dbot_score=d_bot_score)
+
+        # When Group-IB has no data across every collection (HTTP 200 / null
+        # body), prepend a one-line note to the War-Room readable so the
+        # analyst sees "no data" instead of a bare "Unknown" row. The
+        # context contract (`raw_response` fields) is unchanged.
+        has_payload = any(isinstance(v, list) and v for k, v in indicator_data.items() if k not in ("scoring", "graph_ip"))
+        base_readable = self._build_readable_output(
+            title=f"Group-IB reputation for {indicator_value}",
+            indicator_value=indicator_value,
+            score_value=score,
+            reliability=reliability,
+        )
+        if not has_payload:
+            readable_output = f"No Group-IB Threat Intelligence data was found for `{indicator_value}`.\n\n" + base_readable
+        else:
+            readable_output = base_readable
+
+        return CommandResults(
+            readable_output=readable_output,
+            indicator=indicator_obj,
+            raw_response={
+                "indicator": indicator_value,
+                "score": score,
+                "reliability": str(reliability),
+            },
+        )
+
+
+def gibti_ip_scoring_command(client: Client, args: dict) -> CommandResults:
+    indicator_value = args.get("ip")
+    if not indicator_value:
+        raise DemistoException("Argument 'ip' is required.")
+
+    ip_data = IndicatorsHelper.build_ip_enrichment(
+        poller=client.poller,
+        indicator_value=indicator_value,
+        mapping={},
+    )
+    risk_score = ip_data.get("scoring", {}).get("score")
+    dbot_score_value = IndicatorsHelper.dbot_from_score(risk_score)
+
+    d_bot_score = Common.DBotScore(
+        indicator=indicator_value,
+        indicator_type=DBotScoreType.IP,
+        integration_name="GroupIBTI",
+        score=dbot_score_value,
+        reliability=None,
+    )
+
+    indicator_obj = Common.IP(
+        ip=indicator_value,
+        dbot_score=d_bot_score,
+    )
+
+    readable_output = ReputationCommandProcessor._build_readable_output(
+        title=f"Group-IB scoring for {indicator_value}",
+        indicator_value=indicator_value,
+        score_value=dbot_score_value,
+        numerical_score=risk_score,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        indicator=indicator_obj,
+        raw_response={
+            "indicator": indicator_value,
+            "score": dbot_score_value,
+            "riskScore": risk_score,
+        },
+    )
+
+
+class ReputationCommands:
+    @staticmethod
+    def file(
+        client: Client,
+        args: dict,
+        integration_reliability: Reliability | None = None,
+    ) -> CommandResults:
+        return ReputationCommandProcessor(client, args, integration_reliability).run(
+            indicator_name="file", indicator_type=DBotScoreType.FILE
+        )
+
+    @staticmethod
+    def domain(
+        client: Client,
+        args: dict,
+        integration_reliability: Reliability | None = None,
+    ) -> CommandResults:
+        return ReputationCommandProcessor(client, args, integration_reliability).run(
+            indicator_name="domain", indicator_type=DBotScoreType.DOMAIN
+        )
+
+    @staticmethod
+    def ip(
+        client: Client,
+        args: dict,
+        integration_reliability: Reliability | None = None,
+    ) -> CommandResults:
+        return ReputationCommandProcessor(client, args, integration_reliability).run(
+            indicator_name="ip", indicator_type=DBotScoreType.IP
+        )
+
+
+class ReputationCommandPolicy:
+    _SUPPORTED_REPUTATION_COMMANDS: frozenset[str] = frozenset({"ip", "domain", "file"})
+
+    def __init__(self, enabled_commands: set[str]) -> None:
+        self._enabled_commands = enabled_commands
+
+    @classmethod
+    def from_params(cls, params: dict) -> "ReputationCommandPolicy":
+        """
+        Policy precedence:
+        - Allow-list only: only explicitly enabled commands can run.
+        - Fail-safe default: if the param is missing or empty -> no reputation commands run.
+        """
+
+        raw_enabled = params.get("enabled_reputation_commands") or []
+        enabled = {str(x).strip().lower() for x in argToList(raw_enabled) if str(x).strip()}
+        enabled &= set(cls._SUPPORTED_REPUTATION_COMMANDS)
+        return cls(enabled_commands=enabled)
+
+    def is_enabled(self, command: str) -> bool:
+        return command in self._enabled_commands
+
+    @staticmethod
+    def build_not_enabled_result(command: str) -> CommandResults:
+        return CommandResults(
+            readable_output=(
+                f"Reputation command '{command}' is not enabled in the integration instance settings. "
+                "No enrichment was performed."
+            ),
+            raw_response={"command": command, "enabled": False},
+        )
 
 
 def main():
@@ -2322,20 +3549,56 @@ def main():
         hunting_rules = params.get("hunting_rules", 0)
         verify_certificate = not params.get("insecure", False)
         endpoint = None
+        result: Any = None
 
         incident_collections = params.get("incident_collections", [])
         incidents_first_fetch = params.get("first_fetch", "3 days").strip()
         requests_count = int(params.get("max_fetch", 3))
+        skip_updated_incidents = argToBoolean(params.get("skip_updated_incidents", False))
+        dedup_lookback_days = _get_dedup_lookback_days_from_params(params)
 
         combolist = params.get("combolist", False)
         unique = params.get("unique", False)
         enable_probable_corporate_access = params.get("enable_probable_corporate_access", False)
         limit_param = params.get("limit", 100)
         limit = int(limit_param)
+        integration_reliability_param = params.get("integration_reliability")
+        disable_reliability_override = params.get("disable_integration_reliability_override", False)
+        integration_reliability = (
+            None if disable_reliability_override else IndicatorsHelper.parse_source_reliability(integration_reliability_param)
+        )
+        reputation_policy = ReputationCommandPolicy.from_params(params)
 
         args = demisto.args()
-        command = demisto.command()
-        demisto.debug(f"Command being called is {command}")
+        raw_command = demisto.command()
+        command_aliases = {
+            "gibtia-get-compromised-account-info": "gibti-get-compromised-account-info",
+            "gibtia-get-compromised-card-group-info": "gibti-get-compromised-card-group-info",
+            "gibtia-get-compromised-mule-info": "gibti-get-compromised-mule-info",
+            "gibtia-get-compromised-spd-info": "gibti-get-compromised-spd-info",
+            "gibtia-get-compromised-breached-info": "gibti-get-compromised-breached-info",
+            "gibtia-get-phishing-kit-info": "gibti-get-phishing-kit-info",
+            "gibtia-get-phishing-group-info": "gibti-get-phishing-group-info",
+            "gibtia-get-osi-git-leak-info": "gibti-get-osi-git-leak-info",
+            "gibtia-get-osi-public-leak-info": "gibti-get-osi-public-leak-info",
+            "gibtia-get-osi-vulnerability-info": "gibti-get-osi-vulnerability-info",
+            "gibtia-get-attacks-ddos-info": "gibti-get-attacks-ddos-info",
+            "gibtia-get-attacks-deface-info": "gibti-get-attacks-deface-info",
+            "gibtia-get-threat-info": "gibti-get-threat-info",
+            "gibtia-get-threat-actor-info": "gibti-get-threat-actor-info",
+            "gibtia-get-suspicious-ip-tor-node-info": "gibti-get-suspicious-ip-tor-node-info",
+            "gibtia-get-suspicious-ip-open-proxy-info": "gibti-get-suspicious-ip-open-proxy-info",
+            "gibtia-get-suspicious-ip-socks-proxy-info": "gibti-get-suspicious-ip-socks-proxy-info",
+            "gibtia-get-suspicious-ip-vpn-info": "gibti-get-suspicious-ip-vpn-info",
+            "gibtia-get-suspicious-ip-scanner-info": "gibti-get-suspicious-ip-scanner-info",
+            "gibtia-get-malware-cnc-info": "gibti-get-malware-cnc-info",
+            "gibtia-get-malware-malware-info": "gibti-get-malware-malware-info",
+            "gibtia-get-available-collections": "gibti-get-available-collections",
+            "gibtia-global-search": "gibti-global-search",
+            "gibtia-local-search": "gibti-local-search",
+        }
+        command = command_aliases.get(raw_command, raw_command)
+        demisto.debug(f"Command being called is {raw_command}, mapped to {command}")
         demisto.debug(
             "[main] Parsed params: "
             f"url={base_url}, proxy={proxy}, verify={verify_certificate}, "
@@ -2354,50 +3617,60 @@ def main():
         )
         demisto.info("Client created successfully")
 
-        deprecated_comands = [
+        deprecated_commands = [
             "gibtia-get-compromised-card-info",
             "gibtia-get-compromised-imei-info",
             "gibtia-get-malware-targeted-malware-info",
             "gibtia-get-phishing-info",
         ]
-        if command in deprecated_comands:
+        if raw_command in deprecated_commands or command in deprecated_commands:
             raise Exception(f"{command} deprecated")
 
         if hunting_rules is True:
-            hunting_rules = 1
             list_hunting_rules_collections = client.poller.get_hunting_rules_collections()
 
             for collection in incident_collections:
                 if collection not in list_hunting_rules_collections:
-                    raise Exception(f"Collection {collection} Does't support hunting rules")
+                    raise Exception(f"Collection {collection} doesn't support hunting rules")
+            hunting_rules = 1
 
-        info_comands = {
-            "gibtia-get-compromised-account-info": "compromised/account_group",
-            "gibtia-get-compromised-card-group-info": "compromised/bank_card_group",
-            "gibtia-get-compromised-mule-info": "compromised/mule",
-            "gibtia-get-compromised-breached-info": "compromised/breached",
-            "gibtia-get-phishing-kit-info": "attacks/phishing_kit",
-            "gibtia-get-phishing-group-info": "attacks/phishing_group",
-            "gibtia-get-osi-git-leak-info": "osi/git_repository",
-            "gibtia-get-osi-public-leak-info": "osi/public_leak",
-            "gibtia-get-osi-vulnerability-info": "osi/vulnerability",
-            "gibtia-get-attacks-ddos-info": "attacks/ddos",
-            "gibtia-get-attacks-deface-info": "attacks/deface",
-            "gibtia-get-threat-info": "threat",
-            "gibtia-get-threat-actor-info": "threat_actor",
-            "gibtia-get-suspicious-ip-tor-node-info": "suspicious_ip/tor_node",
-            "gibtia-get-suspicious-ip-open-proxy-info": "suspicious_ip/open_proxy",
-            "gibtia-get-suspicious-ip-socks-proxy-info": "suspicious_ip/socks_proxy",
-            "gibtia-get-suspicious-ip-vpn-info": "suspicious_ip/vpn",
-            "gibtia-get-suspicious-ip-scanner-info": "suspicious_ip/scanner",
-            "gibtia-get-malware-cnc-info": "malware/cnc",
-            "gibtia-get-malware-malware-info": "malware/malware",
+        info_commands = {
+            # new prefix
+            "gibti-get-compromised-account-info": "compromised/account_group",
+            "gibti-get-compromised-card-group-info": "compromised/bank_card_group",
+            "gibti-get-compromised-masked-card-info": "compromised/masked_card",
+            "gibti-get-compromised-mule-info": "compromised/mule",
+            "gibti-get-compromised-spd-info": "compromised/spd",
+            "gibti-get-compromised-breached-info": "compromised/breached",
+            "gibti-get-phishing-kit-info": "attacks/phishing_kit",
+            "gibti-get-phishing-group-info": "attacks/phishing_group",
+            "gibti-get-osi-git-leak-info": "osi/git_repository",
+            "gibti-get-osi-public-leak-info": "osi/public_leak",
+            "gibti-get-osi-vulnerability-info": "osi/vulnerability",
+            "gibti-get-attacks-ddos-info": "attacks/ddos",
+            "gibti-get-attacks-deface-info": "attacks/deface",
+            "gibti-get-threat-info": "threat",
+            "gibti-get-threat-actor-info": "threat_actor",
+            "gibti-get-suspicious-ip-tor-node-info": "suspicious_ip/tor_node",
+            "gibti-get-suspicious-ip-open-proxy-info": "suspicious_ip/open_proxy",
+            "gibti-get-suspicious-ip-socks-proxy-info": "suspicious_ip/socks_proxy",
+            "gibti-get-suspicious-ip-vpn-info": "suspicious_ip/vpn",
+            "gibti-get-suspicious-ip-scanner-info": "suspicious_ip/scanner",
+            "gibti-get-malware-cnc-info": "malware/cnc",
+            "gibti-get-malware-malware-info": "malware/malware",
         }
 
         other_commands = {
-            "gibtia-get-available-collections": get_available_collections_command,
-            "gibtia-global-search": global_search_command,
-            "gibtia-local-search": local_search_command,
+            # new prefix
+            "gibti-get-available-collections": get_available_collections_command,
+            "gibti-global-search": global_search_command,
+            "gibti-local-search": local_search_command,
+            "gibti-ip-scoring": gibti_ip_scoring_command,
+        }
+        reputation_commands = {
+            "file": ReputationCommands.file,
+            "domain": ReputationCommands.domain,
+            "ip": ReputationCommands.ip,
         }
 
         if command == "test-module":
@@ -2418,16 +3691,24 @@ def main():
                 combolist=combolist,
                 unique=unique,
                 enable_probable_corporate_access=enable_probable_corporate_access,
+                skip_updated_incidents=skip_updated_incidents,
+                dedup_lookback_days=dedup_lookback_days,
             )
             demisto.debug(f"[fetch-incidents] Incidents created this run: count={len(incidents)}")
-            demisto.debug(f"next_run: {next_run}, last_run: {last_run}")
+            demisto.debug(f"[fetch-incidents] last_run summary before persist: {_summarize_fetch_last_run_state(last_run)}")
+            demisto.debug(f"[fetch-incidents] next_run summary before persist: {_summarize_fetch_last_run_state(next_run)}")
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         else:
             incident_collections = None
-            if command in info_comands:
-                endpoint = info_comands[command]
+            if command in info_commands:
+                endpoint = info_commands[command]
                 result = get_info_by_id_command(endpoint)(client, args)
+            elif command in reputation_commands:
+                if not reputation_policy.is_enabled(command):
+                    result = ReputationCommandPolicy.build_not_enabled_result(command)
+                else:
+                    result = reputation_commands[command](client, args, integration_reliability)  # type: ignore
             else:
                 result = other_commands[command](client, args)  # type: ignore
             return_results(result)

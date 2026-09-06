@@ -6,7 +6,8 @@ To configure this integration, you will need to [create an API Client](https://s
 
 * Users (Read/Write)
 * Detection Lists (Read/Write)
-* Alerts (Read/Write)
+* Alerts and Sessions (Read/Write)
+* Alert Rules (Read)
 * File Events (Read)
 * Device (Read)
 

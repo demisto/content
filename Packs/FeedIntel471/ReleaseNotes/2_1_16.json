@@ -1,0 +1,4 @@
+{
+    "breakingChanges": false,
+    "breakingChangesNotes": "<ul><li>Fixed an issue to restore backward compatibility for the ***test-module*** command.</li></ul>"
+}

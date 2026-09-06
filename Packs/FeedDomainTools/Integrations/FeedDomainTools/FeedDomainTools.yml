@@ -1,5 +1,4 @@
 category: Data Enrichment & Threat Intelligence
-provider: Battery Ventures
 commonfields:
   id: FeedDomainTools
   version: -1
@@ -143,6 +142,7 @@ configuration:
 display: FeedDomainTools
 description: "Real-Time Threat Intelligence Feeds provide data on the different stages of the domain lifecycle: from first-observed in the wild, to newly re-activated after a period of quiet. Newly Active Domains surfaces apex-level domains seen for the first time or after ten or more days of inactivity. Newly Observed Domains surfaces domains that we observe for the first time."
 name: FeedDomainTools
+provider: DomainTools
 script:
   commands:
   - name: domaintools-get-indicators
@@ -200,7 +200,7 @@ script:
       default: false
       required: false
       secret: false
-  dockerimage: demisto/vendors-sdk:1.0.0.8307504
+  dockerimage: demisto/vendors-sdk:1.0.0.10470199
   feed: true
   isfetch: false
   longRunning: false

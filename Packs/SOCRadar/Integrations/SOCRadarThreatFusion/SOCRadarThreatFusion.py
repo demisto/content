@@ -38,7 +38,11 @@ class Client(BaseClient):
         suffix = "/threat/analysis"
         api_params = {"key": self.api_key, "entity": entity}
         response = self._http_request(
-            method="GET", url_suffix=suffix, params=api_params, timeout=60, error_handler=self.handle_error_response
+            method="GET",
+            url_suffix=suffix,
+            params=api_params,
+            timeout=60,
+            error_handler=self.handle_error_response,
         )
         return response
 
@@ -46,7 +50,10 @@ class Client(BaseClient):
         suffix = "/threat/analysis/check/auth"
         api_params = {"key": self.api_key}
         response = self._http_request(
-            method="GET", url_suffix=suffix, params=api_params, error_handler=self.handle_error_response
+            method="GET",
+            url_suffix=suffix,
+            params=api_params,
+            error_handler=self.handle_error_response,
         )
 
         return response

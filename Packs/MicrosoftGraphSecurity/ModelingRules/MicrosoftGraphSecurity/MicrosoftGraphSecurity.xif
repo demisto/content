@@ -1,19 +1,24 @@
 [MODEL: dataset=msft_graph_security_alerts_raw]
 filter _reporting_device_name in ("https://graph.microsoft.com/beta/security/alerts_v2", "https://graph.microsoft.com/v1.0/security/alerts_v2")
-| alter 
-    alertEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "alertEvidence", "@element", null)), ""),
-    analyzedMessageEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "analyzedMessageEvidence", "@element", null)), ""),
-    analyzedMessageEvidence2_json = arraymap(evidence -> [], if("@element" ~= "analyzedMessageEvidence", "@element", null)),
-    cloudApplicationEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "cloudApplicationEvidence", "@element", null)), ""),
-    deviceEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "deviceEvidence", "@element", null)), ""),
-    fileEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "fileEvidence", "@element", null)), ""),
-    ipEvidence_json = arraymap(evidence -> [], if("@element" ~= "ipEvidence", "@element", null)),
-    mailboxEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "mailboxEvidence", "@element", null)), ""),
-    processEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "processEvidence", "@element", null)), ""),
-    registryKeyEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "registryKeyEvidence", "@element", null)), ""),
-    registryValueEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "registryValueEvidence", "@element", null)), ""),
-    urlEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "urlEvidence", "@element", null)), ""),
-    userEvidence_json = arraystring(arraymap(evidence -> [], if("@element" ~= "userEvidence", "@element", null)), "")
+| alter
+    alertEvidence_json            = arrayindex(arrayfilter(evidence -> [], "@element" ~= "alertEvidence"), 0),
+    analyzedMessageEvidence_json  = arrayindex(arrayfilter(evidence -> [], "@element" ~= "analyzedMessageEvidence"), 0),
+    analyzedMessageEvidence2_json = arrayfilter(evidence -> [], "@element" ~= "analyzedMessageEvidence"),
+    cloudApplicationEvidence_json = arrayindex(arrayfilter(evidence -> [], "@element" ~= "cloudApplicationEvidence"), 0),
+    deviceEvidence_json           = arrayindex(arrayfilter(evidence -> [], "@element" ~= "deviceEvidence"), 0),
+    fileEvidence_json             = arrayindex(arrayfilter(evidence -> [], "@element" ~= "fileEvidence"), 0),
+    ipEvidence_json               = arrayfilter(evidence -> [], "@element" ~= "ipEvidence"),
+    mailboxEvidence_json          = arrayindex(arrayfilter(evidence -> [], "@element" ~= "mailboxEvidence"), 0),
+    registryKeyEvidence_json      = arrayindex(arrayfilter(evidence -> [], "@element" ~= "registryKeyEvidence"), 0),
+    registryValueEvidence_json    = arrayindex(arrayfilter(evidence -> [], "@element" ~= "registryValueEvidence"), 0),
+    urlEvidence_json              = arrayindex(arrayfilter(evidence -> [], "@element" ~= "urlEvidence"), 0),
+    userEvidence_json             = arrayindex(arrayfilter(evidence -> [], "@element" ~= "userEvidence"), 0),
+    // processEvidence: prefer evidence tagged with an attacker-side role when present
+    processEvidence_json = coalesce(
+        arrayindex(arrayfilter(arrayfilter(evidence -> [], "@element" ~= "processEvidence"),
+            arraystring(json_extract_array("@element", "$.roles"), ",") ~= "Source|Initiated|Likely"), 0),
+        arrayindex(arrayfilter(evidence -> [], "@element" ~= "processEvidence"), 0)
+    )
 | alter
 // userEvidence Fields
     userEvidence_userAccount_accountName = json_extract_scalar(userEvidence_json, "$.userAccount.accountName"),
@@ -39,6 +44,9 @@ filter _reporting_device_name in ("https://graph.microsoft.com/beta/security/ale
     deviceEvidence_tags = json_extract_scalar(deviceEvidence_json, "$.tags"),
     deviceEvidence_riskScore = json_extract_scalar(deviceEvidence_json, "$.riskScore"),
     deviceEvidence_deviceDnsName = json_extract_scalar(deviceEvidence_json, "$.deviceDnsName"),
+    deviceEvidence_hostName = json_extract_scalar(deviceEvidence_json, "$.hostName"),
+    deviceEvidence_mdeDeviceId = json_extract_scalar(deviceEvidence_json, "$.mdeDeviceId"),
+    deviceEvidence_azureAdDeviceId = json_extract_scalar(deviceEvidence_json, "$.azureAdDeviceId"),
     deviceEvidence_osPlatform = json_extract_scalar(deviceEvidence_json, "$.osPlatform"),
     deviceEvidence_version = json_extract_scalar(deviceEvidence_json, "$.version"),
 // fileEvidence Fields
@@ -105,13 +113,13 @@ filter _reporting_device_name in ("https://graph.microsoft.com/beta/security/ale
     xdm.event.outcome = if(fileEvidence_detectionStatus = "blocked", XDM_CONST.OUTCOME_SUCCESS, fileEvidence_detectionStatus = "detected", XDM_CONST.OUTCOME_FAILED, fileEvidence_detectionStatus = "prevented", XDM_CONST.OUTCOME_PARTIAL, processEvidence_detectionStatus = "blocked", XDM_CONST.OUTCOME_SUCCESS, processEvidence_detectionStatus = "detected", XDM_CONST.OUTCOME_FAILED, processEvidence_detectionStatus = "prevented", XDM_CONST.OUTCOME_PARTIAL, classification = "falsePositive", XDM_CONST.OUTCOME_SUCCESS, classification = "truePositive", XDM_CONST.OUTCOME_FAILED, classification = "benignPositive", XDM_CONST.OUTCOME_PARTIAL, outcome_check = null, null, to_string(outcome_check)),
     xdm.event.tags = arraycreate(alertEvidence_tags, analyzedMessageEvidence_tags, cloudApplicationEvidence_tags, deviceEvidence_tags, fileEvidence_tags, ipEvidence_tags, mailboxEvidence_tags, processEvidence_tags, registryKeyEvidence_tags, registryValueEvidence_tags, urlEvidence_tags),
     xdm.alert.severity = coalesce(to_string(severity), deviceEvidence_riskScore),
-    xdm.source.host.device_id = tenantId,
+    xdm.source.host.device_id = coalesce(deviceEvidence_mdeDeviceId, deviceEvidence_azureAdDeviceId),
     xdm.alert.description = description,
     xdm.intermediate.agent.identifier = detectorId,
     xdm.event.id = coalesce(to_string(incidentId), to_string(providerAlertId)),
     xdm.intermediate.host.fqdn = coalesce(to_string(alertWebUrl), to_string(incidentWebUrl)),
     xdm.alert.original_threat_name = coalesce(to_string(determination), analyzedMessageEvidence_threats),
-    xdm.observer.type = serviceSource,
+    xdm.observer.type = if(serviceSource != "unknownFutureValue", serviceSource, productName),
     xdm.intermediate.host.hostname = detectionSource,
     xdm.email.message_id = analyzedMessageEvidence_internetMessageId, 
     xdm.email.delivery_timestamp = parse_timestamp("%m/%d/%Y %H:%M:%S %p %z", arraystring(arraycreate(get_email_timestamp, get_email_zone), " ")),
@@ -120,6 +128,7 @@ filter _reporting_device_name in ("https://graph.microsoft.com/beta/security/ale
     xdm.source.application.name = cloudApplicationEvidence_displayName,
     xdm.source.cloud.project = cloudApplicationEvidence_instanceName,
     xdm.source.host.fqdn = deviceEvidence_deviceDnsName,
+    xdm.source.host.hostname = coalesce(deviceEvidence_hostName, deviceEvidence_deviceDnsName),
     xdm.source.host.os = unified_os_version,
     xdm.source.agent.identifier = userEvidence_userAccount_azureAdUserId, 
     xdm.source.host.os_family = if(lowercase_os_platform ~= "win|windows", XDM_CONST.OS_FAMILY_WINDOWS, lowercase_os_platform ~= "mac|macos", XDM_CONST.OS_FAMILY_MACOS, lowercase_os_platform ~= "linux", XDM_CONST.OS_FAMILY_LINUX, lowercase_os_platform ~= "android", XDM_CONST.OS_FAMILY_ANDROID, lowercase_os_platform ~= "ios", XDM_CONST.OS_FAMILY_IOS, lowercase_os_platform ~= "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, lowercase_os_platform ~= "debian", XDM_CONST.OS_FAMILY_DEBIAN, lowercase_os_platform ~= "fedora", XDM_CONST.OS_FAMILY_FEDORA, lowercase_os_platform ~= "centos", XDM_CONST.OS_FAMILY_CENTOS, lowercase_os_platform ~= "chromeos", XDM_CONST.OS_FAMILY_CHROMEOS, lowercase_os_platform ~= "solaris", XDM_CONST.OS_FAMILY_SOLARIS, lowercase_os_platform ~= "scada", XDM_CONST.OS_FAMILY_SCADA),

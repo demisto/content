@@ -1,0 +1,8 @@
+{
+  "Vectra.Entity.Tags(val.tag_id && val.tag_id == obj.tag_id && val.entity_type && val.entity_type == obj.entity_type && val.entity_id && val.entity_id == obj.entity_id)": {
+    "tag_id": "1",
+    "tags": [],
+    "entity_type": "host",
+    "entity_id": 1
+  }
+}

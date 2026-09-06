@@ -18,7 +18,7 @@ The Prisma Cloud IAM API consists of a set of API endpoints that allow customers
 | Allow disabling users |  | False |
 | Automatically create user if not found in update command |  | False |
 | Incoming Mapper |  | True |
-| Outgoing Mapper |  | True |
+| Outgoing Mapper | Cortex XSOAR only parameter. | False |
 
 ## Commands
 

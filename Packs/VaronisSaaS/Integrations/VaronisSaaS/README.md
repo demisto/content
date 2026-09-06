@@ -10,10 +10,12 @@ Streamline alerts and related forensic information from Varonis SaaS
 | X-API-Key |  | True |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
+| Maximum number of incidents per fetch |  | False |
 | First fetch time |  | False |
 | Minimum severity of alerts to fetch |  | False |
-| Varonis threat model name | Comma-separated list of threat model names of alerts to fetch | False |
+| Varonis threat model name | Pipe-separated list of threat model names of alerts to fetch. Use "varonis-get-threat-models" command to retrieve the full list | False |
 | Varonis alert status |  | False |
+| Incident Mirroring Direction | Choose the direction to mirror the incident: Outgoing \(from Cortex XSOAR to Varonis SaaS\). Cortex XSOAR only parameter. | False |
 
 ## Commands
 

@@ -1,8 +1,8 @@
+name: Google BigQuery
+display: Google BigQuery
 commonfields:
   id: Google BigQuery
   version: -1
-name: Google BigQuery
-display: Google BigQuery
 category: Database
 provider: Google
 sectionorder:
@@ -71,6 +71,13 @@ configuration:
   type: 13
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - defaultvalue: '50'
   display: Fetch Limit (Max.- 200, Recommended less than 50)
   name: max_fetch
@@ -155,8 +162,8 @@ script:
     - name: context_key_format
       auto: PREDEFINED
       predefined:
-        - underscore
-        - CamelCase
+      - underscore
+      - CamelCase
       description: Choose whether the key in the context will be in an underscore or a CamelCase format.
       defaultValue: 'CamelCase'
     - name: datetime_format
@@ -173,7 +180,7 @@ script:
       description: The table rows the given query returned.
       type: Unknown
     description: Performs a query on BigQuery.
-  dockerimage: demisto/bigquery:1.0.0.3530104
+  dockerimage: demisto/bigquery:1.0.0.10408886
   subtype: python3
   isfetch: true
 fromversion: 5.0.0

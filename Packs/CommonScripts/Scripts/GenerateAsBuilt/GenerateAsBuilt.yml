@@ -22,10 +22,17 @@ subtype: python3
 timeout: '0'
 type: python
 fromversion: 6.0.0
-dockerimage: demisto/teams:1.0.0.2027266
+dockerimage: demisto/teams:1.0.0.10133006
 tests:
 - No tests (auto formatted)
 marketplaces:
 - xsoar
 - marketplacev2
 - platform
+supportedModules:
+- agentix
+- cloud
+- cloud_runtime_security
+- cloud_posture
+- xsiam
+- edr

@@ -124,7 +124,7 @@ configuration:
 script:
   script: ''
   type: python
-  dockerimage: demisto/feed-performance-test:1.0.3558444
+  dockerimage: demisto/feed-performance-test:1.0.10133006
   feed: true
   subtype: python3
 tests:

@@ -1,0 +1,57 @@
+{
+    "description": "Maps Palo Alto Networks Device Security incidents.",
+    "feed": false,
+    "id": "Palo Alto Networks Device Security Incoming Mapper",
+    "mapping": {
+        "Device Security Alert": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "name": {
+                    "simple": "name"
+                },
+                "occurred": {
+                    "simple": "date"
+                },
+                "details": {
+                    "simple": "description"
+                },
+                "Device Security Incident URL": {
+                    "simple": "devicesecurityincidenturl"
+                },
+                "Device Security ServiceNow Table Name": {
+                    "simple": "devicesecurityservicenowtablename"
+                },
+                "Device Security ServiceNow Record ID": {
+                    "simple": "devicesecurityservicenowrecordid"
+                }
+            }
+        },
+        "Device Security Vulnerability": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "name": {
+                    "simple": "name"
+                },
+                "occurred": {
+                    "simple": "detected_date"
+                },
+                "details": {
+                    "simple": "vulnerability_name"
+                },
+                "Device Security Incident URL": {
+                    "simple": "devicesecurityincidenturl"
+                },
+                "Device Security ServiceNow Table Name": {
+                    "simple": "devicesecurityservicenowtablename"
+                },
+                "Device Security ServiceNow Record ID": {
+                    "simple": "devicesecurityservicenowrecordid"
+                }
+            }
+        }
+    },
+    "name": "Palo Alto Networks Device Security Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

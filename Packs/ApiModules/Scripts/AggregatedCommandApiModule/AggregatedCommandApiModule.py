@@ -18,6 +18,11 @@ CommandProcessResults = list[tuple[ContextResult, str, str]]
 # Calculating time interval for indicators freshness
 STATUS_FRESHNESS_WINDOW = timedelta(weeks=1)
 
+try:
+    TIM_BRAND = "Threat Intel" if demisto.caller() == "agentix" else "TIM"  # type: ignore[attr-defined]  # pylint: disable=no-member
+except Exception:
+    TIM_BRAND = "TIM"
+
 DBOT_SCORE_TO_VERDICT = {
     0: "Unknown",
     1: "Benign",
@@ -81,7 +86,7 @@ class EntryResult:
         self.message = message
 
     def to_entry(self) -> dict[str, Any]:
-        if self.brand == "TIM":
+        if self.brand == TIM_BRAND:
             return {
                 "Arguments": self.args,
                 "Brand": self.brand,
@@ -620,7 +625,7 @@ class ContextBuilder:
         """
         if not instance.tim_context:
             return None
-        return next((i for i in instance.tim_context if i.get("Brand") == "TIM"), None)
+        return next((i for i in instance.tim_context if i.get("Brand") == TIM_BRAND), None)
 
     def _get_file_hashes(self, instance: IndicatorInstance, tim_obj: dict) -> dict:
         """
@@ -848,12 +853,11 @@ class ReputationAggregatedCommand(AggregatedCommand):
         self.additional_fields = additional_fields
         self.indicator_instances = indicator_instances
         self.redundant_error_raising = redundant_error_raising
-        # Help to find the instance from the value itself, relevant only for extracted (valid) which we will enrich
-        self.indicator_mapping = {
-            indicator_instance.extracted_value: indicator_instance
-            for indicator_instance in indicator_instances
-            if indicator_instance.extracted_value
-        }
+        # Help to find the instance from the value itself, relevant only for extracted (valid) which we will enrich.
+        self.indicator_mapping: dict[str, list[IndicatorInstance]] = {}
+        for indicator_instance in indicator_instances:
+            if indicator_instance.extracted_value:
+                self.indicator_mapping.setdefault(indicator_instance.extracted_value.lower(), []).append(indicator_instance)
         self.valid_inputs = [
             indicator_instance.extracted_value for indicator_instance in indicator_instances if indicator_instance.extracted_value
         ]
@@ -1025,14 +1029,14 @@ class ReputationAggregatedCommand(AggregatedCommand):
         Returns:
             list[ContextResult]: The search results.
         """
-        indicator_values = " or ".join(
+        indicator_values = " ".join(
             {
-                f'value:"{indicator_instance.extracted_value}"'
+                f'"{indicator_instance.extracted_value}"'
                 for indicator_instance in self.indicator_instances
                 if indicator_instance.extracted_value
             }
         )
-        query = f"type:{self.indicator_schema.type} and ({indicator_values})"
+        query = f"type:{self.indicator_schema.type} and (value:({indicator_values}))"
         try:
             demisto.debug(f"Executing TIM search with query: {query}")
             searcher_start = time.perf_counter()
@@ -1066,11 +1070,12 @@ class ReputationAggregatedCommand(AggregatedCommand):
         for i, ioc in enumerate(iocs):
             demisto.debug(f"Processing #{i+1} TIM result")
             parsed_indicators, indicator_score, value, message = self._process_single_tim_ioc(ioc)
-            indicator_instance = self.indicator_mapping[value]
-            indicator_instance.tim_context = parsed_indicators
-            indicator_instance.indicator_score = indicator_score
-            demisto.debug(f"Score2: {indicator_score}, {indicator_instance.indicator_score} ")
-            indicator_instance.hr_message = message
+            instances = self.indicator_mapping.get(value.lower(), [])
+            for indicator_instance in instances:
+                indicator_instance.tim_context = parsed_indicators
+                indicator_instance.indicator_score = indicator_score
+                demisto.debug(f"Score2: {indicator_score}, {indicator_instance.indicator_score} ")
+                indicator_instance.hr_message = message
 
     def _process_single_tim_ioc(self, ioc: dict[str, Any]) -> tuple[list[dict], float | None, str, str]:
         """
@@ -1131,7 +1136,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
             mapped_indicator.update({"CVSS": indicator_score})
         mapped_indicator.update(
             {
-                "Brand": "TIM",
+                "Brand": TIM_BRAND,
                 "Status": self.get_indicator_status_from_ioc(ioc),
                 "ModifiedTime": ioc.get("modifiedTime"),
             }
@@ -1440,9 +1445,8 @@ class ReputationAggregatedCommand(AggregatedCommand):
         # Return an error only if there were no successes AND at least one of those was a hard failure.
         if self._is_final_result_error(final_entries):
             demisto.debug("All commands failed or no indicators found. Returning an error entry.")
-            return CommandResults(
-                readable_output="Error: All commands failed or no indicators found.\n" + human_readable,
-                entry_type=EntryType.ERROR,
+            raise DemistoException(
+                "Error: All commands failed or no indicators found.\n" + human_readable,
             )
 
         demisto.debug("Returning a success entry (at least one command succeeded or no hard failures).")
@@ -1470,7 +1474,7 @@ class ReputationAggregatedCommand(AggregatedCommand):
             entry_results.append(
                 EntryResult(
                     command_name="",
-                    brand="TIM",
+                    brand=TIM_BRAND,
                     status=indicator_instance.final_status,
                     args=indicator_instance.extracted_value or indicator_instance.raw_input,
                     score_field_name="TIM CVSS" if self.indicator_schema.type == "cve" else "TIM Score",

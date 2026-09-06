@@ -34,4 +34,9 @@ If you have a dedicated server URL, enter it in the *Server Url* parameter.
 
 ## Get the Additional Instance Parameters
 
-To get the *Subscription ID*, *Workspace Name*, and *Resource Group* parameters, in the Azure Portal navigate to **Azure Sentinel** > your workspace > **Settings** and click the **Workspace Settings** tab.
+1. In the Azure portal, navigate to **Azure Sentinel** > your workspace > **Settings**.
+2. Click the **Workspace Settings** tab.
+3. Copy the **Subscription ID**, **Workspace Name**, and **Resource Group** parameters.
+
+**Look-back Note**:
+Increasing the **look-back** parameter value after the initial fetch may result in duplicate incidents during the first run following the change. To avoid duplicates, ensure the lookback value is not increased once the integration is active.

@@ -87,3 +87,7 @@ ignore=GR107
 ignore=GR107
 [file:playbook-MDE_Malware_-_Incident_Enrichment.yml]
 ignore=GR107
+[file:playbook-Microsoft_Defender_For_Endpoint_-_Unisolate_Endpoint.yml]
+ignore=GR109
+[file:playbook-Microsoft_Defender_For_Endpoint_-_Isolate_Endpoint.yml]
+ignore=GR109

@@ -1,0 +1,6 @@
+{
+  "access_token": "ya29.test-access-token",
+  "issued_token_type": "urn:ietf:params:oauth:token-type:access_token",
+  "token_type": "Bearer",
+  "expires_in": 14398
+}

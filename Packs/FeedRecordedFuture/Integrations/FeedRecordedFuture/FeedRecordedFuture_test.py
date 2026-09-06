@@ -27,6 +27,7 @@ class TestStreamCompressedData:
         response_mocker = requests.Response()
         response_mocker.raw = io.BytesIO(gzip_compressed_data)
         response_mocker.encoding = "utf-8"
+        response_mocker.headers["Content-Type"] = "application/gzip;charset=utf-8"
         return response_mocker
 
     def test_stream_compressed_data_iterations(self, mocker: MockerFixture, mock_response: requests.Response):
@@ -80,6 +81,38 @@ class TestStreamCompressedData:
         # We want to check if the code is able to decode the chunks correctly
         with open("test_data/test_gzip_compressed.txt") as file:
             assert file.read() == file_content
+
+    def test_stream_compressed_data_uncompressed_content(self):
+        """
+        Given:
+        - A response with HTTP 200 whose body is NOT gzip-compressed (plain text), and whose Content-Type
+          header reflects that (e.g. 'text/plain'), even though the request asked for gzip.
+          This reproduces XSUP-72509, where the Recorded Future API intermittently returns uncompressed
+          content for a risk list (e.g. recentReportedCnc) despite gzip=True being requested.
+
+        When:
+        - Fetching indicators using the connectApi service, which calls 'stream_compressed_data'.
+
+        Then:
+        - The plain text content is written to the output file as-is, without raising a
+          zlib.error (Error -3 while decompressing data: incorrect header check).
+        """
+        import io
+
+        plain_text_data = "indicator,risk\n1.2.3.4,90\nexample.com,10\n"
+        response_mocker = requests.Response()
+        response_mocker.raw = io.BytesIO(plain_text_data.encode("utf-8"))
+        response_mocker.encoding = "utf-8"
+        response_mocker.headers["Content-Type"] = "text/plain; charset=UTF-8"
+
+        client = Client(indicator_type="ip", api_token="123", services=["connectApi"])
+        client.stream_compressed_data(response=response_mocker, chunk_size=1024)
+
+        with open("response.txt") as file_stream:
+            file_content = file_stream.read()
+        os.remove("response.txt")
+
+        assert file_content == plain_text_data
 
 
 GET_INDICATOR_TYPE_INPUTS = [

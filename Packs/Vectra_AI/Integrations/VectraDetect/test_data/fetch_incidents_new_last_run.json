@@ -1,5 +1,8 @@
 {
     "Accounts": {
+        "multiple_incidents_checkpoint": {
+            "36": "2022-07-03T23:34:07Z"
+        },
         "id": 36,
         "last_created_events": [
             "Accounts_1",
@@ -8,6 +11,9 @@
         "last_timestamp": "2022-07-08T14:10:34+00:00"
     },
     "Hosts": {
+        "multiple_incidents_checkpoint": {
+            "472": "2022-07-09T14:13:58Z"
+        },
         "id": 472,
         "last_created_events": [
             "Hosts_1",
@@ -16,6 +22,9 @@
         "last_timestamp": "2022-07-11T07:07:59+00:00"
     },
     "Detections": {
+        "multiple_incidents_checkpoint": {
+            "14": "2022-07-09T13:45:53Z"
+        },
         "id": 14,
         "last_created_events": [
             "Detections_1",

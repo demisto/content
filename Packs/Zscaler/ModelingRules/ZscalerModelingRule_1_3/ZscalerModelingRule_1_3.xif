@@ -287,6 +287,7 @@ filter sourcetype ="zscalernss-fw"
         os = lowercase(_raw_log -> deviceostype),
         user = coalesce(_raw_log -> user,_raw_log -> login)
 | alter 
+        xdm.event.type = sourcetype,
         xdm.source.user.upn = user,
         xdm.source.user.domain = arrayindex(split(user, "@"),-1),
         xdm.target.port = to_integer(_raw_log -> cdport),

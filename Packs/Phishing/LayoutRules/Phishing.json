@@ -1,4 +1,6 @@
 {
+  "id": "Phishing_Layout_Rule",
+  "name": "Phishing Layout Rule",
   "rule_id": "Phishing_Layout_Rule",
   "layout_id": "Phishing Layout",
   "description": "Default display for phishing alerts.",
@@ -7,9 +9,9 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "Phishing"
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Phishing"
         }
       ]
     }

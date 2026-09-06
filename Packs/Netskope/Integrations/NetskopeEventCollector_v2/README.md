@@ -32,8 +32,10 @@ Returns events extracted from SaaS traffic and or logs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of alerts to return (default: 10). | Optional |
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. | Optional |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display the events. Possible values are: true, false. Default is false. | Required |
+| limit | The maximum number of alerts to return. Default is 10. | Optional |
+| start_time | The start of the time window to fetch events for. Accepts a date (e.g. "2026-08-11T00:00:00Z"), a relative time (e.g. "3 days"), or a Unix epoch timestamp (e.g. 1786513755). If omitted, the command uses the instance's last-run position. | Optional |
+| end_time | The end of the time window to fetch events for. Accepts a date (e.g. "2026-08-12T00:00:00Z"), a relative time (e.g. "1 day"), or a Unix epoch timestamp (e.g. 1786600155). Only used when start_time is provided. Default is now. | Optional |
 
 #### Context Output
 
@@ -42,6 +44,7 @@ There is no context output for this command.
 #### Command example
 
 ```!netskope-get-events limit=1```
+```!netskope-get-events limit=50 start_time="3 days"```
 
 #### Context Example
 
@@ -272,3 +275,9 @@ There is no context output for this command.
 >| 9f806593aa4385e4fc14865c | 2022-06-28T16:59:15.000Z | nspolicy | API Connector | Microsoft Office 365 Sharepoint Online | CloudApp |
 >| efac69202c964c91fd59bcb9 | 2022-07-20T15:27:50.000Z | admin_audit_logs |  |  |  |
 >| e03cf756afc2a707666fcbc0 | 2022-07-13T19:54:57.000Z | network | Client | [CS SEG's] | PrivateApp |
+
+## Troubleshooting
+
+### Out-of-memory (OOM) on high-volume tenants
+
+If you encounter OOM errors on a high-volume tenant, split the event types across multiple instances (ideally one type per instance) to spread the load across separate runtimes.

@@ -1,0 +1,39 @@
+{
+    "id": "incident_rubrikviolationstatus",
+    "version": -1,
+    "name": "Rubrik Violation Status",
+    "ownerOnly": false,
+    "cliName": "rubrikviolationstatus",
+    "type": "singleSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "script": "RubrikPushDSPMViolationStatus",
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "selectValues": [
+        "",
+        "OPEN",
+        "IN_PROGRESS",
+        "REMEDIATED",
+        "DISMISSED",
+        "CLOSED"
+    ],
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Rubrik DSPM Violation"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
