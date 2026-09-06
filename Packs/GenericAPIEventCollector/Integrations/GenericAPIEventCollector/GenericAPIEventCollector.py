@@ -612,7 +612,9 @@ class AuthorizationCodeHandler(OAuth2ClientCredentialsHandler):
 
         with self._lock:
             self._access_token = access_token
-            self._expires_at = time.time() + float(token_data.get("expires_in", 3600))
+            # The base class compares _expires_at against time.monotonic(); using time.time()
+            # here would mix clocks and the token would never be seen as expired.
+            self._expires_at = time.monotonic() + float(token_data.get("expires_in", 3600))
 
         add_sensitive_log_strs(access_token)
         self._store_refresh_token(token_data.get("refresh_token", ""))
@@ -887,6 +889,17 @@ def main() -> None:  # pragma: no cover
             headers=generate_headers(params),
             proxy=proxy,
             auth_handler=oauth2_auth_handler,
+            # ContentClient retries 5 times by default, whereas the BaseClient this integration
+            # previously used did not retry at all. Keep the original behavior so that adding
+            # OAuth 2.0 support does not silently change fetch duration or failure semantics
+            # for existing instances.
+            #
+            # An empty retryable_status_codes means a failing endpoint is never retried, matching
+            # BaseClient. max_attempts stays at 2 purely so the client can re-issue a request once
+            # after a 401 has been resolved by the auth handler (ContentClient implements that
+            # re-authentication as another pass of the same loop); a transport-level failure still
+            # aborts immediately.
+            retry_policy=RetryPolicy(max_attempts=2, retryable_status_codes=()),
         )
         vendor: str = params.get("vendor").lower()
         raw_product: str = params.get("product").lower()

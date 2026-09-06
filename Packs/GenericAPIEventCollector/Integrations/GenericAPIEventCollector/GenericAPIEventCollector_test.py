@@ -6,8 +6,10 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import DemistoException
 from GenericAPIEventCollector import (
+    Client,
     PaginationLogic,
     RequestData,
+    RetryPolicy,
     TimestampFieldConfig,
     datetime_to_timestamp_format,
     derive_authorize_url,
@@ -964,6 +966,55 @@ def test_get_oauth2_auth_handler_rejects_partial_authorization_code_config(mock_
     with pytest.raises(SystemExit):
         get_oauth2_auth_handler(params)
     mock_return_error.assert_called_once()
+
+
+@pytest.mark.parametrize(
+    "retry_policy, expected_requests",
+    [
+        (RetryPolicy(max_attempts=2, retryable_status_codes=()), 1),  # what main() pins
+        (None, 5),  # ContentClient's default, shown for contrast
+    ],
+)
+def test_client_retry_attempts(mocker, retry_policy, expected_requests):
+    """
+    Given: a Client configured with the pinned retry policy (and, for contrast, the default).
+    When: a request repeatedly hits a 503.
+    Then: the pinned policy issues exactly one HTTP request.
+
+    ContentClient retries 5 times by default, whereas the BaseClient this integration used
+    before OAuth 2.0 support did not retry at all. This guards against silently changing
+    fetch duration and failure semantics for existing instances.
+    """
+    import httpx
+
+    calls = {"count": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls["count"] += 1
+        return httpx.Response(503, json={"error": "boom"})
+
+    kwargs = {"retry_policy": retry_policy} if retry_policy else {}
+    client = Client(base_url="https://api.example.com", verify=False, headers={}, proxy=False, **kwargs)
+
+    # _get_async_client() builds a fresh client per event loop, so patch it to keep the
+    # mock transport in place for the duration of the request.
+    mocker.patch.object(
+        Client,
+        "_get_async_client",
+        side_effect=lambda: httpx.AsyncClient(transport=httpx.MockTransport(handler)),
+    )
+    # Avoid paying the real exponential backoff between attempts.
+    mocker.patch("ContentClientApiModule.anyio.sleep", new_callable=mocker.AsyncMock)
+
+    with pytest.raises(Exception):
+        client.search_events(
+            endpoint="/events",
+            http_method="GET",
+            request_data=RequestData(None, None, None),
+            ok_codes=[200],
+        )
+
+    assert calls["count"] == expected_requests
 
 
 def test_authorization_code_handler_prefers_stored_refresh_token(mocker):
