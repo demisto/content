@@ -178,3 +178,91 @@ def test_parse_alarms(alarms_raw_data, parsed_alarms):
     from AlienVault_USM_Anywhere import parse_alarms
 
     assert parse_alarms(alarms_raw_data) == parsed_alarms
+
+
+def test_fetch_incidents_all_duplicates_advances_timestamp(mocker, requests_mock):
+    """Regression guard: a page consisting entirely of already-fetched alarms must still
+    advance the lastRun timestamp.
+
+    Given: A previous run that already fetched every alarm the API returns in this cycle
+           (both UUIDs are present in `fetched_ids`), where those alarms occurred *after*
+           the stored `timestamp` watermark.
+
+    When: Running fetch_incidents.
+
+    Then: No incidents are created, but the persisted `timestamp` advances to the newest
+          occurred time in the page.
+    """
+    from CommonServerPython import date_to_timestamp
+
+    lookback_minutes = 60
+
+    # Build the timeline from datetime so the values stay readable and timezone-consistent
+    # with date_to_timestamp, which the integration uses to parse the alarm occurred time.
+    watermark_time = datetime(2019, 1, 15, 15, 47, 29)
+    older_occurred_time = watermark_time + timedelta(minutes=10)
+    newest_occurred_time = watermark_time + timedelta(minutes=20)
+
+    last_fetch = date_to_timestamp(watermark_time)
+    newest_occurred_ms = date_to_timestamp(newest_occurred_time)
+
+    def as_alarm_time(occurred_time):
+        # Matches the iso8601 form AlienVault returns, as used by the other fetch tests.
+        return occurred_time.strftime("%Y-%m-%dT%H:%M:%S.000Z")
+
+    duplicate_alarms = {
+        "_embedded": {
+            "alarms": [
+                {"uuid": "duplicate-alarm-1", "timestamp_occured_iso8601": as_alarm_time(older_occurred_time)},
+                {"uuid": "duplicate-alarm-2", "timestamp_occured_iso8601": as_alarm_time(newest_occurred_time)},
+            ]
+        },
+        "page": {"totalElements": 2},
+    }
+
+    # Seed the dedup cache with both UUIDs, timestamped "now" so they survive retention eviction.
+    now_ms = date_to_timestamp(datetime.now())
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "fetch_limit": "2",
+            "url": "https://vigilant.alienvault.cloud/",
+            "lookback": str(lookback_minutes),
+        },
+    )
+    mocker.patch.object(
+        demisto,
+        "getLastRun",
+        return_value={
+            "timestamp": last_fetch,
+            "fetched_ids": {"duplicate-alarm-1": now_ms, "duplicate-alarm-2": now_ms},
+        },
+    )
+    mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(demisto, "incidents")
+    from AlienVault_USM_Anywhere import fetch_incidents
+
+    expected_start = date_to_timestamp(watermark_time - timedelta(minutes=lookback_minutes))
+    requests_mock.get(
+        f"https://vigilant.alienvault.cloud/api/2.0/alarms?page=0&size=2"
+        f"&sort=timestamp_occured%2Casc&timestamp_occured_gte={expected_start}",
+        json=duplicate_alarms,
+    )
+
+    fetch_incidents()
+
+    # Both alarms are duplicates, so nothing new is ingested.
+    assert demisto.incidents.call_args[0][0] == []
+
+    last_run = demisto.setLastRun.call_args[0][0]
+
+    # The watermark must move past the duplicates, otherwise the next run repeats this cycle forever.
+    assert last_run["timestamp"] > last_fetch, (
+        f"lastRun timestamp did not advance: still {last_run['timestamp']} (expected > {last_fetch}). "
+        "A fully-duplicate page stalls the fetch."
+    )
+    assert last_run["timestamp"] == newest_occurred_ms
+
+    # The dedup cache must still carry both UUIDs so they stay suppressed next cycle.
+    assert set(last_run["fetched_ids"]) == {"duplicate-alarm-1", "duplicate-alarm-2"}

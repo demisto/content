@@ -511,23 +511,25 @@ def fetch_incidents():
             demisto.debug("Skipping item without UUID")
             continue
 
+        incident = item_to_incident(item)
+        occurred = incident.get("occurred")
+        incident_timestamp = date_to_timestamp(occurred, parse_time(occurred))
+
+        # Track latest timestamp for every item seen, including duplicates, so the
+        # watermark always advances and a fully duplicate page cannot stall the fetch
+        latest_timestamp = max(latest_timestamp, incident_timestamp)
+
         # Full cross-window dedup
         if incident_id in fetched_ids:
             demisto.debug(f"Skipping duplicate incident: {incident_id}")
             continue
 
-        incident = item_to_incident(item)
         incidents.append(incident)
-
-        occurred = incident.get("occurred")
-
-        incident_timestamp = date_to_timestamp(occurred, parse_time(occurred))
-
-        # Track latest timestamp
-        latest_timestamp = max(latest_timestamp, incident_timestamp)
 
         # Remember UUID as fetched
         fetched_ids[incident_id] = now_ms
+
+    demisto.debug(f"fetched {len(items)} items, {len(incidents)} new incidents, latest timestamp: {latest_timestamp}")
 
     demisto.setLastRun(
         {
