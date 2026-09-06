@@ -14,7 +14,10 @@
         "Palo Alto Networks Products"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Palo Alto Networks",
+        "WildFire"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

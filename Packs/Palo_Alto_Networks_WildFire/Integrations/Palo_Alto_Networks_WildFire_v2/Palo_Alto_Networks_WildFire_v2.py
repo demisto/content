@@ -24,6 +24,10 @@ FILE_TYPE_SUPPRESS_ERROR = PARAMS.get("suppress_file_type_error")
 RELIABILITY = PARAMS.get("integrationReliability", DBotScoreReliability.B) or DBotScoreReliability.B
 CREATE_RELATIONSHIPS = argToBoolean(PARAMS.get("create_relationships", "true"))
 DEFAULT_HEADERS = {"Content-Type": "application/x-www-form-urlencoded"}
+# Values that mean "nothing was configured" but arrive as a non-empty string.
+# UCP can deliver a blank optional secret as the literal "null" (a JSON null that was
+# stringified upstream) and Go renders a nil as "<nil>". These are not credentials.
+NON_TOKEN_SENTINELS = frozenset({"null", "none", "nil", "undefined", "<nil>"})
 WILDFIRE_REPORT_DT_FILE = (
     "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5 || val.URL && val.URL == obj.URL)"
 )
@@ -1506,12 +1510,6 @@ def get_agent(api_key_source: str, token: str) -> str:
     return ""
 
 
-# Values that mean "nothing was configured" but arrive as a non-empty string.
-# UCP can deliver a blank optional secret as the literal "null" (a JSON null that was
-# stringified upstream) and Go renders a nil as "<nil>". These are not credentials.
-_NON_TOKEN_SENTINELS = frozenset({"null", "none", "nil", "undefined", "<nil>"})
-
-
 def clean_token(value: Any) -> str:
     """
     Normalize a configured secret into a usable token string.
@@ -1528,7 +1526,7 @@ def clean_token(value: Any) -> str:
         The stripped token, or an empty string when no real token was configured.
     """
     stripped = (value or "").strip()
-    if not stripped or set(stripped) == {"*"} or stripped.lower() in _NON_TOKEN_SENTINELS:
+    if not stripped or set(stripped) == {"*"} or stripped.lower() in NON_TOKEN_SENTINELS:
         return ""
     return stripped
 
