@@ -2,12 +2,6 @@ import json
 
 import demistomock as demisto
 
-# The test drives the real tshark binary through pyshark.FileCapture. Under the
-# pytest-asyncio event loop, pyshark's asyncio subprocess teardown is occasionally
-# racy and tshark is observed exiting with a non-zero code (retcode 255) having read
-# 0 packets. When that happens the script escalates it to return_error -> SystemExit.
-# This is a non-deterministic environment flake (the same input parses correctly on
-# retry), so we retry the run a few times before treating it as a real failure.
 MAX_TSHARK_ATTEMPTS = 5
 
 
