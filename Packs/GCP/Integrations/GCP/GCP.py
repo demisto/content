@@ -264,13 +264,6 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
             "compute.snapshots.get",
         ],
     ),
-    "gcp-compute-project-info-metadata-add": (
-        GCPServices.COMPUTE,
-        [
-            "compute.projects.setCommonInstanceMetadata",
-            "compute.projects.get",
-        ],
-    ),
     "gcp-compute-instances-aggregated-list-by-ip": (
         GCPServices.COMPUTE,
         [
@@ -1310,7 +1303,10 @@ def compute_firewall_delete(creds: Credentials, args: dict[str, Any]) -> Command
 
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.firewalls().delete(project=project_id, firewall=resource_name).execute()  # pylint: disable=E1101
-    demisto.debug(f"Firewall delete response for {resource_name} in project {project_id}: \n{response}")
+    demisto.debug(
+        f"Firewall delete operation for {resource_name} in project {project_id}: "
+        f"{response.get('name')=}, {response.get('status')=}"
+    )
 
     hr = tableToMarkdown(
         f"GCP Compute Firewall Rule {resource_name} Delete Operation Started Successfully",
@@ -1444,7 +1440,10 @@ def compute_snapshot_delete(creds: Credentials, args: dict[str, Any]) -> Command
 
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.snapshots().delete(project=project_id, snapshot=resource_name).execute()  # pylint: disable=E1101
-    demisto.debug(f"Snapshot delete response for {resource_name} in project {project_id}: \n{response}")
+    demisto.debug(
+        f"Snapshot delete operation for {resource_name} in project {project_id}: "
+        f"{response.get('name')=}, {response.get('status')=}"
+    )
 
     hr = tableToMarkdown(
         f"GCP Compute Snapshot {resource_name} Delete Operation Started Successfully",
@@ -1472,8 +1471,9 @@ def compute_snapshot_labels_set(creds: Credentials, args: dict[str, Any]) -> Com
             - project_id (str): The GCP project ID.
             - resource_name (str): The name of the snapshot.
             - labels (str): Labels to apply, e.g., "key=abc,value=123;key=def,value=456".
-            - label_fingerprint (str): The fingerprint of the previous set of labels, used to detect conflicts.
-                Ignored when add_labels is true, since the fingerprint of the fetched snapshot is used instead.
+            - label_fingerprint (str, optional): The fingerprint of the previous set of labels, used to detect
+                conflicts. Required when add_labels is false, and ignored when add_labels is true, since the
+                fingerprint of the fetched snapshot is used instead.
             - add_labels (bool, optional): Whether to add the labels to the existing ones or override them.
 
     Returns:
@@ -1481,20 +1481,25 @@ def compute_snapshot_labels_set(creds: Credentials, args: dict[str, Any]) -> Com
     """
     project_id = args.get("project_id")
     resource_name = args["resource_name"]
-    label_fingerprint = args["label_fingerprint"]
+    label_fingerprint = args.get("label_fingerprint")
     add_labels = argToBoolean(args.get("add_labels", False))
+    if not add_labels and not label_fingerprint:
+        raise DemistoException("The 'label_fingerprint' argument is required when 'add_labels' is false.")
     labels = parse_labels(args["labels"])
     demisto.debug(f"The parsed {labels=}")
 
     current_labels = {}
     if add_labels:
-        snapshot_info = compute_snapshot_get(creds, args).outputs
-        if isinstance(snapshot_info, dict):
-            current_labels = snapshot_info.get("labels", {})
-            # The snapshot was just fetched, so its fingerprint is the most up to date one. The supplied
-            # fingerprint may already be stale, which would fail the request with a conflict error.
-            label_fingerprint = snapshot_info.get("labelFingerprint") or label_fingerprint
-            demisto.debug(f"Adding the new labels {labels=} to the current ones {current_labels}")
+        snapshot_result = compute_snapshot_get(creds, args)
+        snapshot_info = snapshot_result.outputs
+        if not isinstance(snapshot_info, dict):
+            # The snapshot was not found, so its "not found" readable output is returned as is.
+            return snapshot_result
+        current_labels = snapshot_info.get("labels", {})
+        # The snapshot was just fetched, so its fingerprint is the most up to date one. The supplied
+        # fingerprint may already be stale, which would fail the request with a conflict error.
+        label_fingerprint = snapshot_info.get("labelFingerprint") or label_fingerprint
+        demisto.debug(f"Adding the new labels {labels=} to the current ones {current_labels}")
 
     body = {"labels": current_labels | labels, "labelFingerprint": label_fingerprint}
 
@@ -1504,70 +1509,13 @@ def compute_snapshot_labels_set(creds: Credentials, args: dict[str, Any]) -> Com
         .setLabels(project=project_id, resource=resource_name, body=body)
         .execute()
     )
-    demisto.debug(f"Snapshot setLabels response for {resource_name} in project {project_id}: \n{response}")
+    demisto.debug(
+        f"Snapshot setLabels operation for {resource_name} in project {project_id}: "
+        f"{response.get('name')=}, {response.get('status')=}"
+    )
 
     hr = tableToMarkdown(
         f"GCP Compute Snapshot {resource_name} Labels Update Operation Started Successfully",
-        response,
-        headers=OPERATION_TABLE,
-        headerTransform=pascalToSpace,
-        removeNull=True,
-    )
-    return CommandResults(
-        readable_output=hr,
-        outputs_prefix="GCP.Compute.Operations",
-        outputs_key_field="id",
-        outputs=response,
-        raw_response=response,
-    )
-
-
-def compute_project_info_metadata_add(creds: Credentials, args: dict[str, Any]) -> CommandResults:
-    """
-    Adds or updates project-wide (common instance) metadata.
-
-    The Compute Engine API replaces the entire common instance metadata on every call, so the
-    existing items are fetched first and merged with the requested ones, where a requested item
-    overrides an existing item with the same key.
-
-    Args:
-        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
-        args (dict): Command arguments including:
-            - project_id (str): The GCP project ID.
-            - metadata (str): Metadata items, e.g., "key=abc,value=123;key=def,value=456".
-
-    Returns:
-        CommandResults: Object containing the operation details under `GCP.Compute.Operations`.
-    """
-    project_id = args.get("project_id")
-    items = parse_metadata_items(args["metadata"])
-    # Project-wide metadata routinely holds secrets (ssh-keys, startup scripts), so only keys are logged.
-    demisto.debug(f"The parsed metadata keys: {[item['key'] for item in items]}")
-
-    compute = GCPServices.COMPUTE.build(creds)
-    project = compute.projects().get(project=project_id).execute()  # pylint: disable=E1101
-    common_metadata = project.get("commonInstanceMetadata", {})
-
-    # A Metadata item may omit "value", so it is read defensively to avoid a KeyError.
-    merged_items = {item["key"]: item.get("value", "") for item in common_metadata.get("items", [])}
-    merged_items.update({item["key"]: item["value"] for item in items})
-
-    body = remove_empty_elements(
-        {
-            "fingerprint": common_metadata.get("fingerprint"),
-            "items": [{"key": key, "value": value} for key, value in merged_items.items()],
-            "kind": "compute#metadata",
-        }
-    )
-    response = (
-        compute.projects()  # pylint: disable=E1101
-        .setCommonInstanceMetadata(project=project_id, body=body)
-        .execute()
-    )
-    demisto.debug(f"Project metadata update response for {project_id}: \n{response}")
-
-    hr = tableToMarkdown(
-        "GCP Compute Project Metadata Update Operation Started Successfully",
         response,
         headers=OPERATION_TABLE,
         headerTransform=pascalToSpace,
@@ -3194,7 +3142,6 @@ def main():  # pragma: no cover
             "gcp-compute-snapshot-get": compute_snapshot_get,
             "gcp-compute-snapshot-delete": compute_snapshot_delete,
             "gcp-compute-snapshot-labels-set": compute_snapshot_labels_set,
-            "gcp-compute-project-info-metadata-add": compute_project_info_metadata_add,
             "gcp-compute-instances-aggregated-list-by-ip": compute_instances_aggregated_list_by_ip,
             "gcp-compute-network-tag-set": compute_network_tag_set,
             "gcp-compute-subnet-update": compute_subnet_update,

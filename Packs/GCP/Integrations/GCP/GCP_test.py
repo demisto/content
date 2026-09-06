@@ -618,119 +618,57 @@ def test_compute_snapshot_labels_set_invalid_labels(mocker):
     mock_compute.snapshots.return_value.setLabels.assert_not_called()
 
 
-def test_compute_project_info_metadata_add_merges_existing(mocker):
+def test_compute_snapshot_labels_set_add_snapshot_not_found(mocker):
     """
-    Given: A project with existing common instance metadata, including an item that has no "value"
-           key, and new metadata items
-    When: compute_project_info_metadata_add is called
-    Then: The existing fingerprint is reused and the items are merged, with new items overriding by
-          key and the valueless existing item preserved as an empty value rather than raising
+    Given: add_labels set to true and a snapshot that does not exist
+    When: compute_snapshot_labels_set is called
+    Then: The "not found" result of compute_snapshot_get is returned and no setLabels call is made
     """
-    from GCP import compute_project_info_metadata_add
+    from GCP import compute_snapshot_labels_set
+    from googleapiclient.errors import HttpError
 
     mock_creds = mocker.Mock(spec=Credentials)
     mock_compute = mocker.Mock()
-    mock_projects = mocker.Mock()
-    mock_compute.projects.return_value = mock_projects
-    mock_projects.get.return_value.execute.return_value = {
-        "commonInstanceMetadata": {
-            "fingerprint": "fp-abc",
-            "items": [
-                {"key": "enable-oslogin", "value": "false"},
-                {"key": "keep-me", "value": "1"},
-                {"key": "valueless"},
-            ],
-        }
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+    resp = mocker.MagicMock()
+    resp.status = 404
+    mock_snapshots.get.return_value.execute.side_effect = HttpError(
+        resp, b'{"error": {"message": "The resource snap-1 was not found"}}'
+    )
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "p1",
+        "resource_name": "snap-1",
+        "labels": "key=env,value=prod",
+        "add_labels": "true",
     }
-    mock_projects.setCommonInstanceMetadata.return_value.execute.return_value = {"id": "op-4", "status": "RUNNING"}
+    res = compute_snapshot_labels_set(mock_creds, args)
 
-    mocker.patch("GCP.build", return_value=mock_compute)
-
-    args = {"project_id": "p1", "metadata": "key=enable-oslogin,value=true;key=new-key,value=abc"}
-    res = compute_project_info_metadata_add(mock_creds, args)
-
-    called_kwargs = mock_projects.setCommonInstanceMetadata.call_args[1]
-    assert called_kwargs["project"] == "p1"
-    body = called_kwargs["body"]
-    assert body["fingerprint"] == "fp-abc"
-    assert body["kind"] == "compute#metadata"
-    assert body["items"] == [
-        {"key": "enable-oslogin", "value": "true"},
-        {"key": "keep-me", "value": "1"},
-        {"key": "valueless", "value": ""},
-        {"key": "new-key", "value": "abc"},
-    ]
-    assert res.outputs_prefix == "GCP.Compute.Operations"
+    assert res.readable_output == "Snapshot 'snap-1' not found in project 'p1'"
+    mock_snapshots.setLabels.assert_not_called()
 
 
-def test_compute_project_info_metadata_add_does_not_log_values(mocker):
+def test_compute_snapshot_labels_set_override_without_fingerprint(mocker):
     """
-    Given: Metadata containing a sensitive value
-    When: compute_project_info_metadata_add is called
-    Then: The debug logs contain the metadata key but never the value, so secrets such as ssh-keys
-          are not leaked into the war room
+    Given: add_labels left at its default and no label_fingerprint
+    When: compute_snapshot_labels_set is called
+    Then: A DemistoException is raised and no API call is made
     """
-    from GCP import compute_project_info_metadata_add
-
-    mock_creds = mocker.Mock(spec=Credentials)
-    mock_compute = mocker.Mock()
-    mock_projects = mocker.Mock()
-    mock_compute.projects.return_value = mock_projects
-    mock_projects.get.return_value.execute.return_value = {}
-    mock_projects.setCommonInstanceMetadata.return_value.execute.return_value = {"id": "op-4"}
-
-    mocker.patch("GCP.build", return_value=mock_compute)
-    debug_mock = mocker.patch("GCP.demisto.debug")
-
-    compute_project_info_metadata_add(mock_creds, {"project_id": "p1", "metadata": "key=ssh-keys,value=supersecret"})
-
-    logged = " ".join(str(call) for call in debug_mock.call_args_list)
-    assert "ssh-keys" in logged
-    assert "supersecret" not in logged
-
-
-def test_compute_project_info_metadata_add_no_existing_metadata(mocker):
-    """
-    Given: A project with no existing common instance metadata
-    When: compute_project_info_metadata_add is called
-    Then: The body contains only the new items and the empty fingerprint is dropped
-    """
-    from GCP import compute_project_info_metadata_add
-
-    mock_creds = mocker.Mock(spec=Credentials)
-    mock_compute = mocker.Mock()
-    mock_projects = mocker.Mock()
-    mock_compute.projects.return_value = mock_projects
-    mock_projects.get.return_value.execute.return_value = {}
-    mock_projects.setCommonInstanceMetadata.return_value.execute.return_value = {"id": "op-4", "status": "RUNNING"}
-
-    mocker.patch("GCP.build", return_value=mock_compute)
-
-    args = {"project_id": "p1", "metadata": "key=new-key,value=abc"}
-    compute_project_info_metadata_add(mock_creds, args)
-
-    body = mock_projects.setCommonInstanceMetadata.call_args[1]["body"]
-    assert "fingerprint" not in body
-    assert body["items"] == [{"key": "new-key", "value": "abc"}]
-
-
-def test_compute_project_info_metadata_add_invalid_metadata(mocker):
-    """
-    Given: A malformed metadata string
-    When: compute_project_info_metadata_add is called
-    Then: A ValueError is raised before any API call is made
-    """
-    from GCP import compute_project_info_metadata_add
+    from GCP import DemistoException, compute_snapshot_labels_set
 
     mock_creds = mocker.Mock(spec=Credentials)
     mock_compute = mocker.Mock()
     mocker.patch("GCP.build", return_value=mock_compute)
 
-    with pytest.raises(ValueError) as e:
-        compute_project_info_metadata_add(mock_creds, {"project_id": "p1", "metadata": "wrong=format"})
+    args = {"project_id": "p1", "resource_name": "snap-1", "labels": "key=env,value=prod"}
+    with pytest.raises(DemistoException) as e:
+        compute_snapshot_labels_set(mock_creds, args)
 
-    assert "Could not parse field" in str(e.value)
-    mock_compute.projects.return_value.setCommonInstanceMetadata.assert_not_called()
+    assert "label_fingerprint" in str(e.value)
+    mock_compute.snapshots.return_value.setLabels.assert_not_called()
 
 
 def test_compute_instances_aggregated_list_by_ip_internal(mocker):
