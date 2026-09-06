@@ -3038,7 +3038,7 @@ def compute_region_operation_get(creds: Credentials, args: dict[str, Any]) -> Co
         CommandResults: Object containing the operation details under `GCP.Compute.Operations`.
     """
     project_id = args.get("project_id")
-    region = args.get("region")
+    region = extract_region_name(args.get("region"))
     operation = args.get("operation")
     compute = GCPServices.COMPUTE.build(creds)
     response = compute.regionOperations().get(project=project_id, region=region, operation=operation).execute()  # pylint: disable=E1101
@@ -3197,7 +3197,7 @@ def compute_region_operation_list(creds: Credentials, args: dict[str, Any]) -> C
         and pagination token under `GCP.Compute.RegionOperationsNextToken`.
     """
     project_id = args.get("project_id")
-    region = args.get("region")
+    region = extract_region_name(args.get("region"))
     limit = arg_to_number(args.get("limit")) or 50
     next_token = args.get("next_token")
     flt = args.get("filter")
@@ -3296,7 +3296,7 @@ def compute_region_operation_delete(creds: Credentials, args: dict[str, Any]) ->
         CommandResults: A human-readable confirmation that the operation was deleted.
     """
     project_id = args.get("project_id")
-    region = args.get("region")
+    region = extract_region_name(args.get("region"))
     operation = args.get("operation")
     compute = GCPServices.COMPUTE.build(creds)
     compute.regionOperations().delete(project=project_id, region=region, operation=operation).execute()  # pylint: disable=E1101
