@@ -1599,6 +1599,7 @@ Checks the reputation of an IP address.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | IP address to check. | Required |
+| accept_v6_ips | Whether to accept IPv6 addresses as input for the `ip` command. | Optional |
 
 #### Context Output
 
@@ -1651,6 +1652,10 @@ Checks the reputation of an IP address.
 #### Command Example
 
 ```!ip ip=1.2.3.4```
+
+To check the reputation of an IPv6 address, set `accept_v6_ips` to `true`:
+
+```!ip ip=2001:0db8:85a3:0000:0000:8a2e:0370:7334 accept_v6_ips=true```
 
 #### Context Example
 
