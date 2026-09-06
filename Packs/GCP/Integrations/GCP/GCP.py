@@ -567,6 +567,34 @@ def _validate_bucket_policy_for_set(policy: dict[str, Any], add_mode: bool) -> N
                     raise DemistoException("Policy with IAM Conditions requires 'version' to be 3 or greater.")
 
 
+def collect_aggregated_items(response: dict[str, Any], items_key: str) -> list[dict[str, Any]]:
+    """
+    Flattens the scoped lists of an aggregated list response into a single list of resources.
+
+    Scopes that returned a warning instead of resources (for example, NO_RESULTS_ON_PAGE for a zone
+    holding no resources) are excluded from the results and logged.
+
+    Args:
+        response (dict): The aggregated list response returned by the Compute Engine API.
+        items_key (str): The key holding the resources within each scoped list, for example 'disks'.
+
+    Returns:
+        list[dict[str, Any]]: The resources collected from all the scopes that returned results.
+    """
+    items: list[dict[str, Any]] = []
+    excluded_scopes: dict[str, Any] = {}
+    for scope_name, scoped_list in response.get("items", {}).items():
+        if warning := scoped_list.get("warning"):
+            excluded_scopes[scope_name] = warning.get("code")
+            continue
+        items.extend(scoped_list.get(items_key, []) or [])
+    if excluded_scopes:
+        demisto.debug(
+            f"[GCP] {demisto.command()}: excluded {len(excluded_scopes)} scopes that returned a warning: {excluded_scopes}"
+        )
+    return items
+
+
 ##########
 
 
@@ -1440,32 +1468,6 @@ def compute_disks_list(creds: Credentials, args: dict[str, Any]) -> CommandResul
         outputs=outputs,
         raw_response=response,
     )
-
-
-def collect_aggregated_items(response: dict[str, Any], items_key: str) -> list[dict[str, Any]]:
-    """
-    Flattens the scoped lists of an aggregated list response into a single list of resources.
-
-    Scopes that returned a warning instead of resources (for example, NO_RESULTS_ON_PAGE for a zone
-    holding no resources) are excluded from the results and logged.
-
-    Args:
-        response (dict): The aggregated list response returned by the Compute Engine API.
-        items_key (str): The key holding the resources within each scoped list, for example 'disks'.
-
-    Returns:
-        list[dict[str, Any]]: The resources collected from all the scopes that returned results.
-    """
-    items: list[dict[str, Any]] = []
-    excluded_scopes: dict[str, Any] = {}
-    for scope_name, scoped_list in response.get("items", {}).items():
-        if warning := scoped_list.get("warning"):
-            excluded_scopes[scope_name] = warning.get("code")
-            continue
-        items.extend(scoped_list.get(items_key, []) or [])
-    if excluded_scopes:
-        demisto.debug(f"[GCP] Excluded {len(excluded_scopes)} scopes that returned a warning: {excluded_scopes}")
-    return items
 
 
 def compute_disks_aggregated_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:

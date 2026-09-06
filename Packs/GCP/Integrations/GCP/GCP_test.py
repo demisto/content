@@ -6313,11 +6313,13 @@ def test_collect_aggregated_items_excludes_warning_scopes(mocker):
     """
     Given: An aggregated response where one scope holds resources and another only holds a warning.
     When: collect_aggregated_items is called.
-    Then: Only the resources of the non-warning scope are returned and the excluded scope is logged.
+    Then: Only the resources of the non-warning scope are returned and the excluded scope is logged
+          together with the name of the command that triggered the call.
     """
     from GCP import collect_aggregated_items
 
     debug_mock = mocker.patch("GCP.demisto.debug")
+    mocker.patch("GCP.demisto.command", return_value="gcp-compute-disk-type-aggregated-list")
     response = {
         "items": {
             "zones/us-central1-a": {"diskTypes": [{"name": "pd-ssd", "id": "1"}]},
@@ -6329,6 +6331,7 @@ def test_collect_aggregated_items_excludes_warning_scopes(mocker):
 
     assert [item["name"] for item in items] == ["pd-ssd"]
     assert any("zones/europe-west1-b" in str(call) for call in debug_mock.call_args_list)
+    assert any("gcp-compute-disk-type-aggregated-list" in str(call) for call in debug_mock.call_args_list)
 
 
 def test_compute_disks_aggregated_list_flattens_scoped_lists(mocker):
