@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 
 import pytest
 from freezegun import freeze_time
@@ -505,28 +505,52 @@ class TestFetchActivity:
         assert count == MAX_PAGE_SIZE
         assert capped is True
 
-    @freeze_time("2026-08-31 07:15:00")
-    def test_audit_records_first_seen_then_detects_growth(self, mocker):
+    def test_audit_records_baseline_then_detects_growth(self, mocker):
         """
-        Given: the same past minute is audited twice - first the API returns 100, later 130.
-        When: running run_late_arrival_audit across two cycles.
-        Then: the first call records first_seen=100; the second call detects growth (+30), which is
-              the smoking-gun proof of late-arriving events. No events are ingested.
+        Proves the audit observes the SAME minute at two ages and detects growth.
+
+        Given: at the young age a minute reads 100; when it's re-checked at the old age it reads 130.
+        When: running run_late_arrival_audit twice with the appropriate frozen times.
+        Then: the baseline (100) is recorded young, and the recheck logs grew_by=30
+              LATE_ARRIVAL_DETECTED=True. No events are ingested.
         """
-        from WorkdayEventCollector import run_late_arrival_audit
+        from freezegun import freeze_time as _freeze
 
-        # Cycle 1: API currently returns 100 for the audited (already-elapsed) minute.
-        mocker.patch("WorkdayEventCollector.count_activity_logging_for_window", return_value=(100, False))
-        history1 = run_late_arrival_audit(self.client, last_run={})
-        # Exactly one audited minute recorded, value 100.
-        assert list(history1.values()) == [100]
-        audited_minute = next(iter(history1))
+        import WorkdayEventCollector as wec
+        from WorkdayEventCollector import (
+            AUDIT_FIRST_SEEN_DELAY_SECONDS,
+            AUDIT_RECHECK_DELAY_SECONDS,
+            run_late_arrival_audit,
+        )
 
-        # Cycle 2 (same frozen time -> same audited minute): API now returns 130.
-        mocker.patch("WorkdayEventCollector.count_activity_logging_for_window", return_value=(130, False))
-        history2 = run_late_arrival_audit(self.client, last_run={"audit_history": history1})
-        # First-seen value is preserved (still 100) so growth is measurable.
-        assert history2[audited_minute] == 100
+        info_spy = mocker.patch.object(wec.demisto, "info")
+
+        # The minute we will track: choose a base "now" and compute when it is young vs rechecked.
+        # At young time, the minute [t0-90-60, t0-90) reads 100.
+        young_now = "2026-08-31T07:15:00Z"
+        with _freeze(young_now):
+            mocker.patch("WorkdayEventCollector.count_activity_logging_for_window", return_value=(100, False))
+            history = run_late_arrival_audit(self.client, last_run={})
+        # A baseline was recorded for exactly one (young) minute.
+        assert len(history) == 1
+        tracked_minute = next(iter(history))
+        assert history[tracked_minute] == 100
+
+        # Advance time so that same tracked_minute is now at the recheck age. The recheck window is
+        # (now - RECHECK) floored; make now = young_now + (RECHECK - FIRST_SEEN) so windows align.
+        delta = AUDIT_RECHECK_DELAY_SECONDS - AUDIT_FIRST_SEEN_DELAY_SECONDS
+        recheck_now = (datetime.strptime(young_now, DATE_FORMAT) + timedelta(seconds=delta)).strftime(DATE_FORMAT)
+        with _freeze(recheck_now):
+            mocker.patch("WorkdayEventCollector.count_activity_logging_for_window", return_value=(130, False))
+            run_late_arrival_audit(self.client, last_run={"audit_history": history})
+
+        recheck_lines = [c.args[0] for c in info_spy.call_args_list if "phase=recheck" in c.args[0]]
+        assert recheck_lines, "expected a recheck log line"
+        line = recheck_lines[-1]
+        assert "first_seen_api_count=100" in line
+        assert "api_count_now=130" in line
+        assert "grew_by=30" in line
+        assert "LATE_ARRIVAL_DETECTED=True" in line
 
     @freeze_time("2026-08-31 07:15:00")
     def test_audit_is_failure_safe(self, mocker):
@@ -538,8 +562,10 @@ class TestFetchActivity:
         from WorkdayEventCollector import run_late_arrival_audit
 
         mocker.patch("WorkdayEventCollector.count_activity_logging_for_window", side_effect=Exception("boom"))
-        prior = {"audit_history_marker": 1}
+        # Use a recent, realistic minute key so it survives pruning at the frozen time.
+        prior = {"2026-08-31T07:10:00Z": 42}
         result = run_late_arrival_audit(self.client, last_run={"audit_history": prior})
+        # Both phases fail safely; the recorded baseline is preserved (audit never breaks the fetch).
         assert result == prior
 
     @freeze_time("2026-08-31 07:15:00")
@@ -562,7 +588,7 @@ class TestFetchActivity:
 
         # Fetch returns the real batch (page1) then empty (page2). Audit count is a separate large number.
         mocker.patch.object(Client, "get_activity_logging_request", side_effect=[real_batch, []])
-        mocker.patch("WorkdayEventCollector.count_activity_logging_for_window", return_value=99999)
+        mocker.patch("WorkdayEventCollector.count_activity_logging_for_window", return_value=(99999, True))
 
         events_to_ingest, new_last_run = fetch_activity_logging(
             self.client, last_run={}, first_fetch=first_fetch_time, max_fetch=100

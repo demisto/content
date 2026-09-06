@@ -14,21 +14,26 @@ urllib3.disable_warnings()
 # BUILD_MARKER: bump this string on every hotfix build so the exact deployed version can be
 # identified from the tenant integration logs (search for "WORKDAY_EC_BUILD" in GCP Logs Explorer).
 # This is what lets us confirm the fix is actually running on the client tenant after upload.
-BUILD_MARKER = "WORKDAY_EC_BUILD=XSUP-75678-dedup-fix-2-late-arrival-audit"
+BUILD_MARKER = "WORKDAY_EC_BUILD=XSUP-75678-dedup-fix-3-audit-recheck"
 
-# Late-arrival audit (read-only diagnostic): on each fetch we re-query the Workday API for a single
-# minute that has ALREADY fully elapsed and was already fetched by earlier cycles. If the API now
-# returns MORE events for that past minute than we originally ingested, that is direct proof that
-# Workday makes events available late/out-of-order (the cause of the residual gap in XSUP-75678).
+# Late-arrival audit (read-only diagnostic): each fetch cycle counts, with EXACTLY ONE API call, how
+# many events the API returns for a single already-elapsed minute. To prove late arrival we observe
+# the SAME minute at two ages: first when it is "young" (AUDIT_FIRST_SEEN_DELAY_SECONDS after it
+# closes) we record its count; later when it is "old" (AUDIT_RECHECK_DELAY_SECONDS) we re-count it
+# and log the growth. A positive growth for a fixed past minute is direct proof that Workday makes
+# events available late/out-of-order (the cause of the residual gap in XSUP-75678).
 # The audit only COUNTS events - it never ingests them - so it cannot cause duplication or loss.
 AUDIT_LOG_TAG = "WORKDAY_LATE_ARRIVAL_AUDIT"
 # Tag for the dedup-value proof: quantifies, each cycle, the duplicates the identity-based fix
 # prevented from being re-ingested, and the boundary-second events it KEPT that the OLD
 # position-based code would have silently dropped. Greppable in tenant logs to show the fix's value.
 DEDUP_VALUE_LOG_TAG = "WORKDAY_DEDUP_VALUE"
-# How far back the audited minute sits from "now" (seconds). 600s = audit the minute that ended
-# 10 minutes ago, giving the API ample time to have "caught up" if it were strongly consistent.
-AUDIT_DELAY_SECONDS = 600
+# The audit observes each minute at two ages so growth (late arrival) is directly observable.
+# It performs at most TWO small read-only API calls per fetch cycle (still bounded, non-paginated):
+#   * "young": ~90s after the minute closes -> record the count as the baseline (first_seen).
+#   * "recheck": ~600s (10 min) after the same minute closes -> re-count and log growth vs baseline.
+AUDIT_FIRST_SEEN_DELAY_SECONDS = 90
+AUDIT_RECHECK_DELAY_SECONDS = 600
 
 DEFAULT_MAX_FETCH = 3000
 MAX_PAGE_SIZE = 1000
@@ -201,60 +206,69 @@ def count_activity_logging_for_window(client: Client, from_date: str, to_date: s
     return count, capped
 
 
+def _elapsed_minute_window(now: datetime, delay_seconds: int) -> tuple[str, str]:
+    """Returns the (from, to) whole-second strings for the 1-minute window that ended `delay_seconds`
+    ago, floored to whole minutes."""
+    end_dt = (now - timedelta(seconds=delay_seconds)).replace(second=0, microsecond=0)
+    start_dt = end_dt - timedelta(minutes=1)
+    return start_dt.strftime(DATE_FORMAT), end_dt.strftime(DATE_FORMAT)
+
+
 def run_late_arrival_audit(client: Client, last_run: dict) -> dict:
     """
     Self-proving diagnostic for XSUP-75678 (read-only; ingests nothing).
 
-    Each fetch cycle re-queries the API for a single minute that has ALREADY fully elapsed
-    (ending AUDIT_DELAY_SECONDS ago). It records the count the API returns for that minute the
-    first time it is audited, then on every later cycle re-counts the SAME minute and logs whether
-    the API now returns MORE events than before. A growing count for a fixed, long-past minute is
-    direct proof that Workday releases events late/out-of-order - no manual customer command needed.
+    To make late arrival directly observable, the SAME minute is counted at two ages:
+      * "young"   (AUDIT_FIRST_SEEN_DELAY_SECONDS after it closes): record baseline count.
+      * "recheck" (AUDIT_RECHECK_DELAY_SECONDS after it closes): re-count and log growth vs baseline.
+    If the recheck count exceeds the young baseline, that is direct proof Workday released events for
+    that minute late/out-of-order (no manual customer command needed).
 
-    The per-minute first-seen counts are stored in last_run["audit_history"] (a small dict keyed by
-    the minute string). Old entries are pruned so the state stays tiny.
+    Cost: at most TWO small non-paginated read-only calls per fetch cycle. Baselines are stored in
+    last_run["audit_history"] (keyed by the minute string) and pruned to stay tiny.
 
     Args:
         client: Client object.
-        last_run: the last run object (mutated copy is returned via the caller).
+        last_run: the last run object (never mutated; a copy is returned via the caller).
 
     Returns:
         The updated audit_history dict to persist in last_run.
     """
     audit_history: dict = dict(last_run.get("audit_history", {}))
     now = datetime.now(tz=timezone.utc)
-    # The minute that ended AUDIT_DELAY_SECONDS ago, floored to whole minutes.
-    audit_to_dt = (now - timedelta(seconds=AUDIT_DELAY_SECONDS)).replace(second=0, microsecond=0)
-    audit_from_dt = audit_to_dt - timedelta(minutes=1)
-    audit_from = audit_from_dt.strftime(DATE_FORMAT)
-    audit_to = audit_to_dt.strftime(DATE_FORMAT)
-    minute_key = audit_from  # unique per audited minute
 
-    # Exactly ONE read-only API call per audit (non-paginated) to strictly bound API usage.
-    try:
-        api_count_now, capped = count_activity_logging_for_window(client, from_date=audit_from, to_date=audit_to)
-    except Exception as e:  # never let the diagnostic break the fetch
-        demisto.debug(f"{AUDIT_LOG_TAG} audit query failed (non-fatal): {e!s}")
-        return audit_history
+    # --- Young observation: record the baseline count for the minute that just recently closed. ---
+    young_from, young_to = _elapsed_minute_window(now, AUDIT_FIRST_SEEN_DELAY_SECONDS)
+    if young_from not in audit_history:
+        try:
+            young_count, young_capped = count_activity_logging_for_window(client, from_date=young_from, to_date=young_to)
+            audit_history[young_from] = young_count
+            demisto.info(
+                f"{AUDIT_LOG_TAG} phase=baseline window=[{young_from},{young_to}) "
+                f"first_seen_api_count={young_count}{' (capped)' if young_capped else ''} "
+                f"age_seconds={AUDIT_FIRST_SEEN_DELAY_SECONDS}"
+            )
+        except Exception as e:  # never let the diagnostic break the fetch
+            demisto.debug(f"{AUDIT_LOG_TAG} baseline query failed (non-fatal): {e!s}")
 
-    capped_note = " (capped at MAX_PAGE_SIZE)" if capped else ""
-    first_seen = audit_history.get(minute_key)
-    if first_seen is None:
-        audit_history[minute_key] = api_count_now
-        demisto.info(
-            f"{AUDIT_LOG_TAG} window=[{audit_from},{audit_to}) first_seen_api_count={api_count_now}{capped_note} "
-            f"age_seconds={AUDIT_DELAY_SECONDS}"
-        )
-    else:
-        grew_by = api_count_now - first_seen
-        demisto.info(
-            f"{AUDIT_LOG_TAG} window=[{audit_from},{audit_to}) first_seen_api_count={first_seen} "
-            f"api_count_now={api_count_now}{capped_note} grew_by={grew_by} "
-            f"LATE_ARRIVAL_DETECTED={grew_by > 0}"
-        )
+    # --- Recheck observation: re-count an OLDER minute and compare to its recorded baseline. -------
+    recheck_from, recheck_to = _elapsed_minute_window(now, AUDIT_RECHECK_DELAY_SECONDS)
+    baseline = audit_history.get(recheck_from)
+    if baseline is not None:
+        try:
+            recheck_count, recheck_capped = count_activity_logging_for_window(client, from_date=recheck_from, to_date=recheck_to)
+            grew_by = recheck_count - baseline
+            demisto.info(
+                f"{AUDIT_LOG_TAG} phase=recheck window=[{recheck_from},{recheck_to}) "
+                f"first_seen_api_count={baseline} api_count_now={recheck_count}"
+                f"{' (capped)' if recheck_capped else ''} grew_by={grew_by} "
+                f"age_seconds={AUDIT_RECHECK_DELAY_SECONDS} LATE_ARRIVAL_DETECTED={grew_by > 0}"
+            )
+        except Exception as e:  # never let the diagnostic break the fetch
+            demisto.debug(f"{AUDIT_LOG_TAG} recheck query failed (non-fatal): {e!s}")
 
-    # Prune audit_history to the most recent ~30 minutes to keep last_run small.
-    cutoff = (now - timedelta(seconds=AUDIT_DELAY_SECONDS + 1800)).strftime(DATE_FORMAT)
+    # Prune audit_history to the most recent ~30 minutes beyond the recheck age to keep last_run small.
+    cutoff, _ = _elapsed_minute_window(now, AUDIT_RECHECK_DELAY_SECONDS + 1800)
     audit_history = {k: v for k, v in audit_history.items() if k >= cutoff}
     return audit_history
 
