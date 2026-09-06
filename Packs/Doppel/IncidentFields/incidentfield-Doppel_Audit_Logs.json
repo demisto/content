@@ -1,0 +1,114 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Doppel Alert Crypto",
+        "Doppel Alert Domains",
+        "Doppel Alert Ecommerce",
+        "Doppel Alert Email",
+        "Doppel Alert Mobile_Apps",
+        "Doppel Alert Paid_Ads",
+        "Doppel Alert Social_Media",
+        "Doppel Alert Telco"
+    ],
+    "caseInsensitive": true,
+    "cliName": "doppelauditlogs",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Timestamp",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "timestamp",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "date",
+            "width": 180
+        },
+        {
+            "displayName": "Type",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "type",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Value",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "value",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "Changed By",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "changed_by",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 180
+        },
+        {
+            "displayName": "Metadata",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "metadata",
+            "orgType": "",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "longText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_doppelauditlogs",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Doppel Audit Logs",
+    "neverSetAsRequired": false,
+    "openEnded": true,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

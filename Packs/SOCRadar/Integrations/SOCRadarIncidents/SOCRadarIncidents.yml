@@ -105,6 +105,13 @@ configuration:
   name: incidentType
   type: 13
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 defaultclassifier: SOCRadar Incident Classifier
 defaultmapperin: SOCRadar Incident Mapper
 defaultmapperout: 'null'
@@ -129,7 +136,7 @@ script:
       name: comments
     description: Marks incident as resolved in SOCRadar platform.
     name: socradar-mark-incident-resolved
-  dockerimage: demisto/python3:3.12.13.9059085
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   runonce: false
   script: '-'
