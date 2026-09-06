@@ -1,0 +1,21 @@
+{
+  "totalRecords": 2,
+  "records": [
+    {
+      "status": "Warning",
+      "id": 2,
+      "startTime": "2023-11-05T06:03:15.866256+01:00",
+      "updateTime": "2023-11-05T06:03:15.866256+01:00",
+      "title": "Job finished with warning",
+      "description": ""
+    },
+    {
+      "status": "Succeeded",
+      "id": 1,
+      "startTime": "2023-11-05T06:00:07.705199+01:00",
+      "updateTime": "2023-11-05T06:00:07.705199+01:00",
+      "title": "Job started",
+      "description": ""
+    }
+  ]
+}

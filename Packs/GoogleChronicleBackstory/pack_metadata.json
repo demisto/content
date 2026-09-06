@@ -2,7 +2,7 @@
     "name": "Google SecOps",
     "description": "Retrieve Google SecOps detections, impacted assets, IOC matches, and 3P alerts to enrich your XSOAR workflows.",
     "support": "partner",
-    "currentVersion": "5.0.9",
+    "currentVersion": "6.0.0",
     "certification": "certified",
     "author": "Google",
     "url": "https://go.chronicle.security/contact",
@@ -16,7 +16,14 @@
     "created": "2020-04-14T00:00:00Z",
     "defaultDataSource": "Google Chronicle Backstory Streaming API",
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Google",
+        "Google SecOps",
+        "SecOps",
+        "Detections",
+        "Case",
+        "IOC"
+    ],
     "githubUser": [
         "crestdatasystems"
     ],
