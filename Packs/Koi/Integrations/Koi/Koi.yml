@@ -997,4 +997,6 @@ marketplaces:
 - xsoar
 - marketplacev2
 - platform
+supportedModules:
+- xsiam
 excludefromtightlycoupled: true

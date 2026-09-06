@@ -1,5 +1,5 @@
 args:
-- description: Enter JSON STRING like {'email@company':'@bonuslyuser'}
+- description: Enter JSON STRING like {'email@company':'@bonuslyuser'}.
   name: json
   required: true
 - description: The username of the Cortex XSOAR incident owner. This will look up the incident owner's email address.
@@ -25,7 +25,7 @@ tags:
 - Utilities
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.12.8.3296088
+dockerimage: demisto/python3:3.12.14.12776751
 runas: DBotWeakRole
 fromversion: 5.0.0
 tests:
