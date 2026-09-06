@@ -22,7 +22,9 @@ To successfully set up the Generic API Event Collector, you need to provide the 
    - Api-Key (sent in a request header)
    - OAuth 2.0 (Client Credentials and Authorization Code flows)
 
-    For the OAuth 2.0 Authorization Code flow, run the ***generate-login-url*** command to generate the login URL, complete the authentication in your browser, and paste the returned `code` value into the **Authorization code** integration parameter.
+    For the OAuth 2.0 Client Credentials flow, provide the token URL, client ID, and client secret.
+
+    For the OAuth 2.0 Authorization Code flow, run the ***generic-api-event-collector-generate-login-url*** command to generate the login URL, complete the authentication in your browser, and paste the returned `code` value into the **Authorization code** integration parameter. Include an `offline_access` scope (or the equivalent for your identity provider) so that a refresh token is issued, otherwise event collection stops once the first access token expires.
 
 5. HTTP Method
    Specify the HTTP method the collector should use to reach the API endpoint. The supported methods are:

@@ -1,15 +1,18 @@
-from datetime import datetime, UTC
+from datetime import datetime
 from unittest.mock import patch
 
 import pytest
 
+import demistomock as demisto
 from CommonServerPython import DemistoException
 from GenericAPIEventCollector import (
     PaginationLogic,
     RequestData,
     TimestampFieldConfig,
     datetime_to_timestamp_format,
+    derive_authorize_url,
     extract_pagination_params,
+    fetch_events,
     generate_authentication_headers,
     generate_headers,
     generate_login_url_command,
@@ -571,49 +574,56 @@ def test_get_oauth2_auth_handler_scope_defaults_to_none_when_empty():
     assert handler.scope is None
 
 
-def test_get_oauth2_auth_handler_missing_token_url():
+@patch("GenericAPIEventCollector.return_error", side_effect=SystemExit)
+def test_get_oauth2_auth_handler_missing_token_url(mock_return_error):
     """
     Given: OAuth 2.0 params missing the oauth_token_url.
     When: get_oauth2_auth_handler is called.
-    Then: A handler is still built (validation is performed elsewhere).
+    Then: The misconfiguration is reported, rather than building a handler that would fail
+          later with an opaque error at request time.
     """
     params = {
         "authentication": "OAuth 2.0",
         "oauth_client_id": "my-client-id",
         "oauth_client_secret": "my-secret",
     }
-    handler = get_oauth2_auth_handler(params)
-    assert isinstance(handler, OAuth2ClientCredentialsHandler)
+    with pytest.raises(SystemExit):
+        get_oauth2_auth_handler(params)
+    mock_return_error.assert_called_once_with("OAuth token url is required for OAuth 2.0 Authentication.")
 
 
-def test_get_oauth2_auth_handler_missing_client_id():
+@patch("GenericAPIEventCollector.return_error", side_effect=SystemExit)
+def test_get_oauth2_auth_handler_missing_client_id(mock_return_error):
     """
     Given: OAuth 2.0 params missing the oauth_client_id.
     When: get_oauth2_auth_handler is called.
-    Then: A handler is still built (validation is performed elsewhere).
+    Then: The misconfiguration is reported with a client-id specific message.
     """
     params = {
         "authentication": "OAuth 2.0",
         "oauth_token_url": "https://auth.example.com/oauth/token",
         "oauth_client_secret": "my-secret",
     }
-    handler = get_oauth2_auth_handler(params)
-    assert isinstance(handler, OAuth2ClientCredentialsHandler)
+    with pytest.raises(SystemExit):
+        get_oauth2_auth_handler(params)
+    mock_return_error.assert_called_once_with("OAuth client id is required for OAuth 2.0 Authentication.")
 
 
-def test_get_oauth2_auth_handler_missing_client_secret():
+@patch("GenericAPIEventCollector.return_error", side_effect=SystemExit)
+def test_get_oauth2_auth_handler_missing_client_secret(mock_return_error):
     """
     Given: OAuth 2.0 params missing the oauth_client_secret.
     When: get_oauth2_auth_handler is called.
-    Then: A handler is still built (validation is performed elsewhere).
+    Then: The misconfiguration is reported with a client-secret specific message.
     """
     params = {
         "authentication": "OAuth 2.0",
         "oauth_token_url": "https://auth.example.com/oauth/token",
         "oauth_client_id": "my-client-id",
     }
-    handler = get_oauth2_auth_handler(params)
-    assert isinstance(handler, OAuth2ClientCredentialsHandler)
+    with pytest.raises(SystemExit):
+        get_oauth2_auth_handler(params)
+    mock_return_error.assert_called_once_with("OAuth client secret is required for OAuth 2.0 Authentication.")
 
 
 # ---------------------------------------------------------------------------
@@ -679,10 +689,11 @@ def test_generate_authentication_headers_oauth_missing_client_secret(mock_return
 
 def test_generate_login_url_command_builds_authorize_url():
     """
-    Given: params with the token url, client id and redirect uri configured.
+    Given: params with an Auth0-style token url, client id and redirect uri configured.
     When: generate_login_url_command is called.
-    Then: The command returns readable output that contains a login URL pointing at
-          the derived /authorize endpoint with the expected query parameters.
+    Then: The command returns readable output containing a login URL that points at Auth0's
+          real /authorize endpoint (at the root, not /oauth/authorize) with the expected
+          query parameters.
     """
     params = {
         "oauth_token_url": "https://auth.example.com/oauth/token",
@@ -691,7 +702,7 @@ def test_generate_login_url_command_builds_authorize_url():
     }
     result = generate_login_url_command(params)
     readable = result.readable_output
-    assert "https://auth.example.com/oauth/authorize?" in readable
+    assert "https://auth.example.com/authorize?" in readable
     assert "response_type=code" in readable
     assert "client_id=my-client-id" in readable
     assert "redirect_uri=https%3A%2F%2Fredirect.example.com%2Fcallback" in readable
@@ -851,18 +862,125 @@ def test_generate_authentication_headers_oauth2_masks_unwrapped_secret(mock_add_
     mock_add_sensitive.assert_called_once_with("my-secret")
 
 
-@patch("GenericAPIEventCollector.demisto.error")
-def test_timestamp_format_to_datetime_unparseable_falls_back_to_now(mock_error):
+def test_timestamp_format_to_datetime_unparseable_raises():
     """
-    Given: a timestamp string that cannot be parsed by arg_to_datetime.
+    Given: a timestamp string that cannot be parsed by any strategy.
     When: timestamp_format_to_datetime is called.
-    Then: demisto.error is logged and a naive current-time datetime is returned
-          (proving the timezone fallback resolves and does not raise).
+    Then: a DemistoException is raised so the caller skips the event, instead of stamping it
+          with the current time and advancing the last run watermark past unfetched events.
     """
-    before = datetime.now(UTC).replace(tzinfo=None)
-    result = timestamp_format_to_datetime("not-a-real-timestamp", "%Y-%m-%dT%H:%M:%SZ")
-    after = datetime.now(UTC).replace(tzinfo=None)
+    with pytest.raises(DemistoException):
+        timestamp_format_to_datetime("not-a-real-timestamp", "%Y-%m-%dT%H:%M:%SZ")
 
-    assert result.tzinfo is None
-    assert before <= result <= after
-    mock_error.assert_called_once()
+
+def test_timestamp_format_to_datetime_honors_configured_format():
+    """
+    Given: an ambiguous date and a configured day-first format.
+    When: timestamp_format_to_datetime is called.
+    Then: the configured format wins, so 03/04/2024 with "%d/%m/%Y" is the 3rd of April
+          rather than being reinterpreted as the 4th of March.
+    """
+    assert timestamp_format_to_datetime("03/04/2024", "%d/%m/%Y") == datetime(2024, 4, 3)
+
+
+def test_timestamp_format_to_datetime_falls_back_for_mismatched_format():
+    """
+    Given: a valid ISO 8601 timestamp that does not match the configured format.
+    When: timestamp_format_to_datetime is called.
+    Then: the generic parser resolves it rather than failing the event.
+    """
+    assert timestamp_format_to_datetime("2023-05-01T12:00:00Z", "%d/%m/%Y") == datetime(2023, 5, 1, 12, 0, 0)
+
+
+def test_fetch_events_skips_unparsable_timestamp_without_moving_watermark():
+    """
+    Given: a page of events where one event carries an unparsable timestamp.
+    When: fetch_events is called.
+    Then: the malformed event is skipped and the watermark advances only to the newest VALID
+          event, so subsequent fetches do not silently skip events (regression test).
+    """
+
+    class FakeClient:
+        def search_events(self, **kwargs):
+            return {
+                "value": [
+                    {"id": "1", "ts": "2024-01-01T10:00:00Z"},
+                    {"id": "2", "ts": "NOT-A-TIMESTAMP"},
+                    {"id": "3", "ts": "2024-01-01T11:00:00Z"},
+                ]
+            }
+
+    next_run, events = fetch_events(
+        client=FakeClient(),
+        params={"events_keys": "value"},
+        last_run={"@first_fetch_datetime": "2024-01-01T00:00:00Z"},
+        first_fetch_datetime=datetime(2024, 1, 1),
+        endpoint="/e",
+        http_method="GET",
+        ok_codes=[200],
+        events_keys=["value"],
+        timestamp_field_config=TimestampFieldConfig(["ts"], "%Y-%m-%dT%H:%M:%SZ"),
+    )
+
+    assert len(events) == 2
+    assert next_run["@last_fetched_datetime"] == datetime(2024, 1, 1, 11, 0, 0).isoformat()
+
+
+def test_derive_authorize_url_swaps_last_path_segment():
+    """
+    Given: a Microsoft Entra style token endpoint.
+    When: derive_authorize_url is called.
+    Then: the sibling authorize endpoint is returned.
+    """
+    assert (
+        derive_authorize_url("https://login.microsoftonline.com/my-tenant/oauth2/v2.0/token")
+        == "https://login.microsoftonline.com/my-tenant/oauth2/v2.0/authorize"
+    )
+
+
+def test_derive_authorize_url_handles_auth0():
+    """
+    Given: an Auth0 token endpoint (the example documented in the integration parameters).
+    When: derive_authorize_url is called.
+    Then: /authorize at the root is returned, not the non-existent /oauth/authorize.
+    """
+    assert derive_authorize_url("https://my-tenant.us.auth0.com/oauth/token") == "https://my-tenant.us.auth0.com/authorize"
+
+
+@patch("GenericAPIEventCollector.return_error", side_effect=SystemExit)
+def test_get_oauth2_auth_handler_rejects_partial_authorization_code_config(mock_return_error):
+    """
+    Given: an authorization code without a redirect uri.
+    When: get_oauth2_auth_handler is called.
+    Then: the misconfiguration is reported instead of silently degrading to client credentials.
+    """
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_id": "my-client-id",
+        "oauth_client_secret": "my-secret",
+        "authorization_code": "the-auth-code",
+    }
+    with pytest.raises(SystemExit):
+        get_oauth2_auth_handler(params)
+    mock_return_error.assert_called_once()
+
+
+def test_authorization_code_handler_prefers_stored_refresh_token(mocker):
+    """
+    Given: a refresh token persisted in the integration context by a previous execution.
+    When: the authorization code handler is built.
+    Then: the refresh_token grant is used, because replaying the already-redeemed
+          authorization code is rejected by the IdP (Entra AADSTS54005).
+    """
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={"oauth2_refresh_token": "stored-refresh"})
+    params = {
+        "authentication": "OAuth 2.0",
+        "oauth_token_url": "https://auth.example.com/oauth/token",
+        "oauth_client_id": "my-client-id",
+        "oauth_client_secret": "my-secret",
+        "authorization_code": "the-auth-code",
+        "redirect_uri": "https://redirect.example.com/callback",
+    }
+    handler = get_oauth2_auth_handler(params)
+    assert handler.auth_params == {"grant_type": "refresh_token", "refresh_token": "stored-refresh"}

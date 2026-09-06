@@ -63,7 +63,7 @@ The supported authentication types include:
 - API key (sent in a request header)
 - OAuth 2.0 (Client Credentials and Authorization Code flows)
 
-For the OAuth 2.0 Authorization Code flow, run the ***generate-login-url*** command to generate the login URL, complete the authentication in your browser, and paste the returned `code` value into the **Authorization code** integration parameter.
+For the OAuth 2.0 Authorization Code flow, run the ***generic-api-event-collector-generate-login-url*** command to generate the login URL, complete the authentication in your browser, and paste the returned `code` value into the **Authorization code** integration parameter.
 
 ### Pagination
 
@@ -377,14 +377,14 @@ Gets events from 3rd-party vendor.
 
 There is no context output for this command.
 
-### generate-login-url
+### generic-api-event-collector-generate-login-url
 
 ***
 Generate the login URL used for the Authorization Code flow.
 
 #### Base Command
 
-`generate-login-url`
+`generic-api-event-collector-generate-login-url`
 
 #### Input
 

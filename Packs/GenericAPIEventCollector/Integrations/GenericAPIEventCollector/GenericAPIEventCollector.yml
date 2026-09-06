@@ -280,8 +280,8 @@ script:
           required: true
         - name: limit
           description: Maximum number of results to return.
-    - name: generate-login-url
-      description: Generate the login URL used for the Authorization Code flow.
+    - name: generic-api-event-collector-generate-login-url
+      description: Generate the login URL used for the OAuth 2.0 Authorization Code flow.
       arguments: []
   runonce: false
   isfetchevents: true
