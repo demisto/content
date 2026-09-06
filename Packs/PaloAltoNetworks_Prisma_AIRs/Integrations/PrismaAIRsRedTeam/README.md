@@ -572,12 +572,16 @@ Get Red Team scan statistics and risk profile (dashboard telemetry). Returns agg
 >|Total Scans|Targets Scanned|
 >|---|---|
 >| 79 | 20 |
+>
 >### Scan Status
+>
 >|Name|Count|
 >|---|---|
 >| IN_PROGRESS | 1 |
 >| COMPLETED | 78 |
+>
 >### Risk Profile
+>
 >|Risk Rating|Total|
 >|---|---|
 >| CRITICAL | 0 |
@@ -700,7 +704,9 @@ There are no input arguments for this command.
 >|Total Targets|
 >|---|
 >| 24 |
+>
 >### Targets by Type
+>
 >|Name|Count|
 >|---|---|
 >| AGENT | 0 |

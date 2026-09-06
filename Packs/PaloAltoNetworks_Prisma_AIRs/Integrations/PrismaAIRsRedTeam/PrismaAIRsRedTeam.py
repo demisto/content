@@ -5,7 +5,8 @@ from PrismaAirsApiModule import *  # noqa # pylint: disable=unused-wildcard-impo
 
 import base64
 import urllib3
-from typing import Any
+import requests
+from typing import Any, cast
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -45,7 +46,7 @@ RED_TEAM_ERROR_LOG_TARGET_PROFILE_ENDPOINT = "/v1/error-log/target-profile"
 # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/constants.ts (RED_TEAM_ERROR_LOG_PATH)
 RED_TEAM_ERROR_LOG_JOB_ENDPOINT = "/v1/error-log/job"
 # Dashboard telemetry - scan-statistics + score-trend are data-plane; overview is mgmt-plane.
-# Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/constants.ts (RED_TEAM_DASHBOARD_PATH / RED_TEAM_MGMT_DASHBOARD_PATH)
+# Reference: ./knowledge/.../prisma-airs-sdk-main/src/constants.ts (RED_TEAM_DASHBOARD_PATH / RED_TEAM_MGMT_DASHBOARD_PATH)
 RED_TEAM_DASHBOARD_ENDPOINT = "/v1/dashboard"
 # Metering quota summary (static/dynamic/custom allocations) - data-plane, POST with no body.
 # Reference: ./knowledge/versions/20260817/prisma-airs-sdk-main/src/constants.ts (RED_TEAM_QUOTA_PATH)
@@ -3566,8 +3567,9 @@ def redteam_report_download_command(client: Client, args: dict[str, Any]) -> dic
         resp_type="response",
     )
 
-    content = response.content
-    content_disposition = response.headers.get("Content-Disposition", "")
+    raw_response = cast(requests.Response, response)
+    content = raw_response.content
+    content_disposition = raw_response.headers.get("Content-Disposition", "")
     filename = _report_download_filename(job_id, file_format, content, content_disposition)
 
     return fileResult(filename=filename, data=content)
@@ -3607,7 +3609,7 @@ def redteam_report_generate_partial_command(client: Client, args: dict[str, Any]
     if isinstance(outputs, dict) and job_id and "job_id" not in outputs and "id" not in outputs:
         outputs = {"job_id": job_id, **outputs}
 
-    report_stats = {}
+    report_stats: dict[str, Any] = {}
     if isinstance(response, dict):
         report_stats = response.get("report_stats") or {}
 

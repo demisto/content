@@ -3,7 +3,6 @@ This integration was integrated and tested with Palo Alto Networks Prisma AIRS -
 
 ## Configure Palo Alto Networks Prisma AIRS - AI Runtime Security in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -2719,4 +2718,3 @@ Perform bulk scanning of multiple prompts.
 | PrismaAIRs.BulkScan.allowed | Number | The number of prompts allowed. |
 | PrismaAIRs.BulkScan.errors | Number | The number of scan errors. |
 | PrismaAIRs.BulkScan.results | Unknown | The array of individual scan results. |
-
