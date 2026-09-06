@@ -487,7 +487,9 @@ def fetch_incidents():
             last_fetch, _ = parse_date_range(FETCH_TIME, to_timestamp=True)
 
     limit = dict_value_to_int(demisto.params(), "fetch_limit") or 10
-    lookback_minutes = arg_to_number(demisto.params().get("lookback")) or DEFAULT_LOOKBACK_MINUTES
+    lookback_minutes = arg_to_number(demisto.params().get("lookback"))
+    if lookback_minutes is None or lookback_minutes < 0:
+        lookback_minutes = DEFAULT_LOOKBACK_MINUTES
 
     # Apply lookback window
     start_fetch = max(0, int(last_fetch) - (lookback_minutes * 60 * 1000))
