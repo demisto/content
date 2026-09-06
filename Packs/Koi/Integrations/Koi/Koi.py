@@ -206,7 +206,7 @@ def get_log_types_from_titles(event_types_to_fetch: list[str]) -> list[LogType]:
     if invalid_types:
         valid_options = ", ".join(sorted(valid_titles))
         raise DemistoException(
-            f"Invalid event type(s) provided: {invalid_types}. Please select from the following list: {valid_options}"
+            f"Invalid event type(s) provided: {invalid_types}. " f"Please select from the following list: {valid_options}"
         )
 
     return [lt for lt in LogType if lt.title in event_types_to_fetch]
@@ -448,7 +448,7 @@ def parse_filter_from_args(args: dict[str, Any]) -> dict[str, Any]:
 
         if not isinstance(data, dict):
             raise DemistoException(
-                f"Invalid filter JSON structure in entry ID '{entry_id}': expected a dictionary, got {type(data).__name__}."
+                f"Invalid filter JSON structure in entry ID '{entry_id}': " f"expected a dictionary, got {type(data).__name__}."
             )
 
         demisto.debug(f"[Filter Parse] Parsed filter from file: {data}")
@@ -988,6 +988,9 @@ class Client(ContentClient):
 
     def send_events(self, events: list[dict], use_streaming_send: bool = False) -> None:
         """Send events to XSIAM.
+
+        Wraps send_events_to_xsiam to keep event sending encapsulated
+        within the client class for consistent logging and diagnostics.
 
         Args:
             events: List of event dicts to send.

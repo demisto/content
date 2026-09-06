@@ -588,4 +588,4 @@ There is no context output for this command.
 
 ### Out-of-memory (OOM) on high-volume tenants
 
-If you encounter OOM errors on a high-volume tenant, split the event types across multiple instances (ideally one type per instance) to spread the load across separate runtimes.
+If you encounter OOM errors on a high-volume tenant, split the event types across multiple instances (one type per instance) to spread the load across separate runtimes.
