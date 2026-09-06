@@ -1408,14 +1408,15 @@ def compute_disks_list(creds: Credentials, args: dict[str, Any]) -> CommandResul
     remove_nulls_from_dictionary(params)
 
     compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Listing disks with params: {params}")
     response = compute.disks().list(**params).execute()  # pylint: disable=E1101
 
     items = response.get("items", [])
     next_token = response.get("nextPageToken")
-    warning = response.get("warning")
+    warning = response.get("warning", {})
     demisto.debug(
         f"[GCP] Disks list for project {project_id}, zone {zone}: {len(items)} disks, "
-        f"{bool(next_token)=}, {warning.get('code') if warning else None=}"
+        f"{bool(next_token)=}, {warning.get('code')=}"
     )
     readable_output = tableToMarkdown(
         "GCP Compute Disks",
@@ -1427,6 +1428,7 @@ def compute_disks_list(creds: Credentials, args: dict[str, Any]) -> CommandResul
 
     compute_outputs: dict[str, Any] = {"DisksNextToken": next_token}
     if warning:
+        demisto.debug(f"[GCP] Disks list returned a warning: {warning}")
         compute_outputs["DisksWarning"] = warning
 
     outputs = {
@@ -1440,6 +1442,32 @@ def compute_disks_list(creds: Credentials, args: dict[str, Any]) -> CommandResul
     )
 
 
+def collect_aggregated_items(response: dict[str, Any], items_key: str) -> list[dict[str, Any]]:
+    """
+    Flattens the scoped lists of an aggregated list response into a single list of resources.
+
+    Scopes that returned a warning instead of resources (for example, NO_RESULTS_ON_PAGE for a zone
+    holding no resources) are excluded from the results and logged.
+
+    Args:
+        response (dict): The aggregated list response returned by the Compute Engine API.
+        items_key (str): The key holding the resources within each scoped list, for example 'disks'.
+
+    Returns:
+        list[dict[str, Any]]: The resources collected from all the scopes that returned results.
+    """
+    items: list[dict[str, Any]] = []
+    excluded_scopes: dict[str, Any] = {}
+    for scope_name, scoped_list in response.get("items", {}).items():
+        if warning := scoped_list.get("warning"):
+            excluded_scopes[scope_name] = warning.get("code")
+            continue
+        items.extend(scoped_list.get(items_key, []) or [])
+    if excluded_scopes:
+        demisto.debug(f"[GCP] Excluded {len(excluded_scopes)} scopes that returned a warning: {excluded_scopes}")
+    return items
+
+
 def compute_disks_aggregated_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves an aggregated list of persistent disks across all zones in the specified project.
@@ -1451,8 +1479,8 @@ def compute_disks_aggregated_list(creds: Credentials, args: dict[str, Any]) -> C
 
     Returns:
         CommandResults: Object containing the aggregated list of disks under `GCP.Compute.Disks`,
-        the pagination token under `GCP.Compute.DisksAggregatedNextToken` and, when the API returns
-        one, the informational warning under `GCP.Compute.DisksAggregatedWarning`.
+        the pagination token under `GCP.Compute.AggregatedDisksNextToken` and, when the API returns
+        one, the informational warning under `GCP.Compute.AggregatedDisksWarning`.
     """
     project_id = args.get("project_id")
     limit = arg_to_number(args.get("limit")) or 50
@@ -1469,18 +1497,16 @@ def compute_disks_aggregated_list(creds: Credentials, args: dict[str, Any]) -> C
     remove_nulls_from_dictionary(params)
 
     compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Listing aggregated disks with params: {params}")
     response = compute.disks().aggregatedList(**params).execute()  # pylint: disable=E1101
 
-    items: list[dict[str, Any]] = []
-    for scoped_list in response.get("items", {}).values():
-        items.extend(scoped_list.get("disks", []) or [])
+    items = collect_aggregated_items(response, "disks")
 
     next_token = response.get("nextPageToken")
-    # Per-scope warnings are not collected, as the API reports NO_RESULTS_ON_PAGE for every scope holding no disks.
-    warning = response.get("warning")
+    warning = response.get("warning", {})
     demisto.debug(
         f"[GCP] Disks aggregated list for project {project_id}: {len(items)} disks, "
-        f"{bool(next_token)=}, {warning.get('code') if warning else None=}"
+        f"{bool(next_token)=}, {warning.get('code')=}"
     )
     readable_output = tableToMarkdown(
         "GCP Compute Disks",
@@ -1490,9 +1516,10 @@ def compute_disks_aggregated_list(creds: Credentials, args: dict[str, Any]) -> C
         removeNull=True,
     )
 
-    compute_outputs: dict[str, Any] = {"DisksAggregatedNextToken": next_token}
+    compute_outputs: dict[str, Any] = {"AggregatedDisksNextToken": next_token}
     if warning:
-        compute_outputs["DisksAggregatedWarning"] = warning
+        demisto.debug(f"[GCP] Disks aggregated list returned a warning: {warning}")
+        compute_outputs["AggregatedDisksWarning"] = warning
 
     outputs = {
         "GCP.Compute.Disks(val.id && val.id == obj.id)": items,
@@ -1515,19 +1542,14 @@ def compute_disk_get(creds: Credentials, args: dict[str, Any]) -> CommandResults
 
     Returns:
         CommandResults: Object containing the disk details under `GCP.Compute.Disks`.
-        If the disk is not found, returns a human-readable message.
     """
     project_id = args.get("project_id")
     zone = extract_zone_name(args.get("zone"))
     resource_name = args.get("resource_name")
 
     compute = GCPServices.COMPUTE.build(creds)
-    try:
-        response = compute.disks().get(project=project_id, zone=zone, disk=resource_name).execute()  # pylint: disable=E1101
-    except HttpError as e:
-        if e.resp.status == 404 and "was not found" in e._get_reason():
-            return CommandResults(readable_output=f"Disk '{resource_name}' not found in project '{project_id}', zone '{zone}'")
-        raise
+    demisto.debug(f"[GCP] Getting disk {resource_name} in project {project_id}, zone {zone}")
+    response = compute.disks().get(project=project_id, zone=zone, disk=resource_name).execute()  # pylint: disable=E1101
     demisto.debug(f"[GCP] Disk get {resource_name}: {response.get('id')=}, {response.get('status')=}")
 
     readable_output = tableToMarkdown(
@@ -1826,14 +1848,15 @@ def compute_disk_types_list(creds: Credentials, args: dict[str, Any]) -> Command
     remove_nulls_from_dictionary(params)
 
     compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Listing disk types with params: {params}")
     response = compute.diskTypes().list(**params).execute()  # pylint: disable=E1101
 
     items = response.get("items", [])
     next_token = response.get("nextPageToken")
-    warning = response.get("warning")
+    warning = response.get("warning", {})
     demisto.debug(
         f"[GCP] Disk types list for project {project_id}, zone {zone}: {len(items)} disk types, "
-        f"{bool(next_token)=}, {warning.get('code') if warning else None=}"
+        f"{bool(next_token)=}, {warning.get('code')=}"
     )
     readable_output = tableToMarkdown(
         "GCP Compute Disk Types",
@@ -1845,6 +1868,7 @@ def compute_disk_types_list(creds: Credentials, args: dict[str, Any]) -> Command
 
     compute_outputs: dict[str, Any] = {"DiskTypesNextToken": next_token}
     if warning:
+        demisto.debug(f"[GCP] Disk types list returned a warning: {warning}")
         compute_outputs["DiskTypesWarning"] = warning
 
     outputs = {
@@ -1869,8 +1893,8 @@ def compute_disk_types_aggregated_list(creds: Credentials, args: dict[str, Any])
 
     Returns:
         CommandResults: Object containing the aggregated list of disk types under
-        `GCP.Compute.DiskTypes`, the pagination token under `GCP.Compute.DiskTypesAggregatedNextToken`
-        and, when the API returns one, the informational warning under `GCP.Compute.DiskTypesAggregatedWarning`.
+        `GCP.Compute.DiskTypes`, the pagination token under `GCP.Compute.AggregatedDiskTypesNextToken`
+        and, when the API returns one, the informational warning under `GCP.Compute.AggregatedDiskTypesWarning`.
     """
     project_id = args.get("project_id")
     limit = arg_to_number(args.get("limit")) or 50
@@ -1887,18 +1911,16 @@ def compute_disk_types_aggregated_list(creds: Credentials, args: dict[str, Any])
     remove_nulls_from_dictionary(params)
 
     compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Listing aggregated disk types with params: {params}")
     response = compute.diskTypes().aggregatedList(**params).execute()  # pylint: disable=E1101
 
-    items: list[dict[str, Any]] = []
-    for scoped_list in response.get("items", {}).values():
-        items.extend(scoped_list.get("diskTypes", []) or [])
+    items = collect_aggregated_items(response, "diskTypes")
 
     next_token = response.get("nextPageToken")
-    # Per-scope warnings are not collected, as the API reports NO_RESULTS_ON_PAGE for every scope holding no disk types.
-    warning = response.get("warning")
+    warning = response.get("warning", {})
     demisto.debug(
         f"[GCP] Disk types aggregated list for project {project_id}: {len(items)} disk types, "
-        f"{bool(next_token)=}, {warning.get('code') if warning else None=}"
+        f"{bool(next_token)=}, {warning.get('code')=}"
     )
     readable_output = tableToMarkdown(
         "GCP Compute Disk Types",
@@ -1908,9 +1930,10 @@ def compute_disk_types_aggregated_list(creds: Credentials, args: dict[str, Any])
         removeNull=True,
     )
 
-    compute_outputs: dict[str, Any] = {"DiskTypesAggregatedNextToken": next_token}
+    compute_outputs: dict[str, Any] = {"AggregatedDiskTypesNextToken": next_token}
     if warning:
-        compute_outputs["DiskTypesAggregatedWarning"] = warning
+        demisto.debug(f"[GCP] Disk types aggregated list returned a warning: {warning}")
+        compute_outputs["AggregatedDiskTypesWarning"] = warning
 
     outputs = {
         "GCP.Compute.DiskTypes(val.id && val.id == obj.id)": items,
@@ -1933,25 +1956,18 @@ def compute_disk_type_get(creds: Credentials, args: dict[str, Any]) -> CommandRe
 
     Returns:
         CommandResults: Object containing the disk type details under `GCP.Compute.DiskTypes`.
-        If the disk type is not found, returns a human-readable message.
     """
     project_id = args.get("project_id")
     zone = extract_zone_name(args.get("zone"))
     resource_name = args.get("resource_name")
 
     compute = GCPServices.COMPUTE.build(creds)
-    try:
-        response = (
-            compute.diskTypes()  # pylint: disable=E1101
-            .get(project=project_id, zone=zone, diskType=resource_name)
-            .execute()
-        )
-    except HttpError as e:
-        if e.resp.status == 404 and "was not found" in e._get_reason():
-            return CommandResults(
-                readable_output=f"Disk type '{resource_name}' not found in project '{project_id}', zone '{zone}'"
-            )
-        raise
+    demisto.debug(f"[GCP] Getting disk type {resource_name} in project {project_id}, zone {zone}")
+    response = (
+        compute.diskTypes()  # pylint: disable=E1101
+        .get(project=project_id, zone=zone, diskType=resource_name)
+        .execute()
+    )
     demisto.debug(f"[GCP] Disk type get {resource_name}: {response.get('id')=}, {response.get('validDiskSize')=}")
 
     readable_output = tableToMarkdown(

@@ -6309,13 +6309,35 @@ def test_compute_disks_list_invalid_limit(mocker):
     mock_compute.disks.assert_not_called()
 
 
+def test_collect_aggregated_items_excludes_warning_scopes(mocker):
+    """
+    Given: An aggregated response where one scope holds resources and another only holds a warning.
+    When: collect_aggregated_items is called.
+    Then: Only the resources of the non-warning scope are returned and the excluded scope is logged.
+    """
+    from GCP import collect_aggregated_items
+
+    debug_mock = mocker.patch("GCP.demisto.debug")
+    response = {
+        "items": {
+            "zones/us-central1-a": {"diskTypes": [{"name": "pd-ssd", "id": "1"}]},
+            "zones/europe-west1-b": {"warning": {"code": "NO_RESULTS_ON_PAGE"}},
+        }
+    }
+
+    items = collect_aggregated_items(response, "diskTypes")
+
+    assert [item["name"] for item in items] == ["pd-ssd"]
+    assert any("zones/europe-west1-b" in str(call) for call in debug_mock.call_args_list)
+
+
 def test_compute_disks_aggregated_list_flattens_scoped_lists(mocker):
     """
     Given: An aggregated response containing disks in some scopes and a warning-only scope.
     When: compute_disks_aggregated_list is called.
     Then: Disks from all scopes are flattened into a single list, the warning-only
           scope contributes nothing, and the token is emitted under its own
-          DisksAggregatedNextToken key so it cannot collide with the zonal list.
+          AggregatedDisksNextToken key so it cannot collide with the zonal list.
     """
     from GCP import compute_disks_aggregated_list
 
@@ -6338,7 +6360,7 @@ def test_compute_disks_aggregated_list_flattens_scoped_lists(mocker):
 
     disks = res.outputs["GCP.Compute.Disks(val.id && val.id == obj.id)"]
     assert [disk["name"] for disk in disks] == ["disk-1", "disk-2"]
-    assert res.outputs["GCP.Compute(true)"]["DisksAggregatedNextToken"] == "next"
+    assert res.outputs["GCP.Compute(true)"]["AggregatedDisksNextToken"] == "next"
 
 
 def test_compute_disks_aggregated_list_no_results(mocker):
@@ -6360,15 +6382,15 @@ def test_compute_disks_aggregated_list_no_results(mocker):
     res = compute_disks_aggregated_list(mock_creds, {"project_id": "p1"})
 
     assert res.outputs["GCP.Compute.Disks(val.id && val.id == obj.id)"] == []
-    assert res.outputs["GCP.Compute(true)"]["DisksAggregatedNextToken"] is None
-    assert "DisksAggregatedWarning" not in res.outputs["GCP.Compute(true)"]
+    assert res.outputs["GCP.Compute(true)"]["AggregatedDisksNextToken"] is None
+    assert "AggregatedDisksWarning" not in res.outputs["GCP.Compute(true)"]
 
 
 def test_compute_disks_aggregated_list_with_warning(mocker):
     """
     Given: An aggregated response carrying a top-level warning.
     When: compute_disks_aggregated_list is called.
-    Then: The warning is surfaced under its own DisksAggregatedWarning key.
+    Then: The warning is surfaced under its own AggregatedDisksWarning key.
     """
     from GCP import compute_disks_aggregated_list
 
@@ -6385,18 +6407,16 @@ def test_compute_disks_aggregated_list_with_warning(mocker):
 
     res = compute_disks_aggregated_list(mock_creds, {"project_id": "p1"})
 
-    assert res.outputs["GCP.Compute(true)"]["DisksAggregatedWarning"]["code"] == "NO_RESULTS_ON_PAGE"
+    assert res.outputs["GCP.Compute(true)"]["AggregatedDisksWarning"]["code"] == "NO_RESULTS_ON_PAGE"
 
 
-def test_compute_disk_get_found_and_not_found(mocker):
+def test_compute_disk_get(mocker):
     """
-    Given: A disk name that exists and another that does not.
-    When: compute_disk_get is called for each.
-    Then: The disk details are returned for the first and a readable not-found
-          message is returned for the 404 instead of raising.
+    Given: A disk name that exists.
+    When: compute_disk_get is called.
+    Then: The disk details are returned under the GCP.Compute.Disks prefix.
     """
     from GCP import compute_disk_get
-    from googleapiclient.errors import HttpError
 
     mock_creds = mocker.Mock(spec=Credentials)
     mock_compute = mocker.Mock()
@@ -6404,28 +6424,19 @@ def test_compute_disk_get_found_and_not_found(mocker):
     mock_compute.disks.return_value = mock_disks
     mocker.patch("GCP.build", return_value=mock_compute)
 
-    # Found
     mock_disks.get.return_value.execute.return_value = {"name": "disk-1", "id": "1", "sizeGb": "10"}
     res = compute_disk_get(mock_creds, {"project_id": "p1", "zone": "us-central1-a", "resource_name": "disk-1"})
+
     assert res.outputs_prefix == "GCP.Compute.Disks"
     assert res.outputs["name"] == "disk-1"
     assert mock_disks.get.call_args[1] == {"project": "p1", "zone": "us-central1-a", "disk": "disk-1"}
 
-    # Not found
-    resp = mocker.MagicMock()
-    resp.status = 404
-    mock_disks.get.return_value.execute.side_effect = HttpError(
-        resp, b'{"error": {"message": "The resource disk-2 was not found"}}'
-    )
-    res2 = compute_disk_get(mock_creds, {"project_id": "p1", "zone": "us-central1-a", "resource_name": "disk-2"})
-    assert "not found" in res2.readable_output
 
-
-def test_compute_disk_get_propagates_non_404_error(mocker):
+def test_compute_disk_get_propagates_error(mocker):
     """
-    Given: The disks get API failing with a 403 permission error.
+    Given: The disks get API failing with a 404 not found error.
     When: compute_disk_get is called.
-    Then: The HttpError propagates so main() can map it to a permission error.
+    Then: The HttpError propagates so main() can surface it to the user.
     """
     from GCP import compute_disk_get
     from googleapiclient.errors import HttpError
@@ -6436,9 +6447,9 @@ def test_compute_disk_get_propagates_non_404_error(mocker):
     mocker.patch("GCP.build", return_value=mock_compute)
 
     resp = mocker.MagicMock()
-    resp.status = 403
+    resp.status = 404
     mock_disks.get.return_value.execute.side_effect = HttpError(
-        resp, b'{"error": {"message": "Required compute.disks.get permission"}}'
+        resp, b'{"error": {"message": "The resource disk-2 was not found"}}'
     )
 
     with pytest.raises(HttpError):
@@ -6921,7 +6932,7 @@ def test_compute_disk_types_aggregated_list_flattens_scoped_lists(mocker):
     Given: An aggregated response containing disk types in some scopes and a warning-only scope.
     When: compute_disk_types_aggregated_list is called.
     Then: Disk types from all scopes are flattened and the warning-only scope contributes nothing.
-          The token uses its own DiskTypesAggregatedNextToken key.
+          The token uses its own AggregatedDiskTypesNextToken key.
     """
     from GCP import compute_disk_types_aggregated_list
 
@@ -6964,15 +6975,15 @@ def test_compute_disk_types_aggregated_list_no_results(mocker):
     res = compute_disk_types_aggregated_list(mock_creds, {"project_id": "p1"})
 
     assert res.outputs["GCP.Compute.DiskTypes(val.id && val.id == obj.id)"] == []
-    assert res.outputs["GCP.Compute(true)"]["DiskTypesAggregatedNextToken"] is None
-    assert "DiskTypesAggregatedWarning" not in res.outputs["GCP.Compute(true)"]
+    assert res.outputs["GCP.Compute(true)"]["AggregatedDiskTypesNextToken"] is None
+    assert "AggregatedDiskTypesWarning" not in res.outputs["GCP.Compute(true)"]
 
 
 def test_compute_disk_types_aggregated_list_with_warning(mocker):
     """
     Given: An aggregated response carrying a top-level warning.
     When: compute_disk_types_aggregated_list is called.
-    Then: The warning is surfaced under its own DiskTypesAggregatedWarning key.
+    Then: The warning is surfaced under its own AggregatedDiskTypesWarning key.
     """
     from GCP import compute_disk_types_aggregated_list
 
@@ -6989,18 +7000,16 @@ def test_compute_disk_types_aggregated_list_with_warning(mocker):
 
     res = compute_disk_types_aggregated_list(mock_creds, {"project_id": "p1"})
 
-    assert res.outputs["GCP.Compute(true)"]["DiskTypesAggregatedWarning"]["code"] == "NO_RESULTS_ON_PAGE"
+    assert res.outputs["GCP.Compute(true)"]["AggregatedDiskTypesWarning"]["code"] == "NO_RESULTS_ON_PAGE"
 
 
-def test_compute_disk_type_get_found_and_not_found(mocker):
+def test_compute_disk_type_get(mocker):
     """
-    Given: A disk type name that exists and another that does not.
-    When: compute_disk_type_get is called for each.
-    Then: The disk type details are returned for the first and a readable not-found
-          message is returned for the 404 instead of raising.
+    Given: A disk type name that exists.
+    When: compute_disk_type_get is called.
+    Then: The disk type details are returned under the GCP.Compute.DiskTypes prefix.
     """
     from GCP import compute_disk_type_get
-    from googleapiclient.errors import HttpError
 
     mock_creds = mocker.Mock(spec=Credentials)
     mock_compute = mocker.Mock()
@@ -7008,27 +7017,18 @@ def test_compute_disk_type_get_found_and_not_found(mocker):
     mock_compute.diskTypes.return_value = mock_disk_types
     mocker.patch("GCP.build", return_value=mock_compute)
 
-    # Found
     mock_disk_types.get.return_value.execute.return_value = {"name": "pd-ssd", "id": "1", "validDiskSize": "10GB-64TB"}
     res = compute_disk_type_get(mock_creds, {"project_id": "p1", "zone": "us-central1-a", "resource_name": "pd-ssd"})
+
     assert res.outputs_prefix == "GCP.Compute.DiskTypes"
     assert mock_disk_types.get.call_args[1] == {"project": "p1", "zone": "us-central1-a", "diskType": "pd-ssd"}
 
-    # Not found
-    resp = mocker.MagicMock()
-    resp.status = 404
-    mock_disk_types.get.return_value.execute.side_effect = HttpError(
-        resp, b'{"error": {"message": "The resource pd-bogus was not found"}}'
-    )
-    res2 = compute_disk_type_get(mock_creds, {"project_id": "p1", "zone": "us-central1-a", "resource_name": "pd-bogus"})
-    assert "not found" in res2.readable_output
 
-
-def test_compute_disk_type_get_propagates_non_404_error(mocker):
+def test_compute_disk_type_get_propagates_error(mocker):
     """
-    Given: The diskTypes get API failing with a 403 permission error.
+    Given: The diskTypes get API failing with a 404 not found error.
     When: compute_disk_type_get is called.
-    Then: The HttpError propagates so main() can map it to a permission error.
+    Then: The HttpError propagates so main() can surface it to the user.
     """
     from GCP import compute_disk_type_get
     from googleapiclient.errors import HttpError
@@ -7039,9 +7039,9 @@ def test_compute_disk_type_get_propagates_non_404_error(mocker):
     mocker.patch("GCP.build", return_value=mock_compute)
 
     resp = mocker.MagicMock()
-    resp.status = 403
+    resp.status = 404
     mock_disk_types.get.return_value.execute.side_effect = HttpError(
-        resp, b'{"error": {"message": "Required compute.diskTypes.get permission"}}'
+        resp, b'{"error": {"message": "The resource pd-bogus was not found"}}'
     )
 
     with pytest.raises(HttpError):

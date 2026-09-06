@@ -615,6 +615,9 @@ script:
     - contextPath: GCP.Compute.Disks.options
       description: Internal use only.
       type: String
+    - contextPath: GCP.Compute.Disks.params
+      description: Additional parameters used when creating the disk, containing the resourceManagerTags field.
+      type: Unknown
     - contextPath: GCP.Compute.Disks.provisionedIops
       description: The number of I/O operations per second provisioned for the disk.
       type: String
@@ -674,7 +677,7 @@ script:
       defaultValue: '50'
       description: "Maximum number of results to return. Acceptable values are 1 to 500, inclusive."
     - name: next_token
-      description: Token for pagination. Set it to the value of GCP.Compute.DisksAggregatedNextToken returned by a previous request to get the next page of results.
+      description: Token for pagination. Set it to the value of GCP.Compute.AggregatedDisksNextToken returned by a previous request to get the next page of results.
     - name: filter
       description: "A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a disk named example-disk, use name != example-disk."
     - name: order_by
@@ -785,6 +788,9 @@ script:
     - contextPath: GCP.Compute.Disks.options
       description: Internal use only.
       type: String
+    - contextPath: GCP.Compute.Disks.params
+      description: Additional parameters used when creating the disk, containing the resourceManagerTags field.
+      type: Unknown
     - contextPath: GCP.Compute.Disks.provisionedIops
       description: The number of I/O operations per second provisioned for the disk.
       type: String
@@ -827,10 +833,10 @@ script:
     - contextPath: GCP.Compute.Disks.storagePool
       description: The storage pool in which the disk is created.
       type: String
-    - contextPath: GCP.Compute.DisksAggregatedNextToken
+    - contextPath: GCP.Compute.AggregatedDisksNextToken
       description: Next page token for pagination.
       type: String
-    - contextPath: GCP.Compute.DisksAggregatedWarning
+    - contextPath: GCP.Compute.AggregatedDisksWarning
       description: An informational warning returned by the API, containing the code, message, and data fields. For example, NO_RESULTS_ON_PAGE when the page holds no results.
       type: Unknown
   - name: gcp-compute-disk-get
@@ -952,6 +958,9 @@ script:
     - contextPath: GCP.Compute.Disks.options
       description: Internal use only.
       type: String
+    - contextPath: GCP.Compute.Disks.params
+      description: Additional parameters used when creating the disk, containing the resourceManagerTags field.
+      type: Unknown
     - contextPath: GCP.Compute.Disks.provisionedIops
       description: The number of I/O operations per second provisioned for the disk.
       type: String
@@ -1545,7 +1554,7 @@ script:
       defaultValue: '50'
       description: "Maximum number of results to return. Acceptable values are 1 to 500, inclusive."
     - name: next_token
-      description: Token for pagination. Set it to the value of GCP.Compute.DiskTypesAggregatedNextToken returned by a previous request to get the next page of results.
+      description: Token for pagination. Set it to the value of GCP.Compute.AggregatedDiskTypesNextToken returned by a previous request to get the next page of results.
     - name: filter
       description: "A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value, which can be a string, number, or boolean. For example, to exclude a disk type named pd-standard, use name != pd-standard."
     - name: order_by
@@ -1584,10 +1593,10 @@ script:
     - contextPath: GCP.Compute.DiskTypes.deprecated
       description: The deprecation status associated with this disk type, containing the state, replacement, deprecated, obsolete, and deleted fields.
       type: Unknown
-    - contextPath: GCP.Compute.DiskTypesAggregatedNextToken
+    - contextPath: GCP.Compute.AggregatedDiskTypesNextToken
       description: Next page token for pagination.
       type: String
-    - contextPath: GCP.Compute.DiskTypesAggregatedWarning
+    - contextPath: GCP.Compute.AggregatedDiskTypesWarning
       description: An informational warning returned by the API, containing the code, message, and data fields. For example, NO_RESULTS_ON_PAGE when the page holds no results.
       type: Unknown
   - name: gcp-compute-disk-type-get

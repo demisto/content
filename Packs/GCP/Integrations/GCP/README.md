@@ -1735,6 +1735,7 @@ Retrieves a list of persistent disks contained within the specified zone. Requir
 | GCP.Compute.Disks.enableConfidentialCompute | Boolean | Whether this disk is using confidential compute mode. |
 | GCP.Compute.Disks.locationHint | String | An opaque location hint used to place the disk close to other resources. |
 | GCP.Compute.Disks.options | String | Internal use only. |
+| GCP.Compute.Disks.params | Unknown | Additional parameters used when creating the disk, containing the resourceManagerTags field. |
 | GCP.Compute.Disks.provisionedIops | String | The number of I/O operations per second provisioned for the disk. |
 | GCP.Compute.Disks.provisionedThroughput | String | The throughput in MB per second provisioned for the disk. |
 | GCP.Compute.Disks.resourcePolicies | Unknown | Resource policies applied to this disk for automatic snapshot creations. |
@@ -1767,7 +1768,7 @@ Retrieves an aggregated list of persistent disks across all zones in the project
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | Maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
-| next_token | Token for pagination. Set it to the value of GCP.Compute.DisksAggregatedNextToken returned by a previous request to get the next page of results. | Optional |
+| next_token | Token for pagination. Set it to the value of GCP.Compute.AggregatedDisksNextToken returned by a previous request to get the next page of results. | Optional |
 | filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator \(=, !=, &gt;, or &lt;\), and a value, which can be a string, number, or boolean. For example, to exclude a disk named example-disk, use name != example-disk. | Optional |
 | order_by | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using creationTimestamp desc. | Optional |
 
@@ -1810,6 +1811,7 @@ Retrieves an aggregated list of persistent disks across all zones in the project
 | GCP.Compute.Disks.enableConfidentialCompute | Boolean | Whether this disk is using confidential compute mode. |
 | GCP.Compute.Disks.locationHint | String | An opaque location hint used to place the disk close to other resources. |
 | GCP.Compute.Disks.options | String | Internal use only. |
+| GCP.Compute.Disks.params | Unknown | Additional parameters used when creating the disk, containing the resourceManagerTags field. |
 | GCP.Compute.Disks.provisionedIops | String | The number of I/O operations per second provisioned for the disk. |
 | GCP.Compute.Disks.provisionedThroughput | String | The throughput in MB per second provisioned for the disk. |
 | GCP.Compute.Disks.resourcePolicies | Unknown | Resource policies applied to this disk for automatic snapshot creations. |
@@ -1824,8 +1826,8 @@ Retrieves an aggregated list of persistent disks across all zones in the project
 | GCP.Compute.Disks.sourceInstantSnapshotId | String | The unique ID of the instant snapshot used to create this disk. |
 | GCP.Compute.Disks.sourceStorageObject | String | The full Google Cloud Storage URI where the disk image is stored. |
 | GCP.Compute.Disks.storagePool | String | The storage pool in which the disk is created. |
-| GCP.Compute.DisksAggregatedNextToken | String | Next page token for pagination. |
-| GCP.Compute.DisksAggregatedWarning | Unknown | An informational warning returned by the API, containing the code, message, and data fields. For example, NO_RESULTS_ON_PAGE when the page holds no results. |
+| GCP.Compute.AggregatedDisksNextToken | String | Next page token for pagination. |
+| GCP.Compute.AggregatedDisksWarning | Unknown | An informational warning returned by the API, containing the code, message, and data fields. For example, NO_RESULTS_ON_PAGE when the page holds no results. |
 
 ### gcp-compute-disk-get
 
@@ -1883,6 +1885,7 @@ Returns a specified persistent disk. Required permission: compute.disks.get.
 | GCP.Compute.Disks.enableConfidentialCompute | Boolean | Whether this disk is using confidential compute mode. |
 | GCP.Compute.Disks.locationHint | String | An opaque location hint used to place the disk close to other resources. |
 | GCP.Compute.Disks.options | String | Internal use only. |
+| GCP.Compute.Disks.params | Unknown | Additional parameters used when creating the disk, containing the resourceManagerTags field. |
 | GCP.Compute.Disks.provisionedIops | String | The number of I/O operations per second provisioned for the disk. |
 | GCP.Compute.Disks.provisionedThroughput | String | The throughput in MB per second provisioned for the disk. |
 | GCP.Compute.Disks.resourcePolicies | Unknown | Resource policies applied to this disk for automatic snapshot creations. |
@@ -2205,7 +2208,7 @@ Retrieves an aggregated list of disk types across all zones in the project. Requ
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | Maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
-| next_token | Token for pagination. Set it to the value of GCP.Compute.DiskTypesAggregatedNextToken returned by a previous request to get the next page of results. | Optional |
+| next_token | Token for pagination. Set it to the value of GCP.Compute.AggregatedDiskTypesNextToken returned by a previous request to get the next page of results. | Optional |
 | filter | A filter expression for resources listed in the response. The expression must specify a field name, a comparison operator \(=, !=, &gt;, or &lt;\), and a value, which can be a string, number, or boolean. For example, to exclude a disk type named pd-standard, use name != pd-standard. | Optional |
 | order_by | Sorts list results by a certain order. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using creationTimestamp desc. | Optional |
 
@@ -2224,8 +2227,8 @@ Retrieves an aggregated list of disk types across all zones in the project. Requ
 | GCP.Compute.DiskTypes.creationTimestamp | Date | Creation timestamp of the disk type in RFC3339 text format. |
 | GCP.Compute.DiskTypes.selfLink | String | Server-defined URL for the disk type resource. |
 | GCP.Compute.DiskTypes.deprecated | Unknown | The deprecation status associated with this disk type, containing the state, replacement, deprecated, obsolete, and deleted fields. |
-| GCP.Compute.DiskTypesAggregatedNextToken | String | Next page token for pagination. |
-| GCP.Compute.DiskTypesAggregatedWarning | Unknown | An informational warning returned by the API, containing the code, message, and data fields. For example, NO_RESULTS_ON_PAGE when the page holds no results. |
+| GCP.Compute.AggregatedDiskTypesNextToken | String | Next page token for pagination. |
+| GCP.Compute.AggregatedDiskTypesWarning | Unknown | An informational warning returned by the API, containing the code, message, and data fields. For example, NO_RESULTS_ON_PAGE when the page holds no results. |
 
 ### gcp-compute-disk-type-get
 
