@@ -27,32 +27,6 @@ Integration for fetching Alerts and Audit Logs from the KOI API.
 # =================================
 INTEGRATION_NAME = "KOI"
 
-# ============================================================================
-# TEMPORARY DEBUG BUILD MARKER — remove before the official release.
-# Bump the suffix each time you upload a new test build to the client tenant so
-# you can confirm from the logs which build is actually running (XSUP-73937).
-# Grep the tenant/engine logs for "KOI OOM-FIX BUILD" to verify the upload.
-# ============================================================================
-DEBUG_BUILD_MARKER = "KOI OOM-FIX BUILD oom-streaming-1"
-
-
-def _debug_rss(stage: str) -> None:
-    """TEMPORARY: log the process RSS (resident memory) at a given stage.
-
-    Reads /proc/self/statm (Linux runner) to report process memory in MB so we can
-    confirm on the tenant that memory stays ~flat per page instead of growing with
-    volume (XSUP-73937). Best-effort: never raises, and silently no-ops off Linux.
-
-    Remove this helper (and its call sites) before the official release.
-    """
-    try:
-        with open("/proc/self/statm") as statm:
-            pages = int(statm.readline().split()[1])  # resident set size, in pages
-        rss_mb = (pages * 4096) / (1024 * 1024)
-        demisto.debug(f"[{DEBUG_BUILD_MARKER}] RSS at {stage}: {rss_mb:.1f} MB")
-    except Exception as rss_err:  # pragma: no cover - diagnostics only
-        demisto.debug(f"[{DEBUG_BUILD_MARKER}] RSS at {stage}: unavailable ({rss_err})")
-
 
 class ApiPaths:
     """Centralized KOI API endpoint paths.
@@ -1054,9 +1028,6 @@ def test_module(client: Client) -> str:
     Returns:
         'ok' if test passed, otherwise raises an exception.
     """
-    # TEMPORARY (XSUP-73937): emit the build marker on Test click so you can verify the
-    # fixed build is deployed without waiting for a fetch cycle. Grep logs for "KOI OOM-FIX BUILD".
-    demisto.debug(f"[{DEBUG_BUILD_MARKER}] test-module invoked")
     demisto.debug("[Test Module] Starting...")
     try:
         utc_now = datetime.now(UTC)
@@ -1357,7 +1328,6 @@ def _fetch_single_log_type(
         hwm_time: str | None = None
         hwm_ids: set[str] = set()
         total_new = 0
-        page_index = 0  # TEMPORARY (XSUP-73937): for per-page RSS debug logging
 
         for page in _iter_event_pages(
             client,
@@ -1386,7 +1356,6 @@ def _fetch_single_log_type(
                 if event_time == hwm_time and (event_id := get_event_id(event)):
                     hwm_ids.add(event_id)
 
-            page_index += 1
             # Deduplicate this page against the previous run's IDs, then send-and-flush.
             new_events = deduplicate_events(page, last_fetched_ids)
             if new_events:
@@ -1398,8 +1367,6 @@ def _fetch_single_log_type(
                 client.send_events(new_events, use_streaming_send=True)
                 demisto.debug(f"[Fetch] {log_type.type_string}: streamed {count} new events (running total {total_new})")
             # page + new_events go out of scope here → freed before the next page.
-            # TEMPORARY (XSUP-73937): confirm RSS stays ~flat across pages, not growing with volume.
-            _debug_rss(f"{log_type.type_string} after page {page_index}")
 
         result.new_event_count = total_new
         demisto.debug(f"[Fetch] {log_type.type_string}: {total_new} new events sent after dedup")
@@ -1456,11 +1423,6 @@ def fetch_events_command(client: Client) -> None:
     Args:
         client: The KOI client.
     """
-    # TEMPORARY (XSUP-73937): build marker + start-of-cycle RSS. Grep the tenant logs for
-    # "KOI OOM-FIX BUILD" to confirm the fixed build is deployed and to read the memory usage.
-    demisto.debug(f"[{DEBUG_BUILD_MARKER}] fetch-events cycle START")
-    _debug_rss("cycle start")
-
     params = demisto.params()
     max_events_to_fetch = int(params.get("max_fetch", Config.DEFAULT_MAX_FETCH))
 
@@ -1518,11 +1480,6 @@ def fetch_events_command(client: Client) -> None:
     # Single write of last_run state — preserves progress from successful types
     demisto.setLastRun(updated_last_run)
     demisto.debug(f"[Fetch] Last run updated: {updated_last_run}")
-
-    # TEMPORARY (XSUP-73937): end-of-cycle RSS. Compare against "cycle start" and across cycles
-    # of different volume — this peak should stay ~flat (≈ floor + one page), not grow with volume.
-    _debug_rss("cycle end")
-    demisto.debug(f"[{DEBUG_BUILD_MARKER}] fetch-events cycle END | new events this cycle: {total_new_events}")
 
 
 def koi_policy_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
