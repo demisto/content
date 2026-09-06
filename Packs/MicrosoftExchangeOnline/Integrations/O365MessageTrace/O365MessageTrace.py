@@ -454,8 +454,18 @@ def fetch_events_sequential(
     )
 
     if len(collected) > max_events:
-        demisto.debug(f"[Fetch] Collected {len(collected)} events, truncating to max_events ({max_events}).")
-        collected = collected[:max_events]
+        # Truncate to max_events, but never cut through a group sharing the same
+        # receivedDateTime second - otherwise the high-water mark would advance past a
+        # second whose events were only partially fetched, permanently skipping the rest.
+        cut = max_events
+        boundary_time = collected[max_events - 1].get("receivedDateTime")
+        while cut < len(collected) and collected[cut].get("receivedDateTime") == boundary_time:
+            cut += 1
+        demisto.debug(
+            f"[Fetch] Collected {len(collected)} events, truncating to {cut} "
+            f"(max_events={max_events}, extended to keep whole boundary second {boundary_time})."
+        )
+        collected = collected[:cut]
 
     return collected
 
@@ -587,8 +597,6 @@ def fetch_events(client: Client, max_events: int) -> None:
             window_end_dt = min(start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES), now)
 
         events = all_events
-        if len(events) > max_events:
-            events = events[:max_events]
 
     add_unique_id_field(events)
     add_time_field(events)
@@ -606,10 +614,11 @@ def fetch_events(client: Client, max_events: int) -> None:
     new_last_fetch = format_datetime_for_filter(window_end_dt)
     new_seen_ids: list[str] = []
 
-    # Use ALL fetched events (not just published ones): timestamps are second-granular, so
-    # seen_ids must keep every ID at the boundary - including deduped-out ones - or the next
-    # run (re-fetching at ``>= boundary``) would re-send already-sent events as duplicates.
-    timed_events = [event for event in new_events if event.get("_time")]
+    # Build seen_ids from ALL fetched events (not the deduped/published ``new_events``): timestamps
+    # are second-granular, so seen_ids must keep every ID at the boundary second - INCLUDING ones
+    # deduped out this run - or the next run (re-fetching at ``>= boundary``) would re-send
+    # already-sent events as duplicates.
+    timed_events = [event for event in events if event.get("_time")]
 
     if timed_events:
         latest_time: str = max(event["_time"] for event in timed_events)

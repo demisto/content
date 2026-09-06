@@ -654,6 +654,120 @@ class TestFetchEventsWindowWalk:
         assert set_last_run.call_count == 1
 
 
+class TestFetchEventsBoundaryTruncation:
+    """Regression tests for the max_events / timestamp-group boundary.
+
+    ``receivedDateTime`` is second-granular, so many events can share one ``_time``. Two things
+    must hold: (1) truncation must not split a same-second group and then advance the cursor past
+    it (that would drop the cut-off events forever), and (2) ``seen_ids`` must be built from ALL
+    fetched events at the boundary second - including deduped-out ones - so the next run does not
+    re-send them.
+    """
+
+    @staticmethod
+    def _frozen_now(now: datetime):
+        class FrozenDatetime(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return now
+
+        return FrozenDatetime
+
+    def test_seen_ids_include_all_boundary_events_not_just_published(self, mock_client, mocker):
+        """Two events share the same latest ``_time``; one is a duplicate (already in seen_ids).
+        The surviving seen_ids must contain BOTH ``_unique_id``s so neither is re-sent next run."""
+        now = datetime(2025, 1, 1, 10, 3, 0, tzinfo=UTC)
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        # ``a|bob`` was already seen last run, so it will be deduped out this run.
+        mocker.patch.object(
+            demisto,
+            "getLastRun",
+            return_value={"last_fetch": "2025-01-01T10:00:00.000000Z", "seen_ids": ["a|bob@contoso.com"]},
+        )
+        set_last_run = mocker.patch.object(demisto, "setLastRun")
+        mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.return_value = {
+            "value": [
+                {"id": "a", "receivedDateTime": "2025-01-01T10:01:00Z", "recipientAddress": "bob@contoso.com"},
+                {"id": "a", "receivedDateTime": "2025-01-01T10:01:00Z", "recipientAddress": "carol@contoso.com"},
+            ]
+        }
+
+        fetch_events(mock_client, max_events=100)
+
+        new_last_run = set_last_run.call_args.args[0]
+        # Both boundary IDs must be persisted - including the deduped-out ``a|bob``.
+        assert set(new_last_run["seen_ids"]) == {"a|bob@contoso.com", "a|carol@contoso.com"}
+
+    def test_truncation_keeps_whole_boundary_second(self, mock_client, mocker):
+        """When max_events lands mid-second, the cut is EXTENDED to keep the whole boundary
+        second, so every event sharing that second is returned in the same run (never split)."""
+        now = datetime(2025, 1, 1, 10, 3, 0, tzinfo=UTC)
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now))
+        mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2025-01-01T10:00:00.000000Z", "seen_ids": []})
+        set_last_run = mocker.patch.object(demisto, "setLastRun")
+        send = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        # 3 events: one at :01, two sharing :02. max_events=2 lands mid-:02 group.
+        mock_client.ms_client.http_request.return_value = {
+            "value": [
+                {"id": "e1", "receivedDateTime": "2025-01-01T10:01:00Z", "recipientAddress": "bob@contoso.com"},
+                {"id": "e2", "receivedDateTime": "2025-01-01T10:02:00Z", "recipientAddress": "bob@contoso.com"},
+                {"id": "e2", "receivedDateTime": "2025-01-01T10:02:00Z", "recipientAddress": "carol@contoso.com"},
+            ]
+        }
+
+        fetch_events(mock_client, max_events=2)
+
+        # The whole :02 second is kept (cut extended past max_events), so all 3 events are sent
+        # and the cursor advances to :02 - no same-second group is ever split across runs.
+        sent = send.call_args.kwargs["events"]
+        assert {(event["id"], event["recipientAddress"]) for event in sent} == {
+            ("e1", "bob@contoso.com"),
+            ("e2", "bob@contoso.com"),
+            ("e2", "carol@contoso.com"),
+        }
+        new_last_run = set_last_run.call_args.args[0]
+        assert new_last_run["last_fetch"] == "2025-01-01T10:02:00Z"
+
+    def test_no_duplicates_when_next_run_rescans_boundary_second(self, mock_client, mocker):
+        """After a boundary-second run, the next run re-queries ``>= boundary`` and must NOT
+        re-send the same-second events, because their ``_unique_id``s are in seen_ids."""
+        # --- Cycle 1: fetch the :02 boundary second. ---
+        now1 = datetime(2025, 1, 1, 10, 3, 0, tzinfo=UTC)
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now1))
+        mocker.patch.object(demisto, "getLastRun", return_value={"last_fetch": "2025-01-01T10:00:00.000000Z", "seen_ids": []})
+        set_last_run_1 = mocker.patch.object(demisto, "setLastRun")
+        send1 = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.return_value = {
+            "value": [
+                {"id": "e2", "receivedDateTime": "2025-01-01T10:02:00Z", "recipientAddress": "bob@contoso.com"},
+                {"id": "e2", "receivedDateTime": "2025-01-01T10:02:00Z", "recipientAddress": "carol@contoso.com"},
+            ]
+        }
+        fetch_events(mock_client, max_events=100)
+        cycle1_last_run = set_last_run_1.call_args.args[0]
+        cycle1_sent = {(event["id"], event["recipientAddress"]) for event in send1.call_args.kwargs["events"]}
+
+        # --- Cycle 2: resume; the API re-returns the same :02 events at the boundary. ---
+        now2 = datetime(2025, 1, 1, 10, 4, 0, tzinfo=UTC)
+        mocker.patch.object(O365MessageTrace, "datetime", self._frozen_now(now2))
+        mocker.patch.object(demisto, "getLastRun", return_value=cycle1_last_run)
+        mocker.patch.object(demisto, "setLastRun")
+        send2 = mocker.patch.object(O365MessageTrace, "send_events_to_xsiam")
+        mock_client.ms_client.http_request.return_value = {
+            "value": [
+                {"id": "e2", "receivedDateTime": "2025-01-01T10:02:00Z", "recipientAddress": "bob@contoso.com"},
+                {"id": "e2", "receivedDateTime": "2025-01-01T10:02:00Z", "recipientAddress": "carol@contoso.com"},
+            ]
+        }
+        fetch_events(mock_client, max_events=100)
+
+        # Cycle 1 delivered both recipients; cycle 2 re-scanned the same second but sent nothing
+        # (both _unique_ids were carried in seen_ids) - no duplicates.
+        assert cycle1_sent == {("e2", "bob@contoso.com"), ("e2", "carol@contoso.com")}
+        assert not send2.called
+
+
 # ============================================================================
 # O365MessageTraceClient.http_request tests
 # ============================================================================
