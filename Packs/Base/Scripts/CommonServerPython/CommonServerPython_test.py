@@ -48,6 +48,7 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 safe_pickle_loads, UnsafePickleError
                                 )
 
+
 EVENTS_LOG_ERROR = \
     """Error sending new events into XSIAM.
 Parameters used:
@@ -9898,6 +9899,49 @@ def test_content_type(content_format, outputs, expected_type):
     assert command_results.to_context()['ContentsFormat'] == expected_type
 
 
+def _install_fake_ijson(mocker):
+    """
+    Install a minimal fake ``ijson`` module into ``sys.modules`` so ``stream_json_items`` can be exercised
+    in every docker image WITHOUT requiring the real ``ijson`` package to be installed.
+
+    Rationale: ``ijson`` is intentionally NOT part of the CommonServerPython runtime image (``stream_json_items``
+    imports it lazily and raises a clear error if missing, so each adopting integration adds it to its own
+    image), and the SDK's pytest-in-docker test images do not include ``ijson`` either (it is not in the SDK's
+    dev-requirements) and cannot pip-install at test time. Injecting a fake keeps the ``stream_json_items``
+    code path (lazy import + ``ijson.items(...)`` loop + one-at-a-time yield) fully covered in CI with no infra
+    dependency.
+
+    The fake exposes ``items(source, prefix)`` matching the contract stream_json_items relies on: it parses the
+    whole source (bytes / str / file-like) and yields the records addressed by ``prefix`` ('item' for a top-level
+    array, 'a.b.item' for a nested array), one at a time.
+
+    :return: the fake ijson module object.
+    """
+    import types as _types
+
+    def _read_all(source):
+        data = source.read() if hasattr(source, 'read') else source
+        if isinstance(data, bytes):
+            data = data.decode('utf-8')
+        return json.loads(data)
+
+    def items(source, prefix):
+        parsed = _read_all(source)
+        node = parsed
+        for token in prefix.split('.'):
+            if token == 'item':
+                for element in node:
+                    yield element
+                return
+            node = node[token]
+        yield node
+
+    fake = _types.ModuleType('ijson')
+    fake.items = items
+    mocker.patch.dict('sys.modules', {'ijson': fake})
+    return fake
+
+
 class TestSendEventsToXSIAMTest:
     with open('test_data/events.json') as f:
         test_data = json.load(f)
@@ -10116,6 +10160,454 @@ class TestSendEventsToXSIAMTest:
         assert sorted(streaming_lines) == sorted(legacy_lines)
         assert len(streaming_lines) == 2
         assert all('blob' not in line for line in streaming_lines)
+
+    def test_send_assets_to_xsiam_defaults_to_streaming(self, mocker):
+        """
+        Given: a list of dict assets.
+        When:  calling send_assets_to_xsiam with default arguments (use_streaming_send defaults to True).
+        Then:  the assets are sent via the streaming path (serialize+free one at a time), the assets snapshot
+               headers (collector-type/snapshot-id/total-items-count) are preserved, and the same set of
+               serialized assets is delivered as the legacy path would deliver.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, send_assets_to_xsiam
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('time.time', return_value=123)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        assets = [{'id': i, 'name': 'asset number {}'.format(i)} for i in range(10)]
+
+        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_assets_to_xsiam(assets=list(assets), vendor='some vendor', product='some product')
+
+        # The assets snapshot headers must be preserved (send goes through the assets data_type path).
+        headers = http_mock.call_args[1]['headers']
+        assert headers['collector-type'] == 'assets'
+        assert headers['snapshot-id'] == '123000'
+        assert headers['total-items-count'] == str(len(assets))
+
+        # Verify the streaming path delivered exactly the expected serialized assets.
+        streaming_lines = []
+        for call in http_mock.call_args_list:
+            streaming_lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
+        expected_lines = [json.dumps(asset) for asset in assets]
+        assert sorted(streaming_lines) == sorted(expected_lines)
+        demisto.updateModuleHealth.assert_called_with({'assetsPulled': len(assets)})
+
+    def test_send_assets_to_xsiam_non_streaming_preserves_headers(self, mocker):
+        """
+        Given: a list of dict assets.
+        When:  calling send_assets_to_xsiam with use_streaming_send=False (opt out of streaming).
+        Then:  the legacy (chunked) path is used, the assets snapshot headers are still preserved, and the
+               same set of serialized assets is delivered.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, send_assets_to_xsiam
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('time.time', return_value=123)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        assets = [{'id': i} for i in range(5)]
+        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_assets_to_xsiam(assets=list(assets), vendor='v', product='p', use_streaming_send=False)
+
+        headers = http_mock.call_args[1]['headers']
+        assert headers['collector-type'] == 'assets'
+        assert headers['snapshot-id'] == '123000'
+        assert headers['total-items-count'] == str(len(assets))
+
+        lines = []
+        for call in http_mock.call_args_list:
+            lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
+        assert sorted(lines) == sorted(json.dumps(a) for a in assets)
+
+    def test_send_assets_to_xsiam_custom_snapshot_id_and_items_count(self, mocker):
+        """
+        Given: a list of assets with a custom snapshot_id and items_count.
+        When:  calling send_assets_to_xsiam.
+        Then:  the custom snapshot_id and items_count are used in the request headers.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, send_assets_to_xsiam
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('time.time', return_value=123)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_assets_to_xsiam(assets=[{'id': 1}], vendor='v', product='p',
+                             snapshot_id='999', items_count=42)
+
+        headers = http_mock.call_args[1]['headers']
+        assert headers['snapshot-id'] == '999'
+        assert headers['total-items-count'] == '42'
+
+    def test_send_assets_to_xsiam_empty(self, mocker):
+        """
+        Given: an empty list of assets.
+        When:  calling send_assets_to_xsiam.
+        Then:  no HTTP call is made and the health module reports 0 assets.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, send_assets_to_xsiam
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        update_health_mock = mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        http_mock = mocker.patch.object(BaseClient, '_http_request')
+
+        send_assets_to_xsiam(assets=[], vendor='v', product='p')
+
+        assert http_mock.call_count == 0
+        update_health_mock.assert_called_with({'assetsPulled': 0})
+
+    def test_send_assets_to_xsiam_multiple_threads_disables_streaming(self, mocker):
+        """
+        Given: a list of dict assets.
+        When:  calling send_assets_to_xsiam with multiple_threads=True (while use_streaming_send defaults to True).
+        Then:  the streaming send path is NOT used - streaming is mutually exclusive with multiple_threads
+               (see send_data_to_xsiam: streaming_send requires 'not multiple_threads'). Instead the legacy
+               threaded path runs and returns a list of futures. This documents that multiple_threads silently
+               disables the memory-efficient streaming that send_assets_to_xsiam otherwise provides.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, send_assets_to_xsiam
+        from requests import Response
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('CommonServerPython.support_multithreading')
+        mocker.patch('time.time', return_value=123)
+
+        info_mock = mocker.patch.object(demisto, 'info')
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+
+        futures = send_assets_to_xsiam(assets=[{'id': 1}, {'id': 2}], vendor='v', product='p',
+                                       multiple_threads=True)
+
+        # multiple_threads path returns a list of futures ...
+        assert isinstance(futures, list)
+        import concurrent.futures
+        total = 0
+        for future in concurrent.futures.as_completed(futures):
+            total += future.result()
+        assert total == 2
+
+        # ... and the streaming ("free-as-you-go") path was NOT taken.
+        streaming_logged = any(
+            'streaming' in str(call.args[0]).lower()
+            for call in info_mock.call_args_list if call.args
+        )
+        assert not streaming_logged, 'streaming send should be disabled when multiple_threads=True'
+        # The payload sent is the legacy newline-joined form (both assets in a single decompressed blob),
+        # which is the non-streaming serialization.
+        sent_blobs = [gzip.decompress(call[1]['data']).decode('utf-8') for call in http_mock.call_args_list]
+        assert any('\n' in blob for blob in sent_blobs)
+
+    def test_send_assets_to_xsiam_custom_client_class(self, mocker):
+        """
+        Given: a custom client class.
+        When:  calling send_assets_to_xsiam with client_class set.
+        Then:  the custom client class is instantiated and used to perform the send.
+        """
+        if not IS_PY3:
+            return
+        from CommonServerPython import BaseClient, send_assets_to_xsiam
+        from requests import Response
+
+        class MyClient(BaseClient):
+            pass
+
+        mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
+        mocker.patch.object(demisto, 'updateModuleHealth')
+        mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
+        mocker.patch('time.time', return_value=123)
+
+        api_response = Response()
+        api_response.status_code = 200
+        api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
+
+        init_spy = mocker.spy(MyClient, '__init__')
+        mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        send_assets_to_xsiam(assets=[{'id': 1}], vendor='v', product='p', client_class=MyClient)
+        assert init_spy.call_count == 1
+
+    def test_stream_json_items_top_level_array(self, mocker):
+        """
+        Given: a JSON payload that is a top-level array (as bytes).
+        When:  parsing it with stream_json_items using the default 'item' prefix.
+        Then:  every record in the array is yielded, in order.
+        """
+        _install_fake_ijson(mocker)
+        from CommonServerPython import stream_json_items
+        import io
+
+        top_level = [{'id': 1}, {'id': 2}, {'id': 3}]
+        source = io.BytesIO(json.dumps(top_level).encode('utf-8'))
+        assert list(stream_json_items(source, items_prefix='item')) == top_level
+
+    def test_stream_json_items_nested_array(self, mocker):
+        """
+        Given: a JSON payload containing an array nested under a key.
+        When:  parsing it with the matching nested prefix ('data.item').
+        Then:  only the nested records are yielded.
+        """
+        _install_fake_ijson(mocker)
+        from CommonServerPython import stream_json_items
+        import io
+
+        nested = {'data': [{'id': 10}, {'id': 20}], 'meta': {'total': 2}}
+        source = io.BytesIO(json.dumps(nested).encode('utf-8'))
+        assert list(stream_json_items(source, items_prefix='data.item')) == nested['data']
+
+    def test_stream_json_items_empty_array(self, mocker):
+        """
+        Given: a JSON payload that is an empty array.
+        When:  parsing it with stream_json_items.
+        Then:  no records are yielded.
+        """
+        _install_fake_ijson(mocker)
+        from CommonServerPython import stream_json_items
+        import io
+
+        source = io.BytesIO(b'[]')
+        assert list(stream_json_items(source, items_prefix='item')) == []
+
+    def test_stream_json_items_from_bytes(self, mocker):
+        """
+        Given: a JSON array supplied directly as a bytes object (not a stream).
+        When:  parsing it with stream_json_items.
+        Then:  the records are yielded correctly (ijson accepts bytes input).
+        """
+        _install_fake_ijson(mocker)
+        from CommonServerPython import stream_json_items
+
+        assert list(stream_json_items(b'[{"a": 1}, {"a": 2}]', items_prefix='item')) == [{'a': 1}, {'a': 2}]
+
+    def test_stream_json_items_yields_one_at_a_time(self, mocker):
+        """
+        Given: a JSON array parsed via stream_json_items.
+        When:  advancing the returned generator one step at a time.
+        Then:  it is a lazy generator that yields a single record per iteration (does not build a full list
+               up front), confirming the one-record-at-a-time contract of stream_json_items.
+        """
+        _install_fake_ijson(mocker)
+        from CommonServerPython import stream_json_items
+
+        gen = stream_json_items(b'[{"id": 0}, {"id": 1}, {"id": 2}]', items_prefix='item')
+        # It's a generator (lazy), not a materialized list.
+        assert hasattr(gen, '__next__') or hasattr(gen, 'next')
+        assert next(gen) == {'id': 0}
+        assert next(gen) == {'id': 1}
+        assert list(gen) == [{'id': 2}]
+
+    def test_stream_json_items_is_lazy(self, mocker):
+        """
+        Given: a JSON array wrapped in a stream whose reads are counted (real ijson only).
+        When:  advancing the stream_json_items generator by a single step (next()).
+        Then:  the whole stream is NOT fully consumed up front, proving parsing is incremental/lazy.
+
+        This test asserts real-library incremental behavior, so it requires the real ``ijson`` and is skipped
+        when it is not installed (the one-record-at-a-time contract is covered without ijson by
+        test_stream_json_items_yields_one_at_a_time).
+        """
+        pytest.importorskip('ijson')
+        from CommonServerPython import stream_json_items
+        import io
+
+        payload = json.dumps([{'id': i} for i in range(1000)]).encode('utf-8')
+
+        class CountingStream(io.BytesIO):
+            def __init__(self, data):
+                io.BytesIO.__init__(self, data)
+                self.total_read = 0
+
+            def read(self, size=-1):
+                chunk = io.BytesIO.read(self, size)
+                self.total_read += len(chunk)
+                return chunk
+
+        stream = CountingStream(payload)
+        gen = stream_json_items(stream, items_prefix='item')
+        first = next(gen)
+        assert first == {'id': 0}
+        # The generator produced the first record without reading the entire (large) payload.
+        assert stream.total_read < len(payload)
+
+    def test_stream_json_items_missing_ijson(self, mocker):
+        """
+        Given: an environment where ijson is not installed.
+        When:  calling stream_json_items.
+        Then:  a clear DemistoException is raised instructing to add ijson to the docker image.
+        """
+        from CommonServerPython import stream_json_items
+        try:
+            import builtins  # Python 3
+        except ImportError:
+            import __builtin__ as builtins  # type: ignore # Python 2
+
+        real_import = builtins.__import__
+
+        def fake_import(name, *args, **kwargs):
+            if name == 'ijson':
+                raise ImportError('No module named ijson')
+            return real_import(name, *args, **kwargs)
+
+        mocker.patch.object(builtins, '__import__', side_effect=fake_import)
+        with pytest.raises(DemistoException, match='ijson'):
+            list(stream_json_items(b'[]'))
+
+    def test_stream_xml_elements_basic(self):
+        """
+        Given: an XML document with repeated <asset> elements interleaved with other tags.
+        When:  parsing it with stream_xml_elements(tag='asset').
+        Then:  only <asset> elements are yielded, in document order, and non-matching tags are ignored.
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = (
+            b'<assets>'
+            b'<asset><id>1</id><name>a</name></asset>'
+            b'<asset><id>2</id><name>b</name></asset>'
+            b'<other>ignored</other>'
+            b'<asset><id>3</id><name>c</name></asset>'
+            b'</assets>'
+        )
+        ids = [elem.findtext('id') for elem in stream_xml_elements(io.BytesIO(xml_bytes), tag='asset')]
+        assert ids == ['1', '2', '3']
+
+    def test_stream_xml_elements_namespaced(self):
+        """
+        Given: a namespaced XML document.
+        When:  parsing it with stream_xml_elements matching on the local tag name.
+        Then:  namespaced elements are matched (namespace-agnostic).
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        ns_xml = (
+            b'<ns:assets xmlns:ns="http://example.com">'
+            b'<ns:asset><ns:id>7</ns:id></ns:asset>'
+            b'<ns:asset><ns:id>8</ns:id></ns:asset>'
+            b'</ns:assets>'
+        )
+        count = sum(1 for _ in stream_xml_elements(io.BytesIO(ns_xml), tag='asset'))
+        assert count == 2
+
+    def test_stream_xml_elements_no_matches(self):
+        """
+        Given: an XML document with no elements matching the requested tag.
+        When:  parsing it with stream_xml_elements.
+        Then:  nothing is yielded.
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = b'<root><foo>1</foo><bar>2</bar></root>'
+        assert list(stream_xml_elements(io.BytesIO(xml_bytes), tag='asset')) == []
+
+    def test_stream_xml_elements_clears_elements(self):
+        """
+        Given: an XML document with repeated <asset> elements.
+        When:  parsing it with stream_xml_elements and consuming the generator fully.
+        Then:  each yielded element is cleared (has no children/text) after the caller advances past it,
+               proving the memory-freeing behavior (elem.clear()).
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = (
+            b'<assets>'
+            b'<asset><id>1</id></asset>'
+            b'<asset><id>2</id></asset>'
+            b'</assets>'
+        )
+        seen = []
+        for elem in stream_xml_elements(io.BytesIO(xml_bytes), tag='asset'):
+            # capture the previously-yielded element - it should have been cleared before we advanced here
+            seen.append(elem)
+        # After iteration, all yielded elements have been cleared (no children remain).
+        for elem in seen:
+            assert len(list(elem)) == 0
+
+    def test_stream_xml_elements_nested_same_tag(self):
+        """
+        Given: an XML document with the target tag nested inside another instance of the same tag.
+        When:  parsing it with stream_xml_elements.
+        Then:  every matching element (inner and outer) is yielded on its 'end' event.
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = (
+            b'<root>'
+            b'<asset><id>outer</id><asset><id>inner</id></asset></asset>'
+            b'</root>'
+        )
+        count = sum(1 for _ in stream_xml_elements(io.BytesIO(xml_bytes), tag='asset'))
+        assert count == 2
+
+    def test_stream_xml_elements_is_lazy(self):
+        """
+        Given: a large XML document wrapped in a stream whose reads are counted.
+        When:  advancing the stream_xml_elements generator by a single step (next()).
+        Then:  the whole stream is NOT fully consumed up front, proving parsing is incremental/lazy
+               (iterparse reads/parses on demand rather than loading the entire tree).
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        # Build a large document so incremental parsing is observable via read counting.
+        body = b'<assets>' + b''.join(
+            b'<asset><id>%d</id></asset>' % i for i in range(5000)
+        ) + b'</assets>'
+
+        class CountingStream(io.BytesIO):
+            def __init__(self, data):
+                io.BytesIO.__init__(self, data)
+                self.total_read = 0
+
+            def read(self, size=-1):
+                chunk = io.BytesIO.read(self, size)
+                self.total_read += len(chunk)
+                return chunk
+
+        stream = CountingStream(body)
+        gen = stream_xml_elements(stream, tag='asset')
+        first = next(gen)
+        assert first.findtext('id') == '0'
+        # The first element was produced without reading the entire (large) document.
+        assert stream.total_read < len(body)
 
     @pytest.mark.parametrize('data_type, snapshot_id, items_count, expected', [
         ('assets', None, None, {'snapshot_id': '123000', 'items_count': '2'}),
