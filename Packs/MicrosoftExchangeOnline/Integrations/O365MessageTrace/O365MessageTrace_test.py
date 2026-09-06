@@ -655,13 +655,8 @@ class TestFetchEventsWindowWalk:
 
 
 class TestFetchEventsBoundaryTruncation:
-    """Regression tests for the max_events / timestamp-group boundary.
-
-    ``receivedDateTime`` is second-granular, so many events can share one ``_time``. Two things
-    must hold: (1) truncation must not split a same-second group and then advance the cursor past
-    it (that would drop the cut-off events forever), and (2) ``seen_ids`` must be built from ALL
-    fetched events at the boundary second - including deduped-out ones - so the next run does not
-    re-send them.
+    """Regression tests for the max_events / same-second boundary: never split a same-second group,
+    and build seen_ids from all fetched events (incl. deduped-out) so the re-scan sends no duplicates.
     """
 
     @staticmethod

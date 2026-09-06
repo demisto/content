@@ -454,17 +454,13 @@ def fetch_events_sequential(
     )
 
     if len(collected) > max_events:
-        # Truncate to max_events, but never cut through a group sharing the same
-        # receivedDateTime second - otherwise the high-water mark would advance past a
-        # second whose events were only partially fetched, permanently skipping the rest.
+        # Extend the cut to keep the whole boundary second, never splitting a same-second group -
+        # otherwise the cursor advances past a second that was only partially fetched, losing the rest.
         cut = max_events
         boundary_time = collected[max_events - 1].get("receivedDateTime")
         while cut < len(collected) and collected[cut].get("receivedDateTime") == boundary_time:
             cut += 1
-        demisto.debug(
-            f"[Fetch] Collected {len(collected)} events, truncating to {cut} "
-            f"(max_events={max_events}, extended to keep whole boundary second {boundary_time})."
-        )
+        demisto.debug(f"[Fetch] Truncating {len(collected)} events to {cut} (kept whole boundary second {boundary_time}).")
         collected = collected[:cut]
 
     return collected
@@ -614,10 +610,8 @@ def fetch_events(client: Client, max_events: int) -> None:
     new_last_fetch = format_datetime_for_filter(window_end_dt)
     new_seen_ids: list[str] = []
 
-    # Build seen_ids from ALL fetched events (not the deduped/published ``new_events``): timestamps
-    # are second-granular, so seen_ids must keep every ID at the boundary second - INCLUDING ones
-    # deduped out this run - or the next run (re-fetching at ``>= boundary``) would re-send
-    # already-sent events as duplicates.
+    # Use ALL fetched events (pre-dedup), so seen_ids holds every ID at the boundary second -
+    # including deduped-out ones - or the next run (re-fetching ``>= boundary``) re-sends duplicates.
     timed_events = [event for event in events if event.get("_time")]
 
     if timed_events:
