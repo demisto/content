@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: TrendMicroInterScanWebSecurity_ModelingRule
-name: TrendMicroInterScanWebSecurity Modeling Rule
+id: Trend_Micro_InterScan_Web_Security_Suite_ModelingRule
+name: TrendMicro InterScan Web Security Suite Modeling Rule
 rules: ''
 schema: ''
 tags: ''

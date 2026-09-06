@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: CyberArkPAS_ModelingRule
-name: CyberArkPAS Modeling Rule
+id: CyberArk_ISP_ModelingRule
+name: CyberArk ISP Modeling Rule
 rules: ''
 schema: ''
 tags: ''

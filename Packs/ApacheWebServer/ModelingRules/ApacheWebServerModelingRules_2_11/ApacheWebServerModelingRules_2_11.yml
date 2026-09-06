@@ -1,6 +1,6 @@
 fromversion: 8.15.0
 id: ApacheWebServer_ModelingRule
-name: ApacheWebServer Modeling Rule
+name: Apache Web Server Modeling Rule
 rules: ''
 schema: ''
 tags: Apache Web Server

@@ -1,6 +1,6 @@
 fromversion: 8.15.0
 id: ProofpointIsolation_ModelingRule
-name: ProofpointIsolation Modeling Rule
+name: Proofpoint Isolation Modeling Rule
 rules: ''
 schema: ''
 tags: proofpoint
