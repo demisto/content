@@ -207,11 +207,17 @@ class TestFetchIncidents:
         return {"_embedded": {"alarms": alarms}, "page": {"totalElements": len(alarms)}}
 
     @classmethod
-    def alarms_url(cls):
-        """The alarms request the integration is expected to send, given the shared watermark."""
+    def alarms_url(cls, lookback_minutes=None):
+        """The alarms request the integration is expected to send.
+
+        The request starts at the shared watermark minus the lookback window, so the caller
+        passes the lookback it configured. Defaults to the shared LOOKBACK_MINUTES.
+        """
         from CommonServerPython import date_to_timestamp
 
-        start = date_to_timestamp(cls.WATERMARK_TIME - timedelta(minutes=cls.LOOKBACK_MINUTES))
+        if lookback_minutes is None:
+            lookback_minutes = cls.LOOKBACK_MINUTES
+        start = date_to_timestamp(cls.WATERMARK_TIME - timedelta(minutes=lookback_minutes))
         return (
             f"{cls.SERVER_URL}api/2.0/alarms?page=0&size={cls.FETCH_LIMIT}"
             f"&sort=timestamp_occured%2Casc&timestamp_occured_gte={start}"
@@ -461,3 +467,47 @@ class TestFetchIncidents:
         # The oldest entries carry the lowest indexes, so those are the ones dropped.
         assert "cached-uuid-00000" not in persisted_ids
         assert f"cached-uuid-{MAX_FETCHED_IDS + overflow - 1:05d}" in persisted_ids
+
+    def test_zero_lookback_fetches_from_watermark(self, mocker, requests_mock):
+        """A lookback of 0 starts the fetch exactly at the stored watermark.
+
+        Given: A lookback of 0, which is the default and disables the lookback window.
+
+        When: Running fetch_incidents.
+
+        Then: The alarms request starts at the watermark with no window applied, so the fetch
+              immediately after an upgrade does not re-request already fetched alarms.
+
+        """
+        from CommonServerPython import date_to_timestamp
+
+        last_fetch = date_to_timestamp(self.WATERMARK_TIME)
+        occurred_time = self.WATERMARK_TIME + timedelta(minutes=10)
+
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"fetch_limit": str(self.FETCH_LIMIT), "url": self.SERVER_URL, "lookback": "0"},
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value={"timestamp": last_fetch, "fetched_ids": {}})
+        mocker.patch.object(demisto, "setLastRun")
+        mocker.patch.object(demisto, "incidents")
+        from AlienVault_USM_Anywhere import fetch_incidents
+
+        requests_mock.get(
+            self.alarms_url(lookback_minutes=0),
+            json=self.alarms_response([self.alarm("new-alarm", occurred_time)]),
+        )
+
+        fetch_incidents()
+
+        # No window is subtracted, so the request starts on the watermark itself.
+        assert requests_mock.last_request.qs["timestamp_occured_gte"] == [str(last_fetch)]
+
+        # Fetching still works normally with the lookback disabled.
+        created_incidents = demisto.incidents.call_args[0][0]
+        assert [incident["name"] for incident in created_incidents] == ["Alarm: new-alarm"]
+
+        last_run = demisto.setLastRun.call_args[0][0]
+        assert last_run["timestamp"] == date_to_timestamp(occurred_time)
+        assert set(last_run["fetched_ids"]) == {"new-alarm"}
