@@ -822,12 +822,7 @@ class TestFetchEventsCommand:
         assert "last_fetch_audit" not in last_run_arg
 
     def test_send_and_flush_streams_one_send_per_page(self, mock_client, mocker):
-        """OOM fix (XSUP-73937): events must be streamed page-by-page, not accumulated.
-
-        With multiple full pages, send_events must be called once per page (send-and-flush)
-        with use_streaming_send=True — never once with the whole set. This proves peak
-        memory is bounded by a single page regardless of total volume.
-        """
+        """Events must be streamed once per page (send-and-flush), not accumulated."""
         page_size = Config.MAX_PAGE_SIZE
         # Two full pages then a partial page for a single log type (Audit).
         page1 = [{"id": f"audit-{i}", "created_at": f"2024-01-01T00:{i // 60:02d}:{i % 60:02d}Z"} for i in range(page_size)]
@@ -864,16 +859,11 @@ class TestFetchEventsCommand:
         assert last_run_arg["previous_ids_audit"] == ["audit-last"]
 
     def test_streaming_send_consuming_list_does_not_corrupt_state(self, mock_client, mocker):
-        """OOM fix (XSUP-73937): streaming send empties its input list — state must survive it.
+        """Streaming send empties its input list, but HWM/state must still be correct.
 
-        CommonServerPython's use_streaming_send=True nulls out each slot of the list passed to
-        send_events as it serializes (free-as-you-go). This test makes the mock actually clear
-        the list (mimicking CSP), then asserts the HWM timestamp, HWM IDs and counts are still
-        computed correctly — proving all derived values are captured BEFORE the send consumes them.
-
-        Note: on a first run (no previous IDs) deduplicate_events returns the SAME page object,
-        so the streaming send here empties the very list the integration also derived HWM from —
-        this is precisely the aliasing case we must be safe against.
+        The mock clears the list (like CSP) to prove all derived values are captured
+        before the send consumes them, including the first-run aliasing case where
+        deduplicate_events returns the same page object.
         """
         page = [
             {"id": "audit-1", "created_at": "2024-01-01T00:00:00Z"},
