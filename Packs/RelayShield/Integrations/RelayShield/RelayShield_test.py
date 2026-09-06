@@ -5,6 +5,9 @@ import pytest
 import RelayShield
 
 
+RELIABILITY = "B - Usually reliable"
+
+
 def _client():
     return RelayShield.Client(base_url="https://api.relayshield.net", api_key="rs_live_testkey", verify=True, proxy=False)
 
@@ -21,10 +24,11 @@ def test_domain_command_finding():
             "checked_at": "2026-07-22T00:00:00Z",
         },
     ):
-        results = RelayShield.domain_command(client, {"domain": "evil.com"})
+        results = RelayShield.domain_command(client, {"domain": "evil.com"}, RELIABILITY)
     assert len(results) == 1
     r = results[0]
     assert r.indicator.dbot_score.score == 3
+    assert r.indicator.dbot_score.reliability == RELIABILITY
     assert r.indicator.domain == "evil.com"
 
 
@@ -33,7 +37,7 @@ def test_domain_command_clean_maps_to_unknown_not_good():
     "no known finding" is not the same claim as "verified safe"."""
     client = _client()
     with patch.object(client, "call", return_value={"queried": "clean.com", "verdict": None, "findings": []}):
-        results = RelayShield.domain_command(client, {"domain": "clean.com"})
+        results = RelayShield.domain_command(client, {"domain": "clean.com"}, RELIABILITY)
     assert results[0].indicator.dbot_score.score == 0
 
 
@@ -50,7 +54,7 @@ def test_ip_command():
             "country": "US",
         },
     ):
-        results = RelayShield.ip_command(client, {"ip": "1.2.3.4"})
+        results = RelayShield.ip_command(client, {"ip": "1.2.3.4"}, RELIABILITY)
     assert results[0].indicator.dbot_score.score == 3
     assert results[0].indicator.asn == "Evil Corp"
 
@@ -65,7 +69,7 @@ def test_email_command_combines_breach_and_session():
             {"found": True, "sessions": [{"severity": "CRITICAL", "service_category": "email"}]},
         ],
     ):
-        results = RelayShield.email_command(client, {"email": "victim@example.com"})
+        results = RelayShield.email_command(client, {"email": "victim@example.com"}, RELIABILITY)
     r = results[0]
     assert r.indicator.dbot_score.score == 3
     assert r.outputs["breach_found"] is True

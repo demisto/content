@@ -64,7 +64,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+def domain_command(client: Client, args: dict[str, Any], reliability: str) -> list[CommandResults]:
     domains = argToList(args.get("domain"))
     if not domains:
         raise ValueError("domain is required")
@@ -81,7 +81,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
             indicator_type=DBotScoreType.DOMAIN,
             integration_name="RelayShield",
             score=score,
-            reliability=DBotScoreReliability.B,
+            reliability=reliability,
         )
         indicator = Common.Domain(domain=domain, dbot_score=dbot_score)
 
@@ -106,7 +106,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
     return results
 
 
-def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+def ip_command(client: Client, args: dict[str, Any], reliability: str) -> list[CommandResults]:
     ips = argToList(args.get("ip"))
     if not ips:
         raise ValueError("ip is required")
@@ -125,7 +125,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
             indicator_type=DBotScoreType.IP,
             integration_name="RelayShield",
             score=score,
-            reliability=DBotScoreReliability.B,
+            reliability=reliability,
         )
         indicator = Common.IP(
             ip=ip,
@@ -156,7 +156,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     return results
 
 
-def email_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
+def email_command(client: Client, args: dict[str, Any], reliability: str) -> list[CommandResults]:
     emails = argToList(args.get("email"))
     if not emails:
         raise ValueError("email is required")
@@ -181,7 +181,7 @@ def email_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
             indicator_type=DBotScoreType.EMAIL,
             integration_name="RelayShield",
             score=score,
-            reliability=DBotScoreReliability.B,
+            reliability=reliability,
         )
         indicator = Common.EMAIL(address=email, dbot_score=dbot_score)
 
@@ -314,16 +314,20 @@ def main() -> None:
         verify_certificate = not params.get("insecure", False)
         proxy = params.get("proxy", False)
 
+        reliability = params.get("integrationReliability") or DBotScoreReliability.B
+        if not DBotScoreReliability.is_valid_type(reliability):
+            raise DemistoException(DBotScoreReliability.get_error_message())
+
         client = Client(base_url=base_url, api_key=api_key, verify=verify_certificate, proxy=proxy)
 
         if command == "test-module":
             return_results(test_module(client))
         elif command == "domain":
-            return_results(domain_command(client, args))
+            return_results(domain_command(client, args, reliability))
         elif command == "ip":
-            return_results(ip_command(client, args))
+            return_results(ip_command(client, args, reliability))
         elif command == "email":
-            return_results(email_command(client, args))
+            return_results(email_command(client, args, reliability))
         elif command == "relayshield-mcp-registry-risk":
             return_results(mcp_registry_risk_command(client, args))
         elif command == "relayshield-cert-expiry":

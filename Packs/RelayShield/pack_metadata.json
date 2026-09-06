@@ -11,9 +11,7 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Threat Intelligence",
-        "Identity",
-        "Agent Security"
+        "Threat Intelligence"
     ],
     "useCases": [],
     "keywords": [
@@ -27,7 +25,8 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [
         "nzdsf2-gif"

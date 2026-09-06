@@ -15,6 +15,7 @@ This integration was integrated and tested with version 1.0 of the RelayShield A
 | API Key | The RelayShield API key, sent as the `X-RS-API-KEY` header. | True |
 | Trust any certificate (not secure) | Whether to trust any TLS certificate. | False |
 | Use system proxy settings | Whether to route requests through the system proxy. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | False |
 
 ## DBotScore mapping
 
@@ -58,10 +59,11 @@ Check a domain for phishing-lookalike/typosquat risk, presence in RelayShield's 
 | RelayShield.Domain.queried | String | The domain queried. |
 | RelayShield.Domain.verdict | String | The RelayShield verdict \(CRITICAL/HIGH/MEDIUM/LOW\), absent if no known finding. |
 | RelayShield.Domain.findings | Unknown | The list of findings, if any. |
+| Domain.Name | String | The domain name. |
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
-| DBotScore.Score | Number | The actual score \(0=Unknown, 2=Suspicious, 3=Bad, never 1/Good for a clean result\). |
+| DBotScore.Score | Number | The actual score. |
 | DBotScore.Reliability | String | The reliability of the source providing the intelligence data. |
 
 ### ip
@@ -86,10 +88,11 @@ Check an IP address for reputation, malicious/suspicious votes, and set a DBotSc
 | RelayShield.IP.queried | String | The IP address queried. |
 | RelayShield.IP.reputation | Number | The community reputation score. |
 | RelayShield.IP.malicious_votes | Number | The malicious vote count. |
+| IP.Address | String | The IP address. |
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
-| DBotScore.Score | Number | The actual score \(0=Unknown, 2=Suspicious, 3=Bad, never 1/Good for a clean result\). |
+| DBotScore.Score | Number | The actual score. |
 | DBotScore.Reliability | String | The reliability of the source providing the intelligence data. |
 
 ### email
@@ -119,7 +122,7 @@ Check an email address for breach exposure and active stolen-session risk, and s
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
-| DBotScore.Score | Number | The actual score \(0=Unknown, 2=Suspicious, 3=Bad, never 1/Good for a clean result\). |
+| DBotScore.Score | Number | The actual score. |
 | DBotScore.Reliability | String | The reliability of the source providing the intelligence data. |
 
 ### relayshield-mcp-registry-risk

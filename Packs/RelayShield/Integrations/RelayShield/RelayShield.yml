@@ -32,6 +32,21 @@ configuration:
   required: false
   section: Connect
   advanced: true
+- display: Source Reliability
+  name: integrationReliability
+  defaultvalue: B - Usually reliable
+  type: 15
+  required: false
+  additionalinfo: Reliability of the source providing the intelligence data.
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  section: Collect
 description: |-
   RelayShield real-time identity-compromise and agent-security threat intelligence.
   Implements the generic `domain`/`ip`/`email` reputation commands (auto-invoked by
@@ -62,6 +77,9 @@ script:
     - contextPath: RelayShield.Domain.findings
       description: The list of findings, if any.
       type: Unknown
+    - contextPath: Domain.Name
+      description: The domain name.
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
@@ -72,7 +90,7 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score (0=Unknown, 2=Suspicious, 3=Bad, never 1/Good for a clean result).
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Reliability
       description: The reliability of the source providing the intelligence data.
@@ -95,6 +113,9 @@ script:
     - contextPath: RelayShield.IP.malicious_votes
       description: The malicious vote count.
       type: Number
+    - contextPath: IP.Address
+      description: The IP address.
+      type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
       type: String
@@ -105,7 +126,7 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score (0=Unknown, 2=Suspicious, 3=Bad, never 1/Good for a clean result).
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Reliability
       description: The reliability of the source providing the intelligence data.
@@ -144,7 +165,7 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual score (0=Unknown, 2=Suspicious, 3=Bad, never 1/Good for a clean result).
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Reliability
       description: The reliability of the source providing the intelligence data.
@@ -182,6 +203,8 @@ script:
     - contextPath: RelayShield.CertExpiry.risk_level
       description: The risk level (CRITICAL/HIGH/MEDIUM/LOW).
       type: String
+    compliantpolicies:
+    - User Soft Remediation
   - name: relayshield-supply-chain
     description: Check up to 10 vendor domains (or emails) for combined breach/infostealer risk.
     arguments:
@@ -201,7 +224,7 @@ script:
     - contextPath: RelayShield.SupplyChain.critical_vendors
       description: The list of vendors flagged as critical risk.
       type: Unknown
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.14.12343672
   runonce: false
   script: '-'
   subtype: python3
