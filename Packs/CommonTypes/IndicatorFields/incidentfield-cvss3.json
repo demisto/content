@@ -79,5 +79,9 @@
         }
     ],
     "sla": 0,
-    "threshold": 72
+    "threshold": 72,
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

@@ -2893,7 +2893,17 @@ def get_remote_detection_data_for_multiple_types(remote_incident_id):
     detection_type = ""
     mirroring_fields = ["status"]
     updated_object: dict[str, Any] = {}
-    if "idp" in mirrored_data["product"]:
+    # Check type-based conditions first (more specific) before product-based conditions (more generic).
+    # ODS and OFP detections carry product=epp but must be classified by their type, not their product.
+    if "ofp" in mirrored_data["type"]:
+        updated_object = {"incident_type": OFP_DETECTION}
+        detection_type = "ofp"
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    elif "ods" in mirrored_data["type"]:
+        updated_object = {"incident_type": ON_DEMAND_SCANS_DETECTION}
+        detection_type = "ods"
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    elif "idp" in mirrored_data["product"]:
         updated_object = {"incident_type": IDP_DETECTION}
         detection_type = "IDP"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS_IDP
@@ -2904,14 +2914,6 @@ def get_remote_detection_data_for_multiple_types(remote_incident_id):
     elif "epp" in mirrored_data["product"]:
         updated_object = {"incident_type": ENDPOINT_DETECTION}
         detection_type = "Detection"
-        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
-    elif "ofp" in mirrored_data["type"]:
-        updated_object = {"incident_type": OFP_DETECTION}
-        detection_type = "ofp"
-        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
-    elif "ods" in mirrored_data["type"]:
-        updated_object = {"incident_type": ON_DEMAND_SCANS_DETECTION}
-        detection_type = "ods"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
     elif "ngsiem" in mirrored_data["product"]:
         updated_object = {"incident_type": NGSIEM_DETECTION}
@@ -3387,12 +3389,16 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
     fetch_limit = current_fetch_info_detections.get("limit") or base_fetch_limit
     incident_type = "detection"
 
+    # The API rejects requests where offset + limit exceeds MAX_FETCH_SIZE. With look_back, fetch_limit can grow
+    # past that bound, so cap the value sent to the API while keeping fetch_limit for dedup and last_run bookkeeping.
+    api_limit = min(fetch_limit, MAX_FETCH_SIZE - detections_offset)
+
     fetch_query = demisto.params().get("fetch_query")
     if fetch_query:
         fetch_query = f"(created_timestamp:>'{start_fetch_time}')+({fetch_query})"
-        response = get_fetch_detections(filter_arg=fetch_query, limit=fetch_limit, offset=detections_offset)
+        response = get_fetch_detections(filter_arg=fetch_query, limit=api_limit, offset=detections_offset)
     else:
-        response = get_fetch_detections(last_created_timestamp=start_fetch_time, limit=fetch_limit, offset=detections_offset)
+        response = get_fetch_detections(last_created_timestamp=start_fetch_time, limit=api_limit, offset=detections_offset)
 
     detections_ids: list[dict] = demisto.get(response, "resources", [])
     total_detections = demisto.get(response, "meta.pagination.total")
@@ -5321,7 +5327,10 @@ def fetch_detections_by_product_type(
 
     if fetch_query:
         filter = f"({filter})+({fetch_query})"
-    response = get_detections_ids(filter_arg=filter, limit=fetch_limit, offset=offset, product_type=product_type)
+    # The API rejects requests where offset + limit exceeds MAX_FETCH_SIZE. With look_back, fetch_limit can grow
+    # past that bound, so cap the value sent to the API while keeping fetch_limit for dedup and last_run bookkeeping.
+    api_limit = min(fetch_limit, MAX_FETCH_SIZE - offset)
+    response = get_detections_ids(filter_arg=filter, limit=api_limit, offset=offset, product_type=product_type)
     detections_ids: list[dict] = demisto.get(response, "resources", [])
     demisto.debug(f"CrowdStrikeFalconMsg: Total fetched detections: {len(detections_ids)}")
     total_detections = demisto.get(response, "meta.pagination.total")
@@ -7980,8 +7989,13 @@ def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
 def module_test():
     try:
         get_token(new_token=True)
-    except ValueError:
-        return "Connection Error: The URL or The API key you entered is probably incorrect, please try again."
+    except (ValueError, DemistoException, requests.exceptions.RequestException) as e:
+        demisto.debug(f"test-module failed to obtain a token: {e}\n{traceback.format_exc()}")
+        return (
+            "Connection Error: Failed to reach the CrowdStrike Falcon server. Verify that the Server URL parameter is"
+            " correct, that the API credentials are valid, and that the server is reachable from your host"
+            " (check network connectivity, DNS, and proxy settings)."
+        )
     if demisto.params().get("isFetch"):
         try:
             fetch_items(command="fetch-incidents")

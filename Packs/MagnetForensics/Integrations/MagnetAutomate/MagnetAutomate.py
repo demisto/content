@@ -106,10 +106,10 @@ class MagnetAutomateClient(ContentClient):
             list[dict[str, Any]]: A list of custom fields.
         """
 
-        demisto.debug("Sending a GET Request to /customFields.")
+        demisto.debug("Sending a GET Request to /api/v0/customFields.")
 
         return self.get(
-            url_suffix="/customFields",
+            url_suffix="/api/v0/customFields",
             resp_type="json",
         )
 
@@ -126,11 +126,11 @@ class MagnetAutomateClient(ContentClient):
         """
         json_data: dict[str, Any] = assign_params(caseNumber=case_number, customFieldValues=custom_field_values)
 
-        demisto.debug(f"Sending a POST Request to /cases with {json_data=}.")
+        demisto.debug(f"Sending a POST Request to /api/v0/cases with {json_data=}.")
 
         return self.post(
-            url_suffix="/cases",
-            json=json_data,
+            url_suffix="/api/v0/cases",
+            json_data=json_data,
             resp_type="json",
         )
 
@@ -144,7 +144,7 @@ class MagnetAutomateClient(ContentClient):
         Returns:
             list[dict[str, Any]] | dict[str, Any]: A list of cases or a specific case.
         """
-        url_suffix = "/cases"
+        url_suffix = "/api/v0/cases"
         if case_id:
             url_suffix += f"/{case_id}"
 
@@ -162,10 +162,10 @@ class MagnetAutomateClient(ContentClient):
         Args:
             case_id (int): The ID of the case to delete.
         """
-        demisto.debug(f"Sending a DELETE Request to /cases/{case_id}.")
+        demisto.debug(f"Sending a DELETE Request to /api/v0/cases/{case_id}.")
 
         self.delete(
-            url_suffix=f"/cases/{case_id}",
+            url_suffix=f"/api/v0/cases/{case_id}",
             resp_type="text",
         )
 
@@ -176,10 +176,10 @@ class MagnetAutomateClient(ContentClient):
         Args:
             case_id (int): The ID of the case to cancel.
         """
-        demisto.debug(f"Sending a PUT Request to /cases/{case_id}/cancel.")
+        demisto.debug(f"Sending a PUT Request to /api/v0/cases/{case_id}/cancel.")
 
         self.put(
-            url_suffix=f"/cases/{case_id}/cancel",
+            url_suffix=f"/api/v0/cases/{case_id}/cancel",
             resp_type="text",
         )
 
@@ -225,7 +225,7 @@ class MagnetAutomateClient(ContentClient):
 
         json_data = {"evidenceSources": [evidence_source]}
 
-        demisto.debug(f"Sending a POST Request to /cases/{case_id}/runs with {json_data=}.")
+        demisto.debug(f"Sending a POST Request to /api/v0/cases/{case_id}/runs with {json_data=}.")
 
         if decryption and "value" in decryption and hasattr(decryption["value"], "get_secret_value"):
             # remove obfuscation from payload before http post method
@@ -234,8 +234,8 @@ class MagnetAutomateClient(ContentClient):
             evidence_source["decryption"] = raw_decryption_dict
 
         return self.post(
-            url_suffix=f"/cases/{case_id}/runs",
-            json=json_data,
+            url_suffix=f"/api/v0/cases/{case_id}/runs",
+            json_data=json_data,
             resp_type="json",
         )
 
@@ -247,10 +247,10 @@ class MagnetAutomateClient(ContentClient):
             case_id (int): The ID of the case.
             run_id (int): The ID of the workflow run to delete.
         """
-        demisto.debug(f"Sending a DELETE Request to /cases/{case_id}/runs/{run_id}.")
+        demisto.debug(f"Sending a DELETE Request to /api/v0/cases/{case_id}/runs/{run_id}.")
 
         self.delete(
-            url_suffix=f"/cases/{case_id}/runs/{run_id}",
+            url_suffix=f"/api/v0/cases/{case_id}/runs/{run_id}",
             resp_type="text",
         )
 
@@ -262,10 +262,10 @@ class MagnetAutomateClient(ContentClient):
             case_id (int): The ID of the case.
             run_id (int): The ID of the workflow run to cancel.
         """
-        demisto.debug(f"Sending a PUT Request to /cases/{case_id}/runs/{run_id}/cancel.")
+        demisto.debug(f"Sending a PUT Request to /api/v0/cases/{case_id}/runs/{run_id}.")
 
         self.put(
-            url_suffix=f"/cases/{case_id}/runs/{run_id}/cancel",
+            url_suffix=f"/api/v0/cases/{case_id}/runs/{run_id}",
             resp_type="text",
         )
 
@@ -280,10 +280,10 @@ class MagnetAutomateClient(ContentClient):
         Returns:
             dict[str, Any]: A workflow run object.
         """
-        demisto.debug(f"Sending a GET Request to /cases/{case_id}/runs/{run_id}.")
+        demisto.debug(f"Sending a GET Request to /api/v0/cases/{case_id}/runs/{run_id}.")
 
         return self.get(
-            url_suffix=f"/cases/{case_id}/runs/{run_id}",
+            url_suffix=f"/api/v0/cases/{case_id}/runs/{run_id}",
             resp_type="json",
         )
 
@@ -297,10 +297,10 @@ class MagnetAutomateClient(ContentClient):
         Returns:
             list[dict[str, Any]]: A list of workflow runs.
         """
-        demisto.debug(f"Sending a GET Request to /cases/{case_id}/runs.")
+        demisto.debug(f"Sending a GET Request to /api/v0/cases/{case_id}/runs.")
 
         return self.get(
-            url_suffix=f"/cases/{case_id}/runs",
+            url_suffix=f"/api/v0/cases/{case_id}/runs",
             resp_type="json",
         )
 
@@ -325,15 +325,16 @@ class MagnetAutomateClient(ContentClient):
         Returns:
             dict[str, Any]: The started merge workflow run.
         """
-        json_data: dict[str, Any] = assign_params(
-            runIds=run_ids, workflowId=workflow_id, outputPath=output_path, assignedNodeName=assigned_node_name
-        )
+        json_data: dict[str, Any] = {
+            "runIds": run_ids,
+            "mergeWorkflow": assign_params(workflowId=workflow_id, outputPath=output_path, assignedNodeName=assigned_node_name),
+        }
 
-        demisto.debug(f"Sending a POST Request to /cases/{case_id}/merge with {json_data=}.")
+        demisto.debug(f"Sending a POST Request to /api/v0/cases/{case_id}/merge with {json_data=}.")
 
         return self.post(
-            url_suffix=f"/cases/{case_id}/merge",
-            json=json_data,
+            url_suffix=f"/api/v0/cases/{case_id}/merge",
+            json_data=json_data,
             resp_type="json",
         )
 
@@ -344,10 +345,10 @@ class MagnetAutomateClient(ContentClient):
         Returns:
             list[dict[str, Any]]: A list of workflows.
         """
-        demisto.debug("Sending a GET Request to /workflows.")
+        demisto.debug("Sending a GET Request to /api/v0/workflows.")
 
         return self.get(
-            url_suffix="/workflows",
+            url_suffix="/api/v0/workflows",
             resp_type="json",
         )
 
@@ -358,10 +359,10 @@ class MagnetAutomateClient(ContentClient):
         Args:
             workflow_id (int): The ID of the workflow to delete.
         """
-        demisto.debug(f"Sending a DELETE Request to /workflows/{workflow_id}.")
+        demisto.debug(f"Sending a DELETE Request to /api/v0/workflows/{workflow_id}.")
 
         self.delete(
-            url_suffix=f"/workflows/{workflow_id}",
+            url_suffix=f"/api/v0/workflows/{workflow_id}",
             resp_type="text",
         )
 
@@ -375,10 +376,10 @@ class MagnetAutomateClient(ContentClient):
         Returns:
             dict[str, Any]: The exported workflow.
         """
-        demisto.debug(f"Sending a GET Request to /workflows/{workflow_id}/generate-export.")
+        demisto.debug(f"Sending a GET Request to /api/v0/workflows/{workflow_id}/generate-export.")
 
         return self.get(
-            url_suffix=f"/workflows/{workflow_id}/generate-export",
+            url_suffix=f"/api/v0/workflows/{workflow_id}/generate-export",
             resp_type="json",
         )
 
@@ -405,11 +406,11 @@ class MagnetAutomateClient(ContentClient):
             name=name, address=address, workingDirectory=working_directory, applications=applications
         )
 
-        demisto.debug(f"Sending a POST Request to /nodes with {json_data=}.")
+        demisto.debug(f"Sending a POST Request to /api/v0/nodes with {json_data=}.")
 
         return self.post(
-            url_suffix="/nodes",
-            json=json_data,
+            url_suffix="/api/v0/nodes",
+            json_data=json_data,
             resp_type="json",
         )
 
@@ -420,10 +421,10 @@ class MagnetAutomateClient(ContentClient):
         Returns:
             list[dict[str, Any]]: A list of nodes.
         """
-        demisto.debug("Sending a GET Request to /nodes.")
+        demisto.debug("Sending a GET Request to /api/v0/nodes.")
 
         return self.get(
-            url_suffix="/nodes",
+            url_suffix="/api/v0/nodes",
             resp_type="json",
         )
 
@@ -448,11 +449,11 @@ class MagnetAutomateClient(ContentClient):
         """
         json_data: dict[str, Any] = assign_params(address=address, workingDirectory=working_directory, applications=applications)
 
-        demisto.debug(f"Sending a PUT Request to /nodes/{node_id} with {json_data=}.")
+        demisto.debug(f"Sending a PUT Request to /api/v0/nodes/{node_id} with {json_data=}.")
 
         return self.put(
-            url_suffix=f"/nodes/{node_id}",
-            json=json_data,
+            url_suffix=f"/api/v0/nodes/{node_id}",
+            json_data=json_data,
             resp_type="json",
         )
 
@@ -463,10 +464,10 @@ class MagnetAutomateClient(ContentClient):
         Args:
             node_id (int): The ID of the node to delete.
         """
-        demisto.debug(f"Sending a DELETE Request to /nodes/{node_id}.")
+        demisto.debug(f"Sending a DELETE Request to /api/v0/nodes/{node_id}.")
 
         self.delete(
-            url_suffix=f"/nodes/{node_id}",
+            url_suffix=f"/api/v0/nodes/{node_id}",
             resp_type="text",
         )
 

@@ -785,5 +785,9 @@
     "name": "Email Indicator",
     "system": false,
     "version": -1,
-    "description": "Email Indicator Layout"
+    "description": "Email Indicator Layout",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

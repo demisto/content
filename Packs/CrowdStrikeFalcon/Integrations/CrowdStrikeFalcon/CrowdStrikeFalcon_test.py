@@ -1985,6 +1985,94 @@ class TestFetchLimitPerFlow:
         assert update_last_run_mock.call_args.kwargs["fetch_limit"] == INCIDENTS_PER_FETCH
 
 
+class TestFetchLimitApiCap:
+    """The limit sent to the API is capped so offset + limit never exceeds MAX_FETCH_SIZE."""
+
+    def test_fetch_endpoint_detections_caps_api_limit_when_persisted_limit_exceeds_max(self, mocker):
+        """
+        Given: fetch-events where look_back grew the persisted 'limit' past MAX_FETCH_SIZE.
+        When: fetch_endpoint_detections runs.
+        Then: the API call receives limit <= MAX_FETCH_SIZE - offset, avoiding the API 400.
+        """
+        from CrowdStrikeFalcon import MAX_FETCH_SIZE, fetch_endpoint_detections
+
+        mocker.patch("CrowdStrikeFalcon.calculate_new_offset", return_value=0)
+        get_fetch_detections_mock = mocker.patch("CrowdStrikeFalcon.get_fetch_detections", return_value={})
+        mocker.patch("CrowdStrikeFalcon.get_detections_entities", return_value={"resources": []})
+        mocker.patch("CrowdStrikeFalcon.update_last_run_object", return_value={})
+
+        # A prior look_back run persisted a grown limit above the API's hard ceiling.
+        fetch_endpoint_detections({"limit": MAX_FETCH_SIZE + 50, "offset": 0}, look_back=2, is_fetch_events=True)
+
+        assert get_fetch_detections_mock.call_args.kwargs["limit"] <= MAX_FETCH_SIZE
+
+    def test_fetch_detections_by_product_type_caps_api_limit_when_persisted_limit_exceeds_max(self, mocker):
+        """
+        Given: fetch-events where look_back grew the persisted 'limit' past MAX_FETCH_SIZE.
+        When: fetch_detections_by_product_type runs.
+        Then: the API call receives limit <= MAX_FETCH_SIZE - offset, avoiding the API 400.
+        """
+        from CrowdStrikeFalcon import MAX_FETCH_SIZE, fetch_detections_by_product_type
+
+        mocker.patch("CrowdStrikeFalcon.calculate_new_offset", return_value=0)
+        get_detections_ids_mock = mocker.patch("CrowdStrikeFalcon.get_detections_ids", return_value={"resources": []})
+        mocker.patch("CrowdStrikeFalcon.get_detection_entities", return_value={"resources": []})
+        mocker.patch(
+            "CrowdStrikeFalcon.filter_incidents_by_duplicates_and_limit",
+            side_effect=lambda incidents_res, **kwargs: incidents_res,
+        )
+        mocker.patch("CrowdStrikeFalcon.update_last_run_object", return_value={})
+
+        fetch_detections_by_product_type(
+            current_fetch_info={"limit": MAX_FETCH_SIZE + 50, "offset": 0},
+            look_back=2,
+            product_type="idp",
+            fetch_query="",
+            detections_type="IDP Detection",
+            detection_name_prefix="IDP Detection",
+            start_time_key="created_timestamp",
+            is_fetch_events=True,
+        )
+
+        assert get_detections_ids_mock.call_args.kwargs["limit"] <= MAX_FETCH_SIZE
+
+    def test_api_limit_accounts_for_offset(self, mocker):
+        """
+        Given: fetch-events with a non-zero offset and a limit at MAX_FETCH_SIZE.
+        When: fetch_endpoint_detections runs.
+        Then: the API call receives limit <= MAX_FETCH_SIZE - offset (offset + limit stays within bound).
+        """
+        from CrowdStrikeFalcon import MAX_FETCH_SIZE, fetch_endpoint_detections
+
+        offset = 200
+        mocker.patch("CrowdStrikeFalcon.calculate_new_offset", return_value=offset)
+        get_fetch_detections_mock = mocker.patch("CrowdStrikeFalcon.get_fetch_detections", return_value={})
+        mocker.patch("CrowdStrikeFalcon.get_detections_entities", return_value={"resources": []})
+        mocker.patch("CrowdStrikeFalcon.update_last_run_object", return_value={})
+
+        fetch_endpoint_detections({"limit": MAX_FETCH_SIZE, "offset": offset}, look_back=2, is_fetch_events=True)
+
+        api_limit = get_fetch_detections_mock.call_args.kwargs["limit"]
+        assert api_limit + offset <= MAX_FETCH_SIZE
+
+    def test_api_limit_is_noop_for_xsoar_small_limit(self, mocker):
+        """
+        Given: fetch-incidents (XSOAR) where the limit is the small INCIDENTS_PER_FETCH.
+        When: fetch_endpoint_detections runs.
+        Then: the API call receives the unchanged small limit (the cap is a no-op).
+        """
+        from CrowdStrikeFalcon import INCIDENTS_PER_FETCH, fetch_endpoint_detections
+
+        mocker.patch("CrowdStrikeFalcon.calculate_new_offset", return_value=0)
+        get_fetch_detections_mock = mocker.patch("CrowdStrikeFalcon.get_fetch_detections", return_value={})
+        mocker.patch("CrowdStrikeFalcon.get_detections_entities", return_value={"resources": []})
+        mocker.patch("CrowdStrikeFalcon.update_last_run_object", return_value={})
+
+        fetch_endpoint_detections({}, look_back=0, is_fetch_events=False)
+
+        assert get_fetch_detections_mock.call_args.kwargs["limit"] == INCIDENTS_PER_FETCH
+
+
 class TestFetch:
     """Test the logic of the fetch"""
 
@@ -4038,6 +4126,7 @@ def test_get_remote_detection_data_for_multiple_types__endpoint_detection(mocker
         ("ngsiem", "ngsiem_detection", {}),
         ("Detection", "detection", {"type": "ldt", "product": "epp"}),
         ("ofp", "OFP detection", {"type": "ofp"}),
+        ("ods", "On-Demand Scans detection", {"type": "ods", "product": "epp"}),
     ],
 )
 def test_get_remote_detection_data_for_multiple_types(mocker, detection_type, incident_type, entity_modifications):
@@ -10921,3 +11010,50 @@ class TestSynchronousCompression:
         )
 
         assert tasks == [], "Empty non-asset data should return no tasks"
+
+
+class TestModuleTestConnectionErrors:
+    """Tests for module_test() error handling (CRTX-269894)."""
+
+    # The message CommonServerPython raises for a requests ConnectionError (see CRTX-269894).
+    DNS_FAILURE_MESSAGE = (
+        "Verify that the server URL parameter is correct and that you have access to the server from your host."
+        "\nHTTPSConnectionPool(host='api.crowdstrike.cominvalid-domain-000', port=443): Max retries exceeded with url:"
+        " /oauth2/token (Caused by NameResolutionError: Failed to resolve 'api.crowdstrike.cominvalid-domain-000')"
+    )
+
+    def test_connection_error_returns_friendly_message(self, mocker):
+        """
+        Given:
+            - A Server URL whose host cannot be resolved.
+        When:
+            - Running the test-module command.
+        Then:
+            - A friendly message is returned, without the raw connection internals,
+              and the full traceback is written to the debug log.
+        """
+        from CrowdStrikeFalcon import module_test
+
+        debug_mock = mocker.patch.object(demisto, "debug")
+        mocker.patch("CrowdStrikeFalcon.get_token", side_effect=DemistoException(self.DNS_FAILURE_MESSAGE))
+
+        result = module_test()
+
+        assert "Server URL" in result
+        assert "HTTPSConnectionPool" not in result
+        assert "Traceback" in "".join(str(call) for call in debug_mock.call_args_list)
+
+    def test_returns_ok_on_success(self, mocker):
+        """
+        Given:
+            - Valid credentials and a reachable server.
+        When:
+            - Running the test-module command.
+        Then:
+            - "ok" is returned.
+        """
+        from CrowdStrikeFalcon import module_test
+
+        mocker.patch("CrowdStrikeFalcon.get_token", return_value="token")
+
+        assert module_test() == "ok"

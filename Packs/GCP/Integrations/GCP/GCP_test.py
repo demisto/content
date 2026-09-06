@@ -1,12 +1,38 @@
+import ast
 import json
 import pytest
 from google.oauth2.credentials import Credentials
 from unittest.mock import MagicMock
+import os
+import re
+import yaml
 
 
 def util_load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
+
+
+QUICK_ACTION_SUFFIX = "-quick-action"
+_INTEGRATION_DIR = os.path.dirname(os.path.abspath(__file__))
+_YML_PATH = os.path.join(_INTEGRATION_DIR, "GCP.yml")
+_PY_PATH = os.path.join(_INTEGRATION_DIR, "GCP.py")
+
+# The integration sources are read (and the YML parsed) once at import time, so the
+# checks below do not re-read them from disk for every test.
+with open(_PY_PATH, encoding="utf-8") as _py_file:
+    _PY_SOURCE = _py_file.read()
+with open(_YML_PATH, encoding="utf-8") as _yml_file:
+    _YML = yaml.safe_load(_yml_file)
+
+# The .py is parsed into an AST exactly once and every structural check below
+# reuses this tree, so the file is never re-parsed per test.
+_PY_TREE = ast.parse(_PY_SOURCE)
+
+# Platform-standard arguments that are resolved centrally (via get_credentials /
+# the integration configuration) rather than read with args.get(...) inside each
+# command handler. They are exempt from the per-handler verbatim arg check.
+PLATFORM_STANDARD_ARGS = {"project_id", "account_id"}
 
 
 def test_parse_firewall_rule_valid_input():
@@ -6168,3 +6194,461 @@ def test_get_credentials_marketplace_no_project_id_anywhere_raises(mocker):
 
     with pytest.raises(DemistoException, match="Missing required parameter 'project_id'"):
         get_credentials(args, params)
+
+
+# ---------------------------------------------------------------------------
+# YML <-> PY wiring assertion tests
+#
+# These tests read the integration's .yml and .py from disk and assert that
+# every command, its arguments, and its output prefixes declared in the YML are
+# actually wired up in the Python code. This proves the command, its args, and
+# its outputs are implemented as declared.
+#
+# The comparison is PER-COMMAND: each YML command is resolved to its handler
+# function via the command_map in main(), and only that handler function's body
+# is inspected for `args.get("...")` reads and `outputs_prefix="..."` literals.
+#
+# Matching is STRICT and verbatim: an argument declared in the YML must appear
+# in the handler exactly as `args.get("<name>")` (same casing, snake_case vs
+# camelCase, etc.). Any naming difference fails the test.
+#
+# The .py is inspected via the AST (parsed ONCE into _PY_TREE), never via regex
+# over raw text. This matters for correctness, not just for style:
+#   * Comments are invisible to the AST by construction, so the commented-out
+#     "currently unsupported" handlers in GCP.py cannot leak their args or their
+#     output prefixes into a neighbouring live handler.
+#   * Function boundaries are exact, so a `def ` inside a docstring or a string
+#     literal cannot split a body in the wrong place.
+#   * Non-obvious read/write forms (`args["x"]` subscripts, `outputs_prefix`
+#     declared as a function parameter default) are matched structurally.
+# The single deliberate exception is
+# test_command_map_parser_ignores_commented_out_entries, which MUST stay on
+# regex precisely because it asserts something about comments.
+#
+# Quick-action commands (names ending in "-quick-action") and the built-in
+# "test-module" command are intentionally excluded.
+# ---------------------------------------------------------------------------
+
+
+def _is_included_command(command_name: str) -> bool:
+    """Return True if the command should be checked (not test-module / quick-action)."""
+    return command_name != "test-module" and not command_name.endswith(QUICK_ACTION_SUFFIX)
+
+
+def _build_yml_spec() -> dict:
+    """Extract the command specifications from the parsed integration YML.
+
+    Returns:
+        dict mapping command_name -> {"args": [arg_names], "outputs": [contextPaths]}
+        for every non-quick-action, non-test-module command.
+    """
+    spec: dict = {}
+    for command in _YML.get("script", {}).get("commands", []):
+        name = command.get("name", "")
+        if not _is_included_command(name):
+            continue
+        arg_names = [arg["name"] for arg in (command.get("arguments") or []) if arg.get("name")]
+        context_paths = [out["contextPath"] for out in (command.get("outputs") or []) if out.get("contextPath")]
+        spec[name] = {"args": arg_names, "outputs": context_paths}
+    return spec
+
+
+# Command specifications derived once from the integration YML.
+_YML_SPEC = _build_yml_spec()
+
+
+def _parse_command_map(tree: ast.Module) -> dict:
+    """Parse the ``command_map`` dict in main(), mapping command name -> handler name.
+
+    The source is read via the AST rather than a regex, so commented-out entries
+    (such as the "currently unsupported" block at the end of the dict) are excluded
+    by construction, and only the real ``command_map`` literal inside ``main()`` is
+    considered - a stray ``"gcp-x": handler,`` pair elsewhere in the file is ignored.
+
+    Skips test-module, quick-action entries and handlers that are not plain named
+    functions (e.g. the ``test-module`` lambda), which we cannot introspect.
+
+    Returns:
+        dict mapping command_name -> handler_function_name.
+    """
+    main_fn = next(
+        (node for node in tree.body if isinstance(node, ast.FunctionDef) and node.name == "main"),
+        None,
+    )
+    assert main_fn is not None, "Could not find a top-level main() function in GCP.py"
+
+    mapping: dict = {}
+    for node in ast.walk(main_fn):
+        # command_map is an annotated assignment:
+        #   command_map: dict[str, Callable[[Any, dict], Any]] = {...}
+        if isinstance(node, ast.AnnAssign):
+            target, value = node.target, node.value
+        elif isinstance(node, ast.Assign) and len(node.targets) == 1:
+            target, value = node.targets[0], node.value
+        else:
+            continue
+        if not (isinstance(target, ast.Name) and target.id == "command_map"):
+            continue
+        if not isinstance(value, ast.Dict):
+            continue
+        for key, handler in zip(value.keys, value.values):
+            if not (isinstance(key, ast.Constant) and isinstance(key.value, str)):
+                continue
+            # Only plain named functions can be resolved to a body; this skips lambdas.
+            if not isinstance(handler, ast.Name):
+                continue
+            if not _is_included_command(key.value):
+                continue
+            mapping[key.value] = handler.id
+
+    # Guard against silent drift: if command_map is renamed, moved out of main() or
+    # built dynamically, an empty mapping would make every consumer test pass vacuously.
+    assert mapping, "Parsed an empty command_map from GCP.py - the parser is out of sync with the source"
+    return mapping
+
+
+def _top_level_functions(tree: ast.Module) -> dict:
+    """Map every top-level function name in the .py to its AST node.
+
+    Using the AST (instead of splitting the raw text on ``^def``) means a
+    handler's body ends exactly where the function ends. A commented-out
+    function that follows it is not absorbed into it, and a ``def`` appearing
+    inside a docstring or string literal cannot start a bogus body.
+
+    Returns:
+        dict mapping function_name -> the ast.FunctionDef / ast.AsyncFunctionDef node.
+    """
+    functions = {node.name: node for node in tree.body if isinstance(node, ast.FunctionDef | ast.AsyncFunctionDef)}
+
+    # Guard against silent drift: an empty mapping would make every consumer
+    # test pass vacuously.
+    assert functions, "Found no top-level functions in GCP.py - the parser is out of sync with the source"
+    return functions
+
+
+def _string_constant(node: ast.AST) -> str | None:
+    """Return the value of a string-literal AST node, or None if it is not one."""
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+    return None
+
+
+def _extract_args_get(function_node: ast.AST) -> set:
+    """Extract every argument name read from ``args`` within the given function node.
+
+    Recognizes both supported read forms:
+      1. ``args.get("<name>")`` (with or without a default).
+      2. ``args["<name>"]`` subscript access.
+
+    Arguments read with a non-literal key (e.g. ``args.get(some_variable)``)
+    cannot be resolved statically and are deliberately ignored.
+    """
+    names: set = set()
+    for node in ast.walk(function_node):
+        # Form 1: args.get("<name>") / args.get("<name>", default)
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "get"
+            and isinstance(node.func.value, ast.Name)
+            and node.func.value.id == "args"
+            and node.args
+            and (name := _string_constant(node.args[0])) is not None
+        ):
+            names.add(name)
+        # Form 2: args["<name>"]
+        elif (
+            isinstance(node, ast.Subscript)
+            and isinstance(node.value, ast.Name)
+            and node.value.id == "args"
+            and (name := _string_constant(node.slice)) is not None
+        ):
+            names.add(name)
+    return names
+
+
+def _extract_param_default_prefixes(function_node: ast.AST) -> set:
+    """Extract an ``outputs_prefix`` declared as a parameter default of the function.
+
+    Covers the ``def handler(..., outputs_prefix: str = "GCP.Some.Path")`` form,
+    where the prefix is the function's own default rather than a value written
+    inside its body.
+    """
+    if not isinstance(function_node, ast.FunctionDef | ast.AsyncFunctionDef):
+        return set()
+
+    spec = function_node.args
+    # Positional defaults bind to the LAST N positional parameters.
+    positional = [*spec.posonlyargs, *spec.args]
+    defaults = list(spec.defaults)
+    pairs = list(zip(positional[len(positional) - len(defaults) :], defaults))
+    pairs += list(zip(spec.kwonlyargs, spec.kw_defaults))
+
+    return {value for parameter, default in pairs if parameter.arg == "outputs_prefix" and (value := _string_constant(default))}
+
+
+def _extract_output_prefixes(function_node: ast.AST) -> set:
+    """Extract all output context prefixes declared within the given function node.
+
+    Recognizes the supported CommandResults wiring patterns:
+      1. ``outputs_prefix="GCP.Some.Path"`` keyword arguments, variable
+         assignments (``outputs_prefix = "GCP.Some.Path"``), and function
+         parameter defaults (``outputs_prefix: str = "GCP.Some.Path"``).
+      2. Context paths used directly as ``outputs`` dict keys, e.g.
+         ``"GCP.Some.Path(val.id && val.id == obj.id)": data``. The DT
+         transformer suffix in parentheses is stripped.
+
+    A prefix forwarded from a variable (``outputs_prefix=outputs_prefix``)
+    resolves through pattern 1's parameter-default branch when the function
+    declares its own default; it is otherwise not resolvable statically and is
+    ignored.
+    """
+    # Pattern 1c: the prefix declared as this function's own parameter default.
+    prefixes: set = _extract_param_default_prefixes(function_node)
+
+    for node in ast.walk(function_node):
+        # Pattern 1a: outputs_prefix="GCP.Some.Path" passed as a keyword argument.
+        # NOTE: the literal is used verbatim (no .strip()) so that a leading or
+        # trailing whitespace typo in the source (e.g. " GCP.Compute.Operations")
+        # is surfaced as a real wiring defect instead of being silently masked.
+        if isinstance(node, ast.Call):
+            for keyword in node.keywords:
+                if keyword.arg == "outputs_prefix" and (value := _string_constant(keyword.value)):
+                    prefixes.add(value)
+        # Pattern 1b: outputs_prefix = "..." / outputs_prefix: str = "..."
+        elif isinstance(node, ast.Assign | ast.AnnAssign):
+            targets = node.targets if isinstance(node, ast.Assign) else [node.target]
+            is_prefix_target = any(isinstance(target, ast.Name) and target.id == "outputs_prefix" for target in targets)
+            if is_prefix_target and (value := _string_constant(node.value)):
+                prefixes.add(value)
+        # Pattern 2: context paths used as outputs dict keys.
+        elif isinstance(node, ast.Dict):
+            for key in node.keys:
+                # key is None for a ``**expansion`` entry, which has no literal path.
+                if (value := _string_constant(key)) and value.startswith("GCP."):
+                    # Strip only the trailing DT transformer such as
+                    # "(val.id && val.id == obj.id)" or "(true)" so only the bare
+                    # context path remains.
+                    prefixes.add(re.sub(r"\(.*\)$", "", value))
+    return prefixes
+
+
+# Derived once from the single parse of GCP.py and reused by every check below.
+_COMMAND_MAP = _parse_command_map(_PY_TREE)
+_FUNCTION_NODES = _top_level_functions(_PY_TREE)
+
+
+def test_command_map_parser_ignores_commented_out_entries():
+    """
+    Given: A command_map in GCP.py containing a commented-out block of currently
+           unsupported commands.
+    When: Parsing the command_map with _parse_command_map.
+    Then: No commented-out entry is reported as wired, so a command that is enabled
+          in the YML but left commented in the .py is still caught as missing.
+    """
+    # This is the one check that MUST scan the raw text rather than the AST: the
+    # AST cannot see comments at all, so only a text scan can enumerate the
+    # commented-out entries we expect to be absent from the parsed map.
+    commented_out = set(re.findall(r'^\s*#\s*"([a-z0-9][a-z0-9\-]*)"\s*:', _PY_SOURCE, flags=re.MULTILINE))
+    leaked = sorted(commented_out & _COMMAND_MAP.keys())
+
+    assert not leaked, (
+        "The following commands are commented out in GCP.py but were parsed as wired " f"in the command_map: {leaked}"
+    )
+
+
+def test_command_map_handlers_resolve_to_real_functions():
+    """
+    Given: The handler names referenced by the command_map in GCP.py.
+    When: Resolving each of them against the top-level functions in the same file.
+    Then: Every handler must resolve to a real function node, so that a renamed or
+          deleted handler cannot make the arg/output checks pass vacuously against
+          an empty body.
+    """
+    unresolved = sorted({handler for handler in _COMMAND_MAP.values() if handler not in _FUNCTION_NODES})
+
+    assert not unresolved, (
+        "The following handlers are referenced by the command_map in GCP.py but do "
+        f"not resolve to a top-level function in that file: {unresolved}"
+    )
+
+
+def test_yml_commands_are_wired_in_py():
+    """
+    Given: The integration YML declaring command names.
+    When: Comparing against the command_map wired in the .py main().
+    Then: Every non-quick-action YML command must be wired in the .py.
+    """
+    missing = sorted(name for name in _YML_SPEC if name not in _COMMAND_MAP)
+    assert not missing, (
+        "The following commands are declared in GCP.yml but are NOT wired in the " f"command_map in GCP.py: {missing}"
+    )
+
+
+def test_yml_args_match_py_handler_verbatim():
+    """
+    Given: The arguments declared per command in the integration YML.
+    When: Comparing (verbatim) against the args.get("...") reads in that command's
+          resolved handler function in the .py.
+    Then: Each YML argument name must appear exactly as-is in the handler.
+          Any naming difference (snake_case vs camelCase, casing) fails.
+    """
+    mismatches: list = []
+    for command_name in sorted(_YML_SPEC):
+        handler = _COMMAND_MAP.get(command_name)
+        if handler is None:
+            # Missing wiring is reported by test_yml_commands_are_wired_in_py.
+            continue
+        handler_node = _FUNCTION_NODES.get(handler)
+        if handler_node is None:
+            # An unresolvable handler is reported by
+            # test_command_map_handlers_resolve_to_real_functions.
+            continue
+        handler_args = _extract_args_get(handler_node)
+        for arg_name in _YML_SPEC[command_name]["args"]:
+            if arg_name in PLATFORM_STANDARD_ARGS:
+                # Resolved centrally via credentials, not per-handler args.get(...).
+                continue
+            if arg_name not in handler_args:
+                mismatches.append(f'{command_name} (handler {handler}) -> args.get("{arg_name}")')
+
+    assert not mismatches, (
+        "The following YML arguments are NOT read verbatim via args.get(...) in their "
+        "command's handler in GCP.py (a naming difference such as snake_case vs "
+        "camelCase means the YML and PY are out of sync):\n" + "\n".join(mismatches)
+    )
+
+
+def test_yml_output_prefixes_match_py_handler():
+    """
+    Given: The output contextPaths declared per command in the integration YML.
+    When: Comparing against the outputs_prefix="..." literals in that command's
+          resolved handler function in the .py.
+    Then: Every YML output contextPath must be covered by an outputs_prefix declared
+          in the handler (the outputs_prefix must be a leading segment of the contextPath).
+    """
+
+    def _is_covered(context_path: str, prefixes: set) -> bool:
+        return any(context_path == prefix or context_path.startswith(prefix + ".") for prefix in prefixes)
+
+    uncovered: list = []
+    for command_name in sorted(_YML_SPEC):
+        handler = _COMMAND_MAP.get(command_name)
+        if handler is None:
+            continue
+        handler_node = _FUNCTION_NODES.get(handler)
+        if handler_node is None:
+            continue
+        handler_prefixes = _extract_output_prefixes(handler_node)
+        for context_path in _YML_SPEC[command_name]["outputs"]:
+            if not _is_covered(context_path, handler_prefixes):
+                uncovered.append(f"{command_name} (handler {handler}) -> {context_path}")
+
+    assert not uncovered, (
+        "The following YML output contextPaths are NOT covered by any output prefix "
+        "(outputs_prefix=... or an outputs dict key) in their command's handler in "
+        "GCP.py:\n" + "\n".join(uncovered)
+    )
+
+
+# ---------------------------------------------------------------------------
+# Regression tests for the AST extractors used by the checks above.
+#
+# These run against small synthetic sources rather than GCP.py, so they pin the
+# extractors' behaviour independently of the integration's current contents.
+# They exist because the extractors are the trust anchor of the checks above: a
+# silently over-permissive extractor would make those checks pass vacuously.
+# ---------------------------------------------------------------------------
+
+
+def test_extractors_ignore_commented_out_code():
+    """
+    Given: A function whose body is followed by a fully commented-out function that
+           reads its own args and declares its own outputs_prefix.
+    When: Extracting the args and output prefixes of the live function.
+    Then: Nothing from the commented-out block is attributed to the live function.
+          A text-based parser would glue the dead body onto the live one and let a
+          handler satisfy a YML contract it does not actually implement.
+    """
+    source = (
+        "def live_handler(creds, args):\n"
+        '    name = args.get("live_arg")\n'
+        '    return CommandResults(outputs_prefix="GCP.Live.Path", outputs=name)\n'
+        "\n"
+        "\n"
+        "# def dead_handler(creds, args):\n"
+        '#     name = args.get("dead_arg")\n'
+        '#     return CommandResults(outputs_prefix="GCP.Dead.Path", outputs=name)\n'
+    )
+    live_handler = _top_level_functions(ast.parse(source))["live_handler"]
+
+    assert _extract_args_get(live_handler) == {"live_arg"}
+    assert _extract_output_prefixes(live_handler) == {"GCP.Live.Path"}
+
+
+def test_extract_args_get_reads_subscript_access():
+    """
+    Given: A handler that reads one argument via args.get(...), another via the
+           args["..."] subscript form, and a third via a non-literal key.
+    When: Extracting its argument names.
+    Then: Both literal forms are reported and the dynamic key is ignored, so a YML
+          argument implemented only as args["name"] is not falsely reported missing.
+    """
+    source = (
+        "def handler(creds, args):\n"
+        '    a = args.get("via_get")\n'
+        '    b = args["via_subscript"]\n'
+        "    c = args.get(dynamic_key)\n"
+        "    return a, b, c\n"
+    )
+    handler = _top_level_functions(ast.parse(source))["handler"]
+
+    assert _extract_args_get(handler) == {"via_get", "via_subscript"}
+
+
+def test_extract_output_prefixes_covers_all_declaration_forms():
+    """
+    Given: Handlers declaring an output prefix as a parameter default, as a local
+           assignment, and as outputs dict keys.
+    When: Extracting their output prefixes.
+    Then: Every form is recognized, the DT transformer suffix is stripped from dict
+          keys, and a non-GCP dict key is not treated as a context path.
+    """
+    source = (
+        'def param_default(creds, args, outputs_prefix: str = "GCP.Storage.BucketPolicy"):\n'
+        "    return CommandResults(outputs_prefix=outputs_prefix)\n"
+        "\n"
+        "\n"
+        "def local_assignment(creds, args):\n"
+        '    outputs_prefix = "GCP.Assigned.Path"\n'
+        "    return CommandResults(outputs_prefix=outputs_prefix)\n"
+        "\n"
+        "\n"
+        "def dict_keys(creds, args):\n"
+        "    outputs = {\n"
+        '        "GCP.Compute.Firewall(val.name && val.name == obj.name)": [],\n'
+        '        "GCP.Compute(true)": {"FirewallNextToken": None},\n'
+        '        "NotGCP.Other": [],\n'
+        "    }\n"
+        "    return CommandResults(outputs=outputs)\n"
+    )
+    functions = _top_level_functions(ast.parse(source))
+
+    # The parameter default is resolved, so forwarding it as outputs_prefix=outputs_prefix
+    # does not leave the handler with no prefix at all.
+    assert _extract_output_prefixes(functions["param_default"]) == {"GCP.Storage.BucketPolicy"}
+    assert _extract_output_prefixes(functions["local_assignment"]) == {"GCP.Assigned.Path"}
+    assert _extract_output_prefixes(functions["dict_keys"]) == {"GCP.Compute.Firewall", "GCP.Compute"}
+
+
+def test_extract_output_prefixes_does_not_strip_whitespace_typos():
+    """
+    Given: A handler whose outputs_prefix literal has a leading space typo.
+    When: Extracting its output prefixes.
+    Then: The value is reported verbatim, so the typo surfaces as a real wiring
+          defect instead of being silently normalized away.
+    """
+    source = 'def handler(creds, args):\n    return CommandResults(outputs_prefix=" GCP.Compute.Operations")\n'
+    handler = _top_level_functions(ast.parse(source))["handler"]
+
+    assert _extract_output_prefixes(handler) == {" GCP.Compute.Operations"}

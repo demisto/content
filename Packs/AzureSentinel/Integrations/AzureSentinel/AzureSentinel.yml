@@ -29,6 +29,7 @@ configuration:
   required: false
   defaultvalue: '20'
   display: Maximum number of incidents per fetch.
+  additionalinfo: The maximum number of incidents to fetch each time. The maximum allowed value is 50.
 - name: creds_tenant_id
   type: 9
   section: Connect
@@ -1378,9 +1379,10 @@ script:
     - description: The value of the indicator.
       name: value
       required: true
-    - description: The display name of the indicator.
+    - description: Deprecated. This argument is no longer supported by the Microsoft API and will be ignored. The display name of the indicator.
       name: display_name
-      required: true
+      hidden: true
+      deprecated: true
     - description: The description of the threat indicator.
       name: description
     - auto: PREDEFINED

@@ -64,13 +64,17 @@ script:
     - description: The name of the query.
       name: query_name
       required: true
-    - description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context instead of being returned as a .gz file. If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+    - description: Whether to extract more than 1000 query results as JSON data to context instead of returning a .gz file.
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
       - "true"
       - "false"
       defaultValue: "false"
+    - description: The ID of the source that initiated the query. Relevant only when running from a playbook. When provided, this value is reported instead of the automatically detected playbook ID.
+      name: source_id
+    - description: The name of the source that initiated the query. Relevant only when running from a playbook. When provided, this value is reported instead of the automatically detected playbook name.
+      name: source_name
     description: |-
       Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised.
       When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file,
@@ -221,7 +225,7 @@ script:
     - description: The maximum number of returned fields per result.
       name: max_fields
       defaultValue: 20
-    - description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context instead of being returned as a .gz file. If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+    - description: Whether to extract more than 1000 query results as JSON data to context instead of returning a .gz file.
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
@@ -387,7 +391,7 @@ script:
     - description: The name of the query.
       name: query_name
       required: true
-    - description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context instead of being returned as a .gz file. If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+    - description: Whether to extract more than 1000 query results as JSON data to context instead of returning a .gz file.
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
@@ -482,7 +486,7 @@ script:
     - description: The name of the query.
       name: query_name
       required: true
-    - description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context instead of being returned as a .gz file. If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+    - description: Whether to extract more than 1000 query results as JSON data to context instead of returning a .gz file.
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
@@ -604,7 +608,7 @@ script:
     - description: The name of the query.
       name: query_name
       required: true
-    - description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context instead of being returned as a .gz file. If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+    - description: Whether to extract more than 1000 query results as JSON data to context instead of returning a .gz file.
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
@@ -729,7 +733,7 @@ script:
     - description: The name of the query.
       name: query_name
       required: true
-    - description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context instead of being returned as a .gz file. If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+    - description: Whether to extract more than 1000 query results as JSON data to context instead of returning a .gz file.
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
@@ -851,7 +855,7 @@ script:
     - description: The name of the query.
       name: query_name
       required: true
-    - description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context instead of being returned as a .gz file. If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+    - description: Whether to extract more than 1000 query results as JSON data to context instead of returning a .gz file.
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
@@ -958,7 +962,7 @@ script:
     - description: The name of the query.
       name: query_name
       required: true
-    - description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context instead of being returned as a .gz file. If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+    - description: Whether to extract more than 1000 query results as JSON data to context instead of returning a .gz file.
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
@@ -1067,7 +1071,7 @@ script:
     - description: The name of the query.
       name: query_name
       required: true
-    - description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context instead of being returned as a .gz file. If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+    - description: Whether to extract more than 1000 query results as JSON data to context instead of returning a .gz file.
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
@@ -1203,7 +1207,7 @@ script:
     - description: The name of the query.
       name: query_name
       required: true
-    - description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context instead of being returned as a .gz file. If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+    - description: Whether to extract more than 1000 query results as JSON data to context instead of returning a .gz file.
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
@@ -1340,7 +1344,7 @@ script:
     - description: The name of the query.
       name: query_name
       required: true
-    - description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context instead of being returned as a .gz file. If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+    - description: Whether to extract more than 1000 query results as JSON data to context instead of returning a .gz file.
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
@@ -1480,7 +1484,7 @@ script:
     - description: The name of the query.
       name: query_name
       required: true
-    - description: If set to 'true' and the query returns more than 1000 results, it will be extracted as JSON data to context instead of being returned as a .gz file. If set to 'false' and the query returns more than 1000 results, it will return the .gz file without extracting the results to context.
+    - description: Whether to extract more than 1000 query results as JSON data to context instead of returning a .gz file.
       name: parse_result_file_to_context
       auto: PREDEFINED
       predefined:
