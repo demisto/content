@@ -4410,6 +4410,18 @@ script:
     - contextPath: PaloAltoNetworksXDR.Case.Issues.host_ip_list
       description: Host IP address involved in the alert. Returned when extra_data is set to true.
       type: Unknown
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.action_country
+      description: The country associated with the issue action. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.agent_device_domain
+      description: The domain of the agent device involved in the issue. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.causality_actor_process_image_sha256
+      description: SHA256 hash of the causality actor process image. Returned when extra_data is set to true.
+      type: String
+    - contextPath: PaloAltoNetworksXDR.Case.Issues.module_id
+      description: The identifier of the module that raised the issue. Returned when extra_data is set to true.
+      type: String
     - contextPath: PaloAltoNetworksXDR.Case.Issues.event_type
       description: 'Event type. Valid values are: "Process Execution","Network Event","File Event","Registry Event","Injection Event","Load Image Event","Windows Event Log". Returned when extra_data is set to true.'
       type: String
