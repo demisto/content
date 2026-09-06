@@ -28,7 +28,7 @@ IS_FETCH = demisto.params().get("isFetch")
 # How much time before the first fetch to retrieve incidents
 FETCH_TIME = demisto.params().get("fetch_time", "3 days")
 # Default lookback window (in minutes) used when the parameter is unset or empty
-DEFAULT_LOOKBACK_MINUTES = 10
+DEFAULT_LOOKBACK_MINUTES = 0
 # Upper bound on the number of UUIDs persisted in lastRun for deduplication
 MAX_FETCHED_IDS = 5000
 # Service base URL

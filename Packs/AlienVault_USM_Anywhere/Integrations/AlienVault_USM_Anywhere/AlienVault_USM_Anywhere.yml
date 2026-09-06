@@ -70,7 +70,7 @@ configuration:
   section: Collect
   type: 0
   required: false
-- defaultvalue: '10'
+- defaultvalue: '0'
   display: Lookback in minutes
   name: lookback
   type: 0
