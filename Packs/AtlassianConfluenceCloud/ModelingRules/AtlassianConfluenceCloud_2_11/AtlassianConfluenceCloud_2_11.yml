@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: AtlassianConfluenceCloud_ModelingRule
-name: AtlassianConfluenceCloud Modeling Rule
+id: Atlassian_Confluence_ModelingRule
+name: Atlassian Confluence Modeling Rule
 rules: ''
 schema: ''
 tags: ''

@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: SaviyntEIC_ModelingRule
-name: SaviyntEIC Modeling Rule
+id: Saviynt_Enterprise_Identity_Cloud_ModelingRule
+name: Saviynt Enterprise Identity Cloud Modeling Rule
 rules: ''
 schema: ''
 tags: ''
