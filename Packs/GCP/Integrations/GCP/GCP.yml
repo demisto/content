@@ -1661,12 +1661,9 @@ script:
     - contextPath: GCP.Storage.Buckets.iamConfiguration.publicAccessPrevention
       description: The public access prevention setting of the bucket.
       type: String
-    - contextPath: GCP.Storage.Buckets.iamConfiguration.uniformBucketLevelAccess.enabled
-      description: Whether Uniform Bucket-Level Access (UBLA) is enabled on the bucket.
-      type: Boolean
-    - contextPath: GCP.Storage.Buckets.iamConfiguration.uniformBucketLevelAccess.lockedTime
-      description: The deadline for changing the Uniform Bucket-Level Access setting from true to false.
-      type: Date
+    - contextPath: GCP.Storage.Buckets.iamConfiguration.uniformBucketLevelAccess
+      description: The Uniform Bucket-Level Access (UBLA) configuration, including whether it is enabled and the deadline for disabling it.
+      type: Object
     - contextPath: GCP.Storage.Buckets.versioning.enabled
       description: Whether object versioning is enabled for the bucket.
       type: Boolean
@@ -1842,12 +1839,9 @@ script:
     - contextPath: GCP.Storage.Buckets.iamConfiguration.publicAccessPrevention
       description: The public access prevention setting of the bucket.
       type: String
-    - contextPath: GCP.Storage.Buckets.iamConfiguration.uniformBucketLevelAccess.enabled
-      description: Whether Uniform Bucket-Level Access (UBLA) is enabled on the bucket.
-      type: Boolean
-    - contextPath: GCP.Storage.Buckets.iamConfiguration.uniformBucketLevelAccess.lockedTime
-      description: The deadline for changing the Uniform Bucket-Level Access setting from true to false.
-      type: Date
+    - contextPath: GCP.Storage.Buckets.iamConfiguration.uniformBucketLevelAccess
+      description: The Uniform Bucket-Level Access (UBLA) configuration, including whether it is enabled and the deadline for disabling it.
+      type: Object
     - contextPath: GCP.Storage.Buckets.versioning.enabled
       description: Whether object versioning is enabled for the bucket.
       type: Boolean
@@ -2042,12 +2036,9 @@ script:
     - contextPath: GCP.Storage.Buckets.Objects.acl
       description: The access control list for the uploaded object.
       type: Unknown
-    - contextPath: GCP.Storage.Buckets.Objects.owner.entity
-      description: The entity of the object owner.
-      type: String
-    - contextPath: GCP.Storage.Buckets.Objects.owner.entityId
-      description: The ID of the object owner entity.
-      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.owner
+      description: The owner of the object, including the owner entity and entity ID.
+      type: Object
     - contextPath: GCP.Storage.Buckets.Objects.componentCount
       description: The number of component objects that make up a composite object.
       type: Number
@@ -2066,12 +2057,9 @@ script:
     - contextPath: GCP.Storage.Buckets.Objects.kmsKeyName
       description: The Cloud KMS key used to encrypt the uploaded object, if any.
       type: String
-    - contextPath: GCP.Storage.Buckets.Objects.customerEncryption.encryptionAlgorithm
-      description: The encryption algorithm used with the customer-supplied encryption key.
-      type: String
-    - contextPath: GCP.Storage.Buckets.Objects.customerEncryption.keySha256
-      description: The SHA256 hash of the customer-supplied encryption key.
-      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.customerEncryption
+      description: The customer-supplied encryption key information, including the algorithm and the SHA256 hash of the key.
+      type: Object
 
   - name: gcp-storage-bucket-object-download
     description: "Downloads an object from a GCS bucket and returns it as a War Room file. Required permission: storage.objects.get."
@@ -2201,12 +2189,9 @@ script:
     - contextPath: GCP.Storage.Buckets.Objects.acl
       description: The access control list for the copied object.
       type: Unknown
-    - contextPath: GCP.Storage.Buckets.Objects.owner.entity
-      description: The entity of the object owner.
-      type: String
-    - contextPath: GCP.Storage.Buckets.Objects.owner.entityId
-      description: The ID of the object owner entity.
-      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.owner
+      description: The owner of the object, including the owner entity and entity ID.
+      type: Object
     - contextPath: GCP.Storage.Buckets.Objects.componentCount
       description: The number of component objects that make up a composite object.
       type: Number
@@ -2225,12 +2210,9 @@ script:
     - contextPath: GCP.Storage.Buckets.Objects.kmsKeyName
       description: The Cloud KMS key used to encrypt the copied object, if any.
       type: String
-    - contextPath: GCP.Storage.Buckets.Objects.customerEncryption.encryptionAlgorithm
-      description: The encryption algorithm used with the customer-supplied encryption key.
-      type: String
-    - contextPath: GCP.Storage.Buckets.Objects.customerEncryption.keySha256
-      description: The SHA256 hash of the customer-supplied encryption key.
-      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.customerEncryption
+      description: The customer-supplied encryption key information, including the algorithm and the SHA256 hash of the key.
+      type: Object
 
   - name: gcp-storage-bucket-object-delete
     description: "Deletes an object from a GCS bucket. Required permission: storage.objects.delete."

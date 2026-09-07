@@ -1736,8 +1736,7 @@ Creates a new Google Cloud Storage (GCS) bucket in the specified project. Requir
 | GCP.Storage.Buckets.timeCreated | Date | The time the bucket was created. |
 | GCP.Storage.Buckets.updated | Date | The time the bucket was last updated. |
 | GCP.Storage.Buckets.iamConfiguration.publicAccessPrevention | String | The public access prevention setting of the bucket. |
-| GCP.Storage.Buckets.iamConfiguration.uniformBucketLevelAccess.enabled | Boolean | Whether Uniform Bucket-Level Access \(UBLA\) is enabled on the bucket. |
-| GCP.Storage.Buckets.iamConfiguration.uniformBucketLevelAccess.lockedTime | Date | The deadline for changing the Uniform Bucket-Level Access setting from true to false. |
+| GCP.Storage.Buckets.iamConfiguration.uniformBucketLevelAccess | Object | The Uniform Bucket-Level Access \(UBLA\) configuration, including whether it is enabled and the deadline for disabling it. |
 | GCP.Storage.Buckets.versioning.enabled | Boolean | Whether object versioning is enabled for the bucket. |
 | GCP.Storage.Buckets.defaultEventBasedHold | Boolean | The default value for the event-based hold on newly created objects in the bucket. |
 | GCP.Storage.Buckets.generation | String | The generation \(version\) number of the bucket. |
@@ -1826,8 +1825,7 @@ Sets the public access prevention configuration on a GCS bucket. Required permis
 | GCP.Storage.Buckets.timeCreated | Date | The time the bucket was created. |
 | GCP.Storage.Buckets.updated | Date | The time the bucket was last updated. |
 | GCP.Storage.Buckets.iamConfiguration.publicAccessPrevention | String | The public access prevention setting of the bucket. |
-| GCP.Storage.Buckets.iamConfiguration.uniformBucketLevelAccess.enabled | Boolean | Whether Uniform Bucket-Level Access \(UBLA\) is enabled on the bucket. |
-| GCP.Storage.Buckets.iamConfiguration.uniformBucketLevelAccess.lockedTime | Date | The deadline for changing the Uniform Bucket-Level Access setting from true to false. |
+| GCP.Storage.Buckets.iamConfiguration.uniformBucketLevelAccess | Object | The Uniform Bucket-Level Access \(UBLA\) configuration, including whether it is enabled and the deadline for disabling it. |
 | GCP.Storage.Buckets.versioning.enabled | Boolean | Whether object versioning is enabled for the bucket. |
 | GCP.Storage.Buckets.defaultEventBasedHold | Boolean | The default value for the event-based hold on newly created objects in the bucket. |
 | GCP.Storage.Buckets.generation | String | The generation \(version\) number of the bucket. |
@@ -1907,16 +1905,14 @@ Uploads a War Room file (by entry ID) to a GCS bucket as an object. Required per
 | GCP.Storage.Buckets.Objects.cacheControl | String | The cache control directive for the uploaded object. |
 | GCP.Storage.Buckets.Objects.metadata | Unknown | The user-provided metadata, in key/value pairs. |
 | GCP.Storage.Buckets.Objects.acl | Unknown | The access control list for the uploaded object. |
-| GCP.Storage.Buckets.Objects.owner.entity | String | The entity of the object owner. |
-| GCP.Storage.Buckets.Objects.owner.entityId | String | The ID of the object owner entity. |
+| GCP.Storage.Buckets.Objects.owner | Object | The owner of the object, including the owner entity and entity ID. |
 | GCP.Storage.Buckets.Objects.componentCount | Number | The number of component objects that make up a composite object. |
 | GCP.Storage.Buckets.Objects.customTime | Date | The user-specified timestamp for the uploaded object, in RFC 3339 format. |
 | GCP.Storage.Buckets.Objects.eventBasedHold | Boolean | Whether an event-based hold is active on the uploaded object. |
 | GCP.Storage.Buckets.Objects.temporaryHold | Boolean | Whether a temporary hold is active on the uploaded object. |
 | GCP.Storage.Buckets.Objects.retentionExpirationTime | Date | The earliest date and time when the object can be deleted based on the bucket's retention policy, in RFC 3339 format. |
 | GCP.Storage.Buckets.Objects.kmsKeyName | String | The Cloud KMS key used to encrypt the uploaded object, if any. |
-| GCP.Storage.Buckets.Objects.customerEncryption.encryptionAlgorithm | String | The encryption algorithm used with the customer-supplied encryption key. |
-| GCP.Storage.Buckets.Objects.customerEncryption.keySha256 | String | The SHA256 hash of the customer-supplied encryption key. |
+| GCP.Storage.Buckets.Objects.customerEncryption | Object | The customer-supplied encryption key information, including the algorithm and the SHA256 hash of the key. |
 
 ### gcp-storage-bucket-object-download
 
@@ -1994,16 +1990,14 @@ Copies an object from a source bucket to a destination bucket. Required permissi
 | GCP.Storage.Buckets.Objects.cacheControl | String | The cache control directive for the copied object. |
 | GCP.Storage.Buckets.Objects.metadata | Unknown | The user-provided metadata, in key/value pairs. |
 | GCP.Storage.Buckets.Objects.acl | Unknown | The access control list for the copied object. |
-| GCP.Storage.Buckets.Objects.owner.entity | String | The entity of the object owner. |
-| GCP.Storage.Buckets.Objects.owner.entityId | String | The ID of the object owner entity. |
+| GCP.Storage.Buckets.Objects.owner | Object | The owner of the object, including the owner entity and entity ID. |
 | GCP.Storage.Buckets.Objects.componentCount | Number | The number of component objects that make up a composite object. |
 | GCP.Storage.Buckets.Objects.customTime | Date | The user-specified timestamp for the copied object, in RFC 3339 format. |
 | GCP.Storage.Buckets.Objects.eventBasedHold | Boolean | Whether an event-based hold is active on the copied object. |
 | GCP.Storage.Buckets.Objects.temporaryHold | Boolean | Whether a temporary hold is active on the copied object. |
 | GCP.Storage.Buckets.Objects.retentionExpirationTime | Date | The earliest date and time when the object can be deleted based on the bucket's retention policy, in RFC 3339 format. |
 | GCP.Storage.Buckets.Objects.kmsKeyName | String | The Cloud KMS key used to encrypt the copied object, if any. |
-| GCP.Storage.Buckets.Objects.customerEncryption.encryptionAlgorithm | String | The encryption algorithm used with the customer-supplied encryption key. |
-| GCP.Storage.Buckets.Objects.customerEncryption.keySha256 | String | The SHA256 hash of the customer-supplied encryption key. |
+| GCP.Storage.Buckets.Objects.customerEncryption | Object | The customer-supplied encryption key information, including the algorithm and the SHA256 hash of the key. |
 
 ### gcp-storage-bucket-object-delete
 
