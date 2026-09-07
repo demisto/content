@@ -1,5 +1,6 @@
 from unittest.mock import MagicMock, patch
 import pytest
+from datetime import datetime, UTC, timedelta
 from CommonServerPython import DemistoException
 
 
@@ -26,8 +27,6 @@ def test_get_credential_nested():
 
 
 def test_generate_intervals():
-    from datetime import datetime, UTC
-
     start = datetime(2026, 7, 1, 0, 0, tzinfo=UTC)
     end = datetime(2026, 7, 1, 6, 0, tzinfo=UTC)
     intervals = generate_intervals(start, end)
@@ -36,9 +35,42 @@ def test_generate_intervals():
     assert intervals[-1][1] == end
 
 
+def test_generate_intervals_partial():
+    start = datetime(2026, 7, 1, 0, 0, tzinfo=UTC)
+    end = datetime(2026, 7, 1, 5, 0, tzinfo=UTC)
+    intervals = generate_intervals(start, end)
+    assert intervals == [
+        (start, datetime(2026, 7, 1, 3, 0, tzinfo=UTC)),
+        (datetime(2026, 7, 1, 3, 0, tzinfo=UTC), end),
+    ]
+
+
+def test_get_credential_none():
+    assert get_credential(None) == ""
+
+
+def test_get_event_time_invalid():
+    event = {"message": {"timestamp": "invalid-timestamp"}}
+    value = get_event_time(event, "message")
+    assert value.endswith("Z")
+
+
 def test_get_event_time():
     event = {"message": {"timestamp": "2026-07-01T10:30:45Z"}}
     assert get_event_time(event, "message") == "2026-07-01T10:30:45Z"
+
+
+@patch.object(ETDClient, "get_access_token", return_value="dummy")
+def test_get_links_invalid_chunk(mock_token):
+    client = ETDClient(base_url="dummy", params={})
+    response = {
+        "data": {
+            "message": "invalid",
+            "audit": None,
+            "connection": {},
+        }
+    }
+    assert client.get_links(response, ["message", "audit", "connection"]) == []
 
 
 def test_get_event_id():
@@ -52,6 +84,40 @@ def test_deduplicate_events():
     events = [{"_event_id": "1", "_time": "2026-07-01T10:00:00Z"}, {"_event_id": "1", "_time": "2026-07-01T10:00:00Z"}]
     result = deduplicate_events(events, None, set())
     assert len(result) == 1
+
+
+@patch("CiscoETDConnector.demisto.getIntegrationContext")
+@patch.object(ETDClient, "_http_request")
+def test_get_access_token_cached(mock_request, mock_context):
+    mock_context.return_value = {
+        "access_token": "cached-token",
+        "token_expiry": (datetime.now(UTC) + timedelta(minutes=10)).timestamp(),
+    }
+    client = ETDClient.__new__(ETDClient)
+    client.params = {
+        "api_key": "api-key",
+        "client_id": "client-id",
+        "client_secret": "client-secret",
+    }
+    client._headers = {}
+    token = client.get_access_token()
+    assert token == "cached-token"
+    mock_request.assert_not_called()
+
+
+@patch("CiscoETDConnector.demisto.getIntegrationContext", return_value={})
+@patch.object(ETDClient, "_http_request")
+def test_get_access_token_missing_token(mock_request, mock_context):
+    mock_request.return_value = {}
+    client = ETDClient.__new__(ETDClient)
+    client.params = {
+        "api_key": "api-key",
+        "client_id": "client-id",
+        "client_secret": "client-secret",
+    }
+    client._headers = {}
+    with pytest.raises(DemistoException, match="Token not found"):
+        client.get_access_token()
 
 
 @patch.object(ETDClient, "get_access_token", return_value="dummy")
@@ -176,3 +242,99 @@ def test_fetch_and_ingest_logs_success(
     fetch_and_ingest_logs(client, {"max_fetch": 100})
     mock_send.assert_called_once()
     mock_set_last_run.assert_called_once()
+
+
+@patch.object(ETDClient, "download_logs", return_value=[])
+@patch.object(ETDClient, "get_links", return_value=[])
+@patch.object(ETDClient, "request_log_export")
+@patch.object(ETDClient, "get_access_token", return_value="dummy")
+@patch("CiscoETDConnector.demisto.getLastRun", return_value={})
+def test_fetch_and_ingest_logs_no_events(mock_last_run, mock_token, mock_request, mock_links, mock_download):
+    from CiscoETDConnector import fetch_and_ingest_logs
+
+    client = ETDClient(base_url="dummy", params={})
+    fetch_and_ingest_logs(client, {"max_fetch": 100, "event_type": ["message"]})
+    mock_request.assert_called()
+
+
+@patch("CiscoETDConnector.demisto.getLastRun")
+@patch.object(ETDClient, "get_access_token", return_value="dummy")
+def test_fetch_and_ingest_logs_invalid_last_fetch(mock_token, mock_last_run):
+    from CiscoETDConnector import fetch_and_ingest_logs
+
+    mock_last_run.return_value = {
+        "last_fetch": "invalid-date",
+        "last_ids": [],
+    }
+    client = ETDClient(base_url="dummy", params={})
+    with pytest.raises(DemistoException, match="Invalid last_fetch"):
+        fetch_and_ingest_logs(client, {"max_fetch": 100})
+
+
+@patch("CiscoETDConnector.demisto.error")
+@patch.object(ETDClient, "request_log_export")
+@patch.object(ETDClient, "get_access_token", return_value="dummy")
+def test_fetch_and_ingest_logs_request_error(mock_token, mock_request, mock_error):
+    from CiscoETDConnector import fetch_and_ingest_logs
+
+    mock_request.side_effect = Exception("ETD API error")
+    client = ETDClient(base_url="dummy", params={})
+    fetch_and_ingest_logs(client, {"max_fetch": 100})
+    mock_error.assert_called_once()
+
+
+@patch("CiscoETDConnector.send_events_to_xsiam")
+@patch("CiscoETDConnector.demisto.setLastRun")
+@patch("CiscoETDConnector.demisto.getLastRun")
+@patch.object(ETDClient, "download_logs")
+@patch.object(ETDClient, "get_links")
+@patch.object(ETDClient, "request_log_export")
+@patch.object(ETDClient, "get_access_token", return_value="dummy")
+def test_fetch_and_ingest_logs_max_fetch(
+    mock_token, mock_request, mock_links, mock_download, mock_last_run, mock_set_last_run, mock_send
+):
+    from CiscoETDConnector import fetch_and_ingest_logs
+
+    mock_last_run.return_value = {}
+    mock_request.return_value = {"data": {}}
+    mock_links.return_value = [("message", "https://example.com/log")]
+    mock_download.return_value = [
+        {
+            "_time": "2026-07-01T10:00:00Z",
+            "_event_id": "1",
+            "message": {},
+        },
+        {
+            "_time": "2026-07-01T10:01:00Z",
+            "_event_id": "2",
+            "message": {},
+        },
+    ]
+    client = ETDClient(base_url="dummy", params={})
+    fetch_and_ingest_logs(client, {"max_fetch": 2, "event_type": ["message"]})
+    mock_send.assert_called_once()
+
+
+@patch("CiscoETDConnector.demisto.getLastRun")
+@patch.object(ETDClient, "download_logs")
+@patch.object(ETDClient, "get_links")
+@patch.object(ETDClient, "request_log_export")
+@patch.object(ETDClient, "get_access_token", return_value="dummy")
+def test_fetch_and_ingest_logs_all_duplicates(mock_token, mock_request, mock_links, mock_download, mock_last_run):
+    from CiscoETDConnector import fetch_and_ingest_logs
+
+    mock_last_run.return_value = {
+        "last_fetch": "2026-07-01T10:00:00Z",
+        "last_ids": ["1"],
+    }
+    mock_request.return_value = {"data": {}}
+    mock_links.return_value = [("message", "https://example.com/log")]
+    mock_download.return_value = [
+        {
+            "_time": "2026-07-01T10:00:00Z",
+            "_event_id": "1",
+            "message": {},
+        }
+    ]
+    client = ETDClient(base_url="dummy", params={})
+    fetch_and_ingest_logs(client, {"max_fetch": 100, "event_type": ["message"]})

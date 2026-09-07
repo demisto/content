@@ -40,10 +40,7 @@ def generate_intervals(start_dt: datetime, end_dt: datetime) -> list[tuple[datet
 def get_event_time(event: dict[str, Any], log_type: str) -> str:
     if log_type == "message":
         msg = event.get("message", {})
-        time_stamp =  (
-            msg.get("timestamp")
-            or msg.get("action", {}).get("timestamp", "")
-        )      
+        time_stamp = msg.get("timestamp") or msg.get("action", {}).get("timestamp", "")
     else:
         time_stamp = event.get("timestamp")
     if time_stamp:
@@ -123,7 +120,7 @@ class ETDClient(ContentClient):
         )
 
     def get_access_token(self) -> str:
-        try :
+        try:
             context = demisto.getIntegrationContext() or {}
             token = context.get("access_token")
             expiry = context.get("token_expiry")
@@ -146,11 +143,11 @@ class ETDClient(ContentClient):
                 {"access_token": token, "token_expiry": (datetime.now(UTC) + timedelta(minutes=55)).timestamp()}
             )
             return token
-        except Exception as e:
-            demisto.error(f"{e}\n{traceback.format_exc()}")
+        except DemistoException:
             raise
-
-        
+        except Exception as e:
+            demisto.error(f"Failed to authenticate with Cisco ETD: {str(e)}")
+            raise DemistoException("Failed to authenticate with Cisco ETD.")
 
     def request_log_export(self, start: str, end: str, event_types: list[str]) -> dict[str, Any]:
         body = {
@@ -176,10 +173,12 @@ class ETDClient(ContentClient):
     def download_logs(self, links: list[tuple[str, str]]) -> list[dict[str, Any]]:
         events = []
         for log_type, link in links:
-            response = requests.get(link, 
-                            timeout=120,
-                            verify=not self.params.get("insecure", False),
-                            proxies=requests.utils.get_environ_proxies(link) if self.params.get("proxy") else None,)
+            response = requests.get(
+                link,
+                timeout=120,
+                verify=not self.params.get("insecure", False),
+                proxies=requests.utils.get_environ_proxies(link) if self.params.get("proxy") else None,
+            )
             if response.status_code != 200:
                 raise DemistoException(f"Failed downloading ETD log file: {response.text}")
             res = response.text
@@ -216,7 +215,10 @@ def fetch_and_ingest_logs(client: ETDClient, params: dict[str, Any]) -> None:
     if not last_fetch:
         start_dt = now
     else:
-        parsed_dt = arg_to_datetime(last_fetch)
+        try:
+            parsed_dt = arg_to_datetime(last_fetch)
+        except (ValueError, TypeError):
+            raise DemistoException("Invalid last_fetch")
         if parsed_dt is None:
             raise DemistoException("Invalid last_fetch")
         start_dt = parsed_dt.astimezone(UTC)
@@ -303,7 +305,7 @@ def cisco_etd_get_events_command(client: ETDClient, args: dict[str, Any]) -> Com
         outputs_key_field="_event_id",
         outputs=events,
     )
-    
+
 
 """ TEST MODULE """
 
@@ -322,7 +324,9 @@ def test_module(client: ETDClient) -> str:
         return "ok"
     except Exception as e:
         demisto.error(f"[ERROR] Test failed: {str(e)}\n{traceback.format_exc()}")
-        raise DemistoException("Connection test failed. Please verify the ETD Base URL, API Key, Client ID, Client Secret, and network connectivity.")
+        raise DemistoException(
+            "Connection test failed. Please verify the ETD Base URL, API Key, Client ID, Client Secret, and network connectivity."
+        )
 
 
 """ MAIN """
@@ -342,6 +346,7 @@ def main() -> None:
     except Exception as e:
         demisto.error(f"[ERROR] MAIN FAILED: {str(e)}\n" f"{traceback.format_exc()}")
         return_error("Authentication failed. Please verify the Client ID, Client Secret, API Key, and ETD Base URL.")
+
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
