@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: AzureWAF_ModelingRule
-name: AzureWAF Modeling Rule
+id: Azure_WAF_ModelingRule
+name: Azure WAF Modeling Rule
 rules: ''
 schema: ''
 tags: ''
