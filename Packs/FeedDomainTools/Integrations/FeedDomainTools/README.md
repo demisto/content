@@ -41,7 +41,7 @@ Gets indicators from the feed.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | feed_type | The DomainTools integration feed type to fetch. Possible values are: nod, nad, noh, domainrdap, domaindiscovery, domainrisk, domainhotlist, iphotlist, iprisk. Default is nod. | Optional |
-| session_id | The session id to serve as unique identifier. On it's initial use, it will retrieve data from the past 5 days. Default is dt-cortex-feeds. | Optional |
+| session_id | The session id to serve as unique identifier. On its initial use, it will retrieve data from the past 5 days. Default is dt-cortex-feeds. | Optional |
 | domain | The top level domain to query (e.g. `*.com`). | Optional |
 | after | The start of the query window in seconds, relative to the current time, inclusive. Defaults to 3600 seconds (1h). Default is -3600. | Optional |
 | before | The end of the query window in seconds, relative to the current time, inclusive. | Optional |
