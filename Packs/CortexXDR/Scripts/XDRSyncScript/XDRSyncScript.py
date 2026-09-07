@@ -60,6 +60,9 @@ SEVERITY_MAPPING = {
     "high": 3
 }
 
+# Character used to delimit each argument value in the scheduled command string built by args_to_str.
+ARGUMENT_DELIMITER = '`'
+
 
 def compare_incident_in_demisto_vs_xdr_context(incident_in_demisto, xdr_incident_in_context, incident_id,
                                                fields_mapping):
@@ -204,7 +207,17 @@ def args_to_str(demisto_args, latest_incident_in_xdr):
 
     for arg_key in args_copy:
         arg_value = args_copy[arg_key]
-        args_to_str += '{}=`{}` '.format(arg_key, arg_value)
+        # The scheduled command is a single string in which each value is delimited by backticks.
+        # A backtick inside a value would close the argument early and let the rest of the value be
+        # parsed as command text, so such a value is rejected rather than silently altered.
+        if ARGUMENT_DELIMITER in str(arg_value):
+            demisto.error(f'[ScheduleSync] Refusing to schedule: {arg_key} contains the {ARGUMENT_DELIMITER} delimiter.')
+            raise DemistoException(
+                f'The value of the "{arg_key}" argument contains an illegal "{ARGUMENT_DELIMITER}" character and the '
+                f'XDR incident sync was not scheduled. Remove this character from the incident in Cortex XDR and '
+                f'rerun the playbook.')
+
+        args_to_str += f'{arg_key}=`{arg_value}` '
 
     return args_to_str
 
