@@ -1,0 +1,31 @@
+{
+    "id": "incident_devicesecurityincidenturl",
+    "version": -1,
+    "name": "Device Security Incident URL",
+    "ownerOnly": false,
+    "description": "The url to Palo Alto Networks Device Security incident",
+    "cliName": "devicesecurityincidenturl",
+    "type": "url",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Device Security Alert",
+        "Device Security Vulnerability"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

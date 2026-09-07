@@ -2893,7 +2893,17 @@ def get_remote_detection_data_for_multiple_types(remote_incident_id):
     detection_type = ""
     mirroring_fields = ["status"]
     updated_object: dict[str, Any] = {}
-    if "idp" in mirrored_data["product"]:
+    # Check type-based conditions first (more specific) before product-based conditions (more generic).
+    # ODS and OFP detections carry product=epp but must be classified by their type, not their product.
+    if "ofp" in mirrored_data["type"]:
+        updated_object = {"incident_type": OFP_DETECTION}
+        detection_type = "ofp"
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    elif "ods" in mirrored_data["type"]:
+        updated_object = {"incident_type": ON_DEMAND_SCANS_DETECTION}
+        detection_type = "ods"
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    elif "idp" in mirrored_data["product"]:
         updated_object = {"incident_type": IDP_DETECTION}
         detection_type = "IDP"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS_IDP
@@ -2904,14 +2914,6 @@ def get_remote_detection_data_for_multiple_types(remote_incident_id):
     elif "epp" in mirrored_data["product"]:
         updated_object = {"incident_type": ENDPOINT_DETECTION}
         detection_type = "Detection"
-        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
-    elif "ofp" in mirrored_data["type"]:
-        updated_object = {"incident_type": OFP_DETECTION}
-        detection_type = "ofp"
-        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
-    elif "ods" in mirrored_data["type"]:
-        updated_object = {"incident_type": ON_DEMAND_SCANS_DETECTION}
-        detection_type = "ods"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
     elif "ngsiem" in mirrored_data["product"]:
         updated_object = {"incident_type": NGSIEM_DETECTION}
@@ -3377,21 +3379,26 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
         tuple: A tuple containing a list of detections and the updated fetch information dictionary.
     """
     detections = []
-    fetch_limit = MAX_FETCH_DETECTION_PER_API_CALL if is_fetch_events else INCIDENTS_PER_FETCH
+    # The configured per-run limit (10000 for XSIAM, "Max incidents per fetch" for XSOAR).
+    base_fetch_limit = MAX_FETCH_DETECTION_PER_API_CALL if is_fetch_events else INCIDENTS_PER_FETCH
 
     detections_offset: int = current_fetch_info_detections.get("offset") or 0
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(
         last_run=current_fetch_info_detections, first_fetch=FETCH_TIME, look_back=look_back, date_format=DETECTION_DATE_FORMAT
     )
-    fetch_limit = current_fetch_info_detections.get("limit") or fetch_limit
+    fetch_limit = current_fetch_info_detections.get("limit") or base_fetch_limit
     incident_type = "detection"
+
+    # The API rejects requests where offset + limit exceeds MAX_FETCH_SIZE. With look_back, fetch_limit can grow
+    # past that bound, so cap the value sent to the API while keeping fetch_limit for dedup and last_run bookkeeping.
+    api_limit = min(fetch_limit, MAX_FETCH_SIZE - detections_offset)
 
     fetch_query = demisto.params().get("fetch_query")
     if fetch_query:
         fetch_query = f"(created_timestamp:>'{start_fetch_time}')+({fetch_query})"
-        response = get_fetch_detections(filter_arg=fetch_query, limit=fetch_limit, offset=detections_offset)
+        response = get_fetch_detections(filter_arg=fetch_query, limit=api_limit, offset=detections_offset)
     else:
-        response = get_fetch_detections(last_created_timestamp=start_fetch_time, limit=fetch_limit, offset=detections_offset)
+        response = get_fetch_detections(last_created_timestamp=start_fetch_time, limit=api_limit, offset=detections_offset)
 
     detections_ids: list[dict] = demisto.get(response, "resources", [])
     total_detections = demisto.get(response, "meta.pagination.total")
@@ -3432,7 +3439,7 @@ def fetch_endpoint_detections(current_fetch_info_detections, look_back, is_fetch
     current_fetch_info_detections = update_last_run_object(
         last_run=current_fetch_info_detections,
         incidents=detections,
-        fetch_limit=INCIDENTS_PER_FETCH,
+        fetch_limit=base_fetch_limit,
         start_fetch_time=start_fetch_time,
         end_fetch_time=end_fetch_time,
         look_back=look_back,
@@ -5291,13 +5298,14 @@ def fetch_detections_by_product_type(
         tuple[List, dict]: The list of the fetched incidents and the updated last object.
     """
     detections: List = []
-    fetch_limit = MAX_FETCH_DETECTION_PER_API_CALL if is_fetch_events else INCIDENTS_PER_FETCH
+    # The configured per-run limit (10000 for XSIAM, "Max incidents per fetch" for XSOAR).
+    base_fetch_limit = MAX_FETCH_DETECTION_PER_API_CALL if is_fetch_events else INCIDENTS_PER_FETCH
     offset: int = current_fetch_info.get("offset") or 0
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(
         last_run=current_fetch_info, first_fetch=FETCH_TIME, look_back=look_back, date_format=DETECTION_DATE_FORMAT
     )
 
-    fetch_limit = current_fetch_info.get("limit") or fetch_limit
+    fetch_limit = current_fetch_info.get("limit") or base_fetch_limit
 
     # Build the base product/type filter clauses.
     # Most product types (e.g. idp, mobile, ngsiem, xdr, automated-lead, thirdparty) map to a single
@@ -5319,7 +5327,10 @@ def fetch_detections_by_product_type(
 
     if fetch_query:
         filter = f"({filter})+({fetch_query})"
-    response = get_detections_ids(filter_arg=filter, limit=fetch_limit, offset=offset, product_type=product_type)
+    # The API rejects requests where offset + limit exceeds MAX_FETCH_SIZE. With look_back, fetch_limit can grow
+    # past that bound, so cap the value sent to the API while keeping fetch_limit for dedup and last_run bookkeeping.
+    api_limit = min(fetch_limit, MAX_FETCH_SIZE - offset)
+    response = get_detections_ids(filter_arg=filter, limit=api_limit, offset=offset, product_type=product_type)
     detections_ids: list[dict] = demisto.get(response, "resources", [])
     demisto.debug(f"CrowdStrikeFalconMsg: Total fetched detections: {len(detections_ids)}")
     total_detections = demisto.get(response, "meta.pagination.total")
@@ -5350,14 +5361,14 @@ def fetch_detections_by_product_type(
             else detections
         )
         detections = filter_incidents_by_duplicates_and_limit(
-            incidents_res=detections, last_run=current_fetch_info, fetch_limit=INCIDENTS_PER_FETCH, id_field="name"
+            incidents_res=detections, last_run=current_fetch_info, fetch_limit=fetch_limit, id_field="name"
         )
 
     demisto.debug(f"CrowdstrikeFalconMsg: last_run before update: {current_fetch_info}")
     current_fetch_info = update_last_run_object(
         last_run=current_fetch_info,
         incidents=detections,
-        fetch_limit=INCIDENTS_PER_FETCH,
+        fetch_limit=base_fetch_limit,
         start_fetch_time=start_fetch_time,
         end_fetch_time=end_fetch_time,
         look_back=look_back,
@@ -7978,8 +7989,13 @@ def cs_falcon_search_ngsiem_events_command(args: dict) -> PollResult:
 def module_test():
     try:
         get_token(new_token=True)
-    except ValueError:
-        return "Connection Error: The URL or The API key you entered is probably incorrect, please try again."
+    except (ValueError, DemistoException, requests.exceptions.RequestException) as e:
+        demisto.debug(f"test-module failed to obtain a token: {e}\n{traceback.format_exc()}")
+        return (
+            "Connection Error: Failed to reach the CrowdStrike Falcon server. Verify that the Server URL parameter is"
+            " correct, that the API credentials are valid, and that the server is reachable from your host"
+            " (check network connectivity, DNS, and proxy settings)."
+        )
     if demisto.params().get("isFetch"):
         try:
             fetch_items(command="fetch-incidents")

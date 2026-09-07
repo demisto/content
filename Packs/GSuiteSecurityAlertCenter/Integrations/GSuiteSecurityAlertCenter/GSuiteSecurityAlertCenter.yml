@@ -18,6 +18,13 @@ configuration:
   type: 13
   section: Connect
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - additionalinfo: User's Service Account JSON key.
   display: Service Account JSON
   name: user_service_account_json
@@ -768,7 +775,7 @@ script:
     - contextPath: GSuiteSecurityAlert.Recover.failedAlerts.status
       description: Status of the failed alert recovery.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.115338
+  dockerimage: demisto/googleapi-python3:1.0.0.10182333
   isfetch: true
   runonce: false
   script: '-'

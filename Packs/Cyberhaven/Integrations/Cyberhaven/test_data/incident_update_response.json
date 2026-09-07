@@ -1,0 +1,1231 @@
+{
+    "type": "incident",
+    "size": 1,
+    "resources": [
+        {
+            "id": "inc_a1b2c3d4e5f6",
+            "user": {
+                "id": "usr_john_doe_001",
+                "local_username": "john.doe",
+                "local_id": "S-1-5-21-3623811015-3361044348-030300820-1013",
+                "custom_data": {
+                    "department": "Engineering",
+                    "manager_email": "jane.smith@company.com",
+                    "employee_id": "EMP-10042"
+                }
+            },
+            "event_lineage_id": {
+                "start_event_id": "evt_start_001abc",
+                "end_event_id": "evt_end_002xyz"
+            },
+            "blocked": true,
+            "event_time": "2026-01-15T10:28:45Z",
+            "trigger_time": "2026-01-15T10:29:02Z",
+            "dataset": {
+                "id": "ds_hr_confidential",
+                "name": "HR Confidential Records",
+                "sensitivity": "high",
+                "custom_data": {
+                    "classification_level": "confidential"
+                }
+            },
+            "user_risk_groups": [
+                {
+                    "id": "rg_high_risk_users",
+                    "name": "High Risk Users",
+                    "risk_multiplier": 1.5,
+                    "custom_data": {
+                        "criteria": "multiple_policy_violations"
+                    }
+                }
+            ],
+            "policy": {
+                "id": "pol_dlp_hr_001",
+                "name": "HR Data Exfiltration Prevention",
+                "severity": "high",
+                "custom_data": {
+                    "policy_owner": "security@company.com",
+                    "enforcement_mode": "block",
+                    "compliance_framework": "SOC2"
+                }
+            },
+            "risk_score": 9.2,
+            "screenshot_guid": "scrn_7f3a2b1c-4d5e-6f7a-8b9c-0d1e2f3a4b5c",
+            "warning_status": "warning_shown",
+            "user_reactions": [
+                "reaction_acknowledged"
+            ],
+            "user_reaction_message": "I was transferring files for an approved project backup.",
+            "reaction_time": "2026-01-15T10:31:15Z",
+            "assigned_to": "senior.analyst@company.com",
+            "status": "closed",
+            "resolution_time": "2026-01-15T14:45:00Z",
+            "close_reason": "policy_violation",
+            "close_note": "Confirmed policy violation. User warned and HR notified. USB device confiscated.",
+            "custom_data": {
+                "ticket_id": "JIRA-4521"
+            },
+            "created_by": "created_by_system",
+            "ai_summary": "User john.doe copied confidential HR salary records to an unauthorized USB device and attempted to upload to a personal Google Drive account. The action was blocked by endpoint DLP after detection. High-severity incident requiring immediate escalation.",
+            "ai_severity": "critical",
+            "last_modified": "2026-01-15T14:45:00Z",
+            "event_details": {
+                "start_event": {
+                    "id": "evt_start_001abc",
+                    "timestamp": "2026-01-15T10:28:45Z",
+                    "action": {
+                        "kind": "copy",
+                        "blocked": true,
+                        "data_size": 2048576,
+                        "content": {
+                            "tags": [
+                                "pii",
+                                "confidential"
+                            ],
+                            "attributes": {
+                                "word_count": 1500,
+                                "page_count": 3
+                            },
+                            "upload_filename": "employee_salaries_2026.xlsx",
+                            "custom_data": {
+                                "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                            },
+                            "inspected": true
+                        },
+                        "sensor_kind": "endpoint",
+                        "hostname": "WORKSTATION-NYC-042",
+                        "machine_serial_number": "C02XK1JFHV2R",
+                        "custom_data": {
+                            "os_version": "Windows 11 22H2",
+                            "network_zone": "internal",
+                            "policy_applied": "pol_dlp_hr_001"
+                        },
+                        "ip_address": "192.168.1.100",
+                        "device_type": "managed",
+                        "temporary_blocked": true,
+                        "fail_close_statuses": [
+                            {
+                                "temporary_blocked": true,
+                                "dlp_api_status": "SUCCESS",
+                                "dlp_precondition": "DLP_PRECONDITION_MET",
+                                "action_status": "ACTION_STATUS_BLOCKED"
+                            }
+                        ],
+                        "process_id": 4821,
+                        "parent_process_id": 1024
+                    },
+                    "user": {
+                        "id": "usr_john_doe_001",
+                        "local_username": "john.doe",
+                        "local_id": "S-1-5-21-3623811015-3361044348-030300820-1013",
+                        "custom_data": {
+                            "ad_group": "Domain Users",
+                            "upn": "john.doe@company.com"
+                        }
+                    },
+                    "source": {
+                        "id": "src_local_001abc",
+                        "display_name": "employee_salaries_2026.xlsx",
+                        "datastore_id": "dstore_endpoint_01",
+                        "dataset_sensitivity": "sensitivity_high",
+                        "dataset_ids": [
+                            "ds_hr_confidential"
+                        ],
+                        "object_type": "file",
+                        "state": "active",
+                        "content": {
+                            "tags": [
+                                "pii",
+                                "confidential"
+                            ],
+                            "attributes": {
+                                "record_count": 250,
+                                "sensitivity_score": 95
+                            },
+                            "upload_filename": "employee_salaries_2026.xlsx",
+                            "custom_data": {
+                                "classification": "confidential"
+                            },
+                            "inspected": true
+                        },
+                        "data": {
+                            "labels": [
+                                "PII",
+                                "Confidential",
+                                "HR Data"
+                            ],
+                            "label_ids": [
+                                "lbl_pii",
+                                "lbl_confidential"
+                            ]
+                        },
+                        "app": {
+                            "name": "Microsoft Excel",
+                            "description": "Microsoft Office Spreadsheet Application",
+                            "package_name": "com.microsoft.excel",
+                            "binary_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\EXCEL.EXE",
+                            "command_line": "\"EXCEL.EXE\" /e",
+                            "main_window_title": "employee_salaries_2026.xlsx - Excel",
+                            "custom_data": {
+                                "version": "16.0.17126.20132"
+                            }
+                        },
+                        "file": {
+                            "name": "employee_salaries_2026.xlsx",
+                            "extension": "xlsx",
+                            "size": 2048576,
+                            "md5_hash": "d41d8cd98f00b204e9800998ecf8427e",
+                            "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                            "custom_data": {
+                                "creator": "john.doe",
+                                "last_modified_by": "jane.smith",
+                                "revision": "3"
+                            },
+                            "created_at": "2026-01-10T09:00:00Z",
+                            "modified_at": "2026-01-15T08:30:00Z",
+                            "owner": {
+                                "name": "john.doe",
+                                "id": "usr_john_doe_001"
+                            }
+                        },
+                        "local_file": {
+                            "id": "lf_001abc",
+                            "path": "C:\\Users\\john.doe\\Documents\\HR\\employee_salaries_2026.xlsx"
+                        },
+                        "network_share": {
+                            "hostname": "FILESERVER-01",
+                            "path": "\\\\FILESERVER-01\\HR\\Compensation",
+                            "custom_data": {
+                                "share_type": "SMB",
+                                "mount_point": "Z:"
+                            }
+                        },
+                        "email": {
+                            "id": "email_src_001",
+                            "from": "john.doe@company.com",
+                            "to": [
+                                "personal@gmail.com"
+                            ],
+                            "cc": [
+                                "backup@gmail.com"
+                            ],
+                            "bcc": [
+                                "archive@gmail.com"
+                            ],
+                            "subject": "Salary Data Backup",
+                            "custom_data": {
+                                "message_id": "<20260115102845.001@company.com>",
+                                "email_client": "Outlook",
+                                "smtp_server": "smtp.company.com",
+                                "priority": "normal"
+                            }
+                        },
+                        "email_attachment": {
+                            "id": "attach_src_001",
+                            "custom_data": {
+                                "attachment_index": "0"
+                            }
+                        },
+                        "web": {
+                            "url": "https://drive.google.com/upload",
+                            "domain": "drive.google.com",
+                            "category": "cloud_storage",
+                            "download_url": "https://drive.google.com/file/d/1abc123/view",
+                            "title": "Google Drive - Upload",
+                            "custom_data": {
+                                "referrer": "https://drive.google.com/",
+                                "request_method": "POST",
+                                "response_code": "403"
+                            },
+                            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                        },
+                        "cloud_app": {
+                            "provider": "google",
+                            "name": "google_drive",
+                            "user_name": "john.doe",
+                            "user_email": "john.doe@personal.com",
+                            "custom_data": {
+                                "tenant_id": "tenant_google_001",
+                                "app_version": "2026.1"
+                            },
+                            "instance_id": "gdrive_inst_001",
+                            "instance_name": "Personal Google Drive"
+                        },
+                        "cloud_file": {
+                            "id": "cf_src_001",
+                            "content_uri": "https://drive.google.com/file/d/1abc123/content",
+                            "path": "/My Drive/HR Data/employee_salaries_2026.xlsx",
+                            "custom_data": {
+                                "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                                "revision_id": "rev_001",
+                                "blocked_reason": "dlp_policy_violation"
+                            }
+                        },
+                        "cloud_share_recipient": {
+                            "scope": "share_external",
+                            "user_ids": [
+                                "external_user_001"
+                            ],
+                            "role": "role_viewer",
+                            "custom_data": {
+                                "expiry_date": "2026-12-31"
+                            }
+                        },
+                        "printer": {
+                            "name": "HP LaserJet Pro M404n",
+                            "description": "Office Laser Printer - Floor 3",
+                            "physical_location": "3rd Floor Copy Room",
+                            "server": "PRINTSERVER-01",
+                            "share_name": "HP-LaserJet-3F",
+                            "port": "IP_192.168.1.200",
+                            "driver": "HP LaserJet Pro M404n PCL 6",
+                            "is_local": false,
+                            "job_id": "print_job_4521",
+                            "custom_data": {
+                                "pages_printed": "0",
+                                "blocked_by_dlp": "true"
+                            },
+                            "connectivity": "network"
+                        },
+                        "removable_storage": {
+                            "id": "usb_src_001",
+                            "name": "SanDisk Ultra 64GB",
+                            "usb_id": "usb_0781_5581",
+                            "vendor_id": "0781",
+                            "product_id": "5581",
+                            "custom_data": {
+                                "serial_number": "4C530001041120115283",
+                                "file_system": "NTFS"
+                            }
+                        },
+                        "im_message": {
+                            "sender": "john.doe@company.com",
+                            "recipient_users": [
+                                "personal.contact@gmail.com"
+                            ],
+                            "recipient_groups": [
+                                "external-group-001"
+                            ],
+                            "domain": "teams.microsoft.com",
+                            "workspace": "Personal Chat",
+                            "custom_data": {
+                                "message_id": "msg_001abc",
+                                "platform": "teams"
+                            }
+                        },
+                        "source_code_repo": {
+                            "organization": "company-org",
+                            "name": "hr-data-scripts",
+                            "custom_data": {
+                                "visibility": "private",
+                                "default_branch": "main",
+                                "last_commit": "a1b2c3d4e5f6"
+                            },
+                            "branch": "main",
+                            "id": "repo_001"
+                        },
+                        "labels": [
+                            "PII",
+                            "Confidential",
+                            "HR Data"
+                        ],
+                        "label_ids": [
+                            "lbl_pii",
+                            "lbl_confidential"
+                        ],
+                        "matched_policies": [
+                            {
+                                "policy_type": "dlp",
+                                "id": "pol_dlp_hr_001",
+                                "version": 3,
+                                "definition_rule_ids": [
+                                    "rule_pii_detection",
+                                    "rule_confidential_data"
+                                ],
+                                "action_rule_id": "action_rule_block",
+                                "matched_at": "2026-01-15T10:28:45Z"
+                            }
+                        ],
+                        "issues": [
+                            {
+                                "id": "issue_001abc",
+                                "policy_type": "dlp",
+                                "matched_policy_id": "pol_dlp_hr_001",
+                                "policy_action_rule_id": "action_rule_block",
+                                "severity": "issue_severity_critical",
+                                "detected_at": "2026-01-15T10:28:45Z"
+                            }
+                        ],
+                        "custom_data": {
+                            "data_classification": "confidential",
+                            "retention_policy": "7_years",
+                            "gdpr_relevant": "true"
+                        },
+                        "outline": "Spreadsheet containing employee salary and compensation data for 250 employees. Blocked by DLP policy during unauthorized transfer attempt.",
+                        "type": "genai_apps",
+                        "domain": "company.com",
+                        "discovered_at": "2026-01-10T09:00:00Z",
+                        "updated_at": "2026-01-15T14:45:00Z",
+                        "update_event": {
+                            "id": "upd_evt_001",
+                            "action_kind": "copy",
+                            "timestamp": "2026-01-15T10:28:45Z",
+                            "user": {
+                                "id": "usr_john_doe_001",
+                                "local_username": "john.doe",
+                                "local_id": "S-1-5-21-3623811015-3361044348-030300820-1013",
+                                "custom_data": {
+                                    "session_id": "sess_20260115_001"
+                                }
+                            }
+                        },
+                        "version_id": "ver_001abc",
+                        "cloud_connector": {
+                            "id": "cc_slack_001",
+                            "type": "slack",
+                            "name": "Company Slack Integration",
+                            "onboarding_account": "slack-admin@company.com",
+                            "account_id": "slack_acct_001"
+                        }
+                    },
+                    "destination": {
+                        "id": "dst_usb_001abc",
+                        "display_name": "SanDisk Ultra 64GB (E:)",
+                        "datastore_id": "dstore_usb_01",
+                        "dataset_sensitivity": "sensitivity_unspecified",
+                        "dataset_ids": [
+                            "ds_removable_default"
+                        ],
+                        "object_type": "removable_storage",
+                        "state": "active",
+                        "content": {
+                            "tags": [
+                                "external",
+                                "removable"
+                            ],
+                            "attributes": {
+                                "file_count": 0
+                            },
+                            "upload_filename": "employee_salaries_2026.xlsx",
+                            "custom_data": {
+                                "transfer_blocked": "true"
+                            },
+                            "inspected": true
+                        },
+                        "data": {
+                            "labels": [
+                                "External Storage"
+                            ],
+                            "label_ids": [
+                                "lbl_external_storage"
+                            ]
+                        },
+                        "app": {
+                            "name": "Windows Explorer",
+                            "description": "Windows File Explorer",
+                            "package_name": "com.microsoft.explorer",
+                            "binary_path": "C:\\Windows\\explorer.exe",
+                            "command_line": "explorer.exe",
+                            "main_window_title": "E:\\Backup\\HR",
+                            "custom_data": {
+                                "version": "10.0.22621.1",
+                                "elevated": "false",
+                                "blocked": "true"
+                            }
+                        },
+                        "file": {
+                            "name": "employee_salaries_2026.xlsx",
+                            "extension": "xlsx",
+                            "size": 2048576,
+                            "md5_hash": "d41d8cd98f00b204e9800998ecf8427e",
+                            "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                            "custom_data": {
+                                "transfer_status": "blocked"
+                            },
+                            "created_at": "2026-01-15T10:28:50Z",
+                            "modified_at": "2026-01-15T10:28:50Z",
+                            "owner": {
+                                "name": "john.doe",
+                                "id": "usr_john_doe_001"
+                            }
+                        },
+                        "local_file": {
+                            "id": "lf_dst_001",
+                            "path": "E:\\Backup\\HR\\employee_salaries_2026.xlsx"
+                        },
+                        "network_share": {
+                            "hostname": "FILESERVER-01",
+                            "path": "\\\\FILESERVER-01\\Backup\\HR",
+                            "custom_data": {
+                                "share_type": "SMB",
+                                "access_denied": "true",
+                                "blocked_by": "dlp_policy",
+                                "redirect_to": "\\\\FILESERVER-01\\Quarantine"
+                            }
+                        },
+                        "email": {
+                            "id": "email_dst_001",
+                            "from": "john.doe@company.com",
+                            "to": [
+                                "personal@gmail.com"
+                            ],
+                            "cc": [
+                                "backup@gmail.com"
+                            ],
+                            "bcc": [
+                                "archive@gmail.com"
+                            ],
+                            "subject": "Salary Data Backup",
+                            "custom_data": {
+                                "message_id": "<20260115102845.001@company.com>",
+                                "delivery_status": "blocked"
+                            }
+                        },
+                        "email_attachment": {
+                            "id": "attach_dst_001",
+                            "custom_data": {
+                                "attachment_index": "0",
+                                "delivery_blocked": "true",
+                                "blocked_reason": "dlp_policy_violation"
+                            }
+                        },
+                        "web": {
+                            "url": "https://drive.google.com/upload/resumable",
+                            "domain": "drive.google.com",
+                            "category": "cloud_storage",
+                            "download_url": "https://drive.google.com/file/d/1abc123/view",
+                            "title": "Google Drive - Upload Blocked",
+                            "custom_data": {
+                                "upload_blocked": "true"
+                            },
+                            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                        },
+                        "cloud_app": {
+                            "provider": "google",
+                            "name": "google_drive",
+                            "user_name": "john.doe",
+                            "user_email": "john.doe@personal.com",
+                            "custom_data": {
+                                "upload_blocked": "true"
+                            },
+                            "instance_id": "gdrive_inst_001",
+                            "instance_name": "Personal Google Drive"
+                        },
+                        "cloud_file": {
+                            "id": "cf_dst_001",
+                            "content_uri": "https://drive.google.com/file/d/1abc123/content",
+                            "path": "/My Drive/HR Backup/employee_salaries_2026.xlsx",
+                            "custom_data": {
+                                "transfer_blocked": "true"
+                            }
+                        },
+                        "cloud_share_recipient": {
+                            "scope": "share_external",
+                            "user_ids": [
+                                "external_user_001",
+                                "external_user_002",
+                                "external_user_003"
+                            ],
+                            "role": "role_viewer",
+                            "custom_data": {
+                                "expiry_date": "2026-12-31",
+                                "access_revoked": "true",
+                                "revoked_at": "2026-01-15T14:45:00Z"
+                            }
+                        },
+                        "printer": {
+                            "name": "HP LaserJet Pro M404n",
+                            "description": "Office Laser Printer - Floor 3",
+                            "physical_location": "3rd Floor Copy Room",
+                            "server": "PRINTSERVER-01",
+                            "share_name": "HP-LaserJet-3F",
+                            "port": "IP_192.168.1.200",
+                            "driver": "HP LaserJet Pro M404n PCL 6",
+                            "is_local": false,
+                            "job_id": "print_job_4521",
+                            "custom_data": {
+                                "pages_printed": "0",
+                                "print_blocked": "true",
+                                "blocked_by": "dlp_policy"
+                            },
+                            "connectivity": "network"
+                        },
+                        "removable_storage": {
+                            "id": "usb_dst_001",
+                            "name": "SanDisk Ultra 64GB",
+                            "usb_id": "usb_0781_5581",
+                            "vendor_id": "0781",
+                            "product_id": "5581",
+                            "custom_data": {
+                                "serial_number": "4C530001041120115283",
+                                "write_blocked": "true",
+                                "confiscated": "true",
+                                "confiscated_by": "IT Security"
+                            }
+                        },
+                        "im_message": {
+                            "sender": "john.doe@company.com",
+                            "recipient_users": [
+                                "personal.contact@gmail.com"
+                            ],
+                            "recipient_groups": [
+                                "external-group-001"
+                            ],
+                            "domain": "teams.microsoft.com",
+                            "workspace": "Personal Chat",
+                            "custom_data": {
+                                "message_id": "msg_dst_001",
+                                "delivery_blocked": "true"
+                            }
+                        },
+                        "source_code_repo": {
+                            "organization": "personal-org",
+                            "name": "personal-backup-repo",
+                            "custom_data": {
+                                "push_blocked": "true"
+                            },
+                            "branch": "main",
+                            "id": "repo_dst_001"
+                        },
+                        "labels": [
+                            "External Storage",
+                            "Removable Media",
+                            "Blocked"
+                        ],
+                        "label_ids": [
+                            "lbl_external_storage",
+                            "lbl_removable_media"
+                        ],
+                        "matched_policies": [
+                            {
+                                "policy_type": "dlp",
+                                "id": "pol_dlp_removable_001",
+                                "version": 2,
+                                "definition_rule_ids": [
+                                    "rule_removable_media_write"
+                                ],
+                                "action_rule_id": "action_rule_block",
+                                "matched_at": "2026-01-15T10:28:50Z"
+                            }
+                        ],
+                        "issues": [
+                            {
+                                "id": "issue_dst_001",
+                                "policy_type": "dlp",
+                                "matched_policy_id": "pol_dlp_removable_001",
+                                "policy_action_rule_id": "action_rule_block",
+                                "severity": "issue_severity_critical",
+                                "detected_at": "2026-01-15T10:28:50Z"
+                            }
+                        ],
+                        "custom_data": {
+                            "endpoint_risk": "critical",
+                            "device_approved": "false"
+                        },
+                        "outline": "Blocked write attempt to unauthorized USB device. Transfer prevented by DLP policy enforcement.",
+                        "type": "genai_apps",
+                        "domain": "company.com",
+                        "discovered_at": "2026-01-15T10:28:45Z",
+                        "updated_at": "2026-01-15T14:45:00Z",
+                        "update_event": {
+                            "id": "upd_evt_dst_001",
+                            "action_kind": "write",
+                            "timestamp": "2026-01-15T10:28:50Z",
+                            "user": {
+                                "id": "usr_john_doe_001",
+                                "local_username": "john.doe",
+                                "local_id": "S-1-5-21-3623811015-3361044348-030300820-1013",
+                                "custom_data": {
+                                    "session_id": "sess_20260115_001",
+                                    "action_blocked": "true",
+                                    "blocked_reason": "dlp_policy_violation",
+                                    "notification_sent": "true"
+                                }
+                            }
+                        },
+                        "version_id": "ver_dst_001_updated",
+                        "cloud_connector": {
+                            "id": "cc_openai_001",
+                            "type": "openai_chatgpt_enterprise",
+                            "name": "Company OpenAI Integration",
+                            "onboarding_account": "openai-admin@company.com",
+                            "account_id": "openai_acct_001"
+                        }
+                    }
+                },
+                "end_event": {
+                    "id": "evt_end_002xyz",
+                    "timestamp": "2026-01-15T10:29:00Z",
+                    "action": {
+                        "kind": "upload",
+                        "blocked": true,
+                        "data_size": 2048576,
+                        "content": {
+                            "tags": [
+                                "pii",
+                                "confidential"
+                            ],
+                            "attributes": {
+                                "upload_attempts": 1
+                            },
+                            "upload_filename": "employee_salaries_2026.xlsx",
+                            "custom_data": {
+                                "upload_blocked": "true",
+                                "blocked_by_policy": "pol_dlp_hr_001",
+                                "notification_sent_to": "security@company.com"
+                            },
+                            "inspected": true
+                        },
+                        "sensor_kind": "endpoint",
+                        "hostname": "WORKSTATION-NYC-042",
+                        "machine_serial_number": "C02XK1JFHV2R",
+                        "custom_data": {
+                            "os_version": "Windows 11 22H2",
+                            "network_zone": "internal"
+                        },
+                        "ip_address": "192.168.1.100",
+                        "device_type": "managed",
+                        "temporary_blocked": true,
+                        "fail_close_statuses": [
+                            {
+                                "temporary_blocked": true,
+                                "dlp_api_status": "SUCCESS",
+                                "dlp_precondition": "DLP_PRECONDITION_MET",
+                                "action_status": "ACTION_STATUS_BLOCKED"
+                            }
+                        ],
+                        "process_id": 4821,
+                        "parent_process_id": 1024
+                    },
+                    "user": {
+                        "id": "usr_john_doe_001",
+                        "local_username": "john.doe",
+                        "local_id": "S-1-5-21-3623811015-3361044348-030300820-1013",
+                        "custom_data": {
+                            "session_id": "sess_20260115_001",
+                            "ad_group": "Domain Users"
+                        }
+                    },
+                    "source": {
+                        "id": "src_end_001abc",
+                        "display_name": "employee_salaries_2026.xlsx",
+                        "datastore_id": "dstore_endpoint_01",
+                        "dataset_sensitivity": "sensitivity_high",
+                        "dataset_ids": [
+                            "ds_hr_confidential"
+                        ],
+                        "object_type": "file",
+                        "state": "active",
+                        "content": {
+                            "tags": [
+                                "pii",
+                                "confidential"
+                            ],
+                            "attributes": {
+                                "record_count": 250,
+                                "sensitivity_score": 95
+                            },
+                            "upload_filename": "employee_salaries_2026.xlsx",
+                            "custom_data": {
+                                "classification": "confidential"
+                            },
+                            "inspected": true
+                        },
+                        "data": {
+                            "labels": [
+                                "PII",
+                                "Confidential"
+                            ],
+                            "label_ids": [
+                                "lbl_pii",
+                                "lbl_confidential"
+                            ]
+                        },
+                        "app": {
+                            "name": "Google Chrome",
+                            "description": "Google Chrome Web Browser",
+                            "package_name": "com.google.chrome",
+                            "binary_path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+                            "command_line": "chrome.exe --profile-directory=Default",
+                            "main_window_title": "Google Drive - Google Chrome",
+                            "custom_data": {
+                                "version": "120.0.6099.130"
+                            }
+                        },
+                        "file": {
+                            "name": "employee_salaries_2026.xlsx",
+                            "extension": "xlsx",
+                            "size": 2048576,
+                            "md5_hash": "d41d8cd98f00b204e9800998ecf8427e",
+                            "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                            "custom_data": {
+                                "upload_blocked": "true"
+                            },
+                            "created_at": "2026-01-10T09:00:00Z",
+                            "modified_at": "2026-01-15T08:30:00Z",
+                            "owner": {
+                                "name": "john.doe",
+                                "id": "usr_john_doe_001"
+                            }
+                        },
+                        "local_file": {
+                            "id": "lf_end_src_001",
+                            "path": "C:\\Users\\john.doe\\Documents\\HR\\employee_salaries_2026.xlsx"
+                        },
+                        "network_share": {
+                            "hostname": "FILESERVER-01",
+                            "path": "\\\\FILESERVER-01\\HR\\Compensation",
+                            "custom_data": {
+                                "share_type": "SMB"
+                            }
+                        },
+                        "email": {
+                            "id": "email_end_src_001",
+                            "from": "john.doe@company.com",
+                            "to": [
+                                "personal@gmail.com"
+                            ],
+                            "cc": [
+                                "backup@gmail.com"
+                            ],
+                            "bcc": [
+                                "archive@gmail.com"
+                            ],
+                            "subject": "Salary Data Backup",
+                            "custom_data": {
+                                "message_id": "<20260115102900.002@company.com>",
+                                "blocked": "true"
+                            }
+                        },
+                        "email_attachment": {
+                            "id": "attach_end_src_001",
+                            "custom_data": {
+                                "attachment_index": "0"
+                            }
+                        },
+                        "web": {
+                            "url": "https://drive.google.com/upload",
+                            "domain": "drive.google.com",
+                            "category": "cloud_storage",
+                            "download_url": "https://drive.google.com/file/d/1abc123/view",
+                            "title": "Google Drive - Blocked",
+                            "custom_data": {
+                                "blocked_by_policy": "true",
+                                "policy_id": "pol_dlp_hr_001",
+                                "notification_displayed": "true"
+                            },
+                            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                        },
+                        "cloud_app": {
+                            "provider": "google",
+                            "name": "google_drive",
+                            "user_name": "john.doe",
+                            "user_email": "john.doe@personal.com",
+                            "custom_data": {
+                                "upload_status": "blocked"
+                            },
+                            "instance_id": "gdrive_inst_001",
+                            "instance_name": "Personal Google Drive"
+                        },
+                        "cloud_file": {
+                            "id": "cf_end_src_001",
+                            "content_uri": "https://drive.google.com/file/d/1abc123/content",
+                            "path": "/My Drive/HR Backup/employee_salaries_2026.xlsx",
+                            "custom_data": {
+                                "upload_status": "blocked",
+                                "file_id_assigned": "false",
+                                "blocked_by": "cyberhaven_dlp"
+                            }
+                        },
+                        "cloud_share_recipient": {
+                            "scope": "share_external",
+                            "user_ids": [
+                                "external_user_001"
+                            ],
+                            "role": "role_viewer",
+                            "custom_data": {
+                                "expiry_date": "2026-12-31",
+                                "access_blocked": "true"
+                            }
+                        },
+                        "printer": {
+                            "name": "HP LaserJet Pro M404n",
+                            "description": "Office Laser Printer - Floor 3",
+                            "physical_location": "3rd Floor Copy Room",
+                            "server": "PRINTSERVER-01",
+                            "share_name": "HP-LaserJet-3F",
+                            "port": "IP_192.168.1.200",
+                            "driver": "HP LaserJet Pro M404n PCL 6",
+                            "is_local": false,
+                            "job_id": "print_job_4522",
+                            "custom_data": {
+                                "pages_printed": "0",
+                                "blocked": "true"
+                            },
+                            "connectivity": "network"
+                        },
+                        "removable_storage": {
+                            "id": "usb_end_src_001",
+                            "name": "SanDisk Ultra 64GB",
+                            "usb_id": "usb_0781_5581",
+                            "vendor_id": "0781",
+                            "product_id": "5581",
+                            "custom_data": {
+                                "serial_number": "4C530001041120115283",
+                                "write_blocked": "true"
+                            }
+                        },
+                        "im_message": {
+                            "sender": "john.doe@company.com",
+                            "recipient_users": [
+                                "personal.contact@gmail.com"
+                            ],
+                            "recipient_groups": [
+                                "external-group-001"
+                            ],
+                            "domain": "teams.microsoft.com",
+                            "workspace": "Personal Chat",
+                            "custom_data": {
+                                "message_id": "msg_end_001",
+                                "delivery_status": "blocked",
+                                "blocked_reason": "dlp_policy"
+                            }
+                        },
+                        "source_code_repo": {
+                            "organization": "company-org",
+                            "name": "hr-data-scripts",
+                            "custom_data": {
+                                "visibility": "private",
+                                "last_commit": "a1b2c3d4e5f6",
+                                "push_blocked": "true"
+                            },
+                            "branch": "main",
+                            "id": "repo_end_src_001"
+                        },
+                        "labels": [
+                            "PII",
+                            "Confidential",
+                            "Blocked"
+                        ],
+                        "label_ids": [
+                            "lbl_pii",
+                            "lbl_confidential"
+                        ],
+                        "matched_policies": [
+                            {
+                                "policy_type": "dlp",
+                                "id": "pol_dlp_hr_001",
+                                "version": 3,
+                                "definition_rule_ids": [
+                                    "rule_pii_detection",
+                                    "rule_cloud_upload_sensitive"
+                                ],
+                                "action_rule_id": "action_rule_block",
+                                "matched_at": "2026-01-15T10:29:00Z"
+                            }
+                        ],
+                        "issues": [
+                            {
+                                "id": "issue_end_src_001",
+                                "policy_type": "dlp",
+                                "matched_policy_id": "pol_dlp_hr_001",
+                                "policy_action_rule_id": "action_rule_block",
+                                "severity": "issue_severity_critical",
+                                "detected_at": "2026-01-15T10:29:00Z"
+                            }
+                        ],
+                        "custom_data": {
+                            "data_classification": "confidential"
+                        },
+                        "outline": "File blocked during upload attempt to personal cloud storage. DLP policy enforcement successful.",
+                        "type": "mail",
+                        "domain": "company.com",
+                        "discovered_at": "2026-01-10T09:00:00Z",
+                        "updated_at": "2026-01-15T14:45:00Z",
+                        "update_event": {
+                            "id": "upd_evt_end_src_001",
+                            "action_kind": "upload",
+                            "timestamp": "2026-01-15T10:29:00Z",
+                            "user": {
+                                "id": "usr_john_doe_001",
+                                "local_username": "john.doe",
+                                "local_id": "S-1-5-21-3623811015-3361044348-030300820-1013",
+                                "custom_data": {
+                                    "session_id": "sess_20260115_001",
+                                    "notification_acknowledged": "true"
+                                }
+                            }
+                        },
+                        "version_id": "ver_end_src_001",
+                        "cloud_connector": {
+                            "id": "cc_databricks_001",
+                            "type": "databricks",
+                            "name": "Company Databricks Integration",
+                            "onboarding_account": "databricks-admin@company.com",
+                            "account_id": "databricks_acct_001"
+                        }
+                    },
+                    "destination": {
+                        "id": "dst_end_001abc",
+                        "display_name": "Google Drive - Personal (Blocked)",
+                        "datastore_id": "dstore_gdrive_01",
+                        "dataset_sensitivity": "sensitivity_unspecified",
+                        "dataset_ids": [
+                            "ds_external_cloud"
+                        ],
+                        "object_type": "cloud_file",
+                        "state": "blocked",
+                        "content": {
+                            "tags": [
+                                "external",
+                                "blocked"
+                            ],
+                            "attributes": {
+                                "upload_bytes_transferred": 0
+                            },
+                            "upload_filename": "employee_salaries_2026.xlsx",
+                            "custom_data": {
+                                "upload_blocked": "true",
+                                "blocked_by_policy": "pol_dlp_hr_001",
+                                "bytes_received": "0"
+                            },
+                            "inspected": true
+                        },
+                        "data": {
+                            "labels": [
+                                "External",
+                                "Blocked"
+                            ],
+                            "label_ids": [
+                                "lbl_external",
+                                "lbl_blocked"
+                            ]
+                        },
+                        "app": {
+                            "name": "Google Chrome",
+                            "description": "Google Chrome Web Browser",
+                            "package_name": "com.google.chrome",
+                            "binary_path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+                            "command_line": "chrome.exe --profile-directory=Default",
+                            "main_window_title": "Upload Blocked - Google Chrome",
+                            "custom_data": {
+                                "version": "120.0.6099.130",
+                                "dlp_notification_shown": "true"
+                            }
+                        },
+                        "file": {
+                            "name": "employee_salaries_2026.xlsx",
+                            "extension": "xlsx",
+                            "size": 2048576,
+                            "md5_hash": "d41d8cd98f00b204e9800998ecf8427e",
+                            "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+                            "custom_data": {
+                                "upload_status": "blocked"
+                            },
+                            "created_at": "2026-01-15T10:29:05Z",
+                            "modified_at": "2026-01-15T10:29:05Z",
+                            "owner": {
+                                "name": "john.doe",
+                                "id": "usr_john_doe_001"
+                            }
+                        },
+                        "local_file": {
+                            "id": "lf_end_dst_001",
+                            "path": "C:\\Users\\john.doe\\Downloads\\employee_salaries_2026.xlsx"
+                        },
+                        "network_share": {
+                            "hostname": "EXTERNAL-SHARE-01",
+                            "path": "\\\\EXTERNAL-SHARE-01\\Public",
+                            "custom_data": {
+                                "access_blocked": "true",
+                                "blocked_by": "dlp_policy"
+                            }
+                        },
+                        "email": {
+                            "id": "email_end_dst_001",
+                            "from": "john.doe@company.com",
+                            "to": [
+                                "personal@gmail.com"
+                            ],
+                            "cc": [
+                                "backup@gmail.com"
+                            ],
+                            "bcc": [
+                                "archive@gmail.com"
+                            ],
+                            "subject": "Salary Data Backup",
+                            "custom_data": {
+                                "message_id": "<20260115102900.002@company.com>",
+                                "delivery_status": "blocked"
+                            }
+                        },
+                        "email_attachment": {
+                            "id": "attach_end_dst_001",
+                            "custom_data": {
+                                "attachment_blocked": "true"
+                            }
+                        },
+                        "web": {
+                            "url": "https://drive.google.com/upload/blocked",
+                            "domain": "drive.google.com",
+                            "category": "cloud_storage",
+                            "download_url": "https://drive.google.com/file/d/blocked/view",
+                            "title": "Upload Blocked - Google Drive",
+                            "custom_data": {
+                                "blocked_by_cyberhaven": "true"
+                            },
+                            "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+                        },
+                        "cloud_app": {
+                            "provider": "google",
+                            "name": "google_drive",
+                            "user_name": "john.doe",
+                            "user_email": "john.doe@personal.com",
+                            "custom_data": {
+                                "upload_status": "blocked"
+                            },
+                            "instance_id": "gdrive_inst_001",
+                            "instance_name": "Personal Google Drive"
+                        },
+                        "cloud_file": {
+                            "id": "cf_end_dst_001_blocked",
+                            "content_uri": "https://drive.google.com/file/d/blocked/content",
+                            "path": "/My Drive/HR Backup/employee_salaries_2026.xlsx",
+                            "custom_data": {
+                                "file_created": "false",
+                                "upload_blocked": "true"
+                            }
+                        },
+                        "cloud_share_recipient": {
+                            "scope": "share_external",
+                            "user_ids": [
+                                "external_user_001"
+                            ],
+                            "role": "role_viewer",
+                            "custom_data": {
+                                "access_never_granted": "true"
+                            }
+                        },
+                        "printer": {
+                            "name": "HP LaserJet Pro M404n",
+                            "description": "Office Laser Printer - Floor 3",
+                            "physical_location": "3rd Floor Copy Room",
+                            "server": "PRINTSERVER-01",
+                            "share_name": "HP-LaserJet-3F",
+                            "port": "IP_192.168.1.200",
+                            "driver": "HP LaserJet Pro M404n PCL 6",
+                            "is_local": false,
+                            "job_id": "print_job_4523",
+                            "custom_data": {
+                                "print_blocked": "true"
+                            },
+                            "connectivity": "network"
+                        },
+                        "removable_storage": {
+                            "id": "usb_end_dst_001",
+                            "name": "SanDisk Ultra 64GB",
+                            "usb_id": "usb_0781_5581",
+                            "vendor_id": "0781",
+                            "product_id": "5581",
+                            "custom_data": {
+                                "write_blocked": "true"
+                            }
+                        },
+                        "im_message": {
+                            "sender": "john.doe@company.com",
+                            "recipient_users": [
+                                "personal.contact@gmail.com"
+                            ],
+                            "recipient_groups": [
+                                "external-group-001"
+                            ],
+                            "domain": "teams.microsoft.com",
+                            "workspace": "Personal Chat",
+                            "custom_data": {
+                                "message_delivery_blocked": "true"
+                            }
+                        },
+                        "source_code_repo": {
+                            "organization": "personal-org",
+                            "name": "personal-backup-repo",
+                            "custom_data": {
+                                "push_blocked": "true"
+                            },
+                            "branch": "main",
+                            "id": "repo_end_dst_001"
+                        },
+                        "labels": [
+                            "External",
+                            "Blocked",
+                            "Personal Cloud"
+                        ],
+                        "label_ids": [
+                            "lbl_external",
+                            "lbl_blocked"
+                        ],
+                        "matched_policies": [
+                            {
+                                "policy_type": "dlp",
+                                "id": "pol_dlp_cloud_upload_001",
+                                "version": 1,
+                                "definition_rule_ids": [
+                                    "rule_cloud_upload_block",
+                                    "rule_personal_cloud_block"
+                                ],
+                                "action_rule_id": "action_rule_block",
+                                "matched_at": "2026-01-15T10:29:00Z"
+                            }
+                        ],
+                        "issues": [
+                            {
+                                "id": "issue_end_dst_001",
+                                "policy_type": "dlp",
+                                "matched_policy_id": "pol_dlp_cloud_upload_001",
+                                "policy_action_rule_id": "action_rule_block",
+                                "severity": "issue_severity_critical",
+                                "detected_at": "2026-01-15T10:29:00Z"
+                            }
+                        ],
+                        "custom_data": {
+                            "upload_destination": "personal_cloud",
+                            "risk_level": "critical"
+                        },
+                        "outline": "Upload to personal Google Drive blocked by DLP policy. No data transferred to external destination. Incident closed as confirmed policy violation.",
+                        "type": "endpoint",
+                        "domain": "drive.google.com",
+                        "discovered_at": "2026-01-15T10:29:00Z",
+                        "updated_at": "2026-01-15T14:45:00Z",
+                        "update_event": {
+                            "id": "upd_evt_end_dst_001",
+                            "action_kind": "upload",
+                            "timestamp": "2026-01-15T10:29:05Z",
+                            "user": {
+                                "id": "usr_john_doe_001",
+                                "local_username": "john.doe",
+                                "local_id": "S-1-5-21-3623811015-3361044348-030300820-1013",
+                                "custom_data": {
+                                    "session_id": "sess_20260115_001",
+                                    "action_blocked": "true"
+                                }
+                            }
+                        },
+                        "version_id": "ver_end_dst_001_updated",
+                        "cloud_connector": {
+                            "id": "cc_snowflake_002",
+                            "type": "snowflake",
+                            "name": "Company Snowflake Integration",
+                            "onboarding_account": "snowflake-admin@company.com",
+                            "account_id": "snowflake_acct_002"
+                        }
+                    }
+                }
+            }
+        }
+    ],
+    "errors": [
+        {
+            "code": 0,
+            "message": ""
+        }
+    ]
+}

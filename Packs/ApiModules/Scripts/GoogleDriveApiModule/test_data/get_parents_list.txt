@@ -1,0 +1,14 @@
+{
+  "kind": "drive#parentList",
+  "etag": "\"B6Ts0uRGIRS5cehymN8hytHFo-M\"",
+  "selfLink": "https://www.googleapis.com/drive/v2/files/1OKPUTs6C2PmFvAj1co7qcz2kTk9xZPsOhPjMEwPmlM8/parents",
+  "items": [
+    {
+      "selfLink": "https://www.googleapis.com/drive/v2/files/1OKPUTs6C2PmFvAj1co7qcz2kTk9xZPsOhPjMEwPmlM8/parents/1FlYv4F2x0JK_fudwEsNvNVjyUV3L89IB",
+      "id": "1FlYv4F2x0JK_fudwEsNvNVjyUV3L89IB",
+      "isRoot": true,
+      "kind": "drive#parentReference",
+      "parentLink": "https://www.googleapis.com/drive/v2/files/1FlYv4F2x0JK_fudwEsNvNVjyUV3L89IB"
+    }
+  ]
+}

@@ -20,6 +20,7 @@ This integration was integrated and tested with version 2022-07-01 of AzureKeyVa
     | Default Subscription ID                                                     | True         |
     | Default Resource Group Name                                                 | True         |
     | Fetches credentials                                                         | False        |
+    | Credentials Fetch Mode                                                      | False        |
     | Key Vault names - comma-separated list of Key Vaults to fetch secrets from. | False        |
     | Secret names - comma-separated list of secrets to fetch.                    | False        |
     | Trust any certificate (not secure)                                          | False        |

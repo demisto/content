@@ -31,6 +31,7 @@
         "port": 443,
         "asset_type": "ip",
         "asset": "10.161.216.126",
-        "last_updated": 1733839847270
+        "last_updated": 1733839847270,
+        "brand": "REPERSEA"
     }
 ]

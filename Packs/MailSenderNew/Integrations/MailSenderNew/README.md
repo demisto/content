@@ -7,7 +7,7 @@
 <h2>Configure Mail Sender on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
-<li>Search for Mail Sender (New).</li>
+<li>Search for Mail Sender.</li>
 <li>Click <strong>Add instance</strong><span class="wysiwyg-color-black"> to create and configure a new integration instance.</span>
 <ul>
 <li>

@@ -36,7 +36,7 @@ tags:
 - email
 - preProcessing
 type: python
-dockerimage: demisto/btfl-soup:1.0.1.8356897
+dockerimage: demisto/btfl-soup:1.0.1.10120494
 runas: DBotRole
 tests:
 - No tests (auto formatted)

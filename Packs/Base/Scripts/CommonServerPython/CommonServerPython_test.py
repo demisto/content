@@ -3343,13 +3343,77 @@ class TestBaseClient:
             Then
             -  An unsuccessful request returns a DemistoException regardless the bad status code.
         """
-        from CommonServerPython import DemistoException
-        with pytest.raises(DemistoException, match='{}'.format(status)):
+        with pytest.raises(CommonServerPython.DemistoException, match='{}'.format(status)):
             self.client._http_request(method,
                                       '',
                                       full_url='http://httpbin.org/status/{}'.format(status),
                                       retries=3,
                                       status_list_to_retry=[400, 401, 500])
+
+    def test_implement_retry_without_backoff_jitter_support(self, mocker):
+        """
+        Given:
+            - A BaseClient instance
+            - The installed urllib3's Retry class does not support the `backoff_jitter`
+              parameter (as is the case for urllib3 < 1.26.9)
+        When:
+            - _implement_retry is called with retries > 0
+        Then:
+            - Retry is called without the backoff_jitter kwarg (no TypeError is raised)
+            - The https:// adapter is mounted on the session with the configured retry object
+        """
+        from urllib3.util import Retry as RealRetry
+
+        class RetryDefaultNoJitter:
+            allowed_methods = frozenset(['GET'])
+            # No backoff_jitter attribute, simulating an older urllib3 version
+
+        mock_retry_class = mocker.MagicMock(name='Retry')
+        mock_retry_class.DEFAULT = RetryDefaultNoJitter
+        mock_retry_class.return_value = mocker.MagicMock(spec=RealRetry)
+
+        mocker.patch.object(CommonServerPython, 'Retry', mock_retry_class)
+
+        client = CommonServerPython.BaseClient('https://example.com/api/v2/', ok_codes=(200, 201))
+
+        # Should not raise TypeError even though backoff_jitter is requested
+        client._implement_retry(retries=3, backoff_jitter=0.5)
+
+        mock_retry_class.assert_called_once()
+        assert 'backoff_jitter' not in mock_retry_class.call_args.kwargs
+
+        adapter = client._session.adapters.get('https://')
+        assert adapter is not None
+        assert adapter.max_retries is mock_retry_class.return_value
+
+    def test_implement_retry_with_backoff_jitter_support(self, mocker):
+        """
+        Given:
+            - A BaseClient instance
+            - The installed urllib3's Retry class supports the `backoff_jitter` parameter
+        When:
+            - _implement_retry is called with retries > 0 and a backoff_jitter value
+        Then:
+            - Retry is called with the backoff_jitter kwarg set to the given value
+        """
+        from urllib3.util import Retry as RealRetry
+
+        class RetryDefaultWithJitter:
+            allowed_methods = frozenset(['GET'])
+            backoff_jitter = 0.0
+
+        mock_retry_class = mocker.MagicMock(name='Retry')
+        mock_retry_class.DEFAULT = RetryDefaultWithJitter
+        mock_retry_class.return_value = mocker.MagicMock(spec=RealRetry)
+
+        mocker.patch.object(CommonServerPython, 'Retry', mock_retry_class)
+
+        client = CommonServerPython.BaseClient('https://example.com/api/v2/', ok_codes=(200, 201))
+
+        client._implement_retry(retries=3, backoff_jitter=0.5)
+
+        mock_retry_class.assert_called_once()
+        assert mock_retry_class.call_args.kwargs.get('backoff_jitter') == 0.5
 
     def test_http_request_json(self, requests_mock):
         requests_mock.get('http://example.com/api/v2/event', text=json.dumps(self.text))
@@ -11964,6 +12028,72 @@ class TestUcpDetection:
         mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_single)
         CommonServerPython._UCP_AUTH_PARAMS_INJECTED = True
         assert CommonServerPython.should_use_ucp_auth() is False
+
+    # ── passthrough profiles: the dispatcher has no branch for them (CRTX-275569) ──
+
+    @staticmethod
+    def _metadata_with(profile_type, interpolation_mapping=None):
+        """UCP metadata carrying one profile of *profile_type*.
+
+        The capability matches resolve_ucp_capability()'s default so the
+        profile is selected without relying on the fallback path.
+        """
+        profile = {
+            'capability': 'automation-and-remediation',
+            'method_unique_id': 'abc123',
+            'type': profile_type,
+        }
+        if interpolation_mapping:
+            profile['metadata'] = {'xsoar': {'interpolation_mapping': interpolation_mapping}}
+        return {'connectionProfiles': [profile], 'connectorId': 'test-connector'}
+
+    def test_should_use_ucp_auth_false_for_passthrough_without_mapping(self, mocker, ucp_reset_injected_flag):
+        """A passthrough profile with NO interpolation_mapping must NOT use dispatcher auth.
+
+        Regression test for XSUP-75305: an integration with no credentials (or
+        licence-derived ones) interpolates nothing, so _UCP_AUTH_PARAMS_INJECTED
+        stays False. Before the fix this returned True, the request reached
+        _apply_ucp_credentials, and passthrough matched no branch -- raising a
+        bare UcpException surfaced to the user as an opaque
+        "authentication configuration error ... (85)".
+        """
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata_with('passthrough'))
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = False
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_should_use_ucp_auth_false_for_passthrough_with_mapping(self, mocker, ucp_reset_injected_flag):
+        """A passthrough profile WITH a mapping is already covered by the injected flag."""
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata_with('passthrough', 'api_key:credentials.password'))
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = True
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_should_use_ucp_auth_false_for_typed_profile_with_mapping(self, mocker, ucp_reset_injected_flag):
+        """A typed profile that interpolated its creds must not also use dispatcher auth."""
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata_with('api_key', 'api_key:credentials.password'))
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = True
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_should_use_ucp_auth_true_for_typed_profile_without_mapping(self, mocker, ucp_reset_injected_flag):
+        """The normal path is untouched: a typed profile still uses dispatcher auth.
+
+        Guards against the passthrough fix over-reaching and disabling UCP auth
+        for profiles the dispatcher CAN handle.
+        """
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata_with('api_key'))
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = False
+        assert CommonServerPython.should_use_ucp_auth() is True
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

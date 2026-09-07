@@ -2513,3 +2513,80 @@ def test_update_uam_alert_verdict(mocker, requests_mock):
     call = sentinelone_v2.return_results.call_args_list
     command_results = call[0].args[0]
     assert command_results.outputs == [{"ID": UAM_ALERT_ID, "AnalystVerdict": "True positive - Ransomware", "Updated": True}]
+
+
+def test_export_full_threat_timeline(mocker, requests_mock):
+    """
+    Given
+        - required argument i.e threat_id
+    When
+        - running sentinelone-export-full-threat-timeline command
+    Then
+        - returns CommandResults and a file entry with the exported timeline content
+    """
+    requests_mock.get(
+        "https://usea1.sentinelone.net/web/api/v2.1/threats/12345/timeline",
+        [
+            {"json": {"data": [{"id": "evt-1"}], "pagination": {"nextCursor": "cursor-1"}}},
+            {"json": {"data": [{"id": "evt-2"}], "pagination": {"nextCursor": None}}},
+        ],
+    )
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-export-full-threat-timeline")
+    mocker.patch.object(demisto, "args", return_value={"threat_id": "12345"})
+    mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results, file_result = call[0].args[0]
+
+    assert command_results.outputs_prefix == "SentinelOne.Export.Timeline"
+    assert command_results.outputs["ThreatId"] == "12345"
+    assert command_results.outputs["Filename"] == "12345_timeline.json"
+
+    assert len(requests_mock.request_history) == 2
+    assert all(req.method == "GET" for req in requests_mock.request_history)
+
+
+def test_export_threat_events(mocker, requests_mock):
+    """
+    Given
+        - required argument i.e threat_id
+    When
+        - running sentinelone-export-threat-events command
+    Then
+        - returns CommandResults and a file entry with the exported events content
+    """
+    requests_mock.get(
+        "https://usea1.sentinelone.net/web/api/v2.1/export/threats/12345/explore/events",
+        json={"data": [{"id": "evt-1", "eventName": "event-1"}]},
+    )
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1", "fetch_threat_rank": "4"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-export-threat-events")
+    mocker.patch.object(demisto, "args", return_value={"threat_id": "12345"})
+    mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = sentinelone_v2.return_results.call_args_list
+    command_results, file_result = call[0].args[0]
+
+    assert command_results.outputs_prefix == "SentinelOne.Export.Events"
+    assert command_results.outputs["ThreatId"] == "12345"
+    assert command_results.outputs["Filename"] == "threats_12345.json"
+
+    assert len(requests_mock.request_history) == 1
+    assert requests_mock.request_history[0].method == "GET"
+    assert requests_mock.request_history[0].qs.get("format") == ["json"]
+    assert requests_mock.request_history[0].qs.get("eventtypes") == ["events"]

@@ -3,6 +3,9 @@ provider: Google
 commonfields:
   id: GoogleSheets
   version: -1
+sectionorder:
+- Connect
+- Collect
 configuration:
 - name: service_account_credentials
   display:
@@ -12,16 +15,21 @@ configuration:
   additionalinfo: A service account key from Google.
   displaypassword: Service Account Key
   hiddenusername: true
+  section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
   additionalinfo:
   required: false
+  section: Connect
+  advanced: true
 - name: proxy
   display: Use system proxy settings
   type: 8
   additionalinfo:
   required: false
+  section: Connect
+  advanced: true
 - name: user_id
   display: Email - Associate to Google Drive
   defaultvalue:
@@ -32,6 +40,7 @@ configuration:
     easily accessible from a UI. This parameter is used during the
     authentication process.
   required: false
+  section: Connect
 description: Google Sheets is a spreadsheet program that is part of the free web-based Google applications to create and format spreadsheets. Use this integration to create and modify spreadsheets.
 display: Google Sheets
 name: GoogleSheets
@@ -666,7 +675,7 @@ script:
     - contextPath: GoogleSheets.Spreadsheet.updatedSpreadsheet.sheets.title
       description: Sheet title.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.1839740
+  dockerimage: demisto/googleapi-python3:1.0.0.10182333
   runonce: false
   script: "-"
   subtype: python3

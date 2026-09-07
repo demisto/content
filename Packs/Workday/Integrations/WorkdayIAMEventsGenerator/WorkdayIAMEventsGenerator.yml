@@ -70,7 +70,7 @@ script:
     name: workday-generate-terminate-event
   - description: Reset the integration context to fetch the first run reports.
     name: initialize-context
-  dockerimage: demisto/teams:1.0.0.3748709
+  dockerimage: demisto/teams:1.0.0.10133006
   longRunning: true
   longRunningPort: true
   script: '-'

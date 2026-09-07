@@ -6,7 +6,7 @@ from CommonServerPython import *  # noqa: F401
 def detect_qrcode_image(path):
     img = cv2.imread(path)  # pylint: disable=no-member
     detect = cv2.QRCodeDetector()  # pylint: disable=no-member
-    c, v = detect.detectAndDecodeMulti(img)[0:2]
+    c, v = detect.detectAndDecodeMulti(img)[0:2]  # type: ignore[arg-type]
 
     if c:
         result = {"Detected": True, "Value": str(v)}

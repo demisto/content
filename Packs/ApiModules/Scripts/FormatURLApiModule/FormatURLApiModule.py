@@ -132,6 +132,8 @@ class URLCheck:
             else:
                 break
 
+        self.output = self.output.replace(" ", "%20")
+
     def __str__(self):
         return f"{self.output}"
 
@@ -489,6 +491,11 @@ class URLCheck:
         elif char == "\\":
             # Edge case of the url ending with an escape char
             return len(self.modified_url), part
+
+        elif char == " ":
+            # A space is not a valid URL character, encode it to %20 instead of failing
+            part += "%20"
+            index += 1
 
         elif not char.isalnum() and not self.check_codepoint_validity(char):
             raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")

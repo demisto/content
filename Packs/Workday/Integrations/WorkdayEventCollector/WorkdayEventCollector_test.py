@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 import pytest
 from freezegun import freeze_time
-from WorkdayEventCollector import DATE_FORMAT, Client
+from WorkdayEventCollector import DATE_FORMAT, DEFAULT_MAX_FETCH, MAX_PAGE_SIZE, Client
 
 
 def util_load_json(path):
@@ -82,6 +82,92 @@ class TestFetchActivity:
             to_date="2023-04-16T07:00:00.000Z",
         )
         assert len(res) == loggings_to_fetch
+
+    def test_get_max_fetch_activity_logging_paginates_above_page_size(self, mocker):
+        """
+        Given: a max_fetch (logging_to_fetch) larger than the per-call page cap (3 * MAX_PAGE_SIZE).
+        When: running get_max_fetch_activity_logging.
+        Then: the client is called multiple times (pagination), each call is capped at MAX_PAGE_SIZE,
+              the offset advances by the number of events returned, and all events are collected.
+        """
+        from WorkdayEventCollector import get_max_fetch_activity_logging
+
+        logging_to_fetch = 3 * MAX_PAGE_SIZE
+
+        def response_by_requested_limit(from_date, to_date, offset, limit):
+            # Workday returns up to `limit` events (page cap enforced by caller at MAX_PAGE_SIZE).
+            single_response = util_load_json("test_data/single_loggings_response.json")
+            return [single_response.copy() for _ in range(limit)]
+
+        request_mock = mocker.patch.object(Client, "get_activity_logging_request", side_effect=response_by_requested_limit)
+
+        res = get_max_fetch_activity_logging(
+            client=self.client,
+            logging_to_fetch=logging_to_fetch,
+            from_date="2023-04-15T07:00:00.000Z",
+            to_date="2023-04-16T07:00:00.000Z",
+        )
+
+        # logging_to_fetch / MAX_PAGE_SIZE => exactly 3 paginated API calls.
+        assert request_mock.call_count == 3
+        # Every call must be capped at the per-call page limit.
+        assert [call.kwargs["limit"] for call in request_mock.call_args_list] == [MAX_PAGE_SIZE, MAX_PAGE_SIZE, MAX_PAGE_SIZE]
+        # Offset must advance by the number of events collected so far.
+        assert [call.kwargs["offset"] for call in request_mock.call_args_list] == [0, MAX_PAGE_SIZE, 2 * MAX_PAGE_SIZE]
+        # All events are accumulated across the pages.
+        assert len(res) == logging_to_fetch
+
+    def test_get_max_fetch_activity_logging_stops_on_empty_page(self, mocker):
+        """
+        Given: a large max_fetch but the source runs out of events mid-pagination.
+        When: running get_max_fetch_activity_logging.
+        Then: pagination stops as soon as an empty page is returned (no infinite loop),
+              and only the available events are collected.
+        """
+        from WorkdayEventCollector import get_max_fetch_activity_logging
+
+        single_response = util_load_json("test_data/single_loggings_response.json")
+        first_page = [single_response.copy() for _ in range(MAX_PAGE_SIZE)]
+        second_page = [single_response.copy() for _ in range(MAX_PAGE_SIZE // 2)]
+        request_mock = mocker.patch.object(
+            Client,
+            "get_activity_logging_request",
+            side_effect=[first_page, second_page, []],
+        )
+
+        res = get_max_fetch_activity_logging(
+            client=self.client,
+            logging_to_fetch=3 * MAX_PAGE_SIZE,
+            from_date="2023-04-15T07:00:00.000Z",
+            to_date="2023-04-16T07:00:00.000Z",
+        )
+
+        available_events = MAX_PAGE_SIZE + MAX_PAGE_SIZE // 2
+        # Third call returns empty -> loop breaks. Only the available events are collected.
+        assert request_mock.call_count == 3
+        assert [call.kwargs["offset"] for call in request_mock.call_args_list] == [0, MAX_PAGE_SIZE, available_events]
+        assert len(res) == available_events
+
+    def test_resolve_max_fetch_uses_provided_value(self):
+        """
+        Given: a max_fetch value is provided in the params.
+        When: running resolve_max_fetch.
+        Then: the provided value is returned (as an int).
+        """
+        from WorkdayEventCollector import resolve_max_fetch
+
+        assert resolve_max_fetch({"max_fetch": "500"}) == 500
+
+    @pytest.mark.parametrize("params", [{}, {"max_fetch": None}, {"max_fetch": ""}], ids=["missing", "none", "empty"])
+    def test_resolve_max_fetch_falls_back_to_default(self, params):
+        """
+        Given: max_fetch is missing, None, or empty in the params.
+        When: running resolve_max_fetch.
+        Then: DEFAULT_MAX_FETCH is returned.
+        """
+        from WorkdayEventCollector import resolve_max_fetch
+
+        assert resolve_max_fetch(params) == DEFAULT_MAX_FETCH
 
     DUPLICATED_ACTIVITY_LOGGINGS = [
         (("2023-04-15T07:00:00Z", 5, 2, 0), 5, {}),

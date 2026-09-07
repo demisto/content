@@ -468,7 +468,7 @@ script:
     outputs: []
     description: Delete an adlist.
 
-  dockerimage: demisto/python3:3.12.13.8428455
+  dockerimage: demisto/python3:3.12.13.10116658
   runonce: false
   subtype: python3
 tests:

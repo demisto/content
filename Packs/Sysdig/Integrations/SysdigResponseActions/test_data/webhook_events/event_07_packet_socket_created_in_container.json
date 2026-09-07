@@ -1,0 +1,124 @@
+{
+    "alert": {
+        "name": "Policy V2 7770002: Sysdig Runtime Notable Events",
+        "description": "This Notable Events policy contains rules which may indicate undesired behavior including security threats. The rules are more generalized than Threat Detection policies and may result in more noise. Tuning will likely be required for the events generated from this policy.",
+        "severity": 5,
+        "severityLabel": "Medium",
+        "subject": "Sysdig Runtime Notable Events triggered at 04/28/2026 01:13 PM UTC",
+        "body": "Policy event triggered at 04/28/2026 01:13 PM UTC\n\nPolicy:             Sysdig Runtime Notable Events\nPolicy URL:         https://app.example.sysdig.com/secure//#/policies/7770002\nDescription:        This Notable Events policy contains rules which may indicate undesired behavior including security threats. The rules are more generalized than Threat Detection policies and may result in more noise. Tuning will likely be required for the events generated from this policy.\n\nTimestamp:          04/28/2026 01:13 PM UTC\nURL:                https://app.example.sysdig.com/secure//#/events/00000000000000000000000000000007\nRule:               Packet socket created in container\nRule URL:           https://app.example.sysdig.com/secure//#/policies/rules/falco/Packet%20socket%20created%20in%20container\nSeverity:           Medium\nScope:\n    kubernetes.workload.type:      cronjob\n    aws.region:      us-east-1\n    process.name:      nmap scanme.nmap.org\n    cloudProvider.account.id:      111122223333\n    container.label.io.kubernetes.pod.namespace:      pygoat\n    container.image.digest:      sha256:1111222233334444555566667777888899990000aaaabbbbccccddddeeeeffff\n    container.image.repo:      docker.io/example/test-app\n    orchestrator.type:      k8s\n    aws.accountId:      111122223333\n    cloudProvider.name:      aws\n    kubernetes.job.name:      pygoat-cronjob-29623030\n    container.label.io.kubernetes.pod.name:      pygoat-cronjob-29623030-fbmmp\n    agent.variant:      traditional\n    kubernetes.namespace.name:      pygoat\n    host.mac:      aa:bb:cc:dd:ee:04\n    aws.instanceId:      i-0eee5555ffff66666\n    kubernetes.node.name:      ip-10-0-0-3.ec2.internal\n    container.label.io.kubernetes.container.name:      client\n    kubernetes.cluster.name:      demo-eks-cluster\n    agent.version:      14.3.1\n    container.image.tag:      1.3\n    kubernetes.pod.name:      pygoat-cronjob-29623030-fbmmp\n    cloudProvider.region:      us-east-1\n    host.hostName:      ip-10-0-0-3.ec2.internal\n    container.name:      client\n    kubernetes.cronJob.name:      pygoat-cronjob\n    container.image.id:      bbb000000002\n    kubernetes.workload.name:      pygoat-cronjob\n    host.id:      dddd000011112222333344445555666677778888999900001111222233334444\nActions:            Capture Recorded\nDetails:            Packet socket was created in container client with image docker.io/example/test-app by process nmap and parent sh under user root (proc.exepath=/usr/local/bin/nmap proc.name=nmap proc.pname=sh gparent=python ggparent=<NA> gggparent=<NA> container.name=client image=docker.io/example/test-app:1.3 evt.type=socket proc.cmdline=nmap scanme.nmap.org proc.cwd=/ proc.pcmdline=sh -c nmap scanme.nmap.org user.name=root user.loginuid=-1 user.uid=0 user.loginname=<NA> proc.pid.ts=1777382030294174868 proc.ppid.ts=1777382030292951895 proc.hash.sha256=aaa0000000000000000000000000000000000000000000000000000000000003)"
+    },
+    "event": {
+        "url": "https://app.example.sysdig.com/secure//#/events/?from=1777381970&to=1777382031"
+    },
+    "condition": "count(policyEvent) > 0",
+    "source": "Sysdig Secure",
+    "state": "ACTIVE",
+    "timestamp": 1777382030406797,
+    "timespan": 60000000,
+    "entities": [
+        {
+            "metricValues": [
+                {
+                    "metric": "policyEvent",
+                    "aggregation": "count",
+                    "groupAggregation": "none",
+                    "value": 1
+                }
+            ],
+            "policyEvents": [
+                {
+                    "id": "00000000000000000000000000000007",
+                    "containerId": "aaa000000006",
+                    "name": "Sysdig Runtime Notable Events",
+                    "description": "This Notable Events policy contains rules which may indicate undesired behavior including security threats. The rules are more generalized than Threat Detection policies and may result in more noise. Tuning will likely be required for the events generated from this policy.",
+                    "severity": 5,
+                    "policyId": 7770002,
+                    "actionResults": [
+                        {
+                            "type": "POLICY_ACTION_CAPTURE",
+                            "successful": false,
+                            "token": "00000000-0000-0000-0000-000000000002",
+                            "beforeEventNs": 15000000000,
+                            "afterEventNs": 30000000000
+                        }
+                    ],
+                    "output": "Packet socket was created in container client with image docker.io/example/test-app by process nmap and parent sh under user root (proc.exepath=/usr/local/bin/nmap proc.name=nmap proc.pname=sh gparent=python ggparent=<NA> gggparent=<NA> container.name=client image=docker.io/example/test-app:1.3 evt.type=socket proc.cmdline=nmap scanme.nmap.org proc.cwd=/ proc.pcmdline=sh -c nmap scanme.nmap.org user.name=root user.loginuid=-1 user.uid=0 user.loginname=<NA> proc.pid.ts=1777382030294174868 proc.ppid.ts=1777382030292951895 proc.hash.sha256=aaa0000000000000000000000000000000000000000000000000000000000003)",
+                    "ruleName": "Packet socket created in container",
+                    "ruleType": "RULE_TYPE_FALCO",
+                    "matchedOnDefault": false,
+                    "fields": {
+                        "user.uid": "0",
+                        "proc.pname": "sh",
+                        "evt.type": "socket",
+                        "container.image.tag": "1.3",
+                        "proc.cmdline": "nmap scanme.nmap.org",
+                        "proc.cwd": "/",
+                        "user.name": "root",
+                        "proc.pid.ts": "1777382030294174868",
+                        "proc.exepath": "/usr/local/bin/nmap",
+                        "proc.aname[2]": "python",
+                        "proc.aname[3]": "<NA>",
+                        "proc.aname[4]": "<NA>",
+                        "proc.hash.sha256": "aaa0000000000000000000000000000000000000000000000000000000000003",
+                        "user.loginuid": "-1",
+                        "container.name": "client",
+                        "container.image.repository": "docker.io/example/test-app",
+                        "proc.name": "nmap",
+                        "proc.ppid.ts": "1777382030292951895",
+                        "user.loginname": "<NA>",
+                        "proc.aname": "<NA>",
+                        "proc.pcmdline": "sh -c nmap scanme.nmap.org"
+                    },
+                    "eventLabels": {
+                        "kubernetes.node.name": "ip-10-0-0-3.ec2.internal",
+                        "kubernetes.workload.name": "pygoat-cronjob",
+                        "container.image.tag": "1.3",
+                        "host.mac": "aa:bb:cc:dd:ee:04",
+                        "kubernetes.workload.type": "cronjob",
+                        "container.image.repo": "docker.io/example/test-app",
+                        "container.name": "client",
+                        "kubernetes.pod.name": "pygoat-cronjob-29623030-fbmmp",
+                        "cloudProvider.region": "us-east-1",
+                        "container.label.io.kubernetes.pod.namespace": "pygoat",
+                        "cloudProvider.name": "aws",
+                        "container.label.io.kubernetes.container.name": "client",
+                        "host.id": "dddd000011112222333344445555666677778888999900001111222233334444",
+                        "container.image.id": "bbb000000002",
+                        "agent.variant": "traditional",
+                        "kubernetes.namespace.name": "pygoat",
+                        "kubernetes.cronJob.name": "pygoat-cronjob",
+                        "orchestrator.type": "k8s",
+                        "kubernetes.cluster.name": "demo-eks-cluster",
+                        "kubernetes.job.name": "pygoat-cronjob-29623030",
+                        "process.name": "nmap scanme.nmap.org",
+                        "aws.region": "us-east-1",
+                        "aws.accountId": "111122223333",
+                        "container.label.io.kubernetes.pod.name": "pygoat-cronjob-29623030-fbmmp",
+                        "container.image.digest": "sha256:1111222233334444555566667777888899990000aaaabbbbccccddddeeeeffff",
+                        "agent.version": "14.3.1",
+                        "host.hostName": "ip-10-0-0-3.ec2.internal",
+                        "cloudProvider.account.id": "111122223333",
+                        "aws.instanceId": "i-0eee5555ffff66666"
+                    },
+                    "falsePositive": false,
+                    "policyVersion": 160,
+                    "origin": "Sysdig",
+                    "timestamp": 1777382030406797,
+                    "hostMac": "aa:bb:cc:dd:ee:04",
+                    "isAggregated": false
+                }
+            ],
+            "policies": [
+                {
+                    "name": "Sysdig Runtime Notable Events",
+                    "description": "This Notable Events policy contains rules which may indicate undesired behavior including security threats. The rules are more generalized than Threat Detection policies and may result in more noise. Tuning will likely be required for the events generated from this policy.",
+                    "origin": "Secure UI",
+                    "versionId": "0.0.0",
+                    "severity": 5,
+                    "enabled": false,
+                    "id": 7770002
+                }
+            ]
+        }
+    ]
+}

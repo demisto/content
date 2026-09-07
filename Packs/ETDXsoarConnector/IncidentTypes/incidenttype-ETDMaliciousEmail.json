@@ -1,0 +1,22 @@
+{
+    "id": "ETD Malicious Email",
+    "name": "ETD Malicious Email",
+    "playbookId": "ETD Email Reclassification And Remediation",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "color": "#A3C9FF",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "marketplaces": [
+        "xsoar"
+    ]
+}

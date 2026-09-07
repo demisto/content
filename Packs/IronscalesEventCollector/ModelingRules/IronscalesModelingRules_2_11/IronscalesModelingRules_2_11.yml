@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: Ironscales_ModelingRule
+name: IRONSCALES Modeling Rule
+rules: ''
+schema: ''
+tags: ironscales
+supportedModules:
+- xsiam

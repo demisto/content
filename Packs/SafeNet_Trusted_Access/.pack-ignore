@@ -18,3 +18,6 @@ ignore=MR108
 ignore=GR103
 [file:classifier-SafeNet_Trusted_Access_–_Push_Reject_Alert_Classifier.json]
 ignore=GR103
+
+[file:SafeNetTrustedAccessModelingRules_2_11.yml]
+ignore=MR108

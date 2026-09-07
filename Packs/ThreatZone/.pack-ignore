@@ -8,3 +8,15 @@ ignore=RM116
 
 [file:Analyze_File_-_Sandbox_-_ThreatZone_v2.yml]
 ignore=RM116
+
+[known_words]
+CDR
+enums
+filenames
+IOC
+metafield
+runtime
+SDK
+tracebacks
+URLs
+YAMLs

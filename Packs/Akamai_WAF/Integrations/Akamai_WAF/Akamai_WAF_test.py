@@ -702,6 +702,32 @@ def test_get_client_list_command(mocker, akamai_waf_client):
     assert expected_context_entry == context_entry
 
 
+def test_get_client_list_command_paginated(mocker, akamai_waf_client):
+    """
+    Given:
+        - A client and a paginated response (no client_list_id) where the lists are nested
+          under the "content" key.
+    When:
+        - running the command get_client_list_command.
+    Then:
+        - The human-readable table is populated with a row per list in "content" (not an empty
+          table), while context and raw response remain the full paginated response.
+    """
+    from Akamai_WAF import get_client_list_command
+
+    test_data = util_load_json("test_data/get_client_list_paginated_test.json")
+    expected_raw_response = test_data.get("raw_response")
+    expected_human_readable = test_data.get("human_readable")
+    expected_context_entry = test_data.get("context_entry")
+
+    mocker.patch.object(akamai_waf_client, "get_client_list", return_value=expected_raw_response)
+
+    human_readable, context_entry, raw_response = get_client_list_command(client=akamai_waf_client)
+    assert expected_raw_response == raw_response
+    assert expected_human_readable == human_readable
+    assert expected_context_entry == context_entry
+
+
 def test_create_client_list_command(mocker, akamai_waf_client):
     """
     Given:

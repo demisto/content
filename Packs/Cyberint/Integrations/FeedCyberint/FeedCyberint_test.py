@@ -1593,3 +1593,224 @@ def test_main_exception_handling():
 
                 mock_return_error.assert_called_once()
                 assert "connection failed" in mock_return_error.call_args[0][0].lower()
+
+
+def test_get_cve_command(mock_client, requests_mock):
+    """
+    Scenario: Enrich a CVE with Cyberint vulnerability intelligence.
+    Given:
+     - A valid CVE identifier.
+    When:
+     - get_cve_command is called.
+    Then:
+     - Ensure the outputs prefix and key CVE fields are correct.
+     - Ensure the readable output references the CVE.
+    """
+    import json
+
+    with open("test_data/cve_intelligence.json") as file:
+        mock_response = json.load(file)
+    requests_mock.get(f"{BASE_URL}/cve-intel/external/api/v1/vulnerability/CVE-2024-1234", json=mock_response)
+
+    results = FeedCyberint.get_cve_command(mock_client, {"cve_id": "CVE-2024-1234"})
+
+    assert len(results) == 1
+    assert results[0].outputs_prefix == "Cyberint.CVE"
+    assert results[0].outputs["cve_id"] == "CVE-2024-1234"
+    assert results[0].outputs["cyberint_score"] == 8.7
+    assert results[0].outputs["epss"] == 0.974
+    assert "Cyberint CVE Intelligence: CVE-2024-1234" in results[0].readable_output
+
+
+def test_get_cve_command_multiple(mock_client, requests_mock):
+    """
+    Scenario: Enrich several CVEs in a single command call.
+    Given:
+     - A comma-separated list of CVE identifiers.
+    When:
+     - get_cve_command is called.
+    Then:
+     - Ensure one CommandResults entry is returned per CVE.
+    """
+    import json
+
+    with open("test_data/cve_intelligence.json") as file:
+        mock_response = json.load(file)
+    requests_mock.get(f"{BASE_URL}/cve-intel/external/api/v1/vulnerability/CVE-2024-1234", json=mock_response)
+    requests_mock.get(f"{BASE_URL}/cve-intel/external/api/v1/vulnerability/CVE-2024-5678", json=mock_response)
+
+    results = FeedCyberint.get_cve_command(mock_client, {"cve_id": "CVE-2024-1234,CVE-2024-5678"})
+
+    assert len(results) == 2
+
+
+def test_get_cve_command_no_cve(mock_client):
+    """
+    Scenario: Call the CVE enrich command without a CVE identifier.
+    Given:
+     - No 'cve_id' argument.
+    When:
+     - get_cve_command is called.
+    Then:
+     - Ensure a DemistoException is raised.
+    """
+    with pytest.raises(DemistoException):
+        FeedCyberint.get_cve_command(mock_client, {})
+
+
+def test_pick_cvss_collection_prefers_v4():
+    """
+    Scenario: Pick the highest-priority CVSS collection (v4 over v3 over v2).
+    Given:
+     - A CVSS object containing v3 and v4 collections, each with a base_score.
+    When:
+     - pick_cvss_collection is called.
+    Then:
+     - Ensure the v4 base_score, version and vector_string are returned together.
+    """
+    cvss = {
+        "cvss_v3": {"base_score": 9.8, "version": "3.1", "vector_string": "CVSS:3.1/AV:N/.."},
+        "cvss_v4": {"base_score": 9.3, "version": "4.0", "vector_string": "CVSS:4.0/AV:N/.."},
+    }
+    base_score, version, vector_string = FeedCyberint.pick_cvss_collection(cvss)
+    assert base_score == 9.3
+    assert version == "4.0"
+    assert vector_string == "CVSS:4.0/AV:N/.."
+
+
+def test_pick_cvss_collection_falls_back_to_v3():
+    """
+    Scenario: Fall back to CVSS v3 when v4 is absent.
+    Given:
+     - A CVSS object containing only a v3 collection.
+    When:
+     - pick_cvss_collection is called.
+    Then:
+     - Ensure the v3 base_score, version and vector_string are returned together.
+    """
+    cvss = {
+        "cvss_v3": {"base_score": 9.8, "version": "3.1", "vector_string": "CVSS:3.1/AV:N/.."},
+    }
+    base_score, version, vector_string = FeedCyberint.pick_cvss_collection(cvss)
+    assert base_score == 9.8
+    assert version == "3.1"
+    assert vector_string == "CVSS:3.1/AV:N/.."
+
+
+def test_pick_cvss_collection_falls_back_to_v2():
+    """
+    Scenario: Fall back to CVSS v2 when v4 and v3 are absent.
+    Given:
+     - A CVSS object containing only a v2 collection.
+    When:
+     - pick_cvss_collection is called.
+    Then:
+     - Ensure the v2 base_score, version and vector_string are returned together.
+    """
+    cvss = {
+        "cvss_v2": {"base_score": 7.5, "version": "2.0", "vector_string": "AV:N/AC:L/Au:N/C:P/I:P/A:P"},
+    }
+    base_score, version, vector_string = FeedCyberint.pick_cvss_collection(cvss)
+    assert base_score == 7.5
+    assert version == "2.0"
+    assert vector_string == "AV:N/AC:L/Au:N/C:P/I:P/A:P"
+
+
+def test_pick_cvss_collection_no_data():
+    """
+    Scenario: No CVSS collection available.
+    Given:
+     - An empty CVSS object.
+    When:
+     - pick_cvss_collection is called.
+    Then:
+     - Ensure the function returns a triple of Nones.
+    """
+    assert FeedCyberint.pick_cvss_collection({}) == (None, None, None)
+
+
+def test_get_leaked_credentials_by_domain_command(mock_client, requests_mock):
+    """
+    Scenario: Look up leaked credentials for a company domain.
+    Given:
+     - A valid company domain.
+    When:
+     - get_leaked_credentials_by_domain_command is called.
+    Then:
+     - Ensure the employee and customer totals are correct.
+     - Ensure plaintext passwords are not exposed in the readable output.
+    """
+    import json
+
+    with open("test_data/leaked_credentials.json") as file:
+        mock_response = json.load(file)
+    requests_mock.post(f"{BASE_URL}/exposed-credentials/by_domain/", json=mock_response)
+
+    result = FeedCyberint.get_leaked_credentials_by_domain_command(mock_client, {"domain": "example.com"})
+
+    assert result.outputs_prefix == "Cyberint.LeakedCredential"
+    assert result.outputs["domain"] == "example.com"
+    assert result.outputs["employee_total"] == 2
+    assert result.outputs["customer_total"] == 1
+    assert result.outputs["total"] == 3
+    assert "Summer2024!" not in result.readable_output
+
+
+def test_get_leaked_credentials_by_domain_command_limit(mock_client, requests_mock):
+    """
+    Scenario: Limit the number of leaked credential records returned.
+    Given:
+     - A 'limit' argument of 1.
+    When:
+     - get_leaked_credentials_by_domain_command is called.
+    Then:
+     - Ensure only the requested number of records per type is returned.
+    """
+    import json
+
+    with open("test_data/leaked_credentials.json") as file:
+        mock_response = json.load(file)
+    requests_mock.post(f"{BASE_URL}/exposed-credentials/by_domain/", json=mock_response)
+
+    result = FeedCyberint.get_leaked_credentials_by_domain_command(mock_client, {"domain": "example.com", "limit": "1"})
+
+    assert result.outputs["employee_total"] == 1
+    assert result.outputs["customer_total"] == 1
+
+
+def test_get_leaked_credentials_by_domain_command_last_seen_filter(mock_client, requests_mock):
+    """
+    Scenario: Filter leaked credentials by their last-seen date.
+    Given:
+     - A 'last_seen_from' argument.
+    When:
+     - get_leaked_credentials_by_domain_command is called.
+    Then:
+     - Ensure only credentials last seen on or after the date are returned.
+    """
+    import json
+
+    with open("test_data/leaked_credentials.json") as file:
+        mock_response = json.load(file)
+    requests_mock.post(f"{BASE_URL}/exposed-credentials/by_domain/", json=mock_response)
+
+    result = FeedCyberint.get_leaked_credentials_by_domain_command(
+        mock_client, {"domain": "example.com", "last_seen_from": "2024-05-15T00:00:00Z"}
+    )
+
+    assert result.outputs["employee_total"] == 1
+    assert result.outputs["customer_total"] == 1
+
+
+def test_get_leaked_credentials_by_domain_command_no_domain(mock_client):
+    """
+    Scenario: Call the credential leak lookup command without a domain.
+    Given:
+     - No 'domain' argument.
+    When:
+     - get_leaked_credentials_by_domain_command is called.
+    Then:
+     - Ensure a DemistoException is raised.
+    """
+    with pytest.raises(DemistoException):
+        FeedCyberint.get_leaked_credentials_by_domain_command(mock_client, {})

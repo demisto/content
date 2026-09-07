@@ -1,9 +1,5 @@
 {
     "druva_druva_raw": {
-        "timeStamp": {
-            "type": "datetime",
-            "is_array": false
-        },
         "clientOS": {
             "type": "string",
             "is_array": false
@@ -62,6 +58,58 @@
         },
         "inSyncDataSourceName": {
             "type": "string",
+            "is_array": false
+        },
+        "category": {
+            "type": "string",
+            "is_array": false
+        },
+        "details": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "int",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "feature": {
+            "type": "string",
+            "is_array": false
+        },
+        "syslogSeverity": {
+            "type": "int",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "timestamp": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "facility": {
+            "type": "int",
+            "is_array": false
+        },
+        "profileID": {
+            "type": "int",
+            "is_array": false
+        },
+        "globalID": {
+            "type": "string",
+            "is_array": false
+        },
+        "productID": {
+            "type": "int",
+            "is_array": false
+        },
+        "syslogFacility": {
+            "type": "int",
             "is_array": false
         }
     }
