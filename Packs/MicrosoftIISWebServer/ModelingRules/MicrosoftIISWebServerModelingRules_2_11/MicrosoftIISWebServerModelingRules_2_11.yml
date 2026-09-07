@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: MicrosoftIISWebServer_ModelingRule
+name: MicrosoftIISWebServer Modeling Rule
+rules: ''
+schema: ''
+tags: Microsoft IIS Web Server
+supportedModules:
+- xsiam
