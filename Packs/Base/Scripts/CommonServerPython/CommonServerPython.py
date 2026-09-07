@@ -15223,17 +15223,53 @@ def is_ucp_enabled():
         return False
 
 
+def _ucp_auth_is_passthrough():
+    # type: () -> bool
+    """Check whether the integration -- not ``BaseClient`` -- applies the credential.
+
+    ``BaseClient._apply_ucp_credentials()`` dispatches on three credential
+    families only (``oauth2*``, ``api_key``, ``plain``); a ``passthrough``
+    profile matches none of them and would reach its bare ``raise
+    UcpException()``. Such a profile is therefore always self-managed: either
+    the integration applies the credential itself, or it needs no credential at
+    all (e.g. licence-derived auth), so the dispatcher must stay out of the way.
+
+    Note this deliberately does not consider ``interpolation_mapping``: a
+    profile that carries one has already interpolated, which sets
+    ``_UCP_AUTH_PARAMS_INJECTED`` and is handled by that flag instead.
+
+    :return: ``True`` if the dispatcher must not apply UCP credentials.
+    :rtype: ``bool``
+    """
+    try:
+        connector_metadata = demisto.unifiedConnectorMetadata() or {}
+        profiles = _select_ucp_profiles(
+            connector_metadata.get('connectionProfiles') or [], resolve_ucp_capability())
+        return any(p.get('type') == 'passthrough' for p in profiles)
+    except Exception as e:
+        demisto.debug(
+            '[UCP][CommonServerPython.py] _ucp_auth_is_passthrough: could not resolve profiles ({}).'.format(e))
+        return False
+
+
 def should_use_ucp_auth():
     # type: () -> bool
     """Determine whether UCP credentials should be used for authentication.
 
-    Returns ``True`` when UCP is enabled **and** credentials have not already
-    been pre-injected into ``demisto.params()`` via ``interpolate_ucp_params()``.
+    Returns ``True`` when UCP is enabled, credentials have not already been
+    pre-injected into ``demisto.params()`` via ``interpolate_ucp_params()``,
+    **and** the selected profile is one the ``BaseClient`` dispatcher can
+    actually apply.
+
+    The last condition is what keeps a ``passthrough`` profile carrying no
+    ``interpolation_mapping`` -- an integration with no credentials, or one
+    deriving them from the licence -- from reaching a dispatcher that has no
+    branch for it and raising ``UcpException``.
 
     :return: ``True`` if per-request UCP credential injection should be used.
     :rtype: ``bool``
     """
-    return is_ucp_enabled() and not _UCP_AUTH_PARAMS_INJECTED
+    return is_ucp_enabled() and not _UCP_AUTH_PARAMS_INJECTED and not _ucp_auth_is_passthrough()
 
 
 def resolve_ucp_capability(command=None):
