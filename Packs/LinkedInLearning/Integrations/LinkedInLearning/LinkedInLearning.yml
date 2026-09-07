@@ -41,18 +41,93 @@ configuration:
   type: 19
   required: false
   section: Collect
-- name: activity_report_filter
-  display: Learning activity report filter
-  defaultvalue: '?aggregationCriteria.primary=INDIVIDUAL&aggregationCriteria.secondary=CONTENT&q=criteria&contentSource=LINKEDIN_LEARNING'
-  additionalinfo: Query parameters for filtering learning activity reports from the LinkedIn Learning API.
-  type: 12
-  required: false
-  section: Collect
 - name: isFetchEvents
   display: Fetch events
   type: 8
   required: false
   section: Collect
+- name: engagement_metric_type
+  display: Engagement metric type
+  additionalinfo: An engagement type metric by which the results should be sorted.
+  type: 15
+  required: false
+  section: Collect
+  advanced: true
+  options:
+  - SECONDS_VIEWED
+  - COMPLETIONS
+  - DAYS_ACTIVE
+  - MARKED_AS_DONE
+  - PROGRESS_PERCENTAGE
+  - VIEWS
+- name: engagement_metric_qualifier
+  display: Engagement metric qualifier
+  defaultvalue: TOTAL
+  additionalinfo: An engagement metric qualifier by which the results should be sorted.
+  type: 15
+  required: false
+  section: Collect
+  advanced: true
+  options:
+  - TOTAL
+  - UNIQUE
+- name: asset_type
+  display: Asset type
+  additionalinfo: Type of asset for the content whose report is generated.
+  type: 15
+  required: false
+  section: Collect
+  advanced: true
+  options:
+  - COURSE
+  - VIDEO
+  - ARTICLE
+  - AUDIO
+  - BOOK
+  - EVENT
+  - LEARNING_COLLECTION
+  - LEARNING_PATH
+- name: content_source
+  display: Content source
+  defaultvalue: ALL_SOURCES
+  additionalinfo: The source of the content whose report is generated.
+  type: 15
+  required: false
+  section: Collect
+  advanced: true
+  options:
+  - ALL_SOURCES
+  - LINKEDIN_LEARNING
+  - ORGANIZATION
+  - THIRD_PARTY
+- name: primary_aggregation_criteria
+  display: Primary aggregation criteria
+  defaultvalue: ACCOUNT
+  additionalinfo: The primary criteria by which the results are aggregated.
+  type: 15
+  required: false
+  section: Collect
+  advanced: true
+  options:
+  - ACCOUNT
+  - GROUP
+  - INDIVIDUAL
+  - CONTENT
+  - ASSIGNMENT
+- name: secondary_aggregation_criteria
+  display: Secondary aggregation criteria
+  defaultvalue: CONTENT
+  additionalinfo: The secondary criteria by which the results are aggregated.
+  type: 15
+  required: false
+  section: Collect
+  advanced: true
+  options:
+  - ACCOUNT
+  - GROUP
+  - INDIVIDUAL
+  - CONTENT
+  - ASSIGNMENT
 - name: max_fetch
   display: Maximum number of events per fetch
   defaultvalue: '1000'
