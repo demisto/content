@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: Symantec_BlueCoat_ProxySG_ModelingRule
-name: Symantec BlueCoat ProxySG Modeling Rule
-rules: ''
-schema: ''
-tags: ''
-supportedModules:
-- xsiam
