@@ -1,4 +1,4 @@
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 import pytest
 from pytest_mock import MockerFixture
 from aiohttp import ClientResponseError, RequestInfo
@@ -713,6 +713,85 @@ async def test_fetch_siem_events(
     }
     assert next_run == expected_next_run
     assert len(events) == len(mock_siem_events)
+
+
+@pytest.mark.asyncio
+async def test_fetch_siem_events_stale_start_date_resets_cursor(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - A last_run whose start_date is older than 24 hours, along with a stale next_page and last_fetched_ids.
+    When:
+     - Calling fetch_siem_events (the SIEM API only serves the last 24 hours).
+    Then:
+     - Ensure start_date is advanced to now-23h.
+     - Ensure the stale next_page and last_fetched_ids are cleared so they cannot cause a perpetual 0-events loop.
+    """
+    from MimecastEventCollectorV2 import fetch_siem_events, convert_to_siem_filter_format
+
+    max_fetch = 100
+    last_run = {
+        "start_date": "2020-01-01T00:00:00.000Z",  # older than 24 hours
+        "last_fetched_ids": ["stale-1", "stale-2"],
+        "next_page": "stale_next_page_token",
+    }
+
+    mock_now = datetime(2025, 1, 2, 10, 0, 0, tzinfo=UTC)
+    expected_start_date = convert_to_siem_filter_format(mock_now - timedelta(hours=23))
+
+    mocker.patch("MimecastEventCollectorV2.UTC_NOW", mock_now)
+    mocker.patch("MimecastEventCollectorV2.is_within_last_24_hours", return_value=False)
+    mock_get_siem_events = mocker.patch(
+        "MimecastEventCollectorV2.get_siem_events",
+        new=AsyncMock(return_value=([], None)),
+    )
+
+    await fetch_siem_events(async_client, last_run, max_fetch)
+
+    assert mock_get_siem_events.call_count == 1
+    assert mock_get_siem_events.call_args.kwargs == {
+        "start_date": expected_start_date,
+        "limit": max_fetch,
+        "last_fetched_ids": [],
+        "next_page": None,
+    }
+
+
+@pytest.mark.asyncio
+async def test_fetch_siem_events_empty_result_persists_returned_cursor(async_client: AsyncClient, mocker: MockerFixture):
+    """
+    Given:
+     - A SIEM fetch that returns 0 events but a fresh @nextPage cursor from the API.
+       (The Mimecast SIEM v2 endpoint is a checkpoint stream: empty responses still return a resume cursor.)
+    When:
+     - Calling fetch_siem_events.
+    Then:
+     - Ensure the returned next_page cursor is persisted in the next run (not discarded), so the following
+       cycle resumes from the checkpoint instead of cold-starting from "now - 1 minute" and skipping events.
+     - Ensure the existing last_fetched_ids are preserved for continued deduplication.
+    """
+    from MimecastEventCollectorV2 import fetch_siem_events
+
+    max_fetch = 100
+    last_run = {
+        "start_date": "2025-01-01T01:00:00.000Z",
+        "last_fetched_ids": ["event-1"],
+        "next_page": "old_cursor",
+    }
+    returned_cursor = "fresh_cursor_from_api"
+
+    mocker.patch("MimecastEventCollectorV2.is_within_last_24_hours", return_value=True)
+    mocker.patch(
+        "MimecastEventCollectorV2.get_siem_events",
+        new=AsyncMock(return_value=([], returned_cursor)),
+    )
+
+    next_run, events = await fetch_siem_events(async_client, last_run, max_fetch)
+
+    assert events == []
+    # The fresh cursor from the API must be persisted so the next cycle resumes from it.
+    assert next_run["next_page"] == returned_cursor
+    # Dedup state must be preserved across empty cycles.
+    assert next_run["last_fetched_ids"] == ["event-1"]
 
 
 @pytest.mark.asyncio
