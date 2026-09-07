@@ -1,12 +1,12 @@
 
-![Logo](./doc_files/icon.png)
+![Hydden logo](./doc_files/icon.png)
 # Hydden
 
 Places the Hydden identity fabric system of record underneath Cortex XSIAM Identity Analytics and enables Hydden Control actions as manual or automated responses.
 
 Other identity packs tell you what one product saw. This pack tells the analyst who the account actually is.
 
-## What this pack does
+## What does this pack do?
 
 - **Hydden Control** integration: return an account's blast radius information; optionally deprovision the account.
 - **Hydden Mesh modeling rule**: maps `hydden_mesh_raw` events into Cortex XDM (actor, target, auth, alert, observer).
@@ -33,7 +33,7 @@ Other identity packs tell you what one product saw. This pack tells the analyst 
 
 ## Modeling rules
 
-**Hydden Mesh Modeling Rule** maps Mesh events in `hydden_mesh_raw` to XDM. Nested Mesh fields are read from the `mesh` JSON column; flat columns (`event_type`, `actor_*`, `target_*`, `outcome`, and so on) are used when present.
+**Hydden Mesh Modeling Rule** maps Mesh events in `hydden_mesh_raw` to XDM. Nested Mesh fields are read from the `mesh` JSON column; flat columns such as `event_type`, `actor_ref`, `actor_name`, `target_ref`, `target_name`, `outcome`, `is_mfa`, `severity`, `risk_level`, `tenant_id`, and `connector_id` are used when present.
 
 After install, confirm the rule is enabled under **Settings** → **Data Management** → **Data Model**. `datamodel dataset = hydden_mesh_raw` queries stay empty until Mesh events land.
 
@@ -45,8 +45,8 @@ After install, open **Hydden Identity System of Record** from **Dashboards & Rep
 
 | **Cortex detection** | **Playbook ID** |
 | --- | --- |
-| Identity Analytics | Hydden - Blast Radius |
-| Compromised or high-risk account | Hydden - Deprovision Account |
+| Identity Analytics | [Hydden - Blast Radius](./Playbooks/Hydden_-_Blast_Radius_README.md) |
+| Compromised or high-risk account | [Hydden - Deprovision Account](./Playbooks/Hydden_-_Deprovision_Account_README.md) |
 
 Both playbooks take the account identifier from the issue (`alert.user_name`, then `alert.username`, then `incident.username`) and pass it to one Hydden Control command. XDR Analytics identity issues populate `user_name`.
 

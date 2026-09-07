@@ -1,14 +1,11 @@
 import json
 import time
+import traceback
 from typing import Any
-
-import urllib3
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa: F401
 from ContentClientApiModule import *  # noqa: F401,F403
-
-urllib3.disable_warnings()
 
 LOG_LINE = "HyddenControlDebugLog: "
 
@@ -225,7 +222,8 @@ def main() -> None:  # pragma: no cover
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
     except Exception as e:
-        return_error(f"Failed to execute {command} command. Error: {str(e)}")
+        demisto.error(f"{LOG_LINE}Failed to execute {command}: {traceback.format_exc()}")
+        return_error(f"Failed to execute {command} command. Error: {str(e)}", error=e)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

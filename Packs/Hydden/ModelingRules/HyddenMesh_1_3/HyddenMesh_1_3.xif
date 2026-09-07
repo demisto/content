@@ -6,7 +6,6 @@ alter
   xdm.event.outcome = if(
     lowercase(coalesce(outcome, json_extract_scalar(mesh, "$.outcome.result"))) in ("success", "succeeded", "ok"), XDM_CONST.OUTCOME_SUCCESS,
     lowercase(coalesce(outcome, json_extract_scalar(mesh, "$.outcome.result"))) in ("fail", "failed", "failure"), XDM_CONST.OUTCOME_FAILED,
-    outcome = null and json_extract_scalar(mesh, "$.outcome.result") = "", XDM_CONST.OUTCOME_UNKNOWN,
     XDM_CONST.OUTCOME_UNKNOWN
   ),
   xdm.event.outcome_reason = coalesce(outcome_reason, json_extract_scalar(mesh, "$.review_result")),

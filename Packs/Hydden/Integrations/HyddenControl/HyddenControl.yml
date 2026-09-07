@@ -1,3 +1,6 @@
+name: Hydden Control
+display: Hydden Control
+supportlevelheader: xsoar
 category: Identity and Access Management
 provider: Hydden
 commonfields:
@@ -17,8 +20,8 @@ configuration:
   required: true
   section: Connect
 - display: HTTP request timeout (seconds)
-  additionalinfo: A cold blast-radius call builds the tenant reachability graph and can take
-    several minutes; later calls are sub-second. Defaults to 300.
+  additionalinfo: The cold blast-radius call builds the tenant reachability graph and can take
+    several minutes; later calls are sub-second.
   name: timeout
   defaultvalue: "300"
   type: 0
@@ -37,9 +40,7 @@ configuration:
   required: false
   section: Connect
   advanced: true
-description: Calculate account blast radius and deprovision accounts from Cortex using Hydden Control.
-display: Hydden Control
-name: Hydden Control
+description: Calculate account blast radius and deprovision accounts from Cortex XSIAM using Hydden Control.
 sectionorder:
 - Connect
 script:
@@ -53,7 +54,7 @@ script:
     - name: type
       required: false
       description: The subject the ref names. Sent to Hydden as the type query parameter.
-      defaultValue: account
+      defaultvalue: account
       predefined:
       - account
       - group
@@ -66,16 +67,16 @@ script:
       description: The reach score for the subject.
       type: Number
     - contextPath: Hydden.Identity.reachable_resources
-      description: Number of resources the subject can reach.
+      description: The number of resources the subject can reach.
       type: Number
     - contextPath: Hydden.Identity.tenant_resources
-      description: Total resources in the tenant, the denominator for share_of_tenant.
+      description: The total resources in the tenant, the denominator for share_of_tenant.
       type: Number
     - contextPath: Hydden.Identity.share_of_tenant
-      description: Fraction of tenant resources the subject reaches.
+      description: The fraction of tenant resources the subject reaches.
       type: Number
     - contextPath: Hydden.Identity.denied_resources
-      description: Resources reachable by grant but blocked by a deny rule.
+      description: The resources reachable by grant but blocked by a deny rule.
       type: Number
     - contextPath: Hydden.Identity.subject_ref
       description: The ref the score was computed for.
@@ -84,7 +85,7 @@ script:
       description: The subject type the score was computed for.
       type: String
     - contextPath: Hydden.Identity.computed_at
-      description: When the score was computed.
+      description: The time when the score was computed, for example 2024-01-15T12:34:56Z.
       type: Date
   - name: hydden-deprovision-account
     description: Deprovision an account across the Hydden identity fabric using POST /account-actions/deprovision?ref=.
@@ -95,7 +96,7 @@ script:
       description: The Cortex account ID to deprovision. Sent to Hydden as the ref query parameter.
     outputs:
     - contextPath: Hydden.Identity.deprovisioned
-      description: Whether deprovisioning succeeded.
+      description: The deprovisioning success status.
       type: Boolean
   dockerimage: demisto/fastapi:0.125.0.11206988
   runonce: false

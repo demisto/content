@@ -8,12 +8,12 @@ This is the Hydden Control integration for Cortex XSIAM.
 
  | **Parameter** | **Description** | **Required** |
  | --- | --- | --- |
- | Hydden API URL (e.g., https://control.hydden.ai/api/public/v1) | Public API root. | True |
- | Client ID | Client ID for the Hydden REST API. | True |
- | Client Secret | Client secret for the Hydden REST API. | True |
- | HTTP request timeout (seconds) | Optional. Default 300. A cold blast-radius call can take several minutes. | False |
- | Trust any certificate (not secure) | Skip TLS certificate validation. | False |
- | Use system proxy settings | Use the Cortex system proxy. | False |
+ | Hydden API URL (e.g., https://control.hydden.ai/api/public/v1) | The public API root. | True |
+ | Client ID | The client ID for the Hydden REST API. | True |
+ | Client Secret | The client secret for the Hydden REST API. | True |
+ | HTTP request timeout (seconds) | The maximum request duration in seconds. A cold blast-radius call can take several minutes. | False |
+ | Trust any certificate (not secure) | Whether to skip TLS certificate validation. | False |
+ | Use system proxy settings | Whether to use the Cortex XSIAM system proxy. | False |
 
 4. Click **Test** to validate the URL, credentials, and connection.
 
@@ -54,7 +54,7 @@ Return the subject's blast radius from Hydden Control. Calls `GET /blast-radius?
 
 #### Command example
 
-```!hydden-blast-radius account_id="00000000-0000-0000-0000-000000000000" type="account"```
+```!hydden-blast-radius account_id="4f9e7d35-7a64-4e9d-9c8a-51b7d2e6f304" type="account"```
 
 #### Context Example
 
@@ -65,7 +65,7 @@ Return the subject's blast radius from Hydden Control. Calls `GET /blast-radius?
             "blast_radius": "73",
             "score": 73,
             "reachable_resources": 7,
-            "subject_ref": "00000000-0000-0000-0000-000000000000",
+            "subject_ref": "4f9e7d35-7a64-4e9d-9c8a-51b7d2e6f304",
             "subject_type": "account"
         }
     }
@@ -74,7 +74,7 @@ Return the subject's blast radius from Hydden Control. Calls `GET /blast-radius?
 
 #### Human Readable Output
 
-> Blast radius for account 00000000-0000-0000-0000-000000000000: 73
+> Blast radius for account 4f9e7d35-7a64-4e9d-9c8a-51b7d2e6f304: 73
 
 ### hydden-deprovision-account
 
@@ -99,7 +99,7 @@ Deprovision an account across the fabric, including disabling the account and re
 
 #### Command example
 
-```!hydden-deprovision-account account_id="00000000-0000-0000-0000-000000000000"```
+```!hydden-deprovision-account account_id="4f9e7d35-7a64-4e9d-9c8a-51b7d2e6f304"```
 
 #### Context Example
 
@@ -115,4 +115,4 @@ Deprovision an account across the fabric, including disabling the account and re
 
 #### Human Readable Output
 
-> Account 00000000-0000-0000-0000-000000000000 was deprovisioned successfully.
+> Account 4f9e7d35-7a64-4e9d-9c8a-51b7d2e6f304 was deprovisioned successfully.

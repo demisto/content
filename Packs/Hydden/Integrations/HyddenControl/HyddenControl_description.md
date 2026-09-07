@@ -29,3 +29,11 @@ This integration was integrated and tested with the Hydden Control public REST A
 8. Click **Save & Exit** and leave the instance enabled.
 
 `hydden-deprovision-account` is marked potentially harmful. Use it only for accounts you intend to disable across the Hydden identity fabric.
+
+### Troubleshooting
+
+- If the integration reports an authorization error, verify that the Client ID and Client Secret belong to an enabled API user with `rest_api` access.
+- If the integration reports a TLS error, verify the certificate chain on the Hydden API URL. Use **Trust any certificate (not secure)** only for temporary testing.
+- If the connection requires an outbound proxy, enable **Use system proxy settings**.
+- A cold `hydden-blast-radius` request can take several minutes while Hydden builds the tenant reachability graph. Increase **HTTP request timeout (seconds)** if the request times out.
+- If a playbook reports a missing `account_id`, confirm that the Cortex XSIAM issue contains `alert.user_name`, or supply the **AccountId** input in the Playbook Debugger.

@@ -21,7 +21,7 @@
                                     "isRelative": true
                                 },
                                 "time_frame": {
-                                    "relativeTime": 86400000
+                                    "relativeTime": 172800000
                                 },
                                 "viewOptions": {
                                     "type": "line",
@@ -86,7 +86,7 @@
                             "data": {
                                 "type": "Custom XQL",
                                 "height": 400,
-                                "phrase": "datamodel dataset = hydden_mesh_raw\n| comp max(xdm.target.resource.value) as max_risk by xdm.target.resource.name\n| sort desc max_risk\n| limit 20\n| fields xdm.target.resource.name, max_risk\n| view graph type = column subtype = grouped header = \"Top 20 Privileged Indentities\" show_callouts_names = `true` xaxis = xdm.target.resource.name yaxis = max_risk yaxmaxrange = 1 ",
+                                "phrase": "datamodel dataset = hydden_mesh_raw\n| comp max(xdm.target.resource.value) as max_risk by xdm.target.resource.name\n| sort desc max_risk\n| limit 10\n| fields xdm.target.resource.name, max_risk\n| view graph type = column subtype = grouped header = \"Top 10 Privileged Identities\" show_callouts_names = `true` xaxis = xdm.target.resource.name yaxis = max_risk yaxmaxrange = 1 ",
                                 "time_frame": {
                                     "relativeTime": 2592000000
                                 },
@@ -104,7 +104,7 @@
                                             "command": {
                                                 "op": "=",
                                                 "name": "header",
-                                                "value": "\"Top 10 Privileged Indentities\""
+                                                "value": "\"Top 10 Privileged Identities\""
                                             }
                                         },
                                         {
@@ -146,7 +146,7 @@
                                     "isRelative": true
                                 },
                                 "time_frame": {
-                                    "relativeTime": 2592000000
+                                    "relativeTime": 604800000
                                 },
                                 "viewOptions": {
                                     "type": "column",
@@ -182,8 +182,8 @@
                                         {
                                             "func": {
                                                 "args": [
-                                                    "\"event_count\"",
-                                                    "\"#ef5dee\""
+                                                    "event_count",
+                                                    "#ef5dee"
                                                 ],
                                                 "name": "seriescolor"
                                             }
@@ -211,7 +211,7 @@
                                     "isRelative": true
                                 },
                                 "time_frame": {
-                                    "relativeTime": 2592000000
+                                    "relativeTime": 604800000
                                 },
                                 "viewOptions": {
                                     "type": "pie",
@@ -284,14 +284,14 @@
                                 "type": "Custom XQL",
                                 "width": 50.0,
                                 "height": 477,
-                                "phrase": "config timeframe = 7d\n|dataset = hydden_mesh_raw\n| top 10 action\n| view graph type = pie subtype = full header = \"Top 10 Identity Actions\" show_callouts = `true` show_callouts_names = `true` xaxis = action yaxis = top_percent legend_percentage = `true` ",
+                                "phrase": "config timeframe = 7d\n| datamodel dataset = hydden_mesh_raw\n| top 10 xdm.observer.action\n| view graph type = pie subtype = full header = \"Top 10 Identity Actions\" show_callouts = `true` show_callouts_names = `true` xaxis = xdm.observer.action yaxis = top_percent legend_percentage = `true` ",
                                 "timeSpan": {
                                     "toTime": "now",
                                     "fromTime": "7d",
                                     "isRelative": true
                                 },
                                 "time_frame": {
-                                    "relativeTime": 2592000000
+                                    "relativeTime": 604800000
                                 },
                                 "viewOptions": {
                                     "type": "pie",
@@ -328,7 +328,7 @@
                                             "command": {
                                                 "op": "=",
                                                 "name": "xaxis",
-                                                "value": "action"
+                                                "value": "xdm.observer.action"
                                             }
                                         },
                                         {
@@ -368,7 +368,7 @@
                                     "isRelative": true
                                 },
                                 "time_frame": {
-                                    "relativeTime": 2592000000
+                                    "relativeTime": 604800000
                                 },
                                 "viewOptions": {
                                     "type": "pie",
@@ -435,7 +435,7 @@
                                     "isRelative": true
                                 },
                                 "time_frame": {
-                                    "relativeTime": 2592000000
+                                    "relativeTime": 604800000
                                 },
                                 "viewOptions": {
                                     "type": "pie",
@@ -506,7 +506,7 @@
             "creation_time": 1786136415515,
             "description": "Top 10 Hydden Privileged Identities.",
             "data": {
-                "phrase": "datamodel dataset = hydden_mesh_raw\n| comp max(xdm.target.resource.value) as max_risk by xdm.target.resource.name\n| sort desc max_risk\n| limit 20\n| fields xdm.target.resource.name, max_risk\n| view graph type = column subtype = grouped header = \"Top 20 Privileged Indentities\" show_callouts_names = `true` xaxis = xdm.target.resource.name yaxis = max_risk yaxmaxrange = 1 ",
+                "phrase": "datamodel dataset = hydden_mesh_raw\n| comp max(xdm.target.resource.value) as max_risk by xdm.target.resource.name\n| sort desc max_risk\n| limit 10\n| fields xdm.target.resource.name, max_risk\n| view graph type = column subtype = grouped header = \"Top 10 Privileged Identities\" show_callouts_names = `true` xaxis = xdm.target.resource.name yaxis = max_risk yaxmaxrange = 1 ",
                 "time_frame": {
                     "relativeTime": 2592000000
                 },
@@ -524,7 +524,7 @@
                             "command": {
                                 "op": "=",
                                 "name": "header",
-                                "value": "\"Top 10 Privileged Indentities\""
+                                "value": "\"Top 10 Privileged Identities\""
                             }
                         },
                         {
@@ -570,7 +570,7 @@
                     "isRelative": true
                 },
                 "time_frame": {
-                    "relativeTime": 86400000
+                    "relativeTime": 172800000
                 },
                 "viewOptions": {
                     "type": "line",
@@ -643,7 +643,7 @@
                     "isRelative": true
                 },
                 "time_frame": {
-                    "relativeTime": 2592000000
+                    "relativeTime": 604800000
                 },
                 "viewOptions": {
                     "type": "pie",
@@ -719,14 +719,14 @@
             "creation_time": 1786136664193,
             "description": "Top 10 Hydden Mesh actions.",
             "data": {
-                "phrase": "config timeframe = 7d\n|dataset = hydden_mesh_raw\n| top 10 action\n| view graph type = pie subtype = full header = \"Top 10 Identity Actions\" show_callouts = `true` show_callouts_names = `true` xaxis = action yaxis = top_percent legend_percentage = `true` ",
+                "phrase": "config timeframe = 7d\n| datamodel dataset = hydden_mesh_raw\n| top 10 xdm.observer.action\n| view graph type = pie subtype = full header = \"Top 10 Identity Actions\" show_callouts = `true` show_callouts_names = `true` xaxis = xdm.observer.action yaxis = top_percent legend_percentage = `true` ",
                 "timeSpan": {
                     "toTime": "now",
                     "fromTime": "7d",
                     "isRelative": true
                 },
                 "time_frame": {
-                    "relativeTime": 2592000000
+                    "relativeTime": 604800000
                 },
                 "viewOptions": {
                     "type": "pie",
@@ -763,7 +763,7 @@
                             "command": {
                                 "op": "=",
                                 "name": "xaxis",
-                                "value": "action"
+                                "value": "xdm.observer.action"
                             }
                         },
                         {
@@ -785,9 +785,7 @@
             },
             "support_time_range": true,
             "additional_info": {
-                "query_tables": [
-                    "hydden_mesh_raw"
-                ],
+                "query_tables": [],
                 "query_uses_library": false
             }
         },
@@ -804,7 +802,7 @@
                     "isRelative": true
                 },
                 "time_frame": {
-                    "relativeTime": 2592000000
+                    "relativeTime": 604800000
                 },
                 "viewOptions": {
                     "type": "pie",
@@ -877,7 +875,7 @@
                     "isRelative": true
                 },
                 "time_frame": {
-                    "relativeTime": 2592000000
+                    "relativeTime": 604800000
                 },
                 "viewOptions": {
                     "type": "pie",
@@ -950,7 +948,7 @@
                     "isRelative": true
                 },
                 "time_frame": {
-                    "relativeTime": 2592000000
+                    "relativeTime": 604800000
                 },
                 "viewOptions": {
                     "type": "column",
@@ -986,8 +984,8 @@
                         {
                             "func": {
                                 "args": [
-                                    "\"event_count\"",
-                                    "\"#ef5dee\""
+                                    "event_count",
+                                    "#ef5dee"
                                 ],
                                 "name": "seriescolor"
                             }
