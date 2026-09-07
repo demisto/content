@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: MenloSecurity_ModelingRule
-name: MenloSecurity Modeling Rule
+id: Menlo_Security_ModelingRule
+name: Menlo Security Modeling Rule
 rules: ''
 schema: ''
 tags: ''

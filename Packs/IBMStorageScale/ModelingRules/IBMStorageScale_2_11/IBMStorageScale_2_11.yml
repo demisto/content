@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-name: IBMStorageScale Modeling Rule
-id: IBMStorageScale_ModelingRule
+name: IBM Storage Scale Modeling Rule
+id: ibm_storage_scale_ModelingRule
 rules: ''
 schema: ''
 tags: ''

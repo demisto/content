@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: SemperisDSP_ModelingRule
-name: SemperisDSP Modeling Rule
+id: Semperis_DSP_ModelingRule
+name: Semperis DSP Modeling Rule
 rules: ''
 schema: ''
 supportedModules:
