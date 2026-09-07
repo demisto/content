@@ -1,0 +1,12 @@
+{
+    "cisco_umbrella_raw": {
+      "_raw_log": {
+        "type": "string",
+        "is_array": false
+      },
+        "_log_source_file_path": {
+        "type": "string",
+        "is_array": false
+        }
+    }
+  }

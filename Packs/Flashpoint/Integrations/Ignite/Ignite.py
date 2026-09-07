@@ -204,6 +204,8 @@ ALERT_SOURCES_MAPPING = {
     "Communities": "communities",
     "Images": "media",
     "Marketplaces": "marketplaces",
+    "Reports": "reports",
+    "Vulnerabilities": "vulnerabilities",
 }
 
 ALERT_RESOURCE_URL = {
@@ -1434,6 +1436,9 @@ def validate_vulnerabilities_args(args: dict) -> tuple[dict, dict]:
     :rtype: ``tuple[dict, dict]``
     """
     tags = argToList(args.get("tags"))
+    vulnerability_ids = [
+        vulnerability_id.replace("FP-VULN-", "") for vulnerability_id in argToList(args.get("vulnerability_ids"))
+    ]
     products = argToList(args.get("products"))
     vendors = argToList(args.get("vendors"))
     cwe_ids = argToList(args.get("cwe_ids"))
@@ -1475,6 +1480,9 @@ def validate_vulnerabilities_args(args: dict) -> tuple[dict, dict]:
 
     valid_cwe_ids = [cwe_id for cwe_id in cwe_ids if cwe_id.isdigit()]
     invalid_cwe_ids = [cwe_id for cwe_id in cwe_ids if not cwe_id.isdigit()]
+
+    valid_vulnerability_ids = [vulnerability_id for vulnerability_id in vulnerability_ids if vulnerability_id.isdigit()]
+    invalid_vulnerability_ids = [vulnerability_id for vulnerability_id in vulnerability_ids if not vulnerability_id.isdigit()]
 
     valid_location = [LOCATION_MAPPING[loc] for loc in locations if loc in LOCATION_MAPPING]
     invalid_location = [loc for loc in locations if loc not in LOCATION_MAPPING]
@@ -1532,6 +1540,9 @@ def validate_vulnerabilities_args(args: dict) -> tuple[dict, dict]:
     if invalid_cwe_ids:
         errors.append(MESSAGES["INVALID_INT_PARAMS_PROVIDED"].format(invalid_cwe_ids, "CWE IDs"))
 
+    if invalid_vulnerability_ids:
+        errors.append(MESSAGES["INVALID_INT_PARAMS_PROVIDED"].format(invalid_vulnerability_ids, "Vulnerability IDs"))
+
     if invalid_location:
         errors.append(
             MESSAGES["INVALID_MULTI_PARAMS_PROVIDED"].format(
@@ -1557,6 +1568,7 @@ def validate_vulnerabilities_args(args: dict) -> tuple[dict, dict]:
     # Build payload (filters and search criteria)
 
     payload = assign_params(
+        ids=",".join(valid_vulnerability_ids),
         tags=",".join(tags),
         min_epss_score=min_epss_score,
         max_epss_score=max_epss_score,

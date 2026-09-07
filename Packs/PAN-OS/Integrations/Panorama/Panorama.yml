@@ -132,6 +132,9 @@ configuration:
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: "100"
   display: Max incidents per fetch (for each selected Log Type Query)
   additionalinfo: The maximum number of incidents to fetch per Log Type Query. To ensure optimal efficiency, it is strongly advised to keep the limit as low as possible. The maximum is 5,000.
@@ -4068,6 +4071,13 @@ script:
     - description: The tag for the new address.
       isArray: true
       name: tag
+    - auto: PREDEFINED
+      description: Whether to create the tag if it does not exist.
+      defaultValue: 'false'
+      name: create_tag
+      predefined:
+      - 'true'
+      - 'false'
     description: Creates an address object.
     name: pan-os-create-address
     outputs:
@@ -8866,8 +8876,22 @@ script:
     - description: The serial number, or IP address for a Panorama instance, to reboot.
       name: target
       required: true
-    description: Checks the status of the given device, checking whether it's up or down and if the operational mode is normal.
+    - auto: PREDEFINED
+      description: Whether to use polling. When set to "true", the command polls the target device until it becomes available (operational mode "normal") or the timeout is reached.
+      defaultValue: 'false'
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The interval (in seconds) between polling attempts.
+      name: interval_in_seconds
+      defaultValue: '30'
+    - description: The timeout (in seconds) when polling.
+      name: timeout
+      defaultValue: '1200'
+    description: Checks the status of the given device, checking whether it's up or down and if the operational mode is normal. Supports polling to wait until the device becomes available.
     name: pan-os-platform-get-system-status
+    polling: true
     outputs:
     - contextPath: PANOS.SystemStatus.hostid
       type: String
