@@ -416,7 +416,7 @@ configuration:
   - "exposure_management"
 - additionalinfo: |-
     Whether to run the Spotlight vulnerabilities fetch in a long-running container instead of on the assets fetch schedule.
-    Use this when a full Spotlight fetch takes longer than the Assets Fetch Interval and is repeatedly interrupted.
+    Use this when a full Spotlight fetch takes longer than the maximum execution time of a single assets fetch, and is therefore terminated before it completes.
     When enabled, the assets fetch cannot be enabled as well; only one of the two may be active per instance.
     This mode fetches Spotlight vulnerabilities ONLY, regardless of the Asset types to fetch selection.
     CNAPP Alerts are not collected in this mode; to collect them, configure a separate integration instance using the regular assets fetch.
