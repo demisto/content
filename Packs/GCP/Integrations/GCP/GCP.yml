@@ -2949,11 +2949,11 @@ script:
       required: true
     - name: limit
       defaultValue: '50'
-      description: 'The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
+      description: 'The maximum number of results per page to return, ranging from 1 to 500. If the number of available results is larger than the limit, a token is returned in the nextPageToken field to retrieve the next page of results in subsequent list requests.'
     - name: filter
-      description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, to exclude the machine type named example-machine-type, specify name != example-machine-type.
+      description: The filter expression to use for filtering resources listed in the response. Must specify the field name, a comparison operator, and the filtering value. The value can be a string, a number, or a boolean. The comparison operator must be "=", "!=", ">", or "<". For example, to exclude a region named "example-region", specify name != example-region.
     - name: order_by
-      description: The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
+      description: The order in which to sort the list results. Can be "alphanumerical" (default, based on resource name) or "creationTimestamp desc" (reverse chronological order, latest first).
     - name: next_token
       description: The page token to use. Set next_token to the value of GCP.Compute.MachineTypesNextToken returned by a previous list request to get the next page of results.
     outputs:
@@ -3016,11 +3016,11 @@ script:
       required:platform: true
     - name: limit
       defaultValue: '50'
-      description: 'The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
+      description: 'The maximum number of results per page to return, ranging from 1 to 500. If the number of available results is larger than the limit, a token is returned in the nextPageToken field to retrieve the next page of results in subsequent list requests.'
     - name: filter
-      description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, to exclude the machine type named example-machine-type, specify name != example-machine-type.
+      description: The filter expression to use for filtering resources listed in the response. Must specify the field name, a comparison operator, and the filtering value. The value can be a string, a number, or a boolean. The comparison operator must be "=", "!=", ">", or "<". For example, to exclude a region named "example-region", specify name != example-region.
     - name: order_by
-      description: The order by which to sort list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". This sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
+      description: The order in which to sort the list results. Can be "alphanumerical" (default, based on resource name) or "creationTimestamp desc" (reverse chronological order, latest first).
     - name: next_token
       description: The page token to use. Set next_token to the value of GCP.Compute.AggregatedMachineTypesNextToken returned by a previous list request to get the next page of results.
     outputs:
