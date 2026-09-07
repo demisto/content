@@ -1,0 +1,36 @@
+{
+    "name": "BechtleDarkWebScan - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "id": "BechtleDarkWebScan-mapper",
+    "mapping": {
+        "BechtleDarkWebScan Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "username": {
+                    "complex": {
+                        "root": "username",
+                        "transformers": [
+                            {
+                                "args": {
+                                "defaultValue": {
+                                    "isContext": false,
+                                    "value": {
+                                    "complex": null,
+                                    "simple": "Unknown User"
+                                    }
+                                }
+                                },
+                                "operator": "default"
+                            }
+                        ]
+                    }
+                },
+                "link": { "simple": "link" },
+                "price": { "simple": "price" },
+                "domain": { "simple": "domain" },
+                "stealer": { "simple": "stealer" }
+            }
+        }
+    }
+}

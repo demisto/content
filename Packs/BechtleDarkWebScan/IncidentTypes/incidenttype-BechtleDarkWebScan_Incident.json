@@ -1,0 +1,19 @@
+{
+    "id": "BechtleDarkWebScan Incident",
+    "version": -1,
+    "locked": false,
+    "name": "BechtleDarkWebScan Incident",
+    "color": "#00FFB3",
+    "playbookId": "DarkWebScan Notify via Email",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "disabled": false,
+    "fromVersion": "6.10.0"
+}
