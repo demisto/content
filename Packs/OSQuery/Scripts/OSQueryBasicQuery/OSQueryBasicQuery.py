@@ -1,10 +1,12 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
+import shlex
 
 
-# ssh command to run, json format, param = query to execute
-COMMAND = 'osqueryi --json "{0}"'
+# ssh command to run, json format, param = query to execute.
+# {0} is filled with a shlex.quote()-escaped value at call-site.
+COMMAND = "osqueryi --json {0}"
 
 
 def main():
@@ -16,7 +18,8 @@ def main():
 
     if query and systems:
         for system in systems:
-            temp_res = demisto.executeCommand("RemoteExec", {"cmd": COMMAND.format(str(query)), "system": system})
+            safe_query = shlex.quote(str(query))
+            temp_res = demisto.executeCommand("RemoteExec", {"cmd": COMMAND.format(safe_query), "system": system})
             if isError(temp_res[0]):
                 temp_res_contents = temp_res[0]["Contents"]
                 error_res += [

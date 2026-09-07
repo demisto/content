@@ -320,8 +320,10 @@ script:
       - mobile_apps
       - ecommerce
       - crypto
-      - emails
-      - paid_adds
+      - email
+      - paid_ads
+      - telco
+      - darkweb
     - description: Filter alerts created before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'.
       name: created_before
     - description: Filter alerts created after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'.
