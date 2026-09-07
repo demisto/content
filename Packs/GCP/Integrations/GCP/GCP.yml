@@ -2692,17 +2692,17 @@ script:
       required: false
       required:platform: true
     - name: limit
-      description: 'The maximum number of results per page that should be returned. If the number of available results is larger than the limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
+      description: 'The maximum number of results per page to return, ranging from 1 to 500. If the number of available results is larger than the limit, a token is returned in the nextPageToken field to retrieve the next page of results in subsequent list requests.'
       defaultValue: '50'
     - name: filter
-      description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, you can exclude a region named example-region by specifying name != example-region.
+      description: The filter expression to use for filtering resources listed in the response. Must specify the field name, a comparison operator, and the filtering value. The value can be a string, a number, or a boolean. The comparison operator must be "=", "!=", ">", or "<". For example, to exclude a region named "example-region", specify name != example-region.
     - name: order_by
-      description: The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
+      description: The order in which to sort the list results. Can be "alphanumerical" (default, based on the resource name) or "creationTimestamp desc" (reverse chronological order, latest result first).
     - name: next_token
       description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results.
     outputs:
     - contextPath: GCP.Compute.Regions.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique identifier for the resource, defined by the server.
       type: string
     - contextPath: GCP.Compute.Regions.creationTimestamp
       description: The creation timestamp in RFC3339 text format (for example, 2024-01-15T12:34:56.000-07:00).
@@ -2732,16 +2732,16 @@ script:
       description: The current usage of this metric.
       type: number
     - contextPath: GCP.Compute.Regions.quotas.owner
-      description: The owning resource, meaning the resource to which this quota applies.
+      description: The resource to which this quota applies.
       type: string
     - contextPath: GCP.Compute.Regions.deprecated
       description: The deprecation status associated with this region.
       type: string
     - contextPath: GCP.Compute.Regions.deprecated.state
-      description: The deprecation state of this resource. This can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image, can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error.
+      description: The deprecation state of this resource. Can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error.
       type: string
     - contextPath: GCP.Compute.Regions.deprecated.replacement
-      description: The URL of the suggested replacement for a deprecated resource. The suggested replacement resource must be the same kind of resource as the deprecated resource.
+      description: The URL of the suggested replacement for a deprecated resource. The replacement resource must be the same type of resource as the deprecated resource.
       type: string
     - contextPath: GCP.Compute.Regions.deprecated.deprecated
       description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.
@@ -2905,12 +2905,12 @@ script:
       required: false
       required:platform: true
     - name: limit
-      description: 'The maximum number of results per page that should be returned. If the number of available results is larger than the limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
+      description: 'The maximum number of results per page to return, ranging from 1 to 500. If the number of available results is larger than the limit, a token is returned in the nextPageToken field to retrieve the next page of results in subsequent list requests.'
       defaultValue: '50'
     - name: filter
-      description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, you can exclude a zone named example-zone by specifying name != example-zone.
+      description: The filter expression to use for filtering resources listed in the response. Must specify the field name, a comparison operator, and the filtering value. The value can be a string, a number, or a boolean. The comparison operator must be "=", "!=", ">", or "<". For example, to exclude a zone named "example-zone", specify name != example-zone.
     - name: order_by
-      description: The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first).
+      description: The order in which to sort the list results. Can be "alphanumerical" (default, based on the resource name) or "creationTimestamp desc" (reverse chronological order, latest result first).
     - name: next_token
       description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results.
     outputs:
@@ -2933,10 +2933,10 @@ script:
       description: The deprecation status associated with this zone.
       type: string
     - contextPath: GCP.Compute.Zones.deprecated.state
-      description: The deprecation state of this resource. This can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image, can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error.
+      description: The deprecation state of this resource. Can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error.
       type: string
     - contextPath: GCP.Compute.Zones.deprecated.replacement
-      description: The URL of the suggested replacement for a deprecated resource. The suggested replacement resource must be the same kind of resource as the deprecated resource.
+      description: The URL of the suggested replacement for a deprecated resource. The replacement resource must be the same type of resource as the deprecated resource.
       type: string
     - contextPath: GCP.Compute.Zones.deprecated.deprecated
       description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.

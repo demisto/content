@@ -1302,16 +1302,16 @@ Retrieves the list of region resources available to the specified project. Requi
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| limit | The maximum number of results per page that should be returned. If the number of available results is larger than the limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
-| filter | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, you can exclude a region named example-region by specifying name != example-region. | Optional |
-| order_by | The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first). | Optional |
+| limit | The maximum number of results per page to return, ranging from 1 to 500. If the number of available results is larger than the limit, a token is returned in the nextPageToken field to retrieve the next page of results in subsequent list requests. Default is 50. | Optional |
+| filter | The filter expression to use for filtering resources listed in the response. Must specify the field name, a comparison operator, and the filtering value. The value can be a string, a number, or a boolean. The comparison operator must be "=", "!=", "&gt;", or "&lt;". For example, to exclude a region named "example-region", specify name != example-region. | Optional |
+| order_by | The order in which to sort the list results. Can be "alphanumerical" (default, based on the resource name) or "creationTimestamp desc" (reverse chronological order, latest result first). | Optional |
 | next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Regions.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Regions.id | string | The unique identifier for the resource, defined by the server. |
 | GCP.Compute.Regions.creationTimestamp | string | The creation timestamp in RFC3339 text format \(for example, 2024-01-15T12:34:56.000-07:00\). |
 | GCP.Compute.Regions.name | string | The name of the resource. |
 | GCP.Compute.Regions.description | string | The textual description of the resource. |
@@ -1321,10 +1321,10 @@ Retrieves the list of region resources available to the specified project. Requi
 | GCP.Compute.Regions.quotas.metric | string | The name of the quota metric. |
 | GCP.Compute.Regions.quotas.limit | number | The quota limit for this metric. |
 | GCP.Compute.Regions.quotas.usage | number | The current usage of this metric. |
-| GCP.Compute.Regions.quotas.owner | string | The owning resource, meaning the resource to which this quota applies. |
+| GCP.Compute.Regions.quotas.owner | string | The resource to which this quota applies. |
 | GCP.Compute.Regions.deprecated | string | The deprecation status associated with this region. |
-| GCP.Compute.Regions.deprecated.state | string | The deprecation state of this resource. This can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image, can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error. |
-| GCP.Compute.Regions.deprecated.replacement | string | The URL of the suggested replacement for a deprecated resource. The suggested replacement resource must be the same kind of resource as the deprecated resource. |
+| GCP.Compute.Regions.deprecated.state | string | The deprecation state of this resource. Can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error. |
+| GCP.Compute.Regions.deprecated.replacement | string | The URL of the suggested replacement for a deprecated resource. The replacement resource must be the same type of resource as the deprecated resource. |
 | GCP.Compute.Regions.deprecated.deprecated | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
 | GCP.Compute.Regions.deprecated.obsolete | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
 | GCP.Compute.Regions.deprecated.deleted | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
@@ -1437,9 +1437,9 @@ Retrieves the list of zone resources available to the specified project. Require
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| limit | The maximum number of results per page that should be returned. If the number of available results is larger than the limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
-| filter | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, you can exclude a zone named example-zone by specifying name != example-zone. | Optional |
-| order_by | The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using order_by="creationTimestamp desc", which sorts results based on the creationTimestamp field in reverse chronological order (newest result first). | Optional |
+| limit | The maximum number of results per page to return, ranging from 1 to 500. If the number of available results is larger than the limit, a token is returned in the nextPageToken field to retrieve the next page of results in subsequent list requests. Default is 50. | Optional |
+| filter | The filter expression to use for filtering resources listed in the response. Must specify the field name, a comparison operator, and the filtering value. The value can be a string, a number, or a boolean. The comparison operator must be "=", "!=", "&gt;", or "&lt;". For example, to exclude a zone named "example-zone", specify name != example-zone. | Optional |
+| order_by | The order in which to sort the list results. Can be "alphanumerical" (default, based on the resource name) or "creationTimestamp desc" (reverse chronological order, latest result first). | Optional |
 | next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
 
 #### Context Output
@@ -1452,8 +1452,8 @@ Retrieves the list of zone resources available to the specified project. Require
 | GCP.Compute.Zones.description | string | The textual description of the resource. |
 | GCP.Compute.Zones.status | string | The status of the zone, either UP or DOWN. |
 | GCP.Compute.Zones.deprecated | string | The deprecation status associated with this zone. |
-| GCP.Compute.Zones.deprecated.state | string | The deprecation state of this resource. This can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image, can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error. |
-| GCP.Compute.Zones.deprecated.replacement | string | The URL of the suggested replacement for a deprecated resource. The suggested replacement resource must be the same kind of resource as the deprecated resource. |
+| GCP.Compute.Zones.deprecated.state | string | The deprecation state of this resource. Can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error. |
+| GCP.Compute.Zones.deprecated.replacement | string | The URL of the suggested replacement for a deprecated resource. The replacement resource must be the same type of resource as the deprecated resource. |
 | GCP.Compute.Zones.deprecated.deprecated | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
 | GCP.Compute.Zones.deprecated.obsolete | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
 | GCP.Compute.Zones.deprecated.deleted | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
