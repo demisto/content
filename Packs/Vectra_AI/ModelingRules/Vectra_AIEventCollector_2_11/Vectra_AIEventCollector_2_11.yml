@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: Vectra_AI_ModelingRule
-name: Vectra_AI Modeling Rule
+id: VectraAI_Event_collector_ModelingRule
+name: Vectra AI Event Collector Modeling Rule
 rules: ''
 schema: ''
 tags: Vectra Detection Audits
