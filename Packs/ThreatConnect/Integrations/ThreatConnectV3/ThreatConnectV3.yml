@@ -65,6 +65,12 @@ configuration:
   type: 8
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  type: 19
+  required: false
+  section: Collect
 - additionalinfo: Free text box to add comma-separated tags to filter the fetched incidents by.
   display: Tags filter for the fetch
   name: tags

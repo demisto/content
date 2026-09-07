@@ -229,6 +229,12 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
             "compute.firewalls.list",
         ],
     ),
+    "gcp-compute-firewalls-list": (
+        GCPServices.COMPUTE,
+        [
+            "compute.firewalls.list",
+        ],
+    ),
     "gcp-compute-firewall-get": (
         GCPServices.COMPUTE,
         [
@@ -287,6 +293,10 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
         GCPServices.STORAGE,
         ["storage.buckets.list"],
     ),
+    "gcp-storage-buckets-list": (
+        GCPServices.STORAGE,
+        ["storage.buckets.list"],
+    ),
     "gcp-storage-bucket-get": (
         GCPServices.STORAGE,
         ["storage.buckets.get"],
@@ -299,11 +309,19 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
         GCPServices.STORAGE,
         ["storage.buckets.getIamPolicy", "storage.buckets.get"],
     ),
+    "gcp-storage-bucket-policies-list": (
+        GCPServices.STORAGE,
+        ["storage.buckets.getIamPolicy", "storage.buckets.get"],
+    ),
     "gcp-storage-bucket-policy-set": (
         GCPServices.STORAGE,
         ["storage.buckets.setIamPolicy"],
     ),
     "gcp-storage-bucket-object-policy-list": (
+        GCPServices.STORAGE,
+        ["storage.objects.getIamPolicy"],
+    ),
+    "gcp-storage-bucket-object-policies-list": (
         GCPServices.STORAGE,
         ["storage.objects.getIamPolicy"],
     ),
@@ -351,6 +369,10 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-networks-list": (GCPServices.COMPUTE, ["compute.networks.list"]),
     "gcp-compute-network-insert": (GCPServices.COMPUTE, ["compute.networks.create"]),
     "gcp-container-cluster-security-update": (
+        GCPServices.CONTAINER,
+        ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
+    ),
+    "gcp-gke-cluster-security-update": (
         GCPServices.CONTAINER,
         ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
     ),
@@ -675,7 +697,7 @@ def _merge_bucket_objects(bucket_name: str, new_objects: list[dict[str, Any]]) -
         if obj.get("name"):
             merged_objects[obj["name"]] = obj
 
-    demisto.debug(f"[GCP: _merge_bucket_objects] Objects in context after merge: {len(merged_objects)}")
+    demisto.debug(f"[GCP: storage_bucket_objects_list] Objects in context after merge: {len(merged_objects)}")
     return list(merged_objects.values())
 
 
@@ -787,13 +809,26 @@ def storage_bucket_list(creds: Credentials, args: dict[str, Any]) -> CommandResu
         )
     hr = tableToMarkdown("GCP Storage Buckets", hr_bucket_data, removeNull=True, headerTransform=pascalToSpace)
 
-    return CommandResults(
-        readable_output=hr,
-        outputs_prefix="GCP.Storage.Bucket",
-        outputs=buckets,
-        outputs_key_field=["name", "id"],
-        raw_response=buckets,
-    )
+    outputs = {
+        "GCP.Storage.Buckets(val.name && val.name == obj.name)": buckets,
+        "GCP.Storage(true)": {"BucketsNextToken": response.get("nextPageToken")},
+    }
+
+    command_name = demisto.command()
+    if command_name == "gcp-storage-bucket-list":
+        return CommandResults(
+            readable_output=hr,
+            outputs_prefix="GCP.Storage.Bucket",
+            outputs=buckets,
+            outputs_key_field=["name", "id"],
+            raw_response=response,
+        )
+    else:  # command_name == "gcp-storage-buckets-list"
+        return CommandResults(
+            readable_output=hr,
+            outputs=outputs,
+            raw_response=response,
+        )
 
 
 def storage_bucket_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -828,9 +863,9 @@ def storage_bucket_get(creds: Credentials, args: dict[str, Any]) -> CommandResul
 
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Storage.Bucket",
+        outputs_prefix="GCP.Storage.Buckets",
         outputs=response,
-        outputs_key_field=["name", "id"],
+        outputs_key_field="name",
         raw_response=response,
     )
 
@@ -886,12 +921,19 @@ def storage_bucket_objects_list(creds: Credentials, args: dict[str, Any]) -> Com
         }
         object_data.append(object_info)
     hr = tableToMarkdown(f"Objects in bucket: {bucket_name}", object_data, removeNull=True, headerTransform=pascalToSpace)
+    # The objects are merged with the ones already in the context, so the bucket entry that matches the bucket
+    # name is updated with the full objects list instead of overwriting the previously fetched objects.
+    outputs = {
+        "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
+            "name": bucket_name,
+            "Objects": _merge_bucket_objects(bucket_name, objects),
+            "ObjectsNextToken": response.get("nextPageToken"),
+        }
+    }
 
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Storage.BucketObject",
-        outputs=objects,
-        outputs_key_field=["name", "id"],
+        outputs=outputs,
         raw_response=objects,
     )
 
@@ -899,7 +941,7 @@ def storage_bucket_objects_list(creds: Credentials, args: dict[str, Any]) -> Com
 def storage_bucket_policy_list(
     creds: Credentials,
     args: dict[str, Any],
-    outputs_prefix: str = "GCP.Storage.BucketPolicy",
+    outputs_prefix: str = "GCP.Storage.BucketPolicies",
     object_name: str = "",
 ) -> CommandResults:
     """
@@ -960,6 +1002,9 @@ def storage_bucket_policy_list(
     )
     demisto.debug(f"[GCP: storage_bucket_policy_list] Bindings count: {len(bindings_rows)}")
     hr = f"{summary_text}\n\n{hr_bindings}"
+
+    command_name = demisto.command()
+    outputs_prefix = "GCP.Storage.BucketPolicy" if command_name == "gcp-storage-bucket-policy-list" else outputs_prefix
 
     return CommandResults(
         readable_output=hr,
@@ -1039,7 +1084,7 @@ def storage_bucket_policy_set(creds: Credentials, args: dict[str, Any]) -> Comma
 
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Storage.BucketPolicy",
+        outputs_prefix="GCP.Storage.BucketPolicies",
         outputs=response,
         outputs_key_field="etag",
         raw_response=response,
@@ -1066,8 +1111,14 @@ def storage_bucket_object_policy_list(creds: Credentials, args: dict[str, Any]) 
     """
     bucket_name = args.get("bucket_name", "")
     object_name = args.get("object_name", "")
-
     generation = arg_to_number(args.get("generation"))
+
+    command_name = demisto.command()
+    output_prefix = (
+        "GCP.Storage.BucketObjectPolicy"
+        if command_name == "gcp-storage-bucket-object-policy-list"
+        else "GCP.Storage.BucketObjectPolicies"
+    )
 
     storage = GCPServices.STORAGE.build(creds)
 
@@ -1077,7 +1128,7 @@ def storage_bucket_object_policy_list(creds: Credentials, args: dict[str, Any]) 
         return storage_bucket_policy_list(
             creds=creds,
             args=args,
-            outputs_prefix="GCP.Storage.BucketObjectPolicy",
+            outputs_prefix=output_prefix,
             object_name=object_name,
         )
 
@@ -1098,7 +1149,7 @@ def storage_bucket_object_policy_list(creds: Credentials, args: dict[str, Any]) 
             return storage_bucket_policy_list(
                 creds=creds,
                 args=args,
-                outputs_prefix="GCP.Storage.BucketObjectPolicy",
+                outputs_prefix=output_prefix,
                 object_name=object_name,
             )
         demisto.debug(f"[GCP: storage_bucket_object_policy_get] HttpError status={getattr(e.resp, 'status', None)}")
@@ -1109,7 +1160,7 @@ def storage_bucket_object_policy_list(creds: Credentials, args: dict[str, Any]) 
 
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Storage.BucketObjectPolicy",
+        outputs_prefix=output_prefix,
         outputs=items,
         raw_response=response,
         outputs_key_field=["Bucket", "Key"],
@@ -1205,7 +1256,7 @@ def storage_bucket_object_policy_set(creds: Credentials, args: dict[str, Any]) -
 
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Storage.BucketObjectPolicy",
+        outputs_prefix="GCP.Storage.BucketObjectPolicies",
         outputs=results,
         raw_response=results,
         outputs_key_field="resourceId",
@@ -1312,6 +1363,7 @@ def compute_firewall_list(creds: Credentials, args: dict[str, Any]) -> CommandRe
     page_token = args.get("page_token")
     flt = args.get("filter")
     validate_limit(limit)
+    command_name = demisto.command()
 
     params: dict[str, Any] = {
         "project": project_id,
@@ -1328,7 +1380,7 @@ def compute_firewall_list(creds: Credentials, args: dict[str, Any]) -> CommandRe
     headers = ["name", "id", "direction", "priority", "sourceRanges", "targetTags", "creationTimestamp", "network", "disabled"]
     metadata = (
         "Run the following command to retrieve the next batch of firewalls:\n"
-        f"!gcp-compute-firewall-list project_id={project_id} page_token={next_token}"
+        f"!{command_name} project_id={project_id} page_token={next_token}"
         if next_token
         else None
     )
@@ -1340,9 +1392,11 @@ def compute_firewall_list(creds: Credentials, args: dict[str, Any]) -> CommandRe
         metadata=metadata,
     )
 
+    resource = "Firewall" if command_name == "gcp-compute-firewall-list" else "Firewalls"
+
     outputs = {
-        "GCP.Compute.Firewall(val.name && val.name == obj.name)": items,
-        "GCP.Compute(true)": {"FirewallNextToken": next_token},
+        f"GCP.Compute.{resource}(val.name && val.name == obj.name)": items,
+        "GCP.Compute(true)": {f"{resource}NextToken": next_token},
     }
     return CommandResults(
         readable_output=readable_output,
@@ -1384,7 +1438,7 @@ def compute_firewall_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
     )
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Compute.Firewall",
+        outputs_prefix="GCP.Compute.Firewalls",
         outputs=response,
         outputs_key_field="name",
         raw_response=response,
@@ -1442,8 +1496,8 @@ def compute_snapshots_list(creds: Credentials, args: dict[str, Any]) -> CommandR
         headerTransform=pascalToSpace,
     )
     outputs = {
-        "GCP.Compute.Snapshot(val.id && val.id == obj.id)": items,
-        "GCP.Compute(true)": {"SnapshotNextToken": next_token},
+        "GCP.Compute.Snapshots(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"SnapshotsNextToken": next_token},
     }
     return CommandResults(readable_output=hr, outputs=outputs, raw_response=response)
 
@@ -1482,7 +1536,7 @@ def compute_snapshot_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
     )
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Compute.Snapshot",
+        outputs_prefix="GCP.Compute.Snapshots",
         outputs=response,
         outputs_key_field="id",
         raw_response=response,
@@ -1593,11 +1647,13 @@ def compute_instances_aggregated_list_by_ip(creds: Credentials, args: dict[str, 
         headerTransform=pascalToSpace,
         removeNull=True,
     )
+    outputs = {
+        "GCP.Compute.Instances(val.id && val.id == obj.id)": matched,
+        "GCP.Compute(true)": {"AggregatedByIPInstancesNextToken": response.get("nextPageToken")},
+    }
     return CommandResults(
         readable_output=hr,
-        outputs_prefix="GCP.Compute.Instance",
-        outputs=matched,
-        outputs_key_field="id",
+        outputs=outputs,
         raw_response=response,
     )
 
@@ -1878,7 +1934,12 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
         removeNull=True,
     )
 
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Container.Operations", outputs=response)
+    command_name = demisto.command()
+    outputs_prefix = (
+        "GCP.Container.Operations" if command_name == "gcp-container-cluster-security-update" else "GCP.GKE.Operations"
+    )
+
+    return CommandResults(readable_output=hr, outputs_prefix=outputs_prefix, outputs=response)
 
 
 def storage_bucket_metadata_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -1915,9 +1976,7 @@ def storage_bucket_metadata_update(creds: Credentials, args: dict[str, Any]) -> 
         "uniformBucketLevelAccess": response.get("iamConfiguration", {}).get("uniformBucketLevelAccess", {}).get("enabled"),
     }
     hr = tableToMarkdown(f"Metadata for bucket {bucket} was successfully updated.", data_res, removeNull=True)
-    return CommandResults(
-        readable_output=hr, outputs_prefix="GCP.StorageBucket.Metadata", outputs=response, outputs_key_field="name"
-    )
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Storage.Buckets", outputs=response, outputs_key_field="name")
 
 
 def storage_bucket_create(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -2868,7 +2927,7 @@ def validate_limit(limit):
     Raises:
         DemistoException: If the limit is not set or is outside the allowed range (1-500 inclusive).
     """
-    if limit > 500 or limit < 1:
+    if limit is not None and (limit > 500 or limit < 1):
         raise DemistoException(
             f"The acceptable values of the argument limit are 1 to 500, inclusive. Currently the value is {limit}"
         )
@@ -3430,6 +3489,7 @@ def main():  # pragma: no cover
             "gcp-compute-firewall-patch": compute_firewall_patch,
             "gcp-compute-firewall-insert": compute_firewall_insert,
             "gcp-compute-firewall-list": compute_firewall_list,
+            "gcp-compute-firewalls-list": compute_firewall_list,
             "gcp-compute-firewall-get": compute_firewall_get,
             "gcp-compute-snapshots-list": compute_snapshots_list,
             "gcp-compute-snapshot-get": compute_snapshot_get,
@@ -3452,11 +3512,14 @@ def main():  # pragma: no cover
             "gcp-compute-network-insert": gcp_compute_network_insert,
             # Storage commands
             "gcp-storage-bucket-list": storage_bucket_list,
+            "gcp-storage-buckets-list": storage_bucket_list,
             "gcp-storage-bucket-get": storage_bucket_get,
             "gcp-storage-bucket-objects-list": storage_bucket_objects_list,
             "gcp-storage-bucket-policy-list": storage_bucket_policy_list,
+            "gcp-storage-bucket-policies-list": storage_bucket_policy_list,
             "gcp-storage-bucket-policy-set": storage_bucket_policy_set,
             "gcp-storage-bucket-object-policy-list": storage_bucket_object_policy_list,
+            "gcp-storage-bucket-object-policies-list": storage_bucket_object_policy_list,
             "gcp-storage-bucket-object-policy-set": storage_bucket_object_policy_set,
             "gcp-storage-bucket-policy-delete": storage_bucket_policy_delete,
             "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
@@ -3470,6 +3533,7 @@ def main():  # pragma: no cover
             "gcp-storage-bucket-object-policy-delete": storage_bucket_object_policy_delete,
             # Container (GKE) commands
             "gcp-container-cluster-security-update": container_cluster_security_update,
+            "gcp-gke-cluster-security-update": container_cluster_security_update,
             # IAM commands
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
             # BigQuery commands

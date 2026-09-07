@@ -1,6 +1,7 @@
 from CommonServerPython import *
 import copy
 import json
+import pytest
 import XDRSyncScript as xdr_script
 from XDRSyncScript import ASSIGNED_USER_MAIL_XDR_FIELD, MODIFICATION_TIME_XDR_FIELD, MANUAL_SEVERITY_XDR_FIELD, \
     SEVERITY_XDR_FIELD
@@ -523,6 +524,70 @@ def test_args_to_str_2():
         .format(json.dumps(xdr_incident))
 
     assert expected == actual
+
+
+@pytest.mark.parametrize(
+    "malicious_value",
+    [
+        "harmless` !ImportantCommand arg=`pwned",
+        "`",
+        "trailing`",
+        "`leading",
+    ],
+    ids=["full_injection", "bare_delimiter", "trailing_delimiter", "leading_delimiter"],
+)
+def test_args_to_str_rejects_delimiter_in_argument_value(malicious_value):
+    """
+    Given: An argument value containing the backtick used to delimit values in the scheduled command (CRTX-252628).
+    When: args_to_str builds the command string for ScheduleCommand.
+    Then: A DemistoException is raised naming the offending argument, so no command is scheduled.
+    """
+    args = {"incident_id": "11", "description": malicious_value}
+
+    with pytest.raises(xdr_script.DemistoException) as exc_info:
+        xdr_script.args_to_str(args, None)
+
+    assert "description" in str(exc_info.value)
+
+
+def test_args_to_str_rejects_delimiter_coming_from_the_xdr_incident():
+    """
+    Given: An XDR incident whose field contains a backtick, serialized via json.dumps (CRTX-252628).
+    When: args_to_str builds the command string for ScheduleCommand.
+    Then: A DemistoException is raised, because json.dumps does not escape backticks.
+    """
+    xdr_incident = {"incident_id": "11", "resolve_comment": "harmless` !ImportantCommand arg=`pwned"}
+
+    with pytest.raises(xdr_script.DemistoException) as exc_info:
+        xdr_script.args_to_str({"incident_id": "11"}, xdr_incident)
+
+    assert "xdr_incident_from_previous_run" in str(exc_info.value)
+
+
+@pytest.mark.parametrize(
+    "benign_value",
+    ["a benign description", "", "quotes \" and ' and $(id) and ${x}", "line1\nline2", "100"],
+    ids=["plain_text", "empty", "other_shell_metacharacters", "newline", "numeric_string"],
+)
+def test_args_to_str_accepts_values_without_the_delimiter(benign_value):
+    """
+    Given: An argument value that does not contain the backtick delimiter.
+    When: args_to_str builds the command string.
+    Then: The value is emitted unchanged, so the guard does not reject legitimate data.
+    """
+    actual = xdr_script.args_to_str({"description": benign_value}, None)
+
+    assert actual == 'description=`{}` first=`false` '.format(benign_value)
+
+
+def test_args_to_str_rejects_delimiter_in_non_string_value():
+    """
+    Given: A non-string argument value whose string representation contains a backtick.
+    When: args_to_str builds the command string.
+    Then: The guard still rejects it, because the value is interpolated as text.
+    """
+    with pytest.raises(xdr_script.DemistoException):
+        xdr_script.args_to_str({"incident_id": ["safe", "bad`value"]}, None)
 
 
 def test_compare_incident_in_demisto_when_the_severity_is_unknown():

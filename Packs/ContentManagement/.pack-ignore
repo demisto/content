@@ -58,3 +58,6 @@ ignore=BA124
 # GR103 is temporary, see CIAC-11705
 [file:layoutscontainer-configuration_setup.json]
 ignore=GR103
+
+[file:CommitFiles.yml]
+ignore=GR107
