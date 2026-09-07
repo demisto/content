@@ -37,7 +37,9 @@ filter source_log_type = "syslog transactions"
     xdm.event.description = to_string(event_description),
     xdm.source.application.name = application_name,
     xdm.source.user.username = created_by,
+    xdm.source.identity.username = created_by,
     xdm.source.user.identifier = system_identifier,
+    xdm.source.identity.identifier = system_identifier,
     xdm.source.user_agent = source_user_agent,
     xdm.source.ipv4 = remote_ip_ipv4,
     xdm.source.ipv6 = remote_ip_ipv6, 
@@ -110,6 +112,7 @@ filter source_log_type not in ("syslog transactions", "case","outbound_http_log"
     xdm.event.outcome_reason = reason, // Reason for the change (if any reason is associated with the change)
     xdm.session_context_id = documentkey, // the record id of the audited record in <tablename>
     xdm.source.user.username = user, // Name of the user who created the change. 
+    xdm.source.identity.username = user, // Name of the user who created the change.
     xdm.target.resource_before.value = oldvalue, // Old value of the field change represented by this sys_audit record.
     xdm.target.resource.id = documentkey, // the record id of the audited record in <tablename>
     xdm.target.resource.name = fieldname, // Field that changed
@@ -148,12 +151,15 @@ filter source_log_type = "case"
     xdm.alert.category = if(get_category = "0", "Question", get_category = "1", "Issue", get_category = "2", "Feature"),
     xdm.alert.severity = if(get_priority = "1", "Low", get_priority = "2", "Moderate", get_priority = "3", "High", get_priority = "4", "Critical"),
     xdm.source.user.identifier = opened_by,
+    xdm.source.identity.identifier = opened_by,
     xdm.source.user.domain = concat(sys_domain_path, sys_domain),
+    xdm.source.identity.domain = concat(sys_domain_path, sys_domain),
     xdm.alert.subcategory = if(subcategory != null, "Question", null),
     xdm.source.interface = contact_type,
     xdm.observer.content_version = to_string(object_create("N_of_CaseUpdates", sys_mod_count, "N_of_CaseReassign", reassignment_count)),
     xdm.database.tables = arraycreate(sys_class_name),
     xdm.source.user.username = sys_created_by,
+    xdm.source.identity.username = sys_created_by,
     xdm.alert.description = coalesce(short_description, description),
     xdm.observer.name = assigned_to,
     xdm.observer.type = assignment_group,
@@ -162,5 +168,7 @@ filter source_log_type = "case"
     xdm.target.location.latitude = to_float(account -> latitude),
     xdm.target.location.longitude = to_float(account -> longitude),
     xdm.target.user.username = account -> name,
+    xdm.target.identity.username = account -> name,
     xdm.target.user.identifier = account -> number,
+    xdm.target.identity.identifier = account -> number,
     xdm.target.url = account -> website;
