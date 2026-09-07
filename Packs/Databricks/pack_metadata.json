@@ -13,10 +13,7 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Databricks",
-        "Data Lake",
-        "Machine Learning",
-        "SQL Analytics"
+        "Security Analytics"
     ],
     "useCases": [],
     "keywords": [
@@ -30,9 +27,5 @@
         "xsoar",
         "marketplacev2",
         "platform"
-    ],
-    "supportedModules": [
-        "xsoar",
-        "marketplacev2"
     ]
 }
