@@ -1,6 +1,5 @@
 import json
 import traceback
-from collections.abc import Iterator
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, UTC
@@ -1050,41 +1049,41 @@ def test_module(client: Client) -> str:
         raise
 
 
-def _iter_event_pages(
+def fetch_events_with_pagination(
     client: Client,
     log_type: LogType,
     created_after: str,
     created_before: str | None = None,
     max_events: int = Config.DEFAULT_MAX_FETCH,
     audit_types: list[str] | None = None,
-) -> Iterator[list[dict]]:
-    """Yield event pages one at a time (never accumulates the full set).
+) -> list[dict]:
+    """Fetch events with pagination support.
 
-    Single pagination source of truth. Stops on an empty/partial page, at
-    MAX_PAGES_PER_FETCH, or once max_events have been yielded (the last page is
-    trimmed so the total never exceeds max_events).
+    Used by the bounded, low-volume paths (test-module and koi-get-events) that
+    need the full list for display. The high-volume fetch-events path fetches and
+    streams pages itself (send-and-flush) to keep memory flat.
 
     Args:
         client: The KOI client.
         log_type: The LogType to fetch.
         created_after: Start time (ISO 8601).
         created_before: End time (ISO 8601) or None.
-        max_events: Maximum number of events to yield in total across pages.
+        max_events: Maximum number of events to fetch.
         audit_types: Optional list of audit log types to filter by.
 
-    Yields:
-        Non-empty lists of event dictionaries, one page at a time.
+    Returns:
+        List of event dictionaries.
     """
+    events: list[dict] = []
     page = 1
     page_size = min(Config.MAX_PAGE_SIZE, max_events)
-    yielded = 0
 
     demisto.debug(
         f"[Pagination Loop] Start | Type: {log_type.type_string} | Goal: {max_events} | "
         f"Time: {created_after} -> {created_before or 'Now'}"
     )
 
-    while yielded < max_events:
+    while len(events) < max_events:
         page_events = client.get_events_page(
             log_type=log_type,
             created_at_gte=created_after,
@@ -1098,20 +1097,10 @@ def _iter_event_pages(
             demisto.debug(f"[Pagination Loop] Page {page}: Empty. Stopping.")
             break
 
-        raw_count = len(page_events)
+        events.extend(page_events)
+        demisto.debug(f"[Pagination Loop] Page {page}: +{len(page_events)} events. Total: {len(events)}")
 
-        # Trim the final page so the running total never exceeds max_events.
-        remaining = max_events - yielded
-        if raw_count > remaining:
-            demisto.debug(f"[Pagination Loop] Page {page}: trimming {raw_count} -> {remaining} to honor max_events")
-            page_events = page_events[:remaining]
-
-        yielded += len(page_events)
-        demisto.debug(f"[Pagination Loop] Page {page}: +{len(page_events)} events. Yielded total: {yielded}")
-
-        yield page_events
-
-        if raw_count < page_size:
+        if len(page_events) < page_size:
             demisto.debug("[Pagination Loop] Last page (partial). Stopping.")
             break
 
@@ -1121,48 +1110,14 @@ def _iter_event_pages(
             demisto.debug(f"[Pagination Loop] Max page limit reached ({Config.MAX_PAGES_PER_FETCH}). Stopping.")
             break
 
-        if yielded >= max_events:
-            demisto.debug(f"[Pagination Loop] Threshold reached ({yielded} >= {max_events}). Stopping.")
+        if len(events) >= max_events:
+            demisto.debug(f"[Pagination Loop] Threshold reached ({len(events)} >= {max_events}). Stopping.")
             break
 
-    demisto.debug(f"[Pagination Result] Yielded {yielded} {log_type.type_string} events across pages")
-
-
-def fetch_events_with_pagination(
-    client: Client,
-    log_type: LogType,
-    created_after: str,
-    created_before: str | None = None,
-    max_events: int = Config.DEFAULT_MAX_FETCH,
-    audit_types: list[str] | None = None,
-) -> list[dict]:
-    """Fetch events with pagination, returning the full list.
-
-    Thin wrapper over ``_iter_event_pages`` for the bounded, low-volume paths
-    (test-module and koi-get-events) that need the events for display. The
-    high-volume fetch-events path streams pages instead of using this.
-
-    Args:
-        client: The KOI client.
-        log_type: The LogType to fetch.
-        created_after: Start time (ISO 8601).
-        created_before: End time (ISO 8601) or None.
-        max_events: Maximum number of events to fetch.
-        audit_types: Optional list of audit log types to filter by.
-
-    Returns:
-        List of event dictionaries (at most ``max_events``).
-    """
-    events: list[dict] = []
-    for page_events in _iter_event_pages(
-        client,
-        log_type=log_type,
-        created_after=created_after,
-        created_before=created_before,
-        max_events=max_events,
-        audit_types=audit_types,
-    ):
-        events.extend(page_events)
+    # Slice to limit
+    if len(events) > max_events:
+        demisto.debug(f"[Pagination Result] Slicing {len(events)} events to limit {max_events}")
+        events = events[:max_events]
 
     demisto.debug(f"[Pagination Result] Returning {len(events)} {log_type.type_string} events")
     return events
@@ -1286,22 +1241,40 @@ def _fetch_single_log_type(
 
         created_after = get_formatted_utc_time(time_input)
 
-        # Incremental HWM state (computed as pages stream through — never holds all events).
+        # Fetch one page at a time and send-and-flush it, so we never hold more than a
+        # single page in memory (this is what fixes the OOM).
+        page = 1
+        page_size = min(Config.MAX_PAGE_SIZE, max_events)
+        fetched = 0
+
+        # Incremental HWM state (updated per page — never holds all events).
         hwm_time: str | None = None
         hwm_ids: set[str] = set()
         total_new = 0
 
-        for page in _iter_event_pages(
-            client,
-            log_type=log_type,
-            created_after=created_after,
-            max_events=max_events,
-            audit_types=audit_types if log_type == LogType.AUDIT else None,
-        ):
+        while fetched < max_events:
+            page_events = client.get_events_page(
+                log_type=log_type,
+                created_at_gte=created_after,
+                created_at_lte=None,
+                page=page,
+                page_size=page_size,
+                audit_types=audit_types if log_type == LogType.AUDIT else None,
+            )
+            if not page_events:
+                break
+
+            raw_count = len(page_events)
+            # Trim the final page so the total fetched never exceeds max_events.
+            remaining = max_events - fetched
+            if raw_count > remaining:
+                page_events = page_events[:remaining]
+            fetched += len(page_events)
+
             # The streaming send empties its input list, so compute the HWM (from the
             # full page, before dedup) and the count BEFORE sending. hwm_time/hwm_ids
             # hold only strings, so they survive the send.
-            for event in page:
+            for event in page_events:
                 event_time = extract_time_from_event(event, log_type)
                 if not event_time:
                     continue
@@ -1312,13 +1285,20 @@ def _fetch_single_log_type(
                     hwm_ids.add(event_id)
 
             # Dedup against the previous run's IDs, then stream-and-flush this page.
-            new_events = deduplicate_events(page, last_fetched_ids)
+            new_events = deduplicate_events(page_events, last_fetched_ids)
             if new_events:
                 add_time_to_events(new_events, log_type)
                 count = len(new_events)  # count before the send empties the list
                 total_new += count
                 client.send_events(new_events, use_streaming_send=True)
                 demisto.debug(f"[Fetch] {log_type.type_string}: streamed {count} new events (running total {total_new})")
+
+            # Stop on a partial page (no more data) or when the page cap is hit.
+            if raw_count < page_size:
+                break
+            page += 1
+            if page > Config.MAX_PAGES_PER_FETCH:
+                break
 
         result.new_event_count = total_new
         demisto.debug(f"[Fetch] {log_type.type_string}: {total_new} new events sent after dedup")
