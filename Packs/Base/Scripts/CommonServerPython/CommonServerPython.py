@@ -14457,41 +14457,54 @@ def stream_json_items(source, items_prefix='item'):
         yield item
 
 
-def stream_xml_elements(source, tag):
+def stream_xml_elements(source, tags):
     """
     Stream-parse an XML response one element at a time using ``xml.etree.ElementTree.iterparse``, yielding
     each matching element and then clearing it (``elem.clear()``) so memory does not grow with the size of
     the document. This is the XML analog of ``stream_json_items`` and keeps peak memory ~flat for large
     ``fetch-assets`` responses.
 
+    Multiple tags can be matched in a single pass over the stream, and a ``(local_tag_name, element)`` tuple
+    is yielded for each match so the caller can distinguish which tag matched. This lets callers extract
+    several different elements (for example a data element plus an error/pagination marker) in one
+    low-memory pass over the same stream - useful because a streamed HTTP response can only be read once.
+
     Usage example (with a streamed HTTP response)::
 
         res = client._http_request('GET', url_suffix='/assets.xml', resp_type='response', stream=True)
         res.raw.decode_content = True
-        for elem in stream_xml_elements(res.raw, tag='asset'):
-            process(elem)
+        for local_tag, elem in stream_xml_elements(res.raw, tags=['HOST', 'CODE', 'URL']):
+            if local_tag == 'HOST':
+                process_host(elem)
+            elif local_tag == 'CODE':
+                handle_error(elem)
+            elif local_tag == 'URL':
+                next_url = elem.text
 
     :type source: ``Any``
     :param source: The XML source to parse. Can be a filename, a file-like object, or a readable stream such
         as ``requests.Response.raw`` (when the request was made with ``stream=True``).
 
-    :type tag: ``str``
-    :param tag: The element tag to yield. Each element whose tag matches (namespace-agnostic - the local
-        tag name is compared) is yielded on the closing ('end') event and then cleared.
+    :type tags: ``Iterable[str]``
+    :param tags: The element tags to yield. Matching is namespace-agnostic - the local tag name is compared.
+        A single tag may also be passed as a string.
 
-    :return: A generator yielding one ``xml.etree.ElementTree.Element`` at a time. Each yielded element is
+    :return: A generator yielding ``(local_tag_name, element)`` tuples, one at a time. Each yielded element is
         cleared after it is consumed by the caller (i.e. on the next iteration), so callers must extract any
         needed data before advancing the generator.
-    :rtype: ``Iterator[xml.etree.ElementTree.Element]``
+    :rtype: ``Iterator[tuple]``
     """
     def _local_name(elem_tag):
         # Strip an optional '{namespace}' prefix so callers can match on the local tag name.
         return elem_tag.rsplit('}', 1)[-1] if isinstance(elem_tag, str) else elem_tag
 
+    wanted_tags = {tags} if isinstance(tags, str) else set(tags)
+
     context = ET.iterparse(source, events=('end',))
     for _event, elem in context:
-        if _local_name(elem.tag) == tag:
-            yield elem
+        local_tag = _local_name(elem.tag)
+        if local_tag in wanted_tags:
+            yield local_tag, elem
             # Free the element (and its children) as soon as the caller is done with it, keeping peak memory ~flat.
             elem.clear()
 

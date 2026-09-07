@@ -1,3 +1,4 @@
+import io
 import re
 from unittest.mock import Mock
 import Qualysv2
@@ -33,6 +34,7 @@ from Qualysv2 import (
     get_activity_logs_events,
     fetch_assets,
     get_detections_from_hosts,
+    handle_host_list_detection_result,
     fetch_vulnerabilities,
     fetch_assets_and_vulnerabilities_by_date,
     fetch_assets_and_vulnerabilities_by_qids,
@@ -204,6 +206,98 @@ def test_fetch_assets_command_time_out(requests_mock: RequestsMocker, mocker, cl
     assets, new_last_run, amount_to_report, snapshot_id, set_new_limit = fetch_assets(client=client, assets_last_run={})
     assert not assets
     assert set_new_limit
+
+
+def _streamed_response(xml_bytes: bytes) -> Mock:
+    """Builds a fake streamed ``requests.Response`` whose ``.raw`` is a readable byte stream, mimicking ``stream=True``."""
+    response = Mock(spec=requests.Response)
+    response.raw = io.BytesIO(xml_bytes)
+    return response
+
+
+def test_handle_host_list_detection_result_none_response():
+    """
+    Given:
+    - A None response (e.g. the request timed out in get_host_list_detection).
+    When:
+    - Calling handle_host_list_detection_result.
+    Then:
+    - Returns no hosts and an empty next URL, without raising.
+    """
+    hosts, next_url = handle_host_list_detection_result(None)
+    assert hosts == []
+    assert next_url == ""
+
+
+def test_handle_host_list_detection_result_streams_hosts_and_pagination():
+    """
+    Given:
+    - A streamed host list detection XML response with two HOST records and a WARNING/URL pagination block.
+    When:
+    - Calling handle_host_list_detection_result (single-pass streaming parse).
+    Then:
+    - Both hosts are extracted with their nested fields, and the next page URL is read from WARNING/URL.
+    """
+    xml_bytes = (
+        b'<?xml version="1.0" encoding="UTF-8"?>'
+        b"<HOST_LIST_VM_DETECTION_OUTPUT><RESPONSE><HOST_LIST>"
+        b"<HOST><ID>1</ID><IP>1.1.1.1</IP></HOST>"
+        b"<HOST><ID>2</ID><IP>2.2.2.2</IP></HOST>"
+        b"</HOST_LIST>"
+        b"<WARNING><CODE>1980</CODE><URL>https://qualys.example/api?id_min=3</URL></WARNING>"
+        b"</RESPONSE></HOST_LIST_VM_DETECTION_OUTPUT>"
+    )
+
+    hosts, next_url = handle_host_list_detection_result(_streamed_response(xml_bytes))
+
+    assert len(hosts) == 2
+    assert hosts[0]["ID"] == "1"
+    assert hosts[0]["IP"] == "1.1.1.1"
+    assert hosts[1]["ID"] == "2"
+    assert next_url == "https://qualys.example/api?id_min=3"
+
+
+def test_handle_host_list_detection_result_no_pagination():
+    """
+    Given:
+    - A streamed host list detection XML response with a single HOST and no WARNING block.
+    When:
+    - Calling handle_host_list_detection_result.
+    Then:
+    - The host is extracted and the next URL is empty.
+    """
+    xml_bytes = (
+        b"<HOST_LIST_VM_DETECTION_OUTPUT><RESPONSE><HOST_LIST>"
+        b"<HOST><ID>7</ID></HOST>"
+        b"</HOST_LIST></RESPONSE></HOST_LIST_VM_DETECTION_OUTPUT>"
+    )
+
+    hosts, next_url = handle_host_list_detection_result(_streamed_response(xml_bytes))
+
+    assert len(hosts) == 1
+    assert hosts[0]["ID"] == "7"
+    assert next_url == ""
+
+
+def test_handle_host_list_detection_result_raises_on_error_envelope():
+    """
+    Given:
+    - A streamed SIMPLE_RETURN error envelope response (as Qualys returns on API errors).
+    When:
+    - Calling handle_host_list_detection_result.
+    Then:
+    - A DemistoException is raised containing both the error TEXT and CODE.
+    """
+    xml_bytes = (
+        b'<?xml version="1.0" encoding="UTF-8"?>'
+        b"<SIMPLE_RETURN><RESPONSE><CODE>1234</CODE><TEXT>bad request</TEXT></RESPONSE></SIMPLE_RETURN>"
+    )
+
+    with pytest.raises(DemistoException) as e:
+        handle_host_list_detection_result(_streamed_response(xml_bytes))
+
+    assert "1234" in str(e.value)
+    assert "bad request" in str(e.value)
 
 
 def test_get_detections_from_hosts_sets_last_vm_auth_scan_datetime_null_when_missing():
@@ -1795,20 +1889,22 @@ def test_fetch_assets_and_vulnerabilities_by_date_assets_stage(mocker: MockerFix
     next_page, set_new_limit = "", False
     mocker.patch("Qualysv2.get_host_list_detections_events", return_value=(expected_assets, next_page, set_new_limit))
 
-    mock_send_data_to_xsiam = mocker.patch("Qualysv2.send_data_to_xsiam")
+    mock_send_assets_to_xsiam = mocker.patch("Qualysv2.send_assets_to_xsiam")
     mock_set_assets_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
 
     fetch_assets_and_vulnerabilities_by_date(client, last_run)
 
-    send_data_to_xsiam_kwargs: dict = mock_send_data_to_xsiam.call_args.kwargs
+    # The assets list is passed positionally to send_assets_to_xsiam; the rest are keyword args.
+    send_assets_to_xsiam_data = mock_send_assets_to_xsiam.call_args.args[0]
+    send_assets_to_xsiam_kwargs: dict = mock_send_assets_to_xsiam.call_args.kwargs
     next_run = mock_set_assets_last_run.call_args[0][0]
 
-    assert send_data_to_xsiam_kwargs["data"] == expected_assets
-    assert send_data_to_xsiam_kwargs["vendor"] == VENDOR
-    assert send_data_to_xsiam_kwargs["product"] == "assets"
-    assert send_data_to_xsiam_kwargs["snapshot_id"] == SNAPSHOT_ID
-    assert send_data_to_xsiam_kwargs["items_count"] == str(last_total_assets + len(expected_assets))
-    assert not send_data_to_xsiam_kwargs["should_update_health_module"]
+    assert send_assets_to_xsiam_data == expected_assets
+    assert send_assets_to_xsiam_kwargs["vendor"] == VENDOR
+    assert send_assets_to_xsiam_kwargs["product"] == "assets"
+    assert send_assets_to_xsiam_kwargs["snapshot_id"] == SNAPSHOT_ID
+    assert send_assets_to_xsiam_kwargs["items_count"] == str(last_total_assets + len(expected_assets))
+    assert not send_assets_to_xsiam_kwargs["should_update_health_module"]
 
     assert next_run["next_page"] == ""
     assert next_run["stage"] == "vulnerabilities"  # next fetch stage should be vulnerabilities because no next assets page
@@ -1834,17 +1930,18 @@ def test_fetch_assets_and_vulnerabilities_by_date_vulnerabilities_stage(mocker: 
     expected_vulnerabilities = util_load_json("./test_data/fetched_vulnerabilities.json")
     mocker.patch("Qualysv2.get_vulnerabilities", return_value=expected_vulnerabilities)
 
-    mock_send_data_to_xsiam = mocker.patch("Qualysv2.send_data_to_xsiam")
+    mock_send_assets_to_xsiam = mocker.patch("Qualysv2.send_assets_to_xsiam")
     mock_set_assets_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
 
     fetch_assets_and_vulnerabilities_by_date(client, last_run)
 
-    send_data_to_xsiam_kwargs: dict = mock_send_data_to_xsiam.call_args.kwargs
+    send_assets_to_xsiam_data = mock_send_assets_to_xsiam.call_args.args[0]
+    send_assets_to_xsiam_kwargs: dict = mock_send_assets_to_xsiam.call_args.kwargs
     next_run = mock_set_assets_last_run.call_args[0][0]
 
-    assert send_data_to_xsiam_kwargs["data"] == expected_vulnerabilities
-    assert send_data_to_xsiam_kwargs["vendor"] == VENDOR
-    assert send_data_to_xsiam_kwargs["product"] == "vulnerabilities"
+    assert send_assets_to_xsiam_data == expected_vulnerabilities
+    assert send_assets_to_xsiam_kwargs["vendor"] == VENDOR
+    assert send_assets_to_xsiam_kwargs["product"] == "vulnerabilities"
 
     assert next_run == DEFAULT_LAST_ASSETS_RUN  # pulling finished, next run stage should be assets
 
@@ -1976,7 +2073,7 @@ def test_send_assets_and_vulnerabilities_to_xsiam(
     cumulative_assets_count = 10
     cumulative_vulns_count = 13
 
-    mock_send_data_to_xsiam = mocker.patch("Qualysv2.send_data_to_xsiam")
+    mock_send_assets_to_xsiam = mocker.patch("Qualysv2.send_assets_to_xsiam")
 
     send_assets_and_vulnerabilities_to_xsiam(
         assets=expected_assets,
@@ -1987,23 +2084,24 @@ def test_send_assets_and_vulnerabilities_to_xsiam(
         snapshot_id=SNAPSHOT_ID,
     )
 
-    # First send_data_to_xsiam call is to send assets, second to send vulnerabilities
-    send_data_to_xsiam_assets_kwargs = mock_send_data_to_xsiam.mock_calls[0].kwargs
-    send_data_to_xsiam_vulns_kwargs = mock_send_data_to_xsiam.mock_calls[1].kwargs
+    # First send_assets_to_xsiam call is to send assets, second to send vulnerabilities.
+    # The data list is passed positionally (args[0]); the rest are keyword args.
+    send_assets_call = mock_send_assets_to_xsiam.mock_calls[0]
+    send_vulns_call = mock_send_assets_to_xsiam.mock_calls[1]
 
-    assert send_data_to_xsiam_assets_kwargs["data"] == expected_assets
-    assert send_data_to_xsiam_assets_kwargs["vendor"] == VENDOR
-    assert send_data_to_xsiam_assets_kwargs["product"] == "assets"
-    assert send_data_to_xsiam_assets_kwargs["snapshot_id"] == SNAPSHOT_ID
-    assert send_data_to_xsiam_assets_kwargs["items_count"] == expected_assets_count_to_report
-    assert not send_data_to_xsiam_assets_kwargs["should_update_health_module"]
+    assert send_assets_call.args[0] == expected_assets
+    assert send_assets_call.kwargs["vendor"] == VENDOR
+    assert send_assets_call.kwargs["product"] == "assets"
+    assert send_assets_call.kwargs["snapshot_id"] == SNAPSHOT_ID
+    assert send_assets_call.kwargs["items_count"] == expected_assets_count_to_report
+    assert not send_assets_call.kwargs["should_update_health_module"]
 
-    assert send_data_to_xsiam_vulns_kwargs["data"] == expected_vulnerabilities
-    assert send_data_to_xsiam_vulns_kwargs["vendor"] == VENDOR
-    assert send_data_to_xsiam_vulns_kwargs["product"] == "vulnerabilities"
-    assert send_data_to_xsiam_vulns_kwargs["snapshot_id"] == SNAPSHOT_ID
-    assert send_data_to_xsiam_vulns_kwargs["items_count"] == expected_vulns_count_to_report
-    assert not send_data_to_xsiam_vulns_kwargs["should_update_health_module"]
+    assert send_vulns_call.args[0] == expected_vulnerabilities
+    assert send_vulns_call.kwargs["vendor"] == VENDOR
+    assert send_vulns_call.kwargs["product"] == "vulnerabilities"
+    assert send_vulns_call.kwargs["snapshot_id"] == SNAPSHOT_ID
+    assert send_vulns_call.kwargs["items_count"] == expected_vulns_count_to_report
+    assert not send_vulns_call.kwargs["should_update_health_module"]
 
 
 def test_send_assets_and_vulnerabilities_to_xsiam_empty_last_page(mocker: MockerFixture):
@@ -2017,12 +2115,12 @@ def test_send_assets_and_vulnerabilities_to_xsiam_empty_last_page(mocker: Mocker
 
     Then:
         - Ensure close_snapshot_if_empty replaces empty lists with [{}] and increments items_count by 1.
-        - Ensure send_data_to_xsiam is called with data=[{}] and items_count=str(count + 1) for both datasets.
+        - Ensure send_assets_to_xsiam is called with the [{}] closing payload and items_count=str(count + 1) for both.
     """
     cumulative_assets_count = 500
     cumulative_vulns_count = 200
 
-    mock_send_data_to_xsiam = mocker.patch("Qualysv2.send_data_to_xsiam")
+    mock_send_assets_to_xsiam = mocker.patch("Qualysv2.send_assets_to_xsiam")
 
     send_assets_and_vulnerabilities_to_xsiam(
         assets=[],
@@ -2033,18 +2131,18 @@ def test_send_assets_and_vulnerabilities_to_xsiam_empty_last_page(mocker: Mocker
         snapshot_id=SNAPSHOT_ID,
     )
 
-    send_data_to_xsiam_assets_kwargs = mock_send_data_to_xsiam.mock_calls[0].kwargs
-    send_data_to_xsiam_vulns_kwargs = mock_send_data_to_xsiam.mock_calls[1].kwargs
+    send_assets_call = mock_send_assets_to_xsiam.mock_calls[0]
+    send_vulns_call = mock_send_assets_to_xsiam.mock_calls[1]
 
     # Assets: empty list replaced with [{}], items_count incremented by 1
-    assert send_data_to_xsiam_assets_kwargs["data"] == [{}]
-    assert send_data_to_xsiam_assets_kwargs["items_count"] == str(cumulative_assets_count + 1)
-    assert send_data_to_xsiam_assets_kwargs["snapshot_id"] == SNAPSHOT_ID
+    assert send_assets_call.args[0] == [{}]
+    assert send_assets_call.kwargs["items_count"] == str(cumulative_assets_count + 1)
+    assert send_assets_call.kwargs["snapshot_id"] == SNAPSHOT_ID
 
     # Vulnerabilities: empty list replaced with [{}], items_count incremented by 1
-    assert send_data_to_xsiam_vulns_kwargs["data"] == [{}]
-    assert send_data_to_xsiam_vulns_kwargs["items_count"] == str(cumulative_vulns_count + 1)
-    assert send_data_to_xsiam_vulns_kwargs["snapshot_id"] == SNAPSHOT_ID
+    assert send_vulns_call.args[0] == [{}]
+    assert send_vulns_call.kwargs["items_count"] == str(cumulative_vulns_count + 1)
+    assert send_vulns_call.kwargs["snapshot_id"] == SNAPSHOT_ID
 
 
 @pytest.fixture
@@ -2145,23 +2243,24 @@ def test_fetch_assets_and_vulnerabilities_by_date_last_page_empty(mocker: Mocker
     empty_assets, next_page, set_new_limit = [], "", False
     mocker.patch("Qualysv2.get_host_list_detections_events", return_value=(empty_assets, next_page, set_new_limit))
 
-    mock_send_data_to_xsiam = mocker.patch("Qualysv2.send_data_to_xsiam")
+    mock_send_assets_to_xsiam = mocker.patch("Qualysv2.send_assets_to_xsiam")
     mock_set_assets_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
 
     fetch_assets_and_vulnerabilities_by_date(client, last_run)
 
-    send_data_to_xsiam_kwargs: dict = mock_send_data_to_xsiam.call_args.kwargs
+    send_assets_to_xsiam_data = mock_send_assets_to_xsiam.call_args.args[0]
+    send_assets_to_xsiam_kwargs: dict = mock_send_assets_to_xsiam.call_args.kwargs
     next_run = mock_set_assets_last_run.call_args[0][0]
 
     # Should send an empty JSON [{}] to close the snapshot since assets is empty
-    assert send_data_to_xsiam_kwargs["data"] == [{}]
-    assert send_data_to_xsiam_kwargs["vendor"] == VENDOR
-    assert send_data_to_xsiam_kwargs["product"] == "assets"
-    assert send_data_to_xsiam_kwargs["snapshot_id"] == SNAPSHOT_ID
-    assert send_data_to_xsiam_kwargs["items_count"] == str(
+    assert send_assets_to_xsiam_data == [{}]
+    assert send_assets_to_xsiam_kwargs["vendor"] == VENDOR
+    assert send_assets_to_xsiam_kwargs["product"] == "assets"
+    assert send_assets_to_xsiam_kwargs["snapshot_id"] == SNAPSHOT_ID
+    assert send_assets_to_xsiam_kwargs["items_count"] == str(
         last_total_assets + 1
     )  # total_assets + 1 to account for the empty JSON row
-    assert not send_data_to_xsiam_kwargs["should_update_health_module"]
+    assert not send_assets_to_xsiam_kwargs["should_update_health_module"]
 
     assert next_run["next_page"] == ""
     assert next_run["stage"] == "vulnerabilities"

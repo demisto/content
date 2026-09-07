@@ -10489,8 +10489,9 @@ class TestSendEventsToXSIAMTest:
     def test_stream_xml_elements_basic(self):
         """
         Given: an XML document with repeated <asset> elements interleaved with other tags.
-        When:  parsing it with stream_xml_elements(tag='asset').
-        Then:  only <asset> elements are yielded, in document order, and non-matching tags are ignored.
+        When:  parsing it with stream_xml_elements(tags=['asset']).
+        Then:  only <asset> elements are yielded as (local_tag, element) tuples, in document order,
+               and non-matching tags are ignored.
         """
         from CommonServerPython import stream_xml_elements
         import io
@@ -10503,8 +10504,69 @@ class TestSendEventsToXSIAMTest:
             b'<asset><id>3</id><name>c</name></asset>'
             b'</assets>'
         )
-        ids = [elem.findtext('id') for elem in stream_xml_elements(io.BytesIO(xml_bytes), tag='asset')]
-        assert ids == ['1', '2', '3']
+        # Extract data during iteration (elements are cleared once the generator advances past them).
+        results = [(local_tag, elem.findtext('id')) for local_tag, elem in
+                   stream_xml_elements(io.BytesIO(xml_bytes), tags=['asset'])]
+        assert [local_tag for local_tag, _ in results] == ['asset', 'asset', 'asset']
+        assert [id_text for _, id_text in results] == ['1', '2', '3']
+
+    def test_stream_xml_elements_single_tag_as_string(self):
+        """
+        Given: an XML document with repeated <asset> elements.
+        When:  parsing it with a single tag passed as a string (convenience form).
+        Then:  matching elements are yielded as (local_tag, element) tuples.
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = b'<assets><asset><id>1</id></asset><asset><id>2</id></asset></assets>'
+        ids = [elem.findtext('id') for local_tag, elem in stream_xml_elements(io.BytesIO(xml_bytes), tags='asset')]
+        assert ids == ['1', '2']
+
+    def test_stream_xml_elements_multiple_tags_single_pass(self):
+        """
+        Given: an XML document containing several different tags (data + error/pagination markers),
+               as in a Qualys host-list response.
+        When:  parsing it with stream_xml_elements(tags=['HOST', 'CODE', 'URL']) in one pass.
+        Then:  every requested tag is yielded with its local name so the caller can tell them apart,
+               in document order, from a single read of the stream.
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = (
+            b'<OUTPUT>'
+            b'<RESPONSE>'
+            b'<HOST_LIST>'
+            b'<HOST><ID>1</ID></HOST>'
+            b'<HOST><ID>2</ID></HOST>'
+            b'</HOST_LIST>'
+            b'<WARNING><URL>https://example.com?id_min=3</URL></WARNING>'
+            b'</RESPONSE>'
+            b'</OUTPUT>'
+        )
+        results = [(local_tag, (elem.findtext('ID') or elem.text)) for local_tag, elem in
+                   stream_xml_elements(io.BytesIO(xml_bytes), tags=['HOST', 'CODE', 'URL'])]
+        assert results == [
+            ('HOST', '1'),
+            ('HOST', '2'),
+            ('URL', 'https://example.com?id_min=3'),
+        ]
+
+    def test_stream_xml_elements_captures_error_code(self):
+        """
+        Given: an XML error envelope containing a <CODE> element.
+        When:  parsing it while requesting the CODE tag alongside data tags.
+        Then:  the CODE element is surfaced so the caller can raise on API errors.
+        """
+        from CommonServerPython import stream_xml_elements
+        import io
+
+        xml_bytes = b'<SIMPLE_RETURN><RESPONSE><CODE>1234</CODE><TEXT>bad</TEXT></RESPONSE></SIMPLE_RETURN>'
+        # Extract data during iteration (elements are cleared once the generator advances past them).
+        results = [(local_tag, elem.text) for local_tag, elem in
+                   stream_xml_elements(io.BytesIO(xml_bytes), tags=['HOST', 'CODE'])]
+        assert results == [('CODE', '1234')]
 
     def test_stream_xml_elements_namespaced(self):
         """
@@ -10521,12 +10583,12 @@ class TestSendEventsToXSIAMTest:
             b'<ns:asset><ns:id>8</ns:id></ns:asset>'
             b'</ns:assets>'
         )
-        count = sum(1 for _ in stream_xml_elements(io.BytesIO(ns_xml), tag='asset'))
+        count = sum(1 for _ in stream_xml_elements(io.BytesIO(ns_xml), tags=['asset']))
         assert count == 2
 
     def test_stream_xml_elements_no_matches(self):
         """
-        Given: an XML document with no elements matching the requested tag.
+        Given: an XML document with no elements matching the requested tags.
         When:  parsing it with stream_xml_elements.
         Then:  nothing is yielded.
         """
@@ -10534,7 +10596,7 @@ class TestSendEventsToXSIAMTest:
         import io
 
         xml_bytes = b'<root><foo>1</foo><bar>2</bar></root>'
-        assert list(stream_xml_elements(io.BytesIO(xml_bytes), tag='asset')) == []
+        assert list(stream_xml_elements(io.BytesIO(xml_bytes), tags=['asset'])) == []
 
     def test_stream_xml_elements_clears_elements(self):
         """
@@ -10553,7 +10615,7 @@ class TestSendEventsToXSIAMTest:
             b'</assets>'
         )
         seen = []
-        for elem in stream_xml_elements(io.BytesIO(xml_bytes), tag='asset'):
+        for _local_tag, elem in stream_xml_elements(io.BytesIO(xml_bytes), tags=['asset']):
             # capture the previously-yielded element - it should have been cleared before we advanced here
             seen.append(elem)
         # After iteration, all yielded elements have been cleared (no children remain).
@@ -10574,7 +10636,7 @@ class TestSendEventsToXSIAMTest:
             b'<asset><id>outer</id><asset><id>inner</id></asset></asset>'
             b'</root>'
         )
-        count = sum(1 for _ in stream_xml_elements(io.BytesIO(xml_bytes), tag='asset'))
+        count = sum(1 for _ in stream_xml_elements(io.BytesIO(xml_bytes), tags=['asset']))
         assert count == 2
 
     def test_stream_xml_elements_is_lazy(self):
@@ -10603,8 +10665,8 @@ class TestSendEventsToXSIAMTest:
                 return chunk
 
         stream = CountingStream(body)
-        gen = stream_xml_elements(stream, tag='asset')
-        first = next(gen)
+        gen = stream_xml_elements(stream, tags=['asset'])
+        _local_tag, first = next(gen)
         assert first.findtext('id') == '0'
         # The first element was produced without reading the entire (large) document.
         assert stream.total_read < len(body)

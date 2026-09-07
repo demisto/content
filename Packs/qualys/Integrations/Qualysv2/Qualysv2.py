@@ -1740,16 +1740,21 @@ class Client(BaseClient):
 
     def get_host_list_detection(
         self, since_datetime: str, next_page: str | None = None, limit: int = HOST_LIMIT, qid: Optional[str] = None
-    ) -> tuple[str, bool]:
+    ) -> tuple[Optional[requests.Response], bool]:
         """
-        Make a http request to Qualys API to get assets
+        Make a http request to Qualys API to get assets.
+
+        The response is requested as a *streamed* response (``stream=True``) so the (potentially very large) XML body
+        is not buffered in memory. The caller is responsible for consuming the body incrementally
+        (see ``handle_host_list_detection_result``).
+
         Args:
             since_datetime (str): Filter hosts by vulnerability scan end date. Specify in the `YYYY-MM-DD[THH:MM:SSZ]` format.
             next_page (str | None): For pagination; show hosts starting from a minimum host ID value.
             limit (int): Maximum number of host records returned; should be <= 1000000. Specify 0 for no truncation limit.
             qid: The Qualys ID (QID).
         Returns:
-            response from Qualys API
+            A tuple of (streamed ``requests.Response`` or ``None`` on timeout, ``set_new_limit`` flag).
         Raises:
             DemistoException: can be raised by the _http_request function
         """
@@ -1775,15 +1780,18 @@ class Client(BaseClient):
         )
         # Read Timeout does *not* specify request max execution time! Handle using a timed thread (via `ThreadPoolExecutor`)
 
+        response: Optional[requests.Response] = None
         try:
+            demisto.debug(f"Requesting host list detections (streamed). Used query params: {params}.")
             response = self._http_request(
                 method="GET",
                 url_suffix=urljoin(
                     API_SUFFIX_DETECTION, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"
                 ),
-                resp_type="text",
+                resp_type="response",
                 params=params,
                 timeout=timeout,
+                stream=True,
                 error_handler=self.error_handler,
             )
 
@@ -1791,9 +1799,9 @@ class Client(BaseClient):
         except (requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError) as e:
             demisto.debug(f"An error occurred during the request: {str(e)}. Trying again in the next fetch with a reduced limit.")
             set_new_limit = True
-            response = ""
+            response = None
 
-        demisto.debug(f"Got host list detections response length of {len(response)} characters. Used query params: {params}.")
+        demisto.debug(f"Got streamed host list detections response. Set new limit: {set_new_limit}.")
         return response, set_new_limit
 
     def get_vulnerabilities(self, since_datetime: str | None = None, detection_qids: str | None = None) -> str:
@@ -2858,33 +2866,56 @@ def get_next_page_activity_logs(footer):
     return max_id
 
 
-def handle_host_list_detection_result(raw_response: str) -> tuple[list, Optional[str]]:
+def handle_host_list_detection_result(raw_response: Optional[requests.Response]) -> tuple[list, Optional[str]]:
     """
-    Handles Host list detection response - parses xml to json and gets the list
+    Handles Host list detection response.
+
+    Consumes the (potentially very large) XML body *incrementally* using the shared ``stream_xml_elements`` helper,
+    so the whole document is never held in memory at once. In a single pass over the stream it extracts three tags:
+      - ``HOST``          -> a host record; the large, repeated element that we stream one at a time.
+      - ``WARNING``       -> the pagination block; holds the "next page" URL at ``WARNING/URL``.
+      - ``SIMPLE_RETURN`` -> the error envelope; if present, its ``RESPONSE/CODE`` signals an API error.
+
+    ``WARNING`` and ``SIMPLE_RETURN`` are small, appear at most once, and are converted to JSON so we can navigate
+    their exact nested paths (matching the previous ``xml2json`` behavior). Only the ``HOST`` stream is memory-heavy.
+
     Args:
-        raw_response (requests.Response): the raw result received from Qualys API command
+        raw_response (Optional[requests.Response]): the streamed response received from the Qualys API command.
     Returns:
-        List with data generated for the result given
+        A tuple of (list of host dicts, next page URL string).
     """
-    demisto.debug("Going to parse raw_response into the hosts list")
-    formatted_response = parse_raw_response(raw_response)
-    simple_response = get_simple_response_from_raw(formatted_response)
+    demisto.debug("Going to stream-parse the host list detection response into the hosts list")
+
+    if raw_response is None:
+        demisto.debug("Received an empty (None) host list detection response. Returning no hosts.")
+        return [], ""
+
+    hosts: list = []
+    simple_response: dict = {}
+    response_next_url: str = ""
+
+    # Single low-memory pass over the streamed body. Data must be extracted from each element *during* iteration,
+    # because `stream_xml_elements` clears each element once the generator advances past it.
+    for local_tag, element in stream_xml_elements(raw_response.raw, tags=["HOST", "WARNING", "SIMPLE_RETURN"]):
+        if local_tag == "HOST":
+            # Convert this single HOST subtree to the same JSON structure produced previously by `xml2json`.
+            host_dict = json.loads(xml2json(ElementTree.tostring(element)))
+            hosts.append(host_dict.get("HOST", host_dict))
+        elif local_tag == "WARNING":
+            # Pagination block (RESPONSE/WARNING/URL). Small subtree, parse fully and read the exact path.
+            warning_dict = json.loads(xml2json(ElementTree.tostring(element))).get("WARNING", {})
+            response_next_url = warning_dict.get("URL", "") or response_next_url
+        elif local_tag == "SIMPLE_RETURN":
+            # Error envelope (SIMPLE_RETURN/RESPONSE/{CODE,TEXT}). Small subtree, parse fully.
+            simple_return = json.loads(xml2json(ElementTree.tostring(element)))
+            simple_response = get_simple_response_from_raw(simple_return) or {}
+
     if simple_response and simple_response.get("CODE"):
         raise DemistoException(f"\n{simple_response.get('TEXT')} \nCode: {simple_response.get('CODE')}")
 
-    response_requested_value = dict_safe_get(
-        formatted_response, ["HOST_LIST_VM_DETECTION_OUTPUT", "RESPONSE", "HOST_LIST", "HOST"]
-    )
-    response_next_url = dict_safe_get(
-        formatted_response, ["HOST_LIST_VM_DETECTION_OUTPUT", "RESPONSE", "WARNING", "URL"], default_return_value=""
-    )
-    if isinstance(response_requested_value, dict):
-        response_requested_value = [response_requested_value]
+    demisto.debug(f"Extracted a list of {len(hosts)} hosts, and next URL - {response_next_url}")
 
-    host_count = len(response_requested_value) if response_requested_value else 0
-    demisto.debug(f"Extracted a list of {host_count} hosts, and next URL - {response_next_url}")
-
-    return response_requested_value, str(response_next_url)
+    return hosts, str(response_next_url)
 
 
 def handle_vulnerabilities_result(raw_response: str) -> list:
@@ -3082,11 +3113,10 @@ def send_assets_and_vulnerabilities_to_xsiam(
     if is_closing_snapshot:
         assets, total_assets_to_report = close_snapshot_if_empty(assets, total_assets_to_report, snapshot_id, "assets")
 
-    send_data_to_xsiam(
-        data=assets,
+    send_assets_to_xsiam(
+        assets,
         vendor=VENDOR,
         product="assets",
-        data_type="assets",
         snapshot_id=snapshot_id,
         items_count=str(total_assets_to_report),
         should_update_health_module=False,
@@ -3103,11 +3133,10 @@ def send_assets_and_vulnerabilities_to_xsiam(
             vulnerabilities, total_vulns_to_report, snapshot_id, "vulnerabilities"
         )
 
-    send_data_to_xsiam(
-        data=vulnerabilities,
+    send_assets_to_xsiam(
+        vulnerabilities,
         vendor=VENDOR,
         product="vulnerabilities",
-        data_type="assets",
         snapshot_id=snapshot_id,
         items_count=str(total_vulns_to_report),
         should_update_health_module=False,
@@ -3547,11 +3576,10 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
             if is_last_page:
                 assets, total_assets_to_report = close_snapshot_if_empty(assets, total_assets_to_report, snapshot_id, "assets")
 
-            send_data_to_xsiam(
-                data=assets,
+            send_assets_to_xsiam(
+                assets,
                 vendor=VENDOR,
                 product="assets",
-                data_type="assets",
                 snapshot_id=snapshot_id,
                 items_count=str(total_assets_to_report),
                 should_update_health_module=False,
@@ -3564,7 +3592,7 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
     elif fetch_stage == "vulnerabilities":
         vulnerabilities, new_last_run = fetch_vulnerabilities(client, last_run)
         demisto.debug(f"Sending {len(vulnerabilities)} vulnerabilities to XSIAM.")
-        send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product="vulnerabilities", data_type="assets")
+        send_assets_to_xsiam(vulnerabilities, vendor=VENDOR, product="vulnerabilities")
         demisto.setAssetsLastRun(new_last_run)
 
     demisto.debug(f"Finished fetch assets and vulnerabilities run (by date). Set last assets run: {new_last_run}")
@@ -3911,7 +3939,7 @@ def main():  # pragma: no cover
             since_datetime = arg_to_datetime("1 hour").strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
             assets, _, _ = get_host_list_detections_events(client=client, since_datetime=since_datetime, limit=1, qid=qid)
             if should_push_events:
-                send_data_to_xsiam(data=assets, vendor=VENDOR, product="host_detections", data_type="assets")
+                send_assets_to_xsiam(assets, vendor=VENDOR, product="host_detections")
 
             readable_output = tableToMarkdown(name="Assets from Qualys:", t=assets)
 
