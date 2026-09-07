@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: RadwareCloudServices_ModelingRule
-name: RadwareCloudServices Modeling Rule
+id: Radware_Cloud_Services_ModelingRule
+name: Radware Cloud Services Modeling Rule
 rules: ''
 schema: ''
 tags: Radware
