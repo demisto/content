@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: F5BigIPAWAF_ModelingRule
-name: F5BigIPAWAF Modeling Rule
+id: F5_BIG-IP_Advanced_WAF_ModelingRule
+name: F5 BIG-IP Advanced WAF Modeling Rule
 rules: ''
 schema: ''
 tags: ''

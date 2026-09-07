@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: MicrosoftWindowsAMSI_ModelingRule
-name: MicrosoftWindowsAMSI Modeling Rule
+id: Microsoft_Windows_AMSI_ModelingRule
+name: Microsoft Windows AMSI Security Modeling Rule
 rules: ''
 schema: ''
 tags: ''

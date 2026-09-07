@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: AlibabaActionTrail_ModelingRule
-name: AlibabaActionTrail Modeling Rule
+id: alibaba_ModelingRule
+name: Alibaba Modeling Rule
 rules: ''
 schema: ''
 tags: alibaba

@@ -1,6 +1,8 @@
 fromversion: 8.15.0
-id: BeyondTrustEPM_ModelingRule
-name: BeyondTrustEPM Modeling Rule
+id: BeyondTrust_EPM_ModelingRule
+name: BeyondTrust EPM Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam
