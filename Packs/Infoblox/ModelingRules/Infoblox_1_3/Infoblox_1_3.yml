@@ -1,5 +1,4 @@
 fromversion: 6.10.0
-toversion: 8.14.0
 id: infoblox_modeling_rules
 name: Infoblox Modeling Rules
 rules: ''

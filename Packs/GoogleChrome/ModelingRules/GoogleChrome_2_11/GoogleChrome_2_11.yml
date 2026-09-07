@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: GoogleChrome_ModelingRule
-name: GoogleChrome Modeling Rule
+id: Google_Chrome_ModelingRule
+name: Google Chrome Modeling Rule
 rules: ''
 schema: ''
 tags: Google Chrome
