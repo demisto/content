@@ -258,9 +258,13 @@ def _parse_relationships(
     seen: set[tuple[str, str, str]] = set()
 
     for rel in relationships_lst:
-        relationship_type = _normalize_relationship_type(rel.get("relationship_type"))
+        relationship_type_raw = rel.get("relationship_type")
+        if not isinstance(relationship_type_raw, str):
+            demisto.debug(f"Invalid/unsupported relationship_type: {relationship_type_raw!r}")
+            continue
+        relationship_type = _normalize_relationship_type(relationship_type_raw)
         if relationship_type is None:
-            demisto.debug(f"Invalid/unsupported relationship_type: {rel.get('relationship_type')!r}")
+            demisto.debug(f"Invalid/unsupported relationship_type: {relationship_type_raw!r}")
             continue
 
         a_stixid = rel.get("source_ref", "")
@@ -574,7 +578,7 @@ def fetch_indicators_command(
             latest_ts = mod_ts
             latest_modified = mod
 
-        prev_fp = updated_seen.get(stix_id)
+        prev_fp = updated_seen.get(stix_id) if isinstance(stix_id, str) else None
         cur_fp = _indicator_fingerprint(ind)
 
         if stix_id is None:
@@ -697,7 +701,7 @@ def main() -> None:
     feed_tags: list[str] = [t.strip() for t in str(feed_tags_raw).split(",") if t.strip()]
 
     if not url:
-        return_error("The 'url' parameter is required.")
+        raise DemistoException("The 'url' parameter is required.")
 
     command = demisto.command()
     client = Client(
