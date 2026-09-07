@@ -12029,6 +12029,72 @@ class TestUcpDetection:
         CommonServerPython._UCP_AUTH_PARAMS_INJECTED = True
         assert CommonServerPython.should_use_ucp_auth() is False
 
+    # ── passthrough profiles: the dispatcher has no branch for them (CRTX-275569) ──
+
+    @staticmethod
+    def _metadata_with(profile_type, interpolation_mapping=None):
+        """UCP metadata carrying one profile of *profile_type*.
+
+        The capability matches resolve_ucp_capability()'s default so the
+        profile is selected without relying on the fallback path.
+        """
+        profile = {
+            'capability': 'automation-and-remediation',
+            'method_unique_id': 'abc123',
+            'type': profile_type,
+        }
+        if interpolation_mapping:
+            profile['metadata'] = {'xsoar': {'interpolation_mapping': interpolation_mapping}}
+        return {'connectionProfiles': [profile], 'connectorId': 'test-connector'}
+
+    def test_should_use_ucp_auth_false_for_passthrough_without_mapping(self, mocker, ucp_reset_injected_flag):
+        """A passthrough profile with NO interpolation_mapping must NOT use dispatcher auth.
+
+        Regression test for XSUP-75305: an integration with no credentials (or
+        licence-derived ones) interpolates nothing, so _UCP_AUTH_PARAMS_INJECTED
+        stays False. Before the fix this returned True, the request reached
+        _apply_ucp_credentials, and passthrough matched no branch -- raising a
+        bare UcpException surfaced to the user as an opaque
+        "authentication configuration error ... (85)".
+        """
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata_with('passthrough'))
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = False
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_should_use_ucp_auth_false_for_passthrough_with_mapping(self, mocker, ucp_reset_injected_flag):
+        """A passthrough profile WITH a mapping is already covered by the injected flag."""
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata_with('passthrough', 'api_key:credentials.password'))
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = True
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_should_use_ucp_auth_false_for_typed_profile_with_mapping(self, mocker, ucp_reset_injected_flag):
+        """A typed profile that interpolated its creds must not also use dispatcher auth."""
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata_with('api_key', 'api_key:credentials.password'))
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = True
+        assert CommonServerPython.should_use_ucp_auth() is False
+
+    def test_should_use_ucp_auth_true_for_typed_profile_without_mapping(self, mocker, ucp_reset_injected_flag):
+        """The normal path is untouched: a typed profile still uses dispatcher auth.
+
+        Guards against the passthrough fix over-reaching and disabling UCP auth
+        for profiles the dispatcher CAN handle.
+        """
+        mocker.patch.object(demisto, 'debug')
+        mocker.patch.object(demisto, 'command', return_value='test-module')
+        mocker.patch.object(demisto, 'unifiedConnectorMetadata',
+                            return_value=self._metadata_with('api_key'))
+        CommonServerPython._UCP_AUTH_PARAMS_INJECTED = False
+        assert CommonServerPython.should_use_ucp_auth() is True
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # Category 2: Capability Resolution
