@@ -1,8 +1,8 @@
 category: Analytics & SIEM
 provider: Exabeam
 sectionorder:
-  - Connect
-  - Collect
+- Connect
+- Collect
 commonfields:
   id: Exabeam
   version: -1
@@ -112,6 +112,13 @@ configuration:
   section: Connect
   type: 13
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
