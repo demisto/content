@@ -1,0 +1,15 @@
+{
+    "items": [
+        {
+            "id": "rem-001",
+            "item_id": "ext-risky",
+            "hostname": "dev-laptop-01",
+            "platform": "chrome",
+            "status": "pending",
+            "risk_level": "high",
+            "reason": "Critical vulnerability detected",
+            "created_at": "2025-06-01T10:00:00Z"
+        }
+    ],
+    "total_count": 1
+}

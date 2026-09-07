@@ -3,23 +3,64 @@
 !koi-policy-list limit=50
 !koi-policy-list page=1 page_size=100
 !koi-allowlist-get
-!koi-allowlist-items-add item_id=example-extension marketplace=vscode created_by="security-team@org.com" notes="Approved by security team"
+!koi-allowlist-items-add item_id=example-extension marketplace=vscode created_by="user@example.com" notes="Approved by security team"
 !koi-allowlist-items-add items_list_raw_json_entry_id=ENTRY_ID@INVESTIGATION_ID
 !koi-allowlist-items-remove item_id=example-extension marketplace=vscode
 !koi-allowlist-items-remove items_list_raw_json_entry_id=ENTRY_ID@INVESTIGATION_ID
 !koi-blocklist-get
-!koi-blocklist-items-add item_id=malicious-ext marketplace=chrome_web_store created_by="security-team@org.com" notes="Blocked due to security risk"
+!koi-blocklist-items-add item_id=malicious-ext marketplace=chrome_web_store created_by="user@example.com" notes="Blocked due to security risk"
 !koi-blocklist-items-add items_list_raw_json_entry_id=ENTRY_ID@INVESTIGATION_ID
 !koi-blocklist-items-remove item_id=malicious-ext marketplace=chrome_web_store
 !koi-blocklist-items-remove items_list_raw_json_entry_id=ENTRY_ID@INVESTIGATION_ID
 !koi-policy-status-update policy_id=1 enabled=true
 !koi-policy-status-update policy_id=1 enabled=false
 !koi-inventory-list limit=50 marketplace=vscode sort_by=first_seen sort_direction=desc
-!koi-inventory-list page=1 page_size=50 risk_level=high view=browser_extensions
+!koi-inventory-list page=1 page_size=50 risk_level=high view=extensions
 !koi-inventory-list device_id=DEVICE-123 installation_method=manual publisher_name="Microsoft"
 !koi-inventory-item-get item_id=example-extension marketplace=vscode version=1.2.3
-!koi-inventory-item-get item_id=example-extension marketplace=vscode
 !koi-inventory-search filter_json="{\"field\":\"risk_level\",\"operator\":\"eq\",\"value\":\"high\"}" limit=50 sort_by=first_seen sort_direction=desc
 !koi-inventory-search filter_raw_json_entry_id=ENTRY_ID@INVESTIGATION_ID page=1 page_size=100
 !koi-inventory-item-endpoints-list item_id=example-extension marketplace=vscode version=1.2.3 limit=50
-!koi-inventory-item-endpoints-list item_id=example-extension marketplace=vscode page=1 page_size=100
+!koi-inventory-item-endpoints-list item_id=example-extension marketplace=vscode version=1.2.3 page=1 page_size=100
+!koi-agent-activity-events-list created_at_gte="7 days ago" created_at_lte="now" limit=50
+!koi-agent-activity-events-list created_at_gte="1 day ago" created_at_lte="now" session_id=session-123 limit=10
+!koi-agent-activity-sessions-list created_at_gte="7 days ago" created_at_lte="now" limit=50
+!koi-agent-activity-sessions-list created_at_gte="1 day ago" created_at_lte="now" agent=cursor limit=10
+!koi-approval-request-list limit=50
+!koi-approval-request-list approval_status=pending marketplace=vscode limit=10
+!koi-approval-request-create item_id=ext-123 marketplace=vscode platform=vscode justification="Required for development workflow" requested_by="user@example.com"
+!koi-approval-request-approve request_id=req-001
+!koi-approval-request-reject request_id=req-001
+!koi-device-list limit=50
+!koi-device-list status=active limit=10
+!koi-device-archive device_id=device-123 archived_by_user_email="user@example.com"
+!koi-device-inventory-get device_id=device-123
+!koi-finding-list limit=50
+!koi-finding-list page=1 page_size=10
+!koi-finding-customize-risk finding_id=finding-001 risk=3
+!koi-group-list limit=50
+!koi-group-create name="Engineering" device_ids=device-123 creator="user@example.com"
+!koi-group-update group_id=grp-001 name="Engineering Team"
+!koi-group-device-add group_id=grp-001 device_id=device-123
+!koi-group-device-remove group_id=grp-001 device_id=device-123
+!koi-runtime-policy-list limit=50
+!koi-runtime-policy-create display_name="Block AI Agents" description="Block unauthorized AI agents" enforcement_mode=block agents=cursor,codex rules="[{\"type\":\"file_access\",\"action\":\"block\",\"path\":\"/etc/passwd\"}]"
+!koi-runtime-policy-get policy_id=rtpol-001
+!koi-runtime-policy-update policy_id=rtpol-001 display_name="Updated Policy" enforcement_mode=ask
+!koi-runtime-policy-delete policy_id=rtpol-001
+!koi-koidex-fetch items="[{\"item_id\":\"ext-123\",\"marketplace\":\"vscode\"}]"
+!koi-koidex-risk-report-get item_id=ext-123 marketplace=vscode
+!koi-koidex-risk-report-get item_id=ext-123 marketplace=vscode version=1.2.3
+!koi-koidex-search search_term="react" marketplace=vscode limit=10
+!koi-private-item-list
+!koi-private-item-upload entry_id=ENTRY_ID@INVESTIGATION_ID created_by="user@example.com" marketplace=chrome_web_store
+!koi-private-item-details-get item_id=priv-001
+!koi-remediation-list limit=50
+!koi-remediation-list page=1 page_size=10
+!koi-remediation-submit items="[{\"item_id\":\"ext-123\",\"platform\":\"chrome\",\"version\":\"1.0.0\",\"device_ids\":[\"dev-001\"]}]"
+!koi-remediation-dismiss items="[{\"item_id\":\"ext-123\",\"platform\":\"chrome\",\"version\":\"1.0.0\",\"device_id\":\"dev-001\"}]" dismissed_by="user@example.com"
+!koi-report-create report_type=inventory_by_extension
+!koi-report-status-get report_id=rpt-001
+!koi-user-list
+!koi-user-create email="user@example.com" role=analyst
+!koi-user-delete user_id=user-003

@@ -1,0 +1,16 @@
+{
+    "users": [
+        {
+            "id": "user-001",
+            "email": "admin@company.com",
+            "role": "admin",
+            "created_at": "2025-01-01T10:00:00Z"
+        },
+        {
+            "id": "user-002",
+            "email": "viewer@company.com",
+            "role": "viewer",
+            "created_at": "2025-02-01T10:00:00Z"
+        }
+    ]
+}

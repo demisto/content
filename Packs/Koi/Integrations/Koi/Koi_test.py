@@ -13,6 +13,7 @@ from Koi import (
     LogType,
     VALID_AUDIT_TYPES,
     VALID_MARKETPLACES,
+    VALID_PLATFORMS,
     COMMAND_MAP,
     get_log_types_from_titles,
     extract_time_from_event,
@@ -35,11 +36,47 @@ from Koi import (
     koi_inventory_item_get_command,
     koi_inventory_search_command,
     koi_inventory_item_endpoints_list_command,
+    koi_agent_activity_events_list_command,
+    koi_agent_activity_sessions_list_command,
+    koi_approval_request_list_command,
+    koi_approval_request_create_command,
+    koi_approval_request_approve_command,
+    koi_approval_request_reject_command,
+    koi_device_list_command,
+    koi_device_archive_command,
+    koi_device_inventory_get_command,
+    koi_finding_list_command,
+    koi_finding_customize_risk_command,
+    koi_group_list_command,
+    koi_group_create_command,
+    koi_group_update_command,
+    koi_group_device_add_command,
+    koi_group_device_remove_command,
+    koi_runtime_policy_list_command,
+    koi_runtime_policy_create_command,
+    koi_runtime_policy_get_command,
+    koi_runtime_policy_update_command,
+    koi_runtime_policy_delete_command,
+    koi_koidex_fetch_command,
+    koi_koidex_risk_report_get_command,
+    koi_koidex_search_command,
+    koi_private_item_list_command,
+    koi_private_item_upload_command,
+    koi_private_item_details_get_command,
+    koi_remediation_list_command,
+    koi_remediation_submit_command,
+    koi_remediation_dismiss_command,
+    koi_report_create_command,
+    koi_report_status_get_command,
+    koi_user_list_command,
+    koi_user_create_command,
+    koi_user_delete_command,
     parse_filter_from_args,
     resolve_items_from_args,
     parse_list_items_from_entry_id,
     get_formatted_utc_time,
     parse_date_or_use_current,
+    _paginate_generic,
     main,
 )
 
@@ -125,6 +162,36 @@ def mock_client(mocker):
     mocker.patch.object(Client, "__init__", return_value=None)
     client = Client.__new__(Client)
     return client
+
+
+# endregion
+
+# region Command tests
+
+
+class TestTestModule:
+    """Tests for the test_module command."""
+
+    def test_success(self, mock_client, mocker):
+        """Test successful test-module."""
+        mocker.patch.object(mock_client, "get_events_page", return_value=[{"id": "1"}])
+
+        result = koi_test_module(mock_client)
+        assert result == "ok"
+
+    def test_auth_failure(self, mock_client, mocker):
+        """Test test-module with authentication failure."""
+        mocker.patch.object(mock_client, "get_events_page", side_effect=Exception("401 Unauthorized"))
+
+        result = koi_test_module(mock_client)
+        assert "Authorization Error" in result
+
+    def test_non_auth_failure_reraises(self, mock_client, mocker):
+        """Test test-module re-raises non-auth errors."""
+        mocker.patch.object(mock_client, "get_events_page", side_effect=Exception("Connection timeout"))
+
+        with pytest.raises(Exception, match="Connection timeout"):
+            koi_test_module(mock_client)
 
 
 # endregion
@@ -312,7 +379,7 @@ class TestDeduplicateEvents:
         assert len(result) == expected_count
 
     def test_no_duplicates_found(self):
-        """Test dedup when none of the events match previous IDs (covers line 237)."""
+        """Test dedup when none of the events match previous IDs."""
         events = [{"id": "3"}, {"id": "4"}]
         result = deduplicate_events(events, last_fetched_ids=["1", "2"])
         assert len(result) == 2
@@ -356,7 +423,7 @@ class TestClient:
         assert events[0]["id"] == "audit-001"
 
     def test_get_events_page_with_created_at_lte(self, mock_client, alerts_response, mocker):
-        """Test fetching events with created_at_lte parameter (covers line 322)."""
+        """Test fetching events with created_at_lte parameter."""
         mocker.patch.object(mock_client, "_http_request", return_value=alerts_response)
 
         events = mock_client.get_events_page(
@@ -368,7 +435,6 @@ class TestClient:
         )
 
         assert len(events) == 2
-        # Verify created_at_lte was passed in params
         call_kwargs = mock_client._http_request.call_args[1]
         assert call_kwargs["params"]["created_at_lte"] == "2024-01-02T00:00:00Z"
 
@@ -436,8 +502,6 @@ class TestFetchEventsWithPagination:
 
     def test_multiple_pages(self, mock_client, mocker):
         """Test fetching events across multiple pages."""
-        # page_size = min(MAX_PAGE_SIZE, max_events) = min(500, 1000) = 500
-        # page1 must have exactly page_size items to trigger next page fetch
         page_size = Config.MAX_PAGE_SIZE
         page1 = [{"id": f"event-{i}", "created_at": f"2024-01-01T00:{i:02d}:00Z"} for i in range(page_size)]
         page2 = [{"id": f"event-{i}", "created_at": f"2024-01-01T01:{i:02d}:00Z"} for i in range(3)]
@@ -481,9 +545,8 @@ class TestFetchEventsWithPagination:
         assert len(events) == 10
 
     def test_max_pages_limit(self, mock_client, mocker):
-        """Test pagination stops at MAX_PAGES_PER_FETCH (covers lines 438-439)."""
+        """Test pagination stops at MAX_PAGES_PER_FETCH."""
         page_size = Config.MAX_PAGE_SIZE
-        # Return full pages every time to force pagination to continue
         full_page = [{"id": f"event-{i}", "created_at": f"2024-01-01T00:00:{i:02d}Z"} for i in range(page_size)]
         mocker.patch.object(mock_client, "get_events_page", return_value=full_page)
 
@@ -491,50 +554,20 @@ class TestFetchEventsWithPagination:
             mock_client,
             log_type=LogType.AUDIT,
             created_after="2024-01-01T00:00:00Z",
-            max_events=999999,  # Very high limit so pages limit is hit first
+            max_events=999999,
         )
 
-        # Should have fetched MAX_PAGES_PER_FETCH pages
         assert mock_client.get_events_page.call_count == Config.MAX_PAGES_PER_FETCH
 
 
 # endregion
 
-# region Command tests
-
-
-class TestTestModule:
-    """Tests for the test_module command."""
-
-    def test_success(self, mock_client, mocker):
-        """Test successful test-module."""
-        mocker.patch.object(mock_client, "get_events_page", return_value=[{"id": "1"}])
-
-        result = koi_test_module(mock_client)
-        assert result == "ok"
-
-    def test_auth_failure(self, mock_client, mocker):
-        """Test test-module with authentication failure."""
-        mocker.patch.object(mock_client, "get_events_page", side_effect=Exception("401 Unauthorized"))
-
-        result = koi_test_module(mock_client)
-        assert "Authorization Error" in result
-
-    def test_non_auth_failure_reraises(self, mock_client, mocker):
-        """Test test-module re-raises non-auth errors (covers line 378)."""
-        mocker.patch.object(mock_client, "get_events_page", side_effect=Exception("Connection timeout"))
-
-        with pytest.raises(Exception, match="Connection timeout"):
-            koi_test_module(mock_client)
+# region get_events_command tests
 
 
 @pytest.fixture()
 def mock_xsiam(mocker):
-    """Mock is_xsiam to return True so resolve_should_push_events allows pushing.
-
-    Patches is_xsiam in the CommonServerPython namespace, since
-    resolve_should_push_events (defined there) resolves is_xsiam from its own module.
-    """
+    """Mock is_xsiam to return True so resolve_should_push_events allows pushing."""
     mocker.patch("CommonServerPython.is_xsiam", return_value=True)
 
 
@@ -551,7 +584,7 @@ class TestGetEventsCommand:
         mocker.patch.object(
             mock_client,
             "get_events_page",
-            side_effect=[alerts_response["alerts"], audit_response["data"]],
+            side_effect=[alerts_response["alerts"], audit_response["items"]],
         )
 
         args = {"limit": "50", "should_push_events": "false"}
@@ -560,7 +593,7 @@ class TestGetEventsCommand:
         result = get_events_command(mock_client, args, params)
 
         assert not isinstance(result, str)
-        assert "KOI Events" in result.readable_output  # type: ignore[union-attr]
+        assert "KOI Events" in result.readable_output
 
     def test_get_events_push_to_xsiam(self, mock_client, alerts_response, mocker):
         """Test get-events command with push to XSIAM."""
@@ -577,6 +610,11 @@ class TestGetEventsCommand:
         mock_send.assert_called_once()
 
 
+# endregion
+
+# region fetch_events_command tests
+
+
 class TestFetchEventsCommand:
     """Tests for the fetch-events command."""
 
@@ -587,7 +625,7 @@ class TestFetchEventsCommand:
             log_type = kwargs.get("log_type")
             if log_type == LogType.ALERTS:
                 return alerts_response["alerts"]
-            return audit_response["data"]
+            return audit_response["items"]
 
         mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
         mocker.patch.object(
@@ -607,7 +645,6 @@ class TestFetchEventsCommand:
         mock_send.assert_called_once()
         mock_set_last_run.assert_called_once()
 
-        # Verify last_run contains state for both log types
         last_run_arg = mock_set_last_run.call_args[0][0]
         assert "last_fetch_alerts" in last_run_arg
         assert "last_fetch_audit" in last_run_arg
@@ -636,7 +673,6 @@ class TestFetchEventsCommand:
 
         fetch_events_command(mock_client)
 
-        # Should have sent only 1 event (alert-002, since alert-001 is deduped)
         mock_send.assert_called_once()
         sent_events = mock_send.call_args[0][0]
         assert len(sent_events) == 1
@@ -663,7 +699,7 @@ class TestFetchEventsCommand:
         mock_set_last_run.assert_called_once()
 
     def test_all_events_are_duplicates(self, mock_client, alerts_response, mocker):
-        """Test fetch-events when all returned events are duplicates (covers line 578)."""
+        """Test fetch-events when all returned events are duplicates."""
         mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["alerts"])
         mocker.patch.object(
             demisto,
@@ -689,8 +725,7 @@ class TestFetchEventsCommand:
         mock_send.assert_not_called()
 
     def test_hwm_timestamp_unchanged_merges_ids(self, mock_client, mocker):
-        """Test that when HWM timestamp hasn't changed, IDs are merged (covers line 594)."""
-        # Events with same timestamp as last_fetch
+        """Test that when HWM timestamp hasn't changed, IDs are merged."""
         events = [
             {"id": "alert-003", "finding_info": {"created_time": 1704067200000}},
         ]
@@ -716,15 +751,13 @@ class TestFetchEventsCommand:
 
         fetch_events_command(mock_client)
 
-        # Verify IDs were merged
         last_run_arg = mock_set_last_run.call_args[0][0]
         previous_ids = last_run_arg["previous_ids_alerts"]
         assert "alert-001" in previous_ids
         assert "alert-003" in previous_ids
 
     def test_last_event_missing_time(self, mock_client, mocker):
-        """Test fetch-events when last event has no time field (covers line 600)."""
-        # Audit event without created_at
+        """Test fetch-events when last event has no time field."""
         events = [{"id": "audit-no-time"}]
         mocker.patch.object(mock_client, "get_events_page", return_value=events)
         mocker.patch.object(
@@ -741,18 +774,16 @@ class TestFetchEventsCommand:
 
         fetch_events_command(mock_client)
 
-        # Event should still be sent (it's new), but last_run should not have audit timestamp
         last_run_arg = mock_set_last_run.call_args[0][0]
         assert "last_fetch_audit" not in last_run_arg
 
     def test_alerts_failure_does_not_block_audit(self, mock_client, audit_response, mocker):
         """Test that if alerts fetching fails, audit logs are still fetched and sent."""
 
-        # Alerts raises an exception, audit returns data
         def side_effect_get_events_page(**kwargs):
             if kwargs.get("log_type") == LogType.ALERTS:
                 raise Exception("API timeout for alerts")
-            return audit_response["data"]
+            return audit_response["items"]
 
         mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
         mocker.patch.object(
@@ -769,13 +800,11 @@ class TestFetchEventsCommand:
 
         fetch_events_command(mock_client)
 
-        # Audit events should still be sent despite alerts failure
         mock_send.assert_called_once()
         sent_events = mock_send.call_args[0][0]
         assert len(sent_events) == 2
         assert all(e.get("source_log_type") == "Audit" for e in sent_events)
 
-        # Last run should have audit state but no alerts state
         last_run_arg = mock_set_last_run.call_args[0][0]
         assert "last_fetch_audit" in last_run_arg
         assert "last_fetch_alerts" not in last_run_arg
@@ -783,7 +812,6 @@ class TestFetchEventsCommand:
     def test_audit_failure_does_not_block_alerts(self, mock_client, alerts_response, mocker):
         """Test that if audit fetching fails, alerts are still fetched and sent."""
 
-        # Alerts returns data, audit raises an exception
         def side_effect_get_events_page(**kwargs):
             if kwargs.get("log_type") == LogType.AUDIT:
                 raise Exception("API timeout for audit")
@@ -804,16 +832,19 @@ class TestFetchEventsCommand:
 
         fetch_events_command(mock_client)
 
-        # Alerts events should still be sent despite audit failure
         mock_send.assert_called_once()
         sent_events = mock_send.call_args[0][0]
         assert len(sent_events) == 2
         assert all(e.get("source_log_type") == "Alerts" for e in sent_events)
 
-        # Last run should have alerts state but no audit state
         last_run_arg = mock_set_last_run.call_args[0][0]
         assert "last_fetch_alerts" in last_run_arg
         assert "last_fetch_audit" not in last_run_arg
+
+
+# endregion
+
+# region last_run state tests
 
 
 class TestLastRunState:
@@ -943,19 +974,15 @@ class TestLastRunState:
 
         fetch_events_command(mock_client)
 
-        # Verify setLastRun was called exactly once (single write, no race condition)
         mock_set_last_run.assert_called_once()
         last_run_arg = mock_set_last_run.call_args[0][0]
 
-        # Verify expected keys are present
         for key in expected_last_run_keys:
             assert key in last_run_arg, f"Expected key '{key}' missing from last_run: {last_run_arg}"
 
-        # Verify expected missing keys are absent
         for key in expected_missing_keys:
             assert key not in last_run_arg, f"Unexpected key '{key}' found in last_run: {last_run_arg}"
 
-        # Verify event count
         if expected_event_count > 0:
             mock_send.assert_called_once()
             assert len(mock_send.call_args[0][0]) == expected_event_count
@@ -988,20 +1015,19 @@ class TestLastRunState:
 
         last_run_arg = mock_set_last_run.call_args[0][0]
 
-        # Verify IDs are stored per type, not mixed
         assert "alert-100" in last_run_arg["previous_ids_alerts"]
         assert "audit-200" in last_run_arg["previous_ids_audit"]
         assert "audit-200" not in last_run_arg["previous_ids_alerts"]
         assert "alert-100" not in last_run_arg["previous_ids_audit"]
 
     def test_last_run_single_get_single_set(self, mock_client, alerts_response, audit_response, mocker):
-        """Test that getLastRun is called once and setLastRun is called once (no race condition)."""
+        """Test that getLastRun is called once and setLastRun is called once."""
 
         def side_effect_get_events_page(**kwargs):
             log_type = kwargs.get("log_type")
             if log_type == LogType.ALERTS:
                 return alerts_response["alerts"]
-            return audit_response["data"]
+            return audit_response["items"]
 
         mocker.patch.object(mock_client, "get_events_page", side_effect=side_effect_get_events_page)
         mocker.patch.object(
@@ -1018,12 +1044,11 @@ class TestLastRunState:
 
         fetch_events_command(mock_client)
 
-        # Single read, single write — no race condition
         mock_get_last_run.assert_called_once()
         mock_set_last_run.assert_called_once()
 
     def test_last_run_failure_preserves_successful_type_state(self, mock_client, mocker):
-        """Test that when one type fails, the other type's state is still saved in last_run."""
+        """Test that when one type fails, the other type's state is still saved."""
 
         def side_effect_get_events_page(**kwargs):
             log_type = kwargs.get("log_type")
@@ -1055,13 +1080,47 @@ class TestLastRunState:
 
         last_run_arg = mock_set_last_run.call_args[0][0]
 
-        # Alerts state should be updated (successful)
         assert "last_fetch_alerts" in last_run_arg
         assert "alert-ok" in last_run_arg["previous_ids_alerts"]
 
-        # Audit state should be preserved from initial last_run (failed, not overwritten)
         assert last_run_arg["last_fetch_audit"] == "2024-01-01T00:00:00Z"
         assert last_run_arg["previous_ids_audit"] == ["old-audit-id"]
+
+
+# endregion
+
+# region get_events_command error tests
+
+
+class TestGetEventsCommandErrors:
+    """Tests for error handling in get_events_command."""
+
+    @pytest.fixture(autouse=True)
+    def _mock_xsiam(self, mock_xsiam):
+        """Apply the shared mock_xsiam fixture to all tests in this class."""
+
+    def test_should_push_events_overridden_on_non_xsiam(self, mock_client, alerts_response, mocker):
+        """Test that should_push_events is silently overridden to False on non-XSIAM platforms."""
+        mocker.patch("CommonServerPython.is_xsiam", return_value=False)
+        mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["alerts"])
+        mock_send = mocker.patch.object(mock_client, "send_events")
+
+        args = {"limit": "10", "should_push_events": "true", "event_type": "Alerts"}
+        params = {"event_types_to_fetch": "Alerts"}
+
+        result = get_events_command(mock_client, args, params)
+
+        mock_send.assert_not_called()
+        assert isinstance(result, CommandResults)
+        assert "KOI Events" in result.readable_output
+
+    def test_invalid_event_type(self, mock_client):
+        """Test get-events command with invalid event type raises error."""
+        args = {"event_type": "InvalidType", "limit": "10", "should_push_events": "false"}
+        params = {"event_types_to_fetch": "Alerts"}
+
+        with pytest.raises(Exception, match="Invalid event type"):
+            get_events_command(mock_client, args, params)
 
 
 # endregion
@@ -1117,44 +1176,6 @@ class TestParseDate:
 
         result = parse_date_or_use_current("completely-invalid-date")
         assert isinstance(result, datetime)
-
-
-# endregion
-
-# region get_events_command error tests
-
-
-class TestGetEventsCommandErrors:
-    """Tests for error handling in get_events_command."""
-
-    @pytest.fixture(autouse=True)
-    def _mock_xsiam(self, mock_xsiam):
-        """Apply the shared mock_xsiam fixture to all tests in this class."""
-
-    def test_should_push_events_overridden_on_non_xsiam(self, mock_client, alerts_response, mocker):
-        """Test that should_push_events is silently overridden to False on non-XSIAM platforms via resolve_should_push_events."""
-        mocker.patch("CommonServerPython.is_xsiam", return_value=False)
-        mocker.patch.object(mock_client, "get_events_page", return_value=alerts_response["alerts"])
-        mock_send = mocker.patch.object(mock_client, "send_events")
-
-        args = {"limit": "10", "should_push_events": "true", "event_type": "Alerts"}
-        params = {"event_types_to_fetch": "Alerts"}
-
-        result = get_events_command(mock_client, args, params)
-
-        # Events should NOT be pushed (send_events should not be called)
-        mock_send.assert_not_called()
-        # Events should be returned as CommandResults instead
-        assert isinstance(result, CommandResults)
-        assert "KOI Events" in result.readable_output
-
-    def test_invalid_event_type(self, mock_client):
-        """Test get-events command with invalid event type raises error."""
-        args = {"event_type": "InvalidType", "limit": "10", "should_push_events": "false"}
-        params = {"event_types_to_fetch": "Alerts"}
-
-        with pytest.raises(Exception, match="Invalid event type"):
-            get_events_command(mock_client, args, params)
 
 
 # endregion
@@ -1242,7 +1263,7 @@ class TestMain:
         assert "not implemented" in mock_return_error.call_args[0][0]
 
     def test_main_fetch_events(self, mocker):
-        """Test main routes fetch-events command correctly (covers lines 664-665)."""
+        """Test main routes fetch-events command correctly."""
         mocker.patch.object(demisto, "command", return_value="fetch-events")
         mocker.patch.object(
             demisto,
@@ -1263,7 +1284,7 @@ class TestMain:
         mock_fetch.assert_called_once()
 
     def test_main_get_events(self, mocker):
-        """Test main routes koi-get-events command correctly (covers lines 667-668)."""
+        """Test main routes koi-get-events command correctly."""
         mocker.patch.object(demisto, "command", return_value="koi-get-events")
         mocker.patch.object(demisto, "args", return_value={"limit": "10", "should_push_events": "false"})
         mocker.patch.object(
@@ -1287,7 +1308,7 @@ class TestMain:
         mock_return.assert_called_once_with("mock_result")
 
     def test_main_invalid_audit_types(self, mocker):
-        """Test main raises error for invalid audit types filter (covers lines 648-650)."""
+        """Test main raises error for invalid audit types filter."""
         mocker.patch.object(demisto, "command", return_value="test-module")
         mocker.patch.object(
             demisto,
@@ -3463,57 +3484,643 @@ class TestClientGetInventoryItemEndpoints:
 
 # endregion
 
-# region Empty log_types guard tests
+# region New command tests
 
 
-class TestEmptyLogTypesGuard:
-    """Tests for the empty log_types guard in fetch_events_command."""
+class TestKoiAgentActivityEventsListCommand:
 
-    def test_empty_event_types_to_fetch_does_not_crash(self, mock_client, mocker):
-        """Test that an empty event_types_to_fetch param does not crash on ThreadPoolExecutor(max_workers=0)."""
-        mocker.patch.object(
-            demisto,
-            "params",
-            return_value={"max_fetch": "5000", "event_types_to_fetch": ""},
-        )
-        existing_last_run = {"last_fetch_alerts": "2024-01-01T00:00:00Z"}
-        mocker.patch.object(demisto, "getLastRun", return_value=existing_last_run)
-        mock_send = mocker.patch.object(mock_client, "send_events")
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+    def test_single_page(self, mock_client, mocker):
+        response = load_test_data("agent_activity_events_response.json")
+        mocker.patch.object(mock_client, "get_agent_activity_events", return_value=response)
 
-        # Should return cleanly without raising
-        fetch_events_command(mock_client)
+        args = {"created_at_gte": "2025-06-01T09:00:00Z", "created_at_lte": "2025-06-01T11:00:00Z", "page": "1"}
+        result = koi_agent_activity_events_list_command(mock_client, args)
 
-        # No events sent
-        mock_send.assert_not_called()
-        # last_run preserved as-is
-        mock_set_last_run.assert_called_once_with(existing_last_run)
+        assert result.outputs_prefix == "Koi.AgentActivityEvent"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["id"] == "evt-001"
 
+    def test_auto_paginate(self, mock_client, mocker):
+        response = load_test_data("agent_activity_events_response.json")
+        mocker.patch.object(mock_client, "get_agent_activity_events", return_value=response)
 
-# endregion
+        args = {"created_at_gte": "2025-06-01T09:00:00Z", "created_at_lte": "2025-06-01T11:00:00Z", "limit": "10"}
+        result = koi_agent_activity_events_list_command(mock_client, args)
 
-# region Client.send_events tests
+        assert result.outputs_prefix == "Koi.AgentActivityEvent"
+        assert len(result.outputs) == 2
 
 
-class TestClientSendEvents:
-    """Tests for the Client.send_events method."""
+class TestKoiAgentActivitySessionsListCommand:
 
-    def test_send_events_calls_send_events_to_xsiam(self, mock_client, mocker):
-        """Test that send_events delegates to send_events_to_xsiam with correct vendor/product."""
-        mock_send_to_xsiam = mocker.patch("Koi.send_events_to_xsiam")
-        events = [{"id": "1", "_time": "2024-01-01T00:00:00Z"}, {"id": "2", "_time": "2024-01-01T00:00:01Z"}]
+    def test_list_sessions(self, mock_client, mocker):
+        response = load_test_data("agent_activity_sessions_response.json")
+        mocker.patch.object(mock_client, "get_agent_activity_sessions", return_value=response)
 
-        mock_client.send_events(events)
+        args = {"created_at_gte": "2025-06-01T00:00:00Z", "created_at_lte": "2025-06-01T23:59:59Z", "page": "1"}
+        result = koi_agent_activity_sessions_list_command(mock_client, args)
 
-        mock_send_to_xsiam.assert_called_once_with(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
+        assert result.outputs_prefix == "Koi.AgentActivitySession"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["agent"] == "claude-code"
 
-    def test_send_events_with_empty_list(self, mock_client, mocker):
-        """Test that send_events still calls send_events_to_xsiam when events list is empty."""
-        mock_send_to_xsiam = mocker.patch("Koi.send_events_to_xsiam")
 
-        mock_client.send_events([])
+class TestKoiApprovalRequestListCommand:
 
-        mock_send_to_xsiam.assert_called_once_with(events=[], vendor=Config.VENDOR, product=Config.PRODUCT)
+    def test_list_requests(self, mock_client, mocker):
+        response = load_test_data("approval_requests_response.json")
+        mocker.patch.object(mock_client, "get_approval_requests", return_value=response)
+
+        args = {"page": "1"}
+        result = koi_approval_request_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.ApprovalRequest"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["approval_status"] == "pending"
+
+    def test_list_with_filters(self, mock_client, mocker):
+        response = load_test_data("approval_requests_response.json")
+        mocker.patch.object(mock_client, "get_approval_requests", return_value=response)
+
+        args = {"approval_status": "pending", "marketplace": "chrome_web_store", "page": "1"}
+        result = koi_approval_request_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.ApprovalRequest"
+
+
+class TestKoiApprovalRequestCreateCommand:
+
+    def test_create_request(self, mock_client, mocker):
+        response = load_test_data("approval_request_created_response.json")
+        mocker.patch.object(mock_client, "create_approval_request", return_value=response)
+
+        args = {
+            "item_id": "ext-xyz",
+            "marketplace": "npm",
+            "platform": "npm",
+            "justification": "Required dependency",
+            "requested_by": "dev@example.com",
+            "version": "2.0.0",
+        }
+        result = koi_approval_request_create_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.ApprovalRequest"
+        assert result.outputs["id"] == "req-002"
+        mock_client.create_approval_request.assert_called_once()
+
+
+class TestKoiApprovalRequestApproveCommand:
+
+    def test_approve_request(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "approve_approval_request", return_value=None)
+
+        args = {"approval_request_id": "req-001", "approved_by": "admin@example.com"}
+        result = koi_approval_request_approve_command(mock_client, args)
+
+        assert "approved" in result.readable_output
+        mock_client.approve_approval_request.assert_called_once_with("req-001", approved_by="admin@example.com")
+
+
+class TestKoiApprovalRequestRejectCommand:
+
+    def test_reject_request(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "reject_approval_request", return_value=None)
+
+        args = {"approval_request_id": "req-001", "rejected_by": "admin@example.com", "reason": "Not approved"}
+        result = koi_approval_request_reject_command(mock_client, args)
+
+        assert "rejected" in result.readable_output
+        mock_client.reject_approval_request.assert_called_once_with("req-001", rejected_by="admin@example.com", reason="Not approved")
+
+
+class TestKoiDeviceListCommand:
+
+    def test_list_devices(self, mock_client, mocker):
+        response = load_test_data("devices_response.json")
+        mocker.patch.object(mock_client, "get_devices", return_value=response)
+
+        args = {"page": "1"}
+        result = koi_device_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Device"
+        assert len(result.outputs) == 3
+        assert result.outputs[0]["hostname"] == "dev-laptop-01"
+
+    def test_list_devices_auto_paginate(self, mock_client, mocker):
+        response = load_test_data("devices_response.json")
+        mocker.patch.object(mock_client, "get_devices", return_value=response)
+
+        args = {"limit": "50"}
+        result = koi_device_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Device"
+        assert len(result.outputs) == 3
+
+
+class TestKoiDeviceArchiveCommand:
+
+    def test_archive_device(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "archive_device", return_value=None)
+
+        args = {"device_id": "dev-001", "archived_by_user_email": "admin@company.com"}
+        result = koi_device_archive_command(mock_client, args)
+
+        assert "archived" in result.readable_output
+        mock_client.archive_device.assert_called_once_with("dev-001", archived_by_user_email="admin@company.com")
+
+
+class TestKoiDeviceInventoryGetCommand:
+
+    def test_get_device_inventory(self, mock_client, mocker):
+        response = load_test_data("device_inventory_response.json")
+        mocker.patch.object(mock_client, "get_device_inventory", return_value=response)
+
+        args = {"device_id": "dev-001", "page": "1"}
+        result = koi_device_inventory_get_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.DeviceInventory"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["item_display_name"] == "Dark Reader"
+
+
+class TestKoiFindingListCommand:
+
+    def test_list_findings(self, mock_client, mocker):
+        response = load_test_data("findings_response.json")
+        mocker.patch.object(mock_client, "get_findings", return_value=response)
+
+        args = {"page": "1"}
+        result = koi_finding_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Finding"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["name"] == "Excessive Permissions"
+
+    def test_list_findings_auto_paginate(self, mock_client, mocker):
+        response = load_test_data("findings_response.json")
+        mocker.patch.object(mock_client, "get_findings", return_value=response)
+
+        args = {"limit": "50"}
+        result = koi_finding_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Finding"
+        assert len(result.outputs) == 2
+
+
+class TestKoiFindingCustomizeRiskCommand:
+
+    def test_customize_risk(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "customize_finding_risk", return_value=None)
+
+        args = {"finding_id": "finding-001", "risk": "5"}
+        result = koi_finding_customize_risk_command(mock_client, args)
+
+        assert "updated to 5" in result.readable_output
+        mock_client.customize_finding_risk.assert_called_once_with(finding_id="finding-001", risk=5)
+
+    def test_invalid_risk_value(self, mock_client, mocker):
+        args = {"finding_id": "finding-001", "risk": "11"}
+        with pytest.raises(DemistoException, match="risk must be an integer between 0 and 10"):
+            koi_finding_customize_risk_command(mock_client, args)
+
+
+class TestKoiGroupListCommand:
+
+    def test_list_groups(self, mock_client, mocker):
+        response = load_test_data("groups_response.json")
+        mocker.patch.object(mock_client, "get_groups", return_value=response)
+
+        args = {"page": "1"}
+        result = koi_group_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Group"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["name"] == "Engineering"
+
+
+class TestKoiGroupCreateCommand:
+
+    def test_create_group(self, mock_client, mocker):
+        response = load_test_data("group_created_response.json")
+        mocker.patch.object(mock_client, "create_groups", return_value=response)
+
+        args = {"name": "Sales", "creator": "admin@company.com"}
+        result = koi_group_create_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Group"
+        assert result.outputs[0]["name"] == "Sales"
+
+    def test_create_group_with_devices(self, mock_client, mocker):
+        response = load_test_data("group_created_response.json")
+        mocker.patch.object(mock_client, "create_groups", return_value=response)
+
+        args = {"name": "Sales", "device_ids": "dev-001,dev-002"}
+        result = koi_group_create_command(mock_client, args)
+
+        call_args = mock_client.create_groups.call_args
+        assert call_args[1]["groups"][0]["device_ids"] == ["dev-001", "dev-002"]
+
+
+class TestKoiGroupUpdateCommand:
+
+    def test_update_group(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "update_group", return_value=None)
+
+        args = {"group_id": "1", "name": "New Name"}
+        result = koi_group_update_command(mock_client, args)
+
+        assert "renamed" in result.readable_output
+        mock_client.update_group.assert_called_once_with(group_id=1, name="New Name")
+
+
+class TestKoiGroupDeviceAddCommand:
+
+    def test_add_device(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "add_device_to_group", return_value=None)
+
+        args = {"group_id": "1", "device_id": "dev-001"}
+        result = koi_group_device_add_command(mock_client, args)
+
+        assert "added" in result.readable_output
+        mock_client.add_device_to_group.assert_called_once_with(group_id=1, device_id="dev-001")
+
+
+class TestKoiGroupDeviceRemoveCommand:
+
+    def test_remove_device(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "remove_device_from_group", return_value=None)
+
+        args = {"group_id": "1", "device_id": "dev-001"}
+        result = koi_group_device_remove_command(mock_client, args)
+
+        assert "removed" in result.readable_output
+        mock_client.remove_device_from_group.assert_called_once_with(group_id=1, device_id="dev-001")
+
+
+class TestKoiRuntimePolicyListCommand:
+
+    def test_list_runtime_policies(self, mock_client, mocker):
+        response = load_test_data("runtime_policies_response.json")
+        mocker.patch.object(mock_client, "get_runtime_policies", return_value=response)
+
+        args = {"page": "1"}
+        result = koi_runtime_policy_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.RuntimePolicy"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["display_name"] == "Block MCP Tools"
+
+
+class TestKoiRuntimePolicyCreateCommand:
+
+    def test_create_runtime_policy(self, mock_client, mocker):
+        response = load_test_data("runtime_policy_created_response.json")
+        mocker.patch.object(mock_client, "create_runtime_policy", return_value=response)
+
+        args = {
+            "display_name": "Ask for Approval",
+            "enforcement_mode": "ask",
+            "agents": "claude-code",
+            "rules": '[{"type": "data_access", "action": "ask"}]',
+            "enabled": "true",
+        }
+        result = koi_runtime_policy_create_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.RuntimePolicy"
+        assert result.outputs["id"] == "rtp-002"
+
+
+class TestKoiRuntimePolicyGetCommand:
+
+    def test_get_runtime_policy(self, mock_client, mocker):
+        response = load_test_data("runtime_policy_created_response.json")
+        mocker.patch.object(mock_client, "get_runtime_policy", return_value=response)
+
+        args = {"policy_id": "rtp-002"}
+        result = koi_runtime_policy_get_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.RuntimePolicy"
+        assert result.outputs["display_name"] == "Ask for Approval"
+
+
+class TestKoiRuntimePolicyUpdateCommand:
+
+    def test_update_runtime_policy(self, mock_client, mocker):
+        response = load_test_data("runtime_policy_created_response.json")
+        mocker.patch.object(mock_client, "update_runtime_policy", return_value=response)
+
+        args = {"policy_id": "rtp-002", "display_name": "Updated Name", "enforcement_mode": "block"}
+        result = koi_runtime_policy_update_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.RuntimePolicy"
+        mock_client.update_runtime_policy.assert_called_once()
+
+
+class TestKoiRuntimePolicyDeleteCommand:
+
+    def test_delete_runtime_policy(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "delete_runtime_policy", return_value=None)
+
+        args = {"policy_id": "rtp-001"}
+        result = koi_runtime_policy_delete_command(mock_client, args)
+
+        assert "deleted" in result.readable_output
+        mock_client.delete_runtime_policy.assert_called_once_with("rtp-001")
+
+
+class TestKoiKoidexFetchCommand:
+
+    def test_koidex_fetch(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "koidex_fetch", return_value={"status": "ok"})
+
+        args = {"items": '[{"item_id": "abc", "marketplace": "npm", "version": "1.0.0"}]'}
+        result = koi_koidex_fetch_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.KoidexFetch"
+
+
+class TestKoiKoidexRiskReportGetCommand:
+
+    def test_get_risk_report(self, mock_client, mocker):
+        response = load_test_data("koidex_risk_report_response.json")
+        mocker.patch.object(mock_client, "get_koidex_risk_report", return_value=response)
+
+        args = {"item_id": "ext-risk-001", "marketplace": "npm"}
+        result = koi_koidex_risk_report_get_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.KoidexRiskReport"
+        assert result.outputs["risk"] == 6
+        assert result.outputs["risk_level"] == "medium"
+
+
+class TestKoiKoidexSearchCommand:
+
+    def test_search(self, mock_client, mocker):
+        response = load_test_data("koidex_search_response.json")
+        mocker.patch.object(mock_client, "search_koidex", return_value=response)
+
+        args = {"marketplace": "npm", "search_term": "lodash", "page": "1"}
+        result = koi_koidex_search_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.KoidexSearch"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["name"] == "lodash"
+
+
+class TestKoiPrivateItemListCommand:
+
+    def test_list_private_items(self, mock_client, mocker):
+        response = load_test_data("private_items_response.json")
+        mocker.patch.object(mock_client, "get_private_items", return_value=response)
+
+        args: dict[str, str] = {}
+        result = koi_private_item_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.PrivateItem"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["name"] == "Internal Extension"
+
+
+class TestKoiPrivateItemDetailsGetCommand:
+
+    def test_get_details(self, mock_client, mocker):
+        response = load_test_data("koidex_risk_report_response.json")
+        mocker.patch.object(mock_client, "get_private_item_details", return_value=response)
+
+        args = {"item_id": "priv-001"}
+        result = koi_private_item_details_get_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.PrivateItem"
+
+
+class TestKoiRemediationListCommand:
+
+    def test_list_remediations(self, mock_client, mocker):
+        response = load_test_data("remediations_response.json")
+        mocker.patch.object(mock_client, "get_remediations", return_value=response)
+
+        args = {"page": "1"}
+        result = koi_remediation_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Remediation"
+        assert len(result.outputs) == 1
+        assert result.outputs[0]["status"] == "pending"
+
+    def test_list_with_filters(self, mock_client, mocker):
+        response = load_test_data("remediations_response.json")
+        mocker.patch.object(mock_client, "get_remediations", return_value=response)
+
+        args = {"status": "pending", "risk_level": "high", "page": "1"}
+        result = koi_remediation_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Remediation"
+
+
+class TestKoiRemediationSubmitCommand:
+
+    def test_submit_remediations(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "submit_remediations", return_value={"id": "rem-new", "status": "pending"})
+
+        args = {"items": '[{"item_id": "ext-risky", "platform": "chrome", "version": "1.0", "device_ids": ["dev-001"]}]'}
+        result = koi_remediation_submit_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Remediation"
+
+
+class TestKoiRemediationDismissCommand:
+
+    def test_dismiss_remediations(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "dismiss_remediations", return_value=None)
+
+        args = {
+            "items": '[{"item_id": "ext-risky", "platform": "chrome", "version": "1.0", "device_id": "dev-001"}]',
+            "dismissed_by": "admin@company.com",
+        }
+        result = koi_remediation_dismiss_command(mock_client, args)
+
+        assert "dismissed" in result.readable_output
+
+
+class TestKoiReportCreateCommand:
+
+    def test_create_report(self, mock_client, mocker):
+        response = load_test_data("report_created_response.json")
+        mocker.patch.object(mock_client, "create_report", return_value=response)
+
+        args = {"report_type": "inventory_by_extension"}
+        result = koi_report_create_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Report"
+        assert result.outputs["id"] == "rpt-001"
+        assert result.outputs["status"] == "pending"
+
+
+class TestKoiReportStatusGetCommand:
+
+    def test_get_report_status(self, mock_client, mocker):
+        response = load_test_data("report_status_response.json")
+        mocker.patch.object(mock_client, "get_report_status", return_value=response)
+
+        args = {"report_id": "rpt-001"}
+        result = koi_report_status_get_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.Report"
+        assert result.outputs["status"] == "completed"
+        assert result.outputs["download_url"] == "https://storage.example.com/reports/rpt-001.csv"
+
+
+class TestKoiUserListCommand:
+
+    def test_list_users(self, mock_client, mocker):
+        response = load_test_data("users_response.json")
+        mocker.patch.object(mock_client, "get_users", return_value=response)
+
+        args: dict[str, str] = {}
+        result = koi_user_list_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.User"
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["email"] == "admin@company.com"
+
+
+class TestKoiUserCreateCommand:
+
+    def test_create_user(self, mock_client, mocker):
+        response = load_test_data("user_created_response.json")
+        mocker.patch.object(mock_client, "create_user", return_value=response)
+
+        args = {"email": "new@company.com", "role": "analyst"}
+        result = koi_user_create_command(mock_client, args)
+
+        assert result.outputs_prefix == "Koi.User"
+        assert result.outputs["id"] == "user-003"
+        mock_client.create_user.assert_called_once_with(email="new@company.com", role="analyst")
+
+
+class TestKoiUserDeleteCommand:
+
+    def test_delete_user(self, mock_client, mocker):
+        mocker.patch.object(mock_client, "delete_user", return_value=None)
+
+        args = {"user_id": "user-002"}
+        result = koi_user_delete_command(mock_client, args)
+
+        assert "deleted" in result.readable_output
+        mock_client.delete_user.assert_called_once_with("user-002")
+
+
+class TestPaginateGeneric:
+
+    def test_collects_items_across_pages(self):
+        page1 = {"items": [{"id": i} for i in range(10)]}
+        page2 = {"items": [{"id": i + 10} for i in range(5)]}
+        pages = [page1, page2]
+        call_count = 0
+
+        def fetch_fn(page, page_size):
+            nonlocal call_count
+            result = pages[call_count]
+            call_count += 1
+            return result
+
+        items = _paginate_generic(fetch_fn, limit=20, items_key="items", page_size=10)
+        assert len(items) == 15
+
+    def test_trims_to_limit(self):
+        page = {"items": [{"id": i} for i in range(50)]}
+
+        items = _paginate_generic(lambda p, ps: page, limit=10, items_key="items", page_size=50)
+        assert len(items) == 10
+
+    def test_stops_on_empty_page(self):
+        empty_page = {"items": []}
+
+        items = _paginate_generic(lambda p, ps: empty_page, limit=100, items_key="items")
+        assert len(items) == 0
+
+
+class TestNewApiPaths:
+
+    def test_approval_request_paths(self):
+        assert ApiPaths.approval_request_approve("req-1") == "/api/external/v2/approval-requests/req-1/approve"
+        assert ApiPaths.approval_request_reject("req-1") == "/api/external/v2/approval-requests/req-1/reject"
+
+    def test_device_paths(self):
+        assert ApiPaths.device_archive("dev-1") == "/api/external/v2/devices/dev-1/archive"
+        assert ApiPaths.device_inventory("dev-1") == "/api/external/v2/devices/dev-1/inventory"
+
+    def test_group_paths(self):
+        assert ApiPaths.group(1) == "/api/external/v2/groups/1"
+        assert ApiPaths.group_device(1, "dev-1") == "/api/external/v2/groups/1/devices/dev-1"
+
+    def test_runtime_policy_path(self):
+        assert ApiPaths.runtime_policy("rtp-1") == "/api/external/v2/hardening/runtime-policies/rtp-1"
+
+    def test_report_path(self):
+        assert ApiPaths.report("rpt-1") == "/api/external/v2/reports/rpt-1"
+
+    def test_user_path(self):
+        assert ApiPaths.user("user-1") == "/api/external/v2/users/user-1"
+
+    def test_private_item_path(self):
+        assert ApiPaths.private_item("priv-1") == "/api/external/v2/private-items/priv-1"
+
+
+class TestValidMarketplaces:
+
+    def test_new_marketplaces_present(self):
+        for mp in ["binaries", "bitbucket", "github", "gitlab", "mcp_registry", "ollama", "skill"]:
+            assert mp in VALID_MARKETPLACES, f"{mp} should be in VALID_MARKETPLACES"
+
+
+class TestCommandMapCompleteness:
+
+    def test_all_new_commands_in_command_map(self):
+        new_commands = [
+            "koi-agent-activity-events-list",
+            "koi-agent-activity-sessions-list",
+            "koi-approval-request-list",
+            "koi-approval-request-create",
+            "koi-approval-request-approve",
+            "koi-approval-request-reject",
+            "koi-device-list",
+            "koi-device-archive",
+            "koi-device-inventory-get",
+            "koi-finding-list",
+            "koi-finding-customize-risk",
+            "koi-group-list",
+            "koi-group-create",
+            "koi-group-update",
+            "koi-group-device-add",
+            "koi-group-device-remove",
+            "koi-runtime-policy-list",
+            "koi-runtime-policy-create",
+            "koi-runtime-policy-get",
+            "koi-runtime-policy-update",
+            "koi-runtime-policy-delete",
+            "koi-koidex-fetch",
+            "koi-koidex-risk-report-get",
+            "koi-koidex-search",
+            "koi-private-item-list",
+            "koi-private-item-upload",
+            "koi-private-item-details-get",
+            "koi-remediation-list",
+            "koi-remediation-submit",
+            "koi-remediation-dismiss",
+            "koi-report-create",
+            "koi-report-status-get",
+            "koi-user-list",
+            "koi-user-create",
+            "koi-user-delete",
+            "koi-alert-list",
+            "koi-item-enrich",
+        ]
+        for cmd in new_commands:
+            assert cmd in COMMAND_MAP, f"Command '{cmd}' should be in COMMAND_MAP"
+
+    def test_command_map_total_count(self):
+        koi_commands = [k for k in COMMAND_MAP if k.startswith("koi-")]
+        assert len(koi_commands) == 50
 
 
 # endregion

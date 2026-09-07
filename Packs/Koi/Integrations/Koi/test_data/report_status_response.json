@@ -1,0 +1,7 @@
+{
+    "id": "rpt-001",
+    "report_type": "inventory_by_extension",
+    "status": "completed",
+    "download_url": "https://storage.example.com/reports/rpt-001.csv",
+    "created_at": "2025-06-01T10:00:00Z"
+}

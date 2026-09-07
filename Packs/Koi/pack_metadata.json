@@ -1,23 +1,35 @@
 {
     "name": "KOI",
-    "description": "KOI is an endpoint security platform that provides visibility and control over browser extensions, SaaS applications, and web-based threats.",
+    "description": "Koi (Agentic Endpoint Security) provides visibility and governance over non-binary software supply chains including browser extensions, IDE extensions, code packages, AI models, MCP servers, OS packages, binaries, and repositories.",
     "support": "xsoar",
-    "currentVersion": "1.2.3",
+    "currentVersion": "1.3.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "email": "jhuebner@paloaltonetworks.com",
     "created": "2026-03-26T00:00:00Z",
     "categories": [
         "Endpoint"
     ],
     "tags": [
-        "Palo Alto Networks Products"
+        "Palo Alto Networks Products",
+        "Data Source"
     ],
-    "useCases": [],
+    "useCases": [
+        "Vulnerability Management"
+    ],
     "keywords": [
         "KOI",
+        "AES",
+        "Agentic Endpoint Security",
         "browser security",
-        "endpoint"
+        "endpoint",
+        "supply chain",
+        "browser extensions",
+        "SaaS",
+        "guardrails",
+        "Supply Chain",
+        "AI Security",
+        "Software Composition Analysis"
     ],
     "marketplaces": [
         "xsoar",

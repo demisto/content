@@ -1,0 +1,32 @@
+{
+    "devices": [
+        {
+            "id": "dev-001",
+            "hostname": "dev-laptop-01",
+            "os": "macOS 14.5",
+            "platform": "mac",
+            "status": "active",
+            "last_seen": "2025-06-01T12:00:00Z",
+            "serial": "C02XG0ABCDE"
+        },
+        {
+            "id": "dev-002",
+            "hostname": "dev-desktop-01",
+            "os": "Windows 11",
+            "platform": "windows",
+            "status": "active",
+            "last_seen": "2025-06-01T11:00:00Z",
+            "serial": "PF12345"
+        },
+        {
+            "id": "dev-003",
+            "hostname": "dev-laptop-02",
+            "os": "Ubuntu 24.04",
+            "platform": "linux",
+            "status": "active",
+            "last_seen": "2025-06-01T10:00:00Z",
+            "serial": "LNX98765"
+        }
+    ],
+    "total_count": 3
+}
