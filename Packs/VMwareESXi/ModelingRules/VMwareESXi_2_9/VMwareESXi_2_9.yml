@@ -7,3 +7,5 @@ schema: ''
 tags: VMwareESXi
 supportedModules:
 - xsiam
+supportedFeatures:
+- harness_v2
