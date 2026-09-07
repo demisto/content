@@ -36,6 +36,8 @@ alter
         XDM_CONST.OUTCOME_FAILED
     ),
     xdm.source.user.username = if( // Check if the user field is equal to null, empty string or unknown.
+        user in ("null", "unknown", ""), null,
+        user),
     xdm.source.identity.username = if( // Check if the user field is equal to null, empty string or unknown.
         user in ("null", "unknown", ""), null,
         user),
