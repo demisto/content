@@ -1,0 +1,84 @@
+{
+    "gitguardian_enterprise_raw": {
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "tags": {
+            "type": "string",
+            "is_array": false
+        },
+        "who": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "int",
+            "is_array": false
+        },
+        "display_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "severity": {
+            "type": "int",
+            "is_array": false
+        },
+        "category": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "assignee": {
+            "type": "string",
+            "is_array": false
+        },
+        "repo_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "commit_sha": {
+            "type": "string",
+            "is_array": false
+        },
+        "file_path": {
+            "type": "string",
+            "is_array": false
+        },
+        "api_url": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor_email": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor_ip": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "payload": {
+            "type": "string",
+            "is_array": false
+        },
+        "target_user_email": {
+            "type": "string",
+            "is_array": false
+        },
+        "url": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
