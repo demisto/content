@@ -1689,9 +1689,9 @@ Retrieves a list of persistent disks contained within the specified zone. Requir
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
-| limit | The maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| limit | The maximum number of results to return, ranging from 1 to 500. Default is 50. | Optional |
 | next_token | The token for pagination. Set it to the value of GCP.Compute.DisksNextToken returned by a previous request to get the next page of results. | Optional |
 | filter | The filter expression for resources listed in the response. The expression must specify a field name, a comparison operator \(=, !=, &gt;, or &lt;\), and a value, which can be a string, number, or boolean. For example, to exclude a disk named example-disk, use name != example-disk. | Optional |
 | order_by | The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using creationTimestamp desc. | Optional |
@@ -1712,7 +1712,7 @@ Retrieves a list of persistent disks contained within the specified zone. Requir
 | GCP.Compute.Disks.creationTimestamp | Date | The creation timestamp of the disk in RFC3339 text format. |
 | GCP.Compute.Disks.lastAttachTimestamp | Date | The last attach timestamp of the disk in RFC3339 text format. |
 | GCP.Compute.Disks.lastDetachTimestamp | Date | The last detach timestamp of the disk in RFC3339 text format. |
-| GCP.Compute.Disks.users | Unknown | The links to the users of the disk, meaning the instances the disk is attached to. |
+| GCP.Compute.Disks.users | Unknown | The links to the instances to which the disk is attached. |
 | GCP.Compute.Disks.licenses | Unknown | The list of publicly visible licenses attached to the disk. |
 | GCP.Compute.Disks.licenseCodes | Unknown | The integer license codes indicating which licenses are attached to the disk. |
 | GCP.Compute.Disks.guestOsFeatures | Unknown | The list of features to enable on the guest operating system, each containing a type field. |
@@ -1725,13 +1725,13 @@ Retrieves a list of persistent disks contained within the specified zone. Requir
 | GCP.Compute.Disks.diskEncryptionKey | Unknown | The customer-supplied encryption key of the disk, containing the rawKey, kmsKeyName, and sha256 fields. |
 | GCP.Compute.Disks.sourceImageEncryptionKey | Unknown | The customer-supplied encryption key of the source image, containing the rawKey, kmsKeyName, and sha256 fields. |
 | GCP.Compute.Disks.sourceSnapshotEncryptionKey | Unknown | The customer-supplied encryption key of the source snapshot, containing the rawKey, kmsKeyName, and sha256 fields. |
-| GCP.Compute.Disks.replicaZones | Unknown | The URLs of the zones where the disk is replicated to. Only applicable for regional resources. |
+| GCP.Compute.Disks.replicaZones | Unknown | The URLs of the zones where the disk is replicated. Only applicable for regional resources. |
 | GCP.Compute.Disks.physicalBlockSizeBytes | String | The physical block size of the persistent disk, in bytes. |
 | GCP.Compute.Disks.selfLink | String | The server-defined URL for the disk resource. |
 | GCP.Compute.Disks.accessMode | String | The access mode of the disk, such as READ_WRITE_SINGLE, READ_WRITE_MANY, or READ_ONLY_MANY. |
 | GCP.Compute.Disks.architecture | String | The architecture of the disk. Valid values are ARM64 or X86_64. |
-| GCP.Compute.Disks.asyncPrimaryDisk | Unknown | The disk asynchronously replicated into this disk, containing the consistencyGroupPolicy and disk fields. |
-| GCP.Compute.Disks.asyncSecondaryDisks | Unknown | The list of disks this disk is asynchronously replicated to. |
+| GCP.Compute.Disks.asyncPrimaryDisk | Unknown | The disk that is asynchronously replicated to this disk, containing the consistencyGroupPolicy and disk fields. |
+| GCP.Compute.Disks.asyncSecondaryDisks | Unknown | The list of disks to which this disk is asynchronously replicated. |
 | GCP.Compute.Disks.enableConfidentialCompute | Boolean | Whether this disk is using confidential compute mode. |
 | GCP.Compute.Disks.locationHint | String | The opaque location hint used to place the disk close to other resources. |
 | GCP.Compute.Disks.options | String | The field is reserved for internal use only. |
@@ -1766,8 +1766,8 @@ Retrieves an aggregated list of persistent disks across all zones in the project
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| limit | The maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| limit | The maximum number of results to return, ranging from 1 to 500. Default is 50. | Optional |
 | next_token | The token for pagination. Set it to the value of GCP.Compute.AggregatedDisksNextToken returned by a previous request to get the next page of results. | Optional |
 | filter | The filter expression for resources listed in the response. The expression must specify a field name, a comparison operator \(=, !=, &gt;, or &lt;\), and a value, which can be a string, number, or boolean. For example, to exclude a disk named example-disk, use name != example-disk. | Optional |
 | order_by | The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using creationTimestamp desc. | Optional |
@@ -1788,7 +1788,7 @@ Retrieves an aggregated list of persistent disks across all zones in the project
 | GCP.Compute.Disks.creationTimestamp | Date | The creation timestamp of the disk in RFC3339 text format. |
 | GCP.Compute.Disks.lastAttachTimestamp | Date | The last attach timestamp of the disk in RFC3339 text format. |
 | GCP.Compute.Disks.lastDetachTimestamp | Date | The last detach timestamp of the disk in RFC3339 text format. |
-| GCP.Compute.Disks.users | Unknown | The links to the users of the disk, meaning the instances the disk is attached to. |
+| GCP.Compute.Disks.users | Unknown | The links to the instances to which the disk is attached. |
 | GCP.Compute.Disks.licenses | Unknown | The list of publicly visible licenses attached to the disk. |
 | GCP.Compute.Disks.licenseCodes | Unknown | The integer license codes indicating which licenses are attached to the disk. |
 | GCP.Compute.Disks.guestOsFeatures | Unknown | The list of features to enable on the guest operating system, each containing a type field. |
@@ -1801,13 +1801,13 @@ Retrieves an aggregated list of persistent disks across all zones in the project
 | GCP.Compute.Disks.diskEncryptionKey | Unknown | The customer-supplied encryption key of the disk, containing the rawKey, kmsKeyName, and sha256 fields. |
 | GCP.Compute.Disks.sourceImageEncryptionKey | Unknown | The customer-supplied encryption key of the source image, containing the rawKey, kmsKeyName, and sha256 fields. |
 | GCP.Compute.Disks.sourceSnapshotEncryptionKey | Unknown | The customer-supplied encryption key of the source snapshot, containing the rawKey, kmsKeyName, and sha256 fields. |
-| GCP.Compute.Disks.replicaZones | Unknown | The URLs of the zones where the disk is replicated to. Only applicable for regional resources. |
+| GCP.Compute.Disks.replicaZones | Unknown | The URLs of the zones where the disk is replicated. Only applicable for regional resources. |
 | GCP.Compute.Disks.physicalBlockSizeBytes | String | The physical block size of the persistent disk, in bytes. |
 | GCP.Compute.Disks.selfLink | String | The server-defined URL for the disk resource. |
 | GCP.Compute.Disks.accessMode | String | The access mode of the disk, such as READ_WRITE_SINGLE, READ_WRITE_MANY, or READ_ONLY_MANY. |
 | GCP.Compute.Disks.architecture | String | The architecture of the disk. Valid values are ARM64 or X86_64. |
-| GCP.Compute.Disks.asyncPrimaryDisk | Unknown | The disk asynchronously replicated into this disk, containing the consistencyGroupPolicy and disk fields. |
-| GCP.Compute.Disks.asyncSecondaryDisks | Unknown | The list of disks this disk is asynchronously replicated to. |
+| GCP.Compute.Disks.asyncPrimaryDisk | Unknown | The disk that is asynchronously replicated to this disk, containing the consistencyGroupPolicy and disk fields. |
+| GCP.Compute.Disks.asyncSecondaryDisks | Unknown | The list of disks to which this disk is asynchronously replicated. |
 | GCP.Compute.Disks.enableConfidentialCompute | Boolean | Whether this disk is using confidential compute mode. |
 | GCP.Compute.Disks.locationHint | String | The opaque location hint used to place the disk close to other resources. |
 | GCP.Compute.Disks.options | String | The field is reserved for internal use only. |
@@ -1842,7 +1842,7 @@ Returns a specified persistent disk. Required permission: compute.disks.get.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | The name of the persistent disk to return. | Required |
 
@@ -1862,7 +1862,7 @@ Returns a specified persistent disk. Required permission: compute.disks.get.
 | GCP.Compute.Disks.creationTimestamp | Date | The creation timestamp of the disk in RFC3339 text format. |
 | GCP.Compute.Disks.lastAttachTimestamp | Date | The last attach timestamp of the disk in RFC3339 text format. |
 | GCP.Compute.Disks.lastDetachTimestamp | Date | The last detach timestamp of the disk in RFC3339 text format. |
-| GCP.Compute.Disks.users | Unknown | The links to the users of the disk, meaning the instances the disk is attached to. |
+| GCP.Compute.Disks.users | Unknown | The links to the instances to which the disk is attached. |
 | GCP.Compute.Disks.licenses | Unknown | The list of publicly visible licenses attached to the disk. |
 | GCP.Compute.Disks.licenseCodes | Unknown | The integer license codes indicating which licenses are attached to the disk. |
 | GCP.Compute.Disks.guestOsFeatures | Unknown | The list of features to enable on the guest operating system, each containing a type field. |
@@ -1875,13 +1875,13 @@ Returns a specified persistent disk. Required permission: compute.disks.get.
 | GCP.Compute.Disks.diskEncryptionKey | Unknown | The customer-supplied encryption key of the disk, containing the rawKey, kmsKeyName, and sha256 fields. |
 | GCP.Compute.Disks.sourceImageEncryptionKey | Unknown | The customer-supplied encryption key of the source image, containing the rawKey, kmsKeyName, and sha256 fields. |
 | GCP.Compute.Disks.sourceSnapshotEncryptionKey | Unknown | The customer-supplied encryption key of the source snapshot, containing the rawKey, kmsKeyName, and sha256 fields. |
-| GCP.Compute.Disks.replicaZones | Unknown | The URLs of the zones where the disk is replicated to. Only applicable for regional resources. |
+| GCP.Compute.Disks.replicaZones | Unknown | The URLs of the zones where the disk is replicated. Only applicable for regional resources. |
 | GCP.Compute.Disks.physicalBlockSizeBytes | String | The physical block size of the persistent disk, in bytes. |
 | GCP.Compute.Disks.selfLink | String | The server-defined URL for the disk resource. |
 | GCP.Compute.Disks.accessMode | String | The access mode of the disk, such as READ_WRITE_SINGLE, READ_WRITE_MANY, or READ_ONLY_MANY. |
 | GCP.Compute.Disks.architecture | String | The architecture of the disk. Valid values are ARM64 or X86_64. |
-| GCP.Compute.Disks.asyncPrimaryDisk | Unknown | The disk asynchronously replicated into this disk, containing the consistencyGroupPolicy and disk fields. |
-| GCP.Compute.Disks.asyncSecondaryDisks | Unknown | The list of disks this disk is asynchronously replicated to. |
+| GCP.Compute.Disks.asyncPrimaryDisk | Unknown | The disk that is asynchronously replicated to this disk, containing the consistencyGroupPolicy and disk fields. |
+| GCP.Compute.Disks.asyncSecondaryDisks | Unknown | The list of disks to which this disk is asynchronously replicated. |
 | GCP.Compute.Disks.enableConfidentialCompute | Boolean | Whether this disk is using confidential compute mode. |
 | GCP.Compute.Disks.locationHint | String | The opaque location hint used to place the disk close to other resources. |
 | GCP.Compute.Disks.options | String | The field is reserved for internal use only. |
@@ -1914,7 +1914,7 @@ Creates a persistent disk in the specified project and zone. A disk can be creat
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | The name of the disk to create. The name must be 1-63 characters long and match the regular expression \[a-z\](\[-a-z0-9\]\*\[a-z0-9\])?, meaning the first character must be a lowercase letter and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required |
 | disk_type | The full or partial URL of the disk type resource describing which disk type to use to create the disk. A bare disk type name is not accepted. For example: projects/project/zones/zone/diskTypes/pd-standard or zones/zone/diskTypes/pd-ssd. If not provided, the project default disk type is used. | Optional |
@@ -1932,7 +1932,7 @@ Creates a persistent disk in the specified project and zone. A disk can be creat
 | source_snapshot_encryption_key_kms_key_name | The name of the encryption key of the source snapshot that is stored in Google Cloud KMS. | Optional |
 | labels | The labels to apply to this disk, in the format key=abc,value=123;key=def,value=456. | Optional |
 | label_fingerprint | The fingerprint of the labels being applied to this disk, used for optimistic locking. An up-to-date fingerprint hash must always be provided, otherwise the request fails with error 412 conditionNotMet. | Optional |
-| replica_zones | The comma-separated list of URLs of the zones where the disk should be replicated to. Only applicable for regional resources. | Optional |
+| replica_zones | The comma-separated list of URLs of the zones where the disk should be replicated. Only applicable for regional resources. | Optional |
 | license_codes | The comma-separated list of integer license codes indicating which licenses are attached to this disk. | Optional |
 | physical_block_size_bytes | The physical block size of the persistent disk, in bytes. If not provided, a default value is used. Currently supported sizes are 4096 and 16384. | Optional |
 
@@ -1977,7 +1977,7 @@ Deletes the specified persistent disk. Deleting a disk removes its data permanen
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | The name of the persistent disk to delete. | Required |
 
@@ -2022,7 +2022,7 @@ Resizes the specified persistent disk. The disk size can only be increased. Requ
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | The name of the persistent disk to resize. | Required |
 | size_gb | The new size of the persistent disk, specified in GB. | Required |
@@ -2068,7 +2068,7 @@ Sets the labels on a persistent disk. Required permission: compute.disks.setLabe
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | The name of the persistent disk to set the labels on. | Required |
 | labels | The labels to set for this disk, in the format key=abc,value=123;key=def,value=456. | Required |
@@ -2115,7 +2115,7 @@ Creates a snapshot of a specified persistent disk. Required permissions: compute
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | The name of the persistent disk to snapshot. | Required |
 | snapshot_name | The name of the snapshot to create. | Required |
@@ -2168,9 +2168,9 @@ Retrieves a list of disk types available in the specified zone. Required permiss
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
-| limit | The maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| limit | The maximum number of results to return, ranging from 1 to 500. Default is 50. | Optional |
 | next_token | The token for pagination. Set it to the value of GCP.Compute.DiskTypesNextToken returned by a previous request to get the next page of results. | Optional |
 | filter | The filter expression for resources listed in the response. The expression must specify a field name, a comparison operator \(=, !=, &gt;, or &lt;\), and a value, which can be a string, number, or boolean. For example, to exclude a disk type named pd-standard, use name != pd-standard. | Optional |
 | order_by | The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using creationTimestamp desc. | Optional |
@@ -2206,8 +2206,8 @@ Retrieves an aggregated list of disk types across all zones in the project. Requ
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| limit | The maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| limit | The maximum number of results to return, ranging from 1 to 500. Default is 50. | Optional |
 | next_token | The token for pagination. Set it to the value of GCP.Compute.AggregatedDiskTypesNextToken returned by a previous request to get the next page of results. | Optional |
 | filter | The filter expression for resources listed in the response. The expression must specify a field name, a comparison operator \(=, !=, &gt;, or &lt;\), and a value, which can be a string, number, or boolean. For example, to exclude a disk type named pd-standard, use name != pd-standard. | Optional |
 | order_by | The order in which to sort the list results. By default, results are returned in alphanumerical order based on the resource name. Results can also be sorted in descending order based on the creation timestamp using creationTimestamp desc. | Optional |
@@ -2243,7 +2243,7 @@ Returns the specified disk type. Required permission: compute.diskTypes.get.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone for this request. | Required |
 | resource_name | The name of the disk type to return. | Required |
 

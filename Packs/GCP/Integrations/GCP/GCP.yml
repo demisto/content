@@ -496,13 +496,13 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: zone
       required: true
       description: The name of the zone for this request.
     - name: limit
       defaultValue: '50'
-      description: "The maximum number of results to return. Acceptable values are 1 to 500, inclusive."
+      description: "The maximum number of results to return, ranging from 1 to 500."
     - name: next_token
       description: The token for pagination. Set it to the value of GCP.Compute.DisksNextToken returned by a previous request to get the next page of results.
     - name: filter
@@ -547,7 +547,7 @@ script:
       description: The last detach timestamp of the disk in RFC3339 text format.
       type: Date
     - contextPath: GCP.Compute.Disks.users
-      description: The links to the users of the disk, meaning the instances the disk is attached to.
+      description: The links to the instances to which the disk is attached.
       type: Unknown
     - contextPath: GCP.Compute.Disks.licenses
       description: The list of publicly visible licenses attached to the disk.
@@ -586,7 +586,7 @@ script:
       description: The customer-supplied encryption key of the source snapshot, containing the rawKey, kmsKeyName, and sha256 fields.
       type: Unknown
     - contextPath: GCP.Compute.Disks.replicaZones
-      description: The URLs of the zones where the disk is replicated to. Only applicable for regional resources.
+      description: The URLs of the zones where the disk is replicated. Only applicable for regional resources.
       type: Unknown
     - contextPath: GCP.Compute.Disks.physicalBlockSizeBytes
       description: The physical block size of the persistent disk, in bytes.
@@ -601,10 +601,10 @@ script:
       description: The architecture of the disk. Valid values are ARM64 or X86_64.
       type: String
     - contextPath: GCP.Compute.Disks.asyncPrimaryDisk
-      description: The disk asynchronously replicated into this disk, containing the consistencyGroupPolicy and disk fields.
+      description: The disk that is asynchronously replicated to this disk, containing the consistencyGroupPolicy and disk fields.
       type: Unknown
     - contextPath: GCP.Compute.Disks.asyncSecondaryDisks
-      description: The list of disks this disk is asynchronously replicated to.
+      description: The list of disks to which this disk is asynchronously replicated.
       type: Unknown
     - contextPath: GCP.Compute.Disks.enableConfidentialCompute
       description: Whether this disk is using confidential compute mode.
@@ -672,10 +672,10 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: limit
       defaultValue: '50'
-      description: "The maximum number of results to return. Acceptable values are 1 to 500, inclusive."
+      description: "The maximum number of results to return, ranging from 1 to 500."
     - name: next_token
       description: The token for pagination. Set it to the value of GCP.Compute.AggregatedDisksNextToken returned by a previous request to get the next page of results.
     - name: filter
@@ -720,7 +720,7 @@ script:
       description: The last detach timestamp of the disk in RFC3339 text format.
       type: Date
     - contextPath: GCP.Compute.Disks.users
-      description: The links to the users of the disk, meaning the instances the disk is attached to.
+      description: The links to the instances to which the disk is attached.
       type: Unknown
     - contextPath: GCP.Compute.Disks.licenses
       description: The list of publicly visible licenses attached to the disk.
@@ -759,7 +759,7 @@ script:
       description: The customer-supplied encryption key of the source snapshot, containing the rawKey, kmsKeyName, and sha256 fields.
       type: Unknown
     - contextPath: GCP.Compute.Disks.replicaZones
-      description: The URLs of the zones where the disk is replicated to. Only applicable for regional resources.
+      description: The URLs of the zones where the disk is replicated. Only applicable for regional resources.
       type: Unknown
     - contextPath: GCP.Compute.Disks.physicalBlockSizeBytes
       description: The physical block size of the persistent disk, in bytes.
@@ -774,10 +774,10 @@ script:
       description: The architecture of the disk. Valid values are ARM64 or X86_64.
       type: String
     - contextPath: GCP.Compute.Disks.asyncPrimaryDisk
-      description: The disk asynchronously replicated into this disk, containing the consistencyGroupPolicy and disk fields.
+      description: The disk that is asynchronously replicated to this disk, containing the consistencyGroupPolicy and disk fields.
       type: Unknown
     - contextPath: GCP.Compute.Disks.asyncSecondaryDisks
-      description: The list of disks this disk is asynchronously replicated to.
+      description: The list of disks to which this disk is asynchronously replicated.
       type: Unknown
     - contextPath: GCP.Compute.Disks.enableConfidentialCompute
       description: Whether this disk is using confidential compute mode.
@@ -845,7 +845,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: zone
       required: true
       description: The name of the zone for this request.
@@ -890,7 +890,7 @@ script:
       description: The last detach timestamp of the disk in RFC3339 text format.
       type: Date
     - contextPath: GCP.Compute.Disks.users
-      description: The links to the users of the disk, meaning the instances the disk is attached to.
+      description: The links to the instances to which the disk is attached.
       type: Unknown
     - contextPath: GCP.Compute.Disks.licenses
       description: The list of publicly visible licenses attached to the disk.
@@ -929,7 +929,7 @@ script:
       description: The customer-supplied encryption key of the source snapshot, containing the rawKey, kmsKeyName, and sha256 fields.
       type: Unknown
     - contextPath: GCP.Compute.Disks.replicaZones
-      description: The URLs of the zones where the disk is replicated to. Only applicable for regional resources.
+      description: The URLs of the zones where the disk is replicated. Only applicable for regional resources.
       type: Unknown
     - contextPath: GCP.Compute.Disks.physicalBlockSizeBytes
       description: The physical block size of the persistent disk, in bytes.
@@ -944,10 +944,10 @@ script:
       description: The architecture of the disk. Valid values are ARM64 or X86_64.
       type: String
     - contextPath: GCP.Compute.Disks.asyncPrimaryDisk
-      description: The disk asynchronously replicated into this disk, containing the consistencyGroupPolicy and disk fields.
+      description: The disk that is asynchronously replicated to this disk, containing the consistencyGroupPolicy and disk fields.
       type: Unknown
     - contextPath: GCP.Compute.Disks.asyncSecondaryDisks
-      description: The list of disks this disk is asynchronously replicated to.
+      description: The list of disks to which this disk is asynchronously replicated.
       type: Unknown
     - contextPath: GCP.Compute.Disks.enableConfidentialCompute
       description: Whether this disk is using confidential compute mode.
@@ -1009,7 +1009,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: zone
       required: true
       description: The name of the zone for this request.
@@ -1049,7 +1049,7 @@ script:
     - name: label_fingerprint
       description: The fingerprint of the labels being applied to this disk, used for optimistic locking. An up-to-date fingerprint hash must always be provided, otherwise the request fails with error 412 conditionNotMet.
     - name: replica_zones
-      description: The comma-separated list of URLs of the zones where the disk should be replicated to. Only applicable for regional resources.
+      description: The comma-separated list of URLs of the zones where the disk should be replicated. Only applicable for regional resources.
       isArray: true
     - name: license_codes
       description: The comma-separated list of integer license codes indicating which licenses are attached to this disk.
@@ -1133,7 +1133,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: zone
       required: true
       description: The name of the zone for this request.
@@ -1216,7 +1216,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: zone
       required: true
       description: The name of the zone for this request.
@@ -1302,7 +1302,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: zone
       required: true
       description: The name of the zone for this request.
@@ -1390,7 +1390,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: zone
       required: true
       description: The name of the zone for this request.
@@ -1490,13 +1490,13 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: zone
       required: true
       description: The name of the zone for this request.
     - name: limit
       defaultValue: '50'
-      description: "The maximum number of results to return. Acceptable values are 1 to 500, inclusive."
+      description: "The maximum number of results to return, ranging from 1 to 500."
     - name: next_token
       description: The token for pagination. Set it to the value of GCP.Compute.DiskTypesNextToken returned by a previous request to get the next page of results.
     - name: filter
@@ -1549,10 +1549,10 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: limit
       defaultValue: '50'
-      description: "The maximum number of results to return. Acceptable values are 1 to 500, inclusive."
+      description: "The maximum number of results to return, ranging from 1 to 500."
     - name: next_token
       description: The token for pagination. Set it to the value of GCP.Compute.AggregatedDiskTypesNextToken returned by a previous request to get the next page of results.
     - name: filter
@@ -1605,7 +1605,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: zone
       required: true
       description: The name of the zone for this request.
