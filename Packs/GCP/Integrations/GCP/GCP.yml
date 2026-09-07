@@ -3525,6 +3525,702 @@ script:
       - contextPath: GCP.Compute.Operations.kind
         description: Type of the resource. Always compute#operation for Operation resources.
         type: string
+  - name: gcp-compute-global-operation-get
+    description: "Retrieves the specified global Operations resource. Required permission: compute.globalOperations.get."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: operation
+      required: true
+      description: The name of the Operations resource to return.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the request ID if one was provided in the request. Not present otherwise.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the disk that the snapshot was created from.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation. Possible values are PENDING, RUNNING, or DONE.'
+      type: String
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, "user@example.com".
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: The optional progress indicator, ranging from 0 to 100. This number monotonically increases as the operation progresses.
+      type: Number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time the operation was requested, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time the operation was started by the server, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time the operation was completed, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.code
+      description: The error type identifier for the error.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.location
+      description: The field in the request that caused the error.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.message
+      description: The optional, human-readable error message.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.errorDetails
+      description: The optional list of messages containing the error details, including the errorInfo, quotaInfo, help, and localizedMessage fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings.code
+      description: The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response.
+      type: String
+    - contextPath: GCP.Compute.Operations.warnings.message
+      description: The human-readable description of the warning code.
+      type: String
+    - contextPath: GCP.Compute.Operations.warnings.data.key
+      description: The key that provides more detail on the warning being returned.
+      type: String
+    - contextPath: GCP.Compute.Operations.warnings.data.value
+      description: The warning data value corresponding to the key.
+      type: String
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found.
+      type: Number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message that was returned if the operation failed, such as NOT FOUND.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.description
+      description: The textual description of the operation, set when the operation is created.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationGroupId
+      description: The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request.
+      type: String
+    - contextPath: GCP.Compute.Operations.setCommonInstanceMetadataOperationMetadata
+      description: The information on all underlying zonal actions and their state. Populated when the operation is for projects.setCommonInstanceMetadata.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.instancesBulkInsertOperationMetadata
+      description: The per-location status of the operation. Populated when the operation is for a bulk insert of instances.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.getVersionOperationMetadata
+      description: The inline SBOM information for the operation, containing the current and target component versions.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource. Always compute#operation for Operation resources.
+      type: String
+  - name: gcp-compute-zone-operation-get
+    description: "Retrieves the specified zone-specific Operations resource. Required permission: compute.zoneOperations.get."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: zone
+      required: true
+      description: The name of the zone for this request.
+    - name: operation
+      required: true
+      description: The name of the Operations resource to return.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides. Only applicable when performing per-zone operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the request ID if one was provided in the request. Not present otherwise.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the disk that the snapshot was created from.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation. Possible values are PENDING, RUNNING, or DONE.'
+      type: String
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, "user@example.com".
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: The optional progress indicator, ranging from 0 to 100. This number monotonically increases as the operation progresses.
+      type: Number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time the operation was requested, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time the operation was started by the server, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time the operation was completed, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.code
+      description: The error type identifier for the error.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.location
+      description: The field in the request that caused the error.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.message
+      description: The optional, human-readable error message.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.errorDetails
+      description: The optional list of messages containing the error details, including the errorInfo, quotaInfo, help, and localizedMessage fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings.code
+      description: The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response.
+      type: String
+    - contextPath: GCP.Compute.Operations.warnings.message
+      description: The human-readable description of the warning code.
+      type: String
+    - contextPath: GCP.Compute.Operations.warnings.data.key
+      description: The key that provides more detail on the warning being returned.
+      type: String
+    - contextPath: GCP.Compute.Operations.warnings.data.value
+      description: The warning data value corresponding to the key.
+      type: String
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found.
+      type: Number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message that was returned if the operation failed, such as NOT FOUND.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.description
+      description: The textual description of the operation, set when the operation is created.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationGroupId
+      description: The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request.
+      type: String
+    - contextPath: GCP.Compute.Operations.setCommonInstanceMetadataOperationMetadata
+      description: The information on all underlying zonal actions and their state. Populated when the operation is for projects.setCommonInstanceMetadata.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.instancesBulkInsertOperationMetadata
+      description: The per-location status of the operation. Populated when the operation is for a bulk insert of instances.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.getVersionOperationMetadata
+      description: The inline SBOM information for the operation, containing the current and target component versions.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource. Always compute#operation for Operation resources.
+      type: String
+  - name: gcp-compute-region-operation-get
+    description: "Retrieves the specified region-specific Operations resource. Required permission: compute.regionOperations.get."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: region
+      required: true
+      description: The name of the region for this request.
+    - name: operation
+      required: true
+      description: The name of the Operations resource to return.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides. Only applicable when performing regional operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the request ID if one was provided in the request. Not present otherwise.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the disk that the snapshot was created from.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation. Possible values are PENDING, RUNNING, or DONE.'
+      type: String
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, "user@example.com".
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: The optional progress indicator, ranging from 0 to 100. This number monotonically increases as the operation progresses.
+      type: Number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time the operation was requested, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time the operation was started by the server, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time the operation was completed, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.code
+      description: The error type identifier for the error.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.location
+      description: The field in the request that caused the error.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.message
+      description: The optional, human-readable error message.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.errorDetails
+      description: The optional list of messages containing the error details, including the errorInfo, quotaInfo, help, and localizedMessage fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings.code
+      description: The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response.
+      type: String
+    - contextPath: GCP.Compute.Operations.warnings.message
+      description: The human-readable description of the warning code.
+      type: String
+    - contextPath: GCP.Compute.Operations.warnings.data.key
+      description: The key that provides more detail on the warning being returned.
+      type: String
+    - contextPath: GCP.Compute.Operations.warnings.data.value
+      description: The warning data value corresponding to the key.
+      type: String
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found.
+      type: Number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message that was returned if the operation failed, such as NOT FOUND.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.description
+      description: The textual description of the operation, set when the operation is created.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationGroupId
+      description: The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request.
+      type: String
+    - contextPath: GCP.Compute.Operations.setCommonInstanceMetadataOperationMetadata
+      description: The information on all underlying zonal actions and their state. Populated when the operation is for projects.setCommonInstanceMetadata.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.instancesBulkInsertOperationMetadata
+      description: The per-location status of the operation. Populated when the operation is for a bulk insert of instances.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.getVersionOperationMetadata
+      description: The inline SBOM information for the operation, containing the current and target component versions.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource. Always compute#operation for Operation resources.
+      type: String
+  - name: gcp-compute-global-operation-list
+    description: "Lists the global Operations resources in the specified project. Required permission: compute.globalOperations.list."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: limit
+      defaultValue: '50'
+      description: "The maximum number of results to return. Possible values are 1 to 500."
+    - name: next_token
+      description: The token for the next set of results to return, used for pagination. Use the value of GCP.Compute.GlobalOperationsNextToken from the previous response.
+    - name: filter
+      description: The filter expression that filters resources listed in the response. The expression must specify a field name, a comparison operator, and a value (for example, "status = DONE").
+    - name: order_by
+      description: The order to sort list results by. By default, results are returned in alphanumerical order based on the resource name (for example, "creationTimestamp desc").
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the request ID if one was provided in the request. Not present otherwise.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the disk that the snapshot was created from.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation. Possible values are PENDING, RUNNING, or DONE.'
+      type: String
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, "user@example.com".
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: The optional progress indicator, ranging from 0 to 100. This number monotonically increases as the operation progresses.
+      type: Number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time the operation was requested, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time the operation was started by the server, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time the operation was completed, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.code
+      description: The error type identifier for the error.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.location
+      description: The field in the request that caused the error.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.message
+      description: The optional, human-readable error message.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.errorDetails
+      description: The optional list of messages containing the error details, including the errorInfo, quotaInfo, help, and localizedMessage fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings.code
+      description: The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response.
+      type: String
+    - contextPath: GCP.Compute.Operations.warnings.message
+      description: The human-readable description of the warning code.
+      type: String
+    - contextPath: GCP.Compute.Operations.warnings.data.key
+      description: The key that provides more detail on the warning being returned.
+      type: String
+    - contextPath: GCP.Compute.Operations.warnings.data.value
+      description: The warning data value corresponding to the key.
+      type: String
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found.
+      type: Number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message that was returned if the operation failed, such as NOT FOUND.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.description
+      description: The textual description of the operation, set when the operation is created.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationGroupId
+      description: The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request.
+      type: String
+    - contextPath: GCP.Compute.Operations.setCommonInstanceMetadataOperationMetadata
+      description: The information on all underlying zonal actions and their state. Populated when the operation is for projects.setCommonInstanceMetadata.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.instancesBulkInsertOperationMetadata
+      description: The per-location status of the operation. Populated when the operation is for a bulk insert of instances.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.getVersionOperationMetadata
+      description: The inline SBOM information for the operation, containing the current and target component versions.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource. Always compute#operation for Operation resources.
+      type: String
+    - contextPath: GCP.Compute.GlobalOperationsNextToken
+      description: The token to use as the next_token argument to retrieve the next page of results.
+      type: String
+  - name: gcp-compute-zone-operation-list
+    description: "Lists the zone-specific Operations resources in the specified project and zone. Required permission: compute.zoneOperations.list."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: zone
+      required: true
+      description: The name of the zone for this request.
+    - name: limit
+      defaultValue: '50'
+      description: "The maximum number of results to return. Possible values are 1 to 500."
+    - name: next_token
+      description: The token for the next set of results to return, used for pagination. Use the value of GCP.Compute.ZoneOperationsNextToken from the previous response.
+    - name: filter
+      description: The filter expression that filters resources listed in the response. The expression must specify a field name, a comparison operator, and a value (for example, "status = DONE").
+    - name: order_by
+      description: The order to sort list results by. By default, results are returned in alphanumerical order based on the resource name (for example, "creationTimestamp desc").
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides. Only applicable when performing per-zone operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the request ID if one was provided in the request. Not present otherwise.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the disk that the snapshot was created from.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation. Possible values are PENDING, RUNNING, or DONE.'
+      type: String
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, "user@example.com".
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: The optional progress indicator, ranging from 0 to 100. This number monotonically increases as the operation progresses.
+      type: Number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time the operation was requested, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time the operation was started by the server, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time the operation was completed, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.code
+      description: The error type identifier for the error.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.location
+      description: The field in the request that caused the error.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.message
+      description: The optional, human-readable error message.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.errorDetails
+      description: The optional list of messages containing the error details, including the errorInfo, quotaInfo, help, and localizedMessage fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings.code
+      description: The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response.
+      type: String
+    - contextPath: GCP.Compute.Operations.warnings.message
+      description: The human-readable description of the warning code.
+      type: String
+    - contextPath: GCP.Compute.Operations.warnings.data.key
+      description: The key that provides more detail on the warning being returned.
+      type: String
+    - contextPath: GCP.Compute.Operations.warnings.data.value
+      description: The warning data value corresponding to the key.
+      type: String
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found.
+      type: Number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message that was returned if the operation failed, such as NOT FOUND.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.description
+      description: The textual description of the operation, set when the operation is created.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationGroupId
+      description: The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request.
+      type: String
+    - contextPath: GCP.Compute.Operations.setCommonInstanceMetadataOperationMetadata
+      description: The information on all underlying zonal actions and their state. Populated when the operation is for projects.setCommonInstanceMetadata.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.instancesBulkInsertOperationMetadata
+      description: The per-location status of the operation. Populated when the operation is for a bulk insert of instances.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.getVersionOperationMetadata
+      description: The inline SBOM information for the operation, containing the current and target component versions.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource. Always compute#operation for Operation resources.
+      type: String
+    - contextPath: GCP.Compute.ZoneOperationsNextToken
+      description: The token to use as the next_token argument to retrieve the next page of results.
+      type: String
+  - name: gcp-compute-region-operation-list
+    description: "Lists the region-specific Operations resources in the specified project and region. Required permission: compute.regionOperations.list."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: region
+      required: true
+      description: The name of the region for this request.
+    - name: limit
+      defaultValue: '50'
+      description: "The maximum number of results to return. Possible values are 1 to 500."
+    - name: next_token
+      description: The token for the next set of results to return, used for pagination. Use the value of GCP.Compute.RegionOperationsNextToken from the previous response.
+    - name: filter
+      description: The filter expression that filters resources listed in the response. The expression must specify a field name, a comparison operator, and a value (for example, "status = DONE").
+    - name: order_by
+      description: The order to sort list results by. By default, results are returned in alphanumerical order based on the resource name (for example, "creationTimestamp desc").
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides. Only applicable when performing regional operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the request ID if one was provided in the request. Not present otherwise.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the disk that the snapshot was created from.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation. Possible values are PENDING, RUNNING, or DONE.'
+      type: String
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, "user@example.com".
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: The optional progress indicator, ranging from 0 to 100. This number monotonically increases as the operation progresses.
+      type: Number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time the operation was requested, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time the operation was started by the server, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time the operation was completed, in RFC3339 text format.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.code
+      description: The error type identifier for the error.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.location
+      description: The field in the request that caused the error.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.message
+      description: The optional, human-readable error message.
+      type: String
+    - contextPath: GCP.Compute.Operations.error.errors.errorDetails
+      description: The optional list of messages containing the error details, including the errorInfo, quotaInfo, help, and localizedMessage fields.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings.code
+      description: The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response.
+      type: String
+    - contextPath: GCP.Compute.Operations.warnings.message
+      description: The human-readable description of the warning code.
+      type: String
+    - contextPath: GCP.Compute.Operations.warnings.data.key
+      description: The key that provides more detail on the warning being returned.
+      type: String
+    - contextPath: GCP.Compute.Operations.warnings.data.value
+      description: The warning data value corresponding to the key.
+      type: String
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found.
+      type: Number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message that was returned if the operation failed, such as NOT FOUND.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.description
+      description: The textual description of the operation, set when the operation is created.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationGroupId
+      description: The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request.
+      type: String
+    - contextPath: GCP.Compute.Operations.setCommonInstanceMetadataOperationMetadata
+      description: The information on all underlying zonal actions and their state. Populated when the operation is for projects.setCommonInstanceMetadata.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.instancesBulkInsertOperationMetadata
+      description: The per-location status of the operation. Populated when the operation is for a bulk insert of instances.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.getVersionOperationMetadata
+      description: The inline SBOM information for the operation, containing the current and target component versions.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource. Always compute#operation for Operation resources.
+      type: String
+    - contextPath: GCP.Compute.RegionOperationsNextToken
+      description: The token to use as the next_token argument to retrieve the next page of results.
+      type: String
+  - name: gcp-compute-global-operation-delete
+    description: "Deletes the specified global Operations resource. Required permission: compute.globalOperations.delete."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: operation
+      required: true
+      description: The name of the Operations resource to delete.
+    outputs: []
+  - name: gcp-compute-zone-operation-delete
+    description: "Deletes the specified zone-specific Operations resource. Required permission: compute.zoneOperations.delete."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: zone
+      required: true
+      description: The name of the zone for this request.
+    - name: operation
+      required: true
+      description: The name of the Operations resource to delete.
+    outputs: []
+  - name: gcp-compute-region-operation-delete
+    description: "Deletes the specified region-specific Operations resource. Required permission: compute.regionOperations.delete."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: region
+      required: true
+      description: The name of the region for this request.
+    - name: operation
+      required: true
+      description: The name of the Operations resource to delete.
+    outputs: []
 
 # The command is currently unsupported.
 #  - name: gcp-admin-user-update
