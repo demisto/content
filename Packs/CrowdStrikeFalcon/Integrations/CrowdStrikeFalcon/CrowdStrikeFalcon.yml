@@ -379,6 +379,7 @@ configuration:
   defaultvalue: 'false'
   hidden:
   - xsoar
+  - xpanse
   supportedModules:
   - "xsiam"
   - "exposure_management"
