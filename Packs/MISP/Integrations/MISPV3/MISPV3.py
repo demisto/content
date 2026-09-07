@@ -733,18 +733,19 @@ def generic_reputation_command(
                 reliability,
                 attributes_limit,
                 search_warninglists,
+                accept_v6_ips=argToBoolean(demisto_args.get("accept_v6_ips", False)),
             )
         )
     return command_results
 
 
-def reputation_value_validation(value, dbot_type):
+def reputation_value_validation(value, dbot_type, accept_v6_ips: bool = False):
     if dbot_type == "FILE":
         # hashFormat will be used only in output
         hash_format = get_hash_type(value)
         if hash_format == "Unknown":
             raise DemistoException("Invalid hash length, enter file hash of format MD5, SHA-1 or SHA-256")
-    if dbot_type == "IP" and not is_ip_valid(value):
+    if dbot_type == "IP" and not is_ip_valid(value, accept_v6_ips=accept_v6_ips):
         raise DemistoException(f"Error: The given IP address: {value} is not valid")
     if dbot_type == "DOMAIN" and not re.compile(DOMAIN_REGEX, regexFlags).match(value):
         raise DemistoException(f"Error: The given domain: {value} is not valid")
@@ -763,6 +764,7 @@ def get_indicator_results(
     reliability: DBotScoreReliability,
     attributes_limit: int,
     search_warninglists: bool = False,
+    accept_v6_ips: bool = False,
 ):
     """
     This function searches for the given attribute value in MISP and then calculates it's dbot score.
@@ -776,11 +778,12 @@ def get_indicator_results(
         reliability (DBotScoreReliability): integration reliability score.
         attributes_limit (int) : Limits the number of attributes that will be written to the context
         search_warninglists: (optional, bool): Should the warninglists be included?
+        accept_v6_ips: (optional, bool): Should the IPv6 addresses be checked in the ip command?
 
     Returns:
         CommandResults includes all the indicator results.
     """
-    reputation_value_validation(value, dbot_type)
+    reputation_value_validation(value, dbot_type, accept_v6_ips=accept_v6_ips)
     # if ALLOWED_ORGS is empty, then it equals to any. When specified, then it filters out all other orgs that are not requested
     if TO_IDS:
         # to_ids flag represents whether the attribute is meant to be actionable

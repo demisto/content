@@ -1,0 +1,11 @@
+!confluence-cloud-page-create space_id=98765 title="XSOAR Page" body_value="Hello World" body_representation=storage
+!confluence-cloud-page-list space_id=98765 limit=2
+!confluence-cloud-page-update page_id=12345 version_number=2 title="XSOAR Page Updated" body_value="Updated content"
+!confluence-cloud-page-delete page_id=12345
+!confluence-cloud-blogpost-create space_id=98765 title="XSOAR Blogpost" body_value="Blog content" body_representation=storage
+!confluence-cloud-blogpost-list space_id=98765 limit=2
+!confluence-cloud-blogpost-update blogpost_id=12345 version_number=2 title="XSOAR Blogpost Updated" body_value="Updated blog"
+!confluence-cloud-blogpost-delete blogpost_id=12345
+!confluence-cloud-footer-comment-create page_id=12345 body_value="A footer comment"
+!confluence-cloud-space-listv2 limit=2
+!confluence-cloud-space-createv2 name="XSOAR Space" key=XSOAR

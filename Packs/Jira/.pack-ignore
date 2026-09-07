@@ -46,3 +46,6 @@ ignore=IF100
 
 [file:Jira_Issue_Type.json]
 ignore=IF100
+
+[file:JiraEventCollector_2_11.yml]
+ignore=MR108

@@ -1,4 +1,5 @@
 fromversion: 8.4.0  # Will be updated with XSIAM version updates
+toversion: 8.14.0
 id: Celonis_Celonis_ModelingRule
 name: Celonis Celonis Modeling Rule
 rules: ''

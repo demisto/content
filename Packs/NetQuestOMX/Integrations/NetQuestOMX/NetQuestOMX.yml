@@ -41,6 +41,17 @@ configuration:
   supportedModules:
   - xsiam
   additionalinfo: Whether to collect events.
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  defaultvalue: '1'
+  advanced: true
+  section: Collect
+  hidden:
+  - xsoar
+  supportedModules:
+  - xsiam
 - display: Statistic types to fetch
   name: statistic_types_to_fetch
   options:
