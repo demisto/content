@@ -1,7 +1,6 @@
-fromversion: 6.10.0
-toversion: 8.14.0
+fromversion: 8.15.0
 id: Symantec_BlueCoat_ProxySG_ModelingRule
-name: Symantec BlueCoat ProxySG Modeling Rules
+name: Symantec BlueCoat ProxySG Modeling Rule
 rules: ''
 schema: ''
 tags: ''
