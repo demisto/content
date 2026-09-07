@@ -1,0 +1,6 @@
+fromversion: 8.15.0
+id: CiscoUCM_ModelingRule
+name: CiscoUCM Modeling Rule
+rules: ''
+schema: ''
+tags: cisco

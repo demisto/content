@@ -18,10 +18,9 @@ Unlike `PAN-OS EDL Management`, this integration hosts the EDL on the Cortex XSO
 
 ***Important Notes:***
 
-- EDL uses three consecutive ports: the configured **Listen Port**, port + 1, and port + 2. NGINX listens on the configured port (public), the Python process listens on port + 1, and NGINX uses port + 2 internally for its fail-fast cache fetch tier. For example, if configured for port 9009, ports 9009, 9010, and 9011 must all be free. Ensure no other instance uses a **Listen Port** within 2 of another, or an `[Errno 98] Address in use` error will occur. When running without `--network=host`, ports + 1 and + 2 are not exposed to the machine.
+- EDL uses three consecutive ports: the configured **Listen Port**, port + 1, and port + 2. NGINX listens on the configured port (public), the Python process listens on port + 1, and NGINX uses port + 2 internally for its fail-fast cache fetch tier. For example, if configured for port 9009, ports 9009, 9010, and 9011 must all be free. Ensure no other instance uses a **Listen Port** within 2 of another. When running without `--network=host`, ports + 1 and + 2 are not exposed to the machine.
 - If you frequently use different queries for the same EDL instance through the *q* inline argument, use separate EDL instances (one per query) and set a default query for each to improve performance.
 - When using the *q* inline argument, the number of exported indicators is limited to 100,000 for performance reasons. To export more than 100,000 indicators, create a new integration instance with the desired Indicator Query and List Size.
-- Note: After successfully configuring an instance, clicking the 'Test' button again may display a failure because the system incorrectly assumes the port is in use. Despite this message, the instance continues to function correctly.
 - When the integration is configured with ***Update list on demand only***, the indicator list refreshes based on the value set in the ***Refresh Rate*** parameter.
 
 ## Use Cases
