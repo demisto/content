@@ -48,7 +48,7 @@ def raw_response_to_context_rules(items: dict | list) -> dict | list:
         "Useno": items.get("useno"),
         "Sync_state": items.get("sync_state"),
         "Is_connected": items.get("is_connected"),
-        "Description": items.get("description"),
+        "Description": items.get("descriptionnnnnnn"),
         "Created_at": items.get("created_at"),
         "Updated_at": items.get("updated_at"),
     }
