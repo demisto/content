@@ -454,13 +454,18 @@ def fetch_events_sequential(
     )
 
     if len(collected) > max_events:
-        # Extend the cut to keep the whole boundary second, never splitting a same-second group -
-        # otherwise the cursor advances past a second that was only partially fetched, losing the rest.
+        # Keep the whole boundary second so the cursor never advances past a second that was only
+        # partially fetched. Parse timestamps (like the sort above) - not raw strings - so differing
+        # representations of the same instant (e.g. missing microseconds) group together.
+        def _boundary_second(event: dict) -> datetime:
+            received = event.get("receivedDateTime")
+            return safe_strptime(received, Config.DATE_FORMAT_EVENT).replace(microsecond=0) if received else datetime.min
+
         cut = max_events
-        boundary_time = collected[max_events - 1].get("receivedDateTime")
-        while cut < len(collected) and collected[cut].get("receivedDateTime") == boundary_time:
+        boundary_second = _boundary_second(collected[max_events - 1])
+        while cut < len(collected) and _boundary_second(collected[cut]) == boundary_second:
             cut += 1
-        demisto.debug(f"[Fetch] Truncating {len(collected)} events to {cut} (kept whole boundary second {boundary_time}).")
+        demisto.debug(f"[Fetch] Truncating {len(collected)} events to {cut} (kept whole boundary second {boundary_second}).")
         collected = collected[:cut]
 
     return collected
