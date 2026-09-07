@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: ApacheWebServer_ModelingRule
-name: Apache Web Server Modeling Rule
-rules: ''
-schema: ''
-tags: Apache Web Server
-supportedModules:
-- xsiam
