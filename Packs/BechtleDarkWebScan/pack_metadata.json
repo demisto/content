@@ -10,19 +10,8 @@
         "Identity and Access Management"
     ],
     "tags": [
-        "Bechtle",
-        "BechtleDarkWebScan",
-        "darkwebscan",
-        "dark web",
-        "darkweb",
-        "darknet",
-        "credentials",
-        "leaked credentials",
-        "threat intelligence",
-        "ransomware",
-        "leak detection",
-        "ransomware leaks",
-        "ransomware leak"
+        "Dark Web",
+        "Threat Intelligence"
     ],
     "useCases": [],
     "keywords": [
@@ -42,10 +31,10 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "created": "2026-07-13T14:49:20Z",
-    "firstCreated": "2026-07-13T14:49:20Z",
     "githubUser": [
         "86x"
     ]

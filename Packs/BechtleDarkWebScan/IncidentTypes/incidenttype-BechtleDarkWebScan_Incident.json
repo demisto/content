@@ -15,5 +15,9 @@
     "readonly": false,
     "default": false,
     "disabled": false,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.10.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

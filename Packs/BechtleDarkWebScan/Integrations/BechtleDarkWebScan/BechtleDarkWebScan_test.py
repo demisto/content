@@ -6,13 +6,15 @@ More details: https://xsoar.pan.dev/docs/integrations/unit-testing
 """
 
 from test_data.constants import *
-from BechtleDarkWebScan import Client, \
-    darkwebscan_getcompanies_command, \
-    darkwebscan_getleaks_command, \
-    darkwebscan_resetcontext_command, \
-    darkwebscan_getemailsecurity_command, \
-    darkwebscan_getosint_command, \
-    darkwebscan_getwaf_command
+from BechtleDarkWebScan import (
+    Client,
+    darkwebscan_getcompanies_command,
+    darkwebscan_getleaks_command,
+    darkwebscan_resetcontext_command,
+    darkwebscan_getemailsecurity_command,
+    darkwebscan_getosint_command,
+    darkwebscan_getwaf_command,
+)
 import json
 
 
@@ -31,13 +33,7 @@ def test_command_darkwebscan_getcompanies(requests_mock):
     mock_url = MOCK_BASE_URL + "/user/companies"
     requests_mock.get(mock_url, json=mock_api_response)
 
-    client = Client(
-        base_url=MOCK_BASE_URL,
-        verify=False,
-        proxy=False,
-        api_key="dummyapikey",
-        additional_request_headers={}
-    )
+    client = Client(base_url=MOCK_BASE_URL, verify=False, proxy=False, api_key="dummyapikey", additional_request_headers={})
 
     response = darkwebscan_getcompanies_command(client, {})
 
@@ -56,18 +52,12 @@ def test_command_darkwebscan_getleaks(requests_mock):
     mock_url = MOCK_BASE_URL + "/user/lookout/my-leaked-data"
     requests_mock.get(mock_url, json=mock_api_response)
 
-    client = Client(
-        base_url=MOCK_BASE_URL,
-        verify=False,
-        proxy=False,
-        api_key="dummyapikey",
-        additional_request_headers={}
-    )
+    client = Client(base_url=MOCK_BASE_URL, verify=False, proxy=False, api_key="dummyapikey", additional_request_headers={})
 
-    response = darkwebscan_getleaks_command(client, {'company_id': 123,'only_new': 'false'})
+    response = darkwebscan_getleaks_command(client, {"company_id": 123, "only_new": "false"})
 
     assert response.outputs_prefix == "BechtleDarkWebScan.LeakedCredentials"
-    assert response.outputs == MOCK_GET_LEAKS_RESPONSE.get('searchResults')
+    assert response.outputs == MOCK_GET_LEAKS_RESPONSE.get("searchResults")
     assert "john.doe@example.org" in response.readable_output
 
 
@@ -81,35 +71,17 @@ def test_command_darkwebscan_getemailsecurity(requests_mock):
     mock_url = MOCK_BASE_URL + "/scan/email-security"
     requests_mock.get(mock_url, json=mock_api_response)
 
-    client = Client(
-        base_url=MOCK_BASE_URL,
-        verify=False,
-        proxy=False,
-        api_key="dummyapikey",
-        additional_request_headers={}
-    )
+    client = Client(base_url=MOCK_BASE_URL, verify=False, proxy=False, api_key="dummyapikey", additional_request_headers={})
 
-    response = darkwebscan_getemailsecurity_command(client, {'company_id': 123})
+    response = darkwebscan_getemailsecurity_command(client, {"company_id": 123})
 
-    spf = MOCK_GET_EMAILSECURITY_RESPONSE.get('spf')
-    dmarc = MOCK_GET_EMAILSECURITY_RESPONSE.get('dmarc')
-    dane = MOCK_GET_EMAILSECURITY_RESPONSE.get('dane')
+    spf = MOCK_GET_EMAILSECURITY_RESPONSE.get("spf")
+    dmarc = MOCK_GET_EMAILSECURITY_RESPONSE.get("dmarc")
+    dane = MOCK_GET_EMAILSECURITY_RESPONSE.get("dane")
     expected_output = {
-        "SPF": {
-            "Record": spf.get("spfRecord"),
-            "Info": spf.get("warning"),
-            "Summary": spf.get("summary")
-        },
-        "DMARC": {
-            "Record": dmarc.get("dmarcRecord"),
-            "Info": dmarc.get("warning"),
-            "Summary": dmarc.get("summary")
-        },
-        "DANE": {
-            "EmailHosts": dane.get("emailHosts"),
-            "Info": dane.get("warning"),
-            "Summary": dane.get("summary")
-        }
+        "SPF": {"Record": spf.get("spfRecord"), "Info": spf.get("warning"), "Summary": spf.get("summary")},
+        "DMARC": {"Record": dmarc.get("dmarcRecord"), "Info": dmarc.get("warning"), "Summary": dmarc.get("summary")},
+        "DANE": {"EmailHosts": dane.get("emailHosts"), "Info": dane.get("warning"), "Summary": dane.get("summary")},
     }
 
     assert response.outputs_prefix == "BechtleDarkWebScan.EmailSecurity"
@@ -140,15 +112,9 @@ def test_command_darkwebscan_getwaf(requests_mock):
     mock_url = MOCK_BASE_URL + "/scan/waf"
     requests_mock.get(mock_url, json=mock_api_response)
 
-    client = Client(
-        base_url=MOCK_BASE_URL,
-        verify=False,
-        proxy=False,
-        api_key="dummyapikey",
-        additional_request_headers={}
-    )
+    client = Client(base_url=MOCK_BASE_URL, verify=False, proxy=False, api_key="dummyapikey", additional_request_headers={})
 
-    response = darkwebscan_getwaf_command(client, {'company_id': 123})
+    response = darkwebscan_getwaf_command(client, {"company_id": 123})
 
     assert response.outputs_prefix == "BechtleDarkWebScan.WAF"
     assert response.outputs == MOCK_GET_WAF_RESPONSE
@@ -165,15 +131,9 @@ def test_command_darkwebscan_getosint(requests_mock):
     mock_url = MOCK_BASE_URL + "/scan/osint"
     requests_mock.get(mock_url, json=mock_api_response)
 
-    client = Client(
-        base_url=MOCK_BASE_URL,
-        verify=False,
-        proxy=False,
-        api_key="dummyapikey",
-        additional_request_headers={}
-    )
+    client = Client(base_url=MOCK_BASE_URL, verify=False, proxy=False, api_key="dummyapikey", additional_request_headers={})
 
-    response = darkwebscan_getosint_command(client, {'company_id': 123})
+    response = darkwebscan_getosint_command(client, {"company_id": 123})
 
     assert response.outputs_prefix == "BechtleDarkWebScan.OSINT"
     assert response.outputs == MOCK_GET_OSINT_RESPONSE

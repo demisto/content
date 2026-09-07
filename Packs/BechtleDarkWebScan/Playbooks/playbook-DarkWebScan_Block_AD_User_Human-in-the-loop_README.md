@@ -46,4 +46,4 @@ There are no outputs for this playbook.
 
 ---
 
-![DarkWebScan Block AD User (Human-in-the-loop)](../doc_files/DarkWebScan_Block_AD_User_(Human-in-the-loop).png)
+![DarkWebScan Block AD User Human-in-the-loop](../doc_files/DarkWebScan_Block_AD_User_Human-in-the-loop.png)

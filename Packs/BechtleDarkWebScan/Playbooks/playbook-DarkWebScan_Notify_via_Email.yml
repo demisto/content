@@ -81,6 +81,7 @@ tasks:
       id: 187b861e-f6a8-4143-8bc0-c958ba1031c4
       version: -1
       name: Ask (via email) to escalate or mark as resolved
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -344,4 +345,19 @@ outputs: []
 quiet: false
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+supportedModules:
+- agentix
+- xsiam
+- asm
+- cloud
+- cloud_posture
+- cloud_runtime_security
+- edr
+- exposure_management
+- tim
+- xti
 fromversion: 6.10.0

@@ -9,7 +9,7 @@ from urllib3.exceptions import InsecureRequestWarning
 
 urllib3.disable_warnings(InsecureRequestWarning)
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
 DEFAULT_BASE_URL = "https://api.darkwebscan.app/v1"
 DEFAULT_PAGE_SIZE = 50
@@ -27,7 +27,7 @@ MAX_SEEN_IDS_TO_RETAIN = 5000
 MAX_SEEN_IDS_PER_COMPANY = 1000
 
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -41,7 +41,7 @@ class Client(BaseClient):
         headers = {
             "apiKey": f"{api_key}",
             "Content-Type": "application/json",
-            "User-Agent": f"{INTEGRATION_NAME}-PANW-XSOAR/{INTEGRATION_VERSION}"
+            "User-Agent": f"{INTEGRATION_NAME}-PANW-XSOAR/{INTEGRATION_VERSION}",
         }
 
         if additional_request_headers:
@@ -61,12 +61,7 @@ class Client(BaseClient):
             "page_size": page_size,
         }
 
-        response = self._http_request(
-            method="GET",
-            url_suffix="/user/companies",
-            params=params,
-            resp_type="response"
-        )
+        response = self._http_request(method="GET", url_suffix="/user/companies", params=params, resp_type="response")
 
         if not response.text or response.status_code == 204:
             return {}
@@ -79,11 +74,7 @@ class Client(BaseClient):
             )
 
     def get_leaks(
-        self,
-        company_id: int = 0,
-        since: Optional[str] = None,
-        page: int = 1,
-        page_size: int = DEFAULT_PAGE_SIZE
+        self, company_id: int = 0, since: Optional[str] = None, page: int = 1, page_size: int = DEFAULT_PAGE_SIZE
     ) -> dict:
         """
         Retrieve leaked credentials for a given company_id.
@@ -110,9 +101,7 @@ class Client(BaseClient):
         """
         Retrieve information about the email security of the domain from a given company_id.
         """
-        params = {
-            "companyId": company_id
-        }
+        params = {"companyId": company_id}
         return self._http_request(
             method="GET",
             url_suffix="/scan/email-security",
@@ -126,9 +115,7 @@ class Client(BaseClient):
         """
         Retrieve OSINT information about the associated domain of a given company_id.
         """
-        params = {
-            "companyId": company_id
-        }
+        params = {"companyId": company_id}
         return self._http_request(
             method="GET",
             url_suffix="/scan/osint",
@@ -142,9 +129,7 @@ class Client(BaseClient):
         """
         Retrieve Web Application Firewall Status information about the associated domain of a given company_id.
         """
-        params = {
-            "companyId": company_id
-        }
+        params = {"companyId": company_id}
         return self._http_request(
             method="GET",
             url_suffix="/scan/waf",
@@ -152,7 +137,7 @@ class Client(BaseClient):
         )
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def _redact_rows(rows: list[dict[str, Any]], redact: bool) -> list[dict[str, Any]]:
@@ -177,7 +162,7 @@ def _should_redact_secrets(params: dict) -> bool:
     return str(raw).strip().lower() in {"true", "1", "yes", "on"}
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client) -> str:
@@ -313,10 +298,7 @@ def darkwebscan_getleaks_command(client: Client, args: dict) -> CommandResults:
         if len(seen_ids) > MAX_SEEN_IDS_TO_RETAIN:
             seen_ids = set(list(seen_ids)[-MAX_SEEN_IDS_TO_RETAIN:])
 
-        set_integration_context({
-            CONTEXT_SEEN_LEAK_IDS_KEY: list(seen_ids),
-            CONTEXT_LAST_FETCH_KEY: newest_timestamp
-        })
+        set_integration_context({CONTEXT_SEEN_LEAK_IDS_KEY: list(seen_ids), CONTEXT_LAST_FETCH_KEY: newest_timestamp})
 
     new_leaks = _redact_rows(new_leaks, redact)
 
@@ -342,30 +324,24 @@ def format_subdomains_and_emails(api_response: dict) -> str:
     """
     markdown_outputs = []
 
-    subdomains_list = api_response.get('subdomains', [])
+    subdomains_list = api_response.get("subdomains", [])
     if subdomains_list:
         subdomains_table = tableToMarkdown(
-            name='Monitored Subdomains',
-            t=subdomains_list,
-            headers=['subdomain', 'description'],
-            headerTransform=pascalToSpace
+            name="Monitored Subdomains", t=subdomains_list, headers=["subdomain", "description"], headerTransform=pascalToSpace
         )
         markdown_outputs.append(subdomains_table)
 
-    emails_list = api_response.get('emailAddresses', [])
+    emails_list = api_response.get("emailAddresses", [])
     if emails_list:
         emails_table = tableToMarkdown(
-            name='Monitored Email Addresses',
-            t=emails_list,
-            headers=['email'],
-            headerTransform=string_to_table_header
+            name="Monitored Email Addresses", t=emails_list, headers=["email"], headerTransform=string_to_table_header
         )
         markdown_outputs.append(emails_table)
 
     if markdown_outputs:
-        return '\n\n'.join(markdown_outputs)
+        return "\n\n".join(markdown_outputs)
 
-    return 'No subdomains or email addresses found.'
+    return "No subdomains or email addresses found."
 
 
 def darkwebscan_getosint_command(client: Client, args: dict) -> CommandResults:
@@ -398,27 +374,15 @@ def darkwebscan_getemailsecurity_command(client: Client, args: dict) -> CommandR
     dane = response.get("dane", {})
 
     output = {
-        "SPF": {
-            "Record": spf.get("spfRecord"),
-            "Info": spf.get("warning"),
-            "Summary": spf.get("summary")
-        },
-        "DMARC": {
-            "Record": dmarc.get("dmarcRecord"),
-            "Info": dmarc.get("warning"),
-            "Summary": dmarc.get("summary")
-        },
-        "DANE": {
-            "EmailHosts": dane.get("emailHosts"),
-            "Info": dane.get("warning"),
-            "Summary": dane.get("summary")
-        }
+        "SPF": {"Record": spf.get("spfRecord"), "Info": spf.get("warning"), "Summary": spf.get("summary")},
+        "DMARC": {"Record": dmarc.get("dmarcRecord"), "Info": dmarc.get("warning"), "Summary": dmarc.get("summary")},
+        "DANE": {"EmailHosts": dane.get("emailHosts"), "Info": dane.get("warning"), "Summary": dane.get("summary")},
     }
 
     summary_rows = [
-        {"Check": "SPF", "Status": _color_tag(spf.get("summary"), spf.get('warningColor'))},
-        {"Check": "DMARC", "Status": _color_tag(dmarc.get("summary"), dmarc.get('warningColor'))},
-        {"Check": "DANE", "Status": _color_tag(dane.get("summary"), dane.get('warningColor'))}
+        {"Check": "SPF", "Status": _color_tag(spf.get("summary"), spf.get("warningColor"))},
+        {"Check": "DMARC", "Status": _color_tag(dmarc.get("summary"), dmarc.get("warningColor"))},
+        {"Check": "DANE", "Status": _color_tag(dane.get("summary"), dane.get("warningColor"))},
     ]
 
     # Map the exact keys returned by the API to the markdown table headers
@@ -447,9 +411,9 @@ def darkwebscan_getwaf_command(client: Client, args: dict) -> CommandResults:
     response = client.get_waf(company_id=company_id)
 
     summary = {
-        "product": response.get('product'),
-        "summary": response.get('summary'),
-        "warning": _color_tag(response.get('warning'), response.get('warningColor')),
+        "product": response.get("product"),
+        "summary": response.get("summary"),
+        "warning": _color_tag(response.get("warning") or "", response.get("warningColor") or ""),
     }
 
     # Map the exact keys returned by the API to the markdown table headers
@@ -470,12 +434,13 @@ def darkwebscan_getwaf_command(client: Client, args: dict) -> CommandResults:
 
 
 def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch: int) -> tuple[dict, list]:
-    default_since = arg_to_datetime(first_fetch).strftime("%Y-%m-%dT%H:%M:%SZ")
+    parsed_dt = arg_to_datetime(first_fetch)
+    default_since = parsed_dt.strftime("%Y-%m-%dT%H:%M:%SZ") if parsed_dt else ""
     companies_state = last_run.get("companies", {})
 
     company_ids = _get_all_company_ids(client)
 
-    incidents = []
+    incidents: list[dict] = []
     next_companies_state = {}
 
     for cid in company_ids:
@@ -491,7 +456,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
         leaks = response.get("searchResults", [])
 
         newest_timestamp = since
-        #demisto.debug("Iterating leaks...")
+        # demisto.debug("Iterating leaks...")
         for leak in leaks:
             leak_id = leak.get("id")
             if leak_id in seen_ids:
@@ -502,36 +467,38 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
                 break
 
             alert_json = {
-                "id": leak.get('id', None),
-                "date": leak.get('date', 'Unknown'),
-                "domain": leak.get('domain', 'Unknown'),
-                "links": leak.get('links', 'Unknown'),
-                "username": leak.get('username', 'Username not included with initial offer'),
-                "price": leak.get('price', ''),
-                "size": leak.get('size', None),
-                "source": leak.get('source', None),
-                "stealer": leak.get('stealer', None),
-                "dataSource": "BechtleDarkWebScan"
+                "id": leak.get("id", None),
+                "date": leak.get("date", "Unknown"),
+                "domain": leak.get("domain", "Unknown"),
+                "links": leak.get("links", "Unknown"),
+                "username": leak.get("username", "Username not included with initial offer"),
+                "price": leak.get("price", ""),
+                "size": leak.get("size", None),
+                "source": leak.get("source", None),
+                "stealer": leak.get("stealer", None),
+                "dataSource": "BechtleDarkWebScan",
             }
 
             occurred = _to_iso8601(leak.get("date") or None)
             demisto.debug("Preparing leak info...")
-            incidents.append({
-                "name": (
-                    f"DarkWebScan Leak: {leak.get('links', 'unknown')} "
-                    f"({leak.get('source', leak.get('stealer', 'unknown source'))})"
-                ),
-                "type": "BechtleDarkWebScan Incident",
-                "details": (
-                    f"New Dark Web Leak: {leak.get('links', 'unknown URL')}, "
-                    f"Username: {leak.get('username', 'Username not included with initial offer')}, "
-                    f"Price: {leak.get('price', 'Unknown')}, "
-                    f"Source: {leak.get('source', leak.get('stealer', 'unknown') + ' Stealer')}"
-                ),
-                "occurred": occurred,
-                "severity": 2,
-                "rawJSON": json.dumps(alert_json),
-            })
+            incidents.append(
+                {
+                    "name": (
+                        f"DarkWebScan Leak: {leak.get('links', 'unknown')} "
+                        f"({leak.get('source', leak.get('stealer', 'unknown source'))})"
+                    ),
+                    "type": "BechtleDarkWebScan Incident",
+                    "details": (
+                        f"New Dark Web Leak: {leak.get('links', 'unknown URL')}, "
+                        f"Username: {leak.get('username', 'Username not included with initial offer')}, "
+                        f"Price: {leak.get('price', 'Unknown')}, "
+                        f"Source: {leak.get('source', leak.get('stealer', 'unknown') + ' Stealer')}"
+                    ),
+                    "occurred": occurred,
+                    "severity": 2,
+                    "rawJSON": json.dumps(alert_json),
+                }
+            )
             demisto.debug("Adding this leak's id to the known leak ids...")
             seen_ids.add(leak_id)
             if occurred > newest_timestamp:
@@ -541,10 +508,7 @@ def fetch_incidents(client: Client, last_run: dict, first_fetch: str, max_fetch:
             seen_ids = set(list(seen_ids)[-MAX_SEEN_IDS_PER_COMPANY:])
 
         demisto.debug("Setting next_companies_state...")
-        next_companies_state[cid_key] = {
-            "last_fetch": newest_timestamp,
-            "seen_ids": list(seen_ids)
-        }
+        next_companies_state[cid_key] = {"last_fetch": newest_timestamp, "seen_ids": list(seen_ids)}
 
     return {"companies": next_companies_state}, incidents
 
@@ -554,7 +518,7 @@ def darkwebscan_resetcontext_command() -> CommandResults:
     return CommandResults(readable_output="Integration context cleared.")
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -579,7 +543,7 @@ def main() -> None:
             proxy=proxy,
         )
 
-        if command in ('test-module', ''):
+        if command in ("test-module", ""):
             return_results(test_module(client))
 
         elif command == "fetch-incidents":
@@ -615,7 +579,7 @@ def main() -> None:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}", error=e)
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

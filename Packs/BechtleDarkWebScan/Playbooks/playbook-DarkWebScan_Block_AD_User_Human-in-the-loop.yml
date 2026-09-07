@@ -1,8 +1,8 @@
-id: DarkWebScan Block AD User (Human-in-the-loop)
+id: DarkWebScan Block AD User Human-in-the-loop
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: DarkWebScan Block AD User (Human-in-the-loop)
+name: DarkWebScan Block AD User Human-in-the-loop
 description: Gets the affected username of a Bechtle Dark Web Scan issue, then sends an email for human confirmation if the affected user should be blocked.
 starttaskid: "0"
 tasks:
@@ -81,6 +81,7 @@ tasks:
       id: 852e98d3-5960-4e47-9e6a-c56cf9d68773
       version: -1
       name: Ask (via email) to block user or mark as resolved
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -252,7 +253,7 @@ tasks:
       - "12"
     scriptarguments:
       body:
-        simple: You are receiving this mail because you have enabled the "DarkWebScan Block AD (Human-in-the-loop)" Playbook. However, you have not yet installed and configured an instance of the required "Active Directory Query v2" integration. This integration is required to run this playbook. You will receive an email like this for every failed attempt to run this playbook unless you disable the playbook.
+        simple: You are receiving this mail because you have enabled the "DarkWebScan Block AD User Human-in-the-loop" Playbook. However, you have not yet installed and configured an instance of the required "Active Directory Query v2" integration. This integration is required to run this playbook. You will receive an email like this for every failed attempt to run this playbook unless you disable the playbook.
       subject:
         simple: DarkWebScan Block AD User Playbook has identified an issue
       to:
@@ -316,6 +317,7 @@ tasks:
       id: ecadde1a-c79c-4183-a45b-cc2315b23f6c
       version: -1
       name: Does an account with that username exist?
+      description: ''
       type: condition
       iscommand: false
       brand: ""
@@ -678,4 +680,15 @@ outputs: []
 quiet: false
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+supportedModules:
+- agentix
+- xsiam
+- cloud
+- cloud_posture
+- cloud_runtime_security
+- edr
 fromversion: 6.10.0

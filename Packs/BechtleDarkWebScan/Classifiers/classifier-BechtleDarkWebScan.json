@@ -1,12 +1,22 @@
 {
-  "id": "BechtleDarkWebScan - Classifier",
-  "version": -1,
-  "name": "Bechtle DarkWebScan Classifier",
-  "description": "Maps Bechtle DarkWebScan integration alerts to their incident type.",
-  "type": "classification",
-  "transformer": {
-    "complex": null
-  },
-  "keyTypeMap": {},
-  "defaultIncidentType": "BechtleDarkWebScan Incident"
+    "id": "BechtleDarkWebScan - Classifier",
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "name": "BechtleDarkWebScan - Classifier",
+    "description": "Maps Bechtle DarkWebScan integration alerts to their incident type.",
+    "type": "classification",
+    "transformer": {
+        "complex": null
+    },
+    "keyTypeMap": {},
+    "defaultIncidentType": "BechtleDarkWebScan Incident",
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }
