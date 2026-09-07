@@ -11,6 +11,12 @@ from cryptography.hazmat.primitives.serialization import load_pem_private_key
 from pydantic import ConfigDict, Field, parse_obj_as
 from SiemApiModule import *  # noqa: E402
 
+VENDOR = "box"
+PRODUCT = "box"
+DEFAULT_MAX_EVENTS_PER_FETCH = 2500
+MAX_EVENTS_PER_FETCH_LIMIT = 5000
+PAGE_SIZE = 500
+
 
 class Claims(BaseModel):
     iss: str = Field(alias="client_id")
@@ -56,7 +62,8 @@ def get_box_events_timestamp_format(value):
 
 class BoxEventsParams(BaseModel):
     event_type: Optional[str] = None
-    limit: int = Field(500, alias="page_size", gt=0, le=500)
+    # `limit` is the Box /events `limit` query param (page size). Fixed at PAGE_SIZE; not user-configurable.
+    limit: int = PAGE_SIZE
     stream_position: Optional[str] = None
     stream_type: str = "admin_logs"
     created_after: Optional[str]
@@ -89,8 +96,8 @@ class BoxEventsRequestConfig(IntegrationHTTPRequest):
 
 
 class BoxIntegrationOptions(IntegrationOptions):
-    product_name: str = "box"
-    vendor_name: str = "box"
+    product_name: str = PRODUCT
+    vendor_name: str = VENDOR
     should_push_events: bool = False
 
 
@@ -155,15 +162,90 @@ class BoxEventsClient(IntegrationEventsClient):
 class BoxEventsGetter(IntegrationGetEvents):
     client: BoxEventsClient
 
+    def run(self):
+        """Collect events, capping the total at ``options.limit`` without losing data.
+
+        The base ``IntegrationGetEvents.run`` slices the accumulated list to ``options.limit``
+        (``stored[: limit]``) *after* the page's ``stream_position`` has already been advanced.
+        Persisting that advanced position while discarding the sliced-off tail causes permanent
+        data loss (XSUP-72996).
+
+        To cap the total *exactly* while keeping the persisted ``stream_position`` aligned with the
+        events actually returned, we shrink the page size of each request to the remaining budget
+        (``min(PAGE_SIZE, remaining)``). Box then ends the final page precisely on the limit and
+        returns a valid ``next_stream_position`` for it, so no events are dropped and the next fetch
+        resumes exactly where this one stopped.
+        """
+        stored: list = []
+        start_time = time.time()
+        params = self.client.request.params
+        demisto.debug(
+            f"[Fetch Events] run() START | total_cap(options.limit)={self.options.limit} | "
+            f"start_stream_position={params.stream_position!r} | created_after={params.created_after!r} | "
+            f"stream_type={params.stream_type!r} | initial_page_size(limit)={params.limit}"
+        )
+        # Seed the first request's page size to the budget too, so a limit smaller than a full page
+        # (e.g. limit < PAGE_SIZE) is respected on the very first call, not just on later pages.
+        if self.options.limit:
+            self.client.request.params.limit = min(PAGE_SIZE, self.options.limit)
+            demisto.debug(
+                f"[Fetch Events] seeded first-page size to min(PAGE_SIZE={PAGE_SIZE}, "
+                f"cap={self.options.limit}) -> {self.client.request.params.limit}"
+            )
+        page_number = 0
+        for logs in self._iter_events():
+            page_number += 1
+            page_len = len(logs)
+            stored.extend(logs)
+            demisto.debug(
+                f"[Fetch Events] page #{page_number} received {page_len} events | "
+                f"running_total={len(stored)} | requested_page_size={self.client.request.params.limit} | "
+                f"stream_position_now={self.client.request.params.stream_position!r}"
+            )
+            if self.options.limit:
+                remaining = self.options.limit - len(stored)
+                if remaining <= 0:
+                    demisto.debug(
+                        f"[Fetch Events] total cap reached: options.limit={self.options.limit}, "
+                        f"collected={len(stored)} over {page_number} page(s); stopping."
+                    )
+                    break
+                # Shrink the next request so the last page returns exactly the remaining budget,
+                # making the total land precisely on the limit with a valid stream position.
+                self.client.request.params.limit = min(PAGE_SIZE, remaining)
+                demisto.debug(
+                    f"[Fetch Events] {remaining=} events left in budget; next request page size set to "
+                    f"{self.client.request.params.limit}"
+                )
+        elapsed = round(time.time() - start_time, 2)
+        demisto.debug(
+            f"[Fetch Events] run() END | collected={len(stored)} events over {page_number} page(s) in "
+            f"{elapsed}s | final_stream_position={self.client.request.params.stream_position!r}"
+        )
+        return stored
+
     def get_last_run(self: Any) -> dict:  # type: ignore
-        demisto.debug(f"getting {self.client.request.params.stream_position=}")
-        return {"stream_position": self.client.request.params.stream_position}
+        stream_position = self.client.request.params.stream_position
+        demisto.debug(f"[Last Run] persisting {stream_position=!r} as the next cycle's starting cursor")
+        return {"stream_position": stream_position}
 
     def _iter_events(self):
         self.client.authenticate()
         demisto.debug("authenticated successfully")
+        call_number = 0
         # region First Call
+        params = self.client.request.params
+        demisto.debug(
+            f"[Iter Events] first API call -> GET {self.client.request.url} | "
+            f"stream_position={params.stream_position!r} | created_after={params.created_after!r} | "
+            f"stream_type={params.stream_type!r} | limit(page_size)={params.limit}"
+        )
+        call_number += 1
         events = self.client.call(self.client.request).json()
+        demisto.debug(
+            f"[Iter Events] first response: entries={len(events.get('entries', []))} | "
+            f"next_stream_position={events.get('next_stream_position')!r}"
+        )
         # endregion
         # region Yield Response
         while True:  # Run as long there are logs
@@ -171,11 +253,25 @@ class BoxEventsGetter(IntegrationGetEvents):
             # The next stream position points to where new messages will arrive.
             demisto.debug(f'setting the next request filter {events["next_stream_position"]=}')
             if not events["entries"]:
+                demisto.debug(
+                    f"[Iter Events] empty page after {call_number} call(s) -> backlog drained; "
+                    f"stopping at next_stream_position={events['next_stream_position']!r}"
+                )
                 break
             yield events["entries"]
             # endregion
             # region Do next call
+            call_number += 1
+            demisto.debug(
+                f"[Iter Events] API call #{call_number} | stream_position="
+                f"{self.client.request.params.stream_position!r} | limit(page_size)="
+                f"{self.client.request.params.limit}"
+            )
             events = self.client.call(self.client.request).json()
+            demisto.debug(
+                f"[Iter Events] call #{call_number} response: entries={len(events.get('entries', []))} | "
+                f"next_stream_position={events.get('next_stream_position')!r}"
+            )
             # endregion
 
 
@@ -217,21 +313,34 @@ def main(command: str, demisto_params: dict):
             get_events.run()
             demisto.results("ok")
             return
-        demisto.debug("not in test module, running box-get-events")
+        if command == "fetch-events":
+            # Cap total events per fetch so a single run can't chase the whole backlog and time out.
+            max_events_per_fetch = arg_to_number(demisto_params.get("max_events_per_fetch")) or DEFAULT_MAX_EVENTS_PER_FETCH
+            if max_events_per_fetch > MAX_EVENTS_PER_FETCH_LIMIT:
+                demisto.debug(
+                    f"[Fetch Events] 'Maximum number of events per fetch' ({max_events_per_fetch}) exceeds the "
+                    f"allowed maximum; capping it to {MAX_EVENTS_PER_FETCH_LIMIT}."
+                )
+                max_events_per_fetch = MAX_EVENTS_PER_FETCH_LIMIT
+            get_events.client.options.limit = max_events_per_fetch
+            demisto.debug(f"[Fetch Events] total cap set to {max_events_per_fetch=}")
+        demisto.debug(f"[Main] executing {command=} against {options.vendor_name}/{options.product_name}")
         events = get_events.run()
-        demisto.debug(f"got {len(events)=} from api")
+        demisto.debug(f"[Main] run() returned {len(events)} events for {command=}")
         if command == "box-get-events":
-            demisto.debug("box-get-events, publishing events to incident")
+            demisto.debug(f"[Main] box-get-events: publishing {len(events)} events to war room")
             return_results(CommandResults("BoxEvents", "event_id", events))
             if options.should_push_events:
+                demisto.debug(f"[Main] box-get-events: pushing {len(events)} events to XSIAM (should_push_events=True)")
                 send_events_to_xsiam(events, options.vendor_name, options.product_name)
         if command == "fetch-events":
             last_run = get_events.get_last_run()
-            demisto.debug(f"in fetch-events. settings should push events to true, setting {last_run=}")
+            demisto.debug(f"[Main] fetch-events: pushing {len(events)} events to XSIAM and setting {last_run=}")
             send_events_to_xsiam(events, options.vendor_name, options.product_name)
             demisto.setLastRun(last_run)
-        demisto.debug(f"finished fetching events. {options.should_push_events=}")
+        demisto.debug(f"[Main] finished {command=} successfully. total_events={len(events)}")
     except Exception as e:
+        demisto.error(f"[Main] Failed to execute {command=}: {e}\nTraceback:{traceback.format_exc()}")
         return_error(f"Failed to execute {command} command.\nError:\n{e}\nTraceback:{traceback.format_exc()}")
 
 

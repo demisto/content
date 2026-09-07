@@ -27,19 +27,27 @@ PRODUCT = "netskope"
 
 # Event type configuration mapping
 # Each event type can have specific endpoint, time parameters, and count field configurations
-EVENT_TYPE_CONFIGS = {
+EVENT_TYPE_CONFIGS: dict[str, dict[str, Any]] = {
     "incident": {
         "endpoint": "/events/datasearch/incident",
         "time_params": {"start_time": "starttime", "end_time": "endtime"},
         "count_field": "event_count:count(_id)",
-    }
+    },
+    # Audit doesn't support the count() aggregation (always returns 0), so skip the count and page
+    # directly.
+    "audit": {
+        "endpoint": "/events/data/{type}",
+        "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
+        "supports_count": False,
+    },
 }
 
 # Default configuration for all other event types
-DEFAULT_EVENT_TYPE_CONFIG = {
+DEFAULT_EVENT_TYPE_CONFIG: dict[str, Any] = {
     "endpoint": "/events/data/{type}",
     "time_params": {"start_time": "insertionstarttime", "end_time": "insertionendtime"},
     "count_field": "event_count:count(id)",
+    "supports_count": True,
 }
 
 
@@ -451,8 +459,9 @@ async def fetch_and_send_events_async(
                         retry_count += 1
                     else:
                         raise e
-            demisto.debug(f"[Fetch] Rate limit (429) for {type=} reached {MAX_RETRY=}, giving up on this page")
-            return {}
+            # Exhausted retries on a 429 - raise so the page is recorded as a failure (and retried
+            # next cycle).
+            raise DemistoException(f"Rate limit (429) for {type=} not resolved after {MAX_RETRY=} retries")
 
         async def _send_page_to_xsiam(events):
             # use_streaming_send=True streams+gzips one event at a time (consumes `events`), keeping memory flat.
@@ -486,8 +495,49 @@ async def fetch_and_send_events_async(
             # get-events path: caller needs the actual events
             return events
 
+    def _page_result_len(page_result: int | list[dict]) -> int:
+        # _handle_page returns an int (fetch-events: streamed & freed) or the events list (get-events).
+        return page_result if isinstance(page_result, int) else len(page_result)
+
+    async def _handle_all_pages_sequential():
+        """Paginate without a pre-flight count (for datasets like `audit` that don't support count()).
+
+        Pages one at a time until a short page (last page) or `limit` events. Returns success items
+        and BaseException items (like return_exceptions=True) so failures are recorded, not swallowed.
+        """
+        init_offset = int(request_params.pop("offset", 0))
+        request_limit = int(request_params.get("limit", MAX_EVENTS_PAGE_SIZE))
+        max_offset = init_offset + int(limit)
+        demisto.debug(
+            f"[Fetch] type={type}: sequential paging (count unsupported) from {init_offset=} "
+            f"up to {limit} events in pages of {request_limit}"
+        )
+
+        results: list = []
+        offset = init_offset
+        while offset < max_offset:
+            # Cap total at `limit` so the caller's `events_count == limit` check checkpoints next_fetch_offset.
+            page_size = min(request_limit, max_offset - offset)
+            try:
+                page_result = await _handle_page(request_params | {"offset": offset, "limit": page_size})
+            except Exception as e:
+                # Record the failure (don't abort the window) so the caller checkpoints and retries this offset.
+                demisto.error(f"[Fetch] type={type}: sequential page failed at {offset=}: {str(e)}")
+                demisto.debug(traceback.format_exc())
+                results.append(e)
+                break
+            results.append(page_result)
+            if _page_result_len(page_result) < page_size:
+                break  # short page => last page for this window
+            offset += page_size
+        return results
+
     async def _handle_all_pages():
         try:
+            # Datasets that don't support the count aggregation must page directly (no pre-flight count).
+            if not is_re_fetch_failed_fetch and not get_event_type_config(type).get("supports_count", True):
+                return await _handle_all_pages_sequential()
+
             # the `offset` should not be in the get_events_count request
             init_offset = int(request_params.pop("offset", 0))
 
@@ -629,8 +679,37 @@ async def handle_fetch_and_send_all_events(
 async def get_events_command_async(
     client: Client, args: dict[str, Any], last_run: dict, should_push_events: bool = False
 ) -> CommandResults:
-    """Manual netskope-get-events command: fetch a small batch, optionally push it, and display it."""
+    """Manual netskope-get-events command: fetch a small batch, optionally push it, and display it.
+
+    Optionally accepts a manual time window via the `start_time`/`end_time` args. When provided,
+    we synthesize a `last_run` that pins the window for every fetched type, so the existing fetch
+    pipeline (including the per-type API param mapping and the audit no-count path) is reused as-is.
+    When the args are omitted, the instance's real `last_run` is used - i.e. the default behavior
+    is unchanged.
+    """
     limit = arg_to_number(args.get("limit")) or 10
+
+    # Optional manual time window: triggered by start_time (end_time defaults to "now"). Without
+    # start_time the instance's real last_run is used (default behavior). For audit this filters by
+    # insertion time (insertionstarttime/endtime). `arg_name` makes arg_to_datetime raise a clear
+    # error on unparseable input, so the parsed values are always valid datetimes.
+    if args.get("start_time"):
+        start_arg = arg_to_datetime(args.get("start_time"), arg_name="start_time")
+        end_arg = arg_to_datetime(args.get("end_time") or "now", arg_name="end_time")
+        start_ts = int(start_arg.timestamp())  # type: ignore[union-attr]
+        end_ts = int(end_arg.timestamp())  # type: ignore[union-attr]
+        if end_ts <= start_ts:
+            return_error(f"'end_time' ({end_ts}) must be after 'start_time' ({start_ts}).")
+        start_epoch = str(start_ts)
+        end_epoch = str(end_ts)
+        last_run = {
+            fetch_type: {"next_fetch_start_time": start_epoch, "next_fetch_end_time": end_epoch, "failures": []}
+            for fetch_type in client.event_types_to_fetch
+        }
+        demisto.debug(
+            f"[Get-Events] Using manual time window {start_epoch} -> {end_epoch} for types={client.event_types_to_fetch}"
+        )
+
     demisto.debug(f"[Get-Events] Running netskope-get-events with {limit=}, {should_push_events=}")
 
     # Two distinct flows use send_to_xsiam differently:

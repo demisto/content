@@ -17,6 +17,13 @@ configuration:
   type: 13
   section: Connect
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: Service account private key file contents (JSON).
   additionalinfo: See the Help tab for details on creating a Service Account file.
   name: service_account_json
