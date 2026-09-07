@@ -1488,12 +1488,18 @@ def assert_upload_argument(args: dict):
         raise ValueError("Please specify the item you wish to upload using the 'upload' argument.")
 
 
-def get_agent(api_key_source: str, token: str) -> str:
+def get_agent(api_key_source: str, token: str, is_license_token: bool = False) -> str:
     # Auto API expect the agent header to be 'xdr' when running from within XSIAM and 'xsoartim' when running from
     # within XSOAR (both on-prem and cloud).
     # Explicit source selection always takes priority.
     if api_key_source in ["pcc", "prismaaccessapi", "xsoartim", "xdr"]:
         return api_key_source
+    # A token taken from the platform license is always an XDR key and must be sent with agent=xdr,
+    # whatever the 'API Key Type' selection happens to be. Under ConnectUs the API Key field is left
+    # blank and 'API Key Type' keeps its default of 'other', which previously short-circuited the
+    # platform detection below and sent no agent at all, so WildFire answered 401. (XSUP-75894)
+    if is_license_token:
+        return "xdr"
     # Auto-detect on XSIAM / XSOAR 8+ platforms — XDR license tokens may be 32 chars
     # but still require agent=xdr.
     if (is_xsiam() or is_demisto_version_ge("8")) and not api_key_source:
@@ -1532,10 +1538,13 @@ def main():  # pragma: no cover
         # get the source of the credentials to ensure the correct agent is set for all API calls
         # other = ngfw or wf api based keys that are 32 chars long and require no agent
         # pcc and prismaaccessapi are 64 char long and require the correct agent= value in the api call
+        is_license_token = False
         if not token:
             # Added support for all platforms from version 2.1.42.
             with contextlib.suppress(Exception):
                 token = demisto.getLicenseCustomField("WildFire-Reports.token")
+            # A license-supplied token is an XDR key and needs agent=xdr regardless of 'API Key Type'.
+            is_license_token = bool(token)
 
         if not token:
             # If token is empty when test-module is running, return a more readable output to the user.
@@ -1559,7 +1568,7 @@ def main():  # pragma: no cover
                 sys.exit()
 
         # update the default headers with the correct agent version based on the selection in the instance config.
-        agent_value = get_agent(params.get("credentials_source"), token)
+        agent_value = get_agent(params.get("credentials_source"), token, is_license_token=is_license_token)
 
         # if the apikey is longer than 32 characters agent is not set, and we're not in XSIAM or XSOAR SaaS, send exception
         # otherwise API calls will fail.
