@@ -13951,6 +13951,8 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
     for future in concurrent.futures.as_completed(futures):
         data_size += future.result()
+    On a mid-stream failure (streaming + multiple_threads), the raised exception carries the already-submitted
+    futures on a ``submitted_futures`` attribute so the caller can still count events already sent.
     :rtype: ``List[Future]`` or ``None``
     """
     return send_data_to_xsiam(
@@ -14142,6 +14144,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
     for future in concurrent.futures.as_completed(futures):
         data_size += future.result()
+    On a mid-stream failure (streaming + multiple_threads), the raised exception carries the already-submitted
+    futures on a ``submitted_futures`` attribute so the caller can still count events already sent.
     :rtype: ``List[Future]`` or ``None```
     """
     data_size = 0
@@ -14318,10 +14322,15 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
             gz.close()
             if chunk_items:
                 data_size += _dispatch(buf.getvalue(), chunk_items)
-        except Exception:
-            # On a mid-stream failure, don't leak worker threads: cancel pending work and shut the pool down.
+        except Exception as exc:
+            # shutdown(wait=False) alone does not cancel queued tasks; cancel_futures does (Python 3.9+).
             if executor is not None:
-                executor.shutdown(wait=False)
+                try:
+                    executor.shutdown(wait=False, cancel_futures=True)
+                except TypeError:  # Python < 3.9
+                    executor.shutdown(wait=False)
+                # Expose already-submitted futures so the caller can still count chunks already sent to XSIAM.
+                exc.submitted_futures = all_futures  # type: ignore[attr-defined]
             raise
 
         if multiple_threads:
@@ -15673,3 +15682,4 @@ from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 ###########################################
 register_module_line('CommonServerPython', 'end', __line__())
 register_module_line('CustomScriptIntegration', 'start', __line__())
+
