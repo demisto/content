@@ -1,0 +1,31 @@
+{
+    "customFieldValues": [
+        {
+            "customFieldId": "1",
+            "scope": "ALERT",
+            "values": [
+                "High"
+            ],
+            "valuesSearchText": "High"
+        },
+        {
+            "customFieldId": "2",
+            "scope": "ALERT",
+            "values": [
+                "Yes"
+            ],
+            "valuesSearchText": "Yes"
+        },
+        {
+            "customFieldId": "3",
+            "scope": "ALERT",
+            "values": [
+                "Web Server",
+                "Database"
+            ],
+            "valuesSearchText": "Web Server Database"
+        }
+    ],
+    "nextPageToken": "test-next-page-token",
+    "totalSize": 10
+}

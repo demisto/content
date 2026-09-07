@@ -8,8 +8,8 @@ category: Data Enrichment & Threat Intelligence
 provider: Cofense
 description: Use the Cofense Triage integration to ingest reported phishing indicators.
 sectionorder:
-  - Connect
-  - Collect
+- Connect
+- Collect
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
   name: host
@@ -39,6 +39,13 @@ configuration:
   type: 13
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: Mailbox Location
   name: mailbox_location
   defaultvalue: Processed_Reports

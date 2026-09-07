@@ -6,6 +6,7 @@ import pytest
 from pytest_mock.plugin import MockerFixture
 import slack_sdk
 from CommonServerPython import *
+from CommonServerPython import CortexMissingArgError, CortexResourceNotFoundError
 from slack_sdk.errors import SlackApiError
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
@@ -5459,14 +5460,14 @@ def test_conversation_history_no_channel_provided_error(mocker):
 
     Given: A conversation_history command is configured and no channel parameters are provided
     When: The conversation_history command is called with args missing both conversation_id and conversation_name
-    Then: The command raises ValueError with appropriate error message
+    Then: The command raises CortexMissingArgError with appropriate error message
     """
 
     args = {"limit": "10"}
 
     mocker.patch.object(demisto, "args", return_value=args)
 
-    with pytest.raises(ValueError, match="Either conversation_id or conversation_name must be provided."):
+    with pytest.raises(CortexMissingArgError, match="Either conversation_id or conversation_name must be provided."):
         conversation_history()
 
 
@@ -5508,12 +5509,12 @@ def test_resolve_conversation_id_from_name_no_channel_found(mocker):
 
     Given: The resolve_conversation_id_from_name function is called with a channel name that doesn't exist.
     When: No private conversation or channel exists for the specified name and channel id is not provided.
-    Then: The function raises ValueError with appropriate error message indicating the channel was not found.
+    Then: The function raises CortexResourceNotFoundError with appropriate error message indicating the channel was not found.
     """
     mocker.patch("SlackV3.get_direct_message_channel_id_by_username", return_value=None)
     mocker.patch("SlackV3.get_conversation_by_name", return_value={})
 
-    with pytest.raises(DemistoException, match="Channel 'nonexistent' does not exist."):
+    with pytest.raises(CortexResourceNotFoundError, match="Channel 'nonexistent' does not exist."):
         resolve_conversation_id_from_name("nonexistent")
 
 
@@ -5911,6 +5912,45 @@ async def test_post_agent_response_sync_with_invalid_blocks_fallback(mocker):
         thread_id="thread123",
         blocks=[{"invalid": "block"}],
         attachments=[],
+        agent_name="Test Agent",
+        fallback_text="This is the fallback message",
+    )
+
+    assert result == {"ts": "1234567890.123456"}
+    assert SlackV3.send_message_to_destinations.call_count == 2
+    # Second call should use fallback_text
+    second_call = SlackV3.send_message_to_destinations.call_args_list[1]
+    assert second_call[0][1] == "This is the fallback message"
+
+
+@pytest.mark.asyncio
+async def test_post_agent_response_sync_with_invalid_attachments_fallback(mocker):
+    """
+    Given:
+        Invalid attachments (e.g. plan/step messages) that cause an
+        invalid_attachments SlackApiError.
+    When:
+        Posting agent response.
+    Then:
+        Falls back to sending a plain text message instead of losing it entirely.
+    """
+    import SlackV3
+    from slack_sdk.errors import SlackApiError
+
+    # First call fails with invalid_attachments, second call succeeds.
+    mocker.patch.object(
+        SlackV3,
+        "send_message_to_destinations",
+        side_effect=[SlackApiError("invalid_attachments", {"error": "invalid_attachments"}), {"ts": "1234567890.123456"}],
+    )
+    mocker.patch.object(demisto, "error")
+
+    handler = SlackV3.slack_assistant_handler
+    result = handler.post_agent_response(
+        channel_id="C123",
+        thread_id="thread123",
+        blocks=[],
+        attachments=[{"invalid": "attachment"}],
         agent_name="Test Agent",
         fallback_text="This is the fallback message",
     )
