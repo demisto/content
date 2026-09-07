@@ -1,0 +1,12 @@
+{
+    "inventory": [
+        {
+            "item_id": "ext-001",
+            "item_display_name": "Dark Reader",
+            "marketplace": "chrome_web_store",
+            "risk_level": "low",
+            "version": "4.9.80"
+        }
+    ],
+    "total_count": 1
+}

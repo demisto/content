@@ -1,0 +1,21 @@
+{
+    "items": [
+        {
+            "item_id": "lodash",
+            "name": "lodash",
+            "marketplace": "npm",
+            "publisher_name": "lodash",
+            "risk": 2,
+            "risk_level": "low"
+        },
+        {
+            "item_id": "lodash-es",
+            "name": "lodash-es",
+            "marketplace": "npm",
+            "publisher_name": "lodash",
+            "risk": 2,
+            "risk_level": "low"
+        }
+    ],
+    "total_count": 2
+}

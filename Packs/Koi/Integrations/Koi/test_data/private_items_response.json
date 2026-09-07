@@ -1,0 +1,11 @@
+{
+    "items": [
+        {
+            "id": "priv-001",
+            "name": "Internal Extension",
+            "marketplace": "chrome_web_store",
+            "created_by": "admin@company.com",
+            "created_at": "2025-05-01T10:00:00Z"
+        }
+    ]
+}
