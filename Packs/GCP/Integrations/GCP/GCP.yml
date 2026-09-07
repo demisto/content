@@ -1583,7 +1583,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
       description: The name of the bucket to create.
@@ -1767,7 +1767,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
       description: The name of the bucket to delete.
@@ -1787,7 +1787,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
       description: The name of the bucket.
@@ -1948,7 +1948,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
       description: The name of the bucket to upload the object to.
@@ -2079,7 +2079,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
       description: The name of the bucket containing the object.
@@ -2115,7 +2115,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: source_bucket_name
       required: true
       description: The name of the source bucket containing the object to copy.
@@ -2238,7 +2238,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
       description: The name of the bucket containing the object.
@@ -2256,7 +2256,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: bucket_name
       required: true
       description: The name of the bucket containing the object.
