@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: CiscoThousandEyes_ModelingRule
-name: CiscoThousandEyes Modeling Rule
+id: Cisco_ThousandEyes_ModelingRule
+name: Cisco ThousandEyes Modeling Rule
 rules: ''
 schema: ''
 tags: 
