@@ -921,7 +921,7 @@ Retrieves details for a specific snapshot. Required permission: compute.snapshot
 ### gcp-compute-snapshot-delete
 
 ***
-Deletes the specified snapshot. Deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot. Required permission: compute.snapshots.delete.
+Deletes the specified snapshot. Deleting a single snapshot might not delete all data on that snapshot. If any data on the snapshot marked for deletion is needed for subsequent snapshots, the data is moved to the next corresponding snapshot. Required permission: compute.snapshots.delete.
 
 #### Base Command
 
@@ -938,17 +938,17 @@ Deletes the specified snapshot. Deleting a single snapshot might not necessarily
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Operations.id | String | Unique identifier for the operation resource, defined by the server. |
-| GCP.Compute.Operations.name | String | Name of the operation resource. |
-| GCP.Compute.Operations.kind | String | Type of the resource, for example compute\#operation. |
-| GCP.Compute.Operations.operationType | String | Type of operation, such as insert, update, or delete. |
-| GCP.Compute.Operations.status | String | Current status of the operation. |
-| GCP.Compute.Operations.progress | Number | Progress of the operation as a percentage between 0 and 100. |
-| GCP.Compute.Operations.targetId | String | Unique target ID of the resource affected by the operation. |
-| GCP.Compute.Operations.targetLink | String | URL of the target resource modified by the operation. |
-| GCP.Compute.Operations.selfLink | String | Server-defined URL for the operation resource. |
-| GCP.Compute.Operations.insertTime | Date | The time when the operation resource was created. |
-| GCP.Compute.Operations.startTime | Date | The time when the operation started running. |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation resource, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation resource. |
+| GCP.Compute.Operations.kind | String | The type of the resource, for example compute\#operation. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | The current status of the operation. |
+| GCP.Compute.Operations.progress | Number | The progress of the operation as a percentage between 0 and 100. |
+| GCP.Compute.Operations.targetId | String | The unique target ID of the resource affected by the operation. |
+| GCP.Compute.Operations.targetLink | String | The URL of the target resource modified by the operation. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the operation resource. |
+| GCP.Compute.Operations.insertTime | Date | The date and time when the operation resource was created. |
+| GCP.Compute.Operations.startTime | Date | The date and time when the operation started running. |
 | GCP.Compute.Operations.user | String | The user account that performed the operation. |
 
 ### gcp-compute-snapshot-labels-set
@@ -966,7 +966,7 @@ Sets the labels on a snapshot. Required permissions: compute.snapshots.setLabels
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_name | The name of the snapshot for this request. | Required |
-| labels | A list of labels to apply for this resource. Each label key and value must comply with RFC1035. Example: key=abc,value=123;key=def,value=456. | Required |
+| labels | The labels to apply for this resource. Each label key and value must comply with RFC1035. Example: key=abc,value=123;key=def,value=456. | Required |
 | label_fingerprint | The fingerprint of the previous set of labels for this resource, used to detect conflicts. Run gcp-compute-snapshot-get to retrieve the latest fingerprint. Ignored when add_labels is true, since the fingerprint of the fetched snapshot is used instead. When add_labels is false, a label_fingerprint must be provided. | Optional |
 | add_labels | Whether to add the new labels to the existing ones or override the previous labels with the new ones. True - add, False - override. Possible values are: true, false. Default is false. | Optional |
 
@@ -974,17 +974,17 @@ Sets the labels on a snapshot. Required permissions: compute.snapshots.setLabels
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Operations.id | String | Unique identifier for the operation resource, defined by the server. |
-| GCP.Compute.Operations.name | String | Name of the operation resource. |
-| GCP.Compute.Operations.kind | String | Type of the resource, for example compute\#operation. |
-| GCP.Compute.Operations.operationType | String | Type of operation, such as insert, update, or delete. |
-| GCP.Compute.Operations.status | String | Current status of the operation. |
-| GCP.Compute.Operations.progress | Number | Progress of the operation as a percentage between 0 and 100. |
-| GCP.Compute.Operations.targetId | String | Unique target ID of the resource affected by the operation. |
-| GCP.Compute.Operations.targetLink | String | URL of the target resource modified by the operation. |
-| GCP.Compute.Operations.selfLink | String | Server-defined URL for the operation resource. |
-| GCP.Compute.Operations.insertTime | Date | The time when the operation resource was created. |
-| GCP.Compute.Operations.startTime | Date | The time when the operation started running. |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation resource, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation resource. |
+| GCP.Compute.Operations.kind | String | The type of the resource, for example compute\#operation. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | The current status of the operation. |
+| GCP.Compute.Operations.progress | Number | The progress of the operation as a percentage between 0 and 100. |
+| GCP.Compute.Operations.targetId | String | The unique target ID of the resource affected by the operation. |
+| GCP.Compute.Operations.targetLink | String | The URL of the target resource modified by the operation. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the operation resource. |
+| GCP.Compute.Operations.insertTime | Date | The date and time when the operation resource was created. |
+| GCP.Compute.Operations.startTime | Date | The date and time when the operation started running. |
 | GCP.Compute.Operations.user | String | The user account that performed the operation. |
 
 ### gcp-compute-instances-aggregated-list-by-ip
@@ -1661,17 +1661,17 @@ Deletes the specified firewall rule. Required permission: compute.firewalls.dele
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Operations.id | String | Unique identifier for the operation resource, defined by the server. |
-| GCP.Compute.Operations.name | String | Name of the operation resource. |
-| GCP.Compute.Operations.kind | String | Type of the resource, for example compute\#operation. |
-| GCP.Compute.Operations.operationType | String | Type of operation, such as insert, update, or delete. |
-| GCP.Compute.Operations.status | String | Current status of the operation. |
-| GCP.Compute.Operations.progress | Number | Progress of the operation as a percentage between 0 and 100. |
-| GCP.Compute.Operations.targetId | String | Unique target ID of the resource affected by the operation. |
-| GCP.Compute.Operations.targetLink | String | URL of the target resource modified by the operation. |
-| GCP.Compute.Operations.selfLink | String | Server-defined URL for the operation resource. |
-| GCP.Compute.Operations.insertTime | Date | The time when the operation resource was created. |
-| GCP.Compute.Operations.startTime | Date | The time when the operation started running. |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation resource, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation resource. |
+| GCP.Compute.Operations.kind | String | The type of the resource, for example compute\#operation. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | The current status of the operation. |
+| GCP.Compute.Operations.progress | Number | The progress of the operation as a percentage between 0 and 100. |
+| GCP.Compute.Operations.targetId | String | The unique target ID of the resource affected by the operation. |
+| GCP.Compute.Operations.targetLink | String | The URL of the target resource modified by the operation. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the operation resource. |
+| GCP.Compute.Operations.insertTime | Date | The date and time when the operation resource was created. |
+| GCP.Compute.Operations.startTime | Date | The date and time when the operation started running. |
 | GCP.Compute.Operations.user | String | The user account that performed the operation. |
 
 ### gcp-compute-snapshots-list
