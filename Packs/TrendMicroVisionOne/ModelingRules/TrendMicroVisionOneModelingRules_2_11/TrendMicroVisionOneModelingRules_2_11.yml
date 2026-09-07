@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: TrendMicroVisionOne_ModelingRule
+name: TrendMicroVisionOne Modeling Rule
+rules: ''
+schema: ''
+tags: trend_micro_vision_one
+supportedModules:
+- xsiam
