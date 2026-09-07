@@ -1,7 +1,6 @@
-fromversion: 8.4.0
-toversion: 8.14.0
+fromversion: 8.15.0
 id: cyfirma_decyfir_ModelingRule
-name: cyfirma decyfir Modeling Rule
+name: DeCYFIR Modeling Rule
 rules: ''
 schema: ''
 tags: ''

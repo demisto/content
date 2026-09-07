@@ -1,7 +1,6 @@
-fromversion: 8.5.0
-toversion: 8.14.0
+fromversion: 8.15.0
 id: Oracle_OAM_ModelingRule
-name: Oracle OAM Modeling Rule
+name: Oracle IAM Modeling Rule
 rules: ''
 schema: ''
 tags: ''
