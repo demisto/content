@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: GenetecSecurityCenter_ModelingRule
-name: GenetecSecurityCenter Modeling Rule
+id: Genetec_Security_Center_ModelingRule
+name: Genetec Security Center Modeling Rule
 rules: ''
 schema: ''
 tags: ''

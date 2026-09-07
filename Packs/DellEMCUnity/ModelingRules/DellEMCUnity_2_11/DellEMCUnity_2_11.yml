@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: DellEMCUnity_ModelingRule
-name: DellEMCUnity Modeling Rule
+id: Dell_EMC_Unity_ModelingRule
+name: Dell EMC Unity Modeling Rule
 rules: ''
 schema: ''
 tags: ''
