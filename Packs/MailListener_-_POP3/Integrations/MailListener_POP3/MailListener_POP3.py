@@ -3,6 +3,7 @@ import poplib
 import quopri
 from email.parser import Parser
 from email.header import decode_header
+from email.utils import parsedate_to_datetime
 from html.entities import name2codepoint
 from html.parser import HTMLParser
 
@@ -265,8 +266,45 @@ def parse_mail_parts(parts):
 
 
 def parse_time(t):
-    base_time, _, _, _, _ = TIME_REGEX.findall(t)[0]
-    return datetime.strptime(base_time, "%a, %d %b %Y %H:%M:%S").isoformat() + "Z"
+    """Parse an email ``Date`` header into an ISO-8601 string with a trailing ``Z``.
+
+    RFC 5322 makes the leading day-of-week optional (e.g. both ``Tue, 23 Sep 2025 08:18:52``
+    and ``23 Sep 2025 08:18:52`` are valid). This function handles both variants.
+
+    Args:
+        t: The raw ``Date`` header value.
+
+    Returns:
+        The parsed timestamp as an ISO-8601 string suffixed with ``Z``.
+
+    Raises:
+        ValueError: If the timestamp cannot be parsed by any supported format.
+    """
+    # Prefer the RFC 5322-aware stdlib parser, which handles the optional weekday
+    # and a variety of timezone representations.
+    try:
+        parsed = parsedate_to_datetime(t)
+        # Normalize to a naive datetime to preserve the existing return contract.
+        if parsed.tzinfo is not None:
+            parsed = parsed.replace(tzinfo=None)
+        return parsed.isoformat() + "Z"
+    except (TypeError, ValueError) as e:
+        demisto.debug(
+            f"parsedate_to_datetime failed for Date header {t!r}: {e}. Falling back to manual parsing."
+            f"\n{traceback.format_exc()}"
+        )
+
+    matches = TIME_REGEX.findall(t)
+    if not matches:
+        raise ValueError(f"Unsupported Date header format: {t!r}")
+    base_time, _, _, _, _ = matches[0]
+    for time_format in ("%a, %d %b %Y %H:%M:%S", "%d %b %Y %H:%M:%S"):
+        try:
+            return datetime.strptime(base_time, time_format).isoformat() + "Z"
+        except ValueError:
+            continue
+
+    raise ValueError(f"Unsupported Date header format: {t!r}")
 
 
 def create_incident_labels(parsed_msg, headers):
