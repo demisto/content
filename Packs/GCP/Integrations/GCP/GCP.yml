@@ -2826,14 +2826,14 @@ script:
       required: false
       defaultValue: '600'
     - name: hide_polling_output
-      description: Hide the polling message and only print the final status at the end.
+      description: The polling message will be hidden and only the final status will be printed at the end.
       hidden: true
     outputs:
     - contextPath: GCP.Compute.Operations.id
       description: The unique identifier for the resource. This identifier is defined by the server.
       type: string
     - contextPath: GCP.Compute.Operations.name
-      description: Name of the resource.
+      description: The name of the resource.
       type: string
     - contextPath: GCP.Compute.Operations.zone
       description: The URL of the zone where the operation resides. Only available when performing per-zone operations.
@@ -2854,13 +2854,13 @@ script:
       description: 'The status of the operation, which can be one of the following: PENDING, RUNNING or DONE.'
       type: string
     - contextPath: GCP.Compute.Operations.statusMessage
-      description: An optional textual description of the current status of the operation.
+      description: The optional textual description of the current status of the operation.
       type: string
     - contextPath: GCP.Compute.Operations.user
       description: The user who requested the operation, for example, EMAILADDRESS.
       type: string
     - contextPath: GCP.Compute.Operations.progress
-      description: An optional progress indicator that ranges from 0 to 100.
+      description: The optional progress indicator that ranges from 0 to 100.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
       description: The time that this operation was requested. This value is in RFC3339 text format.
@@ -2875,25 +2875,25 @@ script:
       description: The error type identifier for this error.
       type: string
     - contextPath: GCP.Compute.Operations.error.errors.location
-      description: Indicates the field in the request that caused the error.
+      description: The field in the request that caused the error.
       type: string
     - contextPath: GCP.Compute.Operations.error.errors.message
-      description: An optional, human-readable error message.
+      description: The optional, human-readable error message.
       type: string
     - contextPath: GCP.Compute.Operations.error.errors.errorDetails
-      description: An optional list of messages that contain the error details.
+      description: The optional list of messages that contain the error details.
       type: unknown
     - contextPath: GCP.Compute.Operations.warnings.code
-      description: A warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response.
+      description: The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response.
       type: string
     - contextPath: GCP.Compute.Operations.warnings.message
-      description: A human-readable description of the warning code.
+      description: The human-readable description of the warning code.
       type: string
     - contextPath: GCP.Compute.Operations.warnings.data.key
-      description: A key that provides more detail on the warning being returned.
+      description: The key that provides more detail on the warning being returned.
       type: string
     - contextPath: GCP.Compute.Operations.warnings.data.value
-      description: A warning data value corresponding to the key.
+      description: The warning data value corresponding to the key.
       type: string
     - contextPath: GCP.Compute.Operations.httpErrorStatusCode
       description: The HTTP error status code that was returned if the operation failed. For example, 404 means the resource was not found.
@@ -2902,16 +2902,16 @@ script:
       description: The HTTP error message that was returned if the operation failed, such as NOT FOUND.
       type: string
     - contextPath: GCP.Compute.Operations.selfLink
-      description: Server-defined URL for the resource.
+      description: The server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.description
-      description: A textual description of the operation, which is set when the operation is created.
+      description: The textual description of the operation, which is set when the operation is created.
       type: string
     - contextPath: GCP.Compute.Operations.operationGroupId
-      description: An ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request.
+      description: The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request.
       type: string
     - contextPath: GCP.Compute.Operations.kind
-      description: Type of the resource. Always compute#operation for Operation resources.
+      description: The type of the resource. Always compute#operation for Operation resources.
       type: string
 
 # gcp-compute-region-operation-wait
@@ -2938,14 +2938,14 @@ script:
       required: false
       defaultValue: '600'
     - name: hide_polling_output
-      description: Hide the polling message and only print the final status at the end.
+      description: The polling message will be hidden and only the final status will be printed at the end.
       hidden: true
     outputs:
     - contextPath: GCP.Compute.Operations.id
       description: The unique identifier for the resource. This identifier is defined by the server.
       type: string
     - contextPath: GCP.Compute.Operations.name
-      description: Name of the resource.
+      description: The name of the resource.
       type: string
     - contextPath: GCP.Compute.Operations.region
       description: The URL of the region where the operation resides. Only available when performing regional operations.
@@ -2966,13 +2966,13 @@ script:
       description: 'The status of the operation, which can be one of the following: PENDING, RUNNING or DONE.'
       type: string
     - contextPath: GCP.Compute.Operations.statusMessage
-      description: An optional textual description of the current status of the operation.
+      description: The optional textual description of the current status of the operation.
       type: string
     - contextPath: GCP.Compute.Operations.user
       description: The user who requested the operation, for example, EMAILADDRESS.
       type: string
     - contextPath: GCP.Compute.Operations.progress
-      description: An optional progress indicator that ranges from 0 to 100.
+      description: The optional progress indicator that ranges from 0 to 100.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
       description: The time that this operation was requested. This value is in RFC3339 text format.
@@ -2987,25 +2987,25 @@ script:
       description: The error type identifier for this error.
       type: string
     - contextPath: GCP.Compute.Operations.error.errors.location
-      description: Indicates the field in the request that caused the error.
+      description: The field in the request that caused the error.
       type: string
     - contextPath: GCP.Compute.Operations.error.errors.message
-      description: An optional, human-readable error message.
+      description: The optional, human-readable error message.
       type: string
     - contextPath: GCP.Compute.Operations.error.errors.errorDetails
-      description: An optional list of messages that contain the error details.
+      description: The optional list of messages that contain the error details.
       type: unknown
     - contextPath: GCP.Compute.Operations.warnings.code
-      description: A warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response.
+      description: The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response.
       type: string
     - contextPath: GCP.Compute.Operations.warnings.message
-      description: A human-readable description of the warning code.
+      description: The human-readable description of the warning code.
       type: string
     - contextPath: GCP.Compute.Operations.warnings.data.key
-      description: A key that provides more detail on the warning being returned.
+      description: The key that provides more detail on the warning being returned.
       type: string
     - contextPath: GCP.Compute.Operations.warnings.data.value
-      description: A warning data value corresponding to the key.
+      description: The warning data value corresponding to the key.
       type: string
     - contextPath: GCP.Compute.Operations.httpErrorStatusCode
       description: The HTTP error status code that was returned if the operation failed. For example, 404 means the resource was not found.
@@ -3014,16 +3014,16 @@ script:
       description: The HTTP error message that was returned if the operation failed, such as NOT FOUND.
       type: string
     - contextPath: GCP.Compute.Operations.selfLink
-      description: Server-defined URL for the resource.
+      description: The server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.description
-      description: A textual description of the operation, which is set when the operation is created.
+      description: The textual description of the operation, which is set when the operation is created.
       type: string
     - contextPath: GCP.Compute.Operations.operationGroupId
-      description: An ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request.
+      description: The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request.
       type: string
     - contextPath: GCP.Compute.Operations.kind
-      description: Type of the resource. Always compute#operation for Operation resources.
+      description: The type of the resource. Always compute#operation for Operation resources.
       type: string
 
 # gcp-compute-global-operation-wait
@@ -3047,14 +3047,14 @@ script:
       required: false
       defaultValue: '600'
     - name: hide_polling_output
-      description: Hide the polling message and only print the final status at the end.
+      description: The polling message will be hidden and only the final status will be printed at the end.
       hidden: true
     outputs:
     - contextPath: GCP.Compute.Operations.id
       description: The unique identifier for the resource. This identifier is defined by the server.
       type: string
     - contextPath: GCP.Compute.Operations.name
-      description: Name of the resource.
+      description: The name of the resource.
       type: string
     - contextPath: GCP.Compute.Operations.clientOperationId
       description: The value of the requestId field, if you provided it when the operation was created.
@@ -3072,13 +3072,13 @@ script:
       description: 'The status of the operation, which can be one of the following: PENDING, RUNNING or DONE.'
       type: string
     - contextPath: GCP.Compute.Operations.statusMessage
-      description: An optional textual description of the current status of the operation.
+      description: The optional textual description of the current status of the operation.
       type: string
     - contextPath: GCP.Compute.Operations.user
       description: The user who requested the operation, for example, EMAILADDRESS.
       type: string
     - contextPath: GCP.Compute.Operations.progress
-      description: An optional progress indicator that ranges from 0 to 100.
+      description: The optional progress indicator that ranges from 0 to 100.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
       description: The time that this operation was requested. This value is in RFC3339 text format.
@@ -3093,25 +3093,25 @@ script:
       description: The error type identifier for this error.
       type: string
     - contextPath: GCP.Compute.Operations.error.errors.location
-      description: Indicates the field in the request that caused the error.
+      description: The field in the request that caused the error.
       type: string
     - contextPath: GCP.Compute.Operations.error.errors.message
-      description: An optional, human-readable error message.
+      description: The optional, human-readable error message.
       type: string
     - contextPath: GCP.Compute.Operations.error.errors.errorDetails
-      description: An optional list of messages that contain the error details.
+      description: The optional list of messages that contain the error details.
       type: unknown
     - contextPath: GCP.Compute.Operations.warnings.code
-      description: A warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response.
+      description: The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response.
       type: string
     - contextPath: GCP.Compute.Operations.warnings.message
-      description: A human-readable description of the warning code.
+      description: The human-readable description of the warning code.
       type: string
     - contextPath: GCP.Compute.Operations.warnings.data.key
-      description: A key that provides more detail on the warning being returned.
+      description: The key that provides more detail on the warning being returned.
       type: string
     - contextPath: GCP.Compute.Operations.warnings.data.value
-      description: A warning data value corresponding to the key.
+      description: The warning data value corresponding to the key.
       type: string
     - contextPath: GCP.Compute.Operations.httpErrorStatusCode
       description: The HTTP error status code that was returned if the operation failed. For example, 404 means the resource was not found.
@@ -3120,16 +3120,16 @@ script:
       description: The HTTP error message that was returned if the operation failed, such as NOT FOUND.
       type: string
     - contextPath: GCP.Compute.Operations.selfLink
-      description: Server-defined URL for the resource.
+      description: The server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.description
-      description: A textual description of the operation, which is set when the operation is created.
+      description: The textual description of the operation, which is set when the operation is created.
       type: string
     - contextPath: GCP.Compute.Operations.operationGroupId
-      description: An ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request.
+      description: The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request.
       type: string
     - contextPath: GCP.Compute.Operations.kind
-      description: Type of the resource. Always compute#operation for Operation resources.
+      description: The type of the resource. Always compute#operation for Operation resources.
       type: string
 
 # gcp-compute-networks-list
