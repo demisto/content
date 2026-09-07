@@ -3103,7 +3103,7 @@ script:
       description: The name of the instance group where the instances are added.
       required: true
     - name: instances
-      description: A comma-separated list of URLs of the instances to add to the instance group.
+      description: The comma-separated list of URLs of the instances to add to the instance group.
       required: true
       isArray: true
     outputs:
@@ -3180,7 +3180,7 @@ script:
       description: The name of the instance group from which the instances are removed.
       required: true
     - name: instances
-      description: A comma-separated list of URLs of the instances to remove from the instance group.
+      description: The comma-separated list of URLs of the instances to remove from the instance group.
       required: true
       isArray: true
     outputs:

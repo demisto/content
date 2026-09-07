@@ -1895,7 +1895,7 @@ Adds a list of instances to the specified instance group. All of the instances i
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone where the instance group is located. | Required |
 | instance_group | The name of the instance group where the instances are added. | Required |
-| instances | A comma-separated list of URLs of the instances to add to the instance group. | Required |
+| instances | The comma-separated list of URLs of the instances to add to the instance group. | Required |
 
 #### Context Output
 
@@ -1978,7 +1978,7 @@ Removes one or more instances from the specified instance group, but does not de
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone where the instance group is located. | Required |
 | instance_group | The name of the instance group from which the instances are removed. | Required |
-| instances | A comma-separated list of URLs of the instances to remove from the instance group. | Required |
+| instances | The comma-separated list of URLs of the instances to remove from the instance group. | Required |
 
 #### Context Output
 
