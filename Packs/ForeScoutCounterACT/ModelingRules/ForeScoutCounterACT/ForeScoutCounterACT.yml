@@ -1,4 +1,5 @@
 fromversion: 8.5.0
+toversion: 8.14.0
 id: ForeScout_CounterACT_ModelingRule
 name: ForeScout CounterACT Modeling Rule
 rules: ''
