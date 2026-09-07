@@ -181,12 +181,19 @@ alter
     xdm.source.user.identifier = userId,
     xdm.source.identity.identifier = userId,
     xdm.source.user.identity_type = if(
+        username contains "SYSTEM$" or username contains "RA-SYSTEM-USER$", "SERVICE_ACCOUNT",
+        identityType = "HUMAN", "USER",
+        "USER"
+    ),
     xdm.source.identity.identity_type = if(
         username contains "SYSTEM$" or username contains "RA-SYSTEM-USER$", "SERVICE_ACCOUNT",
         identityType = "HUMAN", "USER",
         "USER"
     ),
     xdm.source.user.user_type = if(
+        username contains "SYSTEM$" or username contains "RA-SYSTEM-USER$", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        XDM_CONST.USER_TYPE_REGULAR
+    ),
     xdm.source.identity.user_type = if(
         username contains "SYSTEM$" or username contains "RA-SYSTEM-USER$", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
         XDM_CONST.USER_TYPE_REGULAR
