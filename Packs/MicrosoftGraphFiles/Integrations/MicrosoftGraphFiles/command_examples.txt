@@ -6,3 +6,11 @@
 !msgraph-driveitem-copy object_type=sites object_type_id=test_site_id item_id=test_item_id destination_parent_id=test_folder_id new_name=copy-by-cortex.txt
 !msgraph-driveitem-permissions-list object_type=sites object_type_id=test_site_id item_id=test_item_id
 !msgraph-driveitem-permission-delete object_type=sites object_type_id=test_site_id item_id=test_item_id permission_id=test_perm_id
+!msgraph-driveitem-metadata-get object_type=sites object_type_id=test_site_id item_id=test_item_id
+!msgraph-driveitem-metadata-get object_type=sites object_type_id=test_site_id item_path=Documents/test.docx
+!msgraph-driveitem-metadata-get share_url=https://contoso.sharepoint.com/:w:/r/personal/test_user/Documents/test.docx
+!msgraph-driveitem-metadata-get object_type=sites object_type_id=test_site_id item_id=test_item_id include_sharepoint_ids=true
+!msgraph-driveitem-activities-list site_id=test_site_id item_id=test_item_id
+!msgraph-driveitem-activities-list site_id=test_site_id item_id=test_item_id limit=5
+!msgraph-driveitem-analytics-get site_id=test_site_id item_id=test_item_id
+!msgraph-driveitem-analytics-get site_id=test_site_id item_id=test_item_id time_range=lastSevenDays

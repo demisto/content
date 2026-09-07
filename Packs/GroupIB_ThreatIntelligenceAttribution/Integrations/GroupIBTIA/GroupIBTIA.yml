@@ -175,6 +175,13 @@ configuration:
   section: Collect
   required: false
   type: 13
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: Hunting Rules
   name: hunting_rules
   section: Collect

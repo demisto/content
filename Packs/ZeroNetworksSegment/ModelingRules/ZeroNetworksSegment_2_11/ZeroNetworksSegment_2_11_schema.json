@@ -1,0 +1,72 @@
+{
+  "zeronetworks_segment_raw": {
+      "callerIpAddress": {
+          "type": "int",
+          "is_array": false
+      },
+      "userRole": {
+          "type": "int",
+          "is_array": false
+      },
+      "auditType": {
+          "type": "int",
+          "is_array": false
+      },
+      "enforcementSource": {
+          "type": "int",
+          "is_array": false
+      },
+      "performedBy": {
+          "type": "string",
+          "is_array": false
+      },
+      "parentObjectId": {
+          "type": "string",
+          "is_array": false
+      },
+      "details": {
+          "type": "string",
+          "is_array": false
+      },
+      "reportedObjectId": {
+          "type": "string",
+          "is_array": false
+      },
+      "destinationEntitiesList": {
+          "type": "string",
+          "is_array": false
+      },
+      "protocol": {
+          "type": "int",
+          "is_array": false
+      },
+      "src": {
+          "type": "string",
+          "is_array": false
+      },
+      "dst": {
+          "type": "string",
+          "is_array": false
+      },
+      "state": {
+          "type": "int",
+          "is_array": false
+      },
+      "reason": {
+          "type": "int",
+          "is_array": false
+      },
+      "inboundRuleMatches": {
+          "type": "string",
+          "is_array": false
+      },
+      "outboundRuleMatches": {
+          "type": "string",
+          "is_array": false
+      },
+      "source_log_type": {
+          "type": "string",
+          "is_array": false
+      }
+  }
+}
