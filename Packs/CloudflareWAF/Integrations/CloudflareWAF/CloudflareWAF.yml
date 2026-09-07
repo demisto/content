@@ -111,7 +111,8 @@ script:
       name: ref
     - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
       name: zone_id
-    description: Create a new firewall rule that create new filter or use an exist filter.
+    deprecated: true
+    description: Deprecated. Use `cloudflare-waf-ruleset-rule-create` instead. Create a new firewall rule that create new filter or use an exist filter.
     name: cloudflare-waf-firewall-rule-create
     outputs:
     - contextPath: CloudflareWAF.FirewallRule.id
@@ -182,7 +183,8 @@ script:
       name: ref
     - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
       name: zone_id
-    description: Update firewall rule by the specified rule ID. Can update rule action, paused, description, priority, products and ref. Can not update or delete rule filter, ONLY add a new filter.
+    deprecated: true
+    description: Deprecated. Use `cloudflare-waf-ruleset-rule-update` instead. Update firewall rule by the specified rule ID. Can update rule action, paused, description, priority, products and ref. Can not update or delete rule filter, ONLY add a new filter.
     name: cloudflare-waf-firewall-rule-update
     outputs: []
   - arguments:
@@ -191,7 +193,8 @@ script:
       required: true
     - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
       name: zone_id
-    description: Delete firewall rule by the specified rule ID.
+    deprecated: true
+    description: Deprecated. Use `cloudflare-waf-ruleset-rule-delete` instead. Delete firewall rule by the specified rule ID.
     name: cloudflare-waf-firewall-rule-delete
     outputs: []
   - arguments:
@@ -227,7 +230,8 @@ script:
       name: limit
     - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
       name: zone_id
-    description: List of firewall rules or details of individual rule by ID.
+    deprecated: true
+    description: Deprecated. Use `cloudflare-waf-ruleset-get` instead. List of firewall rules or details of individual rule by ID.
     name: cloudflare-waf-firewall-rule-list
     outputs:
     - contextPath: CloudflareWAF.FirewallRule.id
@@ -273,7 +277,8 @@ script:
       name: description
     - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
       name: zone_id
-    description: Create a new filter which can be added to a firewall rule.
+    deprecated: true
+    description: Deprecated. Use the inline expression on `cloudflare-waf-ruleset-rule-create` instead. Create a new filter which can be added to a firewall rule.
     name: cloudflare-waf-filter-create
     outputs:
     - contextPath: CloudflareWAF.Filter.id
@@ -313,7 +318,8 @@ script:
       name: description
     - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
       name: zone_id
-    description: Update filter by the specified filter ID.
+    deprecated: true
+    description: Deprecated. Use the inline expression on `cloudflare-waf-ruleset-rule-update` instead. Update filter by the specified filter ID.
     name: cloudflare-waf-filter-update
     outputs: []
   - arguments:
@@ -322,7 +328,8 @@ script:
       required: true
     - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
       name: zone_id
-    description: Delete an exist filter (Note that a filter linked to firewall rule cannot be deleted).
+    deprecated: true
+    description: Deprecated. Use `cloudflare-waf-ruleset-rule-delete` instead. Delete an exist filter (Note that a filter linked to firewall rule cannot be deleted).
     name: cloudflare-waf-filter-delete
     outputs: []
   - arguments:
@@ -359,7 +366,8 @@ script:
       name: limit
     - description: Zone identifier. The initialization will override the value set in the instance. Zone ID field is required for this command.
       name: zone_id
-    description: List filters.
+    deprecated: true
+    description: Deprecated. Use `cloudflare-waf-ruleset-get` instead. List filters.
     name: cloudflare-waf-filter-list
     outputs:
     - contextPath: CloudflareWAF.Filter.id
