@@ -619,6 +619,30 @@ def arg_to_boolean(arg: str) -> Optional[bool]:
     return argToBoolean(arg) if arg else None
 
 
+def _resolve_scope_ids(args: dict[str, Any], client: "Client") -> tuple[str | None, str]:
+    """Return (zone_id, account_id) resolved from args with client fallback.
+
+    Args take priority over client defaults. Raises ValueError if both are
+    supplied (mutually exclusive) or if neither resolves to a value.
+
+    Returns:
+        tuple[str | None, str]: (zone_id, account_id); zone_id may be None.
+    """
+    has_zone = "zone_id" in args
+    has_account = "account_id" in args
+
+    if has_zone and has_account:
+        raise ValueError("zone_id and account_id are mutually exclusive. Provide only one.")
+
+    zone_id = args["zone_id"] if has_zone else client.zone_id
+    account_id = args["account_id"] if has_account else client.account_id
+
+    if not zone_id and not account_id:
+        raise ValueError("Either zone_id or account_id must be provided (via argument or instance configuration).")
+
+    return zone_id, account_id
+
+
 def cloudflare_waf_firewall_rule_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Create a new firewall rule by a new filter (if filter_expression is specified)
         or an already exist filter (if filter_id is specified).

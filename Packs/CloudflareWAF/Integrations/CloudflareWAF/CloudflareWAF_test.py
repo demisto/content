@@ -722,3 +722,120 @@ def test_cloudflare_waf_ruleset_delete_command(requests_mock, mock_client):
     result = cloudflare_waf_ruleset_delete_command(mock_client, {"ruleset_id": ruleset_id})
 
     assert result.readable_output == f"Ruleset {ruleset_id} was successfully deleted."
+
+
+class TestResolveScopeIds:
+    """Tests for the _resolve_scope_ids helper function."""
+
+    def test_both_zone_id_and_account_id_in_args_raises(self, mock_client):
+        """
+        Scenario: Both zone_id and account_id are explicitly provided in args.
+        Given:
+         - args contains both zone_id and account_id.
+        When:
+         - _resolve_scope_ids is called.
+        Then:
+         - Raise ValueError indicating mutual exclusivity.
+        """
+        from CloudflareWAF import _resolve_scope_ids
+
+        with pytest.raises(ValueError, match="mutually exclusive"):
+            _resolve_scope_ids({"zone_id": "z1", "account_id": "a1"}, mock_client)
+
+    def test_neither_zone_nor_account_raises(self):
+        """
+        Scenario: Neither zone_id nor account_id is available from args or client.
+        Given:
+         - args is empty.
+         - Client has no zone_id and no account_id.
+        When:
+         - _resolve_scope_ids is called.
+        Then:
+         - Raise ValueError indicating that at least one must be provided.
+        """
+        from CloudflareWAF import _resolve_scope_ids
+
+        client_empty = Client(account_id="", zone_id=None, credentials=CREDENTIALS, base_url=BASE_URL, proxy=False, insecure=True)
+
+        with pytest.raises(ValueError, match="Either zone_id or account_id must be provided"):
+            _resolve_scope_ids({}, client_empty)
+
+    def test_zone_id_in_args_only(self, mock_client):
+        """
+        Scenario: zone_id is provided in args only (no account_id in args).
+        Given:
+         - args contains zone_id.
+         - Client has account_id.
+        When:
+         - _resolve_scope_ids is called.
+        Then:
+         - Returns (zone_id_from_args, client.account_id).
+        """
+        from CloudflareWAF import _resolve_scope_ids
+
+        zone_id, account_id = _resolve_scope_ids({"zone_id": "arg_zone"}, mock_client)
+
+        assert zone_id == "arg_zone"
+        assert account_id == ACCOUNT_ID
+
+    def test_account_id_in_args_only(self):
+        """
+        Scenario: account_id is provided in args only (no zone_id in args or client).
+        Given:
+         - args contains account_id.
+         - Client has no zone_id.
+        When:
+         - _resolve_scope_ids is called.
+        Then:
+         - Returns (None, account_id_from_args).
+        """
+        from CloudflareWAF import _resolve_scope_ids
+
+        client_no_zone = Client(
+            account_id=ACCOUNT_ID, zone_id=None, credentials=CREDENTIALS, base_url=BASE_URL, proxy=False, insecure=True
+        )
+
+        zone_id, account_id = _resolve_scope_ids({"account_id": "arg_account"}, client_no_zone)
+
+        assert zone_id is None
+        assert account_id == "arg_account"
+
+    def test_zone_id_from_client(self, mock_client):
+        """
+        Scenario: zone_id is not in args but client has zone_id.
+        Given:
+         - args is empty.
+         - Client has zone_id and account_id.
+        When:
+         - _resolve_scope_ids is called.
+        Then:
+         - Returns (client.zone_id, client.account_id).
+        """
+        from CloudflareWAF import _resolve_scope_ids
+
+        zone_id, account_id = _resolve_scope_ids({}, mock_client)
+
+        assert zone_id == ZONE_ID
+        assert account_id == ACCOUNT_ID
+
+    def test_account_id_from_client(self):
+        """
+        Scenario: No zone_id in args or client; account_id falls back to client.account_id.
+        Given:
+         - args is empty.
+         - Client has no zone_id but has account_id.
+        When:
+         - _resolve_scope_ids is called.
+        Then:
+         - Returns (None, client.account_id).
+        """
+        from CloudflareWAF import _resolve_scope_ids
+
+        client_no_zone = Client(
+            account_id=ACCOUNT_ID, zone_id=None, credentials=CREDENTIALS, base_url=BASE_URL, proxy=False, insecure=True
+        )
+
+        zone_id, account_id = _resolve_scope_ids({}, client_no_zone)
+
+        assert zone_id is None
+        assert account_id == ACCOUNT_ID
