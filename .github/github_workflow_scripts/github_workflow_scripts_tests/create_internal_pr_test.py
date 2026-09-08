@@ -179,8 +179,8 @@ class TestCrossReferencePRs:
         assert main_pr.edit.call_count == 1
         assert mapping_pr.edit.call_count == 1
 
-        main_updated_body = main_pr.edit.call_args[1]["body"]
-        mapping_updated_body = mapping_pr.edit.call_args[1]["body"]
+        main_updated_body = main_pr.edit.call_args.kwargs.get("body", "")
+        mapping_updated_body = mapping_pr.edit.call_args.kwargs.get("body", "")
 
         assert f"**Mapping Internal PR:** {self.MAPPING_URL}" in main_updated_body
         assert f"**Main Internal PR:** {self.MAIN_URL}" in mapping_updated_body

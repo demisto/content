@@ -380,14 +380,18 @@ def main():
     if len(created) == 2:
         main_pr, mapping_pr = created[0], created[1]
         try:
-            main_pr.edit(body=main_pr.body.replace(
-                f"**Original External PR:** {merged_pr.html_url}",
-                f"**Original External PR:** {merged_pr.html_url}\r\n**Mapping Internal PR:** {mapping_pr.html_url}",
-            ))
-            mapping_pr.edit(body=mapping_pr.body.replace(
-                f"**Original External PR:** {merged_pr.html_url}",
-                f"**Original External PR:** {merged_pr.html_url}\r\n**Main Internal PR:** {main_pr.html_url}",
-            ))
+            main_pr.edit(
+                body=main_pr.body.replace(
+                    f"**Original External PR:** {merged_pr.html_url}",
+                    f"**Original External PR:** {merged_pr.html_url}\r\n**Mapping Internal PR:** {mapping_pr.html_url}",
+                )
+            )
+            mapping_pr.edit(
+                body=mapping_pr.body.replace(
+                    f"**Original External PR:** {merged_pr.html_url}",
+                    f"**Original External PR:** {merged_pr.html_url}\r\n**Main Internal PR:** {main_pr.html_url}",
+                )
+            )
             print(f"{t.cyan}Cross-referenced main PR #{main_pr.number} and mapping PR #{mapping_pr.number}{t.normal}")
         except Exception as e:
             print(f"{t.red}Failed to cross-reference PRs: {e}{t.normal}")
