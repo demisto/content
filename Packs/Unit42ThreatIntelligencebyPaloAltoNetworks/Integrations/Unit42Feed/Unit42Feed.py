@@ -941,11 +941,9 @@ def fetch_indicator_type(
         # Parse indicators for this page
         page_indicators = parse_indicators(data, feed_tags, tlp_color)
 
-        # Ensure we don't exceed the limit (safety check, in case the API returns more than requested)
-        if total_fetched + len(page_indicators) > limit:
-            page_indicators = page_indicators[: limit - total_fetched]
-
-        # Push this page to the server immediately, in batches of 2000
+        # Push the full page even if the API returned more than requested: the page token
+        # below acknowledges the whole page, so dropping the surplus would lose it
+        # permanently. Overshooting by one page is cheaper, and createIndicators dedups.
         push_indicators_in_batches(page_indicators)
 
         total_fetched += len(page_indicators)
@@ -1015,14 +1013,13 @@ def fetch_threat_objects_with_limit(
         # indicators derived from a single threat object, so it can exceed len(data))
         page_objects = parse_threat_objects(data, feed_tags, tlp_color)
 
-        # Ensure we don't exceed the limit (safety check, in case the API returns more than requested)
-        if total_fetched + len(page_objects) > limit:
-            page_objects = page_objects[: limit - total_fetched]
-
-        # Push this page to the server immediately, in batches of 2000
+        # Push the whole page as one unit: a threat object and its derived location
+        # indicators must not be split, or we persist locations whose parent is missing.
         push_indicators_in_batches(page_objects)
 
-        total_fetched += len(page_objects)
+        # Count objects consumed from the API - not the indicators they expand into -
+        # so the limit stays aligned with the page token used to resume.
+        total_fetched += len(data)
 
         demisto.debug(f"UNIT42FEED: Parsed and pushed {len(page_objects)} threat objects (total: {total_fetched})")
 
