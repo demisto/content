@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: ServiceNow_ModelingRule
-name: ServiceNow Modeling Rule
-rules: ''
-schema: ''
-supportedModules:
-- xsiam
-tags: ''
