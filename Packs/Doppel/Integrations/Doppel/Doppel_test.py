@@ -1299,6 +1299,27 @@ def test_client_sends_attribution_headers(requests_mock):
     assert alert_mock.last_request.headers["x-api-key"] == "test-api-key"
 
 
+def test_pack_version_matches_pack_metadata():
+    """PACK_VERSION (used in attribution headers) must match pack_metadata.json.
+
+    pack_metadata.json is not readable at runtime, so Doppel.py carries the version as a
+    hardcoded constant that must be bumped manually on every release. This test makes CI
+    fail if the two ever drift apart.
+    """
+    from pathlib import Path
+
+    from Doppel import PACK_VERSION
+
+    pack_metadata_path = Path(__file__).resolve().parents[2] / "pack_metadata.json"
+    pack_metadata = json.loads(pack_metadata_path.read_text())
+
+    assert pack_metadata["currentVersion"] == PACK_VERSION, (
+        f"pack_metadata.json currentVersion ({pack_metadata['currentVersion']}) does not match "
+        f"PACK_VERSION ({PACK_VERSION}) in Doppel.py; bump the constant so the x-doppel-client "
+        f"attribution header reports the released pack version."
+    )
+
+
 def test_main_function_with_proxy_enabled(mocker):
     """Test main function when proxy is enabled in params."""
     # Mock demisto functions
