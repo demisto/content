@@ -1,7 +1,7 @@
 category: Analytics & SIEM
 provider: Cisco Systems
 commonfields:
-  id: SplunkPy v2FIX_UPDATE
+  id: SplunkPy v2
   version: -1
 sectionorder:
 - Connect
@@ -345,8 +345,8 @@ configuration:
   - agentix
   - xsiam
 description: Run queries on Splunk and fetch Splunk ES Findings and Investigations (Splunk ES 8.2+).
-display: SplunkPy v2 (FIX_UPDATE)
-name: SplunkPy v2FIX_UPDATE
+display: SplunkPy v2
+name: SplunkPy v2
 script:
   commands:
   - arguments:
