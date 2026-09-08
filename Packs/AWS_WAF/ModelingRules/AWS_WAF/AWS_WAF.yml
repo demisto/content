@@ -6,3 +6,5 @@ schema: ''
 tags: AWS_WAF
 supportedModules:
 - xsiam
+supportedFeatures:
+- harness_v1

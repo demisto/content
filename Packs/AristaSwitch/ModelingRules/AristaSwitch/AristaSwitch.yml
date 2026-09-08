@@ -6,3 +6,5 @@ schema: ''
 tags: 'Arista Switch EOS'
 supportedModules:
 - xsiam
+supportedFeatures:
+- harness_v2
