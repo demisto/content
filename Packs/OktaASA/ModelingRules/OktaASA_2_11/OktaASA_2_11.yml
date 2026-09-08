@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: OktaASA_ModelingRule
-name: OktaASA Modeling Rule
-rules: ''
-schema: ''
-tags: ''
-supportedModules:
-- xsiam
