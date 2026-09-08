@@ -2169,7 +2169,7 @@ def test_get_file_content_command_text_file(mocker: MockerFixture):
     When: Running get-file-content.
     Then: Content is returned inline (decoded) and Type is the plain MIME type (no ';base64').
     """
-    url = "https://contoso.sharepoint.com/:x:/s/site/csv1"
+    url = "https://example.sharepoint.com/:x:/s/site/csv1"
     mocker.patch.object(
         CLIENT_MOCKER,
         "get_driveitem_by_share_url",
@@ -2195,7 +2195,7 @@ def test_get_file_content_command_binary_file_base64(mocker: MockerFixture):
     """
     import base64 as _b64
 
-    url = "https://contoso.sharepoint.com/:w:/s/site/docx1"
+    url = "https://example.sharepoint.com/:w:/s/site/docx1"
     raw = b"\x50\x4b\x03\x04binary-docx-bytes"
     docx_mime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     mocker.patch.object(
@@ -2217,7 +2217,7 @@ def test_get_file_content_command_unapproved_format(mocker: MockerFixture):
     When: Running get-file-content.
     Then: A ValueError is raised listing the supported formats.
     """
-    url = "https://contoso.sharepoint.com/:i:/s/site/png1"
+    url = "https://example.sharepoint.com/:i:/s/site/png1"
     mocker.patch.object(
         CLIENT_MOCKER,
         "get_driveitem_by_share_url",
@@ -2233,7 +2233,7 @@ def test_get_file_content_command_exceeds_size_limit(mocker: MockerFixture):
     When: Running get-file-content.
     Then: A ValueError about the maximum allowed size is raised.
     """
-    url = "https://contoso.sharepoint.com/:w:/s/site/big"
+    url = "https://example.sharepoint.com/:w:/s/site/big"
     docx_mime = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
     mocker.patch.object(
         CLIENT_MOCKER,
@@ -2260,7 +2260,7 @@ def test_get_file_content_command_site_page_error(mocker: MockerFixture):
     When: Running get-file-content and Graph returns 'Site Pages cannot be accessed as a drive item'.
     Then: A clear ValueError about Site Pages is raised instead of the raw Graph error.
     """
-    url = "https://contoso.sharepoint.com/sites/site/SitePages/Home.aspx"
+    url = "https://example.sharepoint.com/sites/site/SitePages/Home.aspx"
     mocker.patch.object(
         CLIENT_MOCKER,
         "get_driveitem_by_share_url",
@@ -2285,10 +2285,9 @@ def test_get_file_content_command_access_denied(mocker: MockerFixture, graph_err
     """
     Given: A sharing URL the connector's application cannot access (Graph 403/404/accessDenied).
     When: Running get-file-content.
-    Then: A friendly, actionable ValueError is raised instead of the raw Graph error
-          (parity with the Google Drive get-file-content access-denied mapping).
+    Then: A friendly, actionable ValueError is raised instead of the raw Graph error.
     """
-    url = "https://contoso.sharepoint.com/:x:/r/personal/fake_user/Documents/report.csv"
+    url = "https://example.sharepoint.com/:x:/r/personal/fake_user/Documents/report.csv"
     mocker.patch.object(
         CLIENT_MOCKER,
         "get_driveitem_by_share_url",
@@ -2304,7 +2303,7 @@ def test_get_file_content_command_other_demisto_exception_propagates(mocker: Moc
     When: Running get-file-content.
     Then: The original DemistoException propagates unchanged (no over-broad mapping).
     """
-    url = "https://contoso.sharepoint.com/:x:/r/personal/fake_user/Documents/report.csv"
+    url = "https://example.sharepoint.com/:x:/r/personal/fake_user/Documents/report.csv"
     mocker.patch.object(
         CLIENT_MOCKER,
         "get_driveitem_by_share_url",

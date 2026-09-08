@@ -1083,7 +1083,7 @@ def get_file_content_command(client: MsGraphClient, args: dict[str, str]) -> Com
             ) from error
         # Access denied / not found usually means the file is not shared with the connector's
         # application, or the sharing URL is invalid/expired. Surface an actionable message
-        # instead of the raw Graph 403/404 (parity with the Google Drive get-file-content).
+        # instead of the raw Graph 403/404.
         if any(
             marker in error_text for marker in ("accessdenied", "access denied", "403", "404", "itemnotfound", "unauthorized")
         ):
