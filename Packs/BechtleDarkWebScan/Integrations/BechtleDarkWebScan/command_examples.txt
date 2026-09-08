@@ -1,0 +1,6 @@
+!darkwebscan-getcompanies
+!darkwebscan-getleaks company_id=119
+!darkwebscan-resetcontext
+!darkwebscan-getemailsecurity company_id=119
+!darkwebscan-getosint company_id=119
+!darkwebscan-getwaf company_id=119
