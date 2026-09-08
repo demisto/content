@@ -8,13 +8,17 @@ from urllib.parse import unquote
 COMMAND_PREFIX = "nodezero-mcp"
 DEFAULT_BASE_URL = "https://mcp.horizon3ai.com/mcp"
 SCOPE = "read write offline_access"
+SERVER_NAME = "NodeZero MCP"
+
+
+COMMANDS_WITHOUT_AUTH = {"nodezero-mcp-generate-login-url", "test-module"}
 
 
 def validate_required_params(base_url: str, auth_code: str, command: str) -> None:
     if not base_url:
         raise ValueError("Server URL must be provided.")
-    if not auth_code and command not in ("test-module", f"{COMMAND_PREFIX}-generate-login-url"):
-        raise ValueError("Authorization Code is required. Run !nodezero-mcp-generate-login-url to obtain one.")
+    if not auth_code and command not in COMMANDS_WITHOUT_AUTH:
+        raise ValueError("Authorization Code is required.")
 
 
 async def main() -> None:  # pragma: no cover
@@ -46,7 +50,7 @@ async def main() -> None:  # pragma: no cover
             )
 
         elif command == "list-tools":
-            result = await client.list_tools(COMMAND_PREFIX)
+            result = await client.list_tools(SERVER_NAME)
             return_results(result)
 
         elif command == "call-tool":
