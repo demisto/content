@@ -14,26 +14,36 @@ urllib3.disable_warnings()
 # BUILD_MARKER: bump this string on every hotfix build so the exact deployed version can be
 # identified from the tenant integration logs (search for "WORKDAY_EC_BUILD" in GCP Logs Explorer).
 # This is what lets us confirm the fix is actually running on the client tenant after upload.
-BUILD_MARKER = "WORKDAY_EC_BUILD=XSUP-75678-dedup-fix-3-audit-recheck"
+BUILD_MARKER = "WORKDAY_EC_BUILD=XSUP-75678-dual-proof-probe"
 
-# Late-arrival audit (read-only diagnostic): each fetch cycle counts, with EXACTLY ONE API call, how
-# many events the API returns for a single already-elapsed minute. To prove late arrival we observe
-# the SAME minute at two ages: first when it is "young" (AUDIT_FIRST_SEEN_DELAY_SECONDS after it
-# closes) we record its count; later when it is "old" (AUDIT_RECHECK_DELAY_SECONDS) we re-count it
-# and log the growth. A positive growth for a fixed past minute is direct proof that Workday makes
-# events available late/out-of-order (the cause of the residual gap in XSUP-75678).
-# The audit only COUNTS events - it never ingests them - so it cannot cause duplication or loss.
-AUDIT_LOG_TAG = "WORKDAY_LATE_ARRIVAL_AUDIT"
+# Freshness-lag audit (read-only diagnostic for XSUP-75678). The real fetch queries up to `to_date=now`,
+# but Workday publishes an event minute's tail with a short lag, so the freshest events are not yet
+# returned when we read them; the checkpoint then advances past them and they are lost permanently.
+# The previous audit only observed each minute at 90s+ (already published) so it saw grew_by=0 and
+# MISSED the loss. This audit instead re-counts the SAME fixed minute at several YOUNG ages spanning
+# the freshness zone (AUDIT_PROBE_AGES_SECONDS). The count growing from the youngest age to the oldest
+# is direct proof of Workday's publishing lag AND measures its magnitude (to size the fix's safety lag).
+# Note: this measures the pure Workday API lag with NO XSIAM pipeline involvement (unlike _insert_time).
+# The audit only COUNTS events via the API - it never ingests them - so it cannot cause duplication or loss.
+AUDIT_LOG_TAG = "WORKDAY_FRESHNESS_LAG_AUDIT"
 # Tag for the dedup-value proof: quantifies, each cycle, the duplicates the identity-based fix
 # prevented from being re-ingested, and the boundary-second events it KEPT that the OLD
 # position-based code would have silently dropped. Greppable in tenant logs to show the fix's value.
 DEDUP_VALUE_LOG_TAG = "WORKDAY_DEDUP_VALUE"
-# The audit observes each minute at two ages so growth (late arrival) is directly observable.
-# It performs at most TWO small read-only API calls per fetch cycle (still bounded, non-paginated):
-#   * "young": ~90s after the minute closes -> record the count as the baseline (first_seen).
-#   * "recheck": ~600s (10 min) after the same minute closes -> re-count and log growth vs baseline.
-AUDIT_FIRST_SEEN_DELAY_SECONDS = 90
-AUDIT_RECHECK_DELAY_SECONDS = 600
+# Tag for the capture-gap proof (Problem B consequence): each cycle, once a recently-fetched minute
+# has settled (past the publishing lag), we re-count via the API how many events that minute REALLY
+# has, and compare to how many the real fetch actually captured for it. A positive gap is the live,
+# per-cycle version of the dataset shortfall - direct proof that to_date=now skips freshly-published
+# events. Read-only: it only COUNTS via the API and never ingests, so it cannot cause loss/duplication.
+CAPTURE_GAP_LOG_TAG = "WORKDAY_CAPTURE_GAP"
+# A minute is considered "settled" (publishing lag elapsed) this many seconds after it closes; the
+# capture-gap probe compares captured-vs-available only once a minute is at least this old.
+CAPTURE_GAP_SETTLE_SECONDS = 300
+# Ages (seconds after a minute closes) at which the audit re-counts the SAME minute to build a
+# publishing-lag curve. The youngest age (~10s) mirrors where the real fetch reads (to_date=now);
+# the oldest (~300s) is well past the lag so it represents the "complete" count. One read-only,
+# non-paginated API call is made per cycle (for whichever probe age is due), so at most one extra call.
+AUDIT_PROBE_AGES_SECONDS = (10, 30, 60, 120, 300)
 
 DEFAULT_MAX_FETCH = 3000
 MAX_PAGE_SIZE = 1000
@@ -216,61 +226,135 @@ def _elapsed_minute_window(now: datetime, delay_seconds: int) -> tuple[str, str]
 
 def run_late_arrival_audit(client: Client, last_run: dict) -> dict:
     """
-    Self-proving diagnostic for XSUP-75678 (read-only; ingests nothing).
+    Freshness-lag diagnostic for XSUP-75678 (read-only; ingests nothing).
 
-    To make late arrival directly observable, the SAME minute is counted at two ages:
-      * "young"   (AUDIT_FIRST_SEEN_DELAY_SECONDS after it closes): record baseline count.
-      * "recheck" (AUDIT_RECHECK_DELAY_SECONDS after it closes): re-count and log growth vs baseline.
-    If the recheck count exceeds the young baseline, that is direct proof Workday released events for
-    that minute late/out-of-order (no manual customer command needed).
+    The real fetch reads up to `to_date=now`, but Workday publishes an event minute's tail with a
+    short lag, so the freshest events are not yet returned at read time and are then skipped forever
+    once the checkpoint advances. To measure that lag directly, this re-counts the SAME fixed minute
+    at several increasing YOUNG ages (AUDIT_PROBE_AGES_SECONDS). Each cycle it issues at most ONE
+    read-only, non-paginated API call for whichever probe age is currently due for the target minute,
+    recording the count into `audit_history[minute][age]`. When the oldest probe age is reached, it
+    logs the full lag curve and the growth from the youngest age to the oldest.
 
-    Cost: at most TWO small non-paginated read-only calls per fetch cycle. Baselines are stored in
-    last_run["audit_history"] (keyed by the minute string) and pruned to stay tiny.
+      growth = count(oldest_age) - count(youngest_age)
+
+    A positive growth is direct proof of Workday's publishing lag (the cause of the residual gap),
+    and its magnitude tells us how large a safety lag the fix must apply. This is the pure Workday API
+    lag with NO XSIAM pipeline involvement (unlike _insert_time, which also includes pipeline delay).
 
     Args:
         client: Client object.
         last_run: the last run object (never mutated; a copy is returned via the caller).
 
     Returns:
-        The updated audit_history dict to persist in last_run.
+        The updated audit_history dict to persist in last_run. Shape:
+        { "<minute_from_str>": { "<age_seconds_str>": count, ... }, ... }
     """
-    audit_history: dict = dict(last_run.get("audit_history", {}))
+    audit_history: dict = {minute: dict(ages) for minute, ages in last_run.get("audit_history", {}).items()}
     now = datetime.now(tz=timezone.utc)
+    youngest_age = AUDIT_PROBE_AGES_SECONDS[0]
+    oldest_age = AUDIT_PROBE_AGES_SECONDS[-1]
 
-    # --- Young observation: record the baseline count for the minute that just recently closed. ---
-    young_from, young_to = _elapsed_minute_window(now, AUDIT_FIRST_SEEN_DELAY_SECONDS)
-    if young_from not in audit_history:
+    # Each probe age targets the minute that closed `age` seconds ago (a DIFFERENT minute per age).
+    # We measure every age whose target minute hasn't been measured yet this cycle, so each fixed
+    # minute accumulates all its age-samples over successive cycles and its curve reliably completes.
+    # At most len(AUDIT_PROBE_AGES_SECONDS) small non-paginated read-only calls per cycle (typically
+    # far fewer, since most ages are already recorded), and never any ingestion.
+    for age in AUDIT_PROBE_AGES_SECONDS:
+        probe_from, probe_to = _elapsed_minute_window(now, age)
+        minute_ages = audit_history.setdefault(probe_from, {})
+        age_key = str(age)
+        if age_key in minute_ages:
+            continue  # already measured this minute at this age
         try:
-            young_count, young_capped = count_activity_logging_for_window(client, from_date=young_from, to_date=young_to)
-            audit_history[young_from] = young_count
+            count, capped = count_activity_logging_for_window(client, from_date=probe_from, to_date=probe_to)
+            minute_ages[age_key] = count
             demisto.info(
-                f"{AUDIT_LOG_TAG} phase=baseline window=[{young_from},{young_to}) "
-                f"first_seen_api_count={young_count}{' (capped)' if young_capped else ''} "
-                f"age_seconds={AUDIT_FIRST_SEEN_DELAY_SECONDS}"
+                f"{AUDIT_LOG_TAG} phase=probe window=[{probe_from},{probe_to}) "
+                f"age_seconds={age} api_count={count}{' (capped)' if capped else ''}"
             )
+            # When we have just taken the OLDEST-age measurement, emit the full lag curve + growth.
+            if age == oldest_age and str(youngest_age) in minute_ages:
+                curve = {a: minute_ages[a] for a in (str(x) for x in AUDIT_PROBE_AGES_SECONDS) if a in minute_ages}
+                young_count = minute_ages[str(youngest_age)]
+                old_count = minute_ages[str(oldest_age)]
+                grew_by = old_count - young_count
+                pct = (100.0 * grew_by / old_count) if old_count else 0.0
+                demisto.info(
+                    f"{AUDIT_LOG_TAG} phase=curve window=[{probe_from},{probe_to}) "
+                    f"lag_curve={curve} young_age={youngest_age}s young_count={young_count} "
+                    f"old_age={oldest_age}s old_count={old_count} grew_by={grew_by} "
+                    f"late_publish_pct={pct:.1f} PUBLISH_LAG_DETECTED={grew_by > 0}"
+                )
         except Exception as e:  # never let the diagnostic break the fetch
-            demisto.debug(f"{AUDIT_LOG_TAG} baseline query failed (non-fatal): {e!s}")
+            demisto.debug(f"{AUDIT_LOG_TAG} probe query failed (non-fatal) age={age}: {e!s}")
 
-    # --- Recheck observation: re-count an OLDER minute and compare to its recorded baseline. -------
-    recheck_from, recheck_to = _elapsed_minute_window(now, AUDIT_RECHECK_DELAY_SECONDS)
-    baseline = audit_history.get(recheck_from)
-    if baseline is not None:
-        try:
-            recheck_count, recheck_capped = count_activity_logging_for_window(client, from_date=recheck_from, to_date=recheck_to)
-            grew_by = recheck_count - baseline
-            demisto.info(
-                f"{AUDIT_LOG_TAG} phase=recheck window=[{recheck_from},{recheck_to}) "
-                f"first_seen_api_count={baseline} api_count_now={recheck_count}"
-                f"{' (capped)' if recheck_capped else ''} grew_by={grew_by} "
-                f"age_seconds={AUDIT_RECHECK_DELAY_SECONDS} LATE_ARRIVAL_DETECTED={grew_by > 0}"
-            )
-        except Exception as e:  # never let the diagnostic break the fetch
-            demisto.debug(f"{AUDIT_LOG_TAG} recheck query failed (non-fatal): {e!s}")
-
-    # Prune audit_history to the most recent ~30 minutes beyond the recheck age to keep last_run small.
-    cutoff, _ = _elapsed_minute_window(now, AUDIT_RECHECK_DELAY_SECONDS + 1800)
+    # Prune audit_history: keep only minutes still within the oldest probe age + 30 min buffer.
+    cutoff, _ = _elapsed_minute_window(now, oldest_age + 1800)
     audit_history = {k: v for k, v in audit_history.items() if k >= cutoff}
     return audit_history
+
+
+def run_capture_gap_probe(client: Client, last_run: dict, captured_per_minute: dict) -> dict:
+    """
+    Capture-gap proof for XSUP-75678 Problem B (read-only; ingests nothing).
+
+    For a minute that has now SETTLED (closed at least CAPTURE_GAP_SETTLE_SECONDS ago, so Workday has
+    finished publishing it), this re-counts via the API how many events that minute REALLY has, and
+    compares it to how many the real scheduled fetch actually CAPTURED for that same minute. A
+    positive gap = events that were available from the API but never ingested, i.e. the live,
+    per-cycle version of the dataset shortfall. This makes Problem B's consequence explicit in logs.
+
+    Read-only: performs at most ONE non-paginated API count per cycle and never ingests anything.
+
+    Args:
+        client: Client object.
+        last_run: last run (never mutated here).
+        captured_per_minute: {minute_from_str: captured_count} the real fetch has ingested so far.
+
+    Returns:
+        The captured_per_minute map with settled+reported minutes pruned out.
+    """
+    captured = dict(captured_per_minute)
+    now = datetime.now(tz=timezone.utc)
+    settled_from, settled_to = _elapsed_minute_window(now, CAPTURE_GAP_SETTLE_SECONDS)
+    captured_count = captured.get(settled_from)
+    if captured_count is not None:
+        try:
+            api_count, capped = count_activity_logging_for_window(client, from_date=settled_from, to_date=settled_to)
+            gap = api_count - captured_count
+            pct = (100.0 * gap / api_count) if api_count else 0.0
+            demisto.info(
+                f"{CAPTURE_GAP_LOG_TAG} window=[{settled_from},{settled_to}) "
+                f"captured_by_fetch={captured_count} api_has_now={api_count}{' (capped)' if capped else ''} "
+                f"missing={gap} missing_pct={pct:.1f} settle_seconds={CAPTURE_GAP_SETTLE_SECONDS} "
+                f"CAPTURE_GAP_DETECTED={gap > 0}"
+            )
+            # This minute has been reported; drop it so the map stays small.
+            captured.pop(settled_from, None)
+        except Exception as e:  # never let the diagnostic break the fetch
+            demisto.debug(f"{CAPTURE_GAP_LOG_TAG} probe query failed (non-fatal): {e!s}")
+
+    # Prune any minutes older than the settle window (already reported or missed) to keep last_run small.
+    cutoff, _ = _elapsed_minute_window(now, CAPTURE_GAP_SETTLE_SECONDS + 600)
+    captured = {k: v for k, v in captured.items() if k >= cutoff}
+    return captured
+
+
+def accumulate_captured_per_minute(events_to_ingest: list, previous_captured: dict) -> dict:
+    """
+    Adds the events ingested this cycle into a per-minute captured-count map (keyed by the whole-minute
+    `from` string of each event's requestTime), used by run_capture_gap_probe to compare captured vs
+    available. Purely additive bookkeeping - does not affect ingestion.
+    """
+    captured = dict(previous_captured)
+    for logging in events_to_ingest:
+        request_time = str(logging.get("requestTime", ""))
+        if len(request_time) < 16:
+            continue
+        minute_from = request_time[:16] + ":00Z"  # e.g. "2026-08-31T07:29:00Z"
+        captured[minute_from] = captured.get(minute_from, 0) + 1
+    return captured
 
 
 def get_event_identity(activity_logging: dict) -> str:
@@ -483,16 +567,31 @@ def fetch_activity_logging(client: Client, max_fetch: int, first_fetch: datetime
 
     next_last_run = build_next_last_run(events_to_ingest, last_run)
 
-    # ---- Read-only diagnostic (XSUP-75678 smoking gun) -------------------------------------------
-    # SAFETY GUARANTEES:
-    #   * It does NOT touch `events_to_ingest` (the only list ever sent to XSIAM) -> no duplicates.
-    #   * It does NOT touch fetch checkpoint keys (last_fetch_time/previous_event_ids) -> no loss.
-    #   * It only performs an extra READ query and adds an isolated `audit_history` key.
-    #   * Any failure is swallowed inside run_late_arrival_audit -> cannot break the fetch.
+    # ---- Read-only diagnostics (XSUP-75678 dual proof) ------------------------------------------
+    # SAFETY GUARANTEES (both probes):
+    #   * They do NOT touch `events_to_ingest` (the only list ever sent to XSIAM) -> no duplicates.
+    #   * They do NOT touch fetch checkpoint keys (last_fetch_time/previous_event_ids) -> no loss.
+    #   * They only perform extra READ counts and add isolated keys (audit_history/captured_per_minute).
+    #   * Any failure is swallowed -> cannot break the fetch.
+    #
+    # Problem A (boundary-second dedup) is proven live by the WORKDAY_DEDUP_VALUE log in
+    # remove_duplications. Problem B (freshness/publishing lag) is proven two ways here:
+    #   1) run_late_arrival_audit -> WORKDAY_FRESHNESS_LAG_AUDIT lag curve (API count grows with age).
+    #   2) run_capture_gap_probe -> WORKDAY_CAPTURE_GAP (what the fetch captured vs what the API has
+    #      once the minute settled) = the live per-cycle version of the dataset shortfall.
     try:
         next_last_run["audit_history"] = run_late_arrival_audit(client=client, last_run=last_run)
     except Exception as e:  # extra belt-and-suspenders; never affect ingestion
         demisto.debug(f"{AUDIT_LOG_TAG} skipped due to non-fatal error: {e!s}")
+
+    try:
+        captured = accumulate_captured_per_minute(events_to_ingest, last_run.get("captured_per_minute", {}))
+        next_last_run["captured_per_minute"] = run_capture_gap_probe(
+            client=client, last_run=last_run, captured_per_minute=captured
+        )
+    except Exception as e:  # extra belt-and-suspenders; never affect ingestion
+        demisto.debug(f"{CAPTURE_GAP_LOG_TAG} skipped due to non-fatal error: {e!s}")
+        next_last_run["captured_per_minute"] = last_run.get("captured_per_minute", {})
     # ---------------------------------------------------------------------------------------------
 
     return events_to_ingest, next_last_run

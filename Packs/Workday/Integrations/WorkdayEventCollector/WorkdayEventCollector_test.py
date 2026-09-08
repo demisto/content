@@ -1,5 +1,5 @@
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 
 import pytest
 from freezegun import freeze_time
@@ -505,68 +505,78 @@ class TestFetchActivity:
         assert count == MAX_PAGE_SIZE
         assert capped is True
 
-    def test_audit_records_baseline_then_detects_growth(self, mocker):
+    def test_audit_probes_multiple_ages_and_detects_publish_lag(self, mocker):
         """
-        Proves the audit observes the SAME minute at two ages and detects growth.
+        Proves the audit re-counts the SAME fixed minute at increasing YOUNG ages and, when the
+        oldest age is reached, logs the lag curve with the growth from youngest->oldest.
 
-        Given: at the young age a minute reads 100; when it's re-checked at the old age it reads 130.
-        When: running run_late_arrival_audit twice with the appropriate frozen times.
-        Then: the baseline (100) is recorded young, and the recheck logs grew_by=30
-              LATE_ARRIVAL_DETECTED=True. No events are ingested.
+        The audit takes at most ONE probe per cycle (the youngest age whose target minute is not yet
+        measured), so we drive it with a realistic minute-by-minute clock. We make the API return a
+        count that grows with the observed minute's age, simulating Workday's late publishing, and
+        assert the tracked minute ends with one measurement per age and a positive-growth curve line.
         """
         from freezegun import freeze_time as _freeze
 
         import WorkdayEventCollector as wec
-        from WorkdayEventCollector import (
-            AUDIT_FIRST_SEEN_DELAY_SECONDS,
-            AUDIT_RECHECK_DELAY_SECONDS,
-            run_late_arrival_audit,
-        )
+        from WorkdayEventCollector import AUDIT_PROBE_AGES_SECONDS, run_late_arrival_audit
 
         info_spy = mocker.patch.object(wec.demisto, "info")
 
-        # The minute we will track: choose a base "now" and compute when it is young vs rechecked.
-        # At young time, the minute [t0-90-60, t0-90) reads 100.
-        young_now = "2026-08-31T07:15:00Z"
-        with _freeze(young_now):
-            mocker.patch("WorkdayEventCollector.count_activity_logging_for_window", return_value=(100, False))
-            history = run_late_arrival_audit(self.client, last_run={})
-        # A baseline was recorded for exactly one (young) minute.
-        assert len(history) == 1
-        tracked_minute = next(iter(history))
-        assert history[tracked_minute] == 100
+        tracked_minute = "2026-08-31T07:10:00Z"
+        # Count grows with age: youngest age sees the fewest events, oldest sees the most.
+        count_for_age = {10: 100, 30: 110, 60: 120, 120: 125, 300: 130}
 
-        # Advance time so that same tracked_minute is now at the recheck age. The recheck window is
-        # (now - RECHECK) floored; make now = young_now + (RECHECK - FIRST_SEEN) so windows align.
-        delta = AUDIT_RECHECK_DELAY_SECONDS - AUDIT_FIRST_SEEN_DELAY_SECONDS
-        recheck_now = (datetime.strptime(young_now, DATE_FORMAT) + timedelta(seconds=delta)).strftime(DATE_FORMAT)
-        with _freeze(recheck_now):
-            mocker.patch("WorkdayEventCollector.count_activity_logging_for_window", return_value=(130, False))
-            run_late_arrival_audit(self.client, last_run={"audit_history": history})
+        def fake_count(client, from_date, to_date):
+            # Derive the observed minute's age from the frozen "now" and return its age-based count.
+            now = datetime.now(tz=UTC)
+            minute_close = datetime.strptime(from_date, DATE_FORMAT).replace(tzinfo=UTC) + timedelta(minutes=1)
+            age = round((now - minute_close).total_seconds())
+            # Snap to the nearest configured probe age (clock jitter tolerance).
+            nearest = min(AUDIT_PROBE_AGES_SECONDS, key=lambda a: abs(a - age))
+            return count_for_age[nearest], False
 
-        recheck_lines = [c.args[0] for c in info_spy.call_args_list if "phase=recheck" in c.args[0]]
-        assert recheck_lines, "expected a recheck log line"
-        line = recheck_lines[-1]
-        assert "first_seen_api_count=100" in line
-        assert "api_count_now=130" in line
+        mocker.patch("WorkdayEventCollector.count_activity_logging_for_window", side_effect=fake_count)
+
+        # Drive a cycle at each exact age of the tracked minute (close + age). With one probe per due
+        # age per cycle, each such cycle records that age's sample for the tracked minute.
+        tracked_close = datetime.strptime("2026-08-31T07:11:00Z", DATE_FORMAT)
+        history: dict = {}
+        for age in AUDIT_PROBE_AGES_SECONDS:
+            now = (tracked_close + timedelta(seconds=age)).strftime(DATE_FORMAT)
+            with _freeze(now):
+                history = run_late_arrival_audit(self.client, last_run={"audit_history": history})
+
+        # The tracked minute accumulated one measurement per probe age.
+        tracked = history[tracked_minute]
+        assert tracked == {"10": 100, "30": 110, "60": 120, "120": 125, "300": 130}
+
+        # The final curve line reports growth youngest(10s)->oldest(300s).
+        curve_lines = [c.args[0] for c in info_spy.call_args_list if "phase=curve" in c.args[0]]
+        assert curve_lines, "expected a curve log line once the oldest age was measured"
+        matching = [ln for ln in curve_lines if f"window=[{tracked_minute}," in ln]
+        assert matching, "expected a curve line for the tracked minute"
+        line = matching[-1]
+        assert "young_count=100" in line
+        assert "old_count=130" in line
         assert "grew_by=30" in line
-        assert "LATE_ARRIVAL_DETECTED=True" in line
+        assert "PUBLISH_LAG_DETECTED=True" in line
 
     @freeze_time("2026-08-31 07:15:00")
     def test_audit_is_failure_safe(self, mocker):
         """
         Given: the audit API query raises.
         When: running run_late_arrival_audit.
-        Then: it swallows the error and returns the prior history unchanged (never breaks fetch).
+        Then: it swallows the error, never raises, and preserves the prior measurement (never breaks
+              the fetch). It may add empty minute buckets via setdefault; the recorded count survives.
         """
         from WorkdayEventCollector import run_late_arrival_audit
 
         mocker.patch("WorkdayEventCollector.count_activity_logging_for_window", side_effect=Exception("boom"))
-        # Use a recent, realistic minute key so it survives pruning at the frozen time.
-        prior = {"2026-08-31T07:10:00Z": 42}
+        # Use a recent, realistic minute key (new nested shape) so it survives pruning at frozen time.
+        prior = {"2026-08-31T07:12:00Z": {"10": 42}}
         result = run_late_arrival_audit(self.client, last_run={"audit_history": prior})
-        # Both phases fail safely; the recorded baseline is preserved (audit never breaks the fetch).
-        assert result == prior
+        # The prior measurement is preserved (audit never breaks the fetch, never loses data).
+        assert result["2026-08-31T07:12:00Z"] == {"10": 42}
 
     @freeze_time("2026-08-31 07:15:00")
     def test_audit_does_not_affect_ingested_events_or_checkpoint(self, mocker):
@@ -602,3 +612,58 @@ class TestFetchActivity:
         assert len(new_last_run["previous_event_ids"]) == 3
         # Audit lives in its own isolated key.
         assert "audit_history" in new_last_run
+
+    def test_accumulate_captured_per_minute_counts_by_minute(self):
+        """accumulate_captured_per_minute buckets ingested events by their whole-minute requestTime."""
+        from WorkdayEventCollector import accumulate_captured_per_minute
+
+        events = [
+            {"requestTime": "2026-08-31T07:29:10.100Z"},
+            {"requestTime": "2026-08-31T07:29:59.900Z"},
+            {"requestTime": "2026-08-31T07:30:00.000Z"},
+        ]
+        result = accumulate_captured_per_minute(events, {"2026-08-31T07:29:00Z": 5})
+        # Two events fell in 07:29 (added to the existing 5), one in 07:30.
+        assert result["2026-08-31T07:29:00Z"] == 7
+        assert result["2026-08-31T07:30:00Z"] == 1
+
+    @freeze_time("2026-08-31 07:15:00")
+    def test_capture_gap_probe_detects_missing_events(self, mocker):
+        """
+        Problem B consequence proof: once a minute has settled, the probe compares what the fetch
+        captured for it vs what the API has now, and logs the positive gap (available-but-not-ingested).
+        """
+        import WorkdayEventCollector as wec
+        from WorkdayEventCollector import CAPTURE_GAP_SETTLE_SECONDS, run_capture_gap_probe
+
+        info_spy = mocker.patch.object(wec.demisto, "info")
+
+        # The settled minute is the one that closed CAPTURE_GAP_SETTLE_SECONDS ago at the frozen now.
+        settled_close = datetime.strptime("2026-08-31T07:15:00Z", DATE_FORMAT) - timedelta(seconds=CAPTURE_GAP_SETTLE_SECONDS)
+        settled_from = (settled_close - timedelta(minutes=1)).strftime(DATE_FORMAT)
+
+        # The fetch captured 736 for that minute; the API actually has 1005 now -> gap of 269.
+        mocker.patch("WorkdayEventCollector.count_activity_logging_for_window", return_value=(1005, False))
+        result = run_capture_gap_probe(self.client, last_run={}, captured_per_minute={settled_from: 736})
+
+        gap_lines = [c.args[0] for c in info_spy.call_args_list if "WORKDAY_CAPTURE_GAP" in c.args[0]]
+        assert gap_lines, "expected a capture-gap log line for the settled minute"
+        line = gap_lines[-1]
+        assert "captured_by_fetch=736" in line
+        assert "api_has_now=1005" in line
+        assert "missing=269" in line
+        assert "CAPTURE_GAP_DETECTED=True" in line
+        # The reported minute is pruned from the map.
+        assert settled_from not in result
+
+    @freeze_time("2026-08-31 07:15:00")
+    def test_capture_gap_probe_is_failure_safe(self, mocker):
+        """The capture-gap probe swallows API errors and never raises (must not break the fetch)."""
+        from WorkdayEventCollector import CAPTURE_GAP_SETTLE_SECONDS, run_capture_gap_probe
+
+        settled_close = datetime.strptime("2026-08-31T07:15:00Z", DATE_FORMAT) - timedelta(seconds=CAPTURE_GAP_SETTLE_SECONDS)
+        settled_from = (settled_close - timedelta(minutes=1)).strftime(DATE_FORMAT)
+        mocker.patch("WorkdayEventCollector.count_activity_logging_for_window", side_effect=Exception("boom"))
+        # Should not raise; the unreported minute is preserved (not lost) for a later retry.
+        result = run_capture_gap_probe(self.client, last_run={}, captured_per_minute={settled_from: 736})
+        assert result.get(settled_from) == 736
