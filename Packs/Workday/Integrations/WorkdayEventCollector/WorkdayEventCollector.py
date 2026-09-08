@@ -14,7 +14,14 @@ urllib3.disable_warnings()
 # BUILD_MARKER: bump this string on every hotfix build so the exact deployed version can be
 # identified from the tenant integration logs (search for "WORKDAY_EC_BUILD" in GCP Logs Explorer).
 # This is what lets us confirm the fix is actually running on the client tenant after upload.
-BUILD_MARKER = "WORKDAY_EC_BUILD=XSUP-75678-dual-proof-probe"
+BUILD_MARKER = "WORKDAY_EC_BUILD=XSUP-75678-fix-todate-lag-60s"
+
+# XSUP-75678 FIX: never query up to "now". Workday publishes a minute's events with a short lag
+# (measured via the freshness-lag audit: counts settle within ~30s of a minute closing). Querying
+# to_date=now therefore captured an incomplete tail of the newest minute, and the monotonic cursor
+# then advanced past the not-yet-published events -> permanent loss. We cap to_date at now - this many
+# seconds so every queried range is already fully settled. Clamped to never be earlier than from_date.
+FETCH_TO_DATE_LAG_SECONDS = 60
 
 # Freshness-lag audit (read-only diagnostic for XSUP-75678). The real fetch queries up to `to_date=now`,
 # but Workday publishes an event minute's tail with a short lag, so the freshest events are not yet
@@ -549,9 +556,21 @@ def fetch_activity_logging(client: Client, max_fetch: int, first_fetch: datetime
     """
     demisto.debug(f"{BUILD_MARKER} | fetch_activity_logging started.")
     from_date = last_run.get("last_fetch_time", first_fetch.strftime(DATE_FORMAT))
-    to_date = datetime.now(tz=timezone.utc).strftime(DATE_FORMAT)
+    # XSUP-75678 FIX: never query up to "now" - cap to_date at (now - FETCH_TO_DATE_LAG_SECONDS) so we
+    # only ever request minutes Workday has already fully published (freshness audit shows counts settle
+    # within ~30s). Clamp so to_date is never earlier than from_date (e.g. after a long outage/backfill,
+    # where from_date is already older than the lagged now - in that case we still fetch up to now-lag,
+    # but never invert the window).
+    now = datetime.now(tz=timezone.utc)
+    safe_to_dt = now - timedelta(seconds=FETCH_TO_DATE_LAG_SECONDS)
+    from_dt = datetime.strptime(from_date, DATE_FORMAT).replace(tzinfo=timezone.utc)
+    # If the lagged "now" would precede from_date (from_date is very recent), fall back to from_date so
+    # the window is non-inverted; the next cycle will advance once enough time has elapsed.
+    to_dt = safe_to_dt if safe_to_dt >= from_dt else from_dt
+    to_date = to_dt.strftime(DATE_FORMAT)
     demisto.debug(
-        f"Getting activity loggings {from_date=}, {to_date=}. "
+        f"Getting activity loggings {from_date=}, {to_date=} (to_date lagged by "
+        f"{FETCH_TO_DATE_LAG_SECONDS}s from now={now.strftime(DATE_FORMAT)}). "
         f"Carrying {len(last_run.get('previous_event_ids', []))} previous event id(s) for dedup."
     )
     activity_loggings = get_max_fetch_activity_logging(

@@ -373,17 +373,19 @@ class TestFetchActivity:
             self.client, last_run={}, first_fetch=first_fetch_time, max_fetch=3
         )
 
+        # to_date is lagged 60s behind now (now=08:00:00 -> to_date=07:59:00) to avoid
+        # querying the incomplete, freshly-published tail minute (XSUP-75678 fix).
         assert http_responses.call_args_list[0][1] == {
             "limit": 3,
             "offset": 0,
             "from_date": "2023-04-12T07:00:00Z",
-            "to_date": "2023-04-15T08:00:00Z",
+            "to_date": "2023-04-15T07:59:00Z",
         }
         assert http_responses.call_args_list[1][1] == {
             "limit": 2,
             "offset": 1,
             "from_date": "2023-04-12T07:00:00Z",
-            "to_date": "2023-04-15T08:00:00Z",
+            "to_date": "2023-04-15T07:59:00Z",
         }
 
         assert activity_loggings == fetched_events.get("fetched_events")
@@ -405,7 +407,7 @@ class TestFetchActivity:
             "limit": 3,
             "offset": 0,
             "from_date": "2023-04-15T07:00:00Z",
-            "to_date": "2023-04-15T08:00:00Z",
+            "to_date": "2023-04-15T07:59:00Z",
         }
         # Both re-returned events were already ingested -> deduped by identity -> nothing new.
         assert activity_loggings == []
@@ -667,3 +669,48 @@ class TestFetchActivity:
         # Should not raise; the unreported minute is preserved (not lost) for a later retry.
         result = run_capture_gap_probe(self.client, last_run={}, captured_per_minute={settled_from: 736})
         assert result.get(settled_from) == 736
+
+    @freeze_time("2026-08-31 07:15:00")
+    def test_fetch_to_date_is_lagged_from_now(self, mocker):
+        """
+        XSUP-75678 FIX: the fetch must query up to (now - FETCH_TO_DATE_LAG_SECONDS), never up to now,
+        so it only requests already-settled minutes.
+        """
+        from WorkdayEventCollector import FETCH_TO_DATE_LAG_SECONDS, fetch_activity_logging
+
+        request_spy = mocker.patch.object(Client, "get_activity_logging_request", return_value=[])
+        first_fetch_time = datetime.strptime("2026-08-31T07:00:00Z", DATE_FORMAT)
+        # last_fetch_time is old enough that the lagged now is comfortably after it.
+        last_run = {"last_fetch_time": "2026-08-31T07:10:00Z"}
+        mocker.patch("WorkdayEventCollector.count_activity_logging_for_window", return_value=(0, False))
+
+        fetch_activity_logging(self.client, last_run=last_run, first_fetch=first_fetch_time, max_fetch=100)
+
+        # First call is the real fetch; its to_date must be now(07:15:00) - lag.
+        first_call_kwargs = request_spy.call_args_list[0].kwargs
+        expected_to = (
+            datetime.strptime("2026-08-31T07:15:00Z", DATE_FORMAT) - timedelta(seconds=FETCH_TO_DATE_LAG_SECONDS)
+        ).strftime(DATE_FORMAT)
+        assert first_call_kwargs["to_date"] == expected_to
+        assert first_call_kwargs["to_date"] != "2026-08-31T07:15:00Z"  # never "now"
+
+    @freeze_time("2026-08-31 07:15:00")
+    def test_fetch_to_date_never_earlier_than_from_date(self, mocker):
+        """
+        If from_date is more recent than (now - lag), to_date is clamped to from_date so the window is
+        never inverted.
+        """
+        from WorkdayEventCollector import fetch_activity_logging
+
+        request_spy = mocker.patch.object(Client, "get_activity_logging_request", return_value=[])
+        first_fetch_time = datetime.strptime("2026-08-31T07:00:00Z", DATE_FORMAT)
+        # from_date is only 20s before now -> (now - 60s) would precede it; must clamp to from_date.
+        last_run = {"last_fetch_time": "2026-08-31T07:14:40Z"}
+        mocker.patch("WorkdayEventCollector.count_activity_logging_for_window", return_value=(0, False))
+
+        fetch_activity_logging(self.client, last_run=last_run, first_fetch=first_fetch_time, max_fetch=100)
+
+        first_call_kwargs = request_spy.call_args_list[0].kwargs
+        # to_date clamped to from_date (no inverted window).
+        assert first_call_kwargs["to_date"] == "2026-08-31T07:14:40Z"
+        assert first_call_kwargs["from_date"] == "2026-08-31T07:14:40Z"
