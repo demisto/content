@@ -61,6 +61,7 @@ Fetch all aggregated alert events for a Vega alert using internal API pagination
 | Vega.AlertEvents.Count | Number | Number of alert events returned in the current page. |
 | Vega.AlertEvents.HasAlertEvents | Boolean | Whether the alert returned real alert events instead of aggregated parse-field summary rows. |
 | Vega.AlertEvents.Cached | Boolean | Whether the response was served from cached incident data. |
+| Vega.AlertEvents.Events | Unknown | Enriched alert events for the current page. JSON `fields` are parsed and `fields._raw` contents are promoted to top-level keys under `fields`. |
 | Vega.AlertEvents.CustomFields | Unknown | Incident custom fields to persist for the Alert Events layout section. |
 
 ### vega-set-detections-state

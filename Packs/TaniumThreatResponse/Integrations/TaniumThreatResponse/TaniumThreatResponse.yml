@@ -1,4 +1,7 @@
 category: Endpoint
+sectionorder:
+- Connect
+- Collect
 provider: Tanium
 commonfields:
   id: Tanium Threat Response
@@ -8,31 +11,45 @@ configuration:
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  advanced: true
+  section: Collect
 - display: Hostname, IP address, or server URL
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - defaultvalue: 24 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
   required: false
+  section: Collect
 - defaultvalue: unresolved
   display: 'A comma-separated list of alert states to filter by in fetch incidents command. Possible options are: unresolved, in progress, resolved or suppressed. Empty list won''t filter the incidents by state.'
   name: filter_alerts_by_state
@@ -43,6 +60,7 @@ configuration:
   - suppressed
   type: 16
   required: false
+  section: Collect
 description: Use the Tanium Threat Response integration to manage endpoints processes, evidence, alerts, files, snapshots, and connections. This Integration works with Tanium Threat Response version below 3.0.159. In order to use Tanium Threat Response version 3.0.159 and above, use Tanium Threat Response V2 Integration.
 display: Tanium Threat Response
 name: Tanium Threat Response
@@ -1361,7 +1379,7 @@ script:
     - contextPath: Tanium.QuickScan.QuestionID
       description: The ID of the quick scan question.
       type: number
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   runonce: false
   script: '-'

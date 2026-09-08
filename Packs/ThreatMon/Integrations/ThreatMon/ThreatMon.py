@@ -28,7 +28,7 @@ class Client(BaseClient):
     def set_status(self, data):
         """Updates incidents on Threatmon API using PATCH request."""
 
-        return self._http_request(method="PATCH", url_suffix="/incident/status", json_data=data)
+        return self._http_request(method="PATCH", url_suffix="/incident/status", json_data=data, resp_type="response")
 
     def request_takedown(self, finding_id: int, finding: str):
         """Submits a takedown request for a specific finding (alarm row)."""
@@ -37,6 +37,18 @@ class Client(BaseClient):
         return self._http_request(
             method="POST",
             url_suffix="/takedown",
+            json_data=payload,
+            ok_codes=(200, 400, 403, 404, 409),
+            resp_type="response",
+        )
+
+    def request_data_removal(self, finding_id: int, finding: str):
+        """Submits a Black Market Monitoring data removal request for a specific finding (alarm row)."""
+
+        payload = {"findingId": finding_id, "finding": finding}
+        return self._http_request(
+            method="POST",
+            url_suffix="/blackMarket/dataRemoval",
             json_data=payload,
             ok_codes=(200, 400, 403, 404, 409),
             resp_type="response",
@@ -194,11 +206,13 @@ def change_incident_status(client: Client, args: dict[str, Any]) -> CommandResul
     code = args.get("alarmId")
     status = args.get("status")
     data = {"status": status, "alarmIds": [code]}
-    changingStatus = client.set_status(data=data)
-    if changingStatus:
-        return CommandResults(readable_output=f"Incident {code} status changed to {changingStatus}")
+    response = client.set_status(data=data)
+    if response.ok:
+        return CommandResults(readable_output=f"Incident {code} status changed to {status}.")
     else:
-        return CommandResults(readable_output=f"Failed to change status for incident {code}.")
+        raise DemistoException(
+            f"Failed to change status for incident {code}. API returned {response.status_code}: {response.text}"
+        )
 
 
 def request_takedown_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -228,6 +242,37 @@ def request_takedown_command(client: Client, args: dict[str, Any]) -> CommandRes
         raise DemistoException("Takedown quota exceeded. Please contact ThreatMon.")
     elif status_code == 400:
         raise DemistoException("This finding is not eligible for a takedown request.")
+    else:
+        raise DemistoException(f"API Error: {status_code} - {response.text}")
+
+
+def request_data_removal_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    finding_id_raw = args.get("findingId")
+    finding = args.get("finding")
+
+    if not finding_id_raw:
+        raise ValueError("findingId argument is required.")
+    if not finding:
+        raise ValueError("finding argument is required.")
+
+    try:
+        finding_id = int(finding_id_raw)
+    except (ValueError, TypeError):
+        raise ValueError(f"findingId must be a valid integer, got: {finding_id_raw}")
+
+    response = client.request_data_removal(finding_id=finding_id, finding=finding)
+
+    status_code = response.status_code
+    if status_code == 200:
+        return CommandResults(readable_output="Data removal request submitted successfully.")
+    elif status_code == 404:
+        raise DemistoException(f"Finding not found: findingId={finding_id}")
+    elif status_code == 409:
+        raise DemistoException(f"A data removal request already exists for findingId={finding_id}")
+    elif status_code == 403:
+        raise DemistoException("Data removal quota exceeded or insufficient rights. Please contact ThreatMon.")
+    elif status_code == 400:
+        raise DemistoException("This finding is not eligible for a data removal request.")
     else:
         raise DemistoException(f"API Error: {status_code} - {response.text}")
 
@@ -324,6 +369,8 @@ def main():
             return_results(change_incident_status(client, demisto.args()))
         elif command == "threatmon_request_takedown":
             return_results(request_takedown_command(client, demisto.args()))
+        elif command == "threatmon_request_data_removal":
+            return_results(request_data_removal_command(client, demisto.args()))
         elif command == "threatmon_list_cves":
             return_results(list_cves_command(client, demisto.args()))
         elif command == "threatmon_list_subscribed_cves":

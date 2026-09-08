@@ -1,3 +1,5 @@
 [file:BarracudaEmailProtection_1_3.yml]
 ignore=MR108
 
+[file:BarracudaEmailProtection_2_11.yml]
+ignore=MR108

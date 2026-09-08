@@ -60,12 +60,18 @@ configuration:
   type: 0
   section: Collect
   required: false
-  defaultvalue: '100'
-  additionalinfo: Due to API limitations, the maximum is 100.
+  defaultvalue: '1000'
+  additionalinfo: The number of events to retrieve. Events are retrieved in pages of up to 100 (the API page-size limit) until this number is reached.
 - display: Fetch events
   name: isFetchEvents
   type: 8
   section: Collect
+  required: false
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
   required: false
 - display: Verify SSL Certificate
   name: verify
@@ -94,12 +100,11 @@ display: Microsoft Defender for Cloud Apps Event Collector
 name: Microsoft Defender for Cloud Apps Event Collector
 script:
   commands:
-  - description: Returns a list of alerts.
+  - description: Returns a list of alerts. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     name: microsoft-defender-cloud-apps-get-events
     arguments:
-    - description: The maximum number of alerts per fetch, due to API limitations the max events to fetch is 100.
-      defaultValue: '100'
-      isArray: true
+    - description: The maximum number of events to return per event type. Events are retrieved in pages of up to 100 (the API page-size limit).
+      defaultValue: '1000'
       name: limit
     - description: The first fetch time (<number> <time unit>, for example 12 hours, 1 day, 3 months).
       defaultValue: 3 days
@@ -113,6 +118,14 @@ script:
       predefined:
       - 'false'
       - 'true'
+    - name: event_types_to_fetch
+      auto: PREDEFINED
+      description: A comma-separated list of event types to scope this run to. If not provided, all configured event types are fetched.
+      isArray: true
+      predefined:
+      - Alerts
+      - Admin activities
+      - Login activities
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: microsoft-defender-cloud-apps-auth-reset
     arguments: []
@@ -120,7 +133,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/auth-utils:1.0.0.3562326
+  dockerimage: demisto/auth-utils:1.0.0.11671917
 fromversion: 6.8.0
 marketplaces:
 - marketplacev2
