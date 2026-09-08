@@ -7121,7 +7121,7 @@ def test_storage_bucket_public_access_block_outputs(mocker):
     result = storage_bucket_public_access_block(creds, {"project_id": "p1", "bucket_name": "b1"})
 
     assert result.outputs_prefix == "GCP.Storage.Buckets"
-    assert result.outputs_key_field == ["name", "id"]
+    assert result.outputs_key_field == "name"
     assert result.outputs == response
     assert result.raw_response == response
 

@@ -820,7 +820,7 @@ def storage_bucket_list(creds: Credentials, args: dict[str, Any]) -> CommandResu
             readable_output=hr,
             outputs_prefix="GCP.Storage.Bucket",
             outputs=buckets,
-            outputs_key_field=["name", "id"],
+            outputs_key_field="name",
             raw_response=response,
         )
     else:  # command_name == "gcp-storage-buckets-list"
@@ -2031,7 +2031,7 @@ def storage_bucket_create(creds: Credentials, args: dict[str, Any]) -> CommandRe
         readable_output=hr,
         outputs_prefix="GCP.Storage.Buckets",
         outputs=response,
-        outputs_key_field=["name", "id"],
+        outputs_key_field="name",
         raw_response=response,
     )
 
@@ -2091,7 +2091,7 @@ def storage_bucket_public_access_block(creds: Credentials, args: dict[str, Any])
         readable_output=f"Public access prevention is set to {public_access_prevention} for {bucket_name}.",
         outputs_prefix="GCP.Storage.Buckets",
         outputs=response,
-        outputs_key_field=["name", "id"],
+        outputs_key_field="name",
         raw_response=response,
     )
 
