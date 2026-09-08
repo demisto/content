@@ -1,0 +1,570 @@
+description: Test playbook for Prisma AIRs DLP data patterns. Tests pattern CRUD (list, create, get, patch, replace, delete), ensuring only the pattern created by this playbook is modified and deleted.
+id: PaloAltoNetworks_Prisma_AIRs_DLP_Patterns_Test
+inputs:
+- key: PatternName
+  value:
+    simple: test-dlp-pattern
+  required: false
+  description: Name of the test DLP data pattern to create (unique so only this pattern is operated on)
+  playbookInputQuery:
+- key: PatternType
+  value:
+    simple: custom
+  required: false
+  description: Pattern type (predefined, custom, file_property)
+  playbookInputQuery:
+- key: PatternTechnique
+  value:
+    simple: regex
+  required: false
+  description: Detection technique (regex, weighted_regex, dictionary, etc.)
+  playbookInputQuery:
+- key: PatternMatchingRules
+  value:
+    simple: '{"regexes":[{"regex":"[0-9]{3}-[0-9]{2}-[0-9]{4}","weight":1}]}'
+  required: false
+  description: Matching rules JSON for the regex pattern (regexes with regex + weight)
+  playbookInputQuery:
+name: PaloAltoNetworks_Prisma_AIRs_DLP_Patterns_Test
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e0000000-0000-4000-8000-000000000000
+    type: start
+    task:
+      id: e0000000-0000-4000-8000-000000000000
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: e1111111-1111-4111-8111-111111111111
+    type: regular
+    task:
+      id: e1111111-1111-4111-8111-111111111111
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: e2222222-2222-4222-8222-222222222222
+    type: title
+    task:
+      id: e2222222-2222-4222-8222-222222222222
+      version: -1
+      name: DLP Patterns - CRUD
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e3333333-3333-4333-8333-333333333333
+    type: regular
+    task:
+      id: e3333333-3333-4333-8333-333333333333
+      version: -1
+      name: prisma-airs-runtime-dlp-patterns-list
+      description: List DLP data patterns (initial state).
+      script: '|||prisma-airs-runtime-dlp-patterns-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: e4444444-4444-4444-8444-444444444444
+    type: regular
+    task:
+      id: e4444444-4444-4444-8444-444444444444
+      version: -1
+      name: prisma-airs-runtime-dlp-patterns-create
+      description: Create a DLP data pattern.
+      script: '|||prisma-airs-runtime-dlp-patterns-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      name:
+        complex:
+          root: inputs.PatternName
+      type:
+        complex:
+          root: inputs.PatternType
+      detection_technique:
+        complex:
+          root: inputs.PatternTechnique
+      matching_rules:
+        complex:
+          root: inputs.PatternMatchingRules
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: e5555555-5555-4555-8555-555555555555
+    type: regular
+    task:
+      id: e5555555-5555-4555-8555-555555555555
+      version: -1
+      name: prisma-airs-runtime-dlp-patterns-get
+      description: Get the created pattern by its id.
+      script: '|||prisma-airs-runtime-dlp-patterns-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      pattern_id:
+        complex:
+          root: PrismaAIRs.DlpPatternCreate
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e6666666-6666-4666-8666-666666666666
+    type: condition
+    task:
+      id: e6666666-6666-4666-8666-666666666666
+      version: -1
+      name: Validate Pattern Created
+      description: Verify the get returned the same id as create.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PrismaAIRs.DlpPatternGet
+                accessor: id
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: PrismaAIRs.DlpPatternCreate
+                accessor: id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: e7777777-7777-4777-8777-777777777777
+    type: regular
+    task:
+      id: e7777777-7777-4777-8777-777777777777
+      version: -1
+      name: prisma-airs-runtime-dlp-patterns-patch
+      description: Patch ONLY the created pattern (by its id) - update the description.
+      script: '|||prisma-airs-runtime-dlp-patterns-patch'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      pattern_id:
+        complex:
+          root: PrismaAIRs.DlpPatternCreate
+          accessor: id
+      name:
+        complex:
+          root: inputs.PatternName
+      type:
+        complex:
+          root: inputs.PatternType
+      detection_technique:
+        complex:
+          root: inputs.PatternTechnique
+      matching_rules:
+        complex:
+          root: inputs.PatternMatchingRules
+      description:
+        simple: Patched by test playbook
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e8888888-8888-4888-8888-888888888888
+    type: regular
+    task:
+      id: e8888888-8888-4888-8888-888888888888
+      version: -1
+      name: prisma-airs-runtime-dlp-patterns-replace
+      description: Replace ONLY the created pattern (by its id) - full update.
+      script: '|||prisma-airs-runtime-dlp-patterns-replace'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      pattern_id:
+        complex:
+          root: PrismaAIRs.DlpPatternCreate
+          accessor: id
+      name:
+        complex:
+          root: inputs.PatternName
+      type:
+        complex:
+          root: inputs.PatternType
+      detection_technique:
+        complex:
+          root: inputs.PatternTechnique
+      matching_rules:
+        complex:
+          root: inputs.PatternMatchingRules
+      description:
+        simple: Replaced by test playbook
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: e9999999-9999-4999-8999-999999999999
+    type: regular
+    task:
+      id: e9999999-9999-4999-8999-999999999999
+      version: -1
+      name: prisma-airs-runtime-dlp-patterns-delete
+      description: Delete ONLY the created pattern (by its id).
+      script: '|||prisma-airs-runtime-dlp-patterns-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      pattern_id:
+        complex:
+          root: PrismaAIRs.DlpPatternCreate
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: ea000000-0000-4000-8000-000000000000
+    type: condition
+    task:
+      id: ea000000-0000-4000-8000-000000000000
+      version: -1
+      name: Validate Pattern Deleted
+      description: Verify the delete succeeded for the created pattern id.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PrismaAIRs.DlpPatternDelete
+                accessor: deleted
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PrismaAIRs.DlpPatternDelete
+                accessor: id
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: PrismaAIRs.DlpPatternCreate
+                accessor: id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: eb000000-0000-4000-8000-000000000000
+    type: regular
+    task:
+      id: eb000000-0000-4000-8000-000000000000
+      version: -1
+      name: Test Passed - Close Investigation
+      description: All validations passed successfully.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      id:
+        simple: ${incident.id}
+      closeReason:
+        simple: Test passed - DLP pattern CRUD validated successfully
+      closeNotes:
+        simple: "Pattern lifecycle validated: create, get, patch, replace, delete (only the created pattern)."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: ec000000-0000-4000-8000-000000000000
+    type: regular
+    task:
+      id: ec000000-0000-4000-8000-000000000000
+      version: -1
+      name: Test Failed - Print Error
+      description: Validation failed - print error to fail CI pipeline.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "TEST FAILED: DLP pattern validation failed. Check context: PrismaAIRs.DlpPatternCreate, PrismaAIRs.DlpPatternGet, and PrismaAIRs.DlpPatternDelete. Only the pattern created by this playbook should be modified/deleted."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1995,
+        "width": 800,
+        "x": 240,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.10.0
