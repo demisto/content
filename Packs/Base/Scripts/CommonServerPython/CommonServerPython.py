@@ -3146,7 +3146,7 @@ def get_hash_type(hash_file):
         return 'Unknown'
 
 
-def is_mac_address(mac):
+def is_mac_address(mac, strict=True):
     """
     Test for valid mac address
 
