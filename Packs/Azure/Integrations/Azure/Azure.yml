@@ -11035,6 +11035,321 @@ script:
       - contextPath: Azure.Compute.VirtualMachinesNextToken
         description: The URI to fetch the next page of VMs. Run the same command with the next_token argument to get the next page of VMs.
         type: String
+  - name: azure-log-analytics-saved-searches-list
+    description: "Gets the saved searches of a Log Analytics workspace. Required Permission: Microsoft.OperationalInsights/workspaces/savedSearches/read."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: limit
+      description: The maximum number of saved searches to return.
+      defaultValue: '50'
+    - name: page
+      description: The page number from which to start a search.
+      defaultValue: '0'
+    - name: resource_group_name
+      description: "The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration."
+    - name: workspace_name
+      description: "The name of the Log Analytics workspace."
+    outputs:
+    - contextPath: Azure.LogAnalytics.SavedSearches.id
+      description: The ID of the saved search.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.etag
+      description: The ETag of the saved search.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.category
+      description: The category of the saved search.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.displayName
+      description: The display name of the saved search.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.functionAlias
+      description: The function alias if the query serves as a function.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.functionParameters
+      description: The optional function parameters if the query serves as a function.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.query
+      description: The query expression for the saved search.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.tags
+      description: The tags attached to the saved search.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.version
+      description: The version number of the query language.
+      type: Number
+    - contextPath: Azure.LogAnalytics.SavedSearches.type
+      description: The resource type.
+      type: String
+  - name: azure-log-analytics-saved-search-get
+    description: "Gets a specified saved search from a Log Analytics workspace. Required Permission: Microsoft.OperationalInsights/workspaces/savedSearches/read."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: saved_search_id
+      description: The ID of the saved search.
+      required: true
+    - name: resource_group_name
+      description: "The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration."
+    - name: workspace_name
+      description: "The name of the Log Analytics workspace."
+    outputs:
+    - contextPath: Azure.LogAnalytics.SavedSearches.id
+      description: The ID of the saved search.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.etag
+      description: The ETag of the saved search.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.category
+      description: The category of the saved search.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.displayName
+      description: The display name of the saved search.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.functionAlias
+      description: The function alias if the query serves as a function.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.functionParameters
+      description: The optional function parameters if the query serves as a function.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.query
+      description: The query expression for the saved search.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.tags
+      description: The tags attached to the saved search.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.version
+      description: The version number of the query language.
+      type: Number
+    - contextPath: Azure.LogAnalytics.SavedSearches.type
+      description: The resource type.
+      type: String
+  - name: azure-log-analytics-saved-search-create-update
+    description: "Creates or updates a saved search in a Log Analytics workspace. Required Permissions: Microsoft.OperationalInsights/workspaces/savedSearches/read, Microsoft.OperationalInsights/workspaces/savedSearches/write."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: saved_search_id
+      description: The ID of the saved search.
+      required: true
+    - name: etag
+      description: The ETag of the saved search. This argument is required for updating an existing saved search.
+    - name: category
+      description: The category of the saved search.
+      required: true
+    - name: display_name
+      description: The display name of the saved search.
+      required: true
+    - name: function_alias
+      description: The function alias if the query serves as a function.
+    - name: function_parameters
+      description: "The optional function parameters if the query serves as a function. Value should be in the following format: 'param-name1:type1 = default_value1, param-name2:type2 = default_value2'."
+    - name: query
+      description: The query expression for the saved search.
+      required: true
+    - name: tags
+      description: "The tags attached to the saved search. Value should be in the following format: 'name=value;name=value'."
+    - name: resource_group_name
+      description: "The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration."
+    - name: workspace_name
+      description: "The name of the Log Analytics workspace."
+    outputs:
+    - contextPath: Azure.LogAnalytics.SavedSearches.id
+      description: The ID of the saved search.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.etag
+      description: The ETag of the saved search.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.category
+      description: The category of the saved search.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.displayName
+      description: The display name of the saved search.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.functionAlias
+      description: The function alias if the query serves as a function.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.functionParameters
+      description: The optional function parameters if the query serves as a function.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.query
+      description: The query expression for the saved search.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.tags
+      description: The tags attached to the saved search.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.version
+      description: The version number of the query language.
+      type: Number
+    - contextPath: Azure.LogAnalytics.SavedSearches.type
+      description: The resource type.
+      type: String
+  - name: azure-log-analytics-saved-search-delete
+    description: "Deletes a specified saved search in a Log Analytics workspace. Required Permission: Microsoft.OperationalInsights/workspaces/savedSearches/delete."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: saved_search_id
+      description: The ID of the saved search.
+      required: true
+    - name: resource_group_name
+      description: "The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration."
+    - name: workspace_name
+      description: "The name of the Log Analytics workspace."
+  - name: azure-log-analytics-workspaces-list
+    description: "Gets Log Analytics workspaces in a resource group. Required Permission: Microsoft.OperationalInsights/workspaces/read."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: resource_group_name
+      description: "The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration."
+    outputs:
+    - contextPath: Azure.LogAnalytics.Workspaces.id
+      description: The fully qualified resource ID for the resource.
+      type: String
+    - contextPath: Azure.LogAnalytics.Workspaces.name
+      description: The name of the resource.
+      type: String
+    - contextPath: Azure.LogAnalytics.Workspaces.location
+      description: The geo-location where the resource lives.
+      type: String
+    - contextPath: Azure.LogAnalytics.Workspaces.type
+      description: The type of the resource.
+      type: String
+    - contextPath: Azure.LogAnalytics.Workspaces.tags
+      description: The resource tags.
+      type: Unknown
+    - contextPath: Azure.LogAnalytics.Workspaces.properties
+      description: The workspace properties object, containing provisioningState, customerId, sku, retentionInDays, and other fields.
+      type: Unknown
+  - name: azure-log-analytics-resource-groups-list
+    description: "Lists all resource groups for a subscription. Required Permission: Microsoft.Resources/subscriptions/resourceGroups/read."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: limit
+      description: Limit on the number of resource groups to return.
+      defaultValue: '50'
+    - name: tag
+      description: "A single tag in the form of '{\"Tag Name\":\"Tag Value\"}' to filter the list by."
+    outputs:
+    - contextPath: Azure.LogAnalytics.ResourceGroups.id
+      description: The ID of the resource group.
+      type: String
+    - contextPath: Azure.LogAnalytics.ResourceGroups.name
+      description: The name of the resource group.
+      type: String
+    - contextPath: Azure.LogAnalytics.ResourceGroups.location
+      description: The location of the resource group.
+      type: String
+    - contextPath: Azure.LogAnalytics.ResourceGroups.managedBy
+      description: The ID of the resource that manages this resource group.
+      type: String
+    - contextPath: Azure.LogAnalytics.ResourceGroups.tags
+      description: The tags attached to the resource group.
+      type: Unknown
+    - contextPath: Azure.LogAnalytics.ResourceGroups.type
+      description: The type of the resource group.
+      type: String
+    - contextPath: Azure.LogAnalytics.ResourceGroups.properties.provisioningState
+      description: The provisioning state.
+      type: String
+  - name: azure-log-analytics-table-get
+    description: "Gets a Log Analytics workspace table (search job). Required Permission: Microsoft.OperationalInsights/workspaces/tables/read."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: table_name
+      description: "The name of the table. Example value: AuditLogs_SRCH."
+    - name: resource_group_name
+      description: "The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration."
+    - name: workspace_name
+      description: "The name of the Log Analytics workspace."
+    outputs:
+    - contextPath: Azure.LogAnalytics.Tables.id
+      description: The fully qualified resource ID for the resource.
+      type: String
+    - contextPath: Azure.LogAnalytics.Tables.name
+      description: The name of the resource.
+      type: String
+    - contextPath: Azure.LogAnalytics.Tables.properties
+      description: The table properties object, containing schema, searchResults, provisioningState, plan, retentionInDays, and other fields.
+      type: Unknown
+    - contextPath: Azure.LogAnalytics.Tables.systemData
+      description: The Azure Resource Manager metadata containing createdBy and createdAt information.
+      type: Unknown
+  - name: azure-log-analytics-table-run
+    description: "Runs a search job to fetch records from large datasets into a new search results table in your workspace, and polls until the table is provisioned. Required Permissions: Microsoft.OperationalInsights/workspaces/tables/read, Microsoft.OperationalInsights/workspaces/tables/write."
+    polling: true
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: table_name
+      description: "The name of the table to add. Must contain '_SRCH' suffix. Example value: AuditLogs_SRCH."
+      required: true
+    - name: limit
+      description: Maximum number of records in the result set, up to one million records.
+      defaultValue: '50'
+    - name: query
+      description: "Log query written in KQL format to retrieve data. Search job queries must always start with a table name."
+      required: true
+    - name: start_search_time
+      description: "Start of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as '2023-10-31T00:00:00Z'."
+      defaultValue: 1 day
+    - name: end_search_time
+      description: "End of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as '2023-10-31T00:00:00Z'."
+      defaultValue: now
+    - name: timeout
+      description: The timeout in seconds until polling ends.
+      defaultValue: '600'
+    - name: interval
+      description: The interval in seconds between each poll.
+      defaultValue: '60'
+    - name: first_run
+      description: Used internally to determine whether the current execution is the initial run. Do not set manually.
+      hidden: true
+      defaultValue: 'true'
+    - name: hide_polling_output
+      description: Hide the polling message and only print the final status at the end.
+      hidden: true
+    - name: resource_group_name
+      description: "The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration."
+    - name: workspace_name
+      description: "The name of the Log Analytics workspace."
+    outputs:
+    - contextPath: Azure.LogAnalytics.Tables.TableName
+      description: The table name.
+      type: String
+    - contextPath: Azure.LogAnalytics.Tables.Query
+      description: The query that was used to create the table.
+      type: String
+  - name: azure-log-analytics-table-delete
+    description: "Deletes a Log Analytics workspace table (search job). Required Permission: Microsoft.OperationalInsights/workspaces/tables/delete."
+    arguments:
+    - name: subscription_id
+      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: table_name
+      description: "The name of the table. Must contain '_SRCH' suffix. Example value: AuditLogs_SRCH."
+    - name: resource_group_name
+      description: "The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration."
+    - name: workspace_name
+      description: "The name of the Log Analytics workspace."
   isfetch: false
   runonce: false
   script: '-'
