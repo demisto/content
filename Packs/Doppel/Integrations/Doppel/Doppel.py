@@ -259,14 +259,14 @@ def _normalize_queue_state(value: Any) -> str:
     return str(value or "").strip().lower().replace(" ", "_")
 
 
-def _ensure_aware(dt: datetime | None) -> datetime | None:
+def _ensure_aware(dt):
     """Treat naive datetimes as UTC so aware/naive comparisons cannot raise."""
     if dt and dt.tzinfo is None:
         return dt.replace(tzinfo=UTC)
     return dt
 
 
-def _reopen_entry_if_revived(updated_doppel_alert: dict, audit_logs: Any, last_update: datetime | None) -> dict | None:
+def _reopen_entry_if_revived(updated_doppel_alert: dict, audit_logs: Any, last_update) -> dict | None:
     """Return a dbotIncidentReopen entry when the alert re-entered an active queue after last_update.
 
     Doppel's Revival Monitoring reopens the same alert (e.g. a parked domain going live, or a
