@@ -4,12 +4,14 @@ This integration continuously pulls CEF (Common Event Format) web security and t
 logs from the Imperva Incapsula Log Server into Cortex XSIAM.
 """
 
+from base64 import b64encode
+import json
 import re
 import traceback
-import urllib3
+from typing import Optional
 import zlib
-from base64 import b64encode
-from typing import Any, Dict, List, Optional, Tuple
+
+import urllib3
 
 # Suppress insecure HTTPS request warnings if verify is disabled
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -20,6 +22,9 @@ LOG_PREFIX = "[Imperva Incapsula Collector v2]"
 DEFAULT_MAX_LOGS = 10
 VENDOR = "Imperva"
 PRODUCT = "SIEMIntegration"
+
+# Set of CEF keys that contain structured JSON arrays or objects
+JSON_KEYS = {"cs10", "cs11", "cs12", "cs13", "cs14", "cs15"}
 
 # Regex to match CEF extension key boundaries across all standard and custom fields
 EXT_PATTERN = re.compile(r"(?:^|\s+)([a-zA-Z0-9_]+)=")
@@ -93,27 +98,51 @@ def extract_file_id(file_name):
 def sanitize_cef_value(key: str, val: str) -> str:
     """Sanitizes an individual CEF extension field value across all columns.
 
-    - Strips carriage returns and newlines inside values to protect single-line integrity.
-    - Removes unescaped single quotes/apostrophes (e.g., Al 'Ayyat -> Al Ayyat, 'Amran -> Amran,
-      unbalanced quotes in user-agents or payloads) to prevent CEF tokenizers from entering
-      an unclosed string literal state.
-    - Normalizes doubled quotes in embedded JSON arrays/objects (e.g. cs10, cs11).
+    - Replaces multi-line characters (CR, LF) and whitespace control characters (tab, FF, VT)
+      with spaces to protect single-line log integrity.
+    - Removes unescaped single quotes/apostrophes (e.g., Al 'Ayyat -> Al Ayyat, 'Amran -> Amran).
+    - Strips double quotes from all standard non-JSON fields (e.g., "Xpanse-bot -> Xpanse-bot,
+      payload quotes, URL quotes) to prevent SIEM/XSIAM CEF parsers from entering an unclosed
+      string literal state.
+    - Normalizes embedded JSON structures (cs10-cs15) while ensuring balanced, valid JSON quotes.
+    - Strips trailing backslashes to prevent escaping subsequent CEF space delimiters.
     - Removes non-printable control characters that crash SIEM parsers.
+    - Normalizes consecutive whitespace.
     """
     if not val:
         return ""
 
-    # 1. Strip raw carriage returns and newlines inside field values
-    val = val.replace("\r", " ").replace("\n", " ")
+    # 1. Replace multi-line and control whitespace with spaces
+    for ch in ("\r", "\n", "\f", "\v", "\t"):
+        val = val.replace(ch, " ")
 
-    # 2. Strip unescaped single quotes/apostrophes across all columns
+    # 2. Strip single quotes / apostrophes across all columns
     val = val.replace("'", "")
 
-    # 3. Normalize doubled quotes in embedded JSON structures
-    val = val.replace('""', '"')
+    # 3. Handle double quotes and JSON structures
+    stripped = val.strip()
+    if key in JSON_KEYS and (stripped.startswith(("[", "{")) and stripped.endswith(("]", "}"))):
+        # Normalize doubled quotes in embedded JSON
+        normalized_json = stripped.replace('""', '"')
+        try:
+            json.loads(normalized_json)
+            val = normalized_json
+        except Exception:
+            # If not valid JSON, strip double quotes to prevent unclosed literal state
+            val = val.replace('"', "")
+    else:
+        # Strip all double quotes from non-JSON fields (e.g., "Xpanse-bot, payloads, URLs)
+        val = val.replace('"', "")
 
-    # 4. Remove non-printable control characters (keep printable chars and unicode)
-    val = "".join(c for c in val if c.isprintable() or c == " ")
+    # 4. Strip trailing unescaped backslashes to prevent escaping subsequent CEF space delimiters
+    val = val.rstrip("\\")
+
+    # 5. Remove non-printable control characters (keep printable chars and unicode)
+    val = "".join(c for c in val if (c.isprintable() and c != "\x7f") or c == " ")
+
+    # 6. Normalize multiple consecutive spaces (for non-JSON fields)
+    if key not in JSON_KEYS:
+        val = re.sub(r" +", " ", val)
 
     return val.strip()
 
@@ -135,12 +164,18 @@ def sanitize_cef_event(raw_event: str, file_name: str = "") -> Optional[str]:
             raw_event = "CEF:0|" + raw_event
 
     # CEF Header structure: CEF:Version|Device Vendor|Device Product|Device Version|Device Event Class ID|Name|Severity|Extension
-    parts = raw_event.split("|", 7)
+    # Use negative lookbehind so escaped pipes \| within header fields are preserved
+    parts = re.split(r"(?<!\\)\|", raw_event, maxsplit=7)
     if len(parts) < 8:
         return raw_event
 
     # Sanitize header fields (indexes 0 to 6)
-    header_parts = [h.replace("\r", " ").replace("\n", " ").strip() for h in parts[:7]]
+    header_parts = []
+    for h in parts[:7]:
+        for ch in ("\r", "\n", "\f", "\v", "\t"):
+            h = h.replace(ch, " ")
+        h = "".join(c for c in h if (c.isprintable() and c != "\x7f") or c == " ")
+        header_parts.append(h.strip())
     extension_str = parts[7]
 
     # Robust tokenization of all key=value pairs in the extension
@@ -152,13 +187,14 @@ def sanitize_cef_event(raw_event: str, file_name: str = "") -> Optional[str]:
         v_start = matches[i].end()
         v_end = matches[i + 1].start() if i + 1 < len(matches) else len(extension_str)
         raw_val = extension_str[v_start:v_end]
-        extension_kvs[k] = sanitize_cef_value(k, raw_val)
+        sanitized_val = sanitize_cef_value(k, raw_val)
+        if sanitized_val:
+            extension_kvs[k] = sanitized_val
 
     # Reconstruct clean extension string
     ext_pairs = []
     for k, v in extension_kvs.items():
-        if v:
-            ext_pairs.append("{}={}".format(k, v))
+        ext_pairs.append("{}={}".format(k, v))
 
     # Ensure logfilename and eventhash are present
     if file_name and "logfilename" not in extension_kvs:

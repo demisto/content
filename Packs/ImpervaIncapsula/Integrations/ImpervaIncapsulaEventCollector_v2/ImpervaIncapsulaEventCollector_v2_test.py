@@ -1,8 +1,28 @@
 import builtins
 import gzip
+import os
+import sys
 import zlib
-import pytest
 from unittest.mock import MagicMock, patch
+import pytest
+
+# Ensure repository root and integration directory are on sys.path
+TEST_DIR = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT = os.path.abspath(os.path.join(TEST_DIR, "../../../.."))
+if REPO_ROOT not in sys.path:
+    sys.path.insert(0, REPO_ROOT)
+if TEST_DIR not in sys.path:
+    sys.path.insert(0, TEST_DIR)
+
+# Support official demisto/content and standalone environment locations
+for extra_path in [
+    os.path.join(REPO_ROOT, "Packs/Base/Scripts/CommonServerPython"),
+    os.path.join(REPO_ROOT, "Packs/Base/Scripts/CommonServerUserPython"),
+    os.path.join(REPO_ROOT, "Packs/ApiModules/Scripts/DemistoClassApiModule"),
+    os.path.join(REPO_ROOT, "Tests/demistomock"),
+]:
+    if os.path.isdir(extra_path) and extra_path not in sys.path:
+        sys.path.insert(0, extra_path)
 
 import CommonServerPython
 for attr in dir(CommonServerPython):
@@ -35,22 +55,35 @@ def test_extract_file_id():
 
 
 def test_sanitize_cef_value():
-    """Test CEF value sanitization for apostrophes, quotes, whitespace, and control chars."""
+    """Test CEF value sanitization across quotes, JSON, whitespace, backslashes, and control chars."""
     # 1. Unescaped single quotes / apostrophes (the cicode bug)
     assert sanitize_cef_value("cicode", "Al 'Ayyat") == "Al Ayyat"
     assert sanitize_cef_value("cicode", "'Amran") == "Amran"
     assert sanitize_cef_value("cs1", "User's Browser") == "Users Browser"
 
-    # 2. Multi-line characters replaced with spaces
-    assert sanitize_cef_value("msg", "Line1\r\nLine2\nLine3") == "Line1  Line2 Line3"
+    # 2. Unclosed/stray double quotes in non-JSON fields (the requestClientApplication Xpanse-bot bug)
+    assert sanitize_cef_value("requestClientApplication", '"Xpanse-bot') == "Xpanse-bot"
+    assert sanitize_cef_value("requestClientApplication", 'Mozilla/5.0 "bad_bot"') == "Mozilla/5.0 bad_bot"
+    assert sanitize_cef_value("request", '/api/search?q="xss"') == "/api/search?q=xss"
+    assert sanitize_cef_value("postbody", '{"user": "admin"}') == "{user: admin}"
 
-    # 3. Doubled quotes in embedded JSON
-    assert sanitize_cef_value("cs10", '""tag"": ""waf""') == '"tag": "waf"'
+    # 3. Multi-line characters and control whitespace replaced with spaces
+    assert sanitize_cef_value("msg", "Line1\r\nLine2\nLine3\tTab\fForm\vVert") == "Line1 Line2 Line3 Tab Form Vert"
 
-    # 4. Non-printable control characters removed
+    # 4. Doubled quotes and valid JSON in cs10-cs15
+    assert sanitize_cef_value("cs10", '[{""rule_id"":""4709724""}]') == '[{"rule_id":"4709724"}]'
+    assert sanitize_cef_value("cs11", '[{"api_security_violation_type":"INVALID_URL"}]') == '[{"api_security_violation_type":"INVALID_URL"}]'
+
+    # 5. Broken/malformed JSON has quotes stripped to prevent unclosed strings
+    assert sanitize_cef_value("cs10", '[{""rule_id"":""4709724"') == '[{rule_id:4709724'
+
+    # 6. Trailing backslashes stripped to prevent escaping subsequent CEF space delimiters
+    assert sanitize_cef_value("request", "https://example.com/api/test\\") == "https://example.com/api/test"
+
+    # 7. Non-printable control characters removed
     assert sanitize_cef_value("raw", "Valid \x00\x07Text") == "Valid Text"
 
-    # 5. Empty or None values
+    # 8. Empty or None values
     assert sanitize_cef_value("empty", "") == ""
     assert sanitize_cef_value("none", None) == ""
 
@@ -69,6 +102,29 @@ def test_sanitize_cef_event():
     assert "act=ALLOW" in sanitized
     assert "logfilename=12345_100.log" in sanitized
     assert "eventhash=" in sanitized
+
+    # Test full anomaly reproduction with unclosed double quote in user agent
+    anomaly_event = (
+        'CEF:0|Incapsula|SIEMintegration|1|1|IncapRules(Temp_dump)|11|'
+        'fileId=1415000720207605958 siteid=37659315 suid=1843258 '
+        'requestClientApplication="Xpanse-bot deviceFacility=den ccode=US '
+        'start=1788660690618 request=redacted.co.id/ requestMethod=GET app=HTTPS '
+        'act=REQ_BLOCKED_SECURITY deviceExternalId=82528629909033475 cpt=24804 '
+        'src=xxx.xxx.31.120 end=1788660690623 cs10=[{""rule_id"":""4709724""}]'
+    )
+    sanitized_anomaly = sanitize_cef_event(anomaly_event, file_name="anomaly.log")
+    assert "requestClientApplication=Xpanse-bot" in sanitized_anomaly
+    assert "deviceFacility=den" in sanitized_anomaly
+    assert "ccode=US" in sanitized_anomaly
+    assert "request=redacted.co.id/" in sanitized_anomaly
+    assert "deviceExternalId=82528629909033475" in sanitized_anomaly
+    assert 'cs10=[{"rule_id":"4709724"}]' in sanitized_anomaly
+
+    # Test escaped pipe in header field preserved
+    escaped_pipe_header = "CEF:0|Incapsula|SIEMintegration|1|1|IncapRules(Rule\\|Special)|11|src=10.0.0.1"
+    sanitized_pipe = sanitize_cef_event(escaped_pipe_header, file_name="pipe.log")
+    assert "IncapRules(Rule\\|Special)" in sanitized_pipe
+    assert "src=10.0.0.1" in sanitized_pipe
 
     # Test raw event starting with 0|
     raw_no_cef = "0|Incapsula|SIEMintegration|1|1|Normal|0|src=10.0.0.1"
