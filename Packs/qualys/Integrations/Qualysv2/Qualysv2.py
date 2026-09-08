@@ -34,6 +34,12 @@ ASSET_SIZE_LIMIT = 10**6  # 1MB
 TEST_FROM_DATE = "one day"
 FETCH_ASSETS_COMMAND_TIME_OUT = 180
 QIDS_BATCH_SIZE = 500
+# Fields that should always be present on a fetched detection asset, along with their default
+# value to use when missing from the raw Qualys response. Add new entries here in the future
+# instead of scattering ad-hoc `setdefault` calls across the code.
+DEFAULT_DETECTION_ASSET_FIELDS: dict[str, Any] = {
+    "LAST_VM_AUTH_SCAN_DATETIME": None,
+}
 # Retry configuration for Qualys rate-limit (HTTP 409, Error Code 1965) responses.
 RATE_LIMIT_STATUS_CODE = 409
 RATE_LIMIT_TO_WAIT_HEADER = "X-RateLimit-ToWait-Sec"
@@ -2930,6 +2936,19 @@ def add_fields_to_events(events, time_field_path, event_type_field):
             event["event_type"] = event_type_field
 
 
+def apply_default_detection_asset_fields(asset: dict[str, Any]) -> None:
+    """
+    Ensures that fields listed in DEFAULT_DETECTION_ASSET_FIELDS are always present on the asset,
+    filling in the configured default value when a field is missing.
+
+    To add a new default field in the future, simply add an entry to DEFAULT_DETECTION_ASSET_FIELDS.
+
+    :param asset: the detection asset dict to mutate in-place.
+    """
+    for field, default_value in DEFAULT_DETECTION_ASSET_FIELDS.items():
+        asset.setdefault(field, default_value)
+
+
 def truncate_asset_size(asset):
     if results := asset.get("DETECTION", {}).get("RESULTS"):
         results_size = get_size_of_object(results)
@@ -2991,6 +3010,7 @@ def get_detections_from_hosts(hosts):
             new_detection = copy.deepcopy(host)
             del new_detection["DETECTION_LIST"]
             new_detection["DETECTION"] = detection
+            apply_default_detection_asset_fields(new_detection)
             fetched_assets.append(new_detection)
             truncate_asset_size(new_detection)
 

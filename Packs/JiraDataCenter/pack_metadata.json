@@ -2,7 +2,7 @@
     "name": "Atlassian Jira Data Center",
     "description": "Atlassian Jira Data Center Audit events",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -23,10 +23,6 @@
         "Atlassian"
     ],
     "marketplaces": [
-        "marketplacev2",
-        "platform"
-    ],
-    "supportedModules": [
-        "xsiam"
+        "marketplacev2"
     ]
 }
