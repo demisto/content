@@ -158,6 +158,29 @@ script:
     - contextPath: HashiCorp.Secret.CustomMetadata
       description: The custom metadata saved in the secret.
     description: Returns information about a specified secret in a specified KV V2 engine.
+  - name: hashicorp-create-update-secret-metadata
+    arguments:
+    - name: engine
+      required: true
+      description: The KV V2 engine path, e.g., "secret/" or "kv/".
+    - name: secret_path
+      required: true
+      description: The secret path, for example "my-secret" or "folder/my-secret".
+    - name: max_versions
+      description: The number of versions to keep per key.
+      type: number
+    - name: cas_required
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether the key will require the cas parameter to be set on all write requests. If false, the backend's configuration will be used.
+    - name: delete_version_after
+      description: The duration to specify the deletion_time for all new versions written to this key, e.g., "3h25m19s".
+    - name: custom_metadata
+      description: 'The mapping of arbitrary string key-value pairs representing user-provided metadata to describe the secret. For example, {"foo": "abc", "bar": "123"}.'
+    description: Creates or replaces the metadata of a secret at the specified location in a KV V2 engine. Fields that are not supplied are reset to their server defaults.
+    execution: true
   - name: hashicorp-delete-secret
     arguments:
     - name: secret_path
@@ -395,7 +418,7 @@ script:
       description: AppRole Name.
       type: string
     description: Retrieves the AppRole ID for a specified role.
-  dockerimage: demisto/vendors-sdk:1.0.0.10120494
+  dockerimage: demisto/vendors-sdk:1.0.0.11778894
 tests:
 - hashicorp_test
 fromversion: 5.0.0
