@@ -39,6 +39,7 @@ The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables f
 | Fetch assets and vulnerabilities |  | False |
 | Fetch Asset types | The asset sources to ingest into the Cortex Unified Asset Inventory. | False |
 | Assets Fetch Interval | The fetch interval for assets and vulnerabilities. It is recommended to set it to 1 hour. | False |
+| Long running instance for Spotlight vulnerabilities | Whether to run the Spotlight vulnerabilities fetch in a long-running container instead of on the assets fetch schedule.<br/>Use this when a full Spotlight fetch takes longer than the maximum execution time of a single assets fetch \(up to two hours\) and is therefore terminated before it completes.<br/>When enabled, the assets fetch cannot be enabled as well; only one of the two may be active per instance.<br/>This mode fetches Spotlight vulnerabilities ONLY, regardless of the Asset types to fetch selection.<br/>CNAPP Alerts are not collected in this mode; to collect them, configure a separate integration instance using the regular assets fetch.<br/>A fetch cycle starts every 24 hours. If a cycle runs longer than 24 hours, the next one starts as soon as it finishes. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
