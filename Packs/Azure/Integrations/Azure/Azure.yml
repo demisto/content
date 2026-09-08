@@ -11284,11 +11284,50 @@ script:
     - contextPath: Azure.LogAnalytics.Tables.name
       description: The name of the resource.
       type: String
-    - contextPath: Azure.LogAnalytics.Tables.properties
-      description: The table properties object, containing schema, searchResults, provisioningState, plan, retentionInDays, and other fields.
+    - contextPath: Azure.LogAnalytics.Tables.type
+      description: The type of the resource.
+      type: String
+    - contextPath: Azure.LogAnalytics.Tables.properties.archiveRetentionInDays
+      description: The tables long-term retention in days. Calculated as (totalRetentionInDays-retentionInDays).
+      type: Number
+    - contextPath: Azure.LogAnalytics.Tables.properties.lastPlanModifiedDate
+      description: The timestamp that table plan was last modified (UTC).
+      type: String
+    - contextPath: Azure.LogAnalytics.Tables.properties.plan
+      description: Instruct the system how to handle and charge the logs ingested to this table.
+      type: String
+    - contextPath: Azure.LogAnalytics.Tables.properties.protectionLevel
+      description: The protection level of the table. Determines the default data access isolation behavior.
+      type: String
+    - contextPath: Azure.LogAnalytics.Tables.properties.provisioningState
+      description: Table's current provisioning state. If set to 'updating', indicates a resource lock due to ongoing operation, forbidding any update to the table until the ongoing operation is concluded.
+      type: String
+    - contextPath: Azure.LogAnalytics.Tables.properties.restoredLogs
+      description: Parameters of the restore operation that initiated this table.
       type: Unknown
+    - contextPath: Azure.LogAnalytics.Tables.properties.resultStatistics
+      description: Search job execution statistics.
+      type: Unknown
+    - contextPath: Azure.LogAnalytics.Tables.properties.retentionInDays
+      description: "In Analytics table: the tables analytics retention in days, between 4 and 730. Setting this property to -1 will default to the workspace retention. In Basic and Auxiliary table: read only property."
+      type: Number
+    - contextPath: Azure.LogAnalytics.Tables.properties.retentionInDaysAsDefault
+      description: True - Value originates from workspace retention in days, False - Customer specific.
+      type: Boolean
+    - contextPath: Azure.LogAnalytics.Tables.properties.schema
+      description: Table schema.
+      type: Unknown
+    - contextPath: Azure.LogAnalytics.Tables.properties.searchResults
+      description: Parameters of the search job that initiated this table.
+      type: Unknown
+    - contextPath: Azure.LogAnalytics.Tables.properties.totalRetentionInDays
+      description: The table total retention in days, between 4 and 4383. Setting this property to -1 will default to retentionInDays.
+      type: Number
+    - contextPath: Azure.LogAnalytics.Tables.properties.totalRetentionInDaysAsDefault
+      description: True - Value originates from retention in days, False - Customer specific.
+      type: Boolean
     - contextPath: Azure.LogAnalytics.Tables.systemData
-      description: The Azure Resource Manager metadata containing createdBy and createdAt information.
+      description: The Azure Resource Manager metadata containing createdBy and modifiedBy information.
       type: Unknown
   - name: azure-log-analytics-table-run
     description: "Runs a search job to fetch records from large datasets into a new search results table in your workspace, and polls until the table is provisioned. Required Permissions: Microsoft.OperationalInsights/workspaces/tables/read, Microsoft.OperationalInsights/workspaces/tables/write."
