@@ -237,14 +237,12 @@ def remove_branch_protection(repo, branch_name, t):
 
 
 def prepare_body(pr: PullRequest):
-    body = ""
+    body = f"## Related PRs\r\n**Original External PR:** {pr.html_url}\r\n\r\n"
     if "## Contributor" not in pr.body:
         merged_pr_author = pr.user.login
         body += f"## Contributor\r\n@{merged_pr_author}\r\n\r\n"
     body += pr.body
-    body = replace_related_with_fixes_in_pr_body(body)
-    body += f"\r\n\r\n## Related PRs\r\n**Original External PR:** {pr.html_url}"
-    return body
+    return replace_related_with_fixes_in_pr_body(body)
 
 
 def prepare_labels(pr: PullRequest):
@@ -382,8 +380,14 @@ def main():
     if len(created) == 2:
         main_pr, mapping_pr = created[0], created[1]
         try:
-            main_pr.edit(body=main_pr.body + f"\r\n**Mapping Internal PR:** {mapping_pr.html_url}")
-            mapping_pr.edit(body=mapping_pr.body + f"\r\n**Main Internal PR:** {main_pr.html_url}")
+            main_pr.edit(body=main_pr.body.replace(
+                f"**Original External PR:** {merged_pr.html_url}",
+                f"**Original External PR:** {merged_pr.html_url}\r\n**Mapping Internal PR:** {mapping_pr.html_url}",
+            ))
+            mapping_pr.edit(body=mapping_pr.body.replace(
+                f"**Original External PR:** {merged_pr.html_url}",
+                f"**Original External PR:** {merged_pr.html_url}\r\n**Main Internal PR:** {main_pr.html_url}",
+            ))
             print(f"{t.cyan}Cross-referenced main PR #{main_pr.number} and mapping PR #{mapping_pr.number}{t.normal}")
         except Exception as e:
             print(f"{t.red}Failed to cross-reference PRs: {e}{t.normal}")
