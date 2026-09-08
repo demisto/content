@@ -81,14 +81,8 @@ ERROR_COUNT_MAP = {
 
 ACCEPTABLE_LICENSES = [
     {"type": "Subscription", "package": "Suite"},
-    {"type": "Subscription", "package": "Advanced"},
-    {"type": "Subscription", "package": "Premium"},
     {"type": "Evaluation", "package": "Suite"},
-    {"type": "Evaluation", "package": "Advanced"},
-    {"type": "Evaluation", "package": "Premium"},
     {"type": "NFR", "package": "Suite"},
-    {"type": "NFR", "package": "Advanced"},
-    {"type": "NFR", "package": "Premium"},
     {"type": "Rental", "edition": "EnterprisePlus"},
 ]
 
