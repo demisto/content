@@ -61,7 +61,7 @@ outputs:
   description: A success message if the command runs successfully, otherwise a message that contains the error.
   type: String
 - contextPath: QuarantineFile.Brand
-  description: The integration that executed the command.
+  description: The integration that executed the command. On the Cortex platform, the Core action runs as a Builtin command and is reported as "Cortex Builtin".
   type: String
 - contextPath: QuarantineFile.EndpointID
   description: The endpoint_id which the command was executed on.

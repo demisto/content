@@ -835,3 +835,13 @@ There is no context output for this command.
   - Typically occur when the 30 requests per second API limit is exceeded when paginating over audit trail events.
   - To avoid such errors, reduce the *Maximum Number of Audit Events Per Fetch* parameter value.
   - For additional information, refer to [HashiCorp Terraform API Rate Limits](https://developer.hashicorp.com/terraform/enterprise/api-docs#rate-limits).
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require the **Cortex XSIAM** license:
+
+- Fetch events
+
+</~PLATFORM>
