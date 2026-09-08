@@ -341,6 +341,63 @@
             "parent_data_type": null,
             "source": null,
             "is_read": false
+        },
+        {
+            "id": "00000000-0000-0000-0000-000000000006",
+            "resource": {
+                "id": "00000000000000000006",
+                "basetypes": [
+                    "vulnerability"
+                ],
+                "source": "vulnerabilities",
+                "vulns": [
+                    {
+                        "vuln_id": "111111",
+                        "published_at": "2026-06-01T01:49:20Z",
+                        "ignite_url": "https://mock_dummy.com/vuln/vulnerabilities/111111",
+                        "title": "Dummy Product dummy/module/first.c Multiple Function Unspecified Issue",
+                        "cvss_v3": 5.5,
+                        "location": "Location Unknown",
+                        "description": "Dummy Product contains an unspecified flaw in multiple functions in dummy/module/first.c that may allow an attacker to have an unspecified impact.",
+                        "solution": "It has been reported that this has been fixed. Please refer to the product listing for upgraded versions that address this vulnerability."
+                    },
+                    {
+                        "vuln_id": "222222",
+                        "published_at": "2026-06-01T01:49:14Z",
+                        "ignite_url": "https://mock_dummy.com/vuln/vulnerabilities/222222",
+                        "title": "Dummy Service dummy/module/second.c handle_request() Function Off-by-one Out-of-bounds Read Remote DoS",
+                        "cvss_v3": 6.5,
+                        "epss": 0.00294,
+                        "location": "Remote / Network Access",
+                        "description": "Dummy Service contains an off-by-one condition in the handle_request() function in dummy/module/second.c that is triggered as input is not properly validated. This may allow a remote attacker to cause a denial of service.",
+                        "solution": "It has been reported that this has been fixed. Please refer to the product listing for upgraded versions that address this vulnerability."
+                    }
+                ]
+            },
+            "reason": {
+                "id": "00000000000000000006",
+                "name": "Dummy Product",
+                "text": "dummy product",
+                "origin": "assets",
+                "details": {
+                    "type": "products"
+                },
+                "entity": {
+                    "id": "000000000000000001",
+                    "name": "Crest Data Systems",
+                    "type": "organization"
+                }
+            },
+            "status": null,
+            "generated_at": "2026-06-01T01:50:00Z",
+            "created_at": "2026-06-01T01:50:10.476237Z",
+            "tags": {},
+            "highlights": {},
+            "highlight_text": null,
+            "data_type": "vulnerability",
+            "parent_data_type": null,
+            "source": "vulnerabilities",
+            "is_read": false
         }
     ],
     "pagination": {
