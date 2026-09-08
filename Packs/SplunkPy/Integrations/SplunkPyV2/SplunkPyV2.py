@@ -59,6 +59,10 @@ DEFAULT_STATUSES = {
 MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
 OUTGOING_MIRRORED_FIELDS = ["note", "status", "owner", "urgency", "reviewer", "disposition"]
 ES_APP_NAME = "SplunkEnterpriseSecuritySuite"
+# From Splunk ES 8.4, update requests to the v2 investigations endpoint must include an
+# ``incident_note`` field (with nested ``content``) whenever the tenant enforces the
+# "note required on update" constraint. Earlier versions (8.2/8.3) do not support this field.
+ES_INCIDENT_NOTE_MIN_VERSION = "8.4"
 
 # === Note Tag Globals ===
 NOTE_TAG_TO_SPLUNK = params.get("note_tag_to_splunk", "FROM XSOAR")
@@ -3452,8 +3456,11 @@ def update_remote_system_command(
 
         if any(changed_data.values()):
             demisto.debug(f"Sending update request to Splunk for entity {entity_id}, data: {changed_data}")
+            note_content = f"{changed_data['note']}\n{COMMENT_MIRRORED_FROM_XSOAR}" if changed_data.get("note") else None
             try:
                 # Use the v2 API for field updates (handles both findings and investigations).
+                # Note handling (embedding it in the same request on ES >=8.4 vs. a separate call on
+                # older versions) is done inside update_investigation_or_finding.
                 demisto.debug(f"Using v2 API to update entity {entity_id}")
                 response_info = update_investigation_or_finding(
                     service=service,
@@ -3463,22 +3470,9 @@ def update_remote_system_command(
                     status=changed_data.get("status"),
                     disposition=changed_data.get("disposition"),
                     finding_time=finding_time,
+                    note=note_content,
                 )
                 demisto.debug(f"update-remote-system for entity {entity_id} via v2 API: {response_info}")
-
-                # Handle notes separately using the new add_investigation_note function
-                if changed_data.get("note"):
-                    demisto.debug(f"Adding note to entity {entity_id} via add_investigation_note")
-                    try:
-                        note_content = f"{changed_data['note']}\n{COMMENT_MIRRORED_FROM_XSOAR}"
-                        add_investigation_note(
-                            service=service,
-                            investigation_or_finding_id=entity_id,
-                            content=note_content,
-                        )
-                        demisto.debug(f"Note added successfully to entity {entity_id}")
-                    except Exception as e:
-                        demisto.error(f"Failed adding note to entity {entity_id}: {e!s}")
 
             except Exception as e:
                 demisto.error(
@@ -4176,6 +4170,7 @@ def update_investigation_or_finding(
     finding_time: str | None = None,
     name: str | None = None,
     description: str | None = None,
+    note: str | None = None,
 ):
     """
     Update a Splunk investigation or finding via the v2 investigations API endpoint.
@@ -4195,6 +4190,12 @@ def update_investigation_or_finding(
             call is made without notable_time and falls back to notable_time="now" on failure.
         name (str | None): New name for the investigation (investigations only).
         description (str | None): New description for the investigation (investigations only).
+        note (str | None): Note content to apply to the investigation/finding. Version handling
+            is done internally: on Splunk ES >=8.4 the note is embedded in the same update request
+            as an ``incident_note`` field (with nested ``content``), satisfying the mandatory-note
+            constraint on updates (error code MC_0206); on earlier ES versions (where the
+            ``incident_note`` field is unsupported) the note is added via a separate
+            ``add_investigation_note`` call after the field update.
 
     Returns:
         dict: The JSON response from the API
@@ -4202,8 +4203,24 @@ def update_investigation_or_finding(
     Raises:
         Exception: If the API request fails
     """
+    # From Splunk ES 8.4 the note must be part of the same update request (as an ``incident_note``
+    # field) when the tenant enforces a mandatory note on updates (error code MC_0206). On earlier
+    # versions the field is unsupported, so the note is added via a separate ``add_investigation_note``
+    # call after the field update (preserving the legacy behavior).
+    embed_note_in_update = False
+    if note is not None:
+        es_version = get_enterprise_security_version(service)
+        try:
+            embed_note_in_update = Version(es_version) >= Version(ES_INCIDENT_NOTE_MIN_VERSION)
+        except (InvalidVersion, TypeError):
+            embed_note_in_update = False
+        demisto.debug(
+            f"update_investigation_or_finding: ES version={es_version}, "
+            f"embedding note in update request={embed_note_in_update}"
+        )
+
     # Build the request body with only the fields that are provided
-    body = {}
+    body: dict[str, Any] = {}
     if owner is not None:
         body["owner"] = owner
     if urgency is not None:
@@ -4217,10 +4234,24 @@ def update_investigation_or_finding(
     if description is not None:
         body["description"] = description
 
-    # If no fields to update, return early
+    # If there are no fields to update, add the note (if any) on its own and return early.
+    # A request carrying only an incident_note is not a real field update, so it is always
+    # applied via add_investigation_note regardless of ES version.
     if not body:
+        if note is not None:
+            demisto.debug(f"Only a note to apply for investigation/finding {investigation_or_finding_id}")
+            return add_investigation_note(
+                service=service,
+                investigation_or_finding_id=investigation_or_finding_id,
+                content=note,
+                finding_time=finding_time,
+            )
         demisto.debug(f"No fields to update for investigation/finding {investigation_or_finding_id}")
         return {"success": False, "message": "No fields provided to update"}
+
+    # On ES >=8.4 embed the note in the same request as the field update.
+    if note is not None and embed_note_in_update:
+        body["incident_note"] = {"content": note}
 
     endpoint = f"public/v2/investigations/{investigation_or_finding_id}"
 
@@ -4246,6 +4277,17 @@ def update_investigation_or_finding(
     response_data = response.body.read()
     result = json.loads(response_data)
     demisto.debug(f"Successfully updated investigation/finding {investigation_or_finding_id}: {result}")
+
+    # On ES <8.4 the note is not part of the update request; add it via a separate call.
+    if note is not None and not embed_note_in_update:
+        demisto.debug(f"Adding note to investigation/finding {investigation_or_finding_id} via add_investigation_note")
+        add_investigation_note(
+            service=service,
+            investigation_or_finding_id=investigation_or_finding_id,
+            content=note,
+            finding_time=finding_time,
+        )
+
     return result
 
 
@@ -5320,7 +5362,9 @@ def splunk_edit_event_command(service: client.Service, args: dict) -> None:
     for event_id in event_ids:
         event_id = event_id.strip()
         try:
-            # Update the finding using the v2 API
+            # Update the finding using the v2 API. Note handling (embedding it in the same request
+            # on ES >=8.4 vs. a separate call on older versions) is done inside
+            # update_investigation_or_finding.
             update_investigation_or_finding(
                 service=service,
                 investigation_or_finding_id=event_id,
@@ -5329,21 +5373,11 @@ def splunk_edit_event_command(service: client.Service, args: dict) -> None:
                 status=status,
                 disposition=disposition,
                 finding_time=finding_time,
+                note=note,
             )
 
-            # Add note separately if provided
             if note:
-                try:
-                    add_investigation_note(
-                        service=service,
-                        investigation_or_finding_id=event_id,
-                        content=note,
-                        finding_time=finding_time,
-                    )
-                    results.append(f"Successfully updated Splunk ES event {event_id} (including note)")
-                except Exception as e:
-                    demisto.error(f"Failed to add note to Splunk ES event {event_id}: {e!s}")
-                    results.append(f"Successfully updated Splunk ES event {event_id} (note failed: {e!s})")
+                results.append(f"Successfully updated Splunk ES event {event_id} (including note)")
             else:
                 results.append(f"Successfully updated Splunk ES event {event_id}")
 
