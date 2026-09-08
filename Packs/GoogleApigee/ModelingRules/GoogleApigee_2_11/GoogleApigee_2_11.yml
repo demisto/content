@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: GoogleApigee_ModelingRule
-name: GoogleApigee Modeling Rule
-rules: ''
-schema: ''
-tags:
-supportedModules:
-- xsiam

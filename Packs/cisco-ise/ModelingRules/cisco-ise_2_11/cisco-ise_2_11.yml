@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: cisco-ise_ModelingRule
-name: cisco-ise Modeling Rule
-rules: ''
-schema: ''
-tags: ''
-supportedModules:
-- xsiam
