@@ -2791,7 +2791,7 @@ def hash_djb2(s, seed=5381):
     return hash_name & 0xFFFFFFFF
 
 
-def file_result_existing_file(filename, saveFilename=None):
+def _file_result_existing_file_removed(filename, saveFilename=None):
     """
        Rename an existing file
 
