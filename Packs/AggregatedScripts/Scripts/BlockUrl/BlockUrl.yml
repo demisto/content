@@ -1,0 +1,114 @@
+args:
+- description: List of URLs to block. The scheme is stripped before the URL is submitted to the firewall.
+  isArray: true
+  name: url_list
+  required: true
+- description: |-
+    Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
+    For multi-select provide a comma-separated list. The possible values are: Panorama.
+  isArray: true
+  name: brands
+  required: false
+  auto: PREDEFINED
+  predefined:
+  - 'Panorama'
+- defaultValue: 'Cortex - Block URLs'
+  description: The name of the security rule which will be created in the relevant products.
+  isArray: false
+  name: rule_name
+  required: false
+- defaultValue: 'Blocked URLs - Cortex'
+  description: The name of the PAN-OS custom URL category which holds the blocked URLs.
+  isArray: false
+  name: url_category
+  required: false
+- defaultValue: 'Cortex - Block URL profile'
+  description: The name of the PAN-OS URL Filtering security profile which blocks the custom URL category.
+  isArray: false
+  name: url_filtering_profile
+  required: false
+- description: Panorama log forwarding object name. Indicates what type of Log Forwarding setting will be specified in the PAN-OS custom rules.
+  isArray: false
+  name: log_forwarding_name
+  required: false
+- defaultValue: 'cortex-blocked-urls'
+  description: The designated tag name for the objects the script creates.
+  isArray: false
+  name: tag
+  required: false
+- description: The PAN-OS administrator whose pending changes are committed. When empty, the commit includes the pending changes of all administrators.
+  isArray: false
+  name: admin_name
+  required: false
+- defaultValue: 'vsys1'
+  description: The PAN-OS virtual system to configure. Relevant only for a firewall instance, and ignored on Panorama.
+  isArray: false
+  name: vsys
+  required: false
+- description: Whether to commit the new rule.
+  isArray: false
+  name: auto_commit
+  required: false
+  defaultValue: 'true'
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+- description: Whether to retrieve a human-readable entry for every command or only the final result. True retrieves a human-readable entry for every command. False retrieves a human-readable entry only for the final result.
+  name: verbose
+  defaultValue: 'false'
+  auto: PREDEFINED
+  predefined:
+  - 'true'
+  - 'false'
+- description: Commit job ID to use in polling commands. (automatically filled by polling).
+  name: commit_job_id
+  hidden: true
+- description: Push job ID to use in polling commands. (automatically filled by polling).
+  name: push_job_id
+  hidden: true
+comment: The script blocks a list of URLs in supported integrations.
+commonfields:
+  id: block-url
+  version: -1
+enabled: false
+name: block-url
+outputs:
+- contextPath: BlockURLResults.URL
+  description: The URL that was requested to be blocked, as it was supplied.
+  type: String
+- contextPath: BlockURLResults.SubmittedURL
+  description: The normalized URL that was submitted to the brand. Empty when the URL was rejected before submission.
+  type: String
+- contextPath: BlockURLResults.Brand
+  description: The name of the brand that was executed.
+  type: String
+- contextPath: BlockURLResults.Result
+  description: The result of the action, Success, Failed or Skipped.
+  type: String
+- contextPath: BlockURLResults.Message
+  description: A message concerning the result of the action.
+  type: String
+- contextPath: BlockURLResults.RuleName
+  description: The name of the security rule that blocks the URL.
+  type: String
+- contextPath: BlockURLResults.URLCategory
+  description: The name of the custom URL category that holds the URL.
+  type: String
+- contextPath: BlockURLResults.JobID
+  description: The ID of the PAN-OS commit job.
+  type: String
+script: '-'
+system: false
+timeout: 20m0s
+type: python
+subtype: python3
+dockerimage: demisto/python3:3.12.13.10116658
+fromversion: 6.1.0
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+polling: true
+tests:
+- BlockURL - Test
