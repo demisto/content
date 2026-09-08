@@ -7634,7 +7634,7 @@ def test_log_analytics_saved_searches_list_command_success(mocker):
     When:
         - log_analytics_saved_searches_list_command is called.
     Then:
-        - It returns CommandResults with the Azure.LogAnalytics.SavedSearches prefix and flattened outputs.
+        - It returns CommandResults with the Azure.LogAnalytics.SavedSearches prefix and the raw API outputs.
     """
     from Azure import log_analytics_saved_searches_list_command
 
@@ -7645,7 +7645,8 @@ def test_log_analytics_saved_searches_list_command_success(mocker):
 
     assert result.outputs_prefix == "Azure.LogAnalytics.SavedSearches"
     assert len(result.outputs) == 2
-    assert result.outputs[0]["id"] == "mock_saved_search"
+    assert result.outputs[0]["id"] == "mock_id/mock_saved_search"
+    assert result.outputs[0]["properties"]["displayName"] == "mock saved search"
 
 
 def test_log_analytics_saved_searches_list_command_pagination(mocker):
@@ -7666,7 +7667,7 @@ def test_log_analytics_saved_searches_list_command_pagination(mocker):
     result = log_analytics_saved_searches_list_command(client, {}, args)
 
     assert len(result.outputs) == 1
-    assert result.outputs[0]["id"] == "another_saved_search"
+    assert result.outputs[0]["id"] == "mock_id/another_saved_search"
 
 
 def test_log_analytics_saved_search_get_command_success(mocker):
@@ -7676,7 +7677,7 @@ def test_log_analytics_saved_search_get_command_success(mocker):
     When:
         - log_analytics_saved_search_get_command is called with saved_search_id.
     Then:
-        - It returns CommandResults with the flattened saved search.
+        - It returns CommandResults with the raw saved search.
     """
     from Azure import log_analytics_saved_search_get_command
 
@@ -7687,8 +7688,8 @@ def test_log_analytics_saved_search_get_command_success(mocker):
     result = log_analytics_saved_search_get_command(client, {}, args)
 
     assert result.outputs_prefix == "Azure.LogAnalytics.SavedSearches"
-    assert result.outputs["id"] == "mock_saved_search"
-    assert result.outputs["category"] == "mock_category"
+    assert result.outputs["id"] == "mock_id/mock_saved_search"
+    assert result.outputs["properties"]["category"] == "mock_category"
 
 
 def test_log_analytics_saved_search_create_update_command_success(mocker):
@@ -7780,30 +7781,6 @@ def test_log_analytics_workspaces_list_command_success(mocker):
 
     assert result.outputs_prefix == "Azure.LogAnalytics.Workspaces"
     assert result.outputs[0]["name"] == "mock_workspace"
-
-
-def test_log_analytics_resource_groups_list_command_success(mocker):
-    """
-    Given:
-        - An Azure client whose list_resource_groups_request returns resource groups.
-    When:
-        - log_analytics_resource_groups_list_command is called.
-    Then:
-        - It returns CommandResults with the Azure.LogAnalytics.ResourceGroups prefix.
-    """
-    from Azure import log_analytics_resource_groups_list_command
-
-    client = mocker.MagicMock()
-    mocker.patch.object(
-        client,
-        "list_resource_groups_request",
-        return_value={"value": [{"name": "mock_resource_group", "location": "eastus"}]},
-    )
-
-    result = log_analytics_resource_groups_list_command(client, {}, {"subscription_id": "mock_subscription_id"})
-
-    assert result.outputs_prefix == "Azure.LogAnalytics.ResourceGroups"
-    assert result.outputs[0]["name"] == "mock_resource_group"
 
 
 def test_log_analytics_table_get_command_success(mocker):

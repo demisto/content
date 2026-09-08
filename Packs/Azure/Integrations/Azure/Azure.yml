@@ -11054,35 +11054,41 @@ script:
       description: "The name of the Log Analytics workspace."
     outputs:
     - contextPath: Azure.LogAnalytics.SavedSearches.id
-      description: The ID of the saved search.
+      description: The fully qualified resource ID for the resource.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.name
+      description: The name of the resource.
       type: String
     - contextPath: Azure.LogAnalytics.SavedSearches.etag
       description: The ETag of the saved search.
       type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.category
+    - contextPath: Azure.LogAnalytics.SavedSearches.type
+      description: The type of the resource.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.category
       description: The category of the saved search.
       type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.displayName
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.displayName
       description: The display name of the saved search.
       type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.functionAlias
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.functionAlias
       description: The function alias if the query serves as a function.
       type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.functionParameters
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.functionParameters
       description: The optional function parameters if the query serves as a function.
       type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.query
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.query
       description: The query expression for the saved search.
       type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.tags
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.tags
       description: The tags attached to the saved search.
-      type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.version
+      type: Unknown
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.version
       description: The version number of the query language.
       type: Number
-    - contextPath: Azure.LogAnalytics.SavedSearches.type
-      description: The resource type.
-      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.systemData
+      description: The Azure Resource Manager metadata containing createdBy and modifiedBy information.
+      type: Unknown
   - name: azure-log-analytics-saved-search-get
     description: "Gets a specified saved search from a Log Analytics workspace. Required Permission: Microsoft.OperationalInsights/workspaces/savedSearches/read."
     arguments:
@@ -11099,35 +11105,41 @@ script:
       description: "The name of the Log Analytics workspace."
     outputs:
     - contextPath: Azure.LogAnalytics.SavedSearches.id
-      description: The ID of the saved search.
+      description: The fully qualified resource ID for the resource.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.name
+      description: The name of the resource.
       type: String
     - contextPath: Azure.LogAnalytics.SavedSearches.etag
       description: The ETag of the saved search.
       type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.category
+    - contextPath: Azure.LogAnalytics.SavedSearches.type
+      description: The type of the resource.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.category
       description: The category of the saved search.
       type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.displayName
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.displayName
       description: The display name of the saved search.
       type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.functionAlias
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.functionAlias
       description: The function alias if the query serves as a function.
       type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.functionParameters
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.functionParameters
       description: The optional function parameters if the query serves as a function.
       type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.query
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.query
       description: The query expression for the saved search.
       type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.tags
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.tags
       description: The tags attached to the saved search.
-      type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.version
+      type: Unknown
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.version
       description: The version number of the query language.
       type: Number
-    - contextPath: Azure.LogAnalytics.SavedSearches.type
-      description: The resource type.
-      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.systemData
+      description: The Azure Resource Manager metadata containing createdBy and modifiedBy information.
+      type: Unknown
   - name: azure-log-analytics-saved-search-create-update
     description: "Creates or updates a saved search in a Log Analytics workspace. Required Permissions: Microsoft.OperationalInsights/workspaces/savedSearches/read, Microsoft.OperationalInsights/workspaces/savedSearches/write."
     arguments:
@@ -11161,35 +11173,41 @@ script:
       description: "The name of the Log Analytics workspace."
     outputs:
     - contextPath: Azure.LogAnalytics.SavedSearches.id
-      description: The ID of the saved search.
+      description: The fully qualified resource ID for the resource.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.name
+      description: The name of the resource.
       type: String
     - contextPath: Azure.LogAnalytics.SavedSearches.etag
       description: The ETag of the saved search.
       type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.category
+    - contextPath: Azure.LogAnalytics.SavedSearches.type
+      description: The type of the resource.
+      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.category
       description: The category of the saved search.
       type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.displayName
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.displayName
       description: The display name of the saved search.
       type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.functionAlias
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.functionAlias
       description: The function alias if the query serves as a function.
       type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.functionParameters
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.functionParameters
       description: The optional function parameters if the query serves as a function.
       type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.query
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.query
       description: The query expression for the saved search.
       type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.tags
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.tags
       description: The tags attached to the saved search.
-      type: String
-    - contextPath: Azure.LogAnalytics.SavedSearches.version
+      type: Unknown
+    - contextPath: Azure.LogAnalytics.SavedSearches.properties.version
       description: The version number of the query language.
       type: Number
-    - contextPath: Azure.LogAnalytics.SavedSearches.type
-      description: The resource type.
-      type: String
+    - contextPath: Azure.LogAnalytics.SavedSearches.systemData
+      description: The Azure Resource Manager metadata containing createdBy and modifiedBy information.
+      type: Unknown
   - name: azure-log-analytics-saved-search-delete
     description: "Deletes a specified saved search in a Log Analytics workspace. Required Permission: Microsoft.OperationalInsights/workspaces/savedSearches/delete."
     arguments:
@@ -11220,50 +11238,69 @@ script:
     - contextPath: Azure.LogAnalytics.Workspaces.name
       description: The name of the resource.
       type: String
-    - contextPath: Azure.LogAnalytics.Workspaces.location
-      description: The geo-location where the resource lives.
-      type: String
     - contextPath: Azure.LogAnalytics.Workspaces.type
       description: The type of the resource.
       type: String
+    - contextPath: Azure.LogAnalytics.Workspaces.location
+      description: The geo-location where the resource lives.
+      type: String
+    - contextPath: Azure.LogAnalytics.Workspaces.etag
+      description: The etag of the workspace.
+      type: String
+    - contextPath: Azure.LogAnalytics.Workspaces.identity
+      description: The identity of the resource.
+      type: Unknown
     - contextPath: Azure.LogAnalytics.Workspaces.tags
       description: The resource tags.
       type: Unknown
-    - contextPath: Azure.LogAnalytics.Workspaces.properties
-      description: The workspace properties object, containing provisioningState, customerId, sku, retentionInDays, and other fields.
+    - contextPath: Azure.LogAnalytics.Workspaces.properties.createdDate
+      description: Workspace creation date.
+      type: Date
+    - contextPath: Azure.LogAnalytics.Workspaces.properties.customerId
+      description: This is a read-only property. Represents the ID associated with the workspace.
+      type: String
+    - contextPath: Azure.LogAnalytics.Workspaces.properties.defaultDataCollectionRuleResourceId
+      description: The resource ID of the default Data Collection Rule to use for this workspace.
+      type: String
+    - contextPath: Azure.LogAnalytics.Workspaces.properties.failover
+      description: Workspace failover properties.
       type: Unknown
-  - name: azure-log-analytics-resource-groups-list
-    description: "Lists all resource groups for a subscription. Required Permission: Microsoft.Resources/subscriptions/resourceGroups/read."
-    arguments:
-    - name: subscription_id
-      description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-    - name: limit
-      description: Limit on the number of resource groups to return.
-      defaultValue: '50'
-    - name: tag
-      description: "A single tag in the form of '{\"Tag Name\":\"Tag Value\"}' to filter the list by."
-    outputs:
-    - contextPath: Azure.LogAnalytics.ResourceGroups.id
-      description: The ID of the resource group.
-      type: String
-    - contextPath: Azure.LogAnalytics.ResourceGroups.name
-      description: The name of the resource group.
-      type: String
-    - contextPath: Azure.LogAnalytics.ResourceGroups.location
-      description: The location of the resource group.
-      type: String
-    - contextPath: Azure.LogAnalytics.ResourceGroups.managedBy
-      description: The ID of the resource that manages this resource group.
-      type: String
-    - contextPath: Azure.LogAnalytics.ResourceGroups.tags
-      description: The tags attached to the resource group.
+    - contextPath: Azure.LogAnalytics.Workspaces.properties.features
+      description: Workspace features.
       type: Unknown
-    - contextPath: Azure.LogAnalytics.ResourceGroups.type
-      description: The type of the resource group.
+    - contextPath: Azure.LogAnalytics.Workspaces.properties.forceCmkForQuery
+      description: Indicates whether customer managed storage is mandatory for query management.
+      type: Boolean
+    - contextPath: Azure.LogAnalytics.Workspaces.properties.modifiedDate
+      description: Workspace modification date.
+      type: Date
+    - contextPath: Azure.LogAnalytics.Workspaces.properties.privateLinkScopedResources
+      description: List of linked private link scope resources.
+      type: Unknown
+    - contextPath: Azure.LogAnalytics.Workspaces.properties.provisioningState
+      description: The provisioning state of the workspace.
       type: String
-    - contextPath: Azure.LogAnalytics.ResourceGroups.properties.provisioningState
-      description: The provisioning state.
+    - contextPath: Azure.LogAnalytics.Workspaces.properties.publicNetworkAccessForIngestion
+      description: The network access type for accessing Log Analytics ingestion.
       type: String
+    - contextPath: Azure.LogAnalytics.Workspaces.properties.publicNetworkAccessForQuery
+      description: The network access type for accessing Log Analytics query.
+      type: String
+    - contextPath: Azure.LogAnalytics.Workspaces.properties.replication
+      description: Workspace replication properties.
+      type: Unknown
+    - contextPath: Azure.LogAnalytics.Workspaces.properties.retentionInDays
+      description: The workspace data retention in days. Allowed values are per pricing plan. See pricing tiers documentation for details.
+      type: Number
+    - contextPath: Azure.LogAnalytics.Workspaces.properties.sku
+      description: The SKU of the workspace.
+      type: Unknown
+    - contextPath: Azure.LogAnalytics.Workspaces.properties.workspaceCapping
+      description: The daily volume cap for ingestion.
+      type: Unknown
+    - contextPath: Azure.LogAnalytics.Workspaces.systemData
+      description: The Azure Resource Manager metadata containing createdBy and modifiedBy information.
+      type: Unknown
   - name: azure-log-analytics-table-get
     description: "Gets a Log Analytics workspace table (search job). Required Permission: Microsoft.OperationalInsights/workspaces/tables/read."
     arguments:

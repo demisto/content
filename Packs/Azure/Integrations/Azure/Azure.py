@@ -330,7 +330,6 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.Resources/subscriptions/resourceGroups/read": [
         "azure-nsg-resource-group-list",
         "azure-rm-resource-groups-list",
-        "azure-log-analytics-resource-groups-list",
     ],
     "Microsoft.OperationalInsights/workspaces/savedSearches/read": [
         "azure-log-analytics-saved-searches-list",
@@ -529,16 +528,10 @@ NSG_API_VERSION = "2025-01-01"
 LOG_ANALYTICS_API_VERSION = "2026-03-01"
 LOG_ANALYTICS_TABLE_NAME_SUFFIX = "_SRCH"
 LOG_ANALYTICS_SAVED_SEARCH_HEADERS = [
-    "etag",
     "id",
-    "category",
-    "displayName",
-    "functionAlias",
-    "functionParameters",
-    "query",
-    "tags",
-    "version",
+    "name",
     "type",
+    "etag",
 ]
 
 # The following commands required a scope, token and resource update as part of the functions get_command_resource and
@@ -3287,17 +3280,6 @@ def update_nic_properties(args: dict, params: dict, properties: dict):
 """ LOG ANALYTICS HELPER FUNCTIONS """
 
 
-def log_analytics_flatten_saved_search(saved_search_obj: dict[str, Any]) -> dict[str, Any]:
-    """Flatten a saved search API object into a single-level output dict."""
-    ret: dict = saved_search_obj.get("properties", {})
-    ret["id"] = saved_search_obj.get("id", "").split("/")[-1]
-    ret["etag"] = saved_search_obj.get("etag")
-    ret["type"] = saved_search_obj.get("type")
-    if ret.get("tags"):
-        ret["tags"] = json.dumps(ret.get("tags"))
-    return ret
-
-
 def log_analytics_tags_arg_to_request_format(tags: str | None) -> list[dict[str, str]] | None:
     """Convert a 'name=value;name=value' tags argument into the API request format."""
     bad_arg_msg = "The `tags` argument is malformed. Value should be in the following format: `name=value;name=value`"
@@ -5542,7 +5524,7 @@ def log_analytics_saved_searches_list_command(client: AzureClient, params: dict,
 
     from_index = min(page * limit, len(saved_searches))
     to_index = min(from_index + limit, len(saved_searches))
-    output = [log_analytics_flatten_saved_search(saved_search) for saved_search in saved_searches[from_index:to_index]]
+    output = saved_searches[from_index:to_index]
 
     readable_output = tableToMarkdown(
         "Saved Searches", output, headers=LOG_ANALYTICS_SAVED_SEARCH_HEADERS, headerTransform=pascalToSpace, removeNull=True
@@ -5579,11 +5561,9 @@ def log_analytics_saved_search_get_command(client: AzureClient, params: dict, ar
         workspace_name=workspace_name,
         saved_search_id=saved_search_id,
     )
-    output = log_analytics_flatten_saved_search(response)
-
     readable_output = tableToMarkdown(
         f"Saved search `{saved_search_id}` properties",
-        output,
+        response,
         headers=LOG_ANALYTICS_SAVED_SEARCH_HEADERS,
         headerTransform=pascalToSpace,
         removeNull=True,
@@ -5592,7 +5572,7 @@ def log_analytics_saved_search_get_command(client: AzureClient, params: dict, ar
         readable_output=readable_output,
         outputs_prefix="Azure.LogAnalytics.SavedSearches",
         outputs_key_field="id",
-        outputs=output,
+        outputs=response,
         raw_response=response,
     )
 
@@ -5643,11 +5623,9 @@ def log_analytics_saved_search_create_update_command(client: AzureClient, params
         saved_search_id=saved_search_id,
         data=data,
     )
-    output = log_analytics_flatten_saved_search(response)
-
     readable_output = tableToMarkdown(
         f"Saved search `{saved_search_id}` properties",
-        output,
+        response,
         headers=LOG_ANALYTICS_SAVED_SEARCH_HEADERS,
         headerTransform=pascalToSpace,
         removeNull=True,
@@ -5656,7 +5634,7 @@ def log_analytics_saved_search_create_update_command(client: AzureClient, params
         readable_output=readable_output,
         outputs_prefix="Azure.LogAnalytics.SavedSearches",
         outputs_key_field="id",
-        outputs=output,
+        outputs=response,
         raw_response=response,
     )
 
@@ -5721,41 +5699,6 @@ def log_analytics_workspaces_list_command(client: AzureClient, params: dict, arg
         outputs_key_field="id",
         outputs=value,
         raw_response=value,
-        readable_output=readable_output,
-    )
-
-
-def log_analytics_resource_groups_list_command(client: AzureClient, params: dict, args: dict) -> CommandResults:
-    """
-    List all resource groups in the subscription.
-
-    Args:
-        client (AzureClient): The Azure client instance.
-        params (dict): Configuration parameters.
-        args (dict): Command arguments including optional tag and limit.
-
-    Returns:
-        CommandResults: The list of resource groups.
-    """
-    subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-    filter_by_tag = azure_tag_formatter(args.get("tag")) if args.get("tag") else ""
-    limit = args.get("limit", DEFAULT_LIMIT)
-
-    response = client.list_resource_groups_request(subscription_id=subscription_id, filter_by_tag=filter_by_tag, limit=limit)
-    data_from_response = response.get("value", [])
-
-    readable_output = tableToMarkdown(
-        "Resource Groups List",
-        data_from_response,
-        headers=["name", "location", "tags", "provisioningState"],
-        headerTransform=string_to_table_header,
-        removeNull=True,
-    )
-    return CommandResults(
-        outputs_prefix="Azure.LogAnalytics.ResourceGroups",
-        outputs_key_field="id",
-        outputs=data_from_response,
-        raw_response=response,
         readable_output=readable_output,
     )
 
@@ -6621,7 +6564,6 @@ def main():  # pragma: no cover
             "azure-log-analytics-saved-search-create-update": log_analytics_saved_search_create_update_command,
             "azure-log-analytics-saved-search-delete": log_analytics_saved_search_delete_command,
             "azure-log-analytics-workspaces-list": log_analytics_workspaces_list_command,
-            "azure-log-analytics-resource-groups-list": log_analytics_resource_groups_list_command,
             "azure-log-analytics-table-get": log_analytics_table_get_command,
             "azure-log-analytics-table-delete": log_analytics_table_delete_command,
             "azure-log-analytics-table-run": log_analytics_table_run_command,
