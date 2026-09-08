@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: MicrosoftWindowsSysmon_ModelingRule
-name: MicrosoftWindowsSysmon Modeling Rule
-rules: ''
-schema: ''
-tags: ''
-supportedModules:
-- xsiam
