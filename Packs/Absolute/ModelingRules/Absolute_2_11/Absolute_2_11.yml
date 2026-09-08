@@ -1,4 +1,4 @@
-fromversion: 8.14.0
+fromversion: 8.15.0
 id: Absolute_ModelingRule
 name: Absolute Modeling Rule
 rules: ''
@@ -6,5 +6,3 @@ schema: ''
 tags: ''
 supportedModules:
 - xsiam
-supportedFeatures:
-- harness_v2

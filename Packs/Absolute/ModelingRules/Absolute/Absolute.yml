@@ -7,5 +7,3 @@ schema: ''
 tags: ''
 supportedModules:
 - xsiam
-supportedFeatures:
-- harness_v1

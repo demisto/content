@@ -6,6 +6,4 @@ rules: ''
 schema: ''
 supportedModules:
 - xsiam
-supportedFeatures:
-- mars_v1
 tags: 'slack'
