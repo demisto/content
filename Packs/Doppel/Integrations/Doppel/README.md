@@ -342,12 +342,14 @@ Retrieves a list of alerts. The result can be filtered by provided parameters.
 | --- | --- | --- |  
 | search_key | Currently only supports search by URL. | Optional |  
 | queue_state | New queue status to update alert with (ID required). Possible values: actioned, needs_confirmation, doppel_review, monitoring, taken_down, archived. | Optional |  
-| product | Product category the report belongs to. Possible values: domains, social_media, mobile_apps, ecommerce, crypto, emails, paid_adds. | Optional |  
+| product | Product category the report belongs to. Possible values: domains, social_media, mobile_apps, ecommerce, crypto, email, paid_ads, telco, darkweb. | Optional |  
 | created_before | Filter alerts created before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
 | created_after | Filter alerts created after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
+| last_activity_timestamp | The filter for alerts whose last activity (creation or any update) occurred at or after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
 | sort_type | The field to sort the reports by. Defaults to date_sourced. Possible values: date_sourced, date_last_actioned. | Optional |  
 | sort_order | The order to sort the reports by. Defaults to desc. Possible values: asc, desc. | Optional |  
 | page | Page number for pagination; defaults to 0. | Optional |  
+| page_size | The number of alerts to return per page. The maximum supported by the Doppel API is 200. | Optional |  
 | tags | List of tags to filter alerts. | Optional |  
 
 #### Context Output
@@ -527,11 +529,14 @@ There is no context output for this command.
 
 ### Incident Mirroring
 
+**Note:** The ***fetch-incidents*** command creates Cortex XSOAR incidents only for newly detected Doppel alerts. Changes made to a Doppel alert after it was fetched (such as queue state, entity state, or severity updates) are not pulled in by fetch. To keep existing incidents up to date with Doppel, enable mirroring and set the **Mirror Direction** parameter to Incoming or Incoming And Outgoing.
+
 #### Mirroring In (Doppel → XSOAR)
 
 When incidents are mirrored into Cortex XSOAR from Doppel:
 
 1. Any changes in Doppel alerts (mirroring incoming fields) will be reflected in Cortex XSOAR incidents.
+2. When Doppel revives an alert — moves it back into an active queue such as Doppel Review or Actioned, for example when a taken-down domain comes back online — a closed Cortex incident is automatically reopened so the revival is not missed. The reopening process only occurs on a queue transition that occurred after the incident's last sync, so incidents closed by an analyst are not reopened by unrelated alert activity.
 
 **Supported Fields**
 
@@ -550,6 +555,9 @@ When incidents are mirrored out from Cortex XSOAR to Doppel. Currently, the Mirr
 The following fields are mirrored:
 
 1. Doppel Queue State – Indicates the queue where the alert is currently assigned.
+2. Close Notes – When an incident is closed with close notes, the notes are sent to Doppel and recorded as a comment on the alert.
+
+**Data sharing note:** Closing an incident sends its analyst-authored close notes to the Doppel platform as an alert comment, where they are visible to anyone with access to the alert in Doppel. If your close notes may contain sensitive internal information, review them before closing, or remove the **closeNotes** mapping from the **Doppel Outgoing_Mapper** to disable this behavior.
 
 #### Configuration Steps
 
@@ -568,3 +576,13 @@ To enable incident mirroring between Cortex XSOAR incidents and Doppel alerts:
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Doppel.
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
+
+- Fetch incidents
+
+</~PLATFORM>
