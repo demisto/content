@@ -1134,6 +1134,105 @@ Returns a specific region resource. Required permission: compute.regions.get.
 | GCP.Compute.Regions.selfLink | string | Server-defined URL for the resource. |
 | GCP.Compute.Regions.kind | string | Type of the resource. Always compute\#region for regions. |
 
+### gcp-compute-regions-list
+
+***
+Retrieves the list of region resources available to the specified project. Required permission: compute.regions.list.
+
+#### Base Command
+
+`gcp-compute-regions-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| limit | The maximum number of results per page to return, ranging from 1 to 500. If the number of available results is larger than the limit, a token is returned in the nextPageToken field to retrieve the next page of results in subsequent list requests. Default is 50. | Optional |
+| filter | The filter expression to use for filtering resources listed in the response. Must specify the field name, a comparison operator, and the filtering value. The value can be a string, a number, or a boolean. The comparison operator must be "=", "!=", "&gt;", or "&lt;". For example, to exclude a region named "example-region", specify name != example-region. | Optional |
+| order_by | The order in which to sort the list results. Can be "alphanumerical" (default, based on the resource name) or "creationTimestamp desc" (reverse chronological order, latest result first). | Optional |
+| next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Regions.id | string | The unique identifier for the resource, defined by the server. |
+| GCP.Compute.Regions.creationTimestamp | string | The creation timestamp in RFC3339 text format \(for example, 2024-01-15T12:34:56.000-07:00\). |
+| GCP.Compute.Regions.name | string | The name of the resource. |
+| GCP.Compute.Regions.description | string | The textual description of the resource. |
+| GCP.Compute.Regions.status | string | The status of the region, either UP or DOWN. |
+| GCP.Compute.Regions.zones | string | The list of zones available in this region, in the form of resource URLs. |
+| GCP.Compute.Regions.quotas | string | The quotas assigned to this region. |
+| GCP.Compute.Regions.quotas.metric | string | The name of the quota metric. |
+| GCP.Compute.Regions.quotas.limit | number | The quota limit for this metric. |
+| GCP.Compute.Regions.quotas.usage | number | The current usage of this metric. |
+| GCP.Compute.Regions.quotas.owner | string | The resource to which this quota applies. |
+| GCP.Compute.Regions.deprecated | string | The deprecation status associated with this region. |
+| GCP.Compute.Regions.deprecated.state | string | The deprecation state of this resource. Can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error. |
+| GCP.Compute.Regions.deprecated.replacement | string | The URL of the suggested replacement for a deprecated resource. The replacement resource must be the same type of resource as the deprecated resource. |
+| GCP.Compute.Regions.deprecated.deprecated | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Regions.deprecated.obsolete | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Regions.deprecated.deleted | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Regions.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Regions.supportsPzs | boolean | Whether the region supports physical zone separation. Reserved for future use. |
+| GCP.Compute.Regions.quotaStatusWarning | string | The warning raised while fetching the quotas field for this region. This field is populated only if fetching of the quotas field fails. |
+| GCP.Compute.Regions.quotaStatusWarning.code | string | The warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response. |
+| GCP.Compute.Regions.quotaStatusWarning.message | string | The human-readable description of the warning code. |
+| GCP.Compute.Regions.quotaStatusWarning.data | string | The metadata about this warning, in key-value format. |
+| GCP.Compute.Regions.kind | string | The type of the resource. Always compute\#region for regions. |
+| GCP.Compute.RegionsNextToken | string | The next page token to use for retrieving the next page of regions. |
+
+#### Command example
+
+```!gcp-compute-regions-list project_id=project-id limit=2```
+
+#### Context Example
+
+```json
+{
+    "GCP": {
+        "Compute": {
+            "Regions": [
+                {
+                    "creationTimestamp": "1969-12-31T16:00:00.000-08:00",
+                    "id": "1220",
+                    "kind": "compute#region",
+                    "name": "us-central1",
+                    "selfLink": "https://www.googleapis.com/compute/v1/projects/project-id/regions/us-central1",
+                    "status": "UP",
+                    "zones": [
+                        "https://www.googleapis.com/compute/v1/projects/project-id/zones/us-central1-a",
+                        "https://www.googleapis.com/compute/v1/projects/project-id/zones/us-central1-b"
+                    ]
+                },
+                {
+                    "creationTimestamp": "1969-12-31T16:00:00.000-08:00",
+                    "id": "1230",
+                    "kind": "compute#region",
+                    "name": "us-east1",
+                    "selfLink": "https://www.googleapis.com/compute/v1/projects/project-id/regions/us-east1",
+                    "status": "UP",
+                    "zones": [
+                        "https://www.googleapis.com/compute/v1/projects/project-id/zones/us-east1-b"
+                    ]
+                }
+            ],
+            "RegionsNextToken": "CAIQAA=="
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### GCP Compute Regions
+>
+>|Id|Name|Status|Creation Timestamp|
+>|---|---|---|---|
+>| 1220 | us-central1 | UP | 1969-12-31T16:00:00.000-08:00 |
+>| 1230 | us-east1 | UP | 1969-12-31T16:00:00.000-08:00 |
+
 ### gcp-compute-zone-get
 
 ***
@@ -1169,6 +1268,101 @@ Returns a specific zone resource. Required permission: compute.zones.get.
 | GCP.Compute.Zones.selfLink | string | Server-defined URL for the resource. |
 | GCP.Compute.Zones.availableCpuPlatforms | string | Available cpu/platform selections for the zone. Do not use field = 7 or field = 11. Next available field = 14. |
 | GCP.Compute.Zones.kind | string | Type of the resource. Always compute\#zone for zones. |
+
+### gcp-compute-zones-list
+
+***
+Retrieves the list of zone resources available to the specified project. Required permission: compute.zones.list.
+
+#### Base Command
+
+`gcp-compute-zones-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| limit | The maximum number of results per page to return, ranging from 1 to 500. If the number of available results is larger than the limit, a token is returned in the nextPageToken field to retrieve the next page of results in subsequent list requests. Default is 50. | Optional |
+| filter | The filter expression to use for filtering resources listed in the response. Must specify the field name, a comparison operator, and the filtering value. The value can be a string, a number, or a boolean. The comparison operator must be "=", "!=", "&gt;", or "&lt;". For example, to exclude a zone named "example-zone", specify name != example-zone. | Optional |
+| order_by | The order in which to sort the list results. Can be "alphanumerical" (default, based on the resource name) or "creationTimestamp desc" (reverse chronological order, latest result first). | Optional |
+| next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Zones.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Zones.creationTimestamp | string | The creation timestamp in RFC3339 text format \(for example, 2024-01-15T12:34:56.000-07:00\). |
+| GCP.Compute.Zones.name | string | The name of the resource. |
+| GCP.Compute.Zones.description | string | The textual description of the resource. |
+| GCP.Compute.Zones.status | string | The status of the zone, either UP or DOWN. |
+| GCP.Compute.Zones.deprecated | string | The deprecation status associated with this zone. |
+| GCP.Compute.Zones.deprecated.state | string | The deprecation state of this resource. Can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error. |
+| GCP.Compute.Zones.deprecated.replacement | string | The URL of the suggested replacement for a deprecated resource. The replacement resource must be the same type of resource as the deprecated resource. |
+| GCP.Compute.Zones.deprecated.deprecated | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Zones.deprecated.obsolete | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Zones.deprecated.deleted | string | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED \(for example, 2024-01-15T12:34:56.000-07:00\). This is only informational and the status will not change unless the client explicitly changes it. |
+| GCP.Compute.Zones.region | string | The full URL reference to the region which hosts the zone. |
+| GCP.Compute.Zones.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Zones.availableCpuPlatforms | string | The available CPU platform selections for the zone. |
+| GCP.Compute.Zones.supportsPzs | boolean | Whether the zone supports physical zone separation. Reserved for future use. |
+| GCP.Compute.Zones.resourceStatus | Unknown | The additional status details of the zone. |
+| GCP.Compute.Zones.resourceStatus.upcomingMaintenances | Unknown | The list of upcoming maintenances scheduled for this zone. |
+| GCP.Compute.Zones.kind | string | The type of the resource. Always compute\#zone for zones. |
+| GCP.Compute.ZonesNextToken | string | The next page token to use for retrieving the next page of zones. |
+
+#### Command example
+
+```!gcp-compute-zones-list project_id=project-id limit=2```
+
+#### Context Example
+
+```json
+{
+    "GCP": {
+        "Compute": {
+            "Zones": [
+                {
+                    "availableCpuPlatforms": [
+                        "Intel Broadwell",
+                        "Intel Cascade Lake"
+                    ],
+                    "creationTimestamp": "1969-12-31T16:00:00.000-08:00",
+                    "id": "2231",
+                    "kind": "compute#zone",
+                    "name": "us-central1-a",
+                    "region": "https://www.googleapis.com/compute/v1/projects/project-id/regions/us-central1",
+                    "selfLink": "https://www.googleapis.com/compute/v1/projects/project-id/zones/us-central1-a",
+                    "status": "UP"
+                },
+                {
+                    "availableCpuPlatforms": [
+                        "Intel Broadwell"
+                    ],
+                    "creationTimestamp": "1969-12-31T16:00:00.000-08:00",
+                    "id": "2232",
+                    "kind": "compute#zone",
+                    "name": "us-central1-b",
+                    "region": "https://www.googleapis.com/compute/v1/projects/project-id/regions/us-central1",
+                    "selfLink": "https://www.googleapis.com/compute/v1/projects/project-id/zones/us-central1-b",
+                    "status": "UP"
+                }
+            ],
+            "ZonesNextToken": "CAIQAA=="
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### GCP Compute Zones
+>
+>|Id|Name|Status|Region|Creation Timestamp|
+>|---|---|---|---|---|
+>| 2231 | us-central1-a | UP | https://www.googleapis.com/compute/v1/projects/project-id/regions/us-central1 | 1969-12-31T16:00:00.000-08:00 |
+>| 2232 | us-central1-b | UP | https://www.googleapis.com/compute/v1/projects/project-id/regions/us-central1 | 1969-12-31T16:00:00.000-08:00 |
 
 ### gcp-compute-networks-list
 
@@ -2043,3 +2237,498 @@ Removes an ACL entry (entity) from a GCS object's access control list. If Unifor
 #### Context Output
 
 There is no context output for this command.
+
+### gcp-kms-key-rings-list
+
+***
+Lists the Cloud KMS key rings in a given location, or across all locations. Required Permissions: cloudkms.keyRings.list.
+
+#### Base Command
+
+`gcp-kms-key-rings-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| all_locations | Whether to return the key rings from all supported locations. When set to true, the location argument is ignored. Possible values are: true, false. Default is false. | Optional |
+| limit | The maximum number of key rings to return per location. Valid range 1-500. Default is 50. | Optional |
+| page_token | The token for the next page of results, used for pagination. Ignored when all_locations is set to true, because a page token is bound to a single location. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.KeyRings.Name | String | The ID of the key ring. |
+| GCP.KMS.KeyRings.ResourceName | String | The full resource name of the key ring. |
+| GCP.KMS.KeyRings.Project | String | The project that holds the key ring. |
+| GCP.KMS.KeyRings.Location | String | The location of the key ring. |
+| GCP.KMS.KeyRings.createTime | Date | The time at which the key ring was created. |
+| GCP.KMS.KeyRingsNextToken | String | The token to pass as the page_token argument to retrieve the next page of key rings. |
+
+### gcp-kms-keys-list
+
+***
+Lists the crypto keys of a given Cloud KMS key ring. Required Permissions: cloudkms.cryptoKeys.list.
+
+#### Base Command
+
+`gcp-kms-keys-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto keys. | Required |
+| key_state | Returns only keys whose primary crypto key version is in this state. Leave empty to return all keys. Possible values are: ENABLED, DISABLED, DESTROYED, DESTROY_SCHEDULED, PENDING_GENERATION, PENDING_IMPORT, IMPORT_FAILED. | Optional |
+| limit | The maximum number of crypto keys to return. Valid range 1-500. Default is 50. | Optional |
+| page_token | The token for the next page of results, used for pagination. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.CryptoKeys.Name | String | The ID of the crypto key. |
+| GCP.KMS.CryptoKeys.ResourceName | String | The full resource name of the crypto key. |
+| GCP.KMS.CryptoKeys.Project | String | The project that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Location | String | The location of the crypto key. |
+| GCP.KMS.CryptoKeys.KeyRing | String | The key ring that holds the crypto key. |
+| GCP.KMS.CryptoKeys.purpose | String | The immutable purpose of the crypto key. |
+| GCP.KMS.CryptoKeys.createTime | Date | The time at which the crypto key was created. |
+| GCP.KMS.CryptoKeys.nextRotationTime | Date | The time at which the next scheduled rotation is due to run. |
+| GCP.KMS.CryptoKeys.rotationPeriod | String | The period between automatic key rotations. |
+| GCP.KMS.CryptoKeys.labels | Unknown | The labels with user-defined metadata. |
+| GCP.KMS.CryptoKeys.versionTemplate | Unknown | The version template of the crypto key, containing the protectionLevel and algorithm fields. |
+| GCP.KMS.CryptoKeys.primary | Unknown | The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields. |
+| GCP.KMS.CryptoKeysNextToken | String | The token to use when requesting the next set of crypto keys. |
+
+### gcp-kms-keys-list-all
+
+***
+Lists every crypto key across all key rings in a location, or across all locations. Required Permissions: cloudkms.keyRings.list, cloudkms.cryptoKeys.list.
+
+#### Base Command
+
+`gcp-kms-keys-list-all`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| all_locations | Whether to return the crypto keys from all supported locations. When set to true, the location argument is ignored. Possible values are: true, false. Default is false. | Optional |
+| key_state | Returns only keys whose primary crypto key version is in this state. Leave empty to return all keys. Possible values are: ENABLED, DISABLED, DESTROYED, DESTROY_SCHEDULED, PENDING_GENERATION, PENDING_IMPORT, IMPORT_FAILED. | Optional |
+| limit | The maximum number of crypto keys to return per key ring. Valid range 1-500. This command aggregates results across key rings and cannot be paged. If any key ring holds more keys than this limit, a truncation notice is returned. Use gcp-kms-keys-list to page through a single key ring. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.CryptoKeys.Name | String | The ID of the crypto key. |
+| GCP.KMS.CryptoKeys.ResourceName | String | The full resource name of the crypto key. |
+| GCP.KMS.CryptoKeys.Project | String | The project that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Location | String | The location of the crypto key. |
+| GCP.KMS.CryptoKeys.KeyRing | String | The key ring that holds the crypto key. |
+| GCP.KMS.CryptoKeys.purpose | String | The immutable purpose of the crypto key. |
+| GCP.KMS.CryptoKeys.createTime | Date | The time at which the crypto key was created. |
+| GCP.KMS.CryptoKeys.nextRotationTime | Date | The time at which the next scheduled rotation is due to run. |
+| GCP.KMS.CryptoKeys.rotationPeriod | String | The period between automatic key rotations. |
+| GCP.KMS.CryptoKeys.labels | Unknown | The labels with user-defined metadata. |
+| GCP.KMS.CryptoKeys.versionTemplate | Unknown | The version template of the crypto key, containing the protectionLevel and algorithm fields. |
+| GCP.KMS.CryptoKeys.primary | Unknown | The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields. |
+
+### gcp-kms-key-get
+
+***
+Returns the metadata of a given crypto key and its primary crypto key version. Required Permissions: cloudkms.cryptoKeys.get.
+
+#### Base Command
+
+`gcp-kms-key-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the crypto key to fetch. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.CryptoKeys.Name | String | The ID of the crypto key. |
+| GCP.KMS.CryptoKeys.ResourceName | String | The full resource name of the crypto key. |
+| GCP.KMS.CryptoKeys.Project | String | The project that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Location | String | The location of the crypto key. |
+| GCP.KMS.CryptoKeys.KeyRing | String | The key ring that holds the crypto key. |
+| GCP.KMS.CryptoKeys.purpose | String | The immutable purpose of the crypto key. |
+| GCP.KMS.CryptoKeys.createTime | Date | The time at which the crypto key was created. |
+| GCP.KMS.CryptoKeys.nextRotationTime | Date | The time at which the next scheduled rotation is due to run. |
+| GCP.KMS.CryptoKeys.rotationPeriod | String | The period between automatic key rotations. |
+| GCP.KMS.CryptoKeys.labels | Unknown | The labels with user-defined metadata. |
+| GCP.KMS.CryptoKeys.versionTemplate | Unknown | The version template of the crypto key, containing the protectionLevel and algorithm fields. |
+| GCP.KMS.CryptoKeys.primary | Unknown | The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields. |
+
+### gcp-kms-key-create
+
+***
+Creates a new crypto key within a given key ring. Required Permissions: cloudkms.cryptoKeys.create.
+
+#### Base Command
+
+`gcp-kms-key-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring in which to create the crypto key. | Required |
+| crypto_key | The ID of the crypto key to create. Must be unique within the key ring and match the regular expression [a-zA-Z0-9_-]{1,63}. | Required |
+| purpose | The immutable cryptographic capability of the crypto key. Possible values are: ENCRYPT_DECRYPT, ASYMMETRIC_SIGN, ASYMMETRIC_DECRYPT. Default is ENCRYPT_DECRYPT. | Optional |
+| algorithm | The algorithm to use when creating a crypto key version based on this template. Possible values are: GOOGLE_SYMMETRIC_ENCRYPTION, RSA_SIGN_PSS_2048_SHA256, RSA_SIGN_PSS_3072_SHA256, RSA_SIGN_PSS_4096_SHA256, RSA_SIGN_PSS_4096_SHA512, RSA_SIGN_PKCS1_2048_SHA256, RSA_SIGN_PKCS1_3072_SHA256, RSA_SIGN_PKCS1_4096_SHA256, RSA_SIGN_PKCS1_4096_SHA512, RSA_DECRYPT_OAEP_2048_SHA256, RSA_DECRYPT_OAEP_3072_SHA256, RSA_DECRYPT_OAEP_4096_SHA256, RSA_DECRYPT_OAEP_4096_SHA512, EC_SIGN_P256_SHA256, EC_SIGN_P384_SHA384. Default is GOOGLE_SYMMETRIC_ENCRYPTION. | Optional |
+| protection_level | The protection level to use when creating a crypto key version based on this template. Possible values are: SOFTWARE, HSM. Default is SOFTWARE. | Optional |
+| rotation_period | The period between automatic key rotations, as a duration in seconds (for example, 7776000s). Must be between 24 hours and 876,000 hours. Supported only for keys whose purpose is ENCRYPT_DECRYPT. | Optional |
+| next_rotation_time | The time of the next scheduled rotation. Accepts an absolute timestamp in RFC3339 UTC "Zulu" format (for example, 2024-10-02T15:01:23Z) or a relative expression (for example, "in 30 days"). Supported only for keys whose purpose is ENCRYPT_DECRYPT. | Optional |
+| labels | The labels with user-defined metadata, in the format key=abc,value=123;key=def,value=456. | Optional |
+| skip_initial_version_creation | Whether to create the crypto key without an initial crypto key version. When set to true, a crypto key version must be created before the key can be used. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.CryptoKeys.Name | String | The ID of the crypto key. |
+| GCP.KMS.CryptoKeys.ResourceName | String | The full resource name of the crypto key. |
+| GCP.KMS.CryptoKeys.Project | String | The project that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Location | String | The location of the crypto key. |
+| GCP.KMS.CryptoKeys.KeyRing | String | The key ring that holds the crypto key. |
+| GCP.KMS.CryptoKeys.purpose | String | The immutable purpose of the crypto key. |
+| GCP.KMS.CryptoKeys.createTime | Date | The time at which the crypto key was created. |
+| GCP.KMS.CryptoKeys.nextRotationTime | Date | The time at which the next scheduled rotation is due to run. |
+| GCP.KMS.CryptoKeys.rotationPeriod | String | The period between automatic key rotations. |
+| GCP.KMS.CryptoKeys.labels | Unknown | The labels with user-defined metadata. |
+| GCP.KMS.CryptoKeys.versionTemplate | Unknown | The version template of the crypto key, containing the protectionLevel and algorithm fields. |
+| GCP.KMS.CryptoKeys.primary | Unknown | The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields. |
+
+### gcp-kms-key-update
+
+***
+Updates the mutable fields of a given crypto key. Only the supplied fields are updated. Required Permissions: cloudkms.cryptoKeys.update.
+
+#### Base Command
+
+`gcp-kms-key-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the crypto key to update. | Required |
+| labels | The labels with user-defined metadata, in the format key=abc,value=123;key=def,value=456. | Optional |
+| next_rotation_time | The time of the next scheduled rotation. Accepts an absolute timestamp in RFC3339 UTC "Zulu" format (for example, 2024-10-02T15:01:23Z) or a relative expression (for example, "in 30 days"). | Optional |
+| rotation_period | The period between automatic key rotations, as a duration in seconds (for example, 7776000s). Must be between 24 hours and 876,000 hours. | Optional |
+| algorithm | The algorithm to use when creating a crypto key version based on this template. Possible values are: GOOGLE_SYMMETRIC_ENCRYPTION, RSA_SIGN_PSS_2048_SHA256, RSA_SIGN_PSS_3072_SHA256, RSA_SIGN_PSS_4096_SHA256, RSA_SIGN_PSS_4096_SHA512, RSA_SIGN_PKCS1_2048_SHA256, RSA_SIGN_PKCS1_3072_SHA256, RSA_SIGN_PKCS1_4096_SHA256, RSA_SIGN_PKCS1_4096_SHA512, RSA_DECRYPT_OAEP_2048_SHA256, RSA_DECRYPT_OAEP_3072_SHA256, RSA_DECRYPT_OAEP_4096_SHA256, RSA_DECRYPT_OAEP_4096_SHA512, EC_SIGN_P256_SHA256, EC_SIGN_P384_SHA384. | Optional |
+| protection_level | The protection level to use when creating a crypto key version based on this template. Possible values are: SOFTWARE, HSM. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.CryptoKeys.Name | String | The ID of the crypto key. |
+| GCP.KMS.CryptoKeys.ResourceName | String | The full resource name of the crypto key. |
+| GCP.KMS.CryptoKeys.Project | String | The project that holds the crypto key. |
+| GCP.KMS.CryptoKeys.Location | String | The location of the crypto key. |
+| GCP.KMS.CryptoKeys.KeyRing | String | The key ring that holds the crypto key. |
+| GCP.KMS.CryptoKeys.purpose | String | The immutable purpose of the crypto key. |
+| GCP.KMS.CryptoKeys.createTime | Date | The time at which the crypto key was created. |
+| GCP.KMS.CryptoKeys.nextRotationTime | Date | The time at which the next scheduled rotation is due to run. |
+| GCP.KMS.CryptoKeys.rotationPeriod | String | The period between automatic key rotations. |
+| GCP.KMS.CryptoKeys.labels | Unknown | The labels with user-defined metadata. |
+| GCP.KMS.CryptoKeys.versionTemplate | Unknown | The version template of the crypto key, containing the protectionLevel and algorithm fields. |
+| GCP.KMS.CryptoKeys.primary | Unknown | The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields. |
+
+### gcp-kms-key-version-enable
+
+***
+Enables a crypto key version of a given crypto key. Required Permissions: cloudkms.cryptoKeyVersions.update, cloudkms.cryptoKeys.get.
+
+#### Base Command
+
+`gcp-kms-key-version-enable`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the crypto key to enable. | Required |
+| crypto_key_version | The ID of the crypto key version to enable. Use the keyword default to target the primary crypto key version of the given crypto key. Default is default. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.CryptoKeyVersions.name | String | The resource name of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.state | String | The current state of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.protectionLevel | String | The protection level describing how cryptographic operations are performed. |
+| GCP.KMS.CryptoKeyVersions.algorithm | String | The algorithm that the crypto key version supports. |
+| GCP.KMS.CryptoKeyVersions.createTime | Date | The time at which the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z). |
+
+### gcp-kms-key-version-disable
+
+***
+Disables a crypto key version of a given crypto key. Required Permissions: cloudkms.cryptoKeyVersions.update, cloudkms.cryptoKeys.get.
+
+#### Base Command
+
+`gcp-kms-key-version-disable`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the crypto key to disable. | Required |
+| crypto_key_version | The ID of the crypto key version to disable. Use the keyword default to target the primary crypto key version of the given crypto key. Default is default. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.CryptoKeyVersions.name | String | The resource name of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.state | String | The current state of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.protectionLevel | String | The protection level describing how cryptographic operations are performed. |
+| GCP.KMS.CryptoKeyVersions.algorithm | String | The algorithm that the crypto key version supports. |
+| GCP.KMS.CryptoKeyVersions.createTime | Date | The time at which the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z). |
+
+### gcp-kms-key-version-destroy
+
+***
+Schedules a crypto key version for destruction. The key material is destroyed 24 hours later. Required Permissions: cloudkms.cryptoKeyVersions.destroy, cloudkms.cryptoKeys.get.
+
+#### Base Command
+
+`gcp-kms-key-version-destroy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the crypto key to destroy. | Required |
+| crypto_key_version | The ID of the crypto key version to destroy. Use the keyword default to target the primary crypto key version of the given crypto key. Default is default. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.CryptoKeyVersions.name | String | The resource name of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.state | String | The current state of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.destroyTime | Date | The time at which the crypto key version material is scheduled to be destroyed. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z). |
+
+### gcp-kms-key-version-restore
+
+***
+Restores a crypto key version that is scheduled for destruction. Required Permissions: cloudkms.cryptoKeyVersions.restore, cloudkms.cryptoKeys.get.
+
+#### Base Command
+
+`gcp-kms-key-version-restore`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the crypto key to restore. | Required |
+| crypto_key_version | The ID of the crypto key version to restore. Use the keyword default to target the primary crypto key version of the given crypto key. Default is default. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.CryptoKeyVersions.name | String | The resource name of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.state | String | The current state of the crypto key version. |
+| GCP.KMS.CryptoKeyVersions.protectionLevel | String | The protection level describing how cryptographic operations are performed. |
+| GCP.KMS.CryptoKeyVersions.algorithm | String | The algorithm that the crypto key version supports. |
+
+### gcp-kms-public-key-get
+
+***
+Returns the public key of a given asymmetric crypto key version. Required Permissions: cloudkms.cryptoKeyVersions.viewPublicKey.
+
+#### Base Command
+
+`gcp-kms-public-key-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the asymmetric crypto key. | Required |
+| crypto_key_version | The ID of the crypto key version whose public key is returned. Default is 1. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.PublicKey.CryptoKey | String | The crypto key to which the public key belongs. |
+| GCP.KMS.PublicKey.CryptoKeyVersion | String | The resource name of the crypto key version. |
+| GCP.KMS.PublicKey.pem | String | The public key in PEM format. |
+| GCP.KMS.PublicKey.pemCrc32c | String | The CRC32C checksum of the returned PEM public key. |
+| GCP.KMS.PublicKey.algorithm | String | The algorithm of the public key. |
+| GCP.KMS.PublicKey.name | String | The resource name of the crypto key version returned by the API. |
+| GCP.KMS.PublicKey.protectionLevel | String | The protection level of the crypto key version. |
+
+### gcp-kms-symmetric-encrypt
+
+***
+Encrypts data using a symmetric crypto key. Required Permissions: cloudkms.cryptoKeyVersions.useToEncrypt.
+
+#### Base Command
+
+`gcp-kms-symmetric-encrypt`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the crypto key to encrypt with. | Required |
+| plaintext | The plaintext to encrypt. Must be no larger than 64KiB. Mutually exclusive with base64_plaintext and entry_id. | Optional |
+| base64_plaintext | The Base64-encoded plaintext to encrypt. Mutually exclusive with plaintext and entry_id. | Optional |
+| entry_id | The War Room entry ID of the file to encrypt. Mutually exclusive with plaintext and base64_plaintext. | Optional |
+| additional_authenticated_data | The Base64-encoded additional authenticated data (AAD). The same value must be supplied when decrypting. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.SymmetricEncrypt.CryptoKey | String | The crypto key used for the encryption. |
+| GCP.KMS.SymmetricEncrypt.ResourceName | String | The full resource name of the crypto key used for the encryption. |
+| GCP.KMS.SymmetricEncrypt.ciphertext | String | The Base64-encoded encrypted ciphertext. |
+| GCP.KMS.SymmetricEncrypt.ciphertextCrc32c | String | The CRC32C checksum of the returned ciphertext. |
+| GCP.KMS.SymmetricEncrypt.verifiedPlaintextCrc32c | Boolean | Whether the API verified the CRC32C checksum of the supplied plaintext. |
+| GCP.KMS.SymmetricEncrypt.name | String | The resource name of the crypto key version used for the encryption. |
+| GCP.KMS.SymmetricEncrypt.protectionLevel | String | The protection level of the crypto key version used for the encryption. |
+
+### gcp-kms-symmetric-decrypt
+
+***
+Decrypts data that was encrypted with a symmetric crypto key. Required Permissions: cloudkms.cryptoKeyVersions.useToDecrypt.
+
+#### Base Command
+
+`gcp-kms-symmetric-decrypt`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the crypto key to decrypt with. | Required |
+| ciphertext | The Base64-encoded ciphertext to decrypt. Mutually exclusive with entry_id. | Optional |
+| entry_id | The War Room entry ID of the file holding the raw ciphertext bytes to decrypt. Mutually exclusive with ciphertext. | Optional |
+| additional_authenticated_data | The Base64-encoded additional authenticated data (AAD) that was supplied during encryption. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.SymmetricDecrypt.CryptoKey | String | The crypto key used for the decryption. |
+| GCP.KMS.SymmetricDecrypt.ResourceName | String | The full resource name of the crypto key used for the decryption. |
+| GCP.KMS.SymmetricDecrypt.Plaintext | String | The decrypted plaintext. Omitted when the decrypted data is binary, in which case it is returned as a file instead. |
+| GCP.KMS.SymmetricDecrypt.FullResponse | Unknown | The full API response returned by the decrypt operation. |
+
+### gcp-kms-asymmetric-encrypt
+
+***
+Encrypts data with the public key of an asymmetric crypto key version. The encryption is performed locally using the retrieved public key. Required Permissions: cloudkms.cryptoKeyVersions.viewPublicKey.
+
+#### Base Command
+
+`gcp-kms-asymmetric-encrypt`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the asymmetric crypto key to encrypt with. | Required |
+| crypto_key_version | The ID of the crypto key version to encrypt with. Default is 1. | Optional |
+| plaintext | The plaintext to encrypt. Mutually exclusive with base64_plaintext and entry_id. | Optional |
+| base64_plaintext | The Base64-encoded plaintext to encrypt. Mutually exclusive with plaintext and entry_id. | Optional |
+| entry_id | The War Room entry ID of the file to encrypt. Mutually exclusive with plaintext and base64_plaintext. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.AsymmetricEncrypt.CryptoKey | String | The crypto key used for the encryption. |
+| GCP.KMS.AsymmetricEncrypt.CryptoKeyVersion | String | The resource name of the crypto key version used for the encryption. |
+| GCP.KMS.AsymmetricEncrypt.Ciphertext | String | The Base64-encoded encrypted ciphertext. |
+| GCP.KMS.AsymmetricEncrypt.pem | String | The public key, in PEM format, that was used for the encryption. |
+| GCP.KMS.AsymmetricEncrypt.algorithm | String | The algorithm of the public key that was used for the encryption. |
+| GCP.KMS.AsymmetricEncrypt.name | String | The resource name of the crypto key version returned by the API. |
+| GCP.KMS.AsymmetricEncrypt.protectionLevel | String | The protection level of the crypto key version used for the encryption. |
+
+### gcp-kms-asymmetric-decrypt
+
+***
+Decrypts data using an asymmetric crypto key version. Required Permissions: cloudkms.cryptoKeyVersions.useToDecrypt.
+
+#### Base Command
+
+`gcp-kms-asymmetric-decrypt`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| location | The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations. Default is global. | Optional |
+| key_ring | The ID of the key ring that holds the crypto key. | Required |
+| crypto_key | The ID of the asymmetric crypto key to decrypt with. | Required |
+| crypto_key_version | The ID of the crypto key version to decrypt with. Default is 1. | Optional |
+| ciphertext | The Base64-encoded ciphertext to decrypt. Mutually exclusive with entry_id. | Optional |
+| entry_id | The War Room entry ID of the file holding the raw ciphertext bytes to decrypt. Mutually exclusive with ciphertext. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.KMS.AsymmetricDecrypt.CryptoKey | String | The crypto key used for the decryption. |
+| GCP.KMS.AsymmetricDecrypt.CryptoKeyVersion | String | The resource name of the crypto key version used for the decryption. |
+| GCP.KMS.AsymmetricDecrypt.Plaintext | String | The decrypted plaintext. Omitted when the decrypted data is binary, in which case it is returned as a file instead. |
+| GCP.KMS.AsymmetricDecrypt.plaintextCrc32c | String | The CRC32C checksum of the returned plaintext. |
+| GCP.KMS.AsymmetricDecrypt.verifiedCiphertextCrc32c | Boolean | Whether the API verified the CRC32C checksum of the supplied ciphertext. |
+| GCP.KMS.AsymmetricDecrypt.protectionLevel | String | The protection level of the crypto key version used for the decryption. |
