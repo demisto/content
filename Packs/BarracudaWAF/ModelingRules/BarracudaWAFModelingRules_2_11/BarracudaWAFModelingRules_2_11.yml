@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: BarracudaWAF_ModelingRule
-name: BarracudaWAF Modeling Rule
-rules: ''
-schema: ''
-tags: ''
-supportedModules:
-- xsiam
