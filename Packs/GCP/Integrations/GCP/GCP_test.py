@@ -1,4 +1,6 @@
 import ast
+import io
+import base64
 import json
 import pytest
 from google.oauth2.credentials import Credentials
@@ -6,6 +8,7 @@ from unittest.mock import MagicMock
 import os
 import re
 import yaml
+import demistomock as demisto
 
 
 def util_load_json(path):
@@ -33,6 +36,12 @@ _PY_TREE = ast.parse(_PY_SOURCE)
 # the integration configuration) rather than read with args.get(...) inside each
 # command handler. They are exempt from the per-handler verbatim arg check.
 PLATFORM_STANDARD_ARGS = {"project_id", "account_id"}
+
+# Output prefixes populated by the platform itself rather than by an
+# outputs_prefix in the handler. Commands that return a War Room file entry
+# (via file_result_existing_file / fileResult) declare File.* outputs in the YML,
+# but the entry is built by the platform, so no handler prefix exists to match.
+PLATFORM_STANDARD_OUTPUT_PREFIXES = {"File"}
 
 
 def test_parse_firewall_rule_valid_input():
@@ -268,7 +277,42 @@ def test_compute_firewall_list_with_pagination_and_filter(mocker):
     assert called_kwargs["pageToken"] == "t0"
     assert called_kwargs["filter"] == "name eq fw-*"
 
+    assert res.outputs["GCP.Compute(true)"]["FirewallsNextToken"] == "t1"
+
+
+def test_compute_firewall_list_deprecated_command_keeps_singular_context(mocker):
+    """
+    Given:
+        - The deprecated command name gcp-compute-firewall-list is invoked.
+    When:
+        - compute_firewall_list is called.
+    Then:
+        - The context output keys remain the singular GCP.Compute.Firewall and FirewallNextToken,
+          preserving backward compatibility for existing playbooks.
+    """
+    from GCP import compute_firewall_list
+
+    # Given: the deprecated singular command name and a paginated API response
+    mocker.patch.object(demisto, "command", return_value="gcp-compute-firewall-list")
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_firewalls = mocker.Mock()
+    mock_compute.firewalls.return_value = mock_firewalls
+    mock_firewalls.list.return_value.execute.return_value = {
+        "items": [{"name": "fw-1", "id": "1"}],
+        "nextPageToken": "t1",
+    }
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="md")
+
+    # When: the command function is executed
+    res = compute_firewall_list(mock_creds, {"project_id": "p1"})
+
+    # Then: the singular context paths are used, not the pluralized ones
+    assert "GCP.Compute.Firewall(val.name && val.name == obj.name)" in res.outputs
     assert res.outputs["GCP.Compute(true)"]["FirewallNextToken"] == "t1"
+    assert "GCP.Compute.Firewalls(val.name && val.name == obj.name)" not in res.outputs
 
 
 def test_compute_firewall_get_found_and_not_found(mocker):
@@ -290,7 +334,7 @@ def test_compute_firewall_get_found_and_not_found(mocker):
     mocker.patch("GCP.build", return_value=mock_compute)
     mocker.patch("GCP.tableToMarkdown", return_value="md")
     res = compute_firewall_get(mock_creds, {"project_id": "p1", "resource_name": "fw-1"})
-    assert res.outputs_prefix == "GCP.Compute.Firewall"
+    assert res.outputs_prefix == "GCP.Compute.Firewalls"
 
     # Not found case
     resp = mocker.MagicMock()
@@ -324,7 +368,7 @@ def test_compute_snapshots_list_with_pagination(mocker):
     mocker.patch("GCP.tableToMarkdown", return_value="md")
 
     res = compute_snapshots_list(mock_creds, args)
-    assert res.outputs["GCP.Compute(true)"]["SnapshotNextToken"] == "b"
+    assert res.outputs["GCP.Compute(true)"]["SnapshotsNextToken"] == "b"
 
 
 def test_compute_snapshot_get_found_and_not_found(mocker):
@@ -346,7 +390,7 @@ def test_compute_snapshot_get_found_and_not_found(mocker):
     mocker.patch("GCP.build", return_value=mock_compute)
     mocker.patch("GCP.tableToMarkdown", return_value="md")
     res = compute_snapshot_get(mock_creds, {"project_id": "p1", "resource_name": "snap-1"})
-    assert res.outputs_prefix == "GCP.Compute.Snapshot"
+    assert res.outputs_prefix == "GCP.Compute.Snapshots"
 
     # Not found
     resp = mocker.MagicMock()
@@ -400,8 +444,8 @@ def test_compute_instances_aggregated_list_by_ip_internal(mocker):
     res = compute_instances_aggregated_list_by_ip(mock_creds, {"project_id": "p1", "ip_address": "10.0.0.6", "limit": "10"})
 
     # Expect only i-2
-    assert len(res.outputs) == 1
-    assert res.outputs[0]["name"] == "i-2"
+    assert len(res.outputs["GCP.Compute.Instances(val.id && val.id == obj.id)"]) == 1
+    assert res.outputs["GCP.Compute.Instances(val.id && val.id == obj.id)"][0]["name"] == "i-2"
 
 
 def test_compute_instances_aggregated_list_by_ip_external(mocker):
@@ -449,8 +493,8 @@ def test_compute_instances_aggregated_list_by_ip_external(mocker):
     )
 
     # Expect only i-2
-    assert len(res.outputs) == 1
-    assert res.outputs[0]["name"] == "i-2"
+    assert len(res.outputs["GCP.Compute.Instances(val.id && val.id == obj.id)"]) == 1
+    assert res.outputs["GCP.Compute.Instances(val.id && val.id == obj.id)"][0]["name"] == "i-2"
 
 
 def test__collect_instance_ips_basic():
@@ -947,7 +991,7 @@ def test_storage_bucket_metadata_update_enable_both_settings(mocker):
     assert body["iamConfiguration"]["uniformBucketLevelAccess"]["enabled"] is False
 
     # Check outputs
-    assert result.outputs_prefix == "GCP.StorageBucket.Metadata"
+    assert result.outputs_prefix == "GCP.Storage.Buckets"
     assert result.outputs == mock_response
     assert result.outputs_key_field == "name"
 
@@ -2940,6 +2984,47 @@ def test_storage_bucket_list_basic(mocker):
     result = storage_bucket_list(creds, args)
 
     mock_buckets.list.assert_called_with(project="p1", maxResults=10, prefix="p", pageToken="t")
+    assert result.outputs["GCP.Storage.Buckets(val.name && val.name == obj.name)"][0]["name"] == "b1"
+
+
+def test_storage_bucket_list_deprecated_command_keeps_singular_context(mocker):
+    """
+    Given:
+        - The deprecated command name gcp-storage-bucket-list is invoked.
+    When:
+        - storage_bucket_list is called.
+    Then:
+        - The result uses the singular outputs_prefix GCP.Storage.Bucket with a plain list output,
+          preserving backward compatibility for existing playbooks.
+    """
+    from GCP import storage_bucket_list
+
+    # Given: the deprecated singular command name and a bucket API response
+    mocker.patch.object(demisto, "command", return_value="gcp-storage-bucket-list")
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.list.return_value.execute.return_value = {
+        "items": [
+            {
+                "name": "b1",
+                "timeCreated": "2024-01-01T00:00:00Z",
+                "updated": "2024-01-02T00:00:00Z",
+                "owner": {"entityId": "123"},
+                "location": "US",
+                "storageClass": "STANDARD",
+            }
+        ]
+    }
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+
+    # When: the command function is executed
+    result = storage_bucket_list(creds, {"project_id": "p1"})
+
+    # Then: the singular prefix and list output are preserved
     assert result.outputs_prefix == "GCP.Storage.Bucket"
     assert result.outputs[0]["name"] == "b1"
 
@@ -2969,7 +3054,7 @@ def test_storage_bucket_get_basic(mocker):
     result = storage_bucket_get(creds, {"bucket_name": "b1"})
 
     mock_buckets.get.assert_called_with(bucket="b1")
-    assert result.outputs_prefix == "GCP.Storage.Bucket"
+    assert result.outputs_prefix == "GCP.Storage.Buckets"
     assert result.outputs["name"] == "b1"
 
 
@@ -2995,6 +3080,7 @@ def test_storage_bucket_objects_list_basic(mocker):
                 "updated": "2024-01-02T00:00:00Z",
                 "md5Hash": "md5",
                 "crc32c": "crc",
+                "id": "bucket_name/object_name/generation_number",
             }
         ]
     }
@@ -3005,8 +3091,49 @@ def test_storage_bucket_objects_list_basic(mocker):
     result = storage_bucket_objects_list(creds, args)
 
     mock_objects.list.assert_called_with(bucket="b1", prefix="p/", delimiter="/", maxResults=5, pageToken="tok")
-    assert result.outputs_prefix == "GCP.Storage.BucketObject"
-    assert result.outputs[0]["name"] == "o1"
+    assert "GCP.Storage.Buckets(val.name && val.name == obj.name)" in result.outputs
+    assert result.outputs["GCP.Storage.Buckets(val.name && val.name == obj.name)"]["Objects"][0]["name"] == "o1"
+
+
+def test_storage_bucket_objects_list_merges_with_context(mocker):
+    """
+    Given: A bucket that already has objects in the context, and a new page holding an existing and a new object
+    When: storage_bucket_objects_list is called
+    Then: The existing object is replaced, the new object is appended, and other buckets are left untouched
+    """
+    from GCP import storage_bucket_objects_list
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.list.return_value.execute.return_value = {
+        "items": [{"name": "o1", "bucket": "b1", "size": "2"}, {"name": "o2", "bucket": "b1", "size": "3"}]
+    }
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={
+            "GCP": {
+                "Storage": {
+                    "Buckets": [
+                        {"name": "b1", "Objects": [{"name": "o1", "bucket": "b1", "size": "1"}]},
+                        {"name": "b2", "Objects": [{"name": "other", "bucket": "b2", "size": "9"}]},
+                    ]
+                }
+            }
+        },
+    )
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_objects_list(creds, {"bucket_name": "b1"})
+
+    bucket_output = result.outputs["GCP.Storage.Buckets(val.name && val.name == obj.name)"]
+    assert bucket_output["name"] == "b1"
+    assert bucket_output["Objects"] == [
+        {"name": "o1", "bucket": "b1", "size": "2"},
+        {"name": "o2", "bucket": "b1", "size": "3"},
+    ]
 
 
 def test_storage_bucket_policy_list_with_version(mocker):
@@ -3028,8 +3155,38 @@ def test_storage_bucket_policy_list_with_version(mocker):
     result = storage_bucket_policy_list(creds, args)
 
     mock_buckets.getIamPolicy.assert_called_with(bucket="b1", optionsRequestedPolicyVersion=3)
-    assert result.outputs_prefix == "GCP.Storage.BucketPolicy"
+    assert result.outputs_prefix == "GCP.Storage.BucketPolicies"
     assert result.outputs["version"] == 3
+
+
+def test_storage_bucket_policy_list_deprecated_command_keeps_singular_context(mocker):
+    """
+    Given:
+        - The deprecated command name gcp-storage-bucket-policy-list is invoked.
+    When:
+        - storage_bucket_policy_list is called.
+    Then:
+        - The result uses the singular outputs_prefix GCP.Storage.BucketPolicy,
+          preserving backward compatibility for existing playbooks.
+    """
+    from GCP import storage_bucket_policy_list
+
+    # Given: the deprecated singular command name and a bucket policy API response
+    mocker.patch.object(demisto, "command", return_value="gcp-storage-bucket-policy-list")
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.getIamPolicy.return_value.execute.return_value = {"version": 3, "etag": "abc", "bindings": []}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+
+    # When: the command function is executed
+    result = storage_bucket_policy_list(creds, {"bucket_name": "b1"})
+
+    # Then: the singular prefix is preserved
+    assert result.outputs_prefix == "GCP.Storage.BucketPolicy"
 
 
 def test_storage_bucket_policy_set_basic(mocker):
@@ -3052,7 +3209,7 @@ def test_storage_bucket_policy_set_basic(mocker):
     result = storage_bucket_policy_set(creds, args)
 
     mock_buckets.setIamPolicy.assert_called_with(bucket="b1", body=policy)
-    assert result.outputs_prefix == "GCP.Storage.BucketPolicy"
+    assert result.outputs_prefix == "GCP.Storage.BucketPolicies"
     assert result.outputs["etag"] == "etag1"
 
 
@@ -3075,15 +3232,46 @@ def test_storage_bucket_object_policy_list_normal_and_ubla(mocker):
     creds = mocker.Mock(spec=Credentials)
     result = storage_bucket_object_policy_list(creds, {"bucket_name": "b1", "object_name": "o1"})
     mock_oac.list.assert_called_with(bucket="b1", object="o1")
-    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
+    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicies"
     assert result.outputs[0]["entity"] == "allUsers"
 
     # Case 2: UBLA enabled -> delegates to bucket policy list
     mocker.patch("GCP._is_ubla_enabled", return_value=True)
     # Patch bucket policy list to observe delegation
-    mocker.patch("GCP.storage_bucket_policy_list", return_value=MagicMock(outputs_prefix="GCP.Storage.BucketObjectPolicy"))
+    mocker.patch("GCP.storage_bucket_policy_list", return_value=MagicMock(outputs_prefix="GCP.Storage.BucketObjectPolicies"))
     result2 = storage_bucket_object_policy_list(creds, {"bucket_name": "b1", "object_name": "o1"})
-    assert result2.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
+    assert result2.outputs_prefix == "GCP.Storage.BucketObjectPolicies"
+
+
+def test_storage_bucket_object_policy_list_deprecated_command_keeps_singular_context(mocker):
+    """
+    Given:
+        - The deprecated command name gcp-storage-bucket-object-policy-list is invoked with UBLA disabled.
+    When:
+        - storage_bucket_object_policy_list is called.
+    Then:
+        - The result uses the singular outputs_prefix GCP.Storage.BucketObjectPolicy,
+          preserving backward compatibility for existing playbooks.
+    """
+    from GCP import storage_bucket_object_policy_list
+
+    # Given: the deprecated singular command name, UBLA disabled, and an object ACL API response
+    mocker.patch.object(demisto, "command", return_value="gcp-storage-bucket-object-policy-list")
+
+    mock_storage = mocker.Mock()
+    mock_oac = mocker.Mock()
+    mock_storage.objectAccessControls.return_value = mock_oac
+    mock_oac.list.return_value.execute.return_value = {"items": [{"entity": "allUsers", "role": "READER"}]}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=False)
+
+    creds = mocker.Mock(spec=Credentials)
+
+    # When: the command function is executed
+    result = storage_bucket_object_policy_list(creds, {"bucket_name": "b1", "object_name": "o1"})
+
+    # Then: the singular prefix is preserved
+    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
 
 
 def test_storage_bucket_object_policy_set_update_then_insert(mocker):
@@ -3111,7 +3299,7 @@ def test_storage_bucket_object_policy_set_update_then_insert(mocker):
 
     mock_oac.patch.assert_called()
     mock_oac.insert.assert_called()
-    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicy"
+    assert result.outputs_prefix == "GCP.Storage.BucketObjectPolicies"
     assert result.outputs[0]["entity"] == "allUsers"
 
 
@@ -6387,16 +6575,26 @@ def _extract_param_default_prefixes(function_node: ast.AST) -> set:
     return {value for parameter, default in pairs if parameter.arg == "outputs_prefix" and (value := _string_constant(default))}
 
 
-def _extract_output_prefixes(function_node: ast.AST) -> set:
+def _extract_output_prefixes(function_node: ast.AST, function_nodes: dict | None = None, _seen: set | None = None) -> set:
     """Extract all output context prefixes declared within the given function node.
 
     Recognizes the supported CommandResults wiring patterns:
       1. ``outputs_prefix="GCP.Some.Path"`` keyword arguments, variable
-         assignments (``outputs_prefix = "GCP.Some.Path"``), and function
-         parameter defaults (``outputs_prefix: str = "GCP.Some.Path"``).
+         assignments (``outputs_prefix = "GCP.Some.Path"`` or the singular
+         ``output_prefix = "GCP.Some.Path"``), and function parameter defaults
+         (``outputs_prefix: str = "GCP.Some.Path"``). The assigned value may be a
+         plain string literal or a command-branched conditional expression, e.g.
+         ``outputs_prefix = "GCP.Some.Path" if command_name == "..." else other``;
+         every ``GCP.``-prefixed literal in either branch is collected.
       2. Context paths used directly as ``outputs`` dict keys, e.g.
          ``"GCP.Some.Path(val.id && val.id == obj.id)": data``. The DT
          transformer suffix in parentheses is stripped.
+      3. Delegation: when the function calls another top-level function in the
+         module (e.g. a thin ``kms_key_version_enable`` handler that returns
+         ``_kms_set_key_version_state(...)``), the prefixes declared in that
+         callee are resolved too. ``function_nodes`` maps function name -> node;
+         when provided, one or more levels of delegation are followed (recursion
+         is guarded by ``_seen`` against cycles).
 
     A prefix forwarded from a variable (``outputs_prefix=outputs_prefix``)
     resolves through pattern 1's parameter-default branch when the function
@@ -6406,7 +6604,16 @@ def _extract_output_prefixes(function_node: ast.AST) -> set:
     # Pattern 1c: the prefix declared as this function's own parameter default.
     prefixes: set = _extract_param_default_prefixes(function_node)
 
+    seen = _seen if _seen is not None else set()
+
     for node in ast.walk(function_node):
+        # Pattern 3: follow delegation into a called top-level function.
+        if function_nodes and isinstance(node, ast.Call) and isinstance(node.func, ast.Name):
+            callee_name = node.func.id
+            callee_node = function_nodes.get(callee_name)
+            if callee_node is not None and callee_name not in seen:
+                seen.add(callee_name)
+                prefixes |= _extract_output_prefixes(callee_node, function_nodes, seen)
         # Pattern 1a: outputs_prefix="GCP.Some.Path" passed as a keyword argument.
         # NOTE: the literal is used verbatim (no .strip()) so that a leading or
         # trailing whitespace typo in the source (e.g. " GCP.Compute.Operations")
@@ -6415,12 +6622,25 @@ def _extract_output_prefixes(function_node: ast.AST) -> set:
             for keyword in node.keywords:
                 if keyword.arg == "outputs_prefix" and (value := _string_constant(keyword.value)):
                     prefixes.add(value)
-        # Pattern 1b: outputs_prefix = "..." / outputs_prefix: str = "..."
+        # Pattern 1b: outputs_prefix = "..." / output_prefix = "..." /
+        # outputs_prefix: str = "...". The right-hand side may be a plain string
+        # literal OR a command-branched conditional such as
+        # ``"GCP.X" if command_name == "..." else "GCP.Y"`` (an ast.IfExp); in
+        # that case every ``GCP.``-prefixed literal in either branch is collected.
         elif isinstance(node, ast.Assign | ast.AnnAssign):
             targets = node.targets if isinstance(node, ast.Assign) else [node.target]
-            is_prefix_target = any(isinstance(target, ast.Name) and target.id == "outputs_prefix" for target in targets)
-            if is_prefix_target and (value := _string_constant(node.value)):
-                prefixes.add(value)
+            is_prefix_target = any(
+                isinstance(target, ast.Name) and target.id in ("outputs_prefix", "output_prefix") for target in targets
+            )
+            if is_prefix_target and node.value is not None:
+                if value := _string_constant(node.value):
+                    prefixes.add(value)
+                else:
+                    # Non-literal RHS (e.g. a conditional expression): collect any
+                    # GCP.* string literals nested within it.
+                    for sub_node in ast.walk(node.value):
+                        if (sub_value := _string_constant(sub_node)) and sub_value.startswith("GCP."):
+                            prefixes.add(sub_value)
         # Pattern 2: context paths used as outputs dict keys.
         elif isinstance(node, ast.Dict):
             for key in node.keys:
@@ -6539,8 +6759,11 @@ def test_yml_output_prefixes_match_py_handler():
         handler_node = _FUNCTION_NODES.get(handler)
         if handler_node is None:
             continue
-        handler_prefixes = _extract_output_prefixes(handler_node)
+        handler_prefixes = _extract_output_prefixes(handler_node, _FUNCTION_NODES)
         for context_path in _YML_SPEC[command_name]["outputs"]:
+            if _is_covered(context_path, PLATFORM_STANDARD_OUTPUT_PREFIXES):
+                # Built by the platform (War Room file entry), not by a handler prefix.
+                continue
             if not _is_covered(context_path, handler_prefixes):
                 uncovered.append(f"{command_name} (handler {handler}) -> {context_path}")
 
@@ -6609,10 +6832,13 @@ def test_extract_args_get_reads_subscript_access():
 def test_extract_output_prefixes_covers_all_declaration_forms():
     """
     Given: Handlers declaring an output prefix as a parameter default, as a local
-           assignment, and as outputs dict keys.
+           assignment, as a command-branched conditional assignment (both to
+           ``outputs_prefix`` and to the singular ``output_prefix``), and as
+           outputs dict keys.
     When: Extracting their output prefixes.
-    Then: Every form is recognized, the DT transformer suffix is stripped from dict
-          keys, and a non-GCP dict key is not treated as a context path.
+    Then: Every form is recognized, both branches of a conditional are collected,
+          the DT transformer suffix is stripped from dict keys, and a non-GCP dict
+          key is not treated as a context path.
     """
     source = (
         'def param_default(creds, args, outputs_prefix: str = "GCP.Storage.BucketPolicy"):\n'
@@ -6622,6 +6848,23 @@ def test_extract_output_prefixes_covers_all_declaration_forms():
         "def local_assignment(creds, args):\n"
         '    outputs_prefix = "GCP.Assigned.Path"\n'
         "    return CommandResults(outputs_prefix=outputs_prefix)\n"
+        "\n"
+        "\n"
+        "def conditional_outputs_prefix(creds, args, outputs_prefix='GCP.Storage.BucketPolicies'):\n"
+        "    command_name = demisto.command()\n"
+        '    outputs_prefix = "GCP.Storage.BucketPolicy"'
+        ' if command_name == "gcp-storage-bucket-policy-list" else outputs_prefix\n'
+        "    return CommandResults(outputs_prefix=outputs_prefix)\n"
+        "\n"
+        "\n"
+        "def conditional_output_prefix_singular(creds, args):\n"
+        "    command_name = demisto.command()\n"
+        "    output_prefix = (\n"
+        '        "GCP.Storage.BucketObjectPolicy"\n'
+        '        if command_name == "gcp-storage-bucket-object-policy-list"\n'
+        '        else "GCP.Storage.BucketObjectPolicies"\n'
+        "    )\n"
+        "    return CommandResults(outputs_prefix=output_prefix)\n"
         "\n"
         "\n"
         "def dict_keys(creds, args):\n"
@@ -6638,6 +6881,17 @@ def test_extract_output_prefixes_covers_all_declaration_forms():
     # does not leave the handler with no prefix at all.
     assert _extract_output_prefixes(functions["param_default"]) == {"GCP.Storage.BucketPolicy"}
     assert _extract_output_prefixes(functions["local_assignment"]) == {"GCP.Assigned.Path"}
+    # A command-branched conditional contributes the singular literal plus the
+    # plural parameter default it falls back to.
+    assert _extract_output_prefixes(functions["conditional_outputs_prefix"]) == {
+        "GCP.Storage.BucketPolicy",
+        "GCP.Storage.BucketPolicies",
+    }
+    # The singular ``output_prefix`` target with a two-branch conditional yields both literals.
+    assert _extract_output_prefixes(functions["conditional_output_prefix_singular"]) == {
+        "GCP.Storage.BucketObjectPolicy",
+        "GCP.Storage.BucketObjectPolicies",
+    }
     assert _extract_output_prefixes(functions["dict_keys"]) == {"GCP.Compute.Firewall", "GCP.Compute"}
 
 
@@ -6652,3 +6906,2225 @@ def test_extract_output_prefixes_does_not_strip_whitespace_typos():
     handler = _top_level_functions(ast.parse(source))["handler"]
 
     assert _extract_output_prefixes(handler) == {" GCP.Compute.Operations"}
+
+
+# ---------------------------------------------------------------------------
+# gcp-storage-bucket-create
+# ---------------------------------------------------------------------------
+def test_storage_bucket_create_success(mocker):
+    """
+    Given: A bucket name, location, and project ID.
+    When: storage_bucket_create is called.
+    Then: It calls buckets().insert with the correct body and returns the bucket outputs.
+    """
+    from GCP import storage_bucket_create
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.insert.return_value.execute.return_value = {"name": "b1", "id": "b1", "location": "US"}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"project_id": "p1", "bucket_name": "b1", "location": "US"}
+    result = storage_bucket_create(creds, args)
+
+    call_kwargs = mock_buckets.insert.call_args[1]
+    assert call_kwargs["project"] == "p1"
+    assert call_kwargs["body"]["name"] == "b1"
+    assert call_kwargs["body"]["location"] == "US"
+    assert result.outputs_prefix == "GCP.Storage.Buckets"
+    assert result.outputs["name"] == "b1"
+
+
+def test_storage_bucket_create_with_ubla_and_acls(mocker):
+    """
+    Given: A bucket name with UBLA enabled and predefined ACLs.
+    When: storage_bucket_create is called.
+    Then: The request includes iamConfiguration and the predefined ACL params.
+    """
+    from GCP import storage_bucket_create
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.insert.return_value.execute.return_value = {"name": "b1", "id": "b1"}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {
+        "project_id": "p1",
+        "bucket_name": "b1",
+        "uniform_bucket_level_access": "true",
+        "bucket_acl": "private",
+        "default_object_acl": "projectPrivate",
+    }
+    storage_bucket_create(creds, args)
+
+    call_kwargs = mock_buckets.insert.call_args[1]
+    assert call_kwargs["body"]["iamConfiguration"]["uniformBucketLevelAccess"]["enabled"] is True
+    assert call_kwargs["predefinedAcl"] == "private"
+    assert call_kwargs["predefinedDefaultObjectAcl"] == "projectPrivate"
+
+
+def test_storage_bucket_create_api_error(mocker):
+    """
+    Given: A storage client whose insert raises an exception.
+    When: storage_bucket_create is called.
+    Then: The exception propagates to the caller (handled by main()).
+    """
+    from GCP import storage_bucket_create
+
+    mock_storage = mocker.Mock()
+    mock_storage.buckets.return_value.insert.return_value.execute.side_effect = Exception("API Error")
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    with pytest.raises(Exception, match="API Error"):
+        storage_bucket_create(creds, {"project_id": "p1", "bucket_name": "b1"})
+
+
+# ---------------------------------------------------------------------------
+# gcp-storage-bucket-delete
+# ---------------------------------------------------------------------------
+def test_storage_bucket_delete_success(mocker):
+    """
+    Given: A bucket name.
+    When: storage_bucket_delete is called.
+    Then: It calls buckets().delete with the bucket and returns a confirmation.
+    """
+    from GCP import storage_bucket_delete
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.delete.return_value.execute.return_value = ""
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_delete(creds, {"project_id": "p1", "bucket_name": "b1"})
+
+    mock_buckets.delete.assert_called_once_with(bucket="b1")
+    assert "b1 was deleted successfully" in result.readable_output
+
+
+def test_storage_bucket_delete_force_deletes_objects_first(mocker):
+    """
+    Given: A non-empty bucket and force set to true.
+    When: storage_bucket_delete is called.
+    Then: All object generations are deleted before the bucket itself is deleted.
+    """
+    from GCP import storage_bucket_delete
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_storage.buckets.return_value = mock_buckets
+    mock_objects.list.return_value.execute.return_value = {
+        "items": [{"name": "o1", "generation": "1"}, {"name": "o2", "generation": "2"}]
+    }
+    mock_buckets.delete.return_value.execute.return_value = ""
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_delete(creds, {"project_id": "p1", "bucket_name": "b1", "force": "true"})
+
+    assert mock_objects.delete.call_count == 2
+    mock_objects.delete.assert_any_call(bucket="b1", object="o1", generation="1")
+    mock_objects.delete.assert_any_call(bucket="b1", object="o2", generation="2")
+    mock_buckets.delete.assert_called_once_with(bucket="b1")
+    assert "b1 was deleted successfully" in result.readable_output
+    assert "2 object(s) were deleted from the bucket before deletion." in result.readable_output
+
+
+def test_storage_bucket_delete_without_force_skips_object_listing(mocker):
+    """
+    Given: A bucket and force omitted.
+    When: storage_bucket_delete is called.
+    Then: No objects are listed or deleted, only the bucket itself.
+    """
+    from GCP import storage_bucket_delete
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_storage.buckets.return_value.delete.return_value.execute.return_value = ""
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    storage_bucket_delete(creds, {"project_id": "p1", "bucket_name": "b1"})
+
+    mock_objects.list.assert_not_called()
+    mock_objects.delete.assert_not_called()
+
+
+def test_storage_bucket_delete_api_error(mocker):
+    """
+    Given: A storage client whose delete raises an exception.
+    When: storage_bucket_delete is called.
+    Then: The exception propagates to the caller.
+    """
+    from GCP import storage_bucket_delete
+
+    mock_storage = mocker.Mock()
+    mock_storage.buckets.return_value.delete.return_value.execute.side_effect = Exception("API Error")
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    with pytest.raises(Exception, match="API Error"):
+        storage_bucket_delete(creds, {"project_id": "p1", "bucket_name": "b1"})
+
+
+# ---------------------------------------------------------------------------
+# gcp-storage-bucket-public-access-block
+# ---------------------------------------------------------------------------
+def test_storage_bucket_public_access_block_enforced(mocker):
+    """
+    Given: A bucket name with the default enforced setting.
+    When: storage_bucket_public_access_block is called.
+    Then: It patches the bucket with publicAccessPrevention=enforced.
+    """
+    from GCP import storage_bucket_public_access_block
+
+    mock_storage = mocker.Mock()
+    mock_buckets = mocker.Mock()
+    mock_storage.buckets.return_value = mock_buckets
+    mock_buckets.patch.return_value.execute.return_value = {"name": "b1"}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_public_access_block(creds, {"project_id": "p1", "bucket_name": "b1"})
+
+    call_kwargs = mock_buckets.patch.call_args[1]
+    assert call_kwargs["body"]["iamConfiguration"]["publicAccessPrevention"] == "enforced"
+    assert "enforced" in result.readable_output
+
+
+def test_storage_bucket_public_access_block_inherited(mocker):
+    """
+    Given: A bucket name with public_access_prevention set to inherited.
+    When: storage_bucket_public_access_block is called.
+    Then: It patches the bucket with publicAccessPrevention=inherited.
+    """
+    from GCP import storage_bucket_public_access_block
+
+    mock_storage = mocker.Mock()
+    mock_storage.buckets.return_value.patch.return_value.execute.return_value = {"name": "b1"}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_public_access_block(
+        creds, {"project_id": "p1", "bucket_name": "b1", "public_access_prevention": "inherited"}
+    )
+    assert "inherited" in result.readable_output
+
+
+def test_storage_bucket_public_access_block_outputs(mocker):
+    """
+    Given: A bucket that returns its updated IAM configuration.
+    When: storage_bucket_public_access_block is called.
+    Then: The full API response is returned under the shared bucket outputs prefix.
+    """
+    from GCP import storage_bucket_public_access_block
+
+    response = {"name": "b1", "id": "b1", "iamConfiguration": {"publicAccessPrevention": "enforced"}}
+    mock_storage = mocker.Mock()
+    mock_storage.buckets.return_value.patch.return_value.execute.return_value = response
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_public_access_block(creds, {"project_id": "p1", "bucket_name": "b1"})
+
+    assert result.outputs_prefix == "GCP.Storage.Buckets"
+    assert result.outputs_key_field == "name"
+    assert result.outputs == response
+    assert result.raw_response == response
+
+
+# ---------------------------------------------------------------------------
+# gcp-storage-bucket-object-upload
+# ---------------------------------------------------------------------------
+def test_storage_bucket_object_upload_success(mocker):
+    """
+    Given: An entry ID pointing to a War Room file and a target bucket/object.
+    When: storage_bucket_object_upload is called.
+    Then: It uploads the file via objects().insert and returns a confirmation.
+    """
+    from GCP import storage_bucket_object_upload
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.insert.return_value.execute.return_value = {"name": "o1", "bucket": "b1"}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP.demisto.getFilePath", return_value={"path": "/tmp/f", "name": "f.txt"})
+    mocker.patch("GCP.MediaFileUpload", return_value=mocker.Mock())
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "entry_id": "1@1"}
+    result = storage_bucket_object_upload(creds, args)
+
+    call_kwargs = mock_objects.insert.call_args[1]
+    assert call_kwargs["bucket"] == "b1"
+    assert call_kwargs["name"] == "o1"
+    assert "f.txt was successfully uploaded" in result.readable_output
+    assert result.outputs == {
+        "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
+            "name": "b1",
+            "Objects": [{"name": "o1", "bucket": "b1"}],
+        }
+    }
+
+
+def test_storage_bucket_object_upload_with_acl(mocker):
+    """
+    Given: An upload with a predefined object ACL.
+    When: storage_bucket_object_upload is called.
+    Then: The predefinedAcl parameter is forwarded to objects().insert.
+    """
+    from GCP import storage_bucket_object_upload
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.insert.return_value.execute.return_value = {"name": "o1"}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP.demisto.getFilePath", return_value={"path": "/tmp/f", "name": "f.txt"})
+    mocker.patch("GCP.MediaFileUpload", return_value=mocker.Mock())
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {
+        "project_id": "p1",
+        "bucket_name": "b1",
+        "object_name": "o1",
+        "entry_id": "1@1",
+        "object_acl": "publicRead",
+    }
+    storage_bucket_object_upload(creds, args)
+
+    call_kwargs = mock_objects.insert.call_args[1]
+    assert call_kwargs["predefinedAcl"] == "publicRead"
+
+
+def test_storage_bucket_object_upload_api_error(mocker):
+    """
+    Given: A storage client whose insert raises an exception.
+    When: storage_bucket_object_upload is called.
+    Then: The exception propagates to the caller.
+    """
+    from GCP import storage_bucket_object_upload
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.insert.return_value.execute.side_effect = Exception("API Error")
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP.demisto.getFilePath", return_value={"path": "/tmp/f", "name": "f.txt"})
+    mocker.patch("GCP.MediaFileUpload", return_value=mocker.Mock())
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "entry_id": "1@1"}
+    with pytest.raises(Exception, match="API Error"):
+        storage_bucket_object_upload(creds, args)
+
+
+@pytest.mark.parametrize(
+    "file_path_result",
+    [
+        {"name": "f.txt"},  # missing "path"
+        {"path": "/tmp/f"},  # missing "name"
+        {},  # empty entry
+        None,  # entry could not be resolved at all
+    ],
+)
+def test_storage_bucket_object_upload_missing_file_path_keys(mocker, file_path_result):
+    """
+    Given: A War Room entry that does not expose both a path and a name.
+    When: storage_bucket_object_upload is called.
+    Then: A DemistoException naming the entry ID is raised instead of an unhandled
+          KeyError or TypeError.
+    """
+    from GCP import DemistoException, storage_bucket_object_upload
+
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mocker.Mock())
+    mocker.patch("GCP.demisto.getFilePath", return_value=file_path_result)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "entry_id": "1@1"}
+    with pytest.raises(DemistoException, match="Failed to retrieve the file path or name for entry ID 1@1"):
+        storage_bucket_object_upload(creds, args)
+
+
+# ---------------------------------------------------------------------------
+# gcp-storage-bucket-object-download
+# ---------------------------------------------------------------------------
+def test_storage_bucket_object_download_success(mocker):
+    """
+    Given: A bucket and object name.
+    When: storage_bucket_object_download is called.
+    Then: It streams the object and returns a fileResult with the resolved name.
+    """
+    from GCP import storage_bucket_object_download
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.get_media.return_value = mocker.Mock()
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    mock_downloader = mocker.Mock()
+    mock_downloader.next_chunk.return_value = (None, True)
+    mocker.patch("GCP.MediaIoBaseDownload", return_value=mock_downloader)
+    mock_file_result = mocker.patch("GCP.fileResult", return_value={"File": "o1"})
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_object_download(creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "dir/o1"})
+
+    mock_storage.objects.return_value.get_media.assert_called_once_with(bucket="b1", object="dir/o1")
+    # Default saved file name is the last path segment.
+    assert mock_file_result.call_args[0][0] == "o1"
+    assert result == {"File": "o1"}
+
+
+def test_storage_bucket_object_download_custom_name(mocker):
+    """
+    Given: A bucket, object name, and explicit saved_file_name.
+    When: storage_bucket_object_download is called.
+    Then: The war room file entry is created with the provided saved_file_name.
+    """
+    from GCP import storage_bucket_object_download
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.get_media.return_value = mocker.Mock()
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    mock_downloader = mocker.Mock()
+    mock_downloader.next_chunk.return_value = (None, True)
+    mocker.patch("GCP.MediaIoBaseDownload", return_value=mock_downloader)
+    mock_file_result = mocker.patch("GCP.fileResult", return_value={"File": "custom.txt"})
+
+    creds = mocker.Mock(spec=Credentials)
+    storage_bucket_object_download(
+        creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "saved_file_name": "custom.txt"}
+    )
+    assert mock_file_result.call_args[0][0] == "custom.txt"
+
+
+def test_storage_bucket_object_download_streams_until_done(mocker):
+    """
+    Given: An object that requires several chunks to download.
+    When: storage_bucket_object_download is called.
+    Then: next_chunk is called until it reports done, streaming into an in-memory buffer.
+    """
+    from GCP import storage_bucket_object_download
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.get_media.return_value = mocker.Mock()
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    mock_downloader = mocker.Mock()
+    mock_downloader.next_chunk.side_effect = [(None, False), (None, False), (None, True)]
+    mock_media = mocker.patch("GCP.MediaIoBaseDownload", return_value=mock_downloader)
+    mocker.patch("GCP.fileResult", return_value={"File": "o1"})
+
+    creds = mocker.Mock(spec=Credentials)
+    storage_bucket_object_download(creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1"})
+
+    assert mock_downloader.next_chunk.call_count == 3
+    # The downloader streams into an in-memory BytesIO buffer, not a file on disk.
+    assert isinstance(mock_media.call_args[0][0], io.BytesIO)
+
+
+def test_storage_bucket_object_download_api_error(mocker):
+    """
+    Given: A storage client whose chunk download raises an exception.
+    When: storage_bucket_object_download is called.
+    Then: The exception propagates to the caller.
+    """
+    from GCP import storage_bucket_object_download
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.get_media.return_value = mocker.Mock()
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    mock_downloader = mocker.Mock()
+    mock_downloader.next_chunk.side_effect = Exception("API Error")
+    mocker.patch("GCP.MediaIoBaseDownload", return_value=mock_downloader)
+
+    creds = mocker.Mock(spec=Credentials)
+    with pytest.raises(Exception, match="API Error"):
+        storage_bucket_object_download(creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1"})
+
+
+@pytest.mark.parametrize(
+    "saved_file_name, expected",
+    [
+        ("../../etc/passwd", "passwd"),
+        ("..\\..\\windows\\system32\\evil.dll", "evil.dll"),
+        ("/absolute/path/file.txt", "file.txt"),
+        ("nested/dir/report.csv", "report.csv"),
+    ],
+)
+def test_storage_bucket_object_download_sanitizes_saved_file_name(mocker, saved_file_name, expected):
+    """
+    Given: A saved_file_name containing path separators or traversal segments.
+    When: storage_bucket_object_download is called.
+    Then: Only the base name is used for the war room file entry, so a traversal path
+          cannot influence the created file name.
+    """
+    from GCP import storage_bucket_object_download
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.get_media.return_value = mocker.Mock()
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    mock_downloader = mocker.Mock()
+    mock_downloader.next_chunk.return_value = (None, True)
+    mocker.patch("GCP.MediaIoBaseDownload", return_value=mock_downloader)
+    mock_file_result = mocker.patch("GCP.fileResult", return_value={"File": expected})
+
+    creds = mocker.Mock(spec=Credentials)
+    storage_bucket_object_download(
+        creds,
+        {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "saved_file_name": saved_file_name},
+    )
+
+    assert mock_file_result.call_args[0][0] == expected
+
+
+def test_storage_bucket_object_download_stops_at_max_chunks(mocker):
+    """
+    Given: A downloader that never reports done.
+    When: storage_bucket_object_download is called.
+    Then: The loop stops at MAX_DOWNLOAD_CHUNKS and an error is raised instead of
+          looping forever until the command times out.
+    """
+    from GCP import MAX_DOWNLOAD_CHUNKS, DemistoException, storage_bucket_object_download
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.get_media.return_value = mocker.Mock()
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    mock_downloader = mocker.Mock()
+    mock_downloader.next_chunk.return_value = (None, False)
+    mocker.patch("GCP.MediaIoBaseDownload", return_value=mock_downloader)
+    mock_file_result = mocker.patch("GCP.fileResult")
+
+    creds = mocker.Mock(spec=Credentials)
+    with pytest.raises(DemistoException, match="maximum chunk limit"):
+        storage_bucket_object_download(creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1"})
+
+    assert mock_downloader.next_chunk.call_count == MAX_DOWNLOAD_CHUNKS
+    mock_file_result.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# gcp-storage-bucket-object-copy
+# ---------------------------------------------------------------------------
+def test_storage_bucket_object_copy_success(mocker):
+    """
+    Given: Source and destination bucket/object names.
+    When: storage_bucket_object_copy is called.
+    Then: It calls objects().copy with the correct parameters and returns outputs.
+    """
+    from GCP import storage_bucket_object_copy
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.copy.return_value.execute.return_value = {"name": "o2", "bucket": "dst"}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {
+        "project_id": "p1",
+        "source_bucket_name": "src",
+        "source_object_name": "o1",
+        "destination_bucket_name": "dst",
+        "destination_object_name": "o2",
+    }
+    result = storage_bucket_object_copy(creds, args)
+
+    call_kwargs = mock_objects.copy.call_args[1]
+    assert call_kwargs["sourceBucket"] == "src"
+    assert call_kwargs["sourceObject"] == "o1"
+    assert call_kwargs["destinationBucket"] == "dst"
+    assert call_kwargs["destinationObject"] == "o2"
+    assert result.outputs == {
+        "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
+            "name": "dst",
+            "Objects": [{"name": "o2", "bucket": "dst"}],
+        }
+    }
+
+
+def test_storage_bucket_object_copy_default_destination_name(mocker):
+    """
+    Given: No destination_object_name.
+    When: storage_bucket_object_copy is called.
+    Then: The destination object name defaults to the source object name.
+    """
+    from GCP import storage_bucket_object_copy
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.copy.return_value.execute.return_value = {"name": "o1", "bucket": "dst"}
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {
+        "project_id": "p1",
+        "source_bucket_name": "src",
+        "source_object_name": "o1",
+        "destination_bucket_name": "dst",
+    }
+    storage_bucket_object_copy(creds, args)
+
+    call_kwargs = mock_objects.copy.call_args[1]
+    assert call_kwargs["destinationObject"] == "o1"
+
+
+def test_storage_bucket_object_copy_api_error(mocker):
+    """
+    Given: A storage client whose copy raises an exception.
+    When: storage_bucket_object_copy is called.
+    Then: The exception propagates to the caller.
+    """
+    from GCP import storage_bucket_object_copy
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.copy.return_value.execute.side_effect = Exception("API Error")
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    args = {
+        "project_id": "p1",
+        "source_bucket_name": "src",
+        "source_object_name": "o1",
+        "destination_bucket_name": "dst",
+    }
+    with pytest.raises(Exception, match="API Error"):
+        storage_bucket_object_copy(creds, args)
+
+
+# ---------------------------------------------------------------------------
+# gcp-storage-bucket-object-delete
+# ---------------------------------------------------------------------------
+def test_storage_bucket_object_delete_success(mocker):
+    """
+    Given: A bucket and object name.
+    When: storage_bucket_object_delete is called.
+    Then: It calls objects().delete with the bucket/object and returns a confirmation.
+    """
+    from GCP import storage_bucket_object_delete
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.delete.return_value.execute.return_value = ""
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_object_delete(creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1"})
+
+    call_kwargs = mock_objects.delete.call_args[1]
+    assert call_kwargs["bucket"] == "b1"
+    assert call_kwargs["object"] == "o1"
+    assert "generation" not in call_kwargs
+    assert "o1 was successfully deleted" in result.readable_output
+
+
+def test_storage_bucket_object_delete_with_generation(mocker):
+    """
+    Given: A bucket, object name, and generation.
+    When: storage_bucket_object_delete is called.
+    Then: The generation is forwarded to objects().delete.
+    """
+    from GCP import storage_bucket_object_delete
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.delete.return_value.execute.return_value = ""
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    storage_bucket_object_delete(creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "generation": "12345"})
+
+    call_kwargs = mock_objects.delete.call_args[1]
+    assert call_kwargs["generation"] == 12345
+
+
+def test_storage_bucket_object_delete_api_error(mocker):
+    """
+    Given: A storage client whose delete raises an exception.
+    When: storage_bucket_object_delete is called.
+    Then: The exception propagates to the caller.
+    """
+    from GCP import storage_bucket_object_delete
+
+    mock_storage = mocker.Mock()
+    mock_storage.objects.return_value.delete.return_value.execute.side_effect = Exception("API Error")
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+
+    creds = mocker.Mock(spec=Credentials)
+    with pytest.raises(Exception, match="API Error"):
+        storage_bucket_object_delete(creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1"})
+
+
+# ---------------------------------------------------------------------------
+# _delete_all_bucket_objects helper
+# ---------------------------------------------------------------------------
+def test_delete_all_bucket_objects_paginates(mocker):
+    """
+    Given: A bucket whose object listing spans two pages.
+    When: _delete_all_bucket_objects is called.
+    Then: It follows nextPageToken and deletes every object on every page.
+    """
+    from GCP import _delete_all_bucket_objects
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.list.return_value.execute.side_effect = [
+        {"items": [{"name": "o1", "generation": "1"}], "nextPageToken": "tok"},
+        {"items": [{"name": "o2", "generation": "2"}]},
+    ]
+
+    deleted = _delete_all_bucket_objects(mock_storage, "b1")
+
+    assert deleted == 2
+    assert mock_objects.list.call_count == 2
+    # The first page request has no page token, the second one carries it.
+    assert "pageToken" not in mock_objects.list.call_args_list[0][1]
+    assert mock_objects.list.call_args_list[1][1]["pageToken"] == "tok"
+    # All generations are requested so versioned objects are removed too.
+    assert mock_objects.list.call_args_list[0][1]["versions"] is True
+
+
+def test_delete_all_bucket_objects_empty_bucket(mocker):
+    """
+    Given: A bucket with no objects.
+    When: _delete_all_bucket_objects is called.
+    Then: Nothing is deleted and zero is returned.
+    """
+    from GCP import _delete_all_bucket_objects
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.list.return_value.execute.return_value = {}
+
+    assert _delete_all_bucket_objects(mock_storage, "b1") == 0
+    mock_objects.delete.assert_not_called()
+
+
+def test_delete_all_bucket_objects_stops_at_max_pages(mocker):
+    """
+    Given: A listing API that always returns another nextPageToken.
+    When: _delete_all_bucket_objects is called.
+    Then: It stops after MAX_OBJECT_LIST_PAGES pages and raises an informative error because
+          the bucket still contains objects and therefore cannot be deleted.
+    """
+    from GCP import MAX_OBJECT_LIST_PAGES, DemistoException, _delete_all_bucket_objects
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.list.return_value.execute.return_value = {
+        "items": [{"name": "o1", "generation": "1"}],
+        "nextPageToken": "always-more",
+    }
+
+    with pytest.raises(DemistoException, match="Reached the maximum page limit"):
+        _delete_all_bucket_objects(mock_storage, "b1")
+
+    assert mock_objects.list.call_count == MAX_OBJECT_LIST_PAGES
+
+
+def test_delete_all_bucket_objects_raises_on_object_delete_failure(mocker):
+    """
+    Given: A bucket with two objects where deleting the first object fails.
+    When: _delete_all_bucket_objects is called.
+    Then: A DemistoException is raised summarizing the failed object name and how many objects
+          were successfully deleted, since the bucket cannot be deleted while it holds objects.
+    """
+    from GCP import DemistoException, _delete_all_bucket_objects
+
+    mock_storage = mocker.Mock()
+    mock_objects = mocker.Mock()
+    mock_storage.objects.return_value = mock_objects
+    mock_objects.list.return_value.execute.return_value = {
+        "items": [{"name": "o1", "generation": "1"}, {"name": "o2", "generation": "2"}]
+    }
+    mock_objects.delete.return_value.execute.side_effect = [Exception("retention hold"), None]
+
+    with pytest.raises(DemistoException, match="Failed to delete 1 object.*o1.*1 object.*successfully deleted"):
+        _delete_all_bucket_objects(mock_storage, "b1")
+
+
+# ---------------------------------------------------------------------------
+# gcp-storage-bucket-object-policy-delete
+# ---------------------------------------------------------------------------
+def test_storage_bucket_object_policy_delete_success(mocker):
+    """
+    Given: A bucket, object, and entity.
+    When: storage_bucket_object_policy_delete is called.
+    Then: It calls objectAccessControls().delete and returns a confirmation.
+    """
+    from GCP import storage_bucket_object_policy_delete
+
+    mock_storage = mocker.Mock()
+    mock_oac = mocker.Mock()
+    mock_storage.objectAccessControls.return_value = mock_oac
+    mock_oac.delete.return_value.execute.return_value = ""
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=False)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_object_policy_delete(
+        creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "entity": "allUsers"}
+    )
+
+    call_kwargs = mock_oac.delete.call_args[1]
+    assert call_kwargs["bucket"] == "b1"
+    assert call_kwargs["object"] == "o1"
+    assert call_kwargs["entity"] == "allUsers"
+    assert "generation" not in call_kwargs
+    assert "Removed entity allUsers" in result.readable_output
+
+
+def test_storage_bucket_object_policy_delete_with_generation(mocker):
+    """
+    Given: A bucket, object, entity, and generation.
+    When: storage_bucket_object_policy_delete is called.
+    Then: The generation is forwarded to objectAccessControls().delete.
+    """
+    from GCP import storage_bucket_object_policy_delete
+
+    mock_storage = mocker.Mock()
+    mock_oac = mocker.Mock()
+    mock_storage.objectAccessControls.return_value = mock_oac
+    mock_oac.delete.return_value.execute.return_value = ""
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=False)
+
+    creds = mocker.Mock(spec=Credentials)
+    storage_bucket_object_policy_delete(
+        creds,
+        {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "entity": "allUsers", "generation": "999"},
+    )
+
+    call_kwargs = mock_oac.delete.call_args[1]
+    assert call_kwargs["generation"] == 999
+
+
+def test_storage_bucket_object_policy_delete_ubla_enabled(mocker):
+    """
+    Given: A bucket with Uniform Bucket-Level Access enabled.
+    When: storage_bucket_object_policy_delete is called.
+    Then: It short-circuits with guidance and never calls the object ACL API.
+    """
+    from GCP import storage_bucket_object_policy_delete
+
+    mock_storage = mocker.Mock()
+    mock_oac = mocker.Mock()
+    mock_storage.objectAccessControls.return_value = mock_oac
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=True)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_object_policy_delete(
+        creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "entity": "allUsers"}
+    )
+
+    mock_oac.delete.assert_not_called()
+    assert "Uniform Bucket-Level Access (UBLA) is enabled" in result.readable_output
+    assert "gcp-storage-bucket-policy-delete" in result.readable_output
+
+
+def test_storage_bucket_object_policy_delete_ubla_error_response(mocker):
+    """
+    Given: A bucket whose ACL delete fails with a UBLA-related error.
+    When: storage_bucket_object_policy_delete is called.
+    Then: The UBLA guidance is returned instead of raising.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import storage_bucket_object_policy_delete
+
+    mock_storage = mocker.Mock()
+    ubla_error = HttpError(resp=MagicMock(status=400), content=b"uniform bucket-level access")
+    mock_storage.objectAccessControls.return_value.delete.return_value.execute.side_effect = ubla_error
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=False)
+    mocker.patch("GCP._is_ubla_error", return_value=True)
+
+    creds = mocker.Mock(spec=Credentials)
+    result = storage_bucket_object_policy_delete(
+        creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "entity": "allUsers"}
+    )
+
+    assert "Uniform Bucket-Level Access (UBLA) is enabled" in result.readable_output
+
+
+def test_storage_bucket_object_policy_delete_api_error(mocker):
+    """
+    Given: A storage client whose delete raises a non-UBLA exception.
+    When: storage_bucket_object_policy_delete is called.
+    Then: The exception propagates to the caller.
+    """
+    from GCP import storage_bucket_object_policy_delete
+
+    mock_storage = mocker.Mock()
+    mock_storage.objectAccessControls.return_value.delete.return_value.execute.side_effect = Exception("API Error")
+    mocker.patch("GCP.GCPServices.STORAGE.build", return_value=mock_storage)
+    mocker.patch("GCP._is_ubla_enabled", return_value=False)
+
+    creds = mocker.Mock(spec=Credentials)
+    with pytest.raises(Exception, match="API Error"):
+        storage_bucket_object_policy_delete(
+            creds, {"project_id": "p1", "bucket_name": "b1", "object_name": "o1", "entity": "allUsers"}
+        )
+
+
+# ---------------------------------------------------------------------------
+# Cloud KMS - migrated from the legacy Google Key Management Service pack.
+# ---------------------------------------------------------------------------
+
+
+def _mock_kms_client(mocker):
+    """Builds a mocked Cloud KMS client and patches GCPServices.KMS.build to return it.
+
+    Returns:
+        tuple: (kms_client_mock, crypto_keys_mock, crypto_key_versions_mock, key_rings_mock)
+    """
+    from GCP import GCPServices
+
+    kms_client = mocker.MagicMock()
+    key_rings = kms_client.projects.return_value.locations.return_value.keyRings.return_value
+    crypto_keys = key_rings.cryptoKeys.return_value
+    crypto_key_versions = crypto_keys.cryptoKeyVersions.return_value
+    mocker.patch.object(GCPServices.KMS, "build", return_value=kms_client)
+    return kms_client, crypto_keys, crypto_key_versions, key_rings
+
+
+def test_kms_key_rings_list_success(mocker):
+    """
+    Given: A project whose global location holds a single key ring.
+    When: kms_key_rings_list is called.
+    Then: The key rings are listed for the requested location and returned under GCP.KMS.KeyRings,
+          with the API response enriched by the identifying fields.
+    """
+    from GCP import kms_key_rings_list
+
+    _, _, _, key_rings = _mock_kms_client(mocker)
+    key_rings.list.return_value.execute.return_value = {
+        "keyRings": [
+            {
+                "name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring",
+                "createTime": "2024-01-01T00:00:00Z",
+            }
+        ]
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_key_rings_list(creds, {"project_id": "mock_project_id", "location": "global"})
+
+    key_rings.list.assert_called_once_with(parent="projects/mock_project_id/locations/global", pageSize=50)
+    entry = result.outputs["GCP.KMS.KeyRings(val.ResourceName && val.ResourceName == obj.ResourceName)"][0]
+    assert entry == {
+        "name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring",
+        "createTime": "2024-01-01T00:00:00Z",
+        "Name": "mock_key_ring",
+        "ResourceName": "projects/mock_project_id/locations/global/keyRings/mock_key_ring",
+        "Project": "mock_project_id",
+        "Location": "global",
+    }
+
+
+def test_kms_key_rings_list_forwards_page_token_and_returns_next_token(mocker):
+    """
+    Given: A single-location request that supplies a page token and whose response is paginated.
+    When: kms_key_rings_list is called.
+    Then: The token is forwarded to the API and the next page token is returned in the context.
+    """
+    from GCP import kms_key_rings_list
+
+    _, _, _, key_rings = _mock_kms_client(mocker)
+    key_rings.list.return_value.execute.return_value = {
+        "keyRings": [{"name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring"}],
+        "nextPageToken": "next_token",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_key_rings_list(creds, {"project_id": "mock_project_id", "page_token": "prev_token", "limit": "10"})
+
+    key_rings.list.assert_called_once_with(
+        parent="projects/mock_project_id/locations/global", pageSize=10, pageToken="prev_token"
+    )
+    assert result.outputs["GCP.KMS(true)"] == {"KeyRingsNextToken": "next_token"}
+
+
+def test_kms_key_rings_list_all_locations_ignores_page_token(mocker):
+    """
+    Given: The all_locations flag is enabled together with a page token.
+    When: kms_key_rings_list is called.
+    Then: The token is not forwarded, because a page token is only valid for the location that issued it.
+    """
+    from GCP import kms_key_rings_list
+
+    _, _, _, key_rings = _mock_kms_client(mocker)
+    key_rings.list.return_value.execute.return_value = {
+        "keyRings": [{"name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring"}],
+        "nextPageToken": "next_token",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_key_rings_list(creds, {"project_id": "mock_project_id", "all_locations": "true", "page_token": "prev_token"})
+
+    assert all("pageToken" not in call.kwargs for call in key_rings.list.call_args_list)
+    assert "GCP.KMS(true)" not in result.outputs
+
+
+def test_kms_key_rings_list_all_locations_reports_truncation(mocker):
+    """
+    Given: An all-locations sweep where a location returns more key rings than the limit.
+    When: kms_key_rings_list is called.
+    Then: The omission is surfaced in the output, since the page token cannot be forwarded.
+    """
+    from GCP import kms_key_rings_list
+
+    _, _, _, key_rings = _mock_kms_client(mocker)
+    key_rings.list.return_value.execute.return_value = {
+        "keyRings": [{"name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring"}],
+        "nextPageToken": "next_token",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_key_rings_list(creds, {"project_id": "mock_project_id", "all_locations": "true", "limit": "1"})
+
+    assert "Some results were omitted" in result.readable_output
+
+
+def test_kms_key_rings_list_all_locations_no_truncation_notice_when_complete(mocker):
+    """
+    Given: An all-locations sweep where no location returns a next page token.
+    When: kms_key_rings_list is called.
+    Then: No truncation notice is shown.
+    """
+    from GCP import kms_key_rings_list
+
+    _, _, _, key_rings = _mock_kms_client(mocker)
+    key_rings.list.return_value.execute.return_value = {
+        "keyRings": [{"name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring"}],
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_key_rings_list(creds, {"project_id": "mock_project_id", "all_locations": "true"})
+
+    assert "Some results were omitted" not in result.readable_output
+
+
+def test_kms_key_rings_list_all_locations_sweeps_every_location(mocker):
+    """
+    Given: The all_locations flag is enabled.
+    When: kms_key_rings_list is called.
+    Then: Every supported KMS location is queried instead of only the requested one.
+    """
+    from GCP import KMS_ALL_LOCATIONS, kms_key_rings_list
+
+    _, _, _, key_rings = _mock_kms_client(mocker)
+    key_rings.list.return_value.execute.return_value = {"keyRings": []}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_key_rings_list(creds, {"project_id": "mock_project_id", "all_locations": "true"})
+
+    assert key_rings.list.call_count == len(KMS_ALL_LOCATIONS)
+    assert result.readable_output == "No KMS key rings found."
+
+
+def test_kms_key_rings_list_no_results(mocker):
+    """
+    Given: A location that holds no key rings.
+    When: kms_key_rings_list is called.
+    Then: A no-results message is returned instead of an empty table.
+    """
+    from GCP import kms_key_rings_list
+
+    _, _, _, key_rings = _mock_kms_client(mocker)
+    key_rings.list.return_value.execute.return_value = {}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_key_rings_list(creds, {"project_id": "mock_project_id"})
+
+    assert result.readable_output == "No KMS key rings found."
+
+
+def test_kms_keys_list_success_with_filter_and_paging(mocker):
+    """
+    Given: A key ring holding one enabled crypto key and a next page token.
+    When: kms_keys_list is called with a key_state filter and a page token.
+    Then: The filter and token reach the API and the next page token is exposed in the outputs.
+    """
+    from GCP import kms_keys_list
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.list.return_value.execute.return_value = {
+        "cryptoKeys": [
+            {
+                "name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key",
+                "purpose": "ENCRYPT_DECRYPT",
+                "createTime": "2024-01-01T00:00:00Z",
+            }
+        ],
+        "nextPageToken": "mock_next_page_token",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "location": "global",
+        "key_ring": "mock_key_ring",
+        "key_state": "ENABLED",
+        "page_token": "mock_page_token",
+    }
+    result = kms_keys_list(creds, args)
+
+    crypto_keys.list.assert_called_once_with(
+        parent="projects/mock_project_id/locations/global/keyRings/mock_key_ring",
+        pageSize=50,
+        filter="primary.state=ENABLED",
+        pageToken="mock_page_token",
+    )
+    keys = result.outputs["GCP.KMS.CryptoKeys(val.ResourceName && val.ResourceName == obj.ResourceName)"]
+    assert keys[0]["Name"] == "mock_crypto_key"
+    assert keys[0]["KeyRing"] == "mock_key_ring"
+    assert result.outputs["GCP.KMS(true)"]["CryptoKeysNextToken"] == "mock_next_page_token"
+
+
+def test_kms_keys_list_no_results(mocker):
+    """
+    Given: A key ring that holds no crypto keys.
+    When: kms_keys_list is called.
+    Then: A no-results message is returned.
+    """
+    from GCP import kms_keys_list
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.list.return_value.execute.return_value = {}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_keys_list(creds, {"project_id": "mock_project_id", "key_ring": "mock_key_ring"})
+
+    assert result.readable_output == "No KMS crypto keys found."
+
+
+def test_kms_keys_list_invalid_limit_raises(mocker):
+    """
+    Given: A limit above the accepted range.
+    When: kms_keys_list is called.
+    Then: A DemistoException is raised by the shared limit validation.
+    """
+    from CommonServerPython import DemistoException
+    from GCP import kms_keys_list
+
+    _mock_kms_client(mocker)
+    creds = mocker.MagicMock(spec=Credentials)
+
+    with pytest.raises(DemistoException, match="acceptable values of the argument limit"):
+        kms_keys_list(creds, {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "limit": "501"})
+
+
+def test_kms_keys_list_all_walks_key_rings(mocker):
+    """
+    Given: A location holding one key ring with one crypto key.
+    When: kms_keys_list_all is called.
+    Then: The key ring is enumerated and its crypto keys are attributed to that key ring.
+    """
+    from GCP import kms_keys_list_all
+
+    _, crypto_keys, _, key_rings = _mock_kms_client(mocker)
+    key_rings.list.return_value.execute.return_value = {
+        "keyRings": [{"name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring"}]
+    }
+    crypto_keys.list.return_value.execute.return_value = {
+        "cryptoKeys": [
+            {
+                "name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key",
+                "purpose": "ENCRYPT_DECRYPT",
+            }
+        ]
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_keys_list_all(creds, {"project_id": "mock_project_id", "location": "global"})
+
+    assert result.outputs_prefix == "GCP.KMS.CryptoKeys"
+    assert result.outputs[0]["KeyRing"] == "mock_key_ring"
+    assert result.outputs[0]["Name"] == "mock_crypto_key"
+
+
+def test_kms_keys_list_all_reports_truncation(mocker):
+    """
+    Given: A key ring whose crypto key listing is paginated, so results are incomplete.
+    When: kms_keys_list_all is called.
+    Then: The readable output warns that results were omitted, because this aggregated
+          command cannot expose a single usable page token.
+    """
+    from GCP import kms_keys_list_all
+
+    _, crypto_keys, _, key_rings = _mock_kms_client(mocker)
+    key_rings.list.return_value.execute.return_value = {
+        "keyRings": [{"name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring"}]
+    }
+    crypto_keys.list.return_value.execute.return_value = {
+        "cryptoKeys": [{"name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key"}],
+        "nextPageToken": "omitted_page",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_keys_list_all(creds, {"project_id": "mock_project_id", "location": "global"})
+
+    assert "Some results were omitted" in result.readable_output
+    assert "gcp-kms-keys-list" in result.readable_output
+
+
+def test_kms_keys_list_all_no_truncation_notice_when_complete(mocker):
+    """
+    Given: A key ring whose crypto key listing fits in a single page.
+    When: kms_keys_list_all is called.
+    Then: No truncation notice is shown.
+    """
+    from GCP import kms_keys_list_all
+
+    _, crypto_keys, _, key_rings = _mock_kms_client(mocker)
+    key_rings.list.return_value.execute.return_value = {
+        "keyRings": [{"name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring"}]
+    }
+    crypto_keys.list.return_value.execute.return_value = {
+        "cryptoKeys": [{"name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key"}]
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_keys_list_all(creds, {"project_id": "mock_project_id", "location": "global"})
+
+    assert "Some results were omitted" not in result.readable_output
+
+
+def test_kms_keys_list_all_no_results(mocker):
+    """
+    Given: A location that holds no key rings at all.
+    When: kms_keys_list_all is called.
+    Then: A no-results message is returned.
+    """
+    from GCP import kms_keys_list_all
+
+    _, _, _, key_rings = _mock_kms_client(mocker)
+    key_rings.list.return_value.execute.return_value = {}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    result = kms_keys_list_all(creds, {"project_id": "mock_project_id"})
+
+    assert result.readable_output == "No KMS crypto keys found."
+
+
+def test_kms_key_get_success(mocker):
+    """
+    Given: A crypto key that has a primary crypto key version.
+    When: kms_key_get is called.
+    Then: The key is fetched by its full resource name and normalized into the KMS context.
+    """
+    from GCP import kms_key_get
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    key_name = "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key"
+    crypto_keys.get.return_value.execute.return_value = {
+        "name": key_name,
+        "purpose": "ENCRYPT_DECRYPT",
+        "createTime": "2024-01-01T00:00:00Z",
+        "versionTemplate": {"protectionLevel": "SOFTWARE", "algorithm": "GOOGLE_SYMMETRIC_ENCRYPTION"},
+        "primary": {"name": f"{key_name}/cryptoKeyVersions/1", "state": "ENABLED"},
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "location": "global",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+    }
+    result = kms_key_get(creds, args)
+
+    crypto_keys.get.assert_called_once_with(name=key_name)
+    assert result.outputs_prefix == "GCP.KMS.CryptoKeys"
+    assert result.outputs["Name"] == "mock_crypto_key"
+    assert result.outputs["ResourceName"] == key_name
+    assert result.outputs["primary"]["state"] == "ENABLED"
+    assert result.outputs["versionTemplate"]["algorithm"] == "GOOGLE_SYMMETRIC_ENCRYPTION"
+
+
+def test_kms_key_get_asymmetric_key_without_primary_version(mocker):
+    """
+    Given: An asymmetric crypto key, which the API returns without a primary version.
+    When: kms_key_get is called.
+    Then: The context omits the primary version instead of emitting an empty object.
+    """
+    from GCP import kms_key_get
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.get.return_value.execute.return_value = {
+        "name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_asym_key",
+        "purpose": "ASYMMETRIC_DECRYPT",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "crypto_key": "mock_asym_key"}
+    result = kms_key_get(creds, args)
+
+    assert "primary" not in result.outputs
+
+
+def test_kms_key_get_permission_error_is_handled(mocker):
+    """
+    Given: The API rejects the request with a 403 permission error.
+    When: The raised HttpError is routed through handle_permission_error, as main() does.
+    Then: The missing permission is reported through the structured permission error flow.
+    """
+    import GCP
+    from googleapiclient.errors import HttpError
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    resp = mocker.MagicMock()
+    resp.status = 403
+    resp.get.return_value = "application/json"
+    content = json.dumps({"error": {"message": "Permission 'cloudkms.cryptoKeys.get' denied on resource."}}).encode()
+    crypto_keys.get.return_value.execute.side_effect = HttpError(resp=resp, content=content)
+    mock_report = mocker.patch.object(GCP, "return_multiple_permissions_error")
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "crypto_key": "mock_crypto_key"}
+
+    with pytest.raises(HttpError) as raised:
+        GCP.kms_key_get(creds, args)
+
+    GCP.handle_permission_error(raised.value, "mock_project_id", "gcp-kms-key-get")
+
+    reported = mock_report.call_args[0][0]
+    assert reported[0]["name"] == "cloudkms.cryptoKeys.get"
+    assert reported[0]["account_id"] == "mock_project_id"
+
+
+def test_kms_key_create_builds_request(mocker):
+    """
+    Given: Arguments describing a new symmetric crypto key.
+    When: kms_key_create is called.
+    Then: The create request carries the parent, key ID and a body without empty fields.
+    """
+    from GCP import kms_key_create
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.create.return_value.execute.return_value = {
+        "name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_new_key",
+        "purpose": "ENCRYPT_DECRYPT",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "location": "global",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_new_key",
+        "purpose": "ENCRYPT_DECRYPT",
+        "rotation_period": "7776000s",
+        "next_rotation_time": "2030-01-01T00:00:00Z",
+        "algorithm": "GOOGLE_SYMMETRIC_ENCRYPTION",
+        "protection_level": "SOFTWARE",
+    }
+    result = kms_key_create(creds, args)
+
+    call_kwargs = crypto_keys.create.call_args[1]
+    assert call_kwargs["parent"] == "projects/mock_project_id/locations/global/keyRings/mock_key_ring"
+    assert call_kwargs["cryptoKeyId"] == "mock_new_key"
+    assert call_kwargs["skipInitialVersionCreation"] is False
+    assert call_kwargs["body"]["purpose"] == "ENCRYPT_DECRYPT"
+    assert call_kwargs["body"]["rotationPeriod"] == "7776000s"
+    assert call_kwargs["body"]["versionTemplate"]["algorithm"] == "GOOGLE_SYMMETRIC_ENCRYPTION"
+    assert result.outputs_prefix == "GCP.KMS.CryptoKeys"
+    assert "created successfully" in result.readable_output
+
+
+def test_kms_key_create_skip_initial_version(mocker):
+    """
+    Given: skip_initial_version_creation is enabled.
+    When: kms_key_create is called.
+    Then: The flag is forwarded to the API as a boolean.
+    """
+    from GCP import kms_key_create
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.create.return_value.execute.return_value = {"name": "mock_name", "purpose": "ASYMMETRIC_DECRYPT"}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_new_key",
+        "purpose": "ASYMMETRIC_DECRYPT",
+        "skip_initial_version_creation": "true",
+    }
+    kms_key_create(creds, args)
+
+    assert crypto_keys.create.call_args[1]["skipInitialVersionCreation"] is True
+
+
+def test_kms_key_create_purpose_algorithm_mismatch_raises(mocker):
+    """
+    Given: A purpose and a versionTemplate algorithm that are incompatible (an encrypt/decrypt
+        purpose paired with a signing algorithm).
+    When: kms_key_create is called and the API rejects the combination with a 400 error.
+    Then: The HttpError propagates so main() can route it, and the algorithm was sent to the API.
+    """
+    from googleapiclient.errors import HttpError
+
+    from GCP import kms_key_create
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    resp = mocker.MagicMock()
+    resp.status = 400
+    resp.get.return_value = "application/json"
+    content = json.dumps(
+        {"error": {"message": "Algorithm RSA_SIGN_PSS_2048_SHA256 is not valid for purpose ENCRYPT_DECRYPT."}}
+    ).encode()
+    crypto_keys.create.return_value.execute.side_effect = HttpError(resp=resp, content=content)
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_new_key",
+        "purpose": "ENCRYPT_DECRYPT",
+        "algorithm": "RSA_SIGN_PSS_2048_SHA256",
+    }
+
+    with pytest.raises(HttpError):
+        kms_key_create(creds, args)
+
+    sent_body = crypto_keys.create.call_args[1]["body"]
+    assert sent_body["purpose"] == "ENCRYPT_DECRYPT"
+    assert sent_body["versionTemplate"]["algorithm"] == "RSA_SIGN_PSS_2048_SHA256"
+
+
+@pytest.mark.parametrize(
+    "supplied, expected",
+    [
+        ("2024-10-02T15:01:23Z", "2024-10-02T15:01:23Z"),
+        # A non-UTC offset must be normalized to UTC before being sent.
+        ("2024-10-02T17:01:23+02:00", "2024-10-02T15:01:23Z"),
+    ],
+)
+def test_kms_parse_rotation_time_normalizes_to_rfc3339_utc(supplied, expected):
+    """
+    Given: An absolute rotation timestamp, with or without a UTC offset.
+    When: _kms_parse_rotation_time is called.
+    Then: The value is returned as an RFC 3339 UTC timestamp.
+    """
+    from GCP import _kms_parse_rotation_time
+
+    assert _kms_parse_rotation_time(supplied) == expected
+
+
+def test_kms_parse_rotation_time_accepts_relative_expression():
+    """
+    Given: A relative rotation time such as "in 30 days".
+    When: _kms_parse_rotation_time is called.
+    Then: It is resolved into an absolute RFC 3339 UTC timestamp.
+    """
+    from GCP import _kms_parse_rotation_time
+
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", _kms_parse_rotation_time("in 30 days") or "")
+
+
+def test_kms_parse_rotation_time_without_value_returns_none():
+    """
+    Given: No rotation time.
+    When: _kms_parse_rotation_time is called.
+    Then: None is returned so the field is omitted from the request.
+    """
+    from GCP import _kms_parse_rotation_time
+
+    assert _kms_parse_rotation_time(None) is None
+
+
+def test_kms_parse_rotation_time_invalid_value_raises():
+    """
+    Given: A value that cannot be parsed as a date.
+    When: _kms_parse_rotation_time is called.
+    Then: A ValueError is raised instead of forwarding the bad value to the API.
+    """
+    from GCP import _kms_parse_rotation_time
+
+    with pytest.raises(ValueError):
+        _kms_parse_rotation_time("not a date")
+
+
+def test_kms_key_create_parses_relative_rotation_time(mocker):
+    """
+    Given: A relative next_rotation_time.
+    When: kms_key_create is called.
+    Then: An absolute RFC 3339 timestamp is sent to the API rather than the raw expression.
+    """
+    from GCP import kms_key_create
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.create.return_value.execute.return_value = {"name": "mock_name"}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    kms_key_create(
+        creds,
+        {
+            "project_id": "mock_project_id",
+            "key_ring": "mock_key_ring",
+            "crypto_key": "mock_new_key",
+            "next_rotation_time": "in 30 days",
+        },
+    )
+
+    sent = crypto_keys.create.call_args[1]["body"]["nextRotationTime"]
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", sent)
+
+
+def test_kms_key_update_parses_relative_rotation_time(mocker):
+    """
+    Given: A relative next_rotation_time.
+    When: kms_key_update is called.
+    Then: An absolute RFC 3339 timestamp is sent and the update mask includes the field.
+    """
+    from GCP import kms_key_update
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.patch.return_value.execute.return_value = {"name": "mock_name"}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    kms_key_update(
+        creds,
+        {
+            "project_id": "mock_project_id",
+            "key_ring": "mock_key_ring",
+            "crypto_key": "mock_crypto_key",
+            "next_rotation_time": "in 30 days",
+        },
+    )
+
+    call_kwargs = crypto_keys.patch.call_args[1]
+    assert re.fullmatch(r"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z", call_kwargs["body"]["nextRotationTime"])
+    assert "nextRotationTime" in call_kwargs["updateMask"]
+
+
+def test_kms_key_update_builds_update_mask(mocker):
+    """
+    Given: A subset of the mutable crypto key fields.
+    When: kms_key_update is called.
+    Then: Only the supplied fields are sent and the update mask lists exactly those fields.
+    """
+    from GCP import kms_key_update
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.patch.return_value.execute.return_value = {
+        "name": "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key",
+        "purpose": "ENCRYPT_DECRYPT",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "location": "global",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "labels": "key=env,value=test",
+        "rotation_period": "7776000s",
+    }
+    result = kms_key_update(creds, args)
+
+    call_kwargs = crypto_keys.patch.call_args[1]
+    assert call_kwargs["updateMask"] == "labels,rotationPeriod"
+    assert call_kwargs["body"]["labels"] == {"env": "test"}
+    assert call_kwargs["body"]["rotationPeriod"] == "7776000s"
+    assert "nextRotationTime" not in call_kwargs["body"]
+    assert result.outputs_prefix == "GCP.KMS.CryptoKeys"
+
+
+def test_kms_key_update_without_updatable_field_raises(mocker):
+    """
+    Given: No updatable field is supplied.
+    When: kms_key_update is called.
+    Then: A DemistoException is raised before any API call is made.
+    """
+    from CommonServerPython import DemistoException
+    from GCP import kms_key_update
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "crypto_key": "mock_crypto_key"}
+
+    with pytest.raises(DemistoException, match="No updatable field was provided"):
+        kms_key_update(creds, args)
+
+    crypto_keys.patch.assert_not_called()
+
+
+def test_kms_key_version_disable_explicit_version(mocker):
+    """
+    Given: An explicit crypto key version.
+    When: kms_key_version_disable is called.
+    Then: The version is patched to DISABLED without resolving the primary version first.
+    """
+    from GCP import kms_key_version_disable
+
+    _, crypto_keys, crypto_key_versions, _ = _mock_kms_client(mocker)
+    version_name = (
+        "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key/cryptoKeyVersions/2"
+    )
+    crypto_key_versions.patch.return_value.execute.return_value = {"name": version_name, "state": "DISABLED"}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "location": "global",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "crypto_key_version": "2",
+    }
+    result = kms_key_version_disable(creds, args)
+
+    crypto_keys.get.assert_not_called()
+    crypto_key_versions.patch.assert_called_once_with(name=version_name, updateMask="state", body={"state": "DISABLED"})
+    assert result.outputs_prefix == "GCP.KMS.CryptoKeyVersions"
+    assert "has been set to DISABLED" in result.readable_output
+
+
+def test_kms_key_version_enable_defaults_to_primary_version(mocker):
+    """
+    Given: The crypto key version is left as the default keyword.
+    When: kms_key_version_enable is called.
+    Then: The key's primary crypto key version is resolved and patched to ENABLED.
+    """
+    from GCP import kms_key_version_enable
+
+    _, crypto_keys, crypto_key_versions, _ = _mock_kms_client(mocker)
+    primary_name = (
+        "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key/cryptoKeyVersions/1"
+    )
+    crypto_keys.get.return_value.execute.return_value = {"primary": {"name": primary_name}}
+    crypto_key_versions.patch.return_value.execute.return_value = {"name": primary_name, "state": "ENABLED"}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "crypto_key": "mock_crypto_key"}
+    result = kms_key_version_enable(creds, args)
+
+    crypto_key_versions.patch.assert_called_once_with(name=primary_name, updateMask="state", body={"state": "ENABLED"})
+    assert "has been set to ENABLED" in result.readable_output
+
+
+def test_kms_key_version_enable_without_primary_version_raises(mocker):
+    """
+    Given: A crypto key that exposes no primary crypto key version.
+    When: kms_key_version_enable is called without an explicit version.
+    Then: A DemistoException asks for an explicit crypto_key_version.
+    """
+    from CommonServerPython import DemistoException
+    from GCP import kms_key_version_enable
+
+    _, crypto_keys, crypto_key_versions, _ = _mock_kms_client(mocker)
+    crypto_keys.get.return_value.execute.return_value = {}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "crypto_key": "mock_asym_key"}
+
+    with pytest.raises(DemistoException, match="has no primary CryptoKeyVersion"):
+        kms_key_version_enable(creds, args)
+
+    crypto_key_versions.patch.assert_not_called()
+
+
+def test_kms_key_version_destroy_success(mocker):
+    """
+    Given: An explicit crypto key version to destroy.
+    When: kms_key_version_destroy is called.
+    Then: The destroy endpoint is called and the 24h warning is surfaced to the user.
+    """
+    from GCP import kms_key_version_destroy
+
+    _, _, crypto_key_versions, _ = _mock_kms_client(mocker)
+    version_name = (
+        "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key/cryptoKeyVersions/1"
+    )
+    crypto_key_versions.destroy.return_value.execute.return_value = {
+        "name": version_name,
+        "state": "DESTROY_SCHEDULED",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "crypto_key_version": "1",
+    }
+    result = kms_key_version_destroy(creds, args)
+
+    crypto_key_versions.destroy.assert_called_once_with(name=version_name, body={})
+    assert "DESTROY_SCHEDULED" in result.readable_output
+    assert "destroyed in 24h" in result.readable_output
+
+
+def test_kms_key_version_restore_success(mocker):
+    """
+    Given: A crypto key version that is scheduled for destruction.
+    When: kms_key_version_restore is called.
+    Then: The restore endpoint is called and the key returns to the DISABLED state.
+    """
+    from GCP import kms_key_version_restore
+
+    _, _, crypto_key_versions, _ = _mock_kms_client(mocker)
+    version_name = (
+        "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key/cryptoKeyVersions/1"
+    )
+    crypto_key_versions.restore.return_value.execute.return_value = {"name": version_name, "state": "DISABLED"}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "crypto_key_version": "1",
+    }
+    result = kms_key_version_restore(creds, args)
+
+    crypto_key_versions.restore.assert_called_once_with(name=version_name, body={})
+    assert "has been set to DISABLED" in result.readable_output
+
+
+def test_kms_public_key_get_success(mocker):
+    """
+    Given: An asymmetric crypto key version that exposes a public key.
+    When: kms_public_key_get is called.
+    Then: The PEM and algorithm are returned under GCP.KMS.PublicKey.
+    """
+    from GCP import kms_public_key_get
+
+    _, _, crypto_key_versions, _ = _mock_kms_client(mocker)
+    version_name = "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_asym_key/cryptoKeyVersions/1"
+    crypto_key_versions.getPublicKey.return_value.execute.return_value = {
+        "pem": "-----BEGIN PUBLIC KEY-----\nmock\n-----END PUBLIC KEY-----\n",
+        "algorithm": "RSA_DECRYPT_OAEP_2048_SHA256",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_asym_key",
+        "crypto_key_version": "1",
+    }
+    result = kms_public_key_get(creds, args)
+
+    crypto_key_versions.getPublicKey.assert_called_once_with(name=version_name)
+    assert result.outputs_prefix == "GCP.KMS.PublicKey"
+    assert result.outputs["algorithm"] == "RSA_DECRYPT_OAEP_2048_SHA256"
+    assert result.outputs["pem"] == "-----BEGIN PUBLIC KEY-----\nmock\n-----END PUBLIC KEY-----\n"
+    assert result.outputs["CryptoKey"] == "mock_asym_key"
+    assert result.outputs["CryptoKeyVersion"] == version_name
+
+
+def test_kms_public_key_get_empty_response(mocker):
+    """
+    Given: The API returns an empty public key response.
+    When: kms_public_key_get is called.
+    Then: Only the command-derived fields are returned, since the API response carries no key material.
+    """
+    from GCP import kms_public_key_get
+
+    _, _, crypto_key_versions, _ = _mock_kms_client(mocker)
+    crypto_key_versions.getPublicKey.return_value.execute.return_value = {}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_asym_key",
+        "crypto_key_version": "1",
+    }
+    result = kms_public_key_get(creds, args)
+
+    assert result.outputs_prefix == "GCP.KMS.PublicKey"
+    assert "pem" not in result.outputs
+    assert "algorithm" not in result.outputs
+    assert result.outputs["CryptoKey"] == "mock_asym_key"
+
+
+def test_kms_symmetric_encrypt_plaintext(mocker):
+    """
+    Given: A raw plain text and additional authenticated data.
+    When: kms_symmetric_encrypt is called.
+    Then: The plain text is base64-encoded for the API and the cipher text is returned.
+    """
+    import base64
+
+    from GCP import kms_symmetric_encrypt
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.encrypt.return_value.execute.return_value = {"ciphertext": "bW9ja19jaXBoZXI="}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "location": "global",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "plaintext": "mock secret",
+        "additional_authenticated_data": "bW9ja19hYWQ=",
+    }
+    result = kms_symmetric_encrypt(creds, args)
+
+    call_kwargs = crypto_keys.encrypt.call_args[1]
+    assert call_kwargs["name"] == "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key"
+    assert call_kwargs["body"]["plaintext"] == base64.b64encode(b"mock secret").decode()
+    assert call_kwargs["body"]["additionalAuthenticatedData"] == "bW9ja19hYWQ="
+    assert result.outputs_prefix == "GCP.KMS.SymmetricEncrypt"
+    assert result.outputs["ciphertext"] == "bW9ja19jaXBoZXI="
+    assert result.outputs["CryptoKey"] == "mock_crypto_key"
+    assert result.outputs["ResourceName"] == (
+        "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_crypto_key"
+    )
+
+
+def test_kms_symmetric_encrypt_base64_plaintext_is_decoded_first(mocker):
+    """
+    Given: A base64-encoded plain text.
+    When: kms_symmetric_encrypt is called.
+    Then: The value is decoded and re-encoded so the API receives the original bytes.
+    """
+    from GCP import kms_symmetric_encrypt
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.encrypt.return_value.execute.return_value = {"ciphertext": "bW9ja19jaXBoZXI="}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "base64_plaintext": "bW9jayBzZWNyZXQ=",
+    }
+    kms_symmetric_encrypt(creds, args)
+
+    assert crypto_keys.encrypt.call_args[1]["body"]["plaintext"] == "bW9jayBzZWNyZXQ="
+
+
+def test_kms_symmetric_encrypt_without_input_raises(mocker):
+    """
+    Given: No plaintext, base64_plaintext or entry_id argument.
+    When: kms_symmetric_encrypt is called.
+    Then: A ValueError is raised before any API call is made.
+    """
+    from GCP import kms_symmetric_encrypt
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "crypto_key": "mock_crypto_key"}
+
+    with pytest.raises(ValueError, match="No object to encrypt"):
+        kms_symmetric_encrypt(creds, args)
+
+    crypto_keys.encrypt.assert_not_called()
+
+
+def test_kms_resolve_plaintext_rejects_multiple_inputs():
+    """
+    Given: More than one of plaintext, base64_plaintext or entry_id.
+    When: _kms_resolve_plaintext is called.
+    Then: A DemistoException is raised naming the mutually exclusive inputs.
+    """
+    from CommonServerPython import DemistoException
+    from GCP import _kms_resolve_plaintext
+
+    with pytest.raises(DemistoException, match="Provide exactly one of 'plaintext', 'base64_plaintext' or 'entry_id'."):
+        _kms_resolve_plaintext("hello", "aGVsbG8=", None)
+
+
+def test_kms_read_entry_file_success(mocker, tmp_path):
+    """
+    Given: An entry ID that resolves to a readable file holding binary content.
+    When: _kms_read_entry_file is called.
+    Then: The raw bytes are returned unchanged, without any decoding.
+    """
+    from GCP import _kms_read_entry_file
+
+    file_path = tmp_path / "payload.bin"
+    file_path.write_bytes(b"\x00\x01\x02binary\xff")
+    mocker.patch("GCP.demisto.getFilePath", return_value={"path": str(file_path), "name": "payload.bin"})
+
+    assert _kms_read_entry_file("entry-1") == b"\x00\x01\x02binary\xff"
+
+
+@pytest.mark.parametrize("resolved", [None, {}, {"name": "no_path.bin"}])
+def test_kms_read_entry_file_unresolvable_entry_raises(mocker, resolved):
+    """
+    Given: An entry ID that resolves to nothing, or to a record without a path.
+    When: _kms_read_entry_file is called.
+    Then: A ValueError with a meaningful message naming the entry ID is raised.
+    """
+    from GCP import _kms_read_entry_file
+
+    mocker.patch("GCP.demisto.getFilePath", return_value=resolved)
+
+    with pytest.raises(ValueError, match="Failed to read the file of entry ID 'entry-404'"):
+        _kms_read_entry_file("entry-404")
+
+
+def test_kms_read_entry_file_wraps_unexpected_failure(mocker):
+    """
+    Given: An entry ID whose resolution raises an unexpected error.
+    When: _kms_read_entry_file is called.
+    Then: The failure is wrapped in a ValueError that names the entry ID and keeps the cause.
+    """
+    from GCP import _kms_read_entry_file
+
+    mocker.patch("GCP.demisto.getFilePath", side_effect=RuntimeError("entry store is unavailable"))
+
+    with pytest.raises(ValueError, match="Failed to read the file of entry ID 'entry-boom': entry store is unavailable"):
+        _kms_read_entry_file("entry-boom")
+
+
+def test_kms_symmetric_encrypt_entry_id_reads_raw_bytes(mocker, tmp_path):
+    """
+    Given: An entry ID pointing at a binary file.
+    When: kms_symmetric_encrypt is called.
+    Then: The file bytes are base64-encoded for the API without being decoded first.
+    """
+    from GCP import kms_symmetric_encrypt
+
+    file_path = tmp_path / "payload.bin"
+    file_path.write_bytes(b"\x00\x01\x02binary\xff")
+    mocker.patch("GCP.demisto.getFilePath", return_value={"path": str(file_path), "name": "payload.bin"})
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.encrypt.return_value.execute.return_value = {"ciphertext": "Y2lwaGVy"}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    kms_symmetric_encrypt(
+        creds,
+        {
+            "project_id": "mock_project_id",
+            "key_ring": "mock_key_ring",
+            "crypto_key": "mock_crypto_key",
+            "entry_id": "entry-1",
+        },
+    )
+
+    sent_plaintext = crypto_keys.encrypt.call_args[1]["body"]["plaintext"]
+    assert base64.b64decode(sent_plaintext) == b"\x00\x01\x02binary\xff"
+
+
+def test_kms_symmetric_decrypt_success(mocker):
+    """
+    Given: A base64-encoded cipher text.
+    When: kms_symmetric_decrypt is called.
+    Then: The API response is base64-decoded back into readable plain text.
+    """
+    from GCP import kms_symmetric_decrypt
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.decrypt.return_value.execute.return_value = {"plaintext": "bW9jayBzZWNyZXQ="}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "ciphertext": "bW9ja19jaXBoZXI=",
+    }
+    result = kms_symmetric_decrypt(creds, args)
+
+    assert crypto_keys.decrypt.call_args[1]["body"]["ciphertext"] == "bW9ja19jaXBoZXI="
+    assert result.outputs_prefix == "GCP.KMS.SymmetricDecrypt"
+    assert result.outputs["Plaintext"] == "mock secret"
+
+
+def test_kms_symmetric_decrypt_forwards_additional_authenticated_data(mocker):
+    """
+    Given: A cipher text and additional authenticated data.
+    When: kms_symmetric_decrypt is called.
+    Then: The AAD round-trips to the API as additionalAuthenticatedData alongside the cipher text.
+    """
+    from GCP import kms_symmetric_decrypt
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.decrypt.return_value.execute.return_value = {"plaintext": "bW9jayBzZWNyZXQ="}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "ciphertext": "bW9ja19jaXBoZXI=",
+        "additional_authenticated_data": "context-info",
+    }
+    result = kms_symmetric_decrypt(creds, args)
+
+    sent_body = crypto_keys.decrypt.call_args[1]["body"]
+    assert sent_body["ciphertext"] == "bW9ja19jaXBoZXI="
+    assert sent_body["additionalAuthenticatedData"] == "context-info"
+    assert result.outputs["Plaintext"] == "mock secret"
+
+
+def test_kms_symmetric_decrypt_binary_payload_returned_as_file(mocker):
+    """
+    Given: A cipher text whose decrypted payload is binary rather than UTF-8 text.
+    When: kms_symmetric_decrypt is called.
+    Then: The bytes are returned verbatim as a file entry instead of being lossily decoded.
+    """
+    from GCP import kms_symmetric_decrypt
+
+    # 0x80 is not a valid UTF-8 start byte, so a lossy decode would replace it with U+FFFD.
+    binary_payload = b"\x89PNG\r\n\x1a\n\x80\x81\x82"
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    crypto_keys.decrypt.return_value.execute.return_value = {"plaintext": base64.b64encode(binary_payload).decode()}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "ciphertext": "bW9ja19jaXBoZXI=",
+    }
+    results = kms_symmetric_decrypt(creds, args)
+
+    assert isinstance(results, list)
+    command_results, file_entry = results
+    assert command_results.outputs_prefix == "GCP.KMS.SymmetricDecrypt"
+    # The corrupted placeholder must never reach the context.
+    assert "Plaintext" not in command_results.outputs
+    assert file_entry["File"] == "mock_crypto_key_decrypted.bin"
+
+
+def test_kms_symmetric_decrypt_without_input_raises(mocker):
+    """
+    Given: No ciphertext or entry_id argument.
+    When: kms_symmetric_decrypt is called.
+    Then: A ValueError is raised before any API call is made.
+    """
+    from GCP import kms_symmetric_decrypt
+
+    _, crypto_keys, _, _ = _mock_kms_client(mocker)
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "crypto_key": "mock_crypto_key"}
+
+    with pytest.raises(ValueError, match="No object to decrypt"):
+        kms_symmetric_decrypt(creds, args)
+
+    crypto_keys.decrypt.assert_not_called()
+
+
+def test_kms_asymmetric_decrypt_binary_payload_returned_as_file(mocker):
+    """
+    Given: A cipher text whose decrypted payload is binary rather than UTF-8 text.
+    When: kms_asymmetric_decrypt is called.
+    Then: The bytes are returned verbatim as a file entry instead of being lossily decoded.
+    """
+    from GCP import kms_asymmetric_decrypt
+
+    binary_payload = b"\x00\x01\x02\xff\xfe"
+
+    _, _, crypto_key_versions, _ = _mock_kms_client(mocker)
+    crypto_key_versions.asymmetricDecrypt.return_value.execute.return_value = {
+        "plaintext": base64.b64encode(binary_payload).decode()
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_crypto_key",
+        "ciphertext": "bW9ja19jaXBoZXI=",
+    }
+    results = kms_asymmetric_decrypt(creds, args)
+
+    assert isinstance(results, list)
+    command_results, file_entry = results
+    assert command_results.outputs_prefix == "GCP.KMS.AsymmetricDecrypt"
+    assert "Plaintext" not in command_results.outputs
+    assert file_entry["File"] == "mock_crypto_key_decrypted.bin"
+
+
+def test_kms_resolve_ciphertext_entry_id_is_not_base64_decoded(mocker, tmp_path):
+    """
+    Given: An entry ID pointing to a file holding raw (non-base64) encrypted bytes.
+    When: _kms_resolve_ciphertext is called.
+    Then: The raw bytes are returned unchanged rather than being base64-decoded.
+    """
+    from GCP import _kms_resolve_ciphertext
+
+    raw_ciphertext = b"\x9d\x1f\xa3rawciphertext\x00\xff"
+    path = tmp_path / "cipher.bin"
+    path.write_bytes(raw_ciphertext)
+    mocker.patch("GCP.demisto.getFilePath", return_value={"path": str(path), "name": "cipher.bin"})
+
+    assert _kms_resolve_ciphertext(None, "42@abc") == raw_ciphertext
+
+
+def test_kms_resolve_ciphertext_rejects_multiple_inputs():
+    """
+    Given: Both ciphertext and entry_id.
+    When: _kms_resolve_ciphertext is called.
+    Then: A DemistoException is raised naming the mutually exclusive inputs.
+    """
+    from CommonServerPython import DemistoException
+    from GCP import _kms_resolve_ciphertext
+
+    with pytest.raises(DemistoException, match="Provide exactly one of 'ciphertext' or 'entry_id'."):
+        _kms_resolve_ciphertext("Y2lwaGVy", "42@abc")
+
+
+def test_kms_asymmetric_encrypt_uses_public_key(mocker):
+    """
+    Given: An asymmetric decrypt key whose public key is returned by the API.
+    When: kms_asymmetric_encrypt is called.
+    Then: The plain text is encrypted locally with RSA-OAEP and returned as base64.
+    """
+    import base64
+
+    from cryptography.hazmat.primitives import serialization
+    from cryptography.hazmat.primitives.asymmetric import rsa
+    from GCP import kms_asymmetric_encrypt
+
+    private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+    pem = (
+        private_key.public_key()
+        .public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo,
+        )
+        .decode()
+    )
+
+    _, _, crypto_key_versions, _ = _mock_kms_client(mocker)
+    crypto_key_versions.getPublicKey.return_value.execute.return_value = {
+        "pem": pem,
+        "algorithm": "RSA_DECRYPT_OAEP_2048_SHA256",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_asym_key",
+        "crypto_key_version": "1",
+        "plaintext": "mock secret",
+    }
+    result = kms_asymmetric_encrypt(creds, args)
+
+    assert result.outputs_prefix == "GCP.KMS.AsymmetricEncrypt"
+    # The cipher text must round-trip back to the original plain text through the private key.
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.asymmetric import padding
+
+    decrypted = private_key.decrypt(
+        base64.b64decode(result.outputs["Ciphertext"]),
+        padding.OAEP(mgf=padding.MGF1(algorithm=hashes.SHA256()), algorithm=hashes.SHA256(), label=None),
+    )
+    assert decrypted == b"mock secret"
+
+
+def test_kms_asymmetric_encrypt_rejects_non_decrypt_algorithm(mocker):
+    """
+    Given: A crypto key version whose algorithm is a signing algorithm.
+    When: kms_asymmetric_encrypt is called.
+    Then: A ValueError explains the key cannot be used for asymmetric encryption.
+    """
+    from GCP import kms_asymmetric_encrypt
+
+    _, _, crypto_key_versions, _ = _mock_kms_client(mocker)
+    crypto_key_versions.getPublicKey.return_value.execute.return_value = {
+        "pem": "-----BEGIN PUBLIC KEY-----\nmock\n-----END PUBLIC KEY-----\n",
+        "algorithm": "RSA_SIGN_PSS_2048_SHA256",
+    }
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_sign_key",
+        "plaintext": "mock secret",
+    }
+
+    with pytest.raises(ValueError, match="not a valid asymmetric encryption CryptoKeyVersion"):
+        kms_asymmetric_encrypt(creds, args)
+
+
+def test_kms_asymmetric_decrypt_success(mocker):
+    """
+    Given: A base64-encoded cipher text and an asymmetric crypto key version.
+    When: kms_asymmetric_decrypt is called.
+    Then: The asymmetricDecrypt endpoint is called and the plain text is decoded.
+    """
+    from GCP import kms_asymmetric_decrypt
+
+    _, _, crypto_key_versions, _ = _mock_kms_client(mocker)
+    crypto_key_versions.asymmetricDecrypt.return_value.execute.return_value = {"plaintext": "bW9jayBzZWNyZXQ="}
+
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {
+        "project_id": "mock_project_id",
+        "location": "global",
+        "key_ring": "mock_key_ring",
+        "crypto_key": "mock_asym_key",
+        "crypto_key_version": "1",
+        "ciphertext": "bW9ja19jaXBoZXI=",
+    }
+    result = kms_asymmetric_decrypt(creds, args)
+
+    call_kwargs = crypto_key_versions.asymmetricDecrypt.call_args[1]
+    assert call_kwargs["name"] == (
+        "projects/mock_project_id/locations/global/keyRings/mock_key_ring/cryptoKeys/mock_asym_key/cryptoKeyVersions/1"
+    )
+    assert call_kwargs["body"]["ciphertext"] == "bW9ja19jaXBoZXI="
+    assert result.outputs_prefix == "GCP.KMS.AsymmetricDecrypt"
+    assert result.outputs["Plaintext"] == "mock secret"
+
+
+def test_kms_asymmetric_decrypt_without_input_raises(mocker):
+    """
+    Given: No ciphertext or entry_id argument.
+    When: kms_asymmetric_decrypt is called.
+    Then: A ValueError is raised before any API call is made.
+    """
+    from GCP import kms_asymmetric_decrypt
+
+    _, _, crypto_key_versions, _ = _mock_kms_client(mocker)
+    creds = mocker.MagicMock(spec=Credentials)
+    args = {"project_id": "mock_project_id", "key_ring": "mock_key_ring", "crypto_key": "mock_asym_key"}
+
+    with pytest.raises(ValueError, match="No object to decrypt"):
+        kms_asymmetric_decrypt(creds, args)
+
+    crypto_key_versions.asymmetricDecrypt.assert_not_called()
+
+
+def test_kms_test_connectivity_uses_locations_list(mocker):
+    """
+    Given: The KMS service and a built API client.
+    When: test_connectivity is called.
+    Then: A project-scoped locations list is used as the connectivity probe.
+    """
+    from GCP import GCPServices
+
+    creds = MagicMock(spec=Credentials)
+    mock_client = MagicMock()
+    mocker.patch.object(GCPServices.KMS, "build", return_value=mock_client)
+
+    GCPServices.KMS.test_connectivity(creds, "mock_project_id")
+
+    mock_client.projects.return_value.locations.return_value.list.assert_called_once_with(
+        name="projects/mock_project_id", pageSize=1
+    )
