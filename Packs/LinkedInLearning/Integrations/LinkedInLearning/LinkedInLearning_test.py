@@ -13,7 +13,8 @@ from LinkedInLearning import (
     LinkedInLearningParams,
     LinkedInLearningLastRun,
     LinkedInLearningGetEventsArgs,
-    add_time_to_events,
+    compute_event_hash,
+    enrich_events,
     calculate_time_window,
     fetch_all_events,
     fetch_events_command,
@@ -80,26 +81,60 @@ def sample_response() -> dict:
     return util_load_json("test_data/learning_activity_reports.json")
 
 
-class TestAddTimeToEvents:
-    """Tests for the add_time_to_events function."""
+class TestEnrichEvents:
+    """Tests for the enrich_events function."""
 
-    def test_add_time_to_events(self):
+    def test_enrich_events_adds_time(self):
         """Verify _time field is added correctly from latestDataAt."""
         events = [
             {"latestDataAt": 1719878400000, "name": "event1"},
             {"latestDataAt": 1719964800000, "name": "event2"},
         ]
-        add_time_to_events(events)
+        enrich_events(events)
 
         assert events[0]["_time"] == "2024-07-02T00:00:00Z"
         assert events[1]["_time"] == "2024-07-03T00:00:00Z"
 
-    def test_add_time_to_events_missing_field(self):
-        """Verify events without latestDataAt are handled gracefully."""
+    def test_enrich_events_missing_time_field(self):
+        """Verify events without latestDataAt still get an _id but no _time."""
         events = [{"name": "event_without_time"}]
-        add_time_to_events(events)
+        enrich_events(events)
 
         assert "_time" not in events[0]
+        assert events[0]["_id"]
+
+    def test_enrich_events_adds_stable_unique_id(self):
+        """Verify _id is a stable content hash usable as the XSIAM unique id."""
+        events = [{"latestDataAt": 1719878400000, "name": "event1"}]
+        enrich_events(events)
+        first_id = events[0]["_id"]
+
+        # Recomputing on the same underlying data yields the same hash.
+        assert first_id == compute_event_hash({"latestDataAt": 1719878400000, "name": "event1", "_time": events[0]["_time"]})
+
+    def test_enrich_events_distinct_data_distinct_ids(self):
+        """Verify different events get different _id hashes."""
+        events = [
+            {"latestDataAt": 1719878400000, "name": "event1"},
+            {"latestDataAt": 1719878400000, "name": "event2"},
+        ]
+        enrich_events(events)
+
+        assert events[0]["_id"] != events[1]["_id"]
+
+
+class TestComputeEventHash:
+    """Tests for the compute_event_hash function."""
+
+    def test_hash_is_order_independent(self):
+        """Verify key ordering does not change the hash."""
+        assert compute_event_hash({"a": 1, "b": 2}) == compute_event_hash({"b": 2, "a": 1})
+
+    def test_hash_changes_when_data_changes(self):
+        """Verify a changed field produces a different hash (re-fetch on new activity)."""
+        base = {"latestDataAt": 1719878400000, "engagementValue": 45}
+        changed = {"latestDataAt": 1720000000000, "engagementValue": 100}
+        assert compute_event_hash(base) != compute_event_hash(changed)
 
 
 class TestBuildFilterQuery:
@@ -201,8 +236,10 @@ class TestFetchEvents:
         last_run = LinkedInLearningLastRun()
         next_run = fetch_events_command(mock_client, mock_params, last_run)
 
-        assert next_run.last_fetch_time is not None
-        assert next_run.last_fetch_time == 1720051200001  # max latestDataAt + 1
+        # Cursor advances to the highest latestDataAt (no +1: boundary dedup is done via seen_ids).
+        assert next_run.last_fetch_time == 1720051200000
+        # The single event on the boundary is remembered for the next cycle.
+        assert len(next_run.seen_ids) == 1
 
     def test_fetch_events_with_last_run(
         self,
@@ -236,6 +273,56 @@ class TestFetchEvents:
 
         # Should return the same last_run when no events found
         assert next_run.last_fetch_time == 1719800000000
+
+    def test_fetch_events_drops_seen_boundary_events(
+        self,
+        mock_client: LinkedInLearningClient,
+        mock_params: LinkedInLearningParams,
+        sample_response: dict,
+        mocker: MockerFixture,
+    ):
+        """Verify boundary events already sent (in seen_ids) are not re-sent."""
+        mocker.patch.object(mock_client, "get_learning_activity_reports", return_value=sample_response)
+        send_mock = mocker.patch("LinkedInLearning.send_events_to_xsiam")
+
+        # First run: establishes cursor + boundary seen_ids.
+        first_run = fetch_events_command(mock_client, mock_params, LinkedInLearningLastRun())
+        first_sent = send_mock.call_args.kwargs["events"]
+        assert len(first_sent) == 3
+
+        # Second run returns the same payload; the boundary event must be filtered out.
+        send_mock.reset_mock()
+        second_run = fetch_events_command(mock_client, mock_params, first_run)
+        second_sent = send_mock.call_args.kwargs["events"]
+
+        boundary_ids = set(first_run.seen_ids)
+        assert all(event["_id"] not in boundary_ids for event in second_sent)
+        assert second_run.last_fetch_time == first_run.last_fetch_time
+
+    def test_fetch_events_all_duplicates_returns_last_run(
+        self,
+        mock_client: LinkedInLearningClient,
+        mock_params: LinkedInLearningParams,
+        mocker: MockerFixture,
+    ):
+        """Verify that when every event is a known duplicate, last_run is unchanged and nothing is sent."""
+        single = {
+            "elements": [{"latestDataAt": 1720051200000, "name": "dup"}],
+            "paging": {"count": 100, "start": 0, "total": 1, "links": []},
+        }
+        mocker.patch.object(mock_client, "get_learning_activity_reports", return_value=single)
+        send_mock = mocker.patch("LinkedInLearning.send_events_to_xsiam")
+
+        # Prime seen_ids with the hash of the only boundary event.
+        dup_event = {"latestDataAt": 1720051200000, "name": "dup"}
+        enrich_events([dup_event])
+        last_run = LinkedInLearningLastRun(last_fetch_time=1720051200000, seen_ids=[dup_event["_id"]])
+
+        next_run = fetch_events_command(mock_client, mock_params, last_run)
+
+        send_mock.assert_not_called()
+        assert next_run.last_fetch_time == 1720051200000
+        assert next_run.seen_ids == [dup_event["_id"]]
 
 
 class TestPagination:
