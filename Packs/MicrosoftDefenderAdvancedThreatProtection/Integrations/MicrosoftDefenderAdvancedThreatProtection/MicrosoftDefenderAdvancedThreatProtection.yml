@@ -383,6 +383,7 @@ script:
       predefined:
       - Full
       - Selective
+      - UnManagedDevice
       required: true
     - deprecated: true
       description: Flag for the rate limit retry.
