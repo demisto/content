@@ -21,8 +21,8 @@ configuration:
   name: apikey
   type: 9
   required: true
-  hiddenusername: true
   section: Connect
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -38,35 +38,32 @@ configuration:
   defaultvalue: "120"
   type: 0
   required: false
-  additionalinfo: The Panorays API permits 150 requests per minute and blocks the caller for one hour when that is exceeded. Keep this below 150.
   section: Connect
+  additionalinfo: The Panorays API permits 150 requests per minute and blocks the caller for one hour when that is exceeded. Keep this below 150.
   advanced: true
 - display: Findings scope
   name: findings_scope
   defaultvalue: Company Findings
   type: 15
   required: false
+  section: Collect
   options:
   - Company Findings
   - Supplier Findings
   additionalinfo: Whether this instance fetches your own organization's findings or findings across your supplier portfolio. Configure a separate instance for each scope.
-  section: Collect
 - display: Maximum number of incidents to fetch per run
   name: max_fetch
-  defaultvalue: "50"
   type: 0
   required: false
-  additionalinfo: When fetching supplier findings, a run that reaches this limit part-way through a supplier resumes on that same supplier next run, so the limit is honored without skipping findings.
   section: Collect
-  supportedModules:
-  - agentix
-  - xsiam
+  defaultvalue: "50"
+  additionalinfo: When fetching supplier findings, a run that reaches this limit part-way through a supplier resumes on that same supplier next run, so the limit is honored without skipping findings.
 - display: First fetch timestamp (e.g., 7 days)
   name: first_fetch
-  defaultvalue: 7 days
   type: 0
   required: false
   section: Collect
+  defaultvalue: 7 days
 - display: Supplier finding severities
   name: supplier_finding_severity
   defaultvalue: CRITICAL
@@ -125,9 +122,6 @@ configuration:
   type: 13
   required: false
   section: Collect
-  supportedModules:
-  - agentix
-  - xsiam
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: '15'
@@ -135,17 +129,11 @@ configuration:
   type: 19
   section: Collect
   advanced: true
-  supportedModules:
-  - agentix
-  - xsiam
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
   section: Collect
-  supportedModules:
-  - agentix
-  - xsiam
 script:
   script: '-'
   type: python
