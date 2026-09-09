@@ -11,7 +11,7 @@ Unit 42 Feed integration provides threat intelligence from Palo Alto Networks Un
 | Source Reliability | Reliability of the source providing the intelligence context. | True |
 | Tags | Supports CSV values. | False |
 | Traffic Light Protocol Color (TLP). | The Traffic Light Protocol \(TLP\) designation is to apply to indicators fetched from the feed. | False |
-| Indicator Reputation | Indicators from this integration instance will be marked with this reputation | True |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation. Leave empty to preserve the native verdict returned by Unit 42 for each indicator. | False |
 | Feed Expiration Policy | The feed's expiration policy. | True |
 | Indicator Expiration Interval | The indicator's expiration policy. | False |
 | Create relationships | Create relationships with other indicators. | False |
