@@ -29,6 +29,8 @@ filter SOURCE_LOG_TYPE in ("Account Audit Logs", "User Audit Logs")
     xdm.source.user.identifier = actor -> id, // The ID of the actor that performed the action. If a user performed the action, this will be their User ID.
     xdm.source.identity.identifier = actor -> id, // The ID of the actor that performed the action. If a user performed the action, this will be their User ID.
     xdm.source.user.user_type = if( // The type of actor, whether a User, Cloudflare Admin, or an Automated System. Allowed values: user, admin, Cloudflare
+        actor_type in ("user", "admin"), XDM_CONST.USER_TYPE_REGULAR, 
+        actor_type = "Cloudflare", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
     xdm.source.identity.user_type = if( // The type of actor, whether a User, Cloudflare Admin, or an Automated System. Allowed values: user, admin, Cloudflare
         actor_type in ("user", "admin"), XDM_CONST.USER_TYPE_REGULAR, 
         actor_type = "Cloudflare", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),

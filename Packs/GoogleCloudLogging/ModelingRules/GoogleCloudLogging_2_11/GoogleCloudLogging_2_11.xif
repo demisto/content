@@ -130,7 +130,7 @@ alter // Audit Log events. Audit protoPayload Schema: https://cloud.google.com/l
     xdm.target.resource.sub_type = coalesce(rlbls -> monitored_resource_type, rlbls -> kind, rlbls -> service_type),
     xdm.target.sent_bytes = http_response_size, 
     xdm.target.url = target_url,
-    xdm.target.user.groups = arraycreate(rlbls -> role_name); // The name of the IAM custom role; this label appears only on custom roles (iam_role resource)
+    xdm.target.user.groups = arraycreate(rlbls -> role_name), // The name of the IAM custom role; this label appears only on custom roles (iam_role resource)
     xdm.target.identity.groups = arraycreate(rlbls -> role_name); // The name of the IAM custom role; this label appears only on custom roles (iam_role resource)
 
 [RULE: GCP_MAP_DNS_QUERIES]
