@@ -36,6 +36,7 @@ from ImpervaIncapsulaEventCollector_v2 import (
     sanitize_cef_event,
     decompress_and_parse_cef,
     test_module as imperva_test_module,
+    safe_send_events_to_xsiam,
     fetch_events,
     get_logs_index_command,
     get_events_command,
@@ -192,11 +193,77 @@ def test_client_methods():
             method="GET",
             url_suffix="12345_1.log",
             resp_type="content",
-            timeout=(10, 90),
+            timeout=(10, 30),
             retries=3,
             backoff_factor=2,
             status_list_to_retry=[429, 500, 502, 503, 504]
         )
+
+
+def test_safe_send_events_to_xsiam_empty():
+    """Test safe_send_events_to_xsiam when events list is empty (health check ping)."""
+    with patch.object(builtins, "send_events_to_xsiam") as mock_send:
+        safe_send_events_to_xsiam([], VENDOR, PRODUCT)
+        mock_send.assert_called_once_with(events=[], vendor=VENDOR, product=PRODUCT)
+
+
+def test_safe_send_events_to_xsiam_success():
+    """Test safe_send_events_to_xsiam succeeds on first attempt."""
+    events = ["CEF:0|Imperva|SIEMintegration|1|1|Test|0|src=1.1.1.1"]
+    with patch.object(builtins, "send_events_to_xsiam") as mock_send:
+        safe_send_events_to_xsiam(events, VENDOR, PRODUCT)
+        mock_send.assert_called_once_with(
+            events=events,
+            vendor=VENDOR,
+            product=PRODUCT,
+            data_format="cef"
+        )
+
+
+def test_safe_send_events_to_xsiam_retry_success():
+    """Test safe_send_events_to_xsiam retries on transient errors and succeeds."""
+    events = ["CEF:0|Imperva|SIEMintegration|1|1|Test|0|src=1.1.1.1"]
+    with patch.object(builtins, "send_events_to_xsiam", side_effect=[Exception("Empty response"), None]) as mock_send, \
+         patch("time.sleep") as mock_sleep:
+        safe_send_events_to_xsiam(events, VENDOR, PRODUCT)
+        assert mock_send.call_count == 2
+        mock_sleep.assert_called_once_with(2)
+
+
+def test_safe_send_events_to_xsiam_max_retries_fail():
+    """Test safe_send_events_to_xsiam raises exception after exceeding max retries."""
+    events = ["CEF:0|Imperva|SIEMintegration|1|1|Test|0|src=1.1.1.1"]
+    with patch.object(builtins, "send_events_to_xsiam", side_effect=Exception("Ingestion endpoint 503")), \
+         patch("time.sleep"):
+        with pytest.raises(Exception, match="Ingestion endpoint 503"):
+            safe_send_events_to_xsiam(events, VENDOR, PRODUCT)
+
+
+def test_fetch_events_timeout_budget_yield():
+    """Test fetch_events yields remaining files when approaching timeout budget."""
+    client = Client(base_url="https://logs.incapsula.com", api_id="test_id", api_key="test_key")
+    mock_index = ["12345_100.log", "12345_101.log", "12345_102.log"]
+    sample_cef = b"CEF:0|Imperva|SIEMintegration|1|1|Normal|0|src=1.1.1.1\n"
+    gzipped_content = gzip.compress(sample_cef)
+
+    # Mock time.time to simulate exceeding 50s during loop
+    time_values = [0.0, 10.0, 55.0, 60.0]
+    with patch.object(client, "get_logs_index", return_value=mock_index), \
+         patch.object(client, "get_log_file", return_value=gzipped_content), \
+         patch("time.time", side_effect=time_values):
+
+        last_run = {"last_file_id": 99}
+        next_run, events = fetch_events(
+            client=client,
+            last_run=last_run,
+            max_logs=10,
+            starting_file_id=0
+        )
+
+        # File 100 processed, but before processing file 101, elapsed is 55 > 50 -> yields
+        assert len(events) == 1
+        assert next_run["last_file_id"] == 100
+
 
 
 def test_test_module_success():

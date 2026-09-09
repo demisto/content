@@ -7,8 +7,9 @@ logs from the Imperva Incapsula Log Server into Cortex XSIAM.
 from base64 import b64encode
 import json
 import re
+import time
 import traceback
-from typing import Optional
+from typing import List, Optional
 import zlib
 
 import urllib3
@@ -22,6 +23,9 @@ LOG_PREFIX = "[Imperva Incapsula Collector v2]"
 DEFAULT_MAX_LOGS = 10
 VENDOR = "Imperva"
 PRODUCT = "SIEMIntegration"
+
+# Safety timeout budget in seconds for background polling (Docker containers typically timeout at 60-120s)
+FETCH_TIMEOUT_SAFETY_SECONDS = 50
 
 # Set of CEF keys that contain structured JSON arrays or objects
 JSON_KEYS = {"cs10", "cs11", "cs12", "cs13", "cs14", "cs15"}
@@ -73,7 +77,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix=file_name,
             resp_type="content",
-            timeout=(10, 90),
+            timeout=(10, 30),
             retries=3,
             backoff_factor=2,
             status_list_to_retry=[429, 500, 502, 503, 504]
@@ -279,8 +283,37 @@ def test_module(client):
         return "Connection Failed: {}".format(str(e))
 
 
+def safe_send_events_to_xsiam(events: List[str], vendor: str, product: str) -> None:
+    """Sends events to XSIAM with retry backoff for rate limits and server hiccups."""
+    if not events:
+        try:
+            send_events_to_xsiam(events=[], vendor=vendor, product=product)
+        except Exception as e:
+            demisto.debug("{} Non-critical error updating health module for empty batch: {}".format(LOG_PREFIX, e))
+        return
+
+    max_retries = 3
+    for attempt in range(1, max_retries + 1):
+        try:
+            demisto.debug("{} Sending {} events to XSIAM (attempt {}/{})".format(LOG_PREFIX, len(events), attempt, max_retries))
+            send_events_to_xsiam(
+                events=events,
+                vendor=vendor,
+                product=product,
+                data_format="cef"
+            )
+            demisto.debug("{} Successfully sent {} events to XSIAM.".format(LOG_PREFIX, len(events)))
+            return
+        except Exception as e:
+            demisto.error("{} Error sending events to XSIAM (attempt {}/{}): {}".format(LOG_PREFIX, attempt, max_retries, e))
+            if attempt == max_retries:
+                raise e
+            time.sleep(2 * attempt)
+
+
 def fetch_events(client, last_run, max_logs, starting_file_id):
     """Fetches new log files incrementally and extracts CEF events for XSIAM."""
+    start_time = time.time()
     last_file_id = int(last_run.get("last_file_id", 0))
     last_file_id = max(last_file_id, starting_file_id)
     demisto.debug("{} Starting fetch from last_file_id={}, max_logs={}".format(LOG_PREFIX, last_file_id, max_logs))
@@ -312,6 +345,18 @@ def fetch_events(client, last_run, max_logs, starting_file_id):
     failed_files = []
 
     for file_id, file in candidate_files:
+        # Time budget check: prevent Docker container timeout by yielding remaining files to next cycle
+        elapsed = time.time() - start_time
+        if elapsed > FETCH_TIMEOUT_SAFETY_SECONDS:
+            demisto.info(
+                "{} Approaching execution timeout limit ({}s elapsed). "
+                "Yielding current batch with {} parsed events up to file ID {}. "
+                "Remaining files will be processed in the next polling cycle.".format(
+                    LOG_PREFIX, round(elapsed, 1), len(events), max_file_id
+                )
+            )
+            break
+
         try:
             raw_content = client.get_log_file(file)
             log_events = decompress_and_parse_cef(raw_content, file)
@@ -383,7 +428,7 @@ def get_events_command(client, args):
             demisto.error("{} Failed to process file {}: {}".format(LOG_PREFIX, f, e))
 
     if should_push and all_events:
-        send_events_to_xsiam(events=all_events, vendor=VENDOR, product=PRODUCT, data_format="cef")
+        safe_send_events_to_xsiam(events=all_events, vendor=VENDOR, product=PRODUCT)
         push_msg = " (pushed to dataset imperva_siemintegration_raw)"
     else:
         push_msg = " (preview only, not pushed)"
@@ -440,30 +485,26 @@ def main():
             return_results(test_module(client))
 
         elif command == "fetch-events":
-            next_run, events = fetch_events(
-                client=client,
-                last_run=demisto.getLastRun(),
-                max_logs=max_logs,
-                starting_file_id=starting_file_id
-            )
-            if events:
-                demisto.debug("{} Sending {} events to XSIAM.".format(LOG_PREFIX, len(events)))
-                send_events_to_xsiam(
-                    events=events,
-                    vendor=VENDOR,
-                    product=PRODUCT,
-                    data_format="cef"
+            try:
+                next_run, events = fetch_events(
+                    client=client,
+                    last_run=demisto.getLastRun(),
+                    max_logs=max_logs,
+                    starting_file_id=starting_file_id
                 )
-                demisto.debug("{} Successfully sent {} events to XSIAM.".format(LOG_PREFIX, len(events)))
-            else:
-                demisto.debug("{} No new events to push.".format(LOG_PREFIX))
-                send_events_to_xsiam(
-                    events=[],
-                    vendor=VENDOR,
-                    product=PRODUCT
+                safe_send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+                demisto.setLastRun(next_run)
+            except Exception as e:
+                demisto.error(
+                    "{} Transient error in fetch-events cycle: {}\n{}".format(
+                        LOG_PREFIX, str(e), traceback.format_exc()
+                    )
                 )
-
-            demisto.setLastRun(next_run)
+                # Keep Health Module updated even during transient connection hiccups
+                try:
+                    send_events_to_xsiam(events=[], vendor=VENDOR, product=PRODUCT)
+                except Exception:
+                    pass
 
         elif command in ("imperva-get-logs-index", "imperva-v2-get-logs-index"):
             return_results(get_logs_index_command(client, args))
