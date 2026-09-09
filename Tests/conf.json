@@ -5953,6 +5953,11 @@
         },
         {
             "integrations": "Palo Alto Networks Prisma AIRS - AI Runtime Security",
+            "playbookID": "PaloAltoNetworks_Prisma_AIRs_DLP_Comprehensive_Test",
+            "fromversion": "6.10.0"
+        },
+        {
+            "integrations": "Palo Alto Networks Prisma AIRS - AI Runtime Security",
             "playbookID": "PaloAltoNetworks_Prisma_AIRs_Runtime_Scan_Test",
             "fromversion": "6.10.0"
         }

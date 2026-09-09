@@ -1,4 +1,4 @@
-Common Prisma AIRs code (OAuth2 client, plane routing, scanner transport) appended into each Prisma AIRs integration when it's deployed.
+Common Prisma AIRS code (OAuth2 client, plane routing, scanner transport) appended into each Prisma AIRS integration when it's deployed.
 
 ## Script Data
 

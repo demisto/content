@@ -1,4 +1,4 @@
-Integrate with Palo Alto Networks Prisma AIRs for AI security capabilities including runtime scanning, red teaming, AI supply chain security, and DLP configuration.
+Integrate with Palo Alto Networks Prisma AIRS for AI security capabilities including runtime scanning, red teaming, AI supply chain security, and DLP configuration.
 This integration was integrated and tested with Palo Alto Networks Prisma AIRS - AI Runtime Security.
 
 ## Configure Palo Alto Networks Prisma AIRS - AI Runtime Security in Cortex
@@ -8,7 +8,7 @@ This integration was integrated and tested with Palo Alto Networks Prisma AIRS -
 | Server URL |  | True |
 | API Client ID |  | True |
 | API Client Secret |  | True |
-| Runtime API Key | Runtime API Key for Prisma AIRs Scanner API. This is used exclusively for runtime scanning operations and is different from the OAuth2 Client ID/Secret used for management operations. | True |
+| Runtime API Key | Runtime API Key for Prisma AIRS Scanner API. This is used exclusively for runtime scanning operations and is different from the OAuth2 Client ID/Secret used for management operations. | True |
 | Tenant Services Group ID | Default Tenant Services Group ID to use for API calls. Example: 1234567890. | True |
 | Scanner API Base URL | Scanner API base URL for runtime scanning operations. Default is US region. For other regions: EU: https://service-de.api.aisecurity.paloaltonetworks.com, IN: https://service-in.api.aisecurity.paloaltonetworks.com, SG: https://service-sg.api.aisecurity.paloaltonetworks.com. This must match the region selected during deployment profile creation. | False |
 | DLP API Base URL | DLP API base URL for DLP management operations \(dictionaries, patterns, filtering profiles\). Default is the global DLP endpoint. Change only if using a regional or custom DLP endpoint. | False |
@@ -100,7 +100,7 @@ Scan a single prompt against a security profile for AI security threats.
 
 #### Human Readable Output
 
->## Prisma AIRs Runtime Scan Results
+>## Prisma AIRS Runtime Scan Results
 >
 >### Scan Summary
 >
@@ -131,7 +131,7 @@ Scan a single prompt against a security profile for AI security threats.
 ### prisma-airs-runtime-api-keys-list
 
 ***
-List all Runtime API Keys configured in Prisma AIRs.
+List all Runtime API Keys configured in Prisma AIRS.
 
 #### Base Command
 
@@ -185,7 +185,7 @@ List all Runtime API Keys configured in Prisma AIRs.
 
 #### Human Readable Output
 
->### Prisma AIRs Runtime API Keys
+>### Prisma AIRS Runtime API Keys
 >
 >|Id|Name|Last8|Created At|Expires At|Revoked|
 >|---|---|---|---|---|---|
@@ -352,7 +352,7 @@ List all runtime security profiles.
 
 #### Human Readable Output
 
->### Prisma AIRs Security Profiles
+>### Prisma AIRS Security Profiles
 >
 >|Id|Name|Revision|Active|Created By|Updated By|Last Modified Ts|
 >|---|---|---|---|---|---|---|
@@ -811,7 +811,7 @@ List all customer applications.
 
 #### Human Readable Output
 
->### Prisma AIRs Customer Applications
+>### Prisma AIRS Customer Applications
 >
 >|Id|Name|Model Name|Cloud Provider|Environment|Ai Agent Framework|
 >|---|---|---|---|---|---|
@@ -1036,7 +1036,7 @@ List all deployment profiles.
 
 #### Human Readable Output
 
->### Prisma AIRs Deployment Profiles
+>### Prisma AIRS Deployment Profiles
 >
 >|Name|Auth Code|Status|Expiration Date|Ave Text Records|
 >|---|---|---|---|---|
@@ -1124,7 +1124,7 @@ List all DLP data profiles (v2 API).
 
 #### Human Readable Output
 
->### Prisma AIRs DLP Data Profiles (Page 1/1, 36 of 36)
+>### Prisma AIRS DLP Data Profiles (Page 1/1, 36 of 36)
 >
 >|Id|Name|Type|Profile Status|Profile Type|Version|
 >|---|---|---|---|---|---|
@@ -1179,7 +1179,7 @@ Create a new DLP data profile with detection rules.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The profile name (1-64 characters). | Required |
+| name | The profile name. Note that although the API spec states a 64-character maximum, the server rejects names longer than 32 characters with an HTTP 400 error, so keep the name to 1-32 characters. | Required |
 | detection_rules | The detection rules as JSON array. Each rule must have rule_type (expression_tree or multi_profile) and corresponding structure. | Required |
 | description | The profile description. | Optional |
 | is_granular_data_profile | Whether this is a granular data profile. Possible values are: true, false. | Optional |
@@ -1248,7 +1248,7 @@ Replace (full update) a DLP data profile. This replaces the entire profile confi
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | profile_id | The ID of the DLP data profile to replace. | Required |
-| name | The profile name (1-64 characters). | Required |
+| name | The profile name. Note that although the API spec states a 64-character maximum, the server rejects names longer than 32 characters with an HTTP 400 error, so keep the name to 1-32 characters. | Required |
 | detection_rules | The detection rules as JSON array. | Required |
 | description | The profile description. | Optional |
 | is_granular_data_profile | Whether this is a granular data profile. Possible values are: true, false. | Optional |
@@ -1373,7 +1373,7 @@ List DLP dictionaries.
 
 #### Human Readable Output
 
->### Prisma AIRs DLP Dictionaries (Page 1/1, 38 of 38)
+>### Prisma AIRS DLP Dictionaries (Page 1/1, 38 of 38)
 >
 >|Id|Name|Category|Type|Number Of Keywords|Region Name|
 >|---|---|---|---|---|---|
@@ -1433,7 +1433,7 @@ Create a new DLP dictionary by uploading a keyword file.
 | --- | --- | --- |
 | name | The dictionary name. | Required |
 | category | The dictionary category. Possible values are: Academic, Confidential, Employment, Financial, Government, Healthcare, Legal, Marketing, Source Code. | Required |
-| region_name | The region name (e.g., us-west-2). | Required |
+| region_name | The dictionary region. Must be one of the allowed tenant region labels (the UI exposes these as a pick list); any other value (e.g. an AWS-style code such as us-west-2) makes the API return HTTP 400. Possible values are: Australia, Brazil, Canada, France, Germany, India, Japan, Saudi Arabia, Singapore, Switzerland, United Kingdom, United States. Default is United States. | Required |
 | entry_id | The war room entry ID of the keyword file to upload. | Required |
 | description | The dictionary description. | Optional |
 | is_case_sensitive | Whether the dictionary is case sensitive. Possible values are: true, false. | Optional |
@@ -1508,7 +1508,7 @@ Replace (full update) a DLP dictionary by uploading a new keyword file.
 | dictionary_id | The ID of the DLP dictionary to replace. | Required |
 | name | The dictionary name. | Required |
 | category | The dictionary category. Possible values are: Academic, Confidential, Employment, Financial, Government, Healthcare, Legal, Marketing, Source Code. | Required |
-| region_name | The region name (e.g., us-west-2). | Required |
+| region_name | The dictionary region. Must be one of the allowed tenant region labels (the UI exposes these as a pick list); any other value (e.g. an AWS-style code such as us-west-2) makes the API return HTTP 400. Possible values are: Australia, Brazil, Canada, France, Germany, India, Japan, Saudi Arabia, Singapore, Switzerland, United Kingdom, United States. Default is United States. | Required |
 | entry_id | The war room entry ID of the keyword file to upload. | Required |
 | description | The dictionary description. | Optional |
 | is_case_sensitive | Whether the dictionary is case sensitive. Possible values are: true, false. | Optional |
@@ -1632,7 +1632,7 @@ List DLP data patterns.
 
 #### Human Readable Output
 
->### Prisma AIRs DLP Patterns (Page 1/23, 50 of 1130)
+>### Prisma AIRS DLP Patterns (Page 1/23, 50 of 1130)
 >
 >|Id|Name|Category|Type|Detection Technique|Pattern Status|
 >|---|---|---|---|---|---|
@@ -1774,7 +1774,7 @@ Get a single DLP data pattern by ID.
 
 #### Human Readable Output
 
->### Prisma AIRs DLP Pattern: readme-example-pattern
+>### Prisma AIRS DLP Pattern: readme-example-pattern
 >
 >|Id|Name|Type|Status|License Type|Description|
 >|---|---|---|---|---|---|
@@ -1866,7 +1866,7 @@ Create a new DLP data pattern.
 
 #### Human Readable Output
 
->### Prisma AIRs DLP Pattern Created: readme-example-pattern
+>### Prisma AIRS DLP Pattern Created: readme-example-pattern
 >
 >|Id|Name|Type|Status|Description|
 >|---|---|---|---|---|
@@ -1959,7 +1959,7 @@ Partially update a DLP data pattern (JSON Merge Patch). Fields set to "null" wil
 
 #### Human Readable Output
 
->### Prisma AIRs DLP Pattern Patched: readme-example-pattern
+>### Prisma AIRS DLP Pattern Patched: readme-example-pattern
 >
 >|Id|Name|Type|Status|Description|
 >|---|---|---|---|---|
@@ -2052,7 +2052,7 @@ Replace (full update) a DLP data pattern. This replaces the entire pattern confi
 
 #### Human Readable Output
 
->### Prisma AIRs DLP Pattern Replaced: readme-example-pattern
+>### Prisma AIRS DLP Pattern Replaced: readme-example-pattern
 >
 >|Id|Name|Type|Status|Description|
 >|---|---|---|---|---|
@@ -2061,7 +2061,7 @@ Replace (full update) a DLP data pattern. This replaces the entire pattern confi
 ### prisma-airs-runtime-dlp-patterns-delete
 
 ***
-Delete (soft-delete/archive) a DLP data pattern. This action cannot be undone.
+Delete (soft-delete/archive) a DLP data pattern; returns HTTP 204 on success and the pattern is archived server-side. Note: if the pattern is still referenced by an active data profile, the API returns HTTP 400 and the pattern cannot be deleted until the reference is removed. This action cannot be undone.
 
 #### Base Command
 
@@ -2071,7 +2071,7 @@ Delete (soft-delete/archive) a DLP data pattern. This action cannot be undone.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| pattern_id | The ID of the DLP data pattern to delete. | Required |
+| pattern_id | The ID of the DLP data pattern to delete. The pattern must not be referenced by any active data profile, otherwise the delete fails with HTTP 400. | Required |
 
 #### Context Output
 
@@ -2099,7 +2099,7 @@ Delete (soft-delete/archive) a DLP data pattern. This action cannot be undone.
 
 #### Human Readable Output
 
->### Prisma AIRs DLP Pattern Deleted
+>### Prisma AIRS DLP Pattern Deleted
 >
 >|Id|Status|
 >|---|---|
@@ -2173,7 +2173,7 @@ List DLP filtering profiles.
 
 #### Human Readable Output
 
->### Prisma AIRs DLP Filtering Profiles (Page 1/1, 35 of 35)
+>### Prisma AIRS DLP Filtering Profiles (Page 1/1, 35 of 35)
 >
 >|Id|Name|Type|Default Action|Description|
 >|---|---|---|---|---|
@@ -2386,7 +2386,7 @@ List custom topic guardrails.
 
 #### Human Readable Output
 
->### Prisma AIRs Custom Topics (13 of 13)
+>### Prisma AIRS Custom Topics (13 of 13)
 >
 >|Topic Id|Topic Name|Revision|Description|
 >|---|---|---|---|
