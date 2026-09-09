@@ -290,21 +290,46 @@ def extract_text_indicators(content: dict[str, str], params):
     text_content = list(content.values())[0]
     file_path = list(content.keys())[0]
     text_content = text_content.replace("[.]", ".").replace("[@]", "@")  # Refang indicator prior to checking
-    indicators = []
+    indicators: list[dict] = []
+
+    # seen_values tracks every indicator value captured in Pass 1 (specific types).
+    # Pass 2 (broader types) skips any value already present here to avoid
+    # re-classifying a CIDR/Email/File/CVE as URL, IP, or Domain.
+    seen_values: set[str] = set()
+
+    # --- Pass 1: specific-type regexes (CIDR, IPv6CIDR, Email, File, CVE) ---
+    # Order: ipv4cidrRegex → ipv6Regex → ipv6cidrRegex → emailRegex → cveRegex → md5/sha1/sha256/sha512
     for regex, type_ in regex_indicators:
         matches = re.finditer(regex, text_content)  # type: ignore
         if matches:
-            indicators += [{"value": match.group(0), "type": type_} for match in matches]
+            for match in matches:
+                value = match.group(0)
+                indicators.append({"value": value, "type": type_})
+                seen_values.add(value)
+
+    # --- Pass 2: broader-type regexes (IP, URL, Domain) ---
+    # Values already captured in Pass 1 are skipped to prevent type collisions
+    # (e.g. a CIDR like 1.0.2.0/23 also matches urlRegex as host+path).
     for regex, type_, group_name in regex_with_groups:
         matches = re.finditer(regex, text_content)  # type: ignore
         if matches:
             for match in matches:
                 if regex in (ipv4Regex, urlRegex):
-                    indicators.append({"value": match.group(group_name), "type": type_})
+                    value = match.group(group_name)
+                    if value in seen_values:
+                        demisto.debug(f"Skipping {value!r} as {type_} — already captured as a more specific indicator type.")
+                        continue
+                    indicators.append({"value": value, "type": type_})
+
                 elif regex == domainRegex:
-                    regex_type = type_(match.group(group_name)) if callable(type_) else type_
+                    value = match.group(group_name)
+                    if value in seen_values:
+                        demisto.debug(f"Skipping {value!r} as domain — already captured as a more specific indicator type.")
+                        continue
+                    regex_type = type_(value) if callable(type_) else type_
                     if regex_type:
-                        indicators.append({"value": match.group(group_name), "type": regex_type})
+                        indicators.append({"value": value, "type": regex_type})
+
     indicators_to_xsoar = arrange_iocs_indicator_to_xsoar(file_path, indicators, params)
     return indicators_to_xsoar
 
