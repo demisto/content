@@ -1589,3 +1589,13 @@ Updates (upserts) attributes on an existing stanza in a Splunk .conf file.
 #### Context Output
 
 There is no context output for this command.
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
+
+- Fetch incidents
+
+</~PLATFORM>

@@ -5167,7 +5167,9 @@ script:
       description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
       type: string
 
-  - arguments:
+  - name: aws-ec2-ipam-resource-discoveries-describe
+    description: "Returns details for IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources owned by the account. Required IAM permission: ec2:DescribeIpamResourceDiscoveries."
+    arguments:
     - description: A comma-separated list of the IPAM resource discovery IDs.
       name: ipam_resource_discovery_ids
     - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
@@ -5177,12 +5179,13 @@ script:
       defaultValue: 50
     - description: The token for the next set of results.
       name: next_token
-    - description: The Amazon Web Services region for the IP address.
-      name: address_region
     - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
       required:platform: true
+    - description: The Amazon Web Services region for the IP address.
+      name: address_region
+      hidden: true
     - description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: region
       required: false
@@ -5236,10 +5239,10 @@ script:
     - contextPath: AWS.EC2.IpamResourceDiscoveries.AccountId
       description: The ID of the AWS account associated with the EC2 instance. This key is only present when the parameter "AWS organization accounts" is provided.
       type: string
-    description: "Returns details for IPAM resource discoveries. A resource discovery is an IPAM component that enables IPAM to manage and monitor resources owned by the account. Required IAM permission: ec2:DescribeIpamResourceDiscoveries."
-    name: aws-ec2-ipam-resource-discoveries-describe
 
-  - arguments:
+  - name: aws-ec2-ipam-resource-discovery-associations-describe
+    description: "Returns details for a resource discovery associated with an Amazon VPC IPAM. Required IAM permission: ec2:DescribeIpamResourceDiscoveryAssociations."
+    arguments:
     - description: A comma-separated list of the resource discovery association IDs.
       name: ipam_resource_discovery_association_ids
     - description: One or more filters separated by ';' (for example, name=<name>,values=<values>;name=<name>,values=<values>). See AWS documentation for details & filter options.
@@ -5249,12 +5252,13 @@ script:
       defaultValue: 50
     - description: The token for the next set of results.
       name: next_token
-    - description: The Amazon Web Services region for the IP address.
-      name: address_region
     - description: The AWS account ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: account_id
       required: false
       required:platform: true
+    - description: The Amazon Web Services region for the IP address.
+      name: address_region
+      hidden: true
     - description: The AWS region. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       name: region
       required: false
@@ -5308,8 +5312,6 @@ script:
     - contextPath: AWS.EC2.IpamResourceDiscoveryAssociations.AccountId
       description: The ID of the AWS account associated with the EC2 instance. This key is only present when the parameter "AWS organization accounts" is provided.
       type: string
-    description: "Returns details for a resource discovery associated with an Amazon VPC IPAM. Required IAM permission: ec2:DescribeIpamResourceDiscoveryAssociations."
-    name: aws-ec2-ipam-resource-discovery-associations-describe
 
   - name: aws-cloudtrail-trail-update
     description: 'Updates trail settings for event logging and log file handling. Designates an existing bucket for log delivery without requiring a service restart. Note: This must be executed from the region where the trail was created. Required IAM permission: cloudtrail:UpdateTrail.'
@@ -7090,16 +7092,16 @@ script:
     - contextPath: AWS.CloudTrail.Trails.CloudWatchLogsRoleArn
       description: The role assumed by CloudTrail to write logs to the CloudWatch log group.
       type: string
-    - contextPath: AWS.CloudTrail.KmsKeyId
+    - contextPath: AWS.CloudTrail.Trails.KmsKeyId
       description: The KMS key ID that encrypts logs delivered by CloudTrail.
       type: string
-    - contextPath: AWS.CloudTrail.HasCustomEventSelectors
+    - contextPath: AWS.CloudTrail.Trails.HasCustomEventSelectors
       description: Specifies if the trail has custom event selectors.
       type: boolean
-    - contextPath: AWS.CloudTrail.HasInsightSelectors
+    - contextPath: AWS.CloudTrail.Trails.HasInsightSelectors
       description: Specifies whether a trail has insight types specified in an InsightSelector list.
       type: boolean
-    - contextPath: AWS.CloudTrail.IsOrganizationTrail
+    - contextPath: AWS.CloudTrail.Trails.IsOrganizationTrail
       description: Specifies whether the trail is an organization trail.
       type: boolean
   - name: aws-s3-bucket-policy-delete
