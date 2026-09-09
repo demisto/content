@@ -612,6 +612,11 @@ There is no context output for this command.
 ***
 Lists Amazon GuardDuty findings for the specified detector ID.
 
+##### AWS IAM Policy Permission
+
+Effect: _Allow_<br/>
+Action: _guardduty:ListFindings_
+
 #### Base Command
 
 `aws-gd-list-findings`
@@ -633,7 +638,11 @@ Lists Amazon GuardDuty findings for the specified detector ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.GuardDuty.Findings.FindingId | string | The unique identifier for the Finding. |
+| AWS.GuardDuty.Findings.FindingId | string | The unique identifier for the Finding |
+
+#### Command Example
+
+```!aws-gd-list-findings detectorId=38b1ed3fe279cd0c8edb0715ac5561eb region=eu-west-2```
 
 ### aws-gd-get-findings
 
