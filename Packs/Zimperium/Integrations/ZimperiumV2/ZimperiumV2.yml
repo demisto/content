@@ -71,6 +71,13 @@ configuration:
   type: 13
   defaultvalue: 'Zimperium Event'
   section: Connect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 description: Fetch and investigate mobile security alerts, generated based on anomalous or unauthorized activities detected on a user's mobile device. Compatible with Zimperium 5.X API version.
 name: Zimperium v2
 fromversion: 6.9.0

@@ -1,14 +1,15 @@
 # SOC Framework Pack Manager
 
-Install and configure SOC Framework content packs directly from the XSIAM
+Install and configure SOC Framework content packs directly from the Cortex XSIAM
 Playground. No manual ZIP uploads, no separate REST API tooling.
 
 ## What does this pack do?
 
-- Browses the SOC Framework pack catalog from the XSIAM Playground
+- Browses the SOC Framework pack catalog from the Cortex XSIAM Playground, showing which packs are installed and which have updates available
 - Installs and updates SOC Framework content packs as system content
 - Applies integration instances, jobs, and lookup datasets from each pack's `xsoar_config.json`
 - Re-runs configuration without reinstalling, for recovery or config changes
+- Diagnoses the Cortex XSIAM platform endpoints the install path depends on, so the cause of a failed install can be identified
 - Synchronizes the legacy `value_tags` lookup for older deployments still using it
 
 ## Quick Start
@@ -17,6 +18,7 @@ Playground. No manual ZIP uploads, no separate REST API tooling.
 !SOCFWPackManager action=list
 !SOCFWPackManager action=apply pack_id=soc-optimization-unified
 !SOCFWPackManager action=configure pack_id=SocFrameworkTrendMicroVisionOne
+!SOCFWPackManager action=diagnose
 ```
 
 ## Prerequisites
@@ -43,8 +45,19 @@ passed as command arguments.
 !SOCFWPackManager action=list filter=crowdstrike
 ```
 
-Lists all available SOC Framework packs with ID, version, and path. Use
-`filter=` to narrow results.
+Lists all available SOC Framework packs grouped by catalog category, showing
+the installed version, whether an update is available, and a link to each
+pack's documentation. Use `filter=` to narrow results.
+
+### `action=diagnose` — Check the install path
+
+```
+!SOCFWPackManager action=diagnose
+```
+
+Probes each Cortex XSIAM platform endpoint that the install path depends on and
+reports which one fails. This action is read-only; nothing is installed or
+modified. Run it first when an install does not behave as expected.
 
 ### `action=apply` — Install or update a pack
 
@@ -88,7 +101,7 @@ For deployments still running on the legacy `value_tags` lookup, this
 downloads `value_tags.json` from the SOC Framework repository and updates
 the `value_tags` lookup dataset, comparing a content hash against the
 previously stored version. If unchanged, the upload is skipped. Version
-state is stored in the `SOCFWTagsVersion` XSIAM List (visible at
+state is stored in the `SOCFWTagsVersion` Cortex XSIAM List (visible at
 **Settings** > **Advanced** > **Lists**).
 
 ## Recommended Installation Order
@@ -129,7 +142,7 @@ This pack ships two pieces that work together:
   as system content. The integration is internal plumbing; end users do not
   call it directly.
 
-The split exists because XSIAM integrations cannot call
+The split exists because Cortex XSIAM integrations cannot call
 `demisto.executeCommand`, so all multi-step orchestration must live in the
 script. The integration handles only the work that needs raw HTTP.
 

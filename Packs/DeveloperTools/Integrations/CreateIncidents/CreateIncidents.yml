@@ -31,6 +31,13 @@ configuration:
   type: 13
   section: Connect
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -67,7 +74,7 @@ script:
       name: attachment_paths
     description: Creates incidents from json file, and stores it in the instance context.
     name: create-test-incident-from-raw-json
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   runonce: false
   script: '-'

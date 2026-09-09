@@ -1,0 +1,29 @@
+{
+    "name": "Anthropic Claude (Standard Connector)",
+    "description": "Satellite pack of Anthropic Claude used for the Standard Connector deployment. Shares core logic with the Anthropic Claude pack via the AnthropicClaudeApiModule.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2026-08-24T00:00:00Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "Anthropic",
+        "Claude"
+    ],
+    "marketplaces": [
+        "platform"
+    ],
+    "supportedModules": [
+        "agentix",
+        "cloud_runtime_security",
+        "xsiam",
+        "edr",
+        "cloud"
+    ]
+}
