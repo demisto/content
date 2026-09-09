@@ -1,0 +1,50 @@
+{
+  "indicators": [
+    {
+      "threat_indicator": "dummy-indicator-1.com",
+      "threat_level": 3,
+      "confidence_level": 90,
+      "status": [
+        "Blocked"
+      ],
+      "total_events": 12,
+      "verified_assets": [
+        "dummy-host-01"
+      ],
+      "unverified_assets": [],
+      "users": [
+        "dummy-user-1"
+      ],
+      "threat_actors": [
+        "DUMMY_ACTOR"
+      ],
+      "first_detected": "2026-11-28T02:55:00Z",
+      "last_detected": "2026-12-01T02:55:00Z",
+      "detected_at": "2026-12-01T02:55:00Z",
+      "description": "Malicious domain associated with malware distribution."
+    },
+    {
+      "threat_indicator": "dummy-indicator-2.com",
+      "threat_level": 1,
+      "confidence_level": 40,
+      "status": [
+        "Not Blocked"
+      ],
+      "total_events": 3,
+      "verified_assets": [],
+      "unverified_assets": [
+        "0.0.0.1"
+      ],
+      "users": [
+        "dummy-user-2"
+      ],
+      "threat_actors": [
+        "DUMMY_ACTOR_2"
+      ],
+      "first_detected": "2026-11-30T11:00:00Z",
+      "last_detected": "2026-12-01T11:00:00Z",
+      "detected_at": "2026-12-01T11:00:00Z",
+      "description": "Suspicious domain flagged by phishing feed."
+    }
+  ]
+}
