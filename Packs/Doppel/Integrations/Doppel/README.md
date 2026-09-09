@@ -2,6 +2,13 @@
 
 Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively. The Cortex XSOAR pack for Doppel mirrors the alerts created by Doppel as Cortex XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.
 
+## Authentication: API V1 vs V2
+
+- **V1 (API Key)** — the default. Requests are authenticated with the static **API Key** header. Existing instances keep working unchanged after upgrading the pack.
+- **V2 (OAuth 2.0 Client Credentials)** — recommended. The integration exchanges the **Client ID** and **Client Secret** for a short-lived access token (valid 24 hours), caches it, and refreshes it automatically before expiry. New Doppel API capabilities are added to V2 only.
+
+**Note:** Doppel limits the number of successful token requests per Client ID per hour. The integration's built-in token caching stays well within this limit, but if the same Client ID is shared with other tools that request tokens aggressively, token requests may be throttled. Prefer a dedicated OAuth client for this integration (each Doppel organization can create up to 10).
+
 ## Configure Doppel on Cortex XSOAR
 
 1. Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
@@ -29,13 +36,6 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
-
-### Authentication: API V1 vs V2
-
-- **V1 (API Key)** — the default. Requests are authenticated with the static **API Key** header. Existing instances keep working unchanged after upgrading the pack.
-- **V2 (OAuth 2.0 Client Credentials)** — recommended. The integration exchanges the **Client ID** and **Client Secret** for a short-lived access token (valid 24 hours), caches it, and refreshes it automatically before expiry. New Doppel API capabilities are added to V2 only.
-
-**Note:** Doppel limits the number of successful token requests per Client ID per hour. The integration's built-in token caching stays well within this limit, but if the same Client ID is shared with other tools that request tokens aggressively, token requests may be throttled. Prefer a dedicated OAuth client for this integration (each Doppel organization can create up to 10).
 
 ## Commands
 

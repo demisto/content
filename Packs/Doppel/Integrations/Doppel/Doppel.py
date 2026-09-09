@@ -82,20 +82,20 @@ class Client(BaseClient):
 
     def __init__(
         self,
-        base_url,
-        api_key=None,
-        user_api_key=None,
-        organization_code=None,
-        verify=None,
-        proxy=None,
-        retry_total=DEFAULT_RETRY_TOTAL,
-        retry_backoff_factor=DEFAULT_RETRY_BACKOFF_FACTOR,
-        retry_status_list=DEFAULT_RETRY_STATUS_LIST,
-        api_version=API_VERSION_V1,
-        oauth_client_id=None,
-        oauth_client_secret=None,
-        token_url=None,
-    ):
+        base_url: str,
+        api_key: str | None = None,
+        user_api_key: str | None = None,
+        organization_code: str | None = None,
+        verify: bool | None = None,
+        proxy: bool | None = None,
+        retry_total: int = DEFAULT_RETRY_TOTAL,
+        retry_backoff_factor: int = DEFAULT_RETRY_BACKOFF_FACTOR,
+        retry_status_list: list[int] = DEFAULT_RETRY_STATUS_LIST,
+        api_version: str = API_VERSION_V1,
+        oauth_client_id: str | None = None,
+        oauth_client_secret: str | None = None,
+        token_url: str | None = None,
+    ) -> None:
         super().__init__(base_url, verify=verify, proxy=proxy)
 
         self._api_version = api_version
@@ -129,7 +129,7 @@ class Client(BaseClient):
             f"total={retry_total}, backoff_factor={retry_backoff_factor}, status_list={retry_status_list}"
         )
 
-    def _http_request(self, *args, **kwargs):
+    def _http_request(self, *args: Any, **kwargs: Any) -> Any:
         """Wrap BaseClient._http_request with V2 bearer-token handling.
 
         For V1 this is a pass-through. For V2, a valid cached token is attached
@@ -168,7 +168,7 @@ class Client(BaseClient):
     def _mint_oauth_token(self) -> str:
         """Mint a new access token via the client-credentials flow and cache it."""
 
-        def _token_error_handler(response):
+        def _token_error_handler(response: requests.Response) -> None:
             if response.status_code == 429:
                 retry_after = response.headers.get("Retry-After", "3600")
                 raise DemistoException(
