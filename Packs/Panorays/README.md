@@ -51,6 +51,7 @@ The integration protects against the block in three ways:
 If an instance does get blocked, disable **Fetches incidents** until the hour has elapsed. Leaving it
 enabled means every fetch fails against the block, and the instance may be re-blocked as soon as the
 first one expires.
+
 * The supplier list is cached and re-enumerated only once per **Supplier list cache TTL (hours)** (default 12).
 * If a fetch reaches **Maximum number of incidents to fetch per run** part-way through the portfolio, it
   records its position and resumes there on the next run. When the limit falls in the middle of a single

@@ -343,7 +343,7 @@ def test_completed_pass_leaves_nothing_behind(mocker):
     assert leftover == []
 
 
-def test_fetch_supplier_incidents_survives_one_bad_supplier(mocker):
+def test_fetch_supplier_incidents_survives_one_bad_supplier(mocker, capfd):
     """A single failing supplier must not abort the whole fetch cycle."""
     client = get_client()
     mocker.patch.object(PanoraysFindingsAPI.demisto, "getIntegrationContext", return_value={})
@@ -357,7 +357,9 @@ def test_fetch_supplier_incidents_survives_one_bad_supplier(mocker):
             [{"id": "f-9", "severity": "CRITICAL", "asset_name": "c", "insert_ts": "2099-01-01T00:00:00Z"}],
         ],
     )
-    _, incidents = _fetch_suppliers(client, {})
+    # The bad supplier logs via demisto.error, which demistomock prints to stdout.
+    with capfd.disabled():
+        _, incidents = _fetch_suppliers(client, {})
     assert [i["CustomFields"]["panoraysfindingid"] for i in incidents] == ["f-9"]
 
 
@@ -374,7 +376,7 @@ def test_is_rate_limited(message, expected):
     assert _is_rate_limited(Exception(message)) is expected
 
 
-def test_rate_limit_aborts_run_and_holds_cursor(mocker):
+def test_rate_limit_aborts_run_and_holds_cursor(mocker, capfd):
     """A 429 must stop the run immediately.
 
     Panorays blocks the caller for an hour once tripped, so walking the rest of the portfolio just
@@ -390,7 +392,9 @@ def test_rate_limit_aborts_run_and_holds_cursor(mocker):
         side_effect=Exception("Error in API call [429] - Too Many Requests"),
     )
 
-    next_run, incidents = _fetch_suppliers(client, {"last_fetch": "2098-01-01T00:00:00Z"})
+    # The rate-limit hit logs via demisto.error, which demistomock prints to stdout.
+    with capfd.disabled():
+        next_run, incidents = _fetch_suppliers(client, {"last_fetch": "2098-01-01T00:00:00Z"})
 
     assert incidents == []
     # Only the first supplier was attempted -- the run stopped instead of trying the second.
@@ -399,7 +403,7 @@ def test_rate_limit_aborts_run_and_holds_cursor(mocker):
     assert next_run["last_fetch"] == "2098-01-01T00:00:00Z", "window must not advance"
 
 
-def test_non_rate_limit_error_still_skips_one_supplier(mocker):
+def test_non_rate_limit_error_still_skips_one_supplier(mocker, capfd):
     """A normal error on one supplier must not abort the run -- that behavior is unchanged."""
     client = get_client()
     mocker.patch.object(PanoraysFindingsAPI.demisto, "getIntegrationContext", return_value={})
@@ -413,7 +417,9 @@ def test_non_rate_limit_error_still_skips_one_supplier(mocker):
             [{"id": "f-ok", "severity": "CRITICAL", "asset_name": "z", "insert_ts": "2099-01-01T00:00:00Z"}],
         ],
     )
-    _, incidents = _fetch_suppliers(client, {})
+    # The failing supplier logs via demisto.error, which demistomock prints to stdout.
+    with capfd.disabled():
+        _, incidents = _fetch_suppliers(client, {})
     assert [i["CustomFields"]["panoraysfindingid"] for i in incidents] == ["f-ok"]
 
 
