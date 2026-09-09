@@ -1,17 +1,17 @@
-id: Update File Hash List - Netskope
+id: silent-Update File Hash List - Netskope
 version: -1
-name: Update File Hash List - Netskope
+name: silent-Update File Hash List - Netskope
 description: |-
   Adds hashes to a Netskope file hash list via netskopev2-update-file-hash-list.
 
   IMPORTANT: Netskope's file hash list API (v1) has no endpoint to read the current list content -
   every update REPLACES the full list, it cannot append. Since Netskope itself can't tell us
-  what's already there, this playbook tracks the running hash set on the XSOAR side instead, in
-  an XSOAR List named "NetskopeHashList_<ListName>" (auto-created on first run): it reads that
+  what's already there, this playbook tracks the running hash set on the Cortex XSOAR side instead, in
+  a Cortex XSOAR List named "NetskopeHashList_<ListName>" (auto-created on first run): it reads that
   List's current content (via the NetskopeGetXsoarListContent script), merges it with NewHashes,
   sends the full merged set to Netskope, then writes the result back (via
-  NetskopeSetXsoarListContentWithRetry, which retries a few times if XSOAR's storage backend
-  reports a transient version conflict from a concurrent write) to the same XSOAR List so the
+  NetskopeSetXsoarListContentWithRetry, which retries a few times if Cortex XSOAR's storage backend
+  reports a transient version conflict from a concurrent write) to the same Cortex XSOAR List so the
   next run picks up where this one left off. No manual "what's already in the list" input needed.
 
   Only MD5 (32 hex chars) and SHA256 (64 hex chars) hashes are accepted - the command itself
@@ -20,7 +20,7 @@ description: |-
   present) is already true in that case.
 
   The ListName input must reference a Netskope list that already exists (the tracking List on the
-  XSOAR side is separate and gets created automatically).
+  Cortex XSOAR side is separate and gets created automatically).
 starttaskid: "0"
 tasks:
   "0":
@@ -119,9 +119,9 @@ tasks:
       version: -1
       name: Update Hash List
       description: |-
-        Replaces the full hash list content with the XSOAR-tracked hashes + NewHashes merged
+        Replaces the full hash list content with the Cortex XSOAR-tracked hashes + NewHashes merged
         (Netskope's v1 API has no read/append endpoint - this is why the running set is tracked
-        on the XSOAR side instead, via the preceding Get Currently Tracked Hashes task).
+        on the Cortex XSOAR side instead, via the preceding Get Currently Tracked Hashes task).
       script: "|||netskopev2-update-file-hash-list"
       type: regular
       iscommand: true
@@ -134,7 +134,7 @@ tasks:
         complex:
           root: inputs.ListName
       hash:
-        simple: ${XsoarList.content},${inputs.NewHashes}
+        simple: ${Netskope.XsoarList.Content},${inputs.NewHashes}
     separatecontext: false
     view: |-
       {
@@ -156,7 +156,7 @@ tasks:
       id: 5b21f091-93bb-4784-917f-b7e742352428
       version: -1
       name: Save Updated Hash List
-      description: Writes the now-validated, Netskope-accepted hash set back to the XSOAR List so the next run picks up where this one left off. Retries a few times on a transient Elasticsearch version-conflict error (seen when this list is written to in close succession).
+      description: Writes the now-validated, Netskope-accepted hash set back to the Cortex XSOAR List so the next run picks up where this one left off. Retries a few times on a transient Elasticsearch version-conflict error (seen when this list is written to in close succession).
       scriptName: NetskopeSetXsoarListContentWithRetry
       type: regular
       iscommand: false
@@ -267,7 +267,7 @@ tasks:
       id: 0cbcffd8-e945-4381-a919-3d1e46a98e80
       version: -1
       name: Get Currently Tracked Hashes
-      description: Reads (and creates if missing) the XSOAR List that tracks this Netskope hash list's current content between runs.
+      description: Reads (and creates if missing) the Cortex XSOAR List that tracks this Netskope hash list's current content between runs.
       scriptName: NetskopeGetXsoarListContent
       type: regular
       iscommand: false
@@ -323,4 +323,4 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 8.9.0
-issilent: false
+issilent: true

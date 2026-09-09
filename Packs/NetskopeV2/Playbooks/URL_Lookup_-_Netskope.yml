@@ -1,6 +1,6 @@
-id: URL Lookup - Netskope
+id: silent-URL Lookup - Netskope
 version: -1
-name: URL Lookup - Netskope
+name: silent-URL Lookup - Netskope
 description: |-
   Looks up a URL's categorization/reputation info via netskopev2-url-lookup and records the
   result as labels directly on the incident.
@@ -217,7 +217,7 @@ tasks:
       - "4"
     scriptarguments:
       addLabels:
-        simple: ${NetskopeURLLookupLabels.labels_json}
+        simple: ${Netskope.URLLookupLabels.LabelsJson}
     separatecontext: false
     view: |-
       {
@@ -291,4 +291,4 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 8.9.0
-issilent: false
+issilent: true

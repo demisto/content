@@ -116,10 +116,10 @@ def test_main_computes_new_and_merged_hashes(mocker):
 
     main()
 
-    outputs = results_mock.call_args[0][0]["EntryContext"]["NetskopeHashSync"]
-    assert outputs["new_hashes"] == [new_hash]
-    assert outputs["merged_hashes"] == sorted([existing_hash, new_hash])
-    assert outputs["skipped_no_valid_hash"] == 1
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.HashSync"]
+    assert outputs["NewHashes"] == [new_hash]
+    assert outputs["MergedHashes"] == sorted([existing_hash, new_hash])
+    assert outputs["SkippedNoValidHash"] == 1
 
 
 def test_main_handles_none_iocs(mocker):
@@ -137,6 +137,6 @@ def test_main_handles_none_iocs(mocker):
 
     main()
 
-    outputs = results_mock.call_args[0][0]["EntryContext"]["NetskopeHashSync"]
-    assert outputs["new_hashes"] == []
-    assert outputs["merged_hashes"] == ["a" * 32]
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.HashSync"]
+    assert outputs["NewHashes"] == []
+    assert outputs["MergedHashes"] == ["a" * 32]

@@ -1,7 +1,9 @@
 import json
 import os
 from unittest.mock import patch
+from urllib.parse import parse_qs
 
+import httpx
 import pytest
 from CommonServerPython import DemistoException
 from NetskopeV2 import (
@@ -13,11 +15,16 @@ from NetskopeV2 import (
     create_device_tag,
     create_network_profile,
     create_private_app,
+    delete_destination_profile,
     delete_network_profile,
     delete_private_app,
     deploy_destination_profiles,
+    deploy_network_profiles,
     find_device,
+    get_destination_profile,
     get_destination_profile_applied_version,
+    get_network_profile,
+    get_network_profile_applied_version,
     get_scan_report,
     list_device_classification_tags,
     list_device_tags,
@@ -29,11 +36,13 @@ from NetskopeV2 import (
     migrate_url_list_to_destination_profile,
     replace_private_app,
     revert_destination_profile,
+    revert_network_profile,
     submit_file_scan,
     update_destination_profile,
     update_destination_profile_values,
     update_file_hash_list,
     update_network_profile_values,
+    update_network_profile,
     update_private_app,
     update_private_app_tags,
     url_lookup,
@@ -47,8 +56,73 @@ NETSKOPE_URL = "https://" + ".".join(("www", "netskope", "com"))
 GOOGLE_URL = "https://" + ".".join(("www", "google", "com"))
 
 
+class CapturedRequest:
+    def __init__(self, request: httpx.Request):
+        self._request = request
+
+    def json(self):
+        return json.loads(self._request.content.decode())
+
+    @property
+    def qs(self):
+        return parse_qs(self._request.url.query.decode())
+
+    @property
+    def headers(self):
+        return self._request.headers
+
+
+class HTTPXMockAdapter:
+    """Small requests-mock-compatible adapter for ContentClient's httpx transport."""
+
+    def __init__(self, monkeypatch):
+        self._registrations = {}
+        self.last_request = None
+        self.called = False
+        transport = httpx.MockTransport(self._handle_request)
+        monkeypatch.setattr(Client, "_get_async_client", lambda _client: httpx.AsyncClient(transport=transport))
+
+    def _register(self, method, url, **response):
+        self._registrations[(method, url)] = response
+
+    def get(self, url, **response):
+        self._register("GET", url, **response)
+
+    def post(self, url, **response):
+        self._register("POST", url, **response)
+
+    def patch(self, url, **response):
+        self._register("PATCH", url, **response)
+
+    def put(self, url, **response):
+        self._register("PUT", url, **response)
+
+    def delete(self, url, **response):
+        self._register("DELETE", url, **response)
+
+    async def _handle_request(self, request):
+        self.called = True
+        self.last_request = CapturedRequest(request)
+        request_url = str(request.url.copy_with(query=None))
+        response = self._registrations.get((request.method, request_url))
+        if response is None:
+            raise AssertionError(f"Unexpected HTTP request: {request.method} {request_url}")
+        kwargs = {"status_code": response.get("status_code", 200), "request": request}
+        if "json" in response:
+            kwargs["json"] = response["json"]
+        else:
+            kwargs["text"] = response.get("text", "")
+        return httpx.Response(**kwargs)
+
+
+@pytest.fixture()
+def requests_mock(monkeypatch):
+    return HTTPXMockAdapter(monkeypatch)
+
+
 def util_load_json(file_name):
-    with open(os.path.join("test_data", f"{file_name}.json"), encoding="utf-8") as mock_file:
+    test_data_path = os.path.join(os.path.dirname(__file__), "test_data", f"{file_name}.json")
+    with open(test_data_path, encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -196,6 +270,20 @@ def test_list_destination_profiles(client, requests_mock):
     assert requests_mock.last_request.qs.get("filter") == ['name co "eng"']
 
 
+def test_list_destination_profiles_page_calculates_offset(client, requests_mock):
+    requests_mock.get(f"{SERVER_URL}api/v2/profiles/destinations", json={"elements": []})
+
+    list_destination_profiles(client, {"page": "3", "page_size": "25"})
+
+    assert requests_mock.last_request.qs["offset"] == ["50"]
+    assert requests_mock.last_request.qs["limit"] == ["25"]
+
+
+def test_list_destination_profiles_rejects_page_size_without_page(client):
+    with pytest.raises(DemistoException, match="page_size can only be used"):
+        list_destination_profiles(client, {"page_size": "25"})
+
+
 def test_create_destination_profile(client, requests_mock):
     mock_response = util_load_json("create_destination_profile_response")
     requests_mock.post(f"{SERVER_URL}api/v2/profiles/destinations", json=mock_response)
@@ -217,6 +305,36 @@ def test_create_destination_profile_requires_type(client):
 def test_create_destination_profile_name_too_long(client):
     with pytest.raises(DemistoException, match="name must be between 1 and 100"):
         create_destination_profile(client, {"name": "x" * 101, "type": "regex"})
+
+
+def test_get_destination_profile(client, requests_mock):
+    mock_response = {"id": "profile-1", "name": "destination profile"}
+    requests_mock.get(f"{SERVER_URL}api/v2/profiles/destinations/profile-1", json=mock_response)
+
+    result = get_destination_profile(client, {"id": "profile-1", "details": "true"})
+
+    assert result.outputs == mock_response
+    assert requests_mock.last_request.qs["details"] == ["true"]
+
+
+def test_update_destination_profile(client, requests_mock):
+    mock_response = {"id": "profile-1", "name": "updated destination"}
+    requests_mock.patch(f"{SERVER_URL}api/v2/profiles/destinations/profile-1", json=mock_response)
+
+    result = update_destination_profile(client, {"id": "profile-1", "name": "updated destination"})
+
+    assert result.outputs == mock_response
+    assert requests_mock.last_request.json() == {"name": "updated destination"}
+
+
+def test_delete_destination_profile(client, requests_mock):
+    mock_response = {"id": "profile-1", "status": "pending-delete"}
+    requests_mock.delete(f"{SERVER_URL}api/v2/profiles/destinations/profile-1", json=mock_response)
+
+    result = delete_destination_profile(client, {"id": "profile-1"})
+
+    assert result.outputs == mock_response
+    assert requests_mock.last_request.qs["interactive"] == ["false"]
 
 
 def test_update_destination_profile_type_requires_values(client):
@@ -322,6 +440,25 @@ def test_list_network_profiles(client, requests_mock):
     assert result.outputs == mock_response["elements"]
 
 
+def test_get_network_profile(client, requests_mock):
+    mock_response = {"id": "profile-1", "name": "network profile"}
+    requests_mock.get(f"{SERVER_URL}api/v2/profiles/networks/profile-1", json=mock_response)
+
+    result = get_network_profile(client, {"id": "profile-1"})
+
+    assert result.outputs == mock_response
+
+
+def test_update_network_profile(client, requests_mock):
+    mock_response = {"id": "profile-1", "description": "updated"}
+    requests_mock.patch(f"{SERVER_URL}api/v2/profiles/networks/profile-1", json=mock_response)
+
+    result = update_network_profile(client, {"id": "profile-1", "description": "updated"})
+
+    assert result.outputs == mock_response
+    assert requests_mock.last_request.json() == {"description": "updated"}
+
+
 def test_create_network_profile_has_no_type_field(client, requests_mock):
     mock_response = util_load_json("list_network_profiles_response")["elements"][0]
     requests_mock.post(f"{SERVER_URL}api/v2/profiles/networks", json=mock_response)
@@ -338,6 +475,34 @@ def test_delete_network_profile(client, requests_mock):
     result = delete_network_profile(client, {"id": "profile-1"})
 
     assert result.outputs == {"status": "success"}
+
+
+def test_deploy_network_profiles(client, requests_mock):
+    mock_response = {"ids": ["profile-1"], "status": "pending"}
+    requests_mock.post(f"{SERVER_URL}api/v2/profiles/networks/deploy", json=mock_response)
+
+    result = deploy_network_profiles(client, {"ids": "profile-1", "change_note": "Deploy from Cortex XSOAR"})
+
+    assert result.outputs == mock_response
+    assert requests_mock.last_request.json() == {"ids": ["profile-1"], "change_note": "Deploy from Cortex XSOAR"}
+
+
+def test_revert_network_profile(client, requests_mock):
+    mock_response = {"id": "profile-1", "status": "applied"}
+    requests_mock.post(f"{SERVER_URL}api/v2/profiles/networks/profile-1/revert", json=mock_response)
+
+    result = revert_network_profile(client, {"id": "profile-1"})
+
+    assert result.outputs == mock_response
+
+
+def test_get_network_profile_applied_version(client, requests_mock):
+    mock_response = {"id": "profile-1", "status": "applied"}
+    requests_mock.get(f"{SERVER_URL}api/v2/profiles/networks/profile-1/versions/applied", json=mock_response)
+
+    result = get_network_profile_applied_version(client, {"id": "profile-1"})
+
+    assert result.outputs == mock_response
 
 
 def test_update_file_hash_list(client, requests_mock):
@@ -462,6 +627,24 @@ def test_list_private_apps(client, requests_mock):
 
     assert result.outputs == mock_response["data"]["private_apps"]
     assert result.outputs_prefix == "Netskope.PrivateApp"
+
+
+def test_list_private_apps_honors_limit(client, requests_mock):
+    mock_response = {"data": {"private_apps": [{"app_id": 1}, {"app_id": 2}, {"app_id": 3}]}}
+    requests_mock.get(f"{SERVER_URL}api/v2/steering/apps/private", json=mock_response)
+
+    result = list_private_apps(client, {"limit": "2"})
+
+    assert result.outputs == [{"app_id": 1}, {"app_id": 2}]
+
+
+def test_list_private_apps_all_results_ignores_limit(client, requests_mock):
+    apps = [{"app_id": 1}, {"app_id": 2}, {"app_id": 3}]
+    requests_mock.get(f"{SERVER_URL}api/v2/steering/apps/private", json={"data": {"private_apps": apps}})
+
+    result = list_private_apps(client, {"limit": "1", "all_results": "true"})
+
+    assert result.outputs == apps
 
 
 def test_list_publishers(client, requests_mock):
@@ -653,6 +836,14 @@ def test_submit_file_scan(client, requests_mock, tmp_path):
 def test_submit_file_scan_requires_entry_id(client):
     with pytest.raises(DemistoException, match="entry_id is required"):
         submit_file_scan(client, {})
+
+
+def test_submit_file_scan_rejects_unresolved_entry(client):
+    with (
+        patch("NetskopeV2.demisto.getFilePath", return_value={}),
+        pytest.raises(DemistoException, match="Could not resolve a file path and name"),
+    ):
+        submit_file_scan(client, {"entry_id": "missing-entry"})
 
 
 def test_submit_file_scan_rejects_unsupported_extension(client, tmp_path):

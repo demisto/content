@@ -1,5 +1,13 @@
 Blocks a domain by adding it to an existing Netskope URL List.
 
+Checks whether the Domain input was provided, checks whether a Netskope integration instance is
+enabled (matching any brand name containing "Netskope", so it works against a renamed
+dev/test instance too), and if so blocks the domain by adding it to an existing Netskope URL
+List.
+
+This pack has no "create list" command - the ListName input must reference a list that already
+exists.
+
 ## Dependencies
 
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -10,7 +18,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-Netskope - Direct to Zero Trust
+* NetskopeV2
 
 ### Scripts
 
@@ -33,3 +41,9 @@ This playbook does not use any scripts.
 
 ---
 There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Block Domain - Netskope](../doc_files/Block_Domain_-_Netskope.png)

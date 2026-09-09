@@ -10,7 +10,7 @@ def strip_brackets(name: str) -> str:
 
 
 def get_all_apps() -> list:
-    res = demisto.executeCommand("netskopev2-list-private-apps", {})
+    res = demisto.executeCommand("netskopev2-list-private-apps", {"all_results": "true"})
     if is_error(res):
         raise DemistoException(f"Failed to list private apps: {get_error(res)}")
 
@@ -51,33 +51,33 @@ def main():
     app_name = args.get("app_name")
 
     if app_id:
-        outputs = {"app_id": str(app_id), "resolved_by": "app_id", "error": ""}
+        outputs = {"AppId": str(app_id), "ResolvedBy": "app_id", "Error": ""}
         readable_output = f'Using the provided app_id "{app_id}" directly.'
     elif app_name:
         matches = find_by_name(get_all_apps(), app_name)
         if not matches:
-            outputs = {"app_id": "", "resolved_by": "app_name", "error": f'No private app found named "{app_name}".'}
-            readable_output = outputs["error"]
+            outputs = {"AppId": "", "ResolvedBy": "app_name", "Error": f'No private app found named "{app_name}".'}
+            readable_output = outputs["Error"]
         elif len(matches) > 1:
             ids = ", ".join(str(m.get("app_id") or m.get("id")) for m in matches)
             outputs = {
-                "app_id": "",
-                "resolved_by": "app_name",
-                "error": f'Multiple private apps named "{app_name}" found (IDs: {ids}) - provide AppID directly instead.',
+                "AppId": "",
+                "ResolvedBy": "app_name",
+                "Error": f'Multiple private apps named "{app_name}" found (IDs: {ids}) - provide AppID directly instead.',
             }
-            readable_output = outputs["error"]
+            readable_output = outputs["Error"]
         else:
             resolved_id = matches[0].get("app_id") or matches[0].get("id")
-            outputs = {"app_id": str(resolved_id), "resolved_by": "app_name", "error": ""}
+            outputs = {"AppId": str(resolved_id), "ResolvedBy": "app_name", "Error": ""}
             readable_output = f'Resolved app_name "{app_name}" to app_id "{resolved_id}".'
     else:
-        outputs = {"app_id": "", "resolved_by": "none", "error": "Either AppID or AppName must be provided."}
-        readable_output = outputs["error"]
+        outputs = {"AppId": "", "ResolvedBy": "none", "Error": "Either AppID or AppName must be provided."}
+        readable_output = outputs["Error"]
 
     return_results(
         CommandResults(
             readable_output=readable_output,
-            outputs_prefix="ResolvedAppId",
+            outputs_prefix="Netskope.ResolvedAppId",
             outputs=outputs,
         )
     )

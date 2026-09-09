@@ -1,6 +1,6 @@
-id: Block Domain - Netskope
+id: silent-Block Domain - Netskope
 version: -1
-name: Block Domain - Netskope
+name: silent-Block Domain - Netskope
 description: |-
   Blocks a domain by adding it to an existing Netskope URL List.
 
@@ -232,4 +232,4 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 8.9.0
-issilent: false
+issilent: true

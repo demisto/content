@@ -1,6 +1,6 @@
-id: Block Domain - Destination Profile - Netskope
+id: silent-Block Domain - Destination Profile - Netskope
 version: -1
-name: Block Domain - Destination Profile - Netskope
+name: silent-Block Domain - Destination Profile - Netskope
 description: |-
   Blocks a domain via a Netskope Destination Profile: looks up the profile by name and either
   appends the domain to that existing profile or, if no profile with that name exists yet,
@@ -23,7 +23,7 @@ description: |-
   playbook checks the profile's current values (fetched by the name lookup) first and only
   appends when the domain isn't already present, so re-running it for an already-blocked domain
   is a safe no-op. Also make sure only one Netskope integration instance is enabled at a time - if
-  two are enabled, XSOAR dispatches the command to both, causing the same double-add.
+  two are enabled, Cortex XSOAR dispatches the command to both, causing the same double-add.
 
   Unlike URL Lists, Destination Profile value changes are staged (pending) until deployed - this
   playbook appends the value and then immediately deploys that one profile so the change takes
@@ -505,4 +505,4 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 8.9.0
-issilent: false
+issilent: true

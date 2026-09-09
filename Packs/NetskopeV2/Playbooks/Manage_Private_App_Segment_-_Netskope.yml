@@ -1,6 +1,6 @@
-id: Manage Private App Segment - Netskope
+id: silent-Manage Private App Segment - Netskope
 version: -1
-name: Manage Private App Segment - Netskope
+name: silent-Manage Private App Segment - Netskope
 description: |-
   Creates, modifies, or deletes a Netskope private application (ZTNA/NPA) "segment" (Netskope's
   own API models this as one Private App object: a host + its protocol/port entries + publishers,
@@ -295,10 +295,10 @@ tasks:
           root: inputs.Host
       protocols:
         complex:
-          root: BuiltProtocols.protocols_json
+          root: Netskope.BuiltProtocols.ProtocolsJson
       publishers:
         complex:
-          root: ResolvedPublishers.publishers_json
+          root: Netskope.ResolvedPublishers.PublishersJson
       tags:
         complex:
           root: inputs.Tags
@@ -334,22 +334,22 @@ tasks:
     scriptarguments:
       app_id:
         complex:
-          root: ResolvedAppId.app_id
+          root: Netskope.ResolvedAppId.AppId
       app_name:
         complex:
           root: inputs.AppName
       host:
         complex:
-          root: MergedPrivateAppFields.host
+          root: Netskope.MergedPrivateAppFields.Host
       protocols:
         complex:
-          root: MergedPrivateAppFields.protocols_json
+          root: Netskope.MergedPrivateAppFields.ProtocolsJson
       publishers:
         complex:
-          root: ResolvedPublishers.publishers_json
+          root: Netskope.ResolvedPublishers.PublishersJson
       tags:
         complex:
-          root: MergedPrivateAppFields.tags
+          root: Netskope.MergedPrivateAppFields.Tags
     separatecontext: false
     view: |-
       {
@@ -382,7 +382,7 @@ tasks:
     scriptarguments:
       app_id:
         complex:
-          root: ResolvedAppId.app_id
+          root: Netskope.ResolvedAppId.AppId
     separatecontext: false
     view: |-
       {
@@ -440,7 +440,7 @@ tasks:
       id: 9bbcf9d6-bbb5-4ce4-8e46-4d764e62494c
       version: -1
       name: Was App ID resolved?
-      description: Stop if AppID couldn't be resolved (missing, not found by name, or ambiguous - see ResolvedAppId.error).
+      description: Stop if AppID couldn't be resolved (missing, not found by name, or ambiguous - see Netskope.ResolvedAppId.Error).
       type: condition
       iscommand: false
       brand: ""
@@ -457,7 +457,7 @@ tasks:
           left:
             value:
               complex:
-                root: ResolvedAppId.app_id
+                root: Netskope.ResolvedAppId.AppId
             iscontext: true
     view: |-
       {
@@ -569,7 +569,7 @@ tasks:
       id: 3de3d11d-d524-4e22-80b0-79bd6020f1f8
       version: -1
       name: Were publishers resolved?
-      description: Stop if any requested publisher name couldn't be resolved (not found, or ambiguous - see ResolvedPublishers.error).
+      description: Stop if any requested publisher name couldn't be resolved (not found, or ambiguous - see Netskope.ResolvedPublishers.Error).
       type: condition
       iscommand: false
       brand: ""
@@ -586,7 +586,7 @@ tasks:
           left:
             value:
               complex:
-                root: ResolvedPublishers.publishers_json
+                root: Netskope.ResolvedPublishers.PublishersJson
             iscontext: true
     view: |-
       {
@@ -641,7 +641,7 @@ tasks:
       id: 7a262ba8-fe51-45f4-b4c1-fe97b44803e7
       version: -1
       name: Were publishers resolved?
-      description: Stop if any requested publisher name couldn't be resolved (not found, or ambiguous - see ResolvedPublishers.error).
+      description: Stop if any requested publisher name couldn't be resolved (not found, or ambiguous - see Netskope.ResolvedPublishers.Error).
       type: condition
       iscommand: false
       brand: ""
@@ -658,7 +658,7 @@ tasks:
           left:
             value:
               complex:
-                root: ResolvedPublishers.publishers_json
+                root: Netskope.ResolvedPublishers.PublishersJson
             iscontext: true
     view: |-
       {
@@ -766,13 +766,13 @@ tasks:
     scriptarguments:
       app_id:
         complex:
-          root: ResolvedAppId.app_id
+          root: Netskope.ResolvedAppId.AppId
       host:
         complex:
           root: inputs.Host
       protocols_json:
         complex:
-          root: BuiltProtocols.protocols_json
+          root: Netskope.BuiltProtocols.ProtocolsJson
       tags:
         complex:
           root: inputs.Tags
@@ -918,4 +918,4 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 8.9.0
-issilent: false
+issilent: true

@@ -1,6 +1,14 @@
-Looks up a URL's categorization/reputation info via ***netskopev2-url-lookup*** and records the result as labels directly on the incident.
+Looks up a URL's categorization/reputation info via netskopev2-url-lookup and records the
+result as labels directly on the incident.
 
-netskopev2-url-lookup is a licensed feature on the Netskope side - if you get an error mentioning licensing/enablement, URL Lookup needs to be enabled for your tenant by Netskope support.
+netskopev2-url-lookup is a bulk API (up to 100 URLs per call), but this playbook only ever
+queries one URL at a time, matching the single URL input. Building the addLabels JSON string
+from the lookup result requires joining nested category/URL-list names into flat values, which
+isn't reliably expressible in plain playbook YAML templating (see NetskopeURLLookupLabels for
+why) - that script does the real work; this playbook just wires it together.
+
+netskopev2-url-lookup is a licensed feature on the Netskope side - if you get an error mentioning
+licensing/enablement, URL Lookup needs to be enabled for your tenant by Netskope support.
 
 ## Dependencies
 
@@ -12,7 +20,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-Netskope - Direct to Zero Trust
+* NetskopeV2
 
 ### Scripts
 
@@ -35,3 +43,9 @@ Netskope - Direct to Zero Trust
 
 ---
 There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![URL Lookup - Netskope](../doc_files/URL_Lookup_-_Netskope.png)

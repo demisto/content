@@ -106,9 +106,9 @@ def test_main_empty_publisher_names_does_not_call_executeCommand(mocker):
     main()
 
     execute_mock.assert_not_called()
-    outputs = results_mock.call_args[0][0]["EntryContext"]["ResolvedPublishers"]
-    assert outputs["publishers_json"] == ""
-    assert "must not be empty" in outputs["error"]
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.ResolvedPublishers"]
+    assert outputs["PublishersJson"] == ""
+    assert "must not be empty" in outputs["Error"]
 
 
 def test_main_resolves_publisher_names(mocker):
@@ -136,6 +136,6 @@ def test_main_resolves_publisher_names(mocker):
 
     main()
 
-    outputs = results_mock.call_args[0][0]["EntryContext"]["ResolvedPublishers"]
-    assert outputs["publishers_json"] == '[{"publisher_id": "10", "publisher_name": "AWS-NPA"}]'
-    assert outputs["error"] == ""
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.ResolvedPublishers"]
+    assert outputs["PublishersJson"] == '[{"publisher_id": "10", "publisher_name": "AWS-NPA"}]'
+    assert outputs["Error"] == ""

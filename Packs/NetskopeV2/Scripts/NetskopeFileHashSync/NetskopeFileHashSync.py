@@ -1,4 +1,5 @@
 import re
+from typing import cast
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -10,7 +11,7 @@ SHA256_PATTERN = re.compile(r"^[a-fA-F0-9]{64}$")
 DEFAULT_MAX_INDICATORS = 500
 
 
-def is_valid_hash(value) -> bool:
+def is_valid_hash(value: str | None) -> bool:
     return bool(value) and bool(MD5_PATTERN.match(value) or SHA256_PATTERN.match(value))
 
 
@@ -44,7 +45,12 @@ def main():
 
     tags = [t.strip() for t in argToList(args.get("tags")) if t.strip()]
     existing = {h.strip() for h in argToList(args.get("existing_hashes")) if h.strip()}
-    max_indicators = int(args.get("max_indicators") or DEFAULT_MAX_INDICATORS)
+    max_indicators = cast(
+        int,
+        arg_to_number(args.get("max_indicators"), arg_name="max_indicators") or DEFAULT_MAX_INDICATORS,
+    )
+    if max_indicators < 1:
+        raise DemistoException("max_indicators must be greater than or equal to 1")
 
     query = build_query(tags)
     # .get("iocs", []) only falls back when the key is absent - searchIndicators can return
@@ -64,12 +70,12 @@ def main():
     merged_hashes = sorted(existing | found)
 
     outputs = {
-        "query": query,
-        "total_found_indicators": len(iocs),
-        "skipped_no_valid_hash": skipped_no_valid_hash,
-        "new_count": len(new_hashes),
-        "new_hashes": new_hashes,
-        "merged_hashes": merged_hashes,
+        "Query": query,
+        "TotalFoundIndicators": len(iocs),
+        "SkippedNoValidHash": skipped_no_valid_hash,
+        "NewCount": len(new_hashes),
+        "NewHashes": new_hashes,
+        "MergedHashes": merged_hashes,
     }
 
     readable_output = (
@@ -83,7 +89,7 @@ def main():
     return_results(
         CommandResults(
             readable_output=readable_output,
-            outputs_prefix="NetskopeHashSync",
+            outputs_prefix="Netskope.HashSync",
             outputs=outputs,
         )
     )

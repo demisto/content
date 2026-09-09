@@ -1,5 +1,5 @@
 args:
-- description: The Netskope.FileScanReport context output from netskopev2-get-scan-report (a dict, or a single-element list if XSOAR wraps it) - bind this directly to ${Netskope.FileScanReport}.
+- description: The Netskope.FileScanReport context output from netskopev2-get-scan-report (a dict, or a single-element list if Cortex XSOAR wraps it) - bind this directly to ${Netskope.FileScanReport}.
   name: scan_result
   required: true
 comment: Builds the setIncident addLabels JSON string from a netskopev2-get-scan-report result (jobid, status, verdict, md5, sha256) - kept separate from the large nested fields (dropped/network/observed_behavior/process_tree) already excluded from the command's own readable output.
@@ -8,11 +8,11 @@ commonfields:
   version: -1
 name: NetskopeFileScanLabels
 outputs:
-- contextPath: NetskopeFileScanLabels.labels_json
-  description: JSON string ready to pass as setIncident's addLabels argument.
+- contextPath: Netskope.FileScanLabels.LabelsJson
+  description: The JSON string ready to pass as setIncident's addLabels argument.
   type: String
-- contextPath: NetskopeFileScanLabels.summary
-  description: Human-readable summary of what was recorded.
+- contextPath: Netskope.FileScanLabels.Summary
+  description: The human-readable summary of what was recorded.
   type: String
 script: ''
 type: python
@@ -20,6 +20,6 @@ subtype: python3
 tags: []
 timeout: '0'
 dockerimage: demisto/python3:3.12.8.3296088
-fromversion: 6.0.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

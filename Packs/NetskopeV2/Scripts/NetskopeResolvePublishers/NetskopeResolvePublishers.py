@@ -6,7 +6,7 @@ from CommonServerPython import *  # noqa: F401
 
 def get_all_publishers() -> list:
     # Restrict to just the two fields needed - a publisher can have many connected app segments,
-    # and the full unrestricted response can be large enough that XSOAR strips it from context
+    # and the full unrestricted response can be large enough that Cortex XSOAR strips it from context
     # and attaches it as a file instead, silently returning nothing usable here.
     res = demisto.executeCommand("netskopev2-list-publishers", {"fields": "publisher_id,publisher_name"})
     if is_error(res):
@@ -59,23 +59,25 @@ def main():
     args = demisto.args()
     names = [n.strip() for n in argToList(args.get("publisher_names")) if n.strip()]
     if not names:
-        outputs = {"publishers_json": "", "error": "publisher_names must not be empty."}
-        return_results(CommandResults(readable_output=outputs["error"], outputs_prefix="ResolvedPublishers", outputs=outputs))
+        outputs = {"PublishersJson": "", "Error": "publisher_names must not be empty."}
+        return_results(
+            CommandResults(readable_output=outputs["Error"], outputs_prefix="Netskope.ResolvedPublishers", outputs=outputs)
+        )
         return
 
     resolved, errors = resolve_publishers(names, get_all_publishers())
 
     if errors:
-        outputs = {"publishers_json": "", "error": "; ".join(errors)}
-        readable_output = outputs["error"]
+        outputs = {"PublishersJson": "", "Error": "; ".join(errors)}
+        readable_output = outputs["Error"]
     else:
-        outputs = {"publishers_json": json.dumps(resolved), "error": ""}
-        readable_output = f"Resolved publisher(s) {', '.join(names)} to {outputs['publishers_json']}."
+        outputs = {"PublishersJson": json.dumps(resolved), "Error": ""}
+        readable_output = f"Resolved publisher(s) {', '.join(names)} to {outputs['PublishersJson']}."
 
     return_results(
         CommandResults(
             readable_output=readable_output,
-            outputs_prefix="ResolvedPublishers",
+            outputs_prefix="Netskope.ResolvedPublishers",
             outputs=outputs,
         )
     )

@@ -38,15 +38,15 @@ def test_main_handles_scan_result_as_dict(mocker):
 
     main()
 
-    outputs = results_mock.call_args[0][0]["EntryContext"]["NetskopeFileScanLabels"]
-    labels = json.loads(outputs["labels_json"])
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.FileScanLabels"]
+    labels = json.loads(outputs["LabelsJson"])
     assert {"NetskopeFileScanJobID": "123"} in labels
 
 
 def test_main_handles_scan_result_as_single_element_list(mocker):
     """
     Given:
-        - scan_result provided as a single-element list (XSOAR sometimes wraps context this way).
+        - scan_result provided as a single-element list (Cortex XSOAR sometimes wraps context this way).
     When:
         - Running main.
     Then:
@@ -57,8 +57,8 @@ def test_main_handles_scan_result_as_single_element_list(mocker):
 
     main()
 
-    outputs = results_mock.call_args[0][0]["EntryContext"]["NetskopeFileScanLabels"]
-    labels = json.loads(outputs["labels_json"])
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.FileScanLabels"]
+    labels = json.loads(outputs["LabelsJson"])
     assert {"NetskopeFileScanJobID": "123"} in labels
 
 
@@ -76,6 +76,6 @@ def test_main_handles_empty_scan_result(mocker):
 
     main()
 
-    outputs = results_mock.call_args[0][0]["EntryContext"]["NetskopeFileScanLabels"]
-    assert outputs["labels_json"] == "[]"
-    assert "No scan result" in outputs["summary"]
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.FileScanLabels"]
+    assert outputs["LabelsJson"] == "[]"
+    assert "No scan result" in outputs["Summary"]

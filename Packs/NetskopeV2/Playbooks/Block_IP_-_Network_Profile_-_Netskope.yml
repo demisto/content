@@ -1,6 +1,6 @@
-id: Block IP - Network Profile - Netskope
+id: silent-Block IP - Network Profile - Netskope
 version: -1
-name: Block IP - Network Profile - Netskope
+name: silent-Block IP - Network Profile - Netskope
 description: |-
   Blocks an IP address, IP range, or CIDR netmask via a Netskope Network Profile (shown as
   "Network Location" in the Netskope UI) - the same "check input / check integration enabled /
@@ -23,7 +23,7 @@ description: |-
   present) adds it twice. This playbook checks the profile's current values first and only
   appends when the value isn't already present, so re-running it for an already-blocked value is
   a safe no-op. Also make sure only one Netskope integration instance is enabled at a time - if
-  two are enabled, XSOAR dispatches the command to both, causing the same double-add.
+  two are enabled, Cortex XSOAR dispatches the command to both, causing the same double-add.
 
   Network Profile value changes are staged (pending) until deployed, same as Destination
   Profiles - this playbook appends the value and then immediately deploys that one profile so the
@@ -444,10 +444,10 @@ inputs:
 - key: Value
   value: {}
   required: true
-  description: IP address, IP range, or CIDR netmask to add (e.g. "4.145.79.224/27").
+  description: IP address, IP range, or CIDR netmask to add (e.g. "192.0.2.0/27").
   playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 8.9.0
-issilent: false
+issilent: true

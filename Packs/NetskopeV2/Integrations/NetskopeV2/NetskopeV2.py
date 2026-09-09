@@ -1,11 +1,12 @@
 import json
 import re
 import traceback
-from typing import Any, NamedTuple
+from typing import Any, NamedTuple, cast
 
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
+from ContentClientApiModule import *  # noqa: F401, F403
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -13,7 +14,7 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-DEVICE_API_USER_AGENT = "Netskope-XSOAR-Integration-1.0"
+DEVICE_API_USER_AGENT = "Netskope-Cortex XSOAR-Integration-1.0"
 TAG_DEVICE_BATCH_SIZE = 100
 MAX_TAG_LENGTH = 80
 MAX_TAGS_PER_DEVICE = 5
@@ -30,6 +31,10 @@ DESTINATION_PROFILE_TYPES = ("regex", "sensitive", "insensitive")
 
 URL_LOOKUP_MAX_URLS = 100
 URL_LOOKUP_CATEGORIES = ("casb", "swg")
+DEFAULT_PROFILE_LIMIT = 10
+DEFAULT_PROFILE_PAGE_SIZE = 10
+MAX_PROFILE_PAGE_SIZE = 100
+DEFAULT_PRIVATE_APP_LIMIT = 50
 
 # Per the API spec, /api/v2/atp/scans/filescan expects a password-protected .zip whose one member
 # file is one of these types - reject anything else before wasting a call (max 1000/day).
@@ -59,18 +64,26 @@ PROFILE_RESOURCE_CONFIG = {
 """ CLIENT CLASS """
 
 
-class Client(BaseClient):
+class Client(ContentClient):
     """Client class to interact with the service API"""
 
     def __init__(self, base_url, verify, proxy, headers, api_key, api_v1_token=None):
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
+        # Do not automatically retry write operations: append/remove endpoints are not
+        # idempotent, and a retry after a read timeout could apply a change twice.
+        super().__init__(
+            base_url=base_url,
+            verify=verify,
+            proxy=proxy,
+            headers=headers,
+            client_name="NetskopeV2",
+            retry_policy=RetryPolicy(max_attempts=1),
+        )
         self._api_key = api_key
         self._api_v1_token = api_v1_token
 
     def _device_api_headers(self):
         # The Device Classification / Device Tags APIs (beta) require Bearer auth + a User-Agent,
-        # unlike the policy/urllist APIs which use the Netskope-Api-Token header. Passing headers
-        # here replaces self._headers entirely for the call (BaseClient does not merge).
+        # unlike the policy/urllist APIs which use the Netskope-Api-Token header.
         return {
             "Authorization": f"Bearer {self._api_key}",
             "Content-Type": "application/json",
@@ -304,8 +317,8 @@ class Client(BaseClient):
             )
 
     def get_scan_report(self, jobid):
-        # 200 = report ready, 202 = scan still in progress - both are <400 so BaseClient's
-        # default ok_codes handling already treats them as success; no special casing needed.
+        # 200 = report ready, 202 = scan still in progress. Both are successful responses, so no
+        # special handling is needed.
         return self._http_request(method="GET", url_suffix=f"/api/v2/atp/scans/reports/{jobid}")
 
     def url_lookup(self, query):
@@ -357,11 +370,31 @@ def bool_query_param(value):
     return "true" if argToBoolean(value) else "false"
 
 
-def build_list_profiles_params(args):
+def build_list_profiles_params(args: dict[str, Any]) -> dict[str, Any]:
+    page = arg_to_number(args.get("page"), arg_name="page")
+    page_size = arg_to_number(args.get("page_size"), arg_name="page_size")
+    limit = arg_to_number(args.get("limit"), arg_name="limit")
+
+    if page is not None:
+        if page < 1:
+            raise DemistoException("page must be greater than or equal to 1")
+        effective_page_size = page_size or DEFAULT_PROFILE_PAGE_SIZE
+        if effective_page_size < 1 or effective_page_size > MAX_PROFILE_PAGE_SIZE:
+            raise DemistoException(f"page_size must be between 1 and {MAX_PROFILE_PAGE_SIZE}")
+        offset = (page - 1) * effective_page_size
+        request_limit = effective_page_size
+    else:
+        if page_size is not None:
+            raise DemistoException("page_size can only be used when page is provided")
+        request_limit = limit or DEFAULT_PROFILE_LIMIT
+        if request_limit < 1 or request_limit > MAX_PROFILE_PAGE_SIZE:
+            raise DemistoException(f"limit must be between 1 and {MAX_PROFILE_PAGE_SIZE}")
+        offset = 0
+
     params = {
         "fields": args.get("fields"),
-        "offset": args.get("offset"),
-        "limit": args.get("limit"),
+        "offset": offset,
+        "limit": request_limit,
         "sortby": args.get("sortby"),
         "sortorder": args.get("sortorder"),
         "filter": args.get("filter"),
@@ -609,8 +642,10 @@ def create_device_classification_rule(client: Client, args: dict[str, Any]) -> C
 
 
 def find_device(client: Client, args: dict[str, Any]) -> CommandResults:
-    start_time = args.get("start_time")
-    end_time = args.get("end_time")
+    start_datetime = arg_to_datetime(args.get("start_time"), arg_name="start_time", required=True)
+    end_datetime = arg_to_datetime(args.get("end_time"), arg_name="end_time", required=True)
+    start_time = int(cast(datetime, start_datetime).timestamp())
+    end_time = int(cast(datetime, end_datetime).timestamp())
     fields = args.get("fields") or "nsdeviceuid,hostname,os,client_version"
 
     r = client.find_devices(start_time, end_time, fields)
@@ -663,7 +698,7 @@ def apply_device_tags(client: Client, args: dict[str, Any]) -> CommandResults:
         raise DemistoException("received an empty list of tag IDs")
     if len(tag_ids) > MAX_TAGS_PER_DEVICE:
         raise DemistoException(f"a device supports at most {MAX_TAGS_PER_DEVICE} tags, received {len(tag_ids)}")
-    tag_ids = [int(t) for t in tag_ids]
+    tag_ids = [cast(int, arg_to_number(t, arg_name="tag_id", required=True)) for t in tag_ids]
 
     nsdeviceuids = argToList(args.get("nsdeviceuid"))
     if not nsdeviceuids:
@@ -811,7 +846,7 @@ def _update_profile_values(client: Client, profile_type: str, args: dict[str, An
                 raise DemistoException(f'index-based removal is not supported for "{profile_type}" profiles')
             if len(indexes) > VALUES_OP_MAX_ITEMS:
                 raise DemistoException(f"at most {VALUES_OP_MAX_ITEMS} indexes are allowed per call")
-            operation["indexes"] = [int(i) for i in indexes]
+            operation["indexes"] = [cast(int, arg_to_number(i, arg_name="indexes", required=True)) for i in indexes]
         elif values:
             if len(values) > VALUES_OP_MAX_ITEMS:
                 raise DemistoException(f"at most {VALUES_OP_MAX_ITEMS} values are allowed per call")
@@ -1035,6 +1070,12 @@ def update_file_hash_list(client: Client, args: dict[str, Any]) -> CommandResult
 def list_private_apps(client: Client, args: dict[str, Any]) -> CommandResults:
     r = client.list_private_apps()
     apps = r.get("data", {}).get("private_apps", [])
+    all_results = argToBoolean(args.get("all_results", False))
+    limit = cast(int, arg_to_number(args.get("limit"), arg_name="limit") or DEFAULT_PRIVATE_APP_LIMIT)
+    if limit < 1:
+        raise DemistoException("limit must be greater than or equal to 1")
+    if not all_results:
+        apps = apps[:limit]
 
     markdown = tableToMarkdown("Private Apps", apps)
 
@@ -1179,7 +1220,7 @@ def replace_private_app(client: Client, args: dict[str, Any]) -> CommandResults:
 
 
 def update_private_app_tags(client: Client, args: dict[str, Any]) -> CommandResults:
-    app_ids = [int(i) for i in argToList(args.get("app_id"))]
+    app_ids = [cast(int, arg_to_number(i, arg_name="app_id", required=True)) for i in argToList(args.get("app_id"))]
     if not app_ids:
         raise DemistoException("received an empty list of app IDs")
 
@@ -1229,6 +1270,8 @@ def submit_file_scan(client: Client, args: dict[str, Any]) -> CommandResults:
         raise DemistoException("entry_id is required")
 
     file_info = demisto.getFilePath(entry_id)
+    if not isinstance(file_info, dict) or not file_info.get("path") or not file_info.get("name"):
+        raise DemistoException(f'Could not resolve a file path and name for entry_id "{entry_id}"')
     file_path = file_info["path"]
     file_name = file_info["name"]
 
@@ -1318,12 +1361,13 @@ def main() -> None:
     :rtype:
     """
 
-    api_key = demisto.params().get("api_key_credentials", {}).get("password") or demisto.params().get("api_key")
+    params = demisto.params()
+    api_key = params.get("api_key_credentials", {}).get("password") or params.get("api_key")
     if not api_key:
         return_error("Please provide a valid API Key")
-    api_v1_token = demisto.params().get("api_v1_token_credentials", {}).get("password") or demisto.params().get("api_v1_token")
-    verify_certificate = not demisto.params().get("insecure", False)
-    proxy = demisto.params().get("proxy", False)
+    api_v1_token = params.get("api_v1_token_credentials", {}).get("password")
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
     headers = {"Netskope-Api-Token": api_key}
 
@@ -1376,7 +1420,7 @@ def main() -> None:
     demisto.debug(f"Command being called is {command}")
     try:
         client = Client(
-            base_url=demisto.params()["url"],
+            base_url=params["url"],
             verify=verify_certificate,
             proxy=proxy,
             headers=headers,

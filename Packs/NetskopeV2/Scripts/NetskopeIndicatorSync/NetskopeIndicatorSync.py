@@ -1,3 +1,5 @@
+from typing import cast
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -96,8 +98,15 @@ def main():
     skip_tags = [t.strip() for t in argToList(args.get("skip_tags")) if t.strip()]
     profile_id = args.get("profile_id")
     existing = {v.strip() for v in argToList(args.get("existing_values")) if v.strip()}
-    max_indicators = int(args.get("max_indicators") or DEFAULT_MAX_INDICATORS)
-    chunk_size = int(args.get("chunk_size") or DEFAULT_CHUNK_SIZE)
+    max_indicators = cast(
+        int,
+        arg_to_number(args.get("max_indicators"), arg_name="max_indicators") or DEFAULT_MAX_INDICATORS,
+    )
+    chunk_size = cast(int, arg_to_number(args.get("chunk_size"), arg_name="chunk_size") or DEFAULT_CHUNK_SIZE)
+    if max_indicators < 1:
+        raise DemistoException("max_indicators must be greater than or equal to 1")
+    if chunk_size < 1:
+        raise DemistoException("chunk_size must be greater than or equal to 1")
 
     new_values, chunks, stats = find_new_values(types, tags, skip_tags, existing, max_indicators, chunk_size)
 
@@ -116,12 +125,16 @@ def main():
             deployed = True
 
     outputs = {
-        "profile_id": profile_id,
-        "added_count": added_count,
-        "deployed": deployed,
-        "batches": len(chunks),
-        "all_new_values": new_values,
-        **stats,
+        "ProfileId": profile_id,
+        "AddedCount": added_count,
+        "Deployed": deployed,
+        "Batches": len(chunks),
+        "AllNewValues": new_values,
+        "Query": stats["query"],
+        "TotalFound": stats["total_found"],
+        "SkippedExisting": stats["skipped_existing"],
+        "SkippedNoValue": stats["skipped_no_value"],
+        "NewCount": stats["new_count"],
     }
 
     if profile_id:
@@ -143,7 +156,7 @@ def main():
     return_results(
         CommandResults(
             readable_output=readable_output,
-            outputs_prefix="NetskopeSync",
+            outputs_prefix="Netskope.Sync",
             outputs=outputs,
         )
     )

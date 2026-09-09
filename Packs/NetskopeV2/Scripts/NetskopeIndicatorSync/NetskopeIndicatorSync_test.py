@@ -126,10 +126,10 @@ def test_main_without_profile_id_only_prepares_values(mocker):
     main()
 
     execute_mock.assert_not_called()
-    outputs = results_mock.call_args[0][0]["EntryContext"]["NetskopeSync"]
-    assert outputs["all_new_values"] == ["new.com"]
-    assert outputs["added_count"] == 0
-    assert outputs["deployed"] is False
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.Sync"]
+    assert outputs["AllNewValues"] == ["new.com"]
+    assert outputs["AddedCount"] == 0
+    assert outputs["Deployed"] is False
 
 
 def test_main_with_profile_id_appends_and_deploys(mocker):
@@ -152,9 +152,9 @@ def test_main_with_profile_id_appends_and_deploys(mocker):
     called_commands = [call.args[0] for call in execute_mock.call_args_list]
     assert "netskopev2-update-destination-profile-values" in called_commands
     assert "netskopev2-deploy-destination-profiles" in called_commands
-    outputs = results_mock.call_args[0][0]["EntryContext"]["NetskopeSync"]
-    assert outputs["added_count"] == 1
-    assert outputs["deployed"] is True
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.Sync"]
+    assert outputs["AddedCount"] == 1
+    assert outputs["Deployed"] is True
 
 
 def test_main_rejects_invalid_indicator_type(mocker):

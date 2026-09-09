@@ -1,10 +1,10 @@
-id: Sync Threat Intel to Destination Profile - Netskope
+id: silent-Sync Threat Intel to Destination Profile - Netskope
 version: -1
-name: Sync Threat Intel to Destination Profile - Netskope
+name: silent-Sync Threat Intel to Destination Profile - Netskope
 description: |-
-  Meant to run periodically (attach it to an hourly scheduled Job in XSOAR) to keep a Netskope
-  Destination Profile in sync with indicators already ingested into XSOAR's own Threat Intel
-  Management.
+  Synchronizes a Netskope Destination Profile with indicators already ingested into Cortex XSOAR's
+  Threat Intel Management. Run it periodically, for example, from an hourly scheduled Job in Cortex
+  XSOAR.
 
   ProfileName, MatchType, and IndicatorTypes are ordinary playbook inputs with defaults pre-filled
   in the Inputs and Outputs panel (Test02 / regex / Domain,URL,IP,CIDR) - edit them there like any
@@ -21,7 +21,7 @@ description: |-
 
   Checks whether a Netskope integration instance is enabled (matching any brand name containing
   "Netskope"), looks up the destination profile by name, then:
-  - if the profile exists: searches XSOAR indicators of the selected IndicatorTypes
+  - if the profile exists: searches Cortex XSOAR indicators of the selected IndicatorTypes
     (Domain/URL/IP/CIDR, customer-selectable), skips any value already present in the profile,
     appends the rest in batches of at most 10 (the API's per-call cap - batching is done inside
     the NetskopeIndicatorSync script, not via a playbook loop task), and deploys the change.
@@ -45,7 +45,7 @@ description: |-
   interval.
 
   Make sure only one Netskope integration instance is enabled at a time - if two are enabled,
-  XSOAR dispatches every command to both, silently doubling every append.
+  Cortex XSOAR dispatches every command to both, silently doubling every append.
 starttaskid: "0"
 tasks:
   "0":
@@ -402,7 +402,7 @@ tasks:
       id: 7aa11aa5-4e1e-4242-82f5-1e67ec5f85a9
       version: -1
       name: Sync New Indicators to Existing Profile
-      description: Search XSOAR indicators of the selected types, skip anything already in the profile, append the rest in batches of at most 10, and deploy.
+      description: Search Cortex XSOAR indicators of the selected types, skip anything already in the profile, append the rest in batches of at most 10, and deploy.
       scriptName: NetskopeIndicatorSync
       type: regular
       iscommand: false
@@ -458,7 +458,7 @@ tasks:
       id: 289fa65a-c826-474b-903a-ffdb3e15f71d
       version: -1
       name: Prepare New Values for New Profile
-      description: No profile with that name exists yet - search XSOAR indicators of the selected types and prepare the new-value list, without appending/deploying anything yet.
+      description: No profile with that name exists yet - search Cortex XSOAR indicators of the selected types and prepare the new-value list, without appending/deploying anything yet.
       scriptName: NetskopeIndicatorSync
       type: regular
       iscommand: false
@@ -517,7 +517,7 @@ tasks:
           left:
             value:
               complex:
-                root: NetskopeSync.all_new_values
+                root: Netskope.Sync.AllNewValues
             iscontext: true
     view: |-
       {
@@ -556,7 +556,7 @@ tasks:
           root: SyncConfig.MatchType
       values:
         complex:
-          root: NetskopeSync.all_new_values
+          root: Netskope.Sync.AllNewValues
     separatecontext: false
     view: |-
       {
@@ -608,7 +608,7 @@ inputs:
   value:
     simple: Domain,URL,IP,CIDR
   required: false
-  description: Comma-separated list of XSOAR indicator types to pull and sync into the profile. One or more of Domain, URL, IP, CIDR. Defaults to all four - keep task   #14's fallback value in sync if you change this.
+  description: Comma-separated list of Cortex XSOAR indicator types to pull and sync into the profile. One or more of Domain, URL, IP, CIDR. Defaults to all four - keep task   #14's fallback value in sync if you change this.
   playbookInputQuery:
 - key: Tags
   value: {}
@@ -623,10 +623,10 @@ inputs:
 - key: MaxIndicators
   value: {}
   required: false
-  description: Maximum number of indicators to pull from XSOAR per run (default 500 if left empty). Bounds how much work a single scheduled run does.
+  description: Maximum number of indicators to pull from Cortex XSOAR per run (default 500 if left empty). Bounds how much work a single scheduled run does.
   playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 8.9.0
-issilent: false
+issilent: true

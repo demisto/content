@@ -24,12 +24,12 @@ def main():
         result = scan_result or {}
 
     if not result:
-        outputs = {"labels_json": "[]", "summary": "No scan result to record on the incident."}
+        outputs = {"LabelsJson": "[]", "Summary": "No scan result to record on the incident."}
     else:
         labels = build_labels(result)
         outputs = {
-            "labels_json": json.dumps(labels),
-            "summary": (
+            "LabelsJson": json.dumps(labels),
+            "Summary": (
                 f'Recorded Netskope File Scan labels on the incident for job "{result.get("jobid", "")}" '
                 f"(verdict: {result.get('verdict', 'n/a')})."
             ),
@@ -37,8 +37,8 @@ def main():
 
     return_results(
         CommandResults(
-            readable_output=outputs["summary"],
-            outputs_prefix="NetskopeFileScanLabels",
+            readable_output=outputs["Summary"],
+            outputs_prefix="Netskope.FileScanLabels",
             outputs=outputs,
         )
     )

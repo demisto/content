@@ -8,7 +8,7 @@ def get_current_app(app_id: str) -> dict:
     # netskopev2-list-private-apps has no filter/get-by-id, so fetch everything and find the
     # match here - same EntryContext-based parsing as NetskopeResolvePrivateAppId (Contents
     # reflects raw_response for this command, not outputs).
-    res = demisto.executeCommand("netskopev2-list-private-apps", {})
+    res = demisto.executeCommand("netskopev2-list-private-apps", {"all_results": "true"})
     if is_error(res):
         raise DemistoException(f"Failed to list private apps: {get_error(res)}")
 
@@ -143,7 +143,7 @@ def main():
                 tag_names = remove_tag_names(tag_names, tags_to_remove)
             final_tags = ",".join(tag_names)
 
-    outputs = {"host": final_host, "protocols_json": final_protocols_json, "tags": final_tags}
+    outputs = {"Host": final_host, "ProtocolsJson": final_protocols_json, "Tags": final_tags}
     readable_output = (
         f"Merged fields for app_id {app_id!r}: host={final_host!r}, protocols_json={final_protocols_json!r}, tags={final_tags!r}"
     )
@@ -151,7 +151,7 @@ def main():
     return_results(
         CommandResults(
             readable_output=readable_output,
-            outputs_prefix="MergedPrivateAppFields",
+            outputs_prefix="Netskope.MergedPrivateAppFields",
             outputs=outputs,
         )
     )

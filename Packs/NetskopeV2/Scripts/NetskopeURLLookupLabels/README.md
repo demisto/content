@@ -22,7 +22,7 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| lookup_result | The Netskope.URLLookup context output (a list, or a single-element dict if XSOAR unwraps it) - bind this directly to ${Netskope.URLLookup}. |
+| lookup_result | The Netskope.URLLookup context output (a list, or a single-element dict if Cortex XSOAR unwraps it) - bind this directly to ${Netskope.URLLookup}. |
 
 ## Outputs
 
@@ -30,5 +30,5 @@ This script uses the following commands and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| NetskopeURLLookupLabels.labels_json | JSON string ready to pass as setIncident's addLabels argument. | String |
-| NetskopeURLLookupLabels.summary | Human-readable summary of what was recorded. | String |
+| Netskope.URLLookupLabels.LabelsJson | The JSON string ready to pass as setIncident's addLabels argument. | String |
+| Netskope.URLLookupLabels.Summary | The human-readable summary of what was recorded. | String |

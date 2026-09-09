@@ -1,8 +1,8 @@
 # Netskope - Direct to Zero Trust
 
-The Netskope - Direct to Zero Trust content pack provides policy-enforcement and Zero Trust workflows for Cortex XSOAR. It combines Netskope API v2 capabilities with the API v1 file-hash-list operation required for hash-blocking workflows.
+The Netskope - Direct to Zero Trust content pack provides policy-enforcement and Zero Trust workflows for Cortex XSOAR and Cortex XSIAM. It combines Netskope API v2 capabilities with the API v1 file-hash-list operation required for hash-blocking workflows.
 
-## What this pack includes
+## What does this pack do?
 
 - URL-list management and URL reputation lookup.
 - Device classification tags, device tags, and device lookup.
@@ -10,7 +10,7 @@ The Netskope - Direct to Zero Trust content pack provides policy-enforcement and
 - Private application (ZTNA/NPA) management and publisher discovery.
 - File submission to Netskope Threat Protection and scan-report retrieval.
 - File-hash-list updates through Netskope API v1.
-- Playbooks for blocking domains and IP addresses, synchronizing threat intelligence, managing private applications, inspecting files, and looking up URLs.
+- Playbooks for blocking domains and IP addresses, synchronizing threat intelligence, managing private applications, inspecting files, and looking up URLs. See the linked playbook documentation below for inputs and workflow details.
 - Helper scripts used by the included playbooks.
 
 ## Configuration
@@ -32,12 +32,12 @@ The file-hash-list update command replaces the complete list through API v1. Use
 
 ## Included playbooks
 
-- Block Domain - Netskope
-- Block Domain - Destination Profile - Netskope
-- Block IP - Network Profile - Netskope
-- Manage Private App Segment - Netskope
-- Sync Threat Intel to Destination Profile - Netskope
-- Sync Threat Intel to File Hash List - Netskope
-- Threat Inspection - Netskope
-- Update File Hash List - Netskope
-- URL Lookup - Netskope
+- [Block Domain - Netskope](https://github.com/demisto/content/blob/master/Packs/NetskopeV2/Playbooks/Block_Domain_-_Netskope_README.md)
+- [Block Domain - Destination Profile - Netskope](https://github.com/demisto/content/blob/master/Packs/NetskopeV2/Playbooks/Block_Domain_-_Destination_Profile_-_Netskope_README.md)
+- [Block IP - Network Profile - Netskope](https://github.com/demisto/content/blob/master/Packs/NetskopeV2/Playbooks/Block_IP_-_Network_Profile_-_Netskope_README.md)
+- [Manage Private App Segment - Netskope](https://github.com/demisto/content/blob/master/Packs/NetskopeV2/Playbooks/Manage_Private_App_Segment_-_Netskope_README.md)
+- [Sync Threat Intel to Destination Profile - Netskope](https://github.com/demisto/content/blob/master/Packs/NetskopeV2/Playbooks/Sync_Threat_Intel_to_Destination_Profile_-_Netskope_README.md)
+- [Sync Threat Intel to File Hash List - Netskope](https://github.com/demisto/content/blob/master/Packs/NetskopeV2/Playbooks/Sync_Threat_Intel_to_File_Hash_List_-_Netskope_README.md)
+- [Threat Inspection - Netskope](https://github.com/demisto/content/blob/master/Packs/NetskopeV2/Playbooks/Threat_Inspection_-_Netskope_README.md)
+- [Update File Hash List - Netskope](https://github.com/demisto/content/blob/master/Packs/NetskopeV2/Playbooks/Update_File_Hash_List_-_Netskope_README.md)
+- [URL Lookup - Netskope](https://github.com/demisto/content/blob/master/Packs/NetskopeV2/Playbooks/URL_Lookup_-_Netskope_README.md)

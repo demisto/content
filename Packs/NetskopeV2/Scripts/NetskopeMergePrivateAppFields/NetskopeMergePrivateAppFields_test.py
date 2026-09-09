@@ -156,10 +156,10 @@ def test_main_passes_through_direct_values_when_nothing_to_add_or_remove(mocker)
     main()
 
     execute_mock.assert_not_called()
-    outputs = results_mock.call_args[0][0]["EntryContext"]["MergedPrivateAppFields"]
-    assert outputs["host"] == "10.0.0.6"
-    assert outputs["protocols_json"] == '[{"type": "tcp", "port": "443"}]'
-    assert outputs["tags"] == "existing"
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.MergedPrivateAppFields"]
+    assert outputs["Host"] == "10.0.0.6"
+    assert outputs["ProtocolsJson"] == '[{"type": "tcp", "port": "443"}]'
+    assert outputs["Tags"] == "existing"
 
 
 def test_main_merges_hosts_ports_and_tags(mocker):
@@ -206,7 +206,7 @@ def test_main_merges_hosts_ports_and_tags(mocker):
 
     main()
 
-    outputs = results_mock.call_args[0][0]["EntryContext"]["MergedPrivateAppFields"]
-    assert outputs["host"] == "webserver.local,10.0.0.5"
-    assert outputs["protocols_json"] == '[{"type": "tcp", "port": "22"}, {"type": "tcp", "port": "8080"}]'
-    assert outputs["tags"] == "foo,test"
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.MergedPrivateAppFields"]
+    assert outputs["Host"] == "webserver.local,10.0.0.5"
+    assert outputs["ProtocolsJson"] == '[{"type": "tcp", "port": "22"}, {"type": "tcp", "port": "8080"}]'
+    assert outputs["Tags"] == "foo,test"

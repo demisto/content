@@ -110,10 +110,10 @@ def test_main_uses_app_id_directly_without_lookup(mocker):
     main()
 
     execute_mock.assert_not_called()
-    outputs = results_mock.call_args[0][0]["EntryContext"]["ResolvedAppId"]
-    assert outputs["app_id"] == "4458"
-    assert outputs["resolved_by"] == "app_id"
-    assert outputs["error"] == ""
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.ResolvedAppId"]
+    assert outputs["AppId"] == "4458"
+    assert outputs["ResolvedBy"] == "app_id"
+    assert outputs["Error"] == ""
 
 
 def test_main_resolves_app_name(mocker):
@@ -141,10 +141,10 @@ def test_main_resolves_app_name(mocker):
 
     main()
 
-    outputs = results_mock.call_args[0][0]["EntryContext"]["ResolvedAppId"]
-    assert outputs["app_id"] == "4458"
-    assert outputs["resolved_by"] == "app_name"
-    assert outputs["error"] == ""
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.ResolvedAppId"]
+    assert outputs["AppId"] == "4458"
+    assert outputs["ResolvedBy"] == "app_name"
+    assert outputs["Error"] == ""
 
 
 def test_main_app_name_not_found(mocker):
@@ -162,9 +162,9 @@ def test_main_app_name_not_found(mocker):
 
     main()
 
-    outputs = results_mock.call_args[0][0]["EntryContext"]["ResolvedAppId"]
-    assert outputs["app_id"] == ""
-    assert "No private app found" in outputs["error"]
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.ResolvedAppId"]
+    assert outputs["AppId"] == ""
+    assert "No private app found" in outputs["Error"]
 
 
 def test_main_neither_app_id_nor_app_name_provided(mocker):
@@ -181,6 +181,6 @@ def test_main_neither_app_id_nor_app_name_provided(mocker):
 
     main()
 
-    outputs = results_mock.call_args[0][0]["EntryContext"]["ResolvedAppId"]
-    assert outputs["resolved_by"] == "none"
-    assert "must be provided" in outputs["error"]
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.ResolvedAppId"]
+    assert outputs["ResolvedBy"] == "none"
+    assert "must be provided" in outputs["Error"]

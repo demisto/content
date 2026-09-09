@@ -1,6 +1,6 @@
-id: Threat Inspection - Netskope
+id: silent-Threat Inspection - Netskope
 version: -1
-name: Threat Inspection - Netskope
+name: silent-Threat Inspection - Netskope
 description: |-
   Submits a file for Netskope's sandbox scan (netskopev2-submit-file-scan /
   netskopev2-get-scan-report) and polls for the result, since the scan is asynchronous and can
@@ -339,7 +339,7 @@ tasks:
       - "4"
     scriptarguments:
       addLabels:
-        simple: ${NetskopeFileScanLabels.labels_json}
+        simple: ${Netskope.FileScanLabels.LabelsJson}
     separatecontext: false
     view: |-
       {
@@ -393,4 +393,4 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 8.9.0
-issilent: false
+issilent: true

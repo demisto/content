@@ -29,21 +29,21 @@ def main():
         results = lookup_result or []
 
     if not results:
-        outputs = {"labels_json": "[]", "summary": "No URL Lookup result to record on the incident."}
+        outputs = {"LabelsJson": "[]", "Summary": "No URL Lookup result to record on the incident."}
     else:
         # Netskope.URLLookup is a list even for a single queried URL - this playbook only ever
         # looks up one URL, so the first (only) result is what gets recorded.
         result = results[0]
         labels = build_labels(result)
         outputs = {
-            "labels_json": json.dumps(labels),
-            "summary": f'Recorded Netskope URL Lookup labels on the incident for "{result.get("url", "")}".',
+            "LabelsJson": json.dumps(labels),
+            "Summary": f'Recorded Netskope URL Lookup labels on the incident for "{result.get("url", "")}".',
         }
 
     return_results(
         CommandResults(
-            readable_output=outputs["summary"],
-            outputs_prefix="NetskopeURLLookupLabels",
+            readable_output=outputs["Summary"],
+            outputs_prefix="Netskope.URLLookupLabels",
             outputs=outputs,
         )
     )

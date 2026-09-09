@@ -1,4 +1,4 @@
-Used by the Manage Private App Segment modify flow. ***netskopev2-update-private-app*** (PATCH) always replaces `host`/`protocols`/`tags` wholesale rather than merging - there's no append/remove operation for private apps like there is for Destination/Network Profiles. This script fetches the app's current host/protocols/tags and applies the requested add/remove deltas, so Modify can add or remove a single value without discarding the rest.
+Fetches a private app's current host, protocols, and tags, then applies the requested additions or removals without discarding the other values. This supports the Manage Private App Segment modify flow because ***netskopev2-update-private-app*** (PATCH) replaces host, protocols, and tags wholesale rather than merging them.
 
 ## Script Data
 
@@ -22,17 +22,17 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| app_id | ID of the private app to read current host/protocols/tags from. Required only if hosts_to_add, ports_to_add, hosts_to_remove, ports_to_remove, tags_to_add, or tags_to_remove is provided. |
-| host | Direct-replace host value - passed through unchanged unless hosts_to_add or hosts_to_remove is also provided. |
-| protocols_json | Direct-replace protocols JSON - passed through unchanged unless ports_to_add or ports_to_remove is also provided. |
-| tags | Direct-replace comma-separated tags value - passed through unchanged unless tags_to_add or tags_to_remove is also provided. |
-| hosts_to_add | Comma-separated hosts to add to the app's existing host list without discarding the current ones. |
-| ports_to_add | Comma-separated ports to add to the app's existing protocols without discarding the current ones. |
-| hosts_to_remove | Comma-separated hosts to remove from the app's existing host list without discarding the rest. |
-| ports_to_remove | Comma-separated ports to remove from the app's existing protocols without discarding the rest. |
-| tags_to_add | Comma-separated tags to add to the app's existing tags without discarding the current ones. |
-| tags_to_remove | Comma-separated tags to remove from the app's existing tags without discarding the rest. |
-| protocol_type | Transport protocol used for any newly added ports in ports_to_add. Default is "tcp". |
+| app_id | The ID of the private app to read current host/protocols/tags from. Required only if hosts_to_add, ports_to_add, hosts_to_remove, ports_to_remove, tags_to_add, or tags_to_remove is provided. |
+| host | The direct-replace host value (from the Host input) - passed through unchanged unless hosts_to_add or hosts_to_remove is also provided, in which case those win and this is ignored. |
+| protocols_json | The direct-replace protocols JSON (from Netskope.BuiltProtocols.ProtocolsJson) - passed through unchanged unless ports_to_add or ports_to_remove is also provided, in which case those win and this is ignored. |
+| tags | The direct-replace comma-separated tags value (from the Tags input) - passed through unchanged unless tags_to_add or tags_to_remove is also provided, in which case those win and this is ignored. |
+| hosts_to_add | The comma-separated hosts to add to the app's existing host list (e.g. "10.0.0.5") - fetches the app's current host first and merges, deduplicating case-insensitively. |
+| ports_to_add | The comma-separated ports to add to the app's existing protocols (e.g. "8080") - fetches the app's current protocols first and merges, skipping ports already present. |
+| hosts_to_remove | The comma-separated hosts to remove from the app's existing host list (e.g. "10.0.0.5") - fetches the app's current host first and removes just these entries. |
+| ports_to_remove | The comma-separated ports to remove from the app's existing protocols (e.g. "8080") - fetches the app's current protocols first and removes just the matching port entries. |
+| tags_to_add | The comma-separated tags to add to the app's existing tags (e.g. "test") - fetches the app's current tags first and merges, deduplicating case-insensitively. |
+| tags_to_remove | The comma-separated tags to remove from the app's existing tags (e.g. "test") - fetches the app's current tags first and removes just these entries. |
+| protocol_type | The transport protocol used for any newly added ports in ports_to_add. Default is "tcp". |
 
 ## Outputs
 
@@ -40,6 +40,6 @@ This script uses the following commands and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| MergedPrivateAppFields.host | Final host value to send. | String |
-| MergedPrivateAppFields.protocols_json | Final protocols JSON to send. | String |
-| MergedPrivateAppFields.tags | Final comma-separated tags value to send. | String |
+| Netskope.MergedPrivateAppFields.Host | The final host value to send - merged with hosts_to_add/hosts_to_remove if provided, otherwise the direct-replace value passed through unchanged. | String |
+| Netskope.MergedPrivateAppFields.ProtocolsJson | The final protocols JSON to send - merged with ports_to_add/ports_to_remove if provided, otherwise the direct-replace value passed through unchanged. | String |
+| Netskope.MergedPrivateAppFields.Tags | The final comma-separated tags value to send - with tags_to_add/tags_to_remove applied if provided, otherwise the direct-replace value passed through unchanged. | String |

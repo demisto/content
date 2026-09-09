@@ -98,7 +98,7 @@ def test_main_saves_list_content(mocker):
     When:
         - Running main.
     Then:
-        - XsoarList.name/content reflect what was saved.
+        - Netskope.XsoarList.Name/content reflect what was saved.
     """
     mocker.patch.object(demisto, "args", return_value={"listName": "MyList", "listData": "a,b"})
     mocker.patch.object(demisto, "executeCommand", return_value=[{"Type": 1, "Contents": "ok"}])
@@ -106,6 +106,6 @@ def test_main_saves_list_content(mocker):
 
     main()
 
-    outputs = results_mock.call_args[0][0]["EntryContext"]["XsoarList(val.name && val.name == obj.name)"]
-    assert outputs["name"] == "MyList"
-    assert outputs["content"] == "a,b"
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.XsoarList(val.Name && val.Name == obj.Name)"]
+    assert outputs["Name"] == "MyList"
+    assert outputs["Content"] == "a,b"

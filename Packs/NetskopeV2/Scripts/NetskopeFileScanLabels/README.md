@@ -22,7 +22,7 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| scan_result | The Netskope.FileScanReport context output from netskopev2-get-scan-report (a dict, or a single-element list if XSOAR wraps it) - bind this directly to ${Netskope.FileScanReport}. |
+| scan_result | The Netskope.FileScanReport context output from netskopev2-get-scan-report (a dict, or a single-element list if Cortex XSOAR wraps it) - bind this directly to ${Netskope.FileScanReport}. |
 
 ## Outputs
 
@@ -30,5 +30,5 @@ This script uses the following commands and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| NetskopeFileScanLabels.labels_json | JSON string ready to pass as setIncident's addLabels argument. | String |
-| NetskopeFileScanLabels.summary | Human-readable summary of what was recorded. | String |
+| Netskope.FileScanLabels.LabelsJson | The JSON string ready to pass as setIncident's addLabels argument. | String |
+| Netskope.FileScanLabels.Summary | The human-readable summary of what was recorded. | String |

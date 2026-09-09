@@ -35,9 +35,9 @@ def main():
     return_results(
         CommandResults(
             readable_output=f'Saved list "{list_name}".',
-            outputs_prefix="XsoarList",
-            outputs_key_field="name",
-            outputs={"name": list_name, "content": list_data},
+            outputs_prefix="Netskope.XsoarList",
+            outputs_key_field="Name",
+            outputs={"Name": list_name, "Content": list_data},
         )
     )
 

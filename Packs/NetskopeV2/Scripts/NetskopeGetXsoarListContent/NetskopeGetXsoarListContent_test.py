@@ -66,7 +66,7 @@ def test_main_returns_list_content(mocker):
     When:
         - Running main.
     Then:
-        - XsoarList.name/content are set from the list.
+        - Netskope.XsoarList.Name/content are set from the list.
     """
     mocker.patch.object(demisto, "args", return_value={"listName": "MyList"})
     mocker.patch.object(demisto, "executeCommand", return_value=[{"Type": 1, "Contents": "a,b"}])
@@ -74,6 +74,6 @@ def test_main_returns_list_content(mocker):
 
     main()
 
-    outputs = results_mock.call_args[0][0]["EntryContext"]["XsoarList(val.name && val.name == obj.name)"]
-    assert outputs["name"] == "MyList"
-    assert outputs["content"] == "a,b"
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.XsoarList(val.Name && val.Name == obj.Name)"]
+    assert outputs["Name"] == "MyList"
+    assert outputs["Content"] == "a,b"

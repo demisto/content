@@ -45,7 +45,7 @@ def test_build_labels_handles_missing_nested_arrays():
 def test_main_handles_lookup_result_as_dict(mocker):
     """
     Given:
-        - lookup_result provided as a single dict (XSOAR can unwrap a one-item list this way).
+        - lookup_result provided as a single dict (Cortex XSOAR can unwrap a one-item list this way).
     When:
         - Running main.
     Then:
@@ -56,8 +56,8 @@ def test_main_handles_lookup_result_as_dict(mocker):
 
     main()
 
-    outputs = results_mock.call_args[0][0]["EntryContext"]["NetskopeURLLookupLabels"]
-    labels = json.loads(outputs["labels_json"])
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.URLLookupLabels"]
+    labels = json.loads(outputs["LabelsJson"])
     assert {"NetskopeURLLookupURL": "evil.com"} in labels
 
 
@@ -75,8 +75,8 @@ def test_main_handles_list_result_uses_first_entry(mocker):
 
     main()
 
-    outputs = results_mock.call_args[0][0]["EntryContext"]["NetskopeURLLookupLabels"]
-    assert outputs["summary"] == 'Recorded Netskope URL Lookup labels on the incident for "evil.com".'
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.URLLookupLabels"]
+    assert outputs["Summary"] == 'Recorded Netskope URL Lookup labels on the incident for "evil.com".'
 
 
 def test_main_handles_empty_result(mocker):
@@ -93,6 +93,6 @@ def test_main_handles_empty_result(mocker):
 
     main()
 
-    outputs = results_mock.call_args[0][0]["EntryContext"]["NetskopeURLLookupLabels"]
-    assert outputs["labels_json"] == "[]"
-    assert "No URL Lookup result" in outputs["summary"]
+    outputs = results_mock.call_args[0][0]["EntryContext"]["Netskope.URLLookupLabels"]
+    assert outputs["LabelsJson"] == "[]"
+    assert "No URL Lookup result" in outputs["Summary"]

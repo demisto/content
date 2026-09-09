@@ -1,14 +1,14 @@
-id: Sync Threat Intel to File Hash List - Netskope
+id: silent-Sync Threat Intel to File Hash List - Netskope
 version: -1
-name: Sync Threat Intel to File Hash List - Netskope
+name: silent-Sync Threat Intel to File Hash List - Netskope
 description: |-
-  Meant to run periodically (attach it to an hourly scheduled Job in XSOAR) to keep a Netskope
-  file hash list in sync with File indicators already ingested into XSOAR's own Threat Intel
-  Management.
+  Synchronizes a Netskope file hash list with File indicators already ingested into Cortex XSOAR's
+  Threat Intel Management. Run it periodically, for example, from an hourly scheduled Job in Cortex
+  XSOAR.
 
-  Maintains the same "list is replace-only, track history on the XSOAR side" logic used by the
+  Maintains the same "list is replace-only, track history on the Cortex XSOAR side" logic used by the
   manual Update File Hash List playbook: Netskope's v1 file hash list API has no endpoint to read
-  the current list content, so this playbook tracks the running hash set in an XSOAR List named
+  the current list content, so this playbook tracks the running hash set in a Cortex XSOAR List named
   "NetskopeHashList_<ListName>" (via NetskopeGetXsoarListContent / NetskopeSetXsoarListContentWithRetry,
   exactly as before), merges it with newly found hashes from Threat Intel, and sends the full
   merged set as a replace. If nothing new is found, it skips the update call entirely rather than
@@ -25,10 +25,10 @@ description: |-
   HashSyncConfig context key that every downstream task reads from.
 
   Checks whether a Netskope integration instance is enabled (matching any brand name containing
-  "Netskope"), reads the currently tracked hash set, searches XSOAR File indicators (optionally
+  "Netskope"), reads the currently tracked hash set, searches Cortex XSOAR File indicators (optionally
   restricted by Tags) for valid MD5 (32 hex chars) or SHA256 (64 hex chars) hashes - checking both
   an indicator's value and its md5/sha256 CustomFields - and if any aren't already tracked,
-  updates the Netskope list and saves the new full set back to the XSOAR List for the next run.
+  updates the Netskope list and saves the new full set back to the Cortex XSOAR List for the next run.
 
   Ends with a Close Investigation task - a recurring Job typically won't start a new run while
   the previous job-created incident is still open, so leaving it open (the default if a playbook
@@ -36,7 +36,7 @@ description: |-
   interval.
 
   Make sure only one Netskope integration instance is enabled at a time - if two are enabled,
-  XSOAR dispatches the update command to both.
+  Cortex XSOAR dispatches the update command to both.
 starttaskid: "0"
 tasks:
   "0":
@@ -246,9 +246,9 @@ tasks:
       version: -1
       name: Update Hash List
       description: |-
-        Replaces the full hash list content with the XSOAR-tracked hashes + newly found Threat
+        Replaces the full hash list content with the Cortex XSOAR-tracked hashes + newly found Threat
         Intel hashes merged (Netskope's v1 API has no read/append endpoint - this is why the
-        running set is tracked on the XSOAR side, via Get Currently Tracked Hashes).
+        running set is tracked on the Cortex XSOAR side, via Get Currently Tracked Hashes).
       script: "|||netskopev2-update-file-hash-list"
       type: regular
       iscommand: true
@@ -262,7 +262,7 @@ tasks:
           root: HashSyncConfig.ListName
       hash:
         complex:
-          root: NetskopeHashSync.merged_hashes
+          root: Netskope.HashSync.MergedHashes
     separatecontext: false
     view: |-
       {
@@ -343,7 +343,7 @@ tasks:
       id: 9645c93f-139a-484c-9147-57b2b88b0d63
       version: -1
       name: Get Currently Tracked Hashes
-      description: Reads (and creates if missing) the XSOAR List that tracks this Netskope hash list's current content between runs.
+      description: Reads (and creates if missing) the Cortex XSOAR List that tracks this Netskope hash list's current content between runs.
       scriptName: NetskopeGetXsoarListContent
       type: regular
       iscommand: false
@@ -375,7 +375,7 @@ tasks:
       id: 4d60b077-e458-48b1-ad78-cfed088c20a5
       version: -1
       name: Save Updated Hash List
-      description: Writes the now-validated, Netskope-accepted hash set back to the XSOAR List so the next run picks up where this one left off. Retries a few times on a transient Elasticsearch version-conflict error (seen when this list is written to in close succession).
+      description: Writes the now-validated, Netskope-accepted hash set back to the Cortex XSOAR List so the next run picks up where this one left off. Retries a few times on a transient Elasticsearch version-conflict error (seen when this list is written to in close succession).
       scriptName: NetskopeSetXsoarListContentWithRetry
       type: regular
       iscommand: false
@@ -416,7 +416,7 @@ tasks:
       id: 4bf39664-331f-4d55-8389-5374c74cccc1
       version: -1
       name: Find New Hashes from Threat Intel
-      description: Search XSOAR File indicators (optionally filtered by Tags) for valid MD5/SHA256 hashes not already tracked, and compute the full merged replace-set.
+      description: Search Cortex XSOAR File indicators (optionally filtered by Tags) for valid MD5/SHA256 hashes not already tracked, and compute the full merged replace-set.
       scriptName: NetskopeFileHashSync
       type: regular
       iscommand: false
@@ -430,7 +430,7 @@ tasks:
           root: inputs.Tags
       existing_hashes:
         complex:
-          root: XsoarList.content
+          root: Netskope.XsoarList.Content
       max_indicators:
         complex:
           root: inputs.MaxIndicators
@@ -472,7 +472,7 @@ tasks:
           left:
             value:
               complex:
-                root: NetskopeHashSync.new_hashes
+                root: Netskope.HashSync.NewHashes
             iscontext: true
     view: |-
       {
@@ -520,10 +520,10 @@ inputs:
 - key: MaxIndicators
   value: {}
   required: false
-  description: Maximum number of File indicators to pull from XSOAR per run (default 500 if left empty). Bounds how much work a single scheduled run does.
+  description: Maximum number of File indicators to pull from Cortex XSOAR per run (default 500 if left empty). Bounds how much work a single scheduled run does.
   playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 8.9.0
-issilent: false
+issilent: true

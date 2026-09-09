@@ -1,4 +1,4 @@
-Writes to an XSOAR List via `setList`, retrying a few times on a transient Elasticsearch version-conflict (409) error - used to track Netskope file hash list content between playbook runs.
+Writes to a Cortex XSOAR List via `setList`, retrying a few times on a transient Elasticsearch version-conflict (409) error - used to track Netskope file hash list content between playbook runs.
 
 ## Script Data
 
@@ -22,8 +22,8 @@ This script uses the following commands and scripts.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| listName | Name of the XSOAR List to write to. |
-| listData | Full content to save to the list. |
+| listName | The name of the Cortex XSOAR List to write to. |
+| listData | The full content to save to the list. |
 
 ## Outputs
 
@@ -31,5 +31,5 @@ This script uses the following commands and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| XsoarList.name | Name of the XSOAR List that was written. | String |
-| XsoarList.content | Content that was saved to the list. | String |
+| Netskope.XsoarList.Name | The name of the Cortex XSOAR List that was written. | String |
+| Netskope.XsoarList.Content | The content that was saved to the list. | String |
