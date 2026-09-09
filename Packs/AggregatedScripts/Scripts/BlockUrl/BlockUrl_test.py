@@ -26,22 +26,36 @@ def build_pan_os(**overrides) -> PanOs:
         "url_filtering_profile": "Cortex - Block URL profile",
         "log_forwarding_name": "",
         "tag": "cortex-blocked-urls",
-        "admin_name": "apiadmin",
-        "vsys": "vsys1",
         "auto_commit": True,
         "verbose": False,
-        "incident_id": "2626",
+        "incident_id": "1",
     }
     args.update(overrides)
     pan_os = PanOs(args)
     pan_os.is_panorama = overrides.pop("is_panorama", True)
-    pan_os.device_group = overrides.pop("device_group", "Lab-Devices")
+    pan_os.device_group = overrides.pop("device_group", "Test-Device-Group")
     return pan_os
 
 
 def executed_commands(mock) -> list[tuple[str, dict]]:
     """The (command name, args) pairs that were executed, in order."""
     return [(call.args[0], call.args[1]) for call in mock.call_args_list]
+
+
+def successful_flow_responses() -> list:
+    """The responses of a full start_pan_os_flow run on a Panorama holding none of the objects yet."""
+    return [
+        RESPONSES["system_info_panorama"],
+        RESPONSES["object_not_found"],
+        RESPONSES["category_created"],
+        RESPONSES["object_not_found"],
+        RESPONSES["url_filter_created"],
+        RESPONSES["tag_created"],
+        RESPONSES["list_rules_empty"],
+        RESPONSES["rule_created"],
+        RESPONSES["profile_applied"],
+        RESPONSES["rule_moved"],
+    ]
 
 
 """ URL NORMALIZATION """
@@ -155,7 +169,7 @@ def test_partition_urls_mixed():
     "value, expected",
     [
         ("URL List", "URL List"),
-        ({"#text": "URL List", "@dirtyId": "1074", "@admin": "apiadmin"}, "URL List"),
+        ({"#text": "URL List", "@dirtyId": "1074", "@admin": "test-admin"}, "URL List"),
         (None, ""),
         ({}, ""),
     ],
@@ -390,99 +404,84 @@ def test_ensure_url_filtering_profile_skips_when_category_attached(mocker):
     assert [name for name, _ in executed_commands(execute_mock)] == ["pan-os-get-url-filter"]
 
 
-""" USER CREDENTIAL SUBMISSION """
-
-
-def test_credential_enforcement_xpath_panorama():
-    """
-    Given:
-       - A Panorama instance with a device group.
-    When:
-       - Building the credential-enforcement xpath.
-    Then:
-       - The xpath is scoped by device group.
-    """
-    pan_os = build_pan_os()
-    pan_os.is_panorama = True
-    pan_os.device_group = "Lab-Devices"
-
-    assert pan_os.credential_enforcement_xpath() == (
-        "/config/devices/entry[@name='localhost.localdomain']/device-group/entry[@name='Lab-Devices']/"
-        "profiles/url-filtering/entry[@name='Cortex - Block URL profile']/credential-enforcement"
-    )
-
-
-def test_credential_enforcement_xpath_firewall():
-    """
-    Given:
-       - A plain firewall instance, which has no device group.
-    When:
-       - Building the credential-enforcement xpath.
-    Then:
-       - The xpath is scoped by vsys.
-    """
-    pan_os = build_pan_os(vsys="vsys2")
-    pan_os.is_panorama = False
-    pan_os.device_group = ""
-
-    assert pan_os.credential_enforcement_xpath() == (
-        "/config/devices/entry[@name='localhost.localdomain']/vsys/entry[@name='vsys2']/"
-        "profiles/url-filtering/entry[@name='Cortex - Block URL profile']/credential-enforcement"
-    )
-
-
-def test_set_credential_submission_block_sends_mode(mocker):
-    """
-    Given:
-       - A URL filtering profile whose User Credential Submission must be set to block.
-    When:
-       - Writing the credential-enforcement node through the generic config command.
-    Then:
-       - The element carries the mandatory <mode>, without which the block list stays inert, and the
-         call uses the idempotent action=set.
-    """
-    execute_mock = mocker.patch.object(demisto, "executeCommand", return_value=RESPONSES["generic_success"])
-
-    build_pan_os().set_credential_submission_block()
-
-    command_name, command_args = executed_commands(execute_mock)[0]
-    assert command_name == "pan-os"
-    assert command_args["action"] == "set"
-    assert "<mode><ip-user/></mode>" in command_args["element"]
-    assert "<block><member>Blocked URLs - Cortex</member></block>" in command_args["element"]
-
-
 """ TAG AND SECURITY RULE """
 
 
 def test_ensure_tag_created_before_rule(mocker):
     """
     Given:
-       - A flow that creates a security rule referencing a tag.
+       - A full PAN-OS configuration flow that creates a security rule referencing a tag.
     When:
-       - Running the tag and the rule steps.
+       - Running start_pan_os_flow, which is where the real step ordering is decided.
     Then:
        - The tag is created before the rule, since PAN-OS rejects a rule that references an unknown
          tag with "tag '<name>' is not a valid reference".
     """
-    execute_mock = mocker.patch.object(
-        demisto,
-        "executeCommand",
-        side_effect=[
-            RESPONSES["tag_created"],
-            RESPONSES["list_rules_empty"],
-            RESPONSES["rule_created"],
-            RESPONSES["profile_applied"],
-            RESPONSES["rule_moved"],
-        ],
-    )
+    execute_mock = mocker.patch.object(demisto, "executeCommand", side_effect=successful_flow_responses())
 
-    pan_os = build_pan_os()
-    pan_os.ensure_tag()
-    pan_os.ensure_security_rule()
+    build_pan_os().start_pan_os_flow()
 
     command_names = [name for name, _ in executed_commands(execute_mock)]
     assert command_names.index("pan-os-create-tag") < command_names.index("pan-os-create-rule")
+
+
+def test_start_pan_os_flow_step_order(mocker):
+    """
+    Given:
+       - A PAN-OS instance with none of the objects the script manages.
+    When:
+       - Running the configuration part of the flow.
+    Then:
+       - The steps run in the only order PAN-OS accepts: the topology is detected first, the category
+         is created before the profile that blocks it, and the tag exists before the rule that
+         references it.
+    """
+    execute_mock = mocker.patch.object(demisto, "executeCommand", side_effect=successful_flow_responses())
+
+    build_pan_os().start_pan_os_flow()
+
+    assert [name for name, _ in executed_commands(execute_mock)] == [
+        "pan-os",
+        "pan-os-get-custom-url-category",
+        "pan-os-create-custom-url-category",
+        "pan-os-get-url-filter",
+        "pan-os-create-url-filter",
+        "pan-os-create-tag",
+        "pan-os-list-rules",
+        "pan-os-create-rule",
+        "pan-os-apply-security-profile",
+        "pan-os-move-rule",
+    ]
+
+
+def test_start_pan_os_flow_reports_failure_reason(mocker):
+    """
+    Given:
+       - A flow that writes the category and the profile and then fails on the security rule.
+    When:
+       - The BlockUrlError aborts the flow before the commit.
+    Then:
+       - The PAN-OS failure reason is captured on the failure message. No rollback is done.
+    """
+    mocker.patch.object(
+        demisto,
+        "executeCommand",
+        side_effect=[
+            RESPONSES["system_info_panorama"],
+            RESPONSES["object_not_found"],
+            RESPONSES["category_created"],
+            RESPONSES["object_not_found"],
+            RESPONSES["url_filter_created"],
+            RESPONSES["tag_created"],
+            [{"Type": 4, "Contents": "rulebase is locked", "EntryContext": {}}],
+        ],
+    )
+    mocker.patch.object(demisto, "setContext")
+    pan_os = build_pan_os()
+
+    pan_os.start_pan_os_flow()
+
+    assert "rulebase is locked" in pan_os.failure_message
 
 
 def test_ensure_tag_failure_does_not_abort(mocker):
@@ -633,28 +632,26 @@ def test_build_commit_args_panorama():
     When:
        - Building the commit arguments.
     Then:
-       - The commit is scoped as narrowly as PAN-OS allows: by device group, by administrator, and
-         excluding the shared objects and the device and network configuration.
+       - The commit is scoped as narrowly as PAN-OS allows: by device group, excluding the shared
+         objects and the device and network configuration.
     """
     from BlockUrl import build_commit_args
 
     commit_args = build_commit_args(
         {
             "url_entries": [{"URL": "a", "SubmittedURL": "a"}, {"URL": "b", "SubmittedURL": "b"}],
-            "device_group": "Lab-Devices",
+            "device_group": "Test-Device-Group",
             "is_panorama": True,
-            "admin_name": "apiadmin",
-            "incident_id": "2626",
+            "incident_id": "1",
         }
     )
 
     assert commit_args == {
         "polling": True,
-        "description": "Block URL - 2 URL(s) - 2626",
+        "description": "Block URL - 2 URL(s) - 1",
         "exclude_device_network_configuration": True,
-        "device-group": "Lab-Devices",
+        "device-group": "Test-Device-Group",
         "exclude_shared_objects": True,
-        "admin_name": "apiadmin",
     }
 
 
@@ -669,7 +666,7 @@ def test_build_commit_args_firewall_drops_device_group():
     """
     from BlockUrl import build_commit_args
 
-    commit_args = build_commit_args({"url_entries": [], "is_panorama": False, "incident_id": "2626"})
+    commit_args = build_commit_args({"url_entries": [], "is_panorama": False, "incident_id": "1"})
 
     assert "device-group" not in commit_args
     assert "exclude_shared_objects" not in commit_args
@@ -693,7 +690,7 @@ def test_pan_os_commit_starts_polling(mocker):
     execute_mock = mocker.patch.object(demisto, "executeCommand", return_value=RESPONSES["commit_started"])
     set_context_mock = mocker.patch.object(demisto, "setContext")
 
-    pan_os_commit({"url_entries": [], "is_panorama": True, "device_group": "Lab-Devices"}, [])
+    pan_os_commit({"url_entries": [], "is_panorama": True, "device_group": "Test-Device-Group"}, [])
 
     assert BlockUrl.POLLING is True
     set_context_mock.assert_any_call("commit_job_id", "56795")
@@ -775,11 +772,11 @@ def test_pan_os_push_to_device_starts_polling(mocker):
     execute_mock = mocker.patch.object(demisto, "executeCommand", return_value=RESPONSES["push_started"])
     set_context_mock = mocker.patch.object(demisto, "setContext")
 
-    pan_os_push_to_device({"device_group": "Lab-Devices", "incident_id": "2626"}, [])
+    pan_os_push_to_device({"device_group": "Test-Device-Group", "incident_id": "1"}, [])
 
     assert BlockUrl.POLLING is True
     set_context_mock.assert_any_call("push_job_id", "56957")
-    assert executed_commands(execute_mock)[0][1]["device-group"] == "Lab-Devices"
+    assert executed_commands(execute_mock)[0][1]["device-group"] == "Test-Device-Group"
 
 
 def test_pan_os_push_status_pending_then_completed(mocker):
@@ -804,6 +801,132 @@ def test_pan_os_push_status_pending_then_completed(mocker):
     completed_result = pan_os_push_status({"push_job_id": "56957"}, [])
     assert BlockUrl.POLLING is False
     assert completed_result.outputs["Status"] == "Completed"
+
+
+""" JOB FAILURE """
+
+
+def test_pan_os_commit_status_failed_job_is_a_failure(mocker):
+    """
+    Given:
+       - A commit job that PAN-OS finished with a result other than OK. The command entry itself is a
+         type-1 success, so the is_error sweep cannot detect it.
+    When:
+       - Checking the commit status.
+    Then:
+       - Polling stops, the status is reported as a Failure, and the PAN-OS reason is published for
+         the flow so the push is skipped rather than pushing a config that failed validation.
+    """
+    import BlockUrl
+    from BlockUrl import pan_os_commit_status
+
+    BlockUrl.JOB_FAILURE_MESSAGE = ""
+    mocker.patch.object(demisto, "executeCommand", return_value=RESPONSES["commit_status_failed"])
+
+    result = pan_os_commit_status({"commit_job_id": "56795"}, [])
+
+    assert BlockUrl.POLLING is False
+    assert result.outputs["Status"] == "Failure"
+    assert "commit job 56795 failed" in BlockUrl.JOB_FAILURE_MESSAGE
+    assert "url-filtering profile is invalid" in BlockUrl.JOB_FAILURE_MESSAGE
+    BlockUrl.JOB_FAILURE_MESSAGE = ""
+
+
+def test_failed_commit_skips_the_push_and_reports_failed(mocker):
+    """
+    Given:
+       - A polling round that resumes on a commit job which PAN-OS finished with a failure.
+    When:
+       - Running the PAN-OS state machine.
+    Then:
+       - No push command is issued, and every URL is reported as Failed carrying the PAN-OS reason,
+         rather than "URL was blocked successfully."
+    """
+    import BlockUrl
+    from BlockUrl import PanOs
+
+    BlockUrl.JOB_FAILURE_MESSAGE = ""
+    execute_mock = mocker.patch.object(demisto, "executeCommand", return_value=RESPONSES["commit_status_failed"])
+    mocker.patch.object(demisto, "context", return_value={"commit_job_id": "56795"})
+    mocker.patch.object(demisto, "setContext")
+    pan_os = PanOs(build_pan_os().args | {"commit_job_id": "56795", "polling": True})
+
+    results = pan_os.manage_pan_os_flow()
+
+    executed = [name for name, _ in executed_commands(execute_mock)]
+    assert "pan-os-push-to-device-group" not in executed
+    assert results[0].outputs[0]["Result"] == "Failed"
+    assert "commit job 56795 failed" in results[0].outputs[0]["Message"]
+    BlockUrl.JOB_FAILURE_MESSAGE = ""
+
+
+def test_pan_os_push_status_empty_status_keeps_polling(mocker):
+    """
+    Given:
+       - A push status response that carries no Panorama.Push context at all, which the findings doc
+         records as normal while the job is still settling.
+    When:
+       - Checking the push status.
+    Then:
+       - Polling continues rather than stopping and reporting a full success. The polling decorator
+         timeout is the safety net for a status that never resolves.
+    """
+    import BlockUrl
+    from BlockUrl import pan_os_push_status
+
+    BlockUrl.JOB_FAILURE_MESSAGE = ""
+    mocker.patch.object(demisto, "executeCommand", return_value=RESPONSES["push_status_empty"])
+
+    pan_os_push_status({"push_job_id": "56957"}, [])
+
+    assert BlockUrl.POLLING is True
+    assert BlockUrl.JOB_FAILURE_MESSAGE == ""
+
+
+def test_pan_os_push_status_failed_job_is_a_failure(mocker):
+    """
+    Given:
+       - A push job that PAN-OS reports with an explicit failure status.
+    When:
+       - Checking the push status.
+    Then:
+       - Polling stops immediately instead of running to the timeout, and the failure is published
+         for the flow to report it.
+    """
+    import BlockUrl
+    from BlockUrl import pan_os_push_status
+
+    BlockUrl.JOB_FAILURE_MESSAGE = ""
+    mocker.patch.object(demisto, "executeCommand", return_value=RESPONSES["push_status_failed"])
+
+    result = pan_os_push_status({"push_job_id": "56957"}, [])
+
+    assert BlockUrl.POLLING is False
+    assert result.outputs["Status"] == "FAIL"
+    assert "push job 56957 failed" in BlockUrl.JOB_FAILURE_MESSAGE
+    assert "commit failed on the managed firewall" in BlockUrl.JOB_FAILURE_MESSAGE
+    BlockUrl.JOB_FAILURE_MESSAGE = ""
+
+
+def test_adopt_job_failure_clears_the_global():
+    """
+    Given:
+       - A job failure published by one of the polling functions.
+    When:
+       - The flow adopts it.
+    Then:
+       - It becomes the failure message of this run and the global is cleared, so it cannot leak into
+         an unrelated later run in the same process.
+    """
+    import BlockUrl
+
+    BlockUrl.JOB_FAILURE_MESSAGE = "the commit failed"
+    pan_os = build_pan_os()
+
+    assert pan_os.adopt_job_failure() is True
+    assert pan_os.failure_message == "the commit failed"
+    assert BlockUrl.JOB_FAILURE_MESSAGE == ""
+    assert pan_os.adopt_job_failure() is False
 
 
 """ BRAND RESUME """

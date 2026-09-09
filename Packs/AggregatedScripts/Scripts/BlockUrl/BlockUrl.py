@@ -7,6 +7,9 @@ from CommonServerPython import *
 
 
 POLLING = False
+# Set by the commit and the push status functions when PAN-OS reported a terminal failure. Read by
+# manage_pan_os_flow, which must then skip the push and report the failure instead of a success.
+JOB_FAILURE_MESSAGE = ""
 
 SUPPORTED_BRANDS = ["Panorama"]
 PAN_OS_BRAND = "Panorama"
@@ -21,12 +24,19 @@ DIRTY_OBJECT_ERROR = "Please commit the instance prior to editing"
 URL_LIST_TYPE = "URL List"
 MAX_URL_LENGTH = 255
 
-CATEGORY_DESCRIPTION = "Created by the Cortex block-url script."
-PROFILE_DESCRIPTION = "Created by the Cortex block-url script."
-RULE_DESCRIPTION = "Created by the Cortex block-url script."
+# The description stamped on every object this script creates, so an operator can tell them apart
+# from user-managed objects.
+OBJECT_DESCRIPTION = "Created by the Cortex block-url script."
 
 POLLING_INTERVAL = 30
 POLLING_TIMEOUT = 1200
+
+# A commit job that finished with any result other than "OK" failed. Warnings are not a failure.
+COMMIT_JOB_FINISHED_STATUS = "FIN"
+COMMIT_JOB_SUCCESS_RESULT = "OK"
+# The terminal statuses of a push job. Anything else, including an empty status, means "keep polling".
+PUSH_COMPLETED_STATUS = "Completed"
+PUSH_FAILURE_STATUSES = ("FAIL", "Failed")
 
 
 class BlockUrlError(Exception):
@@ -65,17 +75,6 @@ def _text_list(value: Any) -> list[str]:
         return []
     members = value if isinstance(value, list) else [value]
     return [text for text in (_text(member) for member in members) if text]
-
-
-def xml_escape(value: str) -> str:
-    """Escape a value so it can be embedded in an XML element or in an xpath predicate.
-
-    Args:
-        value (str): The raw value.
-    Returns:
-        The escaped value.
-    """
-    return value.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;").replace("'", "&apos;")
 
 
 def normalize_url(raw_url: str) -> tuple[str, str]:
@@ -393,7 +392,7 @@ class PanOs:
         category = self.args["url_category"]
         res = run_execute_command(
             "pan-os-create-custom-url-category",
-            {"name": category, "type": URL_LIST_TYPE, "sites": urls, "description": CATEGORY_DESCRIPTION},
+            {"name": category, "type": URL_LIST_TYPE, "sites": urls, "description": OBJECT_DESCRIPTION},
         )
         self.responses.append(res)
         raise_on_command_error(res, f"custom URL category '{category}'")
@@ -435,7 +434,7 @@ class PanOs:
                 "name": profile,
                 "url_category": self.args["url_category"],
                 "action": "block",
-                "description": PROFILE_DESCRIPTION,
+                "description": OBJECT_DESCRIPTION,
             },
         )
         self.responses.append(res)
@@ -483,43 +482,6 @@ class PanOs:
         if isinstance(categories, dict):
             categories = [categories]
         return any(_text(item.get("Name")) == category for item in categories)
-
-    """ USER CREDENTIAL SUBMISSION """
-
-    def credential_enforcement_xpath(self) -> str:
-        """Build the xpath of the credential-enforcement node of the URL filtering profile.
-
-        Returns:
-            The full xpath, scoped by device group on Panorama and by vsys on a firewall.
-        """
-        profile = xml_escape(self.args["url_filtering_profile"])
-        if self.is_panorama:
-            scope = f"device-group/entry[@name='{xml_escape(self.device_group)}']"
-        else:
-            scope = f"vsys/entry[@name='{xml_escape(self.args.get('vsys') or 'vsys1')}']"
-        return (
-            f"/config/devices/entry[@name='localhost.localdomain']/{scope}/"
-            f"profiles/url-filtering/entry[@name='{profile}']/credential-enforcement"
-        )
-
-    def set_credential_submission_block(self) -> None:
-        """Set User Credential Submission to BLOCK for the category.
-
-        Neither pan-os-create-url-filter nor pan-os-edit-url-filter can write this node, so the
-        generic pan-os config command is used. The <mode> element is required: without it credential
-        detection stays disabled and the block list is inert. "action=set" is a merge, so this call
-        is idempotent and is not clobbered by later pan-os-edit-url-filter calls.
-        Raises:
-            BlockUrlError: When the configuration command failed.
-        """
-        category = xml_escape(self.args["url_category"])
-        element = f"<mode><ip-user/></mode><log-severity>medium</log-severity><block><member>{category}</member></block>"
-        res = run_execute_command(
-            "pan-os",
-            {"type": "config", "action": "set", "xpath": self.credential_enforcement_xpath(), "element": element},
-        )
-        self.responses.append(res)
-        raise_on_command_error(res, f"URL filtering profile '{self.args['url_filtering_profile']}'")
 
     """ TAG AND SECURITY RULE """
 
@@ -573,7 +535,7 @@ class PanOs:
             "source": "any",
             "destination": "any",
             "application": "any",
-            "description": RULE_DESCRIPTION,
+            "description": OBJECT_DESCRIPTION,
         }
         if tag := self.args.get("tag", ""):
             create_rule_args["tags"] = tag
@@ -668,7 +630,6 @@ class PanOs:
             existing_category = self.get_custom_url_category()
             self.already_present_urls = self.ensure_url_category(existing_category, self.submitted_urls())
             self.ensure_url_filtering_profile()
-            self.set_credential_submission_block()
             self.ensure_tag()
             self.ensure_security_rule()
         except BlockUrlError as error:
@@ -684,6 +645,23 @@ class PanOs:
             The list of submitted URLs.
         """
         return [entry["SubmittedURL"] for entry in self.args["url_entries"]]
+
+    def adopt_job_failure(self) -> bool:
+        """Adopt a commit or push job failure reported by the polling functions.
+
+        The polling functions run outside the class and communicate a terminal PAN-OS job failure
+        through the JOB_FAILURE_MESSAGE global, since a failed job comes back as a type-1 success
+        entry that the is_error sweep in prepare_context_and_hr_multiple_executions cannot detect.
+        Returns:
+            Whether a job failure was adopted.
+        """
+        global JOB_FAILURE_MESSAGE
+        if not JOB_FAILURE_MESSAGE:
+            return False
+        demisto.debug(f"BU: adopting the job failure {JOB_FAILURE_MESSAGE=}")
+        self.failure_message = JOB_FAILURE_MESSAGE
+        JOB_FAILURE_MESSAGE = ""
+        return True
 
     def pan_os_finish(self) -> list[CommandResults]:
         """Clear the polling state from the context and build the final results.
@@ -707,7 +685,7 @@ class PanOs:
             self.responses, bool(self.args.get("verbose", False)), self.args["url_entries"], details
         )
 
-    def manage_pan_os_flow(self) -> CommandResults | list[CommandResults] | PollResult:  # pragma: no cover
+    def manage_pan_os_flow(self) -> CommandResults | list[CommandResults] | PollResult:
         """Manage the different states of the PAN-OS flow.
 
         1. The flow start: create or reuse the category, the profile, the tag and the rule.
@@ -731,6 +709,7 @@ class PanOs:
             # state 6
             if not POLLING:
                 demisto.debug("BU: finished polling, finishing the flow.")
+                self.adopt_job_failure()
                 return self.pan_os_finish()
             self.save_state_to_context()
             return res_push_status
@@ -743,6 +722,12 @@ class PanOs:
             if POLLING:
                 self.save_state_to_context()
                 return poll_commit_status
+            # A commit that PAN-OS finished with a failure must not be pushed: the pushed candidate
+            # config never passed validation, and reporting success here would tell the user the URLs
+            # are blocked when they are not.
+            if self.adopt_job_failure():
+                demisto.debug("BU: the commit job failed, skipping the push.")
+                return self.pan_os_finish()
             # state 4
             self.detect_topology()
             if not self.is_panorama:
@@ -752,6 +737,7 @@ class PanOs:
             poll_push_to_device = pan_os_push_to_device(self.args, self.responses)
             if not POLLING:
                 demisto.debug("BU: nothing to push, finishing the flow.")
+                self.adopt_job_failure()
                 return self.pan_os_finish()
             self.save_state_to_context()
             return poll_push_to_device
@@ -781,6 +767,25 @@ class PanOs:
 """ STANDALONE FUNCTION """
 
 
+def job_details(job: dict) -> str:
+    """Extract the human readable reason a PAN-OS job reports for its outcome.
+
+    PAN-OS returns the reason either as a plain string or as a {"line": [...]} structure, and the
+    lines may themselves be nested lists.
+    Args:
+        job (dict): The job element of a pan-os-commit-status response.
+    Returns:
+        The joined details, or a placeholder when PAN-OS reported none.
+    """
+    details = job.get("details")
+    if isinstance(details, dict):
+        details = details.get("line")
+    if isinstance(details, list):
+        flattened = [str(item) for line in details for item in (line if isinstance(line, list) else [line])]
+        return "; ".join(flattened) or "none reported"
+    return str(details) if details else "none reported"
+
+
 def build_commit_args(args: dict) -> dict[str, Any]:
     """Build the arguments of pan-os-commit, scoped as narrowly as PAN-OS allows.
 
@@ -801,8 +806,6 @@ def build_commit_args(args: dict) -> dict[str, Any]:
         commit_args["device-group"] = device_group
         # Only safe when the objects live in the device group and not in /config/shared.
         commit_args["exclude_shared_objects"] = True
-    if admin_name := args.get("admin_name", ""):
-        commit_args["admin_name"] = admin_name
     return commit_args
 
 
@@ -823,19 +826,18 @@ def build_push_args(args: dict) -> dict[str, Any]:
     return push_args
 
 
-def create_final_human_readable(failure_message: str, used_integration: str, context: list[dict]) -> str:
+def create_final_human_readable(failure_message: str, context: list[dict]) -> str:
     """Create the human readable summary of the script.
 
     Args:
         failure_message (str): A failure message if relevant.
-        used_integration (str): The integration that was used.
         context (list[dict]): The final context records.
     Returns:
         The human readable summary.
     """
     headers = ["URL", "SubmittedURL", "Result", "Brand", "RuleName", "URLCategory", "JobID", "Message"]
     name = "Failed to block the URL/s" if failure_message else "URL/s blocking summary"
-    demisto.debug(f"BU: creating the final human readable for {used_integration=} {failure_message=}")
+    demisto.debug(f"BU: creating the final human readable for {failure_message=}")
     return tableToMarkdown(name=name, t=context, headers=headers, removeNull=True)
 
 
@@ -943,7 +945,7 @@ def prepare_context_and_hr_multiple_executions(
 
     final_context = create_final_context(used_integration, url_entries, details)
     final_cr = CommandResults(
-        readable_output=create_final_human_readable(details["failure_message"], used_integration, final_context),
+        readable_output=create_final_human_readable(details["failure_message"], final_context),
         outputs_prefix="BlockURLResults",
         outputs=final_context,
         raw_response=final_context,
@@ -1013,7 +1015,10 @@ def pan_os_commit(args: dict, responses: list) -> PollResult:
 def pan_os_commit_status(args: dict, responses: list) -> PollResult:
     """Check the status of the commit in PAN-OS.
 
-    A commit that finishes with warnings is a success: the lab returns warnings on every commit.
+    A commit that finishes with warnings is a success: the lab returns warnings on every commit. A
+    commit that finishes with any result other than "OK" is a failure, and PAN-OS reports it as a
+    successful command entry carrying a failed job, so the failure is published through the
+    JOB_FAILURE_MESSAGE global for manage_pan_os_flow to skip the push and report it.
     Args:
         args (dict): The arguments of the flow.
         responses (list): The responses of the command executions so far.
@@ -1025,10 +1030,17 @@ def pan_os_commit_status(args: dict, responses: list) -> PollResult:
     responses.append(res_commit_status)
     job = res_commit_status[0].get("Contents", {}).get("response", {}).get("result", {}).get("job", {})
     job_result = job.get("result")
-    commit_output = {"JobID": commit_job_id, "Status": "Success" if job_result == "OK" else "Failure"}
-    continue_to_poll = job.get("status") != "FIN"
-    global POLLING
+    continue_to_poll = job.get("status") != COMMIT_JOB_FINISHED_STATUS
+    job_failed = not continue_to_poll and job_result != COMMIT_JOB_SUCCESS_RESULT
+    commit_output = {"JobID": commit_job_id, "Status": "Failure" if job_failed else "Success"}
+    global POLLING, JOB_FAILURE_MESSAGE
     POLLING = continue_to_poll
+    if job_failed:
+        JOB_FAILURE_MESSAGE = (
+            f"The PAN-OS commit job {commit_job_id} failed with the result '{job_result}', so the changes were "
+            f"not pushed and the URLs are not blocked. PAN-OS details: {job_details(job)}"
+        )
+        demisto.debug(f"BU: the commit job failed. {JOB_FAILURE_MESSAGE=}")
     demisto.debug(f"BU: after pan-os-commit-status {continue_to_poll=} {commit_job_id=} {job_result=}")
     return PollResult(
         response=CommandResults(
@@ -1101,17 +1113,30 @@ def pan_os_push_status(args: dict, responses: list) -> PollResult:
     push_job_id = args["push_job_id"]
     res_push_status = run_execute_command("pan-os-push-status", {"job_id": push_job_id})
     responses.append(res_push_status)
-    push_status = _text(get_context_entry(res_push_status, "Panorama.Push").get("Status"))
-    continue_to_poll = bool(push_status and push_status != "Completed")
-    demisto.debug(f"BU: after pan-os-push-status {push_status=} {continue_to_poll=}")
+    push_context = get_context_entry(res_push_status, "Panorama.Push")
+    push_status = _text(push_context.get("Status"))
+    push_failed = push_status in PUSH_FAILURE_STATUSES
+    # An empty status means the job is still settling, not that it succeeded. Treating it as done
+    # would report a full success for a push that never finished. The polling decorator timeout is
+    # the safety net for a status that never resolves.
+    continue_to_poll = not push_failed and push_status != PUSH_COMPLETED_STATUS
+    demisto.debug(f"BU: after pan-os-push-status {push_status=} {continue_to_poll=} {push_failed=}")
     context_output = {"Status": push_status, "JobID": push_job_id}
     push_cr = CommandResults(
         outputs_key_field="JobID",
         outputs=context_output,
         readable_output=tableToMarkdown("Push to Device Group:", context_output, ["JobID", "Status"], removeNull=True),
     )
-    global POLLING
+    global POLLING, JOB_FAILURE_MESSAGE
     POLLING = continue_to_poll
+    if push_failed:
+        details = _text(push_context.get("Details")) or _text(push_context.get("Errors"))
+        JOB_FAILURE_MESSAGE = (
+            f"The PAN-OS push job {push_job_id} failed with the status '{push_status}', so the committed changes "
+            f"were not applied to the managed firewalls and the URLs are not blocked. PAN-OS details: "
+            f"{details or 'none reported'}"
+        )
+        demisto.debug(f"BU: the push job failed. {JOB_FAILURE_MESSAGE=}")
     return PollResult(
         response=push_cr,
         continue_to_poll=continue_to_poll,
@@ -1162,8 +1187,6 @@ def main():  # pragma: no cover
                 "url_filtering_profile": args.get("url_filtering_profile", "Cortex - Block URL profile"),
                 "log_forwarding_name": args.get("log_forwarding_name", ""),
                 "tag": args.get("tag", "cortex-blocked-urls"),
-                "admin_name": args.get("admin_name", ""),
-                "vsys": args.get("vsys", "vsys1"),
                 "auto_commit": argToBoolean(args.get("auto_commit", True)),
                 "verbose": verbose,
                 "brands": brands_to_run,

@@ -32,7 +32,7 @@
                         "result": {
                             "system": {
                                 "model": "Panorama",
-                                "devicename": "DC1ENV11APANO-CRTX-151238"
+                                "devicename": "panorama-test"
                             }
                         }
                     }
@@ -75,7 +75,7 @@
                     "Name": "Blocked URLs - Cortex",
                     "Type": "URL List",
                     "Description": "Created by the Cortex block-url script.",
-                    "DeviceGroup": "Lab-Devices",
+                    "DeviceGroup": "Test-Device-Group",
                     "Sites": [
                         "already.example.com",
                         "second.example.com"
@@ -97,23 +97,23 @@
                     "Name": "Blocked URLs - Cortex",
                     "Type": {
                         "#text": "URL List",
-                        "@admin": "apiadmin",
+                        "@admin": "test-admin",
                         "@dirtyId": "1074"
                     },
                     "Description": {
                         "#text": "Created by the Cortex block-url script.",
                         "@dirtyId": "1074"
                     },
-                    "DeviceGroup": "Lab-Devices",
+                    "DeviceGroup": "Test-Device-Group",
                     "Sites": [
                         {
                             "#text": "already.example.com",
-                            "@admin": "apiadmin",
+                            "@admin": "test-admin",
                             "@dirtyId": "1074"
                         },
                         {
                             "#text": "second.example.com",
-                            "@admin": "apiadmin",
+                            "@admin": "test-admin",
                             "@dirtyId": "1074"
                         }
                     ]
@@ -133,7 +133,7 @@
                 "Panorama.CustomURLCategory(val.Name == obj.Name)": {
                     "Name": "Blocked URLs - Cortex",
                     "Type": "Category Match",
-                    "DeviceGroup": "Lab-Devices",
+                    "DeviceGroup": "Test-Device-Group",
                     "Categories": [
                         "gambling",
                         "hacking"
@@ -157,7 +157,7 @@
                         "#text": "URL List",
                         "@dirtyId": "1090"
                     },
-                    "DeviceGroup": "Lab-Devices",
+                    "DeviceGroup": "Test-Device-Group",
                     "Sites": [
                         {
                             "#text": "new.example.com",
@@ -180,7 +180,7 @@
                 "Panorama.CustomURLCategory(val.Name == obj.Name)": {
                     "Name": "Blocked URLs - Cortex",
                     "Type": "URL List",
-                    "DeviceGroup": "Lab-Devices",
+                    "DeviceGroup": "Test-Device-Group",
                     "Sites": [
                         "second.example.com",
                         "new.example.com",
@@ -201,7 +201,7 @@
             "EntryContext": {
                 "Panorama.URLFilter(val.Name == obj.Name)": {
                     "Name": "Cortex - Block URL profile",
-                    "DeviceGroup": "Lab-Devices",
+                    "DeviceGroup": "Test-Device-Group",
                     "Category": [
                         {
                             "Action": "block",
@@ -223,7 +223,7 @@
             "EntryContext": {
                 "Panorama.URLFilter(val.Name == obj.Name)": {
                     "Name": "Cortex - Block URL profile",
-                    "DeviceGroup": "Lab-Devices",
+                    "DeviceGroup": "Test-Device-Group",
                     "Category": [
                         {
                             "Action": "block",
@@ -248,7 +248,7 @@
             "EntryContext": {
                 "Panorama.URLFilter(val.Name == obj.Name)": {
                     "Name": "Cortex - Block URL profile",
-                    "DeviceGroup": "Lab-Devices"
+                    "DeviceGroup": "Test-Device-Group"
                 }
             },
             "Metadata": {
@@ -261,17 +261,6 @@
             "Type": 1,
             "Contents": "URL Filter was edited successfully.",
             "HumanReadable": "URL Filter was edited successfully.",
-            "EntryContext": {},
-            "Metadata": {
-                "brand": "Panorama"
-            }
-        }
-    ],
-    "generic_success": [
-        {
-            "Type": 1,
-            "Contents": "Command was executed successfully.",
-            "HumanReadable": "Command was executed successfully.",
             "EntryContext": {},
             "Metadata": {
                 "brand": "Panorama"
@@ -312,7 +301,7 @@
                     {
                         "Name": "Cortex - Block URLs",
                         "Action": "allow",
-                        "DeviceGroup": "Lab-Devices"
+                        "DeviceGroup": "Test-Device-Group"
                     }
                 ]
             },
@@ -432,13 +421,13 @@
         {
             "Type": 1,
             "Contents": {},
-            "HumanReadable": "Waiting for Job-ID 56957 to finish push changes to device-group Lab-Devices...",
+            "HumanReadable": "Waiting for Job-ID 56957 to finish push changes to device-group Test-Device-Group...",
             "EntryContext": {},
             "Metadata": {
                 "brand": "Panorama",
                 "pollingArgs": {
                     "push_job_id": "56957",
-                    "device-group": "Lab-Devices"
+                    "device-group": "Test-Device-Group"
                 }
             }
         }
@@ -464,7 +453,7 @@
                 "Panorama.Push(val.JobID == obj.JobID)": {
                     "JobID": "56957",
                     "Status": "Pending",
-                    "DeviceGroup": "Lab-Devices"
+                    "DeviceGroup": "Test-Device-Group"
                 }
             },
             "Metadata": {
@@ -482,11 +471,69 @@
                     "JobID": "56957",
                     "Status": "Completed",
                     "Details": "commit succeeded with warnings",
-                    "DeviceGroup": "Lab-Devices",
+                    "DeviceGroup": "Test-Device-Group",
                     "Errors": null,
                     "Warnings": null
                 }
             },
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "commit_status_failed": [
+        {
+            "Type": 1,
+            "Contents": {
+                "response": {
+                    "result": {
+                        "job": {
+                            "id": "56795",
+                            "status": "FIN",
+                            "result": "FAIL",
+                            "details": {
+                                "line": [
+                                    "Validation Error:",
+                                    "url-filtering profile is invalid"
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            "HumanReadable": "### Commit Status:",
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "push_status_failed": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": "### Push to Device Group:",
+            "EntryContext": {
+                "Panorama.Push(val.JobID == obj.JobID)": {
+                    "JobID": "56957",
+                    "Status": "FAIL",
+                    "Details": "commit failed on the managed firewall",
+                    "DeviceGroup": "Test-Device-Group",
+                    "Errors": null,
+                    "Warnings": null
+                }
+            },
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "push_status_empty": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": "|JobID|\n|---|\n| 56957 |",
+            "EntryContext": {},
             "Metadata": {
                 "brand": "Panorama"
             }

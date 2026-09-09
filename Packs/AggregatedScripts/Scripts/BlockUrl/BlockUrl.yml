@@ -36,15 +36,6 @@ args:
   isArray: false
   name: tag
   required: false
-- description: The PAN-OS administrator whose pending changes are committed. When empty, the commit includes the pending changes of all administrators.
-  isArray: false
-  name: admin_name
-  required: false
-- defaultValue: 'vsys1'
-  description: The PAN-OS virtual system to configure. Relevant only for a firewall instance, and ignored on Panorama.
-  isArray: false
-  name: vsys
-  required: false
 - description: Whether to commit the new rule.
   isArray: false
   name: auto_commit
@@ -104,7 +95,7 @@ timeout: 20m0s
 type: python
 subtype: python3
 dockerimage: demisto/python3:3.12.13.10116658
-fromversion: 6.1.0
+fromversion: 6.10.0
 marketplaces:
 - xsoar
 - marketplacev2
