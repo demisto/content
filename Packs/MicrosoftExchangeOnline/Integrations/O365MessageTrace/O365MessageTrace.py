@@ -26,7 +26,7 @@ class Config:
     DATE_FORMAT_EVENT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
     DEFAULT_MAX_EVENTS = 50000
-    DEFAULT_PAGE_SIZE = 1000  # API default/maximum per page
+    DEFAULT_PAGE_SIZE = 5000  # API maximum per page ($top range is 1-5000)
     DEFAULT_FIRST_FETCH_MINUTES = 1
 
     # Each fetch cycle only scans this many minutes starting from ``last_fetch``.
@@ -454,8 +454,19 @@ def fetch_events_sequential(
     )
 
     if len(collected) > max_events:
-        demisto.debug(f"[Fetch] Collected {len(collected)} events, truncating to max_events ({max_events}).")
-        collected = collected[:max_events]
+        # Keep the whole boundary second so the cursor never advances past a second that was only
+        # partially fetched. Parse timestamps (like the sort above) - not raw strings - so differing
+        # representations of the same instant (e.g. missing microseconds) group together.
+        def _boundary_second(event: dict) -> datetime:
+            received = event.get("receivedDateTime")
+            return safe_strptime(received, Config.DATE_FORMAT_EVENT).replace(microsecond=0) if received else datetime.min
+
+        cut = max_events
+        boundary_second = _boundary_second(collected[max_events - 1])
+        while cut < len(collected) and _boundary_second(collected[cut]) == boundary_second:
+            cut += 1
+        demisto.debug(f"[Fetch] Truncating {len(collected)} events to {cut} (kept whole boundary second {boundary_second}).")
+        collected = collected[:cut]
 
     return collected
 
@@ -587,8 +598,6 @@ def fetch_events(client: Client, max_events: int) -> None:
             window_end_dt = min(start_dt + timedelta(minutes=Config.FETCH_WINDOW_MINUTES), now)
 
         events = all_events
-        if len(events) > max_events:
-            events = events[:max_events]
 
     add_unique_id_field(events)
     add_time_field(events)
@@ -606,10 +615,9 @@ def fetch_events(client: Client, max_events: int) -> None:
     new_last_fetch = format_datetime_for_filter(window_end_dt)
     new_seen_ids: list[str] = []
 
-    # Use ALL fetched events (not just published ones): timestamps are second-granular, so
-    # seen_ids must keep every ID at the boundary - including deduped-out ones - or the next
-    # run (re-fetching at ``>= boundary``) would re-send already-sent events as duplicates.
-    timed_events = [event for event in new_events if event.get("_time")]
+    # Use ALL fetched events (pre-dedup), so seen_ids holds every ID at the boundary second -
+    # including deduped-out ones - or the next run (re-fetching ``>= boundary``) re-sends duplicates.
+    timed_events = [event for event in events if event.get("_time")]
 
     if timed_events:
         latest_time: str = max(event["_time"] for event in timed_events)
