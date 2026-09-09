@@ -612,37 +612,61 @@ def _validate_bucket_policy_for_set(policy: dict[str, Any], add_mode: bool) -> N
                     raise DemistoException("Policy with IAM Conditions requires 'version' to be 3 or greater.")
 
 
-def _merge_bucket_objects(bucket_name: str, new_objects: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _merge_context_items(
+    context_path: str,
+    new_items: list[dict[str, Any]],
+    id_key: str = "name",
+    items_key: str | None = None,
+    parent_id_key: str | None = None,
+    parent_id_value: Any = None,
+) -> list[dict[str, Any]]:
     """
-    Merges newly fetched objects into the objects already stored in the context for the given bucket.
+    Merges newly fetched items into the items already stored in the context under the given path.
 
-    Objects are identified by their name: an object that already exists in the context is replaced in place,
-    while a new object is appended to the end of the list.
+    Items are identified by `id_key`: an item that already exists in the context is replaced in place,
+    while a new item is appended to the end of the list. This is useful for paginated commands, where each
+    call should extend the previously fetched results instead of overwriting them.
+
+    Two layouts are supported:
+        - Flat: `context_path` holds the items themselves (leave `items_key` as None).
+        - Nested: `context_path` holds parent entries, and the items live under the `items_key` key of the
+          parent whose `parent_id_key` equals `parent_id_value` (for example, objects inside a storage bucket).
 
     Args:
-        bucket_name (str): The name of the bucket the objects belong to.
-        new_objects (list[dict[str, Any]]): The objects returned by the current API call.
+        context_path (str): The context path holding the existing data, e.g. "GCP.Storage.Buckets".
+        new_items (list[dict[str, Any]]): The items returned by the current API call.
+        id_key (str): The key uniquely identifying an item. Defaults to "name".
+        items_key (str | None): The key holding the items inside each parent entry, for a nested layout.
+        parent_id_key (str | None): The key uniquely identifying a parent entry, for a nested layout.
+        parent_id_value (Any): The value of `parent_id_key` of the parent entry to merge into.
 
     Returns:
-        list[dict[str, Any]]: The merged list of objects for the bucket.
+        list[dict[str, Any]]: The merged list of items.
     """
-    existing_buckets = demisto.get(demisto.context(), "GCP.Storage.Buckets") or []
-    if isinstance(existing_buckets, dict):
-        existing_buckets = [existing_buckets]
+    existing_entries = demisto.get(demisto.context(), context_path) or []
+    if isinstance(existing_entries, dict):
+        existing_entries = [existing_entries]
 
-    merged_objects: dict[str, dict[str, Any]] = {}
-    for bucket in existing_buckets:
-        if isinstance(bucket, dict) and bucket.get("name") == bucket_name:
-            for obj in bucket.get("Objects") or []:
-                if isinstance(obj, dict) and obj.get("name"):
-                    merged_objects[obj["name"]] = obj
+    merged_items: dict[Any, dict[str, Any]] = {}
+    for entry in existing_entries:
+        if not isinstance(entry, dict):
+            continue
+        if items_key:
+            if parent_id_key and entry.get(parent_id_key) != parent_id_value:
+                continue
+            existing_items = entry.get(items_key) or []
+        else:
+            existing_items = [entry]
+        for item in existing_items:
+            if isinstance(item, dict) and item.get(id_key):
+                merged_items[item[id_key]] = item
 
-    for obj in new_objects:
-        if obj.get("name"):
-            merged_objects[obj["name"]] = obj
+    for item in new_items:
+        if item.get(id_key):
+            merged_items[item[id_key]] = item
 
-    demisto.debug(f"[GCP: storage_bucket_objects_list] Objects in context after merge: {len(merged_objects)}")
-    return list(merged_objects.values())
+    demisto.debug(f"[GCP] Items in context '{context_path}' after merge: {len(merged_items)}")
+    return list(merged_items.values())
 
 
 ##########
@@ -870,7 +894,13 @@ def storage_bucket_objects_list(creds: Credentials, args: dict[str, Any]) -> Com
     outputs = {
         "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
             "name": bucket_name,
-            "Objects": _merge_bucket_objects(bucket_name, objects),
+            "Objects": _merge_context_items(
+                "GCP.Storage.Buckets",
+                objects,
+                items_key="Objects",
+                parent_id_key="name",
+                parent_id_value=bucket_name,
+            ),
             "ObjectsNextToken": response.get("nextPageToken"),
         }
     }
