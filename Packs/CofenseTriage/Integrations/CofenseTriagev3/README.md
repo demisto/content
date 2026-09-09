@@ -2791,6 +2791,300 @@ Downloads the image of the report that matches the specified report ID.
 >Uploaded an image: Report ID - 4.png
 ![cofense-report-image-download](./../../doc_files/report_image_download.png)
 
+### cofense-playbook-list
+
+***
+Retrieves playbooks based on the filter values provided in the command arguments.
+
+#### Base Command
+
+`cofense-playbook-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Specify the ID of the playbook to retrieve a specific playbook.<br><br>Note: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be neglected.<br><br>For example: 1. | Optional |
+| page_size | Specify the number of playbooks to retrieve per page.<br><br>Note: Possible values are between 1 and 200. Default is 20. | Optional |
+| page_number | Specify a page number to retrieve the playbooks. Default is 1. | Optional |
+| sort_by | Specify the attributes to sort the playbooks.<br><br>Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order.<br><br>For example: -name, created_at. | Optional |
+| filter_by | Specify the filters to filter the list of playbooks by attribute values.<br><br>Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Add backslash(\\) before quotes.<br><br>Format accepted: \{"attribute1_operator": "value1, value2", "attribute2_operator" : "value3, value4"\}<br><br>For example: \{"name_cont":"Spam", "updated_at_gt":"2024-10-26T10:48:16.834Z"\}. | Optional |
+| fields_to_retrieve | Specify the fields to retrieve the mentioned attributes only.<br><br>For example: name, description. | Optional |
+| name | Specify the name of the playbook to retrieve the playbook.<br><br>For example: Spam Playbook. | Optional |
+| active | Specify whether the playbooks to be retrieved are active or not.<br><br>Possible values are: true, false. | Optional |
+| trigger_only | Specify whether the playbooks to be retrieved are only used for triggers.<br><br>Possible values are: true, false. | Optional |
+| delete_report | Specify whether the playbooks to be retrieved delete the report after all other actions are performed.<br><br>Possible values are: true, false. | Optional |
+| report_tags | Specify the report tags assigned by the playbook to retrieve the playbook.<br><br>For example: Spam, Phishing. | Optional |
+| cluster_tags | Specify the cluster tags assigned by the playbook to retrieve the playbook.<br><br>For example: Spam, Phishing. | Optional |
+| created_at | Specify the date and time of creation, from when to retrieve the playbooks.<br><br>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional |
+| updated_at | Specify the date and time of updation, from when to retrieve the playbooks.<br><br>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cofense.Playbook.id | String | The unique identifier of the playbook. |
+| Cofense.Playbook.type | String | The type of the resource of Cofense Triage. |
+| Cofense.Playbook.links.self | String | The link of the resource. |
+| Cofense.Playbook.attributes.name | String | The short name displayed on the playbook button in the Cofense Triage interface. |
+| Cofense.Playbook.attributes.description | String | The expanded name or description of the playbook. |
+| Cofense.Playbook.attributes.active | Boolean | Whether the playbook is active \(true\) or inactive \(false\). |
+| Cofense.Playbook.attributes.trigger_only | Boolean | Whether the playbook is only used for triggers. The default is false. |
+| Cofense.Playbook.attributes.button_color | String | The color, represented as a hexadecimal value, of the playbook button. |
+| Cofense.Playbook.attributes.add_rule_tags_to_report_tags | Boolean | Whether to add tags from matching rules to the report when the report is categorized. |
+| Cofense.Playbook.attributes.remove_existing_report_tags | Boolean | Whether to remove all existing report tags before the playbook adds any specified new ones. |
+| Cofense.Playbook.attributes.remove_existing_cluster_tags | Boolean | Whether to remove all existing cluster tags before the playbook adds any specified new ones. |
+| Cofense.Playbook.attributes.report_tags | Unknown | The tags assigned to the report when a playbook runs against the reported email. |
+| Cofense.Playbook.attributes.cluster_tags | Unknown | The tags assigned to the cluster when a playbook runs against the reported email. |
+| Cofense.Playbook.attributes.delete_report | Boolean | Whether to delete the report after all other actions are performed. |
+| Cofense.Playbook.attributes.created_at | Date | The date and time, in ISO 8601 format, when the resource was created. |
+| Cofense.Playbook.attributes.updated_at | Date | The date and time, in ISO 8601 format, when the resource was last updated. |
+| Cofense.Playbook.relationships.owner.links.self | String | The link to retrieve the owner who created the playbook. |
+| Cofense.Playbook.relationships.owner.links.related | String | The link to retrieve the detailed information of the owner who created the playbook. |
+| Cofense.Playbook.relationships.owner.data.type | String | The type of the owner associated with the playbook. |
+| Cofense.Playbook.relationships.owner.data.id | String | The unique identifier of the owner associated with the playbook. |
+| Cofense.Playbook.relationships.category.links.self | String | The link to retrieve the category assigned to the report when processed by the playbook. |
+| Cofense.Playbook.relationships.category.links.related | String | The link to retrieve the detailed information of the category assigned to the report when processed by the playbook. |
+| Cofense.Playbook.relationships.category.data.type | String | The type of the category associated with the playbook. |
+| Cofense.Playbook.relationships.category.data.id | String | The unique identifier of the category associated with the playbook. |
+| Cofense.Playbook.relationships.reporter_response.links.self | String | The link to retrieve the response sent to the reporter when the playbook processes the report. |
+| Cofense.Playbook.relationships.reporter_response.links.related | String | The link to retrieve the detailed information of the response sent to the reporter when the playbook processes the report. |
+| Cofense.Playbook.relationships.reporter_response.data.type | String | The type of the reporter response associated with the playbook. |
+| Cofense.Playbook.relationships.reporter_response.data.id | String | The unique identifier of the reporter response associated with the playbook. |
+| Cofense.Playbook.relationships.vip_response.links.self | String | The link to retrieve the response sent to the VIP reporter when the playbook processes the report. |
+| Cofense.Playbook.relationships.vip_response.links.related | String | The link to retrieve the detailed information of the response sent to the VIP reporter when the playbook processes the report. |
+| Cofense.Playbook.relationships.vip_response.data.type | String | The type of the VIP response associated with the playbook. |
+| Cofense.Playbook.relationships.vip_response.data.id | String | The unique identifier of the VIP response associated with the playbook. |
+| Cofense.Playbook.relationships.team_notifications.links.self | String | The link to retrieve the team notifications sent when the playbook processes the report. |
+| Cofense.Playbook.relationships.team_notifications.links.related | String | The link to retrieve the detailed information of the team notifications sent when the playbook processes the report. |
+| Cofense.Playbook.relationships.triggers.links.self | String | The link to retrieve the triggers that run the playbook. |
+| Cofense.Playbook.relationships.triggers.links.related | String | The link to retrieve the detailed information of the triggers that run the playbook. |
+
+#### Command Example
+
+```!cofense-playbook-list page_size=2```
+
+#### Context Example
+
+```json
+{
+    "Cofense": {
+        "Playbook": [
+            {
+                "attributes": {
+                    "active": true,
+                    "add_rule_tags_to_report_tags": false,
+                    "button_color": "#000000",
+                    "cluster_tags": [
+                        "one",
+                        "two"
+                    ],
+                    "created_at": "2026-07-30T07:25:00.334Z",
+                    "delete_report": true,
+                    "description": "Spam playbook for common spam we see from reporters.",
+                    "name": "Spam",
+                    "remove_existing_cluster_tags": true,
+                    "remove_existing_report_tags": false,
+                    "report_tags": [
+                        "one",
+                        "two"
+                    ],
+                    "trigger_only": false,
+                    "updated_at": "2026-08-01T10:04:50.734Z"
+                },
+                "id": "1",
+                "links": {
+                    "self": "https://triage.example.com/api/public/v2/playbooks/1"
+                },
+                "relationships": {
+                    "category": {
+                        "data": {
+                            "id": "1",
+                            "type": "categories"
+                        },
+                        "links": {
+                            "related": "https://triage.example.com/api/public/v2/playbooks/1/category",
+                            "self": "https://triage.example.com/api/public/v2/playbooks/1/relationships/category"
+                        }
+                    },
+                    "owner": {
+                        "data": {
+                            "id": "1",
+                            "type": "owners"
+                        },
+                        "links": {
+                            "related": "https://triage.example.com/api/public/v2/playbooks/1/owner",
+                            "self": "https://triage.example.com/api/public/v2/playbooks/1/relationships/owner"
+                        }
+                    },
+                    "reporter_response": {
+                        "data": {
+                            "id": "1",
+                            "type": "outbound_templates"
+                        },
+                        "links": {
+                            "related": "https://triage.example.com/api/public/v2/playbooks/1/reporter_response",
+                            "self": "https://triage.example.com/api/public/v2/playbooks/1/relationships/reporter_response"
+                        }
+                    },
+                    "team_notifications": {
+                        "links": {
+                            "related": "https://triage.example.com/api/public/v2/playbooks/1/team_notifications",
+                            "self": "https://triage.example.com/api/public/v2/playbooks/1/relationships/team_notifications"
+                        }
+                    },
+                    "triggers": {
+                        "links": {
+                            "related": "https://triage.example.com/api/public/v2/playbooks/1/triggers",
+                            "self": "https://triage.example.com/api/public/v2/playbooks/1/relationships/triggers"
+                        }
+                    },
+                    "vip_response": {
+                        "data": {
+                            "id": "1",
+                            "type": "outbound_templates"
+                        },
+                        "links": {
+                            "related": "https://triage.example.com/api/public/v2/playbooks/1/vip_response",
+                            "self": "https://triage.example.com/api/public/v2/playbooks/1/relationships/vip_response"
+                        }
+                    }
+                },
+                "type": "playbooks"
+            },
+            {
+                "attributes": {
+                    "active": false,
+                    "add_rule_tags_to_report_tags": true,
+                    "button_color": "#ff0000",
+                    "created_at": "2026-08-05T09:12:31.104Z",
+                    "delete_report": false,
+                    "description": "Playbook used only by triggers for credential phishing.",
+                    "name": "Phishing",
+                    "remove_existing_cluster_tags": false,
+                    "remove_existing_report_tags": false,
+                    "trigger_only": true,
+                    "updated_at": "2026-08-07T11:45:22.512Z"
+                },
+                "id": "2",
+                "links": {
+                    "self": "https://triage.example.com/api/public/v2/playbooks/2"
+                },
+                "relationships": {
+                    "category": {
+                        "data": {
+                            "id": "4",
+                            "type": "categories"
+                        },
+                        "links": {
+                            "related": "https://triage.example.com/api/public/v2/playbooks/2/category",
+                            "self": "https://triage.example.com/api/public/v2/playbooks/2/relationships/category"
+                        }
+                    },
+                    "owner": {
+                        "data": {
+                            "id": "3",
+                            "type": "api_applications"
+                        },
+                        "links": {
+                            "related": "https://triage.example.com/api/public/v2/playbooks/2/owner",
+                            "self": "https://triage.example.com/api/public/v2/playbooks/2/relationships/owner"
+                        }
+                    },
+                    "reporter_response": {
+                        "links": {
+                            "related": "https://triage.example.com/api/public/v2/playbooks/2/reporter_response",
+                            "self": "https://triage.example.com/api/public/v2/playbooks/2/relationships/reporter_response"
+                        }
+                    },
+                    "team_notifications": {
+                        "links": {
+                            "related": "https://triage.example.com/api/public/v2/playbooks/2/team_notifications",
+                            "self": "https://triage.example.com/api/public/v2/playbooks/2/relationships/team_notifications"
+                        }
+                    },
+                    "triggers": {
+                        "links": {
+                            "related": "https://triage.example.com/api/public/v2/playbooks/2/triggers",
+                            "self": "https://triage.example.com/api/public/v2/playbooks/2/relationships/triggers"
+                        }
+                    },
+                    "vip_response": {
+                        "links": {
+                            "related": "https://triage.example.com/api/public/v2/playbooks/2/vip_response",
+                            "self": "https://triage.example.com/api/public/v2/playbooks/2/relationships/vip_response"
+                        }
+                    }
+                },
+                "type": "playbooks"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Playbook(s)
+>
+>|Playbook ID|Name|Description|Active|Trigger Only|Report Tags|Cluster Tags|Delete Report|Created At|Updated At|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 1 | Spam | Spam playbook for common spam we see from reporters. | true | false | one, two | one, two | true | 2026-07-30T07:25:00.334Z | 2026-08-01T10:04:50.734Z |
+>| 2 | Phishing | Playbook used only by triggers for credential phishing. | false | true |  |  | false | 2026-08-05T09:12:31.104Z | 2026-08-07T11:45:22.512Z |
+
+### cofense-playbook-execute
+
+***
+Processes the specified reports through an existing playbook.
+Note: This command requires at least the Triage Operator role.
+
+#### Base Command
+
+`cofense-playbook-execute`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| report_ids | Specify the comma-separated list of report IDs the playbook should execute against.<br><br>Note: To retrieve report_ids, execute "cofense-report-list" command.<br><br>For example: 1,2,3. | Required |
+| playbook_id | Specify the ID of an existing playbook to execute against the specified reports.<br><br>Note: To retrieve playbook_id, execute "cofense-playbook-list" command.<br><br>For example: 3. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cofense.PlaybookExecution.report_ids | Number | The unique identifiers of the reports the playbook was executed against. |
+| Cofense.PlaybookExecution.playbook_id | Number | The unique identifier of the executed playbook. |
+| Cofense.PlaybookExecution.execution_key | String | The unique key of the playbook execution, built by combining the report IDs, the playbook ID, and the execution time in UTC. |
+| Cofense.PlaybookExecution.execution_time | Date | The time in UTC at which the playbook was executed. |
+
+#### Command Example
+
+```!cofense-playbook-execute report_ids=1,2,3 playbook_id=3```
+
+#### Context Example
+
+```json
+{
+    "Cofense": {
+        "PlaybookExecution": {
+            "execution_key": "1,2,3_3_2024-05-15T10:20:30.000000Z",
+            "execution_time": "2024-05-15T10:20:30.000000Z",
+            "playbook_id": 3,
+            "report_ids": [
+                1,
+                2,
+                3
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Playbook with ID = 3 is executed successfully on the report(s) with ID = 1, 2, 3.
+
 ## Breaking changes from the previous version of this integration - Cofense Triage v2
 
 The following sections list the changes in this version.
@@ -2827,3 +3121,5 @@ The ability to mirror incident data has been added.
 - _cofense-report-attachment-payload-list_
 - _cofense-report-attachment-list_
 - _cofense-report-attachment-download_
+- _cofense-playbook-list_
+- _cofense-playbook-execute_

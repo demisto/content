@@ -1852,7 +1852,246 @@ script:
     - contextPath: File.Extension
       description: The file extension.
       type: String
-  dockerimage: demisto/python3:3.12.13.10116658
+  - arguments:
+    - description: |-
+        Specify the ID of the playbook to retrieve a specific playbook.
+
+        Note: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be neglected.
+
+        For example: 1.
+      name: id
+    - defaultValue: '20'
+      description: |-
+        Specify the number of playbooks to retrieve per page.
+
+        Note: Possible values are between 1 and 200.
+      name: page_size
+    - defaultValue: '1'
+      description: Specify a page number to retrieve the playbooks.
+      name: page_number
+    - description: |-
+        Specify the attributes to sort the playbooks.
+
+        Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order.
+
+        For example: -name, created_at.
+      isArray: true
+      name: sort_by
+    - description: |-
+        Specify the filters to filter the list of playbooks by attribute values.
+
+        Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Add backslash(\) before quotes.
+
+        Format accepted: {"attribute1_operator": "value1, value2", "attribute2_operator" : "value3, value4"}
+
+        For example: {"name_cont":"Spam", "updated_at_gt":"2024-10-26T10:48:16.834Z"}.
+      name: filter_by
+    - description: |-
+        Specify the fields to retrieve the mentioned attributes only.
+
+        For example: name, description.
+      isArray: true
+      name: fields_to_retrieve
+    - description: |-
+        Specify the name of the playbook to retrieve the playbook.
+
+        For example: Spam Playbook.
+      isArray: true
+      name: name
+    - auto: PREDEFINED
+      description: |-
+        Specify whether the playbooks to be retrieved are active or not.
+
+        Possible values are: true, false.
+      name: active
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: |-
+        Specify whether the playbooks to be retrieved are only used for triggers.
+
+        Possible values are: true, false.
+      name: trigger_only
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: |-
+        Specify whether the playbooks to be retrieved delete the report after all other actions are performed.
+
+        Possible values are: true, false.
+      name: delete_report
+      predefined:
+      - 'true'
+      - 'false'
+    - description: |-
+        Specify the report tags assigned by the playbook to retrieve the playbook.
+
+        For example: Spam, Phishing.
+      isArray: true
+      name: report_tags
+    - description: |-
+        Specify the cluster tags assigned by the playbook to retrieve the playbook.
+
+        For example: Spam, Phishing.
+      isArray: true
+      name: cluster_tags
+    - description: |-
+        Specify the date and time of creation, from when to retrieve the playbooks.
+
+        Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
+      name: created_at
+    - description: |-
+        Specify the date and time of updation, from when to retrieve the playbooks.
+
+        Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
+      name: updated_at
+    description: Retrieves playbooks based on the filter values provided in the command arguments.
+    name: cofense-playbook-list
+    outputs:
+    - contextPath: Cofense.Playbook.id
+      description: The unique identifier of the playbook.
+      type: String
+    - contextPath: Cofense.Playbook.type
+      description: The type of the resource of Cofense Triage.
+      type: String
+    - contextPath: Cofense.Playbook.links.self
+      description: The link of the resource.
+      type: String
+    - contextPath: Cofense.Playbook.attributes.name
+      description: The short name displayed on the playbook button in the Cofense Triage interface.
+      type: String
+    - contextPath: Cofense.Playbook.attributes.description
+      description: The expanded name or description of the playbook.
+      type: String
+    - contextPath: Cofense.Playbook.attributes.active
+      description: Whether the playbook is active (true) or inactive (false).
+      type: Boolean
+    - contextPath: Cofense.Playbook.attributes.trigger_only
+      description: Whether the playbook is only used for triggers. The default is false.
+      type: Boolean
+    - contextPath: Cofense.Playbook.attributes.button_color
+      description: The color, represented as a hexadecimal value, of the playbook button.
+      type: String
+    - contextPath: Cofense.Playbook.attributes.add_rule_tags_to_report_tags
+      description: Whether to add tags from matching rules to the report when the report is categorized.
+      type: Boolean
+    - contextPath: Cofense.Playbook.attributes.remove_existing_report_tags
+      description: Whether to remove all existing report tags before the playbook adds any specified new ones.
+      type: Boolean
+    - contextPath: Cofense.Playbook.attributes.remove_existing_cluster_tags
+      description: Whether to remove all existing cluster tags before the playbook adds any specified new ones.
+      type: Boolean
+    - contextPath: Cofense.Playbook.attributes.report_tags
+      description: The tags assigned to the report when a playbook runs against the reported email.
+      type: Unknown
+    - contextPath: Cofense.Playbook.attributes.cluster_tags
+      description: The tags assigned to the cluster when a playbook runs against the reported email.
+      type: Unknown
+    - contextPath: Cofense.Playbook.attributes.delete_report
+      description: Whether to delete the report after all other actions are performed.
+      type: Boolean
+    - contextPath: Cofense.Playbook.attributes.created_at
+      description: The date and time, in ISO 8601 format, when the resource was created.
+      type: Date
+    - contextPath: Cofense.Playbook.attributes.updated_at
+      description: The date and time, in ISO 8601 format, when the resource was last updated.
+      type: Date
+    - contextPath: Cofense.Playbook.relationships.owner.links.self
+      description: The link to retrieve the owner who created the playbook.
+      type: String
+    - contextPath: Cofense.Playbook.relationships.owner.links.related
+      description: The link to retrieve the detailed information of the owner who created the playbook.
+      type: String
+    - contextPath: Cofense.Playbook.relationships.owner.data.type
+      description: The type of the owner associated with the playbook.
+      type: String
+    - contextPath: Cofense.Playbook.relationships.owner.data.id
+      description: The unique identifier of the owner associated with the playbook.
+      type: String
+    - contextPath: Cofense.Playbook.relationships.category.links.self
+      description: The link to retrieve the category assigned to the report when processed by the playbook.
+      type: String
+    - contextPath: Cofense.Playbook.relationships.category.links.related
+      description: The link to retrieve the detailed information of the category assigned to the report when processed by the playbook.
+      type: String
+    - contextPath: Cofense.Playbook.relationships.category.data.type
+      description: The type of the category associated with the playbook.
+      type: String
+    - contextPath: Cofense.Playbook.relationships.category.data.id
+      description: The unique identifier of the category associated with the playbook.
+      type: String
+    - contextPath: Cofense.Playbook.relationships.reporter_response.links.self
+      description: The link to retrieve the response sent to the reporter when the playbook processes the report.
+      type: String
+    - contextPath: Cofense.Playbook.relationships.reporter_response.links.related
+      description: The link to retrieve the detailed information of the response sent to the reporter when the playbook processes the report.
+      type: String
+    - contextPath: Cofense.Playbook.relationships.reporter_response.data.type
+      description: The type of the reporter response associated with the playbook.
+      type: String
+    - contextPath: Cofense.Playbook.relationships.reporter_response.data.id
+      description: The unique identifier of the reporter response associated with the playbook.
+      type: String
+    - contextPath: Cofense.Playbook.relationships.vip_response.links.self
+      description: The link to retrieve the response sent to the VIP reporter when the playbook processes the report.
+      type: String
+    - contextPath: Cofense.Playbook.relationships.vip_response.links.related
+      description: The link to retrieve the detailed information of the response sent to the VIP reporter when the playbook processes the report.
+      type: String
+    - contextPath: Cofense.Playbook.relationships.vip_response.data.type
+      description: The type of the VIP response associated with the playbook.
+      type: String
+    - contextPath: Cofense.Playbook.relationships.vip_response.data.id
+      description: The unique identifier of the VIP response associated with the playbook.
+      type: String
+    - contextPath: Cofense.Playbook.relationships.team_notifications.links.self
+      description: The link to retrieve the team notifications sent when the playbook processes the report.
+      type: String
+    - contextPath: Cofense.Playbook.relationships.team_notifications.links.related
+      description: The link to retrieve the detailed information of the team notifications sent when the playbook processes the report.
+      type: String
+    - contextPath: Cofense.Playbook.relationships.triggers.links.self
+      description: The link to retrieve the triggers that run the playbook.
+      type: String
+    - contextPath: Cofense.Playbook.relationships.triggers.links.related
+      description: The link to retrieve the detailed information of the triggers that run the playbook.
+      type: String
+  - arguments:
+    - description: |-
+        Specify the comma-separated list of report IDs the playbook should execute against.
+
+        Note: To retrieve report_ids, execute "cofense-report-list" command.
+
+        For example: 1,2,3.
+      isArray: true
+      name: report_ids
+      required: true
+    - description: |-
+        Specify the ID of an existing playbook to execute against the specified reports.
+
+        Note: To retrieve playbook_id, execute "cofense-playbook-list" command.
+
+        For example: 3.
+      name: playbook_id
+      required: true
+    description: 'Processes the specified reports through an existing playbook. Note: This command requires at least the Triage Operator role.'
+    name: cofense-playbook-execute
+    outputs:
+    - contextPath: Cofense.PlaybookExecution.report_ids
+      description: The unique identifiers of the reports the playbook was executed against.
+      type: Number
+    - contextPath: Cofense.PlaybookExecution.playbook_id
+      description: The unique identifier of the executed playbook.
+      type: Number
+    - contextPath: Cofense.PlaybookExecution.execution_key
+      description: The unique key of the playbook execution, built by combining the report IDs, the playbook ID, and the execution time in UTC.
+      type: String
+    - contextPath: Cofense.PlaybookExecution.execution_time
+      description: The time in UTC at which the playbook was executed.
+      type: Date
+  dockerimage: demisto/python3:3.12.14.12844876
   isfetch: true
   isremotesyncin: true
   runonce: false
