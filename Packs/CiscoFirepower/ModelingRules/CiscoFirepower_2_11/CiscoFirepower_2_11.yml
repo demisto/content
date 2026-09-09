@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: CiscoFirepower_ModelingRule
-name: CiscoFirepower Modeling Rule
+id: CiscoFirepower_modeling_rule
+name: Cisco Firepower Modeling Rule
 rules: ''
 schema: ''
 tags: CiscoFirepower
