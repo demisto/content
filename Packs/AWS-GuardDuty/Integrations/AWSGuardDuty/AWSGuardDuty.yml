@@ -676,7 +676,7 @@ script:
     execution: true
     arguments:
     - name: detectorId
-      description: The detector that owns the set.
+      description: The ID of the detector that owns the set.
       required: true
     - name: threatEntitySetId
       description: The ID of the threat entity set to update.
@@ -754,7 +754,7 @@ script:
     execution: true
     arguments:
     - name: detectorId
-      description: The detector that owns the set.
+      description: The ID of the detector that owns the set.
       required: true
     - name: threatEntitySetId
       description: The ID of the threat entity set to delete.
@@ -771,7 +771,7 @@ script:
     description: Lists the threat entity sets of the GuardDuty service specified by the detector ID.
     arguments:
     - name: detectorId
-      description: The detector whose threat entity sets you want to list.
+      description: The ID of the detector whose threat entity sets you want to list.
       required: true
     - name: limit
       description: The maximum number of results across all pages.

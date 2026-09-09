@@ -434,10 +434,10 @@ def create_threat_entity_set(client: "GuardDutyClient", args: dict) -> CommandRe
     )
 
 
-def update_threat_entity_set(client: "GuardDutyClient", args: dict):
-    thread_entity_set_id = args.get("threatEntitySetId")
+def update_threat_entity_set(client: "GuardDutyClient", args: dict) -> CommandResults:
+    threat_entity_set_id = args.get("threatEntitySetId")
     demisto.debug(
-        f"[AWSGuardDuty] update_threat_entity_set: started for Threat Entity Set {thread_entity_set_id} "
+        f"[AWSGuardDuty] update_threat_entity_set: started for Threat Entity Set {threat_entity_set_id} "
         f"of Detector {args.get('detectorId')}, activate={args.get('activate')}, "
         f"location_provided={bool(args.get('location'))}, name={args.get('name')}, "
         f"expectedBucketOwner_provided={bool(args.get('expectedBucketOwner'))}."
@@ -445,7 +445,7 @@ def update_threat_entity_set(client: "GuardDutyClient", args: dict):
     kwargs = remove_empty_elements(
         {
             "DetectorId": args.get("detectorId"),
-            "ThreatEntitySetId": thread_entity_set_id,
+            "ThreatEntitySetId": threat_entity_set_id,
             "Activate": arg_to_bool_or_none(args.get("activate")),
             "Location": args.get("location"),
             "Name": args.get("name"),
@@ -455,19 +455,19 @@ def update_threat_entity_set(client: "GuardDutyClient", args: dict):
 
     demisto.debug(
         f"[AWSGuardDuty] update_threat_entity_set: calling update_threat_entity_set for Threat Entity Set "
-        f"{thread_entity_set_id} of Detector {args.get('detectorId')} with request fields: {list(kwargs.keys())}."
+        f"{threat_entity_set_id} of Detector {args.get('detectorId')} with request fields: {list(kwargs.keys())}."
     )
     response = client.update_threat_entity_set(**kwargs)
     demisto.debug(
-        f"[AWSGuardDuty] update_threat_entity_set: {thread_entity_set_id=} API response HTTPStatusCode="
+        f"[AWSGuardDuty] update_threat_entity_set: {threat_entity_set_id=} API response HTTPStatusCode="
         f"{response.get('ResponseMetadata', {}).get('HTTPStatusCode')}."
     )
 
     if response == {} or response.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200:
-        return f"Threat entity set {thread_entity_set_id} was updated successfully"
+        return CommandResults(readable_output=f"Threat entity set {threat_entity_set_id} was updated successfully")
     else:
         status_code = response.get("ResponseMetadata", {}).get("HTTPStatusCode")
-        raise DemistoException(f"Failed updating Threat Entity set {thread_entity_set_id}. HTTPStatusCode was: {status_code}")
+        raise DemistoException(f"Failed updating Threat Entity set {threat_entity_set_id}. HTTPStatusCode was: {status_code}")
 
 
 def get_threat_entity_set(client: "GuardDutyClient", args: dict) -> CommandResults:
@@ -508,7 +508,7 @@ def get_threat_entity_set(client: "GuardDutyClient", args: dict) -> CommandResul
     )
 
 
-def delete_threat_entity_set(client: "GuardDutyClient", args: dict):
+def delete_threat_entity_set(client: "GuardDutyClient", args: dict) -> CommandResults:
     threat_entity_set_id = args.get("threatEntitySetId")
     detector_id = args.get("detectorId")
     demisto.debug(
@@ -521,7 +521,9 @@ def delete_threat_entity_set(client: "GuardDutyClient", args: dict):
         f"{response.get('ResponseMetadata', {}).get('HTTPStatusCode')}."
     )
     if response == {} or response.get("ResponseMetadata", {}).get("HTTPStatusCode") == 200:
-        return f"Threat Entity Set {threat_entity_set_id} was deleted from Detector " f"{detector_id} successfully"
+        return CommandResults(
+            readable_output=f"Threat Entity Set {threat_entity_set_id} was deleted from Detector " f"{detector_id} successfully"
+        )
     else:
         status_code = response.get("ResponseMetadata", {}).get("HTTPStatusCode")
         raise DemistoException(f"Failed to delete Threat Entity set {threat_entity_set_id}. HTTPStatusCode was: {status_code}")
@@ -1052,19 +1054,19 @@ def main():  # pragma: no cover
             result = update_threat_intel_set(client, demisto.args())
 
         elif demisto.command() == "aws-gd-create-threat-entity-set":
-            result = create_threat_entity_set(client, demisto.args())
+            result = create_threat_entity_set(client, args)
 
         elif demisto.command() == "aws-gd-update-threat-entity-set":
-            result = update_threat_entity_set(client, demisto.args())
+            result = update_threat_entity_set(client, args)
 
         elif demisto.command() == "aws-gd-get-threat-entity-set":
-            result = get_threat_entity_set(client, demisto.args())
+            result = get_threat_entity_set(client, args)
 
         elif demisto.command() == "aws-gd-delete-threat-entity-set":
-            result = delete_threat_entity_set(client, demisto.args())
+            result = delete_threat_entity_set(client, args)
 
         elif demisto.command() == "aws-gd-list-threat-entity-sets":
-            result = list_threat_entity_sets(client, demisto.args())
+            result = list_threat_entity_sets(client, args)
 
         elif demisto.command() == "aws-gd-list-findings":
             result = list_findings(client, demisto.args())

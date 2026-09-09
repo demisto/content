@@ -837,7 +837,7 @@ def test_update_threat_entity_set_readable_output(mocker):
 
     result = update_threat_entity_set(mocked_client, {"detectorId": "some_id", "threatEntitySetId": "ThreatEntitySetId1"})
 
-    assert result == "Threat entity set ThreatEntitySetId1 was updated successfully"
+    assert result.readable_output == "Threat entity set ThreatEntitySetId1 was updated successfully"
 
 
 def test_update_threat_entity_set_failure_message(mocker):
@@ -1002,7 +1002,7 @@ def test_delete_threat_entity_set_readable_output(mocker):
 
     result = delete_threat_entity_set(mocked_client, {"detectorId": "some_id", "threatEntitySetId": "ThreatEntitySetId1"})
 
-    assert result == "Threat Entity Set ThreatEntitySetId1 was deleted from Detector some_id successfully"
+    assert result.readable_output == "Threat Entity Set ThreatEntitySetId1 was deleted from Detector some_id successfully"
 
 
 def test_delete_threat_entity_set_failure_message(mocker):

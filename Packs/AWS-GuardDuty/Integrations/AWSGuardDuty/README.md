@@ -966,7 +966,7 @@ Updates the threat entity set that is specified by the threat entity set ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| detectorId | The detector that owns the set. | Required |
+| detectorId | The ID of the detector that owns the set. | Required |
 | threatEntitySetId | The ID of the threat entity set to update. | Required |
 | activate | Whether GuardDuty should use the updated set. Possible values are: True, False. | Optional |
 | location | The updated S3 URI of the entity-list file. For example, https://s3.us-east-1.amazonaws.com/example-bucket/threat-entities-v2.txt. | Optional |
@@ -1037,7 +1037,7 @@ Deletes the threat entity set that is specified by the threat entity set ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| detectorId | The detector that owns the set. | Required |
+| detectorId | The ID of the detector that owns the set. | Required |
 | threatEntitySetId | The ID of the threat entity set to delete. | Required |
 | region | The AWS Region. If not specified, the default region is used. | Optional |
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional |
@@ -1065,7 +1065,7 @@ Lists the threat entity sets of the GuardDuty service specified by the detector 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| detectorId | The detector whose threat entity sets you want to list. | Required |
+| detectorId | The ID of the detector whose threat entity sets you want to list. | Required |
 | limit | The maximum number of results across all pages. Default is 50. | Optional |
 | page_size | The page size for the underlying paginator. Valid range is 1-50. Default is 50. | Optional |
 | page | The 1-based page index. When set, only that page is returned. | Optional |
