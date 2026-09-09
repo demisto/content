@@ -41,6 +41,9 @@ configuration:
   required: false
   type: 8
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: true
@@ -48,11 +51,17 @@ configuration:
   section: Connect
   additionalinfo: The interval specifies the cadence with which the Doppel alerts be fetched.
   defaultvalue: "1"
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   required: false
   type: 13
   section: Connect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: 'Choose the direction to mirror the incident: None (No mirroring), Incoming (from Doppel to Cortex XSOAR), Outgoing (from Cortex XSOAR to Doppel), Incoming and Outgoing (from/to Cortex XSOAR and Doppel). Cortex XSOAR only parameter.'
   display: Mirror Direction
   name: mirror_direction
@@ -88,6 +97,9 @@ configuration:
   section: Collect
   additionalinfo: Due to API limitations, the maximum is 100.
   defaultvalue: "10"
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -308,12 +320,16 @@ script:
       - mobile_apps
       - ecommerce
       - crypto
-      - emails
-      - paid_adds
+      - email
+      - paid_ads
+      - telco
+      - darkweb
     - description: Filter alerts created before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'.
       name: created_before
     - description: Filter alerts created after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'.
       name: created_after
+    - description: The filter for alerts whose last activity (creation or any update) occurred at or after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'.
+      name: last_activity_timestamp
     - auto: PREDEFINED
       description: The field to sort the reports by.
       defaultValue: date_sourced
@@ -331,6 +347,8 @@ script:
     - description: Page number for pagination.
       defaultValue: '0'
       name: page
+    - description: The number of alerts to return per page. The maximum supported by the Doppel API is 200.
+      name: page_size
     - description: List of tags to filter alerts.
       isArray: true
       name: tags
@@ -458,7 +476,7 @@ script:
       secret: false
     description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
     name: get-remote-data
-  dockerimage: demisto/python3:3.12.13.8428455
+  dockerimage: demisto/python3:3.12.13.10404775
   script: '-'
   type: python
   subtype: python3

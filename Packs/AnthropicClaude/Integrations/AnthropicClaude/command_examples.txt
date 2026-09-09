@@ -10,3 +10,5 @@
 !claude-list-projects
 !claude-list-project-attachments project_id=project-id
 !claude-get-project-document project_id=project-id document_id=claude_proj_doc_id
+!claude-chat-file-delete file_id=claude_file_id
+!claude-project-document-delete document_id=claude_proj_doc_id

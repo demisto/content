@@ -26,6 +26,10 @@
                 "owner": {
                     "complex": null,
                     "simple": "owner"
+                },
+                "notable_time": {
+                    "complex": null,
+                    "simple": "occurred"
                 }
             }
         }

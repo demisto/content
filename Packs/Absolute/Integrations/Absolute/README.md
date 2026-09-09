@@ -1101,6 +1101,7 @@ In the ***absolute-device-application-list*** command, the following argument wa
   - *Absolute.DeviceUnenroll.SystemName*
   - *Absolute.DeviceUnenroll.Username*
 
+
 ### absolute-wipe-request-list
 
 ***
@@ -1226,3 +1227,14 @@ Attempt to cancel all Wipe actions with an actionStatus of Pending for the reque
 #### Context Output
 
 There is no context output for this command.
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require the **Cortex XSIAM** license:
+
+- Fetch Events
+
+</~PLATFORM>
+

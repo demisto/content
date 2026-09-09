@@ -1,0 +1,14 @@
+{
+    "id": "55555",
+    "status": "current",
+    "pageId": "12345",
+    "version": {
+        "number": 1
+    },
+    "body": {
+        "storage": {
+            "representation": "storage",
+            "value": "<p>This is a footer comment</p>"
+        }
+    }
+}

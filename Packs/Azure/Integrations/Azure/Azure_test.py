@@ -1,8 +1,11 @@
+import ast
 import json
+from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 import demistomock as demisto
 import pytest
+import yaml
 import Azure
 from Azure import (
     AzureClient,
@@ -59,6 +62,11 @@ from MicrosoftApiModule import Resources
 from requests import Response
 from requests.structures import CaseInsensitiveDict
 from COOCApiModule import CloudTypes
+
+
+INTEGRATION_DIR = Path(__file__).parent
+YML_PATH = INTEGRATION_DIR / "Azure.yml"
+PY_PATH = INTEGRATION_DIR / "Azure.py"
 
 
 @pytest.fixture
@@ -1089,14 +1097,15 @@ def test_remove_member_from_group_command(mocker, client):
 
 def test_get_azure_client_no_token(mocker, mock_params):
     """
-    Given: Parameters without credentials and no token from cloud credentials.
+    Given: Platform (connector) path where cloud credentials return no token.
     When: The get_azure_client function is called.
-    Then: The function should raise an exception.
+    Then: The function should raise an exception about the missing token.
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
     command = "command"
 
+    mocker.patch("Azure.get_connector_id", return_value="connector-123")  # Platform path
     mocker.patch("Azure.get_from_args_or_params", return_value="mocked_subscription_id")
     mocker.patch("Azure.get_cloud_credentials", return_value={})  # No token
 
@@ -1111,17 +1120,40 @@ def test_get_azure_client_no_token(mocker, mock_params):
     assert "Failed to retrieve AZURE access token" in str(excinfo.value)
 
 
+def test_get_azure_client_marketplace_missing_secret(mocker, mock_params):
+    """
+    Given: Marketplace path (no connector) with the Client Credentials flow and no Client Secret.
+    When: The get_azure_client function is called.
+    Then: The function should raise a clear DemistoException about the missing Client Secret.
+    """
+    args = {"subscription_id": "arg_subscription_id"}
+    command = "command"
+
+    mocker.patch("Azure.get_connector_id", return_value=None)  # Marketplace path
+
+    params = mock_params.copy()
+    params["credentials"] = {}
+    params["auth_type"] = "Client Credentials"
+
+    with pytest.raises(DemistoException) as excinfo:
+        get_azure_client(params, args, command)
+
+    assert "Client Secret" in str(excinfo.value)
+
+
 def test_get_azure_client_with_stored_credentials(mocker, mock_params):
     """
-    Given: Parameters with stored credentials, arguments, and an Azure command.
+    Given: Marketplace path with a Client Secret configured (Client Credentials flow).
     When: The get_azure_client function is called.
-    Then: The function should return an initialized Azure client using stored credentials without cloud authentication.
+    Then: The function should return an initialized Azure client using the secret without cloud (CTS) authentication.
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
     command = "command"
     mock_client = mocker.Mock()
 
+    mocker.patch("Azure.get_connector_id", return_value=None)  # Marketplace path
+    mock_get_managed = mocker.patch("Azure.get_azure_managed_identities_client_id", return_value=None)
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
 
     # Test with credentials (stored credentials path)
@@ -1146,12 +1178,17 @@ def test_get_azure_client_with_stored_credentials(mocker, mock_params):
         resource=Resources.management_azure,
         scope=SCOPE_BY_CONNECTION.get("Client Credentials"),
         headers={},
+        connection_type="Client Credentials",
+        azure_ad_endpoint="https://login.microsoftonline.com",
+        auth_code=None,
+        redirect_uri=None,
+        managed_identities_client_id=mock_get_managed.return_value,
     )
 
 
 def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_params):
     """
-    Given: Parameters without stored credentials, arguments, and an Azure command.
+    Given: Platform (connector) path without stored credentials.
     When: The get_azure_client function is called.
     Then: The function should retrieve cloud credentials and return a client with proper headers and scope.
     """
@@ -1161,6 +1198,8 @@ def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_para
     mock_client = mocker.Mock()
     mock_token = "mock_access_token"
 
+    mocker.patch("Azure.get_connector_id", return_value="connector-123")  # Platform path
+    mock_get_managed = mocker.patch("Azure.get_azure_managed_identities_client_id", return_value=None)
     mocker.patch("Azure.get_from_args_or_params", return_value="test_subscription_id")
     mocker.patch("Azure.get_cloud_credentials", return_value={"access_token": mock_token})
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
@@ -1191,18 +1230,24 @@ def test_get_azure_client_with_cloud_credentials_azure_command(mocker, mock_para
         resource=Resources.management_azure,
         scope=SCOPE_BY_CONNECTION.get("Client Credentials"),
         headers=expected_headers,
+        connection_type="Client Credentials",
+        azure_ad_endpoint="https://login.microsoftonline.com",
+        auth_code=None,
+        redirect_uri=None,
+        managed_identities_client_id=mock_get_managed.return_value,
     )
 
 
 def test_get_azure_client_no_token_raises_exception(mocker, mock_params):
     """
-    Given: Parameters without stored credentials and cloud credentials that return no token.
+    Given: Platform (connector) path with cloud credentials that return no token.
     When: The get_azure_client function is called.
     Then: The function should raise a DemistoException about missing token.
     """
     # Setup mocks
     args = {"subscription_id": "arg_subscription_id"}
     command = "command"
+    mocker.patch("Azure.get_connector_id", return_value="connector-123")  # Platform path
     mocker.patch("Azure.get_from_args_or_params", return_value="test_subscription_id")
     mocker.patch("Azure.get_cloud_credentials", return_value={})  # No access_token
 
@@ -1250,19 +1295,26 @@ def test_get_azure_client_insecure_and_proxy_settings(mocker, mock_params):
 
 def test_get_azure_client_missing_optional_params(mocker):
     """
-    Given: Parameters with missing optional fields.
+    Given: The mandatory Client Credentials params are provided, but the truly optional fields
+           (resource_group_name, insecure, proxy) are omitted.
     When: The get_azure_client function is called.
-    Then: The function should handle missing parameters gracefully with default values.
+    Then: The function builds the client using default values for the omitted optional fields.
     """
     # Setup mocks
     args = {}
     mock_client = mocker.Mock()
     command = "command"
 
+    mocker.patch("Azure.get_connector_id", return_value=None)  # Marketplace path
     mock_azure_client_constructor = mocker.patch("Azure.AzureClient", return_value=mock_client)
 
-    # Test with minimal parameters
-    params = {"credentials": {"password": "test_password"}}
+    # Mandatory params for Client Credentials present; optional fields omitted.
+    params = {
+        "app_id": "test_app_id",
+        "subscription_id": "test_subscription_id",
+        "tenant_id": "test_tenant_id",
+        "credentials": {"password": "test_password"},
+    }
 
     # Call the function
     result = get_azure_client(params, args, command)
@@ -1270,14 +1322,11 @@ def test_get_azure_client_missing_optional_params(mocker):
     # Verify results
     assert result == mock_client
 
-    # Verify default values were used
+    # Verify default values were used for the optional fields
     call_args = mock_azure_client_constructor.call_args
-    assert call_args[1]["app_id"] == ""
-    assert call_args[1]["subscription_id"] == ""
     assert call_args[1]["resource_group_name"] == ""
     assert call_args[1]["verify"] is True  # Default for insecure=False
     assert call_args[1]["proxy"] is False  # Default
-    assert call_args[1]["tenant_id"] is None
 
 
 def test_format_rule_dict_input(mocker):
@@ -3909,11 +3958,20 @@ def test_get_command_resource_storage(command):
 class TestGetAzureClient:
     """Tests for the get_azure_client function."""
 
+    @patch("Azure.get_connector_id", return_value="connector-123")
+    @patch("Azure.get_azure_managed_identities_client_id", return_value=None)
     @patch("Azure.get_from_args_or_params")
     @patch("Azure.get_cloud_credentials")
     @patch("Azure.AzureClient")
-    def test_with_cloud_credentials(self, mock_azure_client, mock_get_cloud_credentials, mock_get_from_args_or_params):
-        """Test get_azure_client with cloud credentials."""
+    def test_with_cloud_credentials(
+        self,
+        mock_azure_client,
+        mock_get_cloud_credentials,
+        mock_get_from_args_or_params,
+        mock_get_managed,
+        mock_get_connector_id,
+    ):
+        """Test get_azure_client with cloud credentials (Platform path)."""
         # Setup mocks
         mock_get_from_args_or_params.return_value = "test-subscription-id"
         mock_get_cloud_credentials.return_value = {"access_token": "test-token"}
@@ -3952,13 +4010,27 @@ class TestGetAzureClient:
             resource=DEFAULT_RESOURCE,
             scope=DEFAULT_SCOPE,
             headers={"Authorization": "Bearer test-token", "Content-Type": "application/json", "Accept": "application/json"},
+            connection_type="Client Credentials",
+            azure_ad_endpoint="https://login.microsoftonline.com",
+            auth_code=None,
+            redirect_uri=None,
+            managed_identities_client_id=None,
         )
 
+    @patch("Azure.get_connector_id", return_value="connector-123")
+    @patch("Azure.get_azure_managed_identities_client_id", return_value=None)
     @patch("Azure.get_from_args_or_params")
     @patch("Azure.get_cloud_credentials")
     @patch("Azure.AzureClient")
-    def test_with_storage_command(self, mock_azure_client, mock_get_cloud_credentials, mock_get_from_args_or_params):
-        """Test get_azure_client with a storage command."""
+    def test_with_storage_command(
+        self,
+        mock_azure_client,
+        mock_get_cloud_credentials,
+        mock_get_from_args_or_params,
+        mock_get_managed,
+        mock_get_connector_id,
+    ):
+        """Test get_azure_client with a storage command (Platform path)."""
         # Setup mocks
         mock_get_from_args_or_params.return_value = "test-subscription-id"
         mock_get_cloud_credentials.return_value = {"access_token": "test-token"}
@@ -3997,6 +4069,11 @@ class TestGetAzureClient:
             resource=STORAGE_RESOURCE,
             scope=STORAGE_SCOPE,
             headers={"Authorization": "Bearer test-token", "Content-Type": "application/json", "Accept": "application/json"},
+            connection_type="Client Credentials",
+            azure_ad_endpoint="https://login.microsoftonline.com",
+            auth_code=None,
+            redirect_uri=None,
+            managed_identities_client_id=None,
         )
 
 
@@ -5598,3 +5675,1926 @@ def test_network_interface_update_command_conflict_nsg(mocker):
         DemistoException, match="The remove_network_security_group option cannot be used with network_security_group_name."
     ):
         network_interface_update_command(client, params, args)
+
+
+def test_test_module_device_code_flow(mocker):
+    """
+    Given: A client configured with the Device Code authentication type.
+    When: test_module is called (Test button).
+    Then: A DemistoException is raised, because the Device Code token lives in the saved instance
+          context and the Test button cannot validate it. The user is directed to `!azure-auth-test`.
+          No API call is made.
+    """
+    client = AzureClient(app_id="test_app_id", connection_type="Device Code")
+    mock_http = mocker.patch.object(client, "http_request", return_value={})
+
+    with pytest.raises(DemistoException) as excinfo:
+        Azure.test_module(client)
+
+    assert "azure-auth-test" in str(excinfo.value)
+    mock_http.assert_not_called()
+
+
+def test_test_module_authorization_code_flow(mocker):
+    """
+    Given: A client configured with the Authorization Code authentication type.
+    When: test_module is called (Test button).
+    Then: It validates directly via the roleAssignments call (the authorization code is in the
+          instance parameters, so a token can be obtained on demand) and returns "ok".
+    """
+    client = AzureClient(app_id="test_app_id", connection_type="Authorization Code")
+    mock_http = mocker.patch.object(client, "http_request", return_value={})
+
+    assert Azure.test_module(client) == "ok"
+    mock_http.assert_called_once()
+
+
+def test_test_module_client_credentials_ok(mocker, client):
+    """
+    Given: A client configured with the Client Credentials flow (default) and a successful API call.
+    When: test_module is called.
+    Then: It returns "ok".
+    """
+    mocker.patch.object(client, "connection_type", "Client Credentials")
+    mocker.patch.object(client, "http_request", return_value={})
+
+    assert Azure.test_module(client) == "ok"
+
+
+def test_test_module_managed_identities_uses_resource_groups(mocker):
+    """
+    Given: A client configured with the Azure Managed Identities authentication type.
+    When: test_module is called (Test button).
+    Then: It validates via the lightweight resource-groups list call (not the roleAssignments call),
+          because a Managed Identity often lacks the roleAssignments/read permission while still being
+          able to run other commands. It returns "ok".
+    """
+    client = AzureClient(app_id="test_app_id", connection_type="Azure Managed Identities")
+    client.subscription_id = "sub-123"
+    mock_http = mocker.patch.object(client, "http_request", return_value={})
+
+    assert Azure.test_module(client) == "ok"
+
+    mock_http.assert_called_once()
+    _, kwargs = mock_http.call_args
+    assert kwargs["full_url"].endswith("/subscriptions/sub-123/resourcegroups")
+    assert "roleAssignments" not in kwargs["full_url"]
+
+
+def test_test_connection_success(mocker, client):
+    """
+    Given: A client whose MicrosoftClient can fetch an access token.
+    When: test_connection is called.
+    Then: A success message is returned.
+    """
+    mocker.patch.object(client.ms_client, "get_access_token")
+
+    assert "Success" in Azure.test_connection(client)
+
+
+def test_start_auth(mocker, client):
+    """
+    Given: A client.
+    When: start_auth is called.
+    Then: It returns CommandResults wrapping the MicrosoftClient start_auth output.
+    """
+    mocker.patch.object(client.ms_client, "start_auth", return_value="follow these steps")
+
+    result = Azure.start_auth(client)
+
+    assert result.readable_output == "follow these steps"
+
+
+def test_complete_auth(mocker, client):
+    """
+    Given: A client.
+    When: complete_auth is called.
+    Then: It fetches the access token and returns a success message.
+    """
+    mock_get_token = mocker.patch.object(client.ms_client, "get_access_token")
+
+    result = Azure.complete_auth(client)
+
+    mock_get_token.assert_called_once()
+    assert "completed successfully" in result
+
+
+def test_get_azure_client_device_code_no_secret(mocker, mock_params):
+    """
+    Given: Marketplace path (no connector) with the Device Code flow and no Client Secret.
+    When: get_azure_client is called.
+    Then: It does NOT raise the missing-secret error and builds a client with the Device Code connection type.
+    """
+    mocker.patch("Azure.get_connector_id", return_value=None)
+    mocker.patch("Azure.get_azure_managed_identities_client_id", return_value=None)
+    mock_azure_client = mocker.patch("Azure.AzureClient", return_value=mocker.Mock())
+
+    params = mock_params.copy()
+    params["credentials"] = {}
+    params["auth_type"] = "Device Code"
+
+    get_azure_client(params, {}, "command")
+
+    # The connection_type must be propagated to the client (no missing-secret exception raised).
+    _, kwargs = mock_azure_client.call_args
+    assert kwargs["connection_type"] == "Device Code"
+
+
+def test_get_azure_client_marketplace_storage_scope(mocker, mock_params):
+    """
+    Given: Marketplace path (no connector), Client Credentials, and a storage-container command.
+    When: get_azure_client is called.
+    Then: The AzureClient is built with the STORAGE scope and STORAGE resource (not the management
+          scope), so the storage-scoped token is requested. Regression test for the scope-override bug.
+    """
+    from Azure import STORAGE_SCOPE, STORAGE_RESOURCE
+
+    mocker.patch("Azure.get_connector_id", return_value=None)
+    mocker.patch("Azure.get_azure_managed_identities_client_id", return_value=None)
+    mock_azure_client = mocker.patch("Azure.AzureClient", return_value=mocker.Mock())
+
+    params = mock_params.copy()
+    params["credentials"] = {"password": "secret"}
+    params["auth_type"] = "Client Credentials"
+
+    get_azure_client(params, {}, "azure-storage-container-create")
+
+    _, kwargs = mock_azure_client.call_args
+    assert kwargs["scope"] == STORAGE_SCOPE
+    assert kwargs["resource"] == STORAGE_RESOURCE
+    assert kwargs["connection_type"] == "Client Credentials"
+
+
+def test_azure_client_client_credentials_does_not_send_resource_to_v2_endpoint(mocker):
+    """
+    Given: A Client Credentials client (uses the v2.0 token endpoint with a `.default` scope).
+    When: AzureClient builds the MicrosoftClient.
+    Then: No `resource` is forwarded to MicrosoftClient, so the token request sends only `scope`.
+          Sending both `scope` and `resource` to the v2.0 endpoint causes Microsoft to return
+          "invalid_target: The resource parameter provided in the request doesn't match with the
+          requested scopes". Only Device Code (v1.0-style) uses `resource`.
+    """
+    from Azure import DEFAULT_SCOPE, DEFAULT_RESOURCE
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(
+        app_id="app",
+        connection_type="Client Credentials",
+        tenant_id="my-tenant",
+        scope=DEFAULT_SCOPE,
+        resource=DEFAULT_RESOURCE,
+    )
+
+    assert captured["scope"] == DEFAULT_SCOPE
+    # resource must not be forwarded for the v2.0 client-credentials flow.
+    assert captured.get("resource") is None
+
+
+def test_azure_client_device_code_default_resource_derives_management_scope(mocker):
+    """
+    Given: A Device Code client for a management (default) command, i.e. resource=DEFAULT_RESOURCE.
+    When: AzureClient builds the MicrosoftClient.
+    Then: The MicrosoftClient receives the management resource (no trailing slash) and a Device Code
+          delegated scope derived from it. Regression test: the branch derives scope/resource from
+          the per-command resource instead of hardcoding management-only values.
+    """
+    from Azure import DEFAULT_RESOURCE
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(app_id="app", connection_type="Device Code", resource=DEFAULT_RESOURCE)
+
+    expected_resource = DEFAULT_RESOURCE.rstrip("/")
+    assert captured["resource"] == expected_resource
+    assert captured["scope"] == f"{expected_resource}/user_impersonation offline_access user.read"
+    assert captured["token_retrieval_url"] is not None
+
+
+def test_azure_client_device_code_storage_resource_derives_storage_scope(mocker):
+    """
+    Given: A Device Code client for a storage-container command, i.e. resource=STORAGE_RESOURCE.
+    When: AzureClient builds the MicrosoftClient.
+    Then: The MicrosoftClient receives the storage resource (no trailing slash) and a Device Code
+          delegated scope derived from it, so storage commands are storage-scoped under Device Code
+          auth instead of always management-scoped.
+    """
+    from Azure import STORAGE_RESOURCE
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(app_id="app", connection_type="Device Code", resource=STORAGE_RESOURCE)
+
+    expected_resource = STORAGE_RESOURCE.rstrip("/")
+    assert captured["resource"] == expected_resource
+    assert captured["scope"] == f"{expected_resource}/user_impersonation offline_access user.read"
+    assert captured["token_retrieval_url"] is not None
+
+
+def test_azure_client_client_credentials_gov_endpoint_builds_gov_token_url(mocker):
+    """
+    Given: A Client Credentials client configured with a US Gov Azure AD endpoint
+           (https://login.microsoftonline.us).
+    When: AzureClient builds the MicrosoftClient.
+    Then: The token_retrieval_url points to the same (gov) authority so the confidential-client token
+          request is not sent cross-cloud. Regression test for the Microsoft error
+          "Confidential Client is not supported in Cross Cloud request".
+    """
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(
+        app_id="app",
+        connection_type="Client Credentials",
+        tenant_id="my-tenant",
+        azure_ad_endpoint="https://login.microsoftonline.us",
+    )
+
+    assert captured["token_retrieval_url"] == "https://login.microsoftonline.us/my-tenant/oauth2/v2.0/token"
+
+
+def test_azure_client_client_credentials_default_endpoint_builds_commercial_token_url(mocker):
+    """
+    Given: A Client Credentials client using the default (commercial) Azure AD endpoint.
+    When: AzureClient builds the MicrosoftClient.
+    Then: The token_retrieval_url points to the commercial login.microsoftonline.com authority.
+    """
+    from Azure import DEFAULT_AZURE_AD_ENDPOINT
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(
+        app_id="app",
+        connection_type="Client Credentials",
+        tenant_id="my-tenant",
+        azure_ad_endpoint=DEFAULT_AZURE_AD_ENDPOINT,
+    )
+
+    assert captured["token_retrieval_url"] == "https://login.microsoftonline.com/my-tenant/oauth2/v2.0/token"
+
+
+def test_azure_client_managed_identities_passes_mi_args_to_ms_client(mocker):
+    """
+    Given: A client constructed with the Azure Managed Identities flow and a user-assigned client ID.
+    When: AzureClient builds the MicrosoftClient.
+    Then: The MicrosoftClient receives the managed_identities_client_id and the management Azure
+          resource URI, matching the reference Azure packs (e.g. AzureNetworkSecurityGroups). The
+          grant_type is None (the managed-identities path is selected by managed_identities_client_id,
+          not by grant_type). No device-code token URL is set.
+    """
+    from Azure import DEFAULT_RESOURCE, DEFAULT_SCOPE
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(
+        app_id="app",
+        connection_type="Azure Managed Identities",
+        managed_identities_client_id="my-mi-client-id",
+        scope=DEFAULT_SCOPE,
+        resource=DEFAULT_RESOURCE,
+    )
+
+    assert captured["managed_identities_client_id"] == "my-mi-client-id"
+    # The MI resource URI is the management Azure resource with the trailing slash stripped
+    # (the MI branch derives it from `(resource or DEFAULT_RESOURCE).rstrip("/")`).
+    assert captured["managed_identities_resource_uri"] == DEFAULT_RESOURCE.rstrip("/")
+    assert captured["managed_identities_resource_uri"] == "https://management.azure.com"
+    # Managed Identities is not a grant_type flow; the path is chosen by managed_identities_client_id.
+    assert captured.get("grant_type") is None
+    # Device-code-only token retrieval URL must not be set for the MI flow.
+    assert captured.get("token_retrieval_url") is None
+
+
+def test_azure_client_client_credentials_empty_tenant_builds_token_url_without_none(mocker):
+    """
+    Given: A non-device-code client (Client Credentials) with no tenant_id configured.
+    When: AzureClient builds the MicrosoftClient.
+    Then: The token_retrieval_url is built with an empty tenant segment (no literal "None" in the URL).
+          Regression test for None stringification in the token URL.
+    """
+    from Azure import DEFAULT_AZURE_AD_ENDPOINT
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(
+        app_id="app",
+        connection_type="Client Credentials",
+        tenant_id=None,
+        azure_ad_endpoint=DEFAULT_AZURE_AD_ENDPOINT,
+    )
+
+    assert "None" not in captured["token_retrieval_url"]
+    # urljoin collapses the empty tenant segment, so the authority host is followed by a single slash.
+    assert captured["token_retrieval_url"] == "https://login.microsoftonline.com/oauth2/v2.0/token"
+
+
+def test_azure_client_managed_identities_storage_resource_derives_storage_uri(mocker):
+    """
+    Given: A Managed Identities client for a storage-container command (per-command resource is the
+           storage resource).
+    When: AzureClient builds the MicrosoftClient.
+    Then: managed_identities_resource_uri is the storage resource (not the management default), so the
+          MI token is storage-scoped. Regression test for storage commands failing with 401/403 under
+          MI auth because the token was always management-scoped.
+    """
+    from Azure import STORAGE_RESOURCE
+
+    captured = {}
+
+    def fake_ms_client(**kwargs):
+        captured.update(kwargs)
+        return mocker.Mock()
+
+    mocker.patch("Azure.MicrosoftClient", side_effect=fake_ms_client)
+    AzureClient(
+        app_id="app",
+        connection_type="Azure Managed Identities",
+        managed_identities_client_id="my-mi-client-id",
+        resource=STORAGE_RESOURCE,
+    )
+
+    assert captured["managed_identities_resource_uri"] == STORAGE_RESOURCE.rstrip("/")
+    assert captured["managed_identities_resource_uri"] == "https://storage.azure.com"
+
+
+def test_get_azure_client_managed_identities_resolves_client_id(mocker, mock_params):
+    """
+    Given: Marketplace path (no connector) with auth_type "Azure Managed Identities" and a configured
+           managed_identities_client_id credential.
+    When: get_azure_client is called.
+    Then: get_azure_managed_identities_client_id resolves the client ID from params and it is passed to
+          AzureClient. The Client Credentials missing-secret guard is NOT triggered (no Client Secret
+          required for the MI flow).
+    """
+    mocker.patch("Azure.get_connector_id", return_value=None)
+    mock_azure_client = mocker.patch("Azure.AzureClient", return_value=mocker.Mock())
+
+    params = mock_params.copy()
+    params["credentials"] = {}  # no client secret configured
+    params["auth_type"] = "Azure Managed Identities"
+    params["managed_identities_client_id"] = {"password": "resolved-mi-id"}
+
+    get_azure_client(params, {}, "command")
+
+    _, kwargs = mock_azure_client.call_args
+    assert kwargs["connection_type"] == "Azure Managed Identities"
+    assert kwargs["managed_identities_client_id"] == "resolved-mi-id"
+
+
+def test_get_azure_client_managed_identities_system_assigned(mocker, mock_params):
+    """
+    Given: Marketplace path with auth_type "Azure Managed Identities" and no client ID configured.
+    When: get_azure_client is called.
+    Then: The system-assigned managed identity sentinel is resolved and passed to AzureClient.
+    """
+    from MicrosoftApiModule import MANAGED_IDENTITIES_SYSTEM_ASSIGNED
+
+    mocker.patch("Azure.get_connector_id", return_value=None)
+    mock_azure_client = mocker.patch("Azure.AzureClient", return_value=mocker.Mock())
+
+    params = mock_params.copy()
+    params["credentials"] = {}
+    params["auth_type"] = "Azure Managed Identities"
+    params["managed_identities_client_id"] = {}  # no client id -> system assigned
+
+    get_azure_client(params, {}, "command")
+
+    _, kwargs = mock_azure_client.call_args
+    assert kwargs["managed_identities_client_id"] == MANAGED_IDENTITIES_SYSTEM_ASSIGNED
+
+
+def test_get_azure_client_credentials_none(mocker, mock_params):
+    """
+    Given: Marketplace path, Client Credentials flow, and credentials explicitly set to None.
+    When: get_azure_client is called.
+    Then: It raises a missing-parameter DemistoException (listing the Client Secret) without an
+          AttributeError.
+    """
+    mocker.patch("Azure.get_connector_id", return_value=None)
+
+    params = mock_params.copy()
+    params["credentials"] = None
+    params["auth_type"] = "Client Credentials"
+
+    with pytest.raises(DemistoException) as excinfo:
+        get_azure_client(params, {}, "command")
+
+    assert "Client Secret" in str(excinfo.value)
+    assert "Client Credentials" in str(excinfo.value)
+
+
+@pytest.mark.parametrize(
+    "auth_type, missing_key, expected_in_message",
+    [
+        ("Client Credentials", "app_id", "Application ID"),
+        ("Client Credentials", "tenant_id", "Tenant ID"),
+        ("Client Credentials", "credentials", "Client Secret"),
+        ("Client Credentials", "subscription_id", "Default Subscription ID"),
+        ("Device Code", "app_id", "Application ID"),
+        ("Device Code", "subscription_id", "Default Subscription ID"),
+        ("Authorization Code", "app_id", "Application ID"),
+        ("Authorization Code", "redirect_uri", "Application redirect URI"),
+        ("Authorization Code", "auth_code", "Authorization code"),
+        ("Authorization Code", "subscription_id", "Default Subscription ID"),
+        ("Azure Managed Identities", "subscription_id", "Default Subscription ID"),
+    ],
+)
+def test_validate_auth_params_missing(auth_type, missing_key, expected_in_message):
+    """
+    Given: A full set of params for an auth type, with exactly one mandatory param removed.
+    When: validate_auth_params is called.
+    Then: It raises a DemistoException naming the missing parameter and the auth type.
+    """
+    from Azure import validate_auth_params
+
+    full_params = {
+        "app_id": "app",
+        "subscription_id": "sub",
+        "tenant_id": "tenant",
+        "credentials": {"password": "secret"},
+        "auth_code": {"password": "code"},
+        "redirect_uri": "redirect-uri",
+        "managed_identities_client_id": {"password": "mi-id"},
+        "auth_type": auth_type,
+    }
+    full_params.pop(missing_key)
+
+    with pytest.raises(DemistoException) as excinfo:
+        validate_auth_params(full_params, auth_type)
+
+    assert expected_in_message in str(excinfo.value)
+    assert auth_type in str(excinfo.value)
+
+
+@pytest.mark.parametrize(
+    "auth_type, params",
+    [
+        (
+            "Client Credentials",
+            {"app_id": "app", "subscription_id": "sub", "tenant_id": "t", "credentials": {"password": "s"}},
+        ),
+        ("Device Code", {"app_id": "app", "subscription_id": "sub"}),
+        (
+            "Authorization Code",
+            {
+                "app_id": "app",
+                "subscription_id": "sub",
+                "redirect_uri": "redirect-uri",
+                "auth_code": {"password": "c"},
+            },
+        ),
+        (
+            "Azure Managed Identities",
+            {"subscription_id": "sub", "managed_identities_client_id": {"password": "mi-id"}},
+        ),
+    ],
+)
+def test_validate_auth_params_valid(auth_type, params):
+    """
+    Given: A complete set of mandatory params for an auth type.
+    When: validate_auth_params is called.
+    Then: It does not raise.
+    """
+    from Azure import validate_auth_params
+
+    params = {**params, "auth_type": auth_type}
+    validate_auth_params(params, auth_type)  # Should not raise
+
+
+def test_validate_auth_params_managed_identities_system_assigned():
+    """
+    Given: Azure Managed Identities with no explicit client ID (system-assigned) and a subscription.
+    When: validate_auth_params is called.
+    Then: It does not raise, because the system-assigned identity resolves to a sentinel client ID.
+    """
+    from Azure import validate_auth_params
+
+    params = {
+        "auth_type": "Azure Managed Identities",
+        "subscription_id": "sub",
+        "managed_identities_client_id": {},  # no password -> system assigned
+    }
+    validate_auth_params(params, "Azure Managed Identities")  # Should not raise
+
+
+def test_main_auth_reset(mocker):
+    """
+    Given: The azure-auth-reset command on the marketplace path.
+    When: main is called.
+    Then: reset_auth is invoked and the client is not built.
+    """
+    from Azure import main
+
+    mocker.patch.object(demisto, "command", return_value="azure-auth-reset")
+    mocker.patch.object(demisto, "params", return_value={})
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch("Azure.get_connector_id", return_value=None)
+    mock_reset = mocker.patch("Azure.reset_auth", return_value="reset done")
+    mock_get_client = mocker.patch("Azure.get_azure_client")
+    mocker.patch("Azure.return_results")
+
+    main()
+
+    mock_reset.assert_called_once()
+    mock_get_client.assert_not_called()
+
+
+# ---------------------------------------------------------------------------
+# YAML <-> Python wiring tests
+#
+# These tests read Azure.yml, extract the command names, argument names and
+# output prefixes, and assert that each one is actually wired up in Azure.py.
+#
+# Everything below is derived *statically* (yaml.safe_load + ast.parse). No
+# integration code is imported, instantiated or executed, so these tests make
+# no network calls, read no environment variables and do not depend on the
+# clock, the OS or the execution order of other tests.
+# ---------------------------------------------------------------------------
+
+# The name of the dict inside main() that maps command name -> handler function.
+DISPATCH_DICT_NAME = "commands_with_params_and_args"
+
+# Commands intentionally excluded from these wiring tests.
+#
+# - "*-quick-action" commands and "test-module" are excluded by request.
+# - Commands marked "deprecated: true" in the yml are excluded as well. They are
+#   kept only so existing playbooks keep working, and are no longer expected to
+#   hold their yml and their implementation in step.
+# - The auth/control commands below are routed by explicit if/elif branches in
+#   main() rather than through the dispatch dict, and expose no yml arguments
+#   or context outputs of the kind these tests inspect.
+QUICK_ACTION_SUFFIX = "-quick-action"
+
+# Arguments that are legitimately not read by the command handler.
+#
+# These are consumed earlier in main(), when the AzureClient itself is built by
+# get_azure_client(), and are also resolvable from the integration parameters
+# rather than the command arguments. A handler may therefore never mention them
+# even though the argument is fully wired up and honoured at runtime, so flagging
+# them here would be a false positive rather than a real defect.
+INFRASTRUCTURE_ARGUMENTS = frozenset(
+    {
+        "subscription_id",
+        "resource_group_name",
+    }
+)
+EXCLUDED_COMMANDS = frozenset(
+    {
+        "test-module",
+        "azure-auth-start",
+        "azure-auth-complete",
+        "azure-auth-test",
+        "azure-auth-reset",
+        "azure-generate-login-url",
+    }
+)
+
+
+def is_command_in_scope(command_name: str) -> bool:
+    """Return True if the given command should be covered by the wiring tests.
+
+    This is the single source of truth for test scope - every wiring test below
+    filters through it, so the scope cannot drift between tests.
+
+    Args:
+        command_name (str): The command name as declared in Azure.yml or used as a
+            key in the dispatch dict, for example "azure-storage-container-create".
+
+    Returns:
+        bool: True if the command should be checked by the wiring tests. False for
+            "*-quick-action" commands, "test-module", and the auth/control commands
+            listed in EXCLUDED_COMMANDS.
+    """
+    if command_name in EXCLUDED_COMMANDS:
+        return False
+    return not command_name.endswith(QUICK_ACTION_SUFFIX)
+
+
+def load_raw_yml_commands() -> list[dict]:
+    """Load Azure.yml and return its command list exactly as declared.
+
+    Use the ``raw_yml_commands`` fixture rather than calling this directly, so Azure.yml
+    is read and parsed only once for the whole module.
+
+    Returns:
+        list[dict]: Every command definition in the yml, with no filtering applied.
+    """
+    with YML_PATH.open(encoding="utf-8") as yml_file:
+        yml_content = yaml.safe_load(yml_file)
+
+    return yml_content.get("script", {}).get("commands") or []
+
+
+def select_deprecated_command_names(raw_commands: list[dict]) -> set[str]:
+    """Return the names of the commands marked ``deprecated: true``.
+
+    Deprecated commands are excluded from the wiring tests, but they are still routed
+    in main(), so the names are needed to keep test_dispatch_commands_exist_in_yml from
+    reporting them as undocumented.
+
+    Args:
+        raw_commands (list[dict]): The unfiltered yml command list.
+
+    Returns:
+        set[str]: The names of every command whose yml definition sets
+            ``deprecated: true`` at the command level.
+    """
+    return {command["name"] for command in raw_commands if command.get("deprecated") is True}
+
+
+def select_in_scope_commands(raw_commands: list[dict]) -> dict[str, dict]:
+    """Return the in-scope commands keyed by command name.
+
+    Args:
+        raw_commands (list[dict]): The unfiltered yml command list.
+
+    Returns:
+        dict[str, dict]: Mapping of command name to the raw yml command definition
+            (including its "arguments" and "outputs" entries). Out-of-scope commands are
+            filtered out via is_command_in_scope, and commands marked
+            ``deprecated: true`` are dropped as well, since a deprecated command is no
+            longer expected to keep its yml and its implementation in step.
+    """
+    return {
+        command["name"]: command
+        for command in raw_commands
+        if is_command_in_scope(command.get("name", "")) and command.get("deprecated") is not True
+    }
+
+
+def visible_arguments(command: dict) -> list[dict]:
+    """Return a command's declared arguments, excluding the hidden ones.
+
+    Arguments marked ``hidden: true`` are not offered to the user, so they are outside
+    the yml <-> py contract these tests enforce in either direction.
+
+    Args:
+        command (dict): A raw yml command definition.
+
+    Returns:
+        list[dict]: The command's argument definitions that are not marked hidden.
+    """
+    return [argument for argument in command.get("arguments") or [] if argument.get("hidden") is not True]
+
+
+def load_py_source_and_tree() -> tuple[str, ast.Module]:
+    """Read Azure.py and return its source text along with the parsed AST.
+
+    Args:
+        None. The Azure.py path is derived from this test file's own location.
+
+    Returns:
+        tuple[str, ast.Module]: The raw source text of Azure.py and its parsed AST.
+            The module is only parsed, never imported or executed.
+    """
+    source = PY_PATH.read_text(encoding="utf-8")
+    return source, ast.parse(source)
+
+
+def extract_dispatch_map(tree: ast.Module) -> dict[str, str]:
+    """Extract the command -> handler-function-name mapping from main().
+
+    The dispatch dict is a local variable inside main(), which is marked
+    "# pragma: no cover" and cannot be imported or safely executed, so it is
+    lifted straight out of the AST instead.
+
+    Args:
+        tree (ast.Module): The parsed AST of Azure.py.
+
+    Returns:
+        dict[str, str]: Mapping of command name to the name of the handler function
+            it is routed to, for example
+            {"azure-storage-container-create": "storage_container_create_command"}.
+
+    Raises:
+        AssertionError: If the dispatch dict cannot be found in Azure.py, if any of its
+            entries is in a shape this extractor cannot read (the offending entries are
+            named in the message), or if it is found but yields no command -> handler
+            pairs at all. In every case the dict shape has changed and this helper needs
+            updating.
+    """
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Assign):
+            continue
+        targets = [t.id for t in node.targets if isinstance(t, ast.Name)]
+        if DISPATCH_DICT_NAME not in targets or not isinstance(node.value, ast.Dict):
+            continue
+
+        dispatch: dict[str, str] = {}
+        unreadable: list[str] = []
+        for key, value in zip(node.value.keys, node.value.values):
+            if isinstance(key, ast.Constant) and isinstance(key.value, str) and isinstance(value, ast.Name):
+                dispatch[key.value] = value.id
+            else:
+                # A dict-unpacking entry (**other) has no key node at all.
+                key_source = "**" if key is None else ast.unparse(key)
+                unreadable.append(f"{key_source}: {ast.unparse(value)}")
+
+        # Guard against the dict being found but containing entries this extractor
+        # cannot read (e.g. values changed to lambdas or partials). Dropping them
+        # silently would report their commands as "not routed", wrongly blaming the
+        # integration instead of the extractor, so name them explicitly instead.
+        assert not unreadable, (
+            f"Found '{DISPATCH_DICT_NAME}' in Azure.py but could not read the following "
+            "entries, so the commands they route would be wrongly reported as unrouted. "
+            "The dict shape has changed and this test helper needs updating:\n" + "\n".join(unreadable)
+        )
+        assert dispatch, (
+            f"Found '{DISPATCH_DICT_NAME}' in Azure.py but could not extract any "
+            "command -> handler pairs from it. The dict shape has changed and this "
+            "test helper needs updating."
+        )
+        return dispatch
+
+    raise AssertionError(f"Could not find the '{DISPATCH_DICT_NAME}' dict inside Azure.py")
+
+
+def build_symbol_index(tree: ast.Module) -> dict[str, ast.FunctionDef]:
+    """Index module-level functions and AzureClient methods by name.
+
+    Client methods are indexed under their bare name so that a handler calling
+    ``client.storage_account_update_request(...)`` can be resolved.
+
+    Args:
+        tree (ast.Module): The parsed AST of Azure.py.
+
+    Returns:
+        dict[str, ast.FunctionDef]: Mapping of function/method name to its AST node.
+            Module-level functions take precedence over class methods of the same
+            name, since a bare call in a handler resolves to the module-level one.
+    """
+    index: dict[str, ast.FunctionDef] = {}
+    for node in tree.body:
+        if isinstance(node, ast.FunctionDef):
+            index[node.name] = node
+        elif isinstance(node, ast.ClassDef):
+            for child in node.body:
+                if isinstance(child, ast.FunctionDef):
+                    index.setdefault(child.name, child)
+    return index
+
+
+def collect_called_names(func_node: ast.FunctionDef) -> set[str]:
+    """Return the names of every function/method directly called by func_node.
+
+    Args:
+        func_node (ast.FunctionDef): The AST node of the function to inspect.
+
+    Returns:
+        set[str]: The bare names of all called callables. Attribute calls contribute
+            only the final attribute, so ``client.get_rule(...)`` yields "get_rule",
+            which is what allows AzureClient methods to be looked up in the symbol index.
+    """
+    called: set[str] = set()
+    for node in ast.walk(func_node):
+        if not isinstance(node, ast.Call):
+            continue
+        func = node.func
+        if isinstance(func, ast.Name):
+            called.add(func.id)
+        elif isinstance(func, ast.Attribute):
+            called.add(func.attr)
+    return called
+
+
+def collect_string_constants(func_node: ast.FunctionDef) -> set[str]:
+    """Return every string literal appearing anywhere inside func_node.
+
+    Args:
+        func_node (ast.FunctionDef): The AST node of the function to inspect.
+
+    Returns:
+        set[str]: All string constants in the function body, including argument keys
+            such as "account_name" and docstring text. Docstrings may add harmless
+            extra entries; they can only mask a failure, never invent one.
+    """
+    return {node.value for node in ast.walk(func_node) if isinstance(node, ast.Constant) and isinstance(node.value, str)}
+
+
+def collect_reachable_strings(handler_name: str, symbol_index: dict[str, ast.FunctionDef]) -> set[str]:
+    """Collect string literals in a handler plus those in its direct callees.
+
+    One level of call following is required for correctness: several handlers
+    (for example storage_account_update_command) hand the raw ``args`` dict to an
+    AzureClient method, and it is that method - not the handler - which reads the
+    individual argument keys.
+
+    Args:
+        handler_name (str): Name of the command handler function to start from.
+        symbol_index (dict[str, ast.FunctionDef]): Index produced by build_symbol_index,
+            used to resolve both the handler and the functions it calls.
+
+    Returns:
+        set[str]: Union of the string literals in the handler and in every function it
+            calls directly (one level deep). Returns an empty set if the handler name is
+            not present in the index.
+    """
+    handler = symbol_index.get(handler_name)
+    if handler is None:
+        return set()
+
+    strings = collect_string_constants(handler)
+    for callee_name in collect_called_names(handler):
+        callee = symbol_index.get(callee_name)
+        if callee is not None and callee is not handler:
+            strings |= collect_string_constants(callee)
+    return strings
+
+
+def collect_read_argument_names(func_node: ast.FunctionDef) -> set[str]:
+    """Return the command-argument names a function reads out of its ``args`` mapping.
+
+    Unlike collect_string_constants, which returns every string literal, this looks only
+    at the three shapes Azure.py uses to read a command argument: ``args.get("name")``,
+    ``args["name"]`` and ``"name" in args``. That precision is what makes it safe to
+    assert in the yml -> py direction: an unrelated literal such as a URL fragment or a
+    response key can never be mistaken for a command argument.
+
+    Args:
+        func_node (ast.FunctionDef): The AST node of the function to inspect.
+
+    Returns:
+        set[str]: The argument names read from the ``args`` mapping. Dynamic reads such
+            as ``args.get(key)`` contribute nothing, since the name is not a literal.
+    """
+    read: set[str] = set()
+    for node in ast.walk(func_node):
+        # args.get("name") / args.get("name", default)
+        if (
+            isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Attribute)
+            and node.func.attr == "get"
+            and isinstance(node.func.value, ast.Name)
+            and node.func.value.id == "args"
+            and node.args
+            and isinstance(node.args[0], ast.Constant)
+            and isinstance(node.args[0].value, str)
+        ):
+            read.add(node.args[0].value)
+
+        # args["name"]
+        elif (
+            isinstance(node, ast.Subscript)
+            and isinstance(node.value, ast.Name)
+            and node.value.id == "args"
+            and isinstance(node.slice, ast.Constant)
+            and isinstance(node.slice.value, str)
+        ):
+            read.add(node.slice.value)
+
+        # "name" in args
+        elif isinstance(node, ast.Compare) and isinstance(node.left, ast.Constant) and isinstance(node.left.value, str):
+            for operator, comparator in zip(node.ops, node.comparators):
+                if isinstance(operator, ast.In) and isinstance(comparator, ast.Name) and comparator.id == "args":
+                    read.add(node.left.value)
+
+    return read
+
+
+def collect_reachable_read_arguments(handler_name: str, symbol_index: dict[str, ast.FunctionDef]) -> set[str]:
+    """Collect the argument names read by a handler and by its direct callees.
+
+    Mirrors collect_reachable_strings, but uses collect_read_argument_names so that only
+    genuine ``args`` reads are returned. One level of call following is required for the
+    same reason: several handlers pass the raw ``args`` dict to an AzureClient method,
+    and it is that method which reads the individual keys.
+
+    Args:
+        handler_name (str): Name of the command handler function to start from.
+        symbol_index (dict[str, ast.FunctionDef]): Index produced by build_symbol_index.
+
+    Returns:
+        set[str]: Argument names read by the handler or by any function it calls directly.
+            Empty if the handler name is not present in the index.
+    """
+    handler = symbol_index.get(handler_name)
+    if handler is None:
+        return set()
+
+    read = collect_read_argument_names(handler)
+    for callee_name in collect_called_names(handler):
+        callee = symbol_index.get(callee_name)
+        if callee is not None and callee is not handler:
+            read |= collect_read_argument_names(callee)
+    return read
+
+
+def extract_fallback_prefix(handler_name: str, symbol_index: dict[str, ast.FunctionDef]) -> set[str]:
+    """Return the output prefixes a handler can produce, ignoring the lookup map.
+
+    Covers both shapes used in Azure.py: the ``COMMANDS_TO_OUTPUTS_PREFIX.get(command,
+    "<fallback>")`` pattern and a prefix passed directly as ``outputs_prefix=``.
+
+    Args:
+        handler_name (str): Name of the command handler function to inspect.
+        symbol_index (dict[str, ast.FunctionDef]): Index produced by build_symbol_index.
+
+    Returns:
+        set[str]: Every context prefix the handler may write to, for example
+            {"Azure.VirtualNetworks.SecurityRules"}. Empty if the handler is unknown or
+            builds its context another way, such as returning a plain outputs dict.
+    """
+    handler = symbol_index.get(handler_name)
+    if handler is None:
+        return set()
+
+    prefixes: set[str] = set()
+    for node in ast.walk(handler):
+        if not isinstance(node, ast.Call):
+            continue
+
+        # COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.Something")
+        func = node.func
+        if (
+            isinstance(func, ast.Attribute)
+            and func.attr == "get"
+            and isinstance(func.value, ast.Name)
+            and func.value.id == "COMMANDS_TO_OUTPUTS_PREFIX"
+            and len(node.args) == 2
+            and isinstance(node.args[1], ast.Constant)
+            and isinstance(node.args[1].value, str)
+        ):
+            prefixes.add(node.args[1].value)
+
+        # CommandResults(outputs_prefix="Azure.Something", ...)
+        for keyword in node.keywords:
+            if (
+                keyword.arg == "outputs_prefix"
+                and isinstance(keyword.value, ast.Constant)
+                and isinstance(keyword.value.value, str)
+            ):
+                prefixes.add(keyword.value.value)
+
+    return prefixes
+
+
+@pytest.fixture(scope="module")
+def raw_yml_commands() -> list[dict]:
+    """Every command declared in Azure.yml, unfiltered.
+
+    Azure.yml is read and parsed here once per module, and every other yml-derived
+    fixture is built from this one rather than re-reading the file.
+    """
+    return load_raw_yml_commands()
+
+
+@pytest.fixture(scope="module")
+def yml_commands(raw_yml_commands: list[dict]) -> dict[str, dict]:
+    """The in-scope, non-deprecated commands declared in Azure.yml, keyed by command name."""
+    return select_in_scope_commands(raw_yml_commands)
+
+
+@pytest.fixture(scope="module")
+def deprecated_commands(raw_yml_commands: list[dict]) -> set[str]:
+    """The names of the commands marked deprecated in Azure.yml."""
+    return select_deprecated_command_names(raw_yml_commands)
+
+
+@pytest.fixture(scope="module")
+def py_tree() -> ast.Module:
+    """The parsed AST of Azure.py."""
+    _, tree = load_py_source_and_tree()
+    return tree
+
+
+@pytest.fixture(scope="module")
+def dispatch_map(py_tree: ast.Module) -> dict[str, str]:
+    """Mapping of command name -> handler function name, lifted from main()."""
+    return extract_dispatch_map(py_tree)
+
+
+@pytest.fixture(scope="module")
+def symbol_index(py_tree: ast.Module) -> dict[str, ast.FunctionDef]:
+    """Index of module-level functions and AzureClient methods by name."""
+    return build_symbol_index(py_tree)
+
+
+# ---------------------------------------------------------------------------
+# The wiring tests themselves: Azure.yml checked against Azure.py.
+# ---------------------------------------------------------------------------
+
+
+def test_py_read_arguments_are_declared_in_yml(yml_commands, raw_yml_commands, dispatch_map, symbol_index):
+    """
+    Given:
+        - yml_commands (dict[str, dict]): The arguments declared for each in-scope command in Azure.yml.
+        - raw_yml_commands (list[dict]): Every command in the yml, used to resolve arguments
+          declared only by a deprecated sibling that shares a handler.
+        - dispatch_map (dict[str, str]): The handler each command is routed to.
+        - symbol_index (dict[str, ast.FunctionDef]): Used to resolve the handler and its direct callees.
+    When:
+        - Every argument the handler reads out of its args mapping is looked up in the
+          command's declared yml arguments.
+    Then:
+        - No argument is consumed by the code without being documented, so a user can
+          discover every argument the command honours. This is the reverse of
+          test_command_arguments_are_read_by_handler, which checks the yml -> py
+          direction.
+        - Infrastructure arguments resolvable from the integration parameters are exempt,
+          matching the exemption applied in the other direction. An argument declared
+          ``hidden: true`` still counts as declared, so reading it is not a failure.
+        - When several commands share one handler, an argument declared by any of them
+          counts as declared for all of them, including by a deprecated sibling. A
+          shared handler routinely reads a renamed argument on behalf of its deprecated
+          predecessor - for example update_security_rule_command reads "action" for
+          azure-nsg-security-rule-update, while its replacement declares "access" -
+          and blaming the current command for that alias would be a false positive.
+    """
+    # Given: a cache so each handler's reachable argument reads are computed once
+    reachable_reads_cache: dict[str, set[str]] = {}
+    undeclared_arguments: list[str] = []
+
+    # Given: every argument name declared by any command sharing the same handler.
+    # This spans the raw yml rather than the filtered map, so an argument kept only for
+    # a deprecated sibling still counts as declared for the handler they share.
+    declared_per_handler: dict[str, set[str]] = {}
+    for command in raw_yml_commands:
+        handler_name = dispatch_map.get(command.get("name", ""))
+        if handler_name is None:
+            continue
+        declared_per_handler.setdefault(handler_name, set()).update(
+            argument.get("name") for argument in command.get("arguments") or []
+        )
+
+    for command_name in sorted(yml_commands):
+        handler_name = dispatch_map.get(command_name)
+        if handler_name is None:
+            continue  # covered by test_yml_commands_are_wired_in_dispatch
+
+        if handler_name not in reachable_reads_cache:
+            reachable_reads_cache[handler_name] = collect_reachable_read_arguments(handler_name, symbol_index)
+
+        declared = declared_per_handler.get(handler_name, set())
+
+        # When: checking each argument the code reads against the declared ones
+        for argument_name in sorted(reachable_reads_cache[handler_name]):
+            if argument_name in declared or argument_name in INFRASTRUCTURE_ARGUMENTS:
+                continue
+            undeclared_arguments.append(f"{command_name}: '{argument_name}' (handler: {handler_name})")
+
+    # Then: every argument the code consumes is documented in the yml
+    assert not undeclared_arguments, "Arguments read by the command handler but not declared in Azure.yml:\n" + "\n".join(
+        undeclared_arguments
+    )
+
+
+def test_yml_commands_are_wired_in_dispatch(yml_commands, dispatch_map, symbol_index):
+    """
+    Given:
+        - yml_commands (dict[str, dict]): The in-scope commands declared in Azure.yml.
+        - dispatch_map (dict[str, str]): The command dispatch dict extracted from main() in Azure.py.
+        - symbol_index (dict[str, ast.FunctionDef]): The index of every function and method defined in Azure.py.
+    When:
+        - Each yml command name is looked up in the dispatch dict, and the handler
+          it points to is looked up in the symbol index.
+    Then:
+        - Every command resolves to a handler, so none would raise
+          NotImplementedError at runtime.
+        - Every resolved handler actually exists as a function in Azure.py.
+    """
+    # Given: the yml command names and the dispatch table
+    yml_command_names = set(yml_commands)
+
+    # When: resolving each command to its handler, then confirming that handler is
+    # a real function in Azure.py rather than a stale or dangling name
+    unrouted = sorted(name for name in yml_command_names if name not in dispatch_map)
+    missing_handlers = sorted(
+        f"{name} -> {dispatch_map[name]}"
+        for name in yml_command_names
+        if name in dispatch_map and dispatch_map[name] not in symbol_index
+    )
+
+    # Then: every command is routed to a handler that exists
+    assert not unrouted, f"Commands declared in Azure.yml but not routed in main(): {unrouted}"
+    assert not missing_handlers, f"Commands routed to functions that do not exist in Azure.py: {missing_handlers}"
+
+
+def test_dispatch_commands_exist_in_yml(yml_commands, dispatch_map, deprecated_commands):
+    """
+    Given:
+        - The command dispatch dict extracted from main() in Azure.py.
+        - The in-scope, non-deprecated commands declared in Azure.yml.
+        - deprecated_commands (set[str]): The commands the yml marks deprecated.
+    When:
+        - Each in-scope dispatch key is looked up in the yml.
+    Then:
+        - No dispatch entry is orphaned, i.e. every routed command is documented.
+        - Deprecated commands are exempt: they are still routed in main() so that
+          existing playbooks keep working, but they are intentionally absent from the
+          filtered yml command map.
+    """
+    # Given: the in-scope dispatch keys, excluding the deprecated ones still routed
+    in_scope_dispatch = {name for name in dispatch_map if is_command_in_scope(name) and name not in deprecated_commands}
+
+    # When: checking them against the declared yml commands
+    undocumented = sorted(in_scope_dispatch - set(yml_commands))
+
+    # Then: every routed command is declared in the yml
+    assert not undocumented, f"Commands routed in main() but not declared in Azure.yml: {undocumented}"
+
+
+def test_command_arguments_are_read_by_handler(yml_commands, dispatch_map, symbol_index):
+    """
+    Given:
+        - yml_commands (dict[str, dict]): The arguments declared for each in-scope command in Azure.yml.
+        - dispatch_map (dict[str, str]): The handler each command is routed to.
+        - symbol_index (dict[str, ast.FunctionDef]): Used to resolve the handler and its direct callees.
+    When:
+        - Each argument name is searched for as a string literal in the handler
+          and in any AzureClient method or helper it calls directly.
+    Then:
+        - Every documented argument is read somewhere on the command's code path,
+          proving no advertised argument is silently ignored.
+        - Infrastructure arguments consumed before the handler runs are exempt, as are
+          arguments marked ``hidden: true``, which are not offered to the user.
+    """
+    # Given: a cache so each handler's reachable strings are computed once
+    reachable_strings_cache: dict[str, set[str]] = {}
+    unread_arguments: list[str] = []
+
+    for command_name, command in sorted(yml_commands.items()):
+        handler_name = dispatch_map.get(command_name)
+        if handler_name is None:
+            continue  # covered by test_yml_commands_are_wired_in_dispatch
+
+        if handler_name not in reachable_strings_cache:
+            reachable_strings_cache[handler_name] = collect_reachable_strings(handler_name, symbol_index)
+        reachable_strings = reachable_strings_cache[handler_name]
+
+        # When: checking each declared argument against the reachable literals
+        for argument in visible_arguments(command):
+            argument_name = argument.get("name")
+            if not argument_name or argument_name in INFRASTRUCTURE_ARGUMENTS:
+                continue
+            if argument_name not in reachable_strings:
+                unread_arguments.append(f"{command_name}: '{argument_name}' (handler: {handler_name})")
+
+    # Then: no documented argument is ignored by the code serving the command
+    assert not unread_arguments, "Arguments declared in Azure.yml but never read by the command handler:\n" + "\n".join(
+        unread_arguments
+    )
+
+
+def test_command_output_prefixes_are_wired(yml_commands, dispatch_map, symbol_index):
+    """
+    Given:
+        - The contextPath outputs declared for each in-scope command in Azure.yml.
+        - The output prefixes produced by the command's handler, either via the
+          COMMANDS_TO_OUTPUTS_PREFIX map or a fallback/literal outputs_prefix.
+    When:
+        - The yml context paths are compared against the prefixes in the code.
+    Then:
+        - Every command whose handler declares a prefix writes context under a
+          path the yml actually documents.
+    """
+    # Given: the explicit command -> prefix lookup used by most handlers
+    from Azure import COMMANDS_TO_OUTPUTS_PREFIX
+
+    mismatches: list[str] = []
+
+    for command_name, command in sorted(yml_commands.items()):
+        handler_name = dispatch_map.get(command_name)
+        outputs = command.get("outputs") or []
+        if handler_name is None or not outputs:
+            continue
+
+        context_paths = [output.get("contextPath", "") for output in outputs]
+
+        # When: resolving the prefix the code will actually use
+        mapped_prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command_name)
+        candidate_prefixes = {mapped_prefix} if mapped_prefix else extract_fallback_prefix(handler_name, symbol_index)
+        if not candidate_prefixes:
+            continue  # handler builds context another way, e.g. a plain outputs dict
+
+        # Then: at least one produced prefix must match a documented context path
+        if not any(path == prefix or path.startswith(f"{prefix}.") for prefix in candidate_prefixes for path in context_paths):
+            mismatches.append(
+                f"{command_name}: code writes to {sorted(candidate_prefixes)} "
+                f"but Azure.yml documents "
+                f"{sorted({path.split('.')[0] + '.' + path.split('.')[1] for path in context_paths if '.' in path})}"
+            )
+
+    assert not mismatches, "Output prefixes in Azure.py do not match the contextPath declared in Azure.yml:\n" + "\n".join(
+        mismatches
+    )
+
+
+# ---------------------------------------------------------------------------
+# Unit tests for the helpers above.
+#
+# These guard the extractors themselves, so that a helper which silently stops
+# reading Azure.py is reported as a helper bug rather than surfacing as a
+# misleading failure - or a vacuous pass - in the wiring tests above.
+# ---------------------------------------------------------------------------
+
+
+def test_select_in_scope_commands_is_not_vacuous(yml_commands, raw_yml_commands, deprecated_commands):
+    """
+    Given:
+        - yml_commands (dict[str, dict]): The result of select_in_scope_commands() over the
+          real Azure.yml, which filters out both out-of-scope and deprecated commands.
+        - raw_yml_commands (list[dict]): The same yml before any filtering.
+        - deprecated_commands (set[str]): The names the yml marks deprecated.
+    When:
+        - The loaded map is compared against the raw command list in Azure.yml.
+    Then:
+        - The map is not empty, so the wiring tests below cannot pass vacuously by
+          silently iterating over nothing.
+        - The out-of-scope and deprecated commands that really exist in the yml were
+          dropped, and everything else was kept, proving both filters are applied.
+        - The raw yml definitions are preserved intact, so the arguments and outputs
+          the wiring tests inspect are present rather than skipped over.
+    """
+    # Given: the raw, unfiltered command list straight from the yml
+    raw_names = {command["name"] for command in raw_yml_commands}
+    out_of_scope_names = {name for name in raw_names if not is_command_in_scope(name)}
+
+    # When / Then: the selector returned something for the other tests to work on
+    assert yml_commands, f"select_in_scope_commands() returned no commands - is {YML_PATH.name} readable and non-empty?"
+
+    # Then: both filters kept the right commands and dropped the wrong ones
+    assert out_of_scope_names, (
+        "Azure.yml no longer declares any out-of-scope commands, so this test can no "
+        "longer prove that is_command_in_scope filtering is applied."
+    )
+    assert deprecated_commands, (
+        "Azure.yml no longer declares any deprecated commands, so this test can no "
+        "longer prove that deprecated commands are filtered out."
+    )
+    assert set(yml_commands) == raw_names - out_of_scope_names - deprecated_commands
+
+    # Then: the definitions kept their arguments and outputs, which the wiring tests
+    # below silently skip when absent
+    assert any(
+        command.get("arguments") for command in yml_commands.values()
+    ), "No loaded command declares 'arguments' - test_command_arguments_are_read_by_handler would pass vacuously."
+    assert any(
+        command.get("outputs") for command in yml_commands.values()
+    ), "No loaded command declares 'outputs' - test_command_output_prefixes_are_wired would pass vacuously."
+
+
+def test_visible_arguments_drops_only_hidden_arguments():
+    """
+    Given:
+        - A command declaring a plain argument, one explicitly marked hidden, and one
+          explicitly marked not hidden.
+    When:
+        - visible_arguments is called on the command.
+    Then:
+        - Only the hidden argument is dropped. An argument the user cannot supply is
+          outside the yml <-> py contract, while everything else must still be checked.
+        - The surviving definitions are returned unchanged, so callers can still read
+          their names.
+    """
+    # Given: a command mixing hidden and visible arguments
+    command = {
+        "name": "azure-disk-update",
+        "arguments": [
+            {"name": "disk_name"},
+            {"name": "internal_token", "hidden": True},
+            {"name": "public_network_access", "hidden": False},
+        ],
+    }
+
+    # When: filtering out the hidden arguments
+    visible = visible_arguments(command)
+
+    # Then: only the hidden one is gone, and the rest are untouched
+    assert [argument["name"] for argument in visible] == ["disk_name", "public_network_access"]
+
+
+def test_visible_arguments_handles_command_without_arguments():
+    """
+    Given:
+        - A command that declares no arguments at all, such as a simple list command.
+    When:
+        - visible_arguments is called on it.
+    Then:
+        - An empty list is returned rather than raising, so the wiring tests simply
+          find nothing to check for that command.
+    """
+    # Given / When / Then: a command with no arguments key yields nothing
+    assert visible_arguments({"name": "azure-resource-group-list"}) == []
+
+
+def test_extract_dispatch_map_reads_command_to_handler_pairs():
+    """
+    Given:
+        - A parsed main() containing a dispatch dict of the shape Azure.py uses,
+          mapping string command names to bare handler function names.
+    When:
+        - extract_dispatch_map is called on the tree.
+    Then:
+        - Every command name is mapped to the exact handler identifier it points to,
+          which is the contract the wiring tests below depend on.
+    """
+    # Given: a minimal main() holding a well-formed dispatch dict
+    source = (
+        "def main():\n"
+        f"    {DISPATCH_DICT_NAME} = {{\n"
+        "        'azure-storage-account-update': storage_account_update_command,\n"
+        "        'azure-disk-update': disk_update_command,\n"
+        "    }\n"
+    )
+
+    # When: lifting the dispatch table out of the AST
+    dispatch = extract_dispatch_map(ast.parse(source))
+
+    # Then: both commands resolve to their handler names
+    assert dispatch == {
+        "azure-storage-account-update": "storage_account_update_command",
+        "azure-disk-update": "disk_update_command",
+    }
+
+
+def test_extract_dispatch_map_raises_naming_entries_it_cannot_read():
+    """
+    Given:
+        - A dispatch dict mixing a readable "command": handler entry with entries this
+          extractor does not support: a non-string key and a value that is a call
+          expression rather than a bare function name.
+    When:
+        - extract_dispatch_map is called on the tree.
+    Then:
+        - An AssertionError is raised rather than the unsupported entries being dropped,
+          so their commands are never wrongly reported as unrouted.
+        - The message names every offending entry, pointing straight at what to fix.
+    """
+    # Given: a dispatch dict containing entry shapes the extractor cannot read
+    source = (
+        "def main():\n"
+        f"    {DISPATCH_DICT_NAME} = {{\n"
+        "        'azure-disk-update': disk_update_command,\n"
+        "        SOME_CONSTANT: acr_update_command,\n"
+        "        'azure-acr-update': partial(acr_update_command),\n"
+        "    }\n"
+    )
+
+    # When: lifting the dispatch table out of the AST
+    with pytest.raises(AssertionError) as error:
+        extract_dispatch_map(ast.parse(source))
+
+    # Then: both unreadable entries are named, and the readable one is not blamed
+    message = str(error.value)
+    assert "SOME_CONSTANT: acr_update_command" in message
+    assert "'azure-acr-update': partial(acr_update_command)" in message
+    assert "disk_update_command" not in message.split("updating:")[-1]
+
+
+def test_extract_dispatch_map_raises_when_dict_is_missing():
+    """
+    Given:
+        - A parsed main() that contains no dispatch dict at all, simulating the dict
+          being renamed or removed from Azure.py.
+    When:
+        - extract_dispatch_map is called on the tree.
+    Then:
+        - An AssertionError naming the expected dict is raised, so the wiring tests
+          fail loudly instead of reporting every command as unrouted.
+    """
+    # Given: a main() with no dispatch dict
+    source = "def main():\n    some_other_mapping = {'azure-disk-update': disk_update_command}\n"
+
+    # When / Then: the missing dict is reported explicitly
+    with pytest.raises(AssertionError, match=DISPATCH_DICT_NAME):
+        extract_dispatch_map(ast.parse(source))
+
+
+def test_extract_dispatch_map_raises_when_dict_is_empty():
+    """
+    Given:
+        - A dispatch dict that exists but is empty, simulating the routing being moved
+          out of the dict entirely.
+    When:
+        - extract_dispatch_map is called on the tree.
+    Then:
+        - An AssertionError is raised rather than an empty map being returned, so the
+          failure blames this helper instead of wrongly reporting every command in
+          Azure.yml as unrouted.
+    """
+    # Given: a main() whose dispatch dict has no entries
+    source = f"def main():\n    {DISPATCH_DICT_NAME} = {{}}\n"
+
+    # When / Then: the empty dict is reported as a helper problem
+    with pytest.raises(AssertionError, match="could not extract any"):
+        extract_dispatch_map(ast.parse(source))
+
+
+def test_build_symbol_index_indexes_module_functions_and_client_methods():
+    """
+    Given:
+        - A module defining a top-level handler function alongside a client class whose
+          methods are called as client.<method>(...) by that handler.
+    When:
+        - build_symbol_index is called on the tree.
+    Then:
+        - Both the module-level function and the class methods are indexed under their
+          bare names, which is what lets an attribute call be resolved back to its
+          definition.
+        - Each entry is the FunctionDef node itself, since callers walk its body.
+    """
+    # Given: a module with a top-level function and a client class
+    source = (
+        "def disk_update_command(client, params, args):\n"
+        "    pass\n"
+        "\n"
+        "class AzureClient:\n"
+        "    def disk_update_request(self, args):\n"
+        "        pass\n"
+        "\n"
+        "    def storage_account_update_request(self, args):\n"
+        "        pass\n"
+    )
+
+    # When: indexing the module
+    index = build_symbol_index(ast.parse(source))
+
+    # Then: both kinds of definition are reachable by bare name, as AST nodes
+    assert set(index) == {"disk_update_command", "disk_update_request", "storage_account_update_request"}
+    assert all(isinstance(node, ast.FunctionDef) for node in index.values())
+    assert index["disk_update_command"].name == "disk_update_command"
+
+
+def test_build_symbol_index_prefers_module_function_over_class_method():
+    """
+    Given:
+        - A module where a top-level function and a class method share the same name.
+    When:
+        - build_symbol_index is called on the tree.
+    Then:
+        - The module-level function wins, matching how Python resolves the bare call
+          format_rule(...) inside a handler. Indexing the method instead would make the
+          wiring tests inspect the wrong body.
+    """
+    # Given: a name defined both at module level and as a class method
+    source = (
+        "def format_rule(rule):\n"
+        "    module_level_marker = 1\n"
+        "\n"
+        "class AzureClient:\n"
+        "    def format_rule(self, rule):\n"
+        "        class_level_marker = 2\n"
+    )
+
+    # When: indexing the module
+    index = build_symbol_index(ast.parse(source))
+
+    # Then: the module-level definition is the one that was kept
+    assert "module_level_marker" in {
+        target.id
+        for node in ast.walk(index["format_rule"])
+        if isinstance(node, ast.Assign)
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    }
+
+
+def test_build_symbol_index_ignores_nested_functions():
+    """
+    Given:
+        - A module-level function containing a nested inner function.
+    When:
+        - build_symbol_index is called on the tree.
+    Then:
+        - Only the outer function is indexed. Nested helpers are not callable by bare
+          name from a handler, so indexing them could resolve a call to a definition
+          that is not actually in scope at the call site.
+    """
+    # Given: a function with a closure defined inside it
+    source = "def disk_update_command(client, args):\n    def inner_helper():\n        pass\n\n    return inner_helper()\n"
+
+    # When: indexing the module
+    index = build_symbol_index(ast.parse(source))
+
+    # Then: the nested definition was not indexed
+    assert set(index) == {"disk_update_command"}
+
+
+def test_build_symbol_index_returns_empty_for_module_without_functions():
+    """
+    Given:
+        - A module that defines no functions at all, only constants.
+    When:
+        - build_symbol_index is called on the tree.
+    Then:
+        - An empty index is returned without raising, since this helper reports what it
+          finds and leaves the "handler does not exist" verdict to the wiring tests.
+    """
+    # Given: a module with no function definitions
+    source = "API_VERSION = '2023-01-01'\nCOMMANDS_TO_OUTPUTS_PREFIX = {}\n"
+
+    # When: indexing the module
+    index = build_symbol_index(ast.parse(source))
+
+    # Then: nothing is indexed, and no error is raised
+    assert index == {}
+
+
+def test_collect_called_names_collects_bare_and_attribute_calls():
+    """
+    Given:
+        - A handler that calls a module-level helper by bare name and an AzureClient
+          method through the client attribute, which are the two call shapes used
+          throughout Azure.py.
+    When:
+        - collect_called_names is called on the handler.
+    Then:
+        - Both are returned, with the attribute call reduced to its final attribute.
+          That reduction is what lets a client.<method>(...) call be looked up in the
+          symbol index, which indexes methods under their bare names.
+    """
+    # Given: a handler using both call shapes
+    source = (
+        "def disk_update_command(client, params, args):\n"
+        "    response = client.disk_update_request(args)\n"
+        "    return format_rule(response)\n"
+    )
+    handler = ast.parse(source).body[0]
+
+    # When: collecting the names it calls
+    called = collect_called_names(handler)
+
+    # Then: the bare call and the reduced attribute call are both present
+    assert called == {"disk_update_request", "format_rule"}
+
+
+def test_collect_called_names_reduces_chained_calls_to_final_attribute():
+    """
+    Given:
+        - A function using the chained attribute calls that Azure.py really makes, such
+          as self.ms_client.http_request(...) and urllib.parse.urljoin(...).
+    When:
+        - collect_called_names is called on it.
+    Then:
+        - Each call contributes only its final attribute, and the intermediate
+          attributes are not reported as calls. Treating an intermediate such as
+          'ms_client' or 'parse' as a call could resolve it to an unrelated same-named
+          function in the symbol index.
+    """
+    # Given: a client method using the chained call shapes found in Azure.py
+    source = (
+        "def http_request(self, method, url_suffix, azure_ad_endpoint):\n"
+        "    token_url = urllib.parse.urljoin(azure_ad_endpoint, url_suffix)\n"
+        "    return self.ms_client.http_request(method=method, full_url=token_url)\n"
+    )
+    handler = ast.parse(source).body[0]
+
+    # When: collecting the names it calls
+    called = collect_called_names(handler)
+
+    # Then: only the final attributes are reported, not 'parse' or 'ms_client'
+    assert called == {"urljoin", "http_request"}
+
+
+def test_collect_called_names_includes_nested_and_argument_calls():
+    """
+    Given:
+        - A handler whose calls appear inside a nested block and as an argument to
+          another call, rather than as plain top-level statements.
+    When:
+        - collect_called_names is called on the handler.
+    Then:
+        - Every call is found regardless of nesting depth, because the whole function
+          body is walked. A handler that only reaches its client inside an if branch
+          must still be seen, or the argument wiring test would report false failures.
+    """
+    # Given: a handler with calls nested in a branch and inside another call
+    source = (
+        "def acr_update_command(client, args):\n"
+        "    if args.get('enabled'):\n"
+        "        for item in build_items(args):\n"
+        "            client.acr_update_request(format_rule(item))\n"
+    )
+    handler = ast.parse(source).body[0]
+
+    # When: collecting the names it calls
+    called = collect_called_names(handler)
+
+    # Then: nested and nested-as-argument calls are all collected
+    assert called == {"get", "build_items", "acr_update_request", "format_rule"}
+
+
+def test_collect_called_names_returns_empty_for_handler_without_calls():
+    """
+    Given:
+        - A handler that makes no calls at all.
+    When:
+        - collect_called_names is called on it.
+    Then:
+        - An empty set is returned without raising, so collect_reachable_strings simply
+          falls back to the handler's own string literals.
+    """
+    # Given: a handler with no calls in its body
+    source = "def disk_update_command(client, args):\n    return args\n"
+    handler = ast.parse(source).body[0]
+
+    # When / Then: nothing is collected, and no error is raised
+    assert collect_called_names(handler) == set()
+
+
+def test_collect_string_constants_collects_argument_keys_at_any_depth():
+    """
+    Given:
+        - A handler that reads its argument keys inside a branch, a nested dict literal
+          and a subscript, which is how Azure.py handlers build request payloads.
+    When:
+        - collect_string_constants is called on the handler.
+    Then:
+        - Every string literal is returned regardless of nesting depth, since the
+          argument wiring test relies on finding an argument name anywhere on the
+          handler's code path.
+    """
+    # Given: a handler reading argument keys at several nesting depths
+    source = (
+        "def disk_update_command(client, args):\n"
+        '    if args.get("public_network_access"):\n'
+        '        payload = {"properties": {"networkAccessPolicy": args["network_access_policy"]}}\n'
+        "    return client.disk_update_request(payload)\n"
+    )
+    handler = ast.parse(source).body[0]
+
+    # When: collecting its string literals
+    strings = collect_string_constants(handler)
+
+    # Then: keys nested in a branch, a dict literal and a subscript are all found
+    assert strings == {"public_network_access", "properties", "networkAccessPolicy", "network_access_policy"}
+
+
+def test_collect_string_constants_ignores_non_string_constants():
+    """
+    Given:
+        - A handler containing numeric, boolean and None constants alongside a single
+          argument key.
+    When:
+        - collect_string_constants is called on the handler.
+    Then:
+        - Only the string literal is returned. Non-string constants can never match an
+          argument name, so including them would only add noise that might mask a real
+          unread argument.
+    """
+    # Given: a handler mixing string and non-string constants
+    source = (
+        "def disk_update_command(client, args):\n"
+        "    timeout = 30\n"
+        "    enabled = True\n"
+        "    missing = None\n"
+        '    return client.disk_update_request(args["disk_name"], timeout, enabled, missing)\n'
+    )
+    handler = ast.parse(source).body[0]
+
+    # When: collecting its string literals
+    strings = collect_string_constants(handler)
+
+    # Then: only the argument key is returned
+    assert strings == {"disk_name"}
+
+
+def test_collect_string_constants_includes_docstring_text():
+    """
+    Given:
+        - A handler whose docstring mentions an argument name that the body never reads.
+    When:
+        - collect_string_constants is called on the handler.
+    Then:
+        - The docstring is returned along with the real literals, confirming the
+          documented caveat that docstrings add harmless extra entries. They can only
+          mask a failure, never invent one, so this is a known limitation of the
+          argument wiring test rather than a defect.
+    """
+    # Given: a handler documenting an argument it does not actually read
+    source = (
+        "def disk_update_command(client, args):\n"
+        '    """Update a disk, honouring data_access_auth_mode."""\n'
+        '    return client.disk_update_request(args["disk_name"])\n'
+    )
+    handler = ast.parse(source).body[0]
+
+    # When: collecting its string literals
+    strings = collect_string_constants(handler)
+
+    # Then: the real key is found, and the docstring text is included as documented
+    assert "disk_name" in strings
+    assert any("data_access_auth_mode" in text for text in strings)
+
+
+def test_collect_string_constants_collects_fstring_literal_parts_only():
+    """
+    Given:
+        - A client method building a URL with an f-string, the shape Azure.py uses for
+          every request path.
+    When:
+        - collect_string_constants is called on it.
+    Then:
+        - The literal fragments around the placeholders are returned, and the
+          interpolated names are not, since those are Name nodes rather than string
+          constants. An argument referenced only by interpolation is therefore not
+          matched by its fragment, which is why the handler must still read the
+          argument key itself somewhere on the path.
+    """
+    # Given: a client method interpolating a value into a request path
+    source = (
+        "def disk_update_request(self, subscription_id, args):\n"
+        '    url = f"/subscriptions/{subscription_id}/disks"\n'
+        "    return self.http_request(url)\n"
+    )
+    handler = ast.parse(source).body[0]
+
+    # When: collecting its string literals
+    strings = collect_string_constants(handler)
+
+    # Then: only the literal fragments are collected, not the interpolated name
+    assert strings == {"/subscriptions/", "/disks"}
+
+
+def test_collect_read_argument_names_collects_the_three_read_shapes():
+    """
+    Given:
+        - A handler reading arguments via args.get("x"), args.get("x", default),
+          args["x"] and "x" in args, which are the shapes Azure.py uses.
+    When:
+        - collect_read_argument_names is called on the handler.
+    Then:
+        - Every argument name is returned, so the py -> yml test below sees the full
+          set of arguments the code actually consumes.
+    """
+    # Given: a handler using all four read forms
+    source = (
+        "def storage_account_update_command(client, args):\n"
+        '    account_name = args.get("account_name", "")\n'
+        '    kind = args.get("kind")\n'
+        '    tags = args["tags"].split(",")\n'
+        '    if "use_sub_domain_name" in args:\n'
+        "        pass\n"
+    )
+    handler = ast.parse(source).body[0]
+
+    # When: collecting the argument names it reads
+    read = collect_read_argument_names(handler)
+
+    # Then: all four are found
+    assert read == {"account_name", "kind", "tags", "use_sub_domain_name"}
+
+
+def test_collect_read_argument_names_ignores_unrelated_literals_and_mappings():
+    """
+    Given:
+        - A handler containing string literals that are not command arguments: a read
+          from the params mapping, a response key, a URL fragment, and a dynamic
+          args.get(key) whose name is not a literal.
+    When:
+        - collect_read_argument_names is called on the handler.
+    Then:
+        - Only the genuine args read is returned. This precision is what makes the
+          py -> yml assertion safe, since a stray literal would otherwise be reported
+          as an argument missing from the yml.
+    """
+    # Given: a handler mixing a real args read with unrelated literals
+    source = (
+        "def disk_update_command(client, params, args, key):\n"
+        '    subscription_id = params.get("subscription_id")\n'
+        '    disk_name = args.get("disk_name")\n'
+        "    dynamic = args.get(key)\n"
+        '    url = "/providers/Microsoft.Compute/disks"\n'
+        '    return response["properties"]["diskState"]\n'
+    )
+    handler = ast.parse(source).body[0]
+
+    # When: collecting the argument names it reads
+    read = collect_read_argument_names(handler)
+
+    # Then: only the real args read is reported
+    assert read == {"disk_name"}
+
+
+def test_extract_fallback_prefix_reads_both_prefix_shapes():
+    """
+    Given:
+        - A handler using the COMMANDS_TO_OUTPUTS_PREFIX.get(command, "<fallback>")
+          lookup, and another passing outputs_prefix= directly to CommandResults, which
+          are the two shapes Azure.py uses to declare a context prefix.
+    When:
+        - extract_fallback_prefix is called on each handler.
+    Then:
+        - The prefix is recovered from both shapes, so the output wiring test can
+          compare it against the contextPath declared in the yml.
+    """
+    # Given: one handler per prefix shape, indexed as build_symbol_index would
+    source = (
+        "def disk_update_command(client, args):\n"
+        '    prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command, "Azure.Compute.Disks")\n'
+        "    return CommandResults(outputs_prefix=prefix, outputs=response)\n"
+        "\n"
+        "def acr_update_command(client, args):\n"
+        '    return CommandResults(outputs_prefix="Azure.ContainerRegistry", outputs=response)\n'
+    )
+    symbol_index = build_symbol_index(ast.parse(source))
+
+    # When / Then: each shape yields its prefix
+    assert extract_fallback_prefix("disk_update_command", symbol_index) == {"Azure.Compute.Disks"}
+    assert extract_fallback_prefix("acr_update_command", symbol_index) == {"Azure.ContainerRegistry"}
+
+
+def test_extract_fallback_prefix_ignores_non_literal_and_unrelated_lookups():
+    """
+    Given:
+        - A handler whose outputs_prefix is a variable rather than a literal, whose
+          COMMANDS_TO_OUTPUTS_PREFIX lookup has no fallback argument, and which calls
+          .get on an unrelated mapping.
+    When:
+        - extract_fallback_prefix is called on the handler.
+    Then:
+        - Nothing is returned, so the output wiring test skips the command rather than
+          comparing the yml against a prefix that was never actually declared.
+    """
+    # Given: a handler declaring its prefix in ways this extractor cannot read
+    source = (
+        "def disk_update_command(client, args):\n"
+        "    prefix = COMMANDS_TO_OUTPUTS_PREFIX.get(command)\n"
+        '    other = SOME_OTHER_MAP.get(command, "Azure.NotAPrefix")\n'
+        "    return CommandResults(outputs_prefix=prefix, outputs=response)\n"
+    )
+    symbol_index = build_symbol_index(ast.parse(source))
+
+    # When / Then: no prefix is claimed
+    assert extract_fallback_prefix("disk_update_command", symbol_index) == set()
+
+
+def test_extract_fallback_prefix_collects_every_prefix_a_handler_may_write():
+    """
+    Given:
+        - A handler that returns a different context prefix on each branch, so more
+          than one prefix is reachable at runtime.
+    When:
+        - extract_fallback_prefix is called on the handler.
+    Then:
+        - Every reachable prefix is returned. The output wiring test then passes if any
+          of them matches the yml, which is the intended behaviour for a handler that
+          serves several commands.
+    """
+    # Given: a handler writing to two different prefixes
+    source = (
+        "def storage_account_update_command(client, args):\n"
+        '    if args.get("container_name"):\n'
+        '        return CommandResults(outputs_prefix="Azure.Storage.Containers", outputs=response)\n'
+        '    return CommandResults(outputs_prefix="Azure.Storage.StorageAccounts", outputs=response)\n'
+    )
+    symbol_index = build_symbol_index(ast.parse(source))
+
+    # When / Then: both branches contribute their prefix
+    assert extract_fallback_prefix("storage_account_update_command", symbol_index) == {
+        "Azure.Storage.Containers",
+        "Azure.Storage.StorageAccounts",
+    }
+
+
+def test_extract_fallback_prefix_returns_empty_for_unknown_handler():
+    """
+    Given:
+        - A handler name that is not present in the symbol index, which happens when a
+          command is routed to a function that does not exist.
+    When:
+        - extract_fallback_prefix is called with that name.
+    Then:
+        - An empty set is returned rather than raising, leaving the missing-handler
+          verdict to test_yml_commands_are_wired_in_dispatch, which reports it with a
+          far clearer message.
+    """
+    # Given: an index that does not contain the requested handler
+    symbol_index = build_symbol_index(ast.parse("def disk_update_command(client, args):\n    pass\n"))
+
+    # When / Then: the unknown name yields nothing, and no error is raised
+    assert extract_fallback_prefix("no_such_command", symbol_index) == set()

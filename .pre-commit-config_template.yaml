@@ -73,10 +73,10 @@ repos:
 - repo: local
   hooks:
   - id: check-invisible-chars
-    name: Check AGENTS.md for invisible characters
+    name: Check AGENTS.md and .ai files for invisible characters
     entry: python3 .github/scripts/check_invisible_chars.py
     language: system
-    files: "(^|/)AGENTS\\.md$"
+    files: "(^|/)AGENTS\\.md$|^\\.ai/"
 
   - id: mdx-validation
     name: Validate README.md files with MDX

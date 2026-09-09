@@ -802,5 +802,9 @@
     "system": false,
     "version": -1,
     "fromVersion": "6.10.0",
-    "description": "URL Indicator Layout"
+    "description": "URL Indicator Layout",
+	"supportedModules": [
+		"agentix",
+		"xsiam"
+	]
 }

@@ -1,0 +1,20 @@
+{
+    "defaultIncidentType": "Vega Alert",
+    "description": "Classifies incoming Vega alerts and incidents by their entity type.",
+    "feed": false,
+    "id": "Vega Classifier",
+    "keyTypeMap": {
+        "Vega Alert": "Vega Alert",
+        "Vega Incident": "Vega Incident"
+    },
+    "name": "Vega Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "vegaEntityType"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

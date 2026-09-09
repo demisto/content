@@ -3646,6 +3646,190 @@ class TestUniversalCommand:
             "warnings": None,
         }
 
+    @patch("Panorama.get_topology")
+    @patch("Panorama.get_jobs")
+    def test_get_jobs_command_polling_terminal(self, patched_get_jobs, patched_get_topology, mock_topology):
+        """
+        Given: polling=true, a single job id, and a job whose status is 'FIN'.
+        When: get_jobs_command is invoked.
+        Then: The returned CommandResults have no scheduled_command (polling stops).
+        """
+        from Panorama import ShowJobsAllResultData, get_jobs_command
+
+        patched_get_topology.return_value = mock_topology
+        patched_get_jobs.return_value = ShowJobsAllResultData(
+            hostid="fw1",
+            id=7,
+            type="Commit",
+            tfin="2024/08/25 22:09:00",
+            status="FIN",
+            result="OK",
+            user="admin",
+            tenq="2024/08/25 22:07:53",
+            stoppable="no",
+            positionInQ=0,
+            progress=100,
+            warnings=None,
+            description="",
+        )
+
+        result = get_jobs_command({"polling": "true", "id": "7"})
+
+        assert result.scheduled_command is None
+        assert result.outputs["status"] == "FIN"
+        assert result.outputs["result"] == "OK"
+        assert result.outputs["id"] == 7
+
+    @patch("Panorama.get_topology")
+    @patch("Panorama.get_jobs")
+    def test_get_jobs_command_polling_still_running(self, patched_get_jobs, patched_get_topology, mock_topology):
+        """
+        Given: polling=true, a single job id, and a job whose status is 'ACT' (still running).
+        When: get_jobs_command is invoked.
+        Then: The returned CommandResults have a scheduled_command (polling continues).
+        """
+        from Panorama import ShowJobsAllResultData, get_jobs_command
+
+        patched_get_topology.return_value = mock_topology
+        patched_get_jobs.return_value = ShowJobsAllResultData(
+            hostid="fw1",
+            id=7,
+            type="Commit",
+            tfin="",
+            status="ACT",
+            result="PEND",
+            user="admin",
+            tenq="2024/08/25 22:07:53",
+            stoppable="no",
+            positionInQ=0,
+            progress=50,
+            warnings=None,
+            description="",
+        )
+
+        result = get_jobs_command({"polling": "true", "id": "7"})
+
+        assert result.scheduled_command is not None
+
+    @patch("Panorama.get_topology")
+    @patch("Panorama.get_jobs")
+    def test_get_jobs_command_no_polling(self, patched_get_jobs, patched_get_topology, mock_topology):
+        """
+        Given: no polling argument (defaults to false).
+        When: get_jobs_command is invoked without polling.
+        Then: The returned CommandResults have no scheduled_command regardless of status.
+        """
+        from Panorama import ShowJobsAllResultData, get_jobs_command
+
+        patched_get_topology.return_value = mock_topology
+        patched_get_jobs.return_value = ShowJobsAllResultData(
+            hostid="fw1",
+            id=7,
+            type="Commit",
+            tfin="",
+            status="ACT",
+            result="PEND",
+            user="admin",
+            tenq="2024/08/25 22:07:53",
+            stoppable="no",
+            positionInQ=0,
+            progress=50,
+            warnings=None,
+            description="",
+        )
+
+        result = get_jobs_command({"id": "7"})
+
+        assert result.scheduled_command is None
+
+    @patch("Panorama.get_topology")
+    @patch("Panorama.get_jobs")
+    def test_get_jobs_command_polling_no_id_raises(self, patched_get_jobs, patched_get_topology, mock_topology):
+        """
+        Given: polling=true but no id argument.
+        When: get_jobs_command is invoked.
+        Then: A DemistoException is raised, since polling requires a single job id.
+        """
+        from Panorama import get_jobs_command
+
+        patched_get_topology.return_value = mock_topology
+
+        with pytest.raises(DemistoException, match="The 'id' argument is required when 'polling' is set to true."):
+            get_jobs_command({"polling": "true"})
+
+        # get_jobs must not be called when the validation fails.
+        patched_get_jobs.assert_not_called()
+
+    @patch("Panorama.get_topology")
+    @patch("Panorama.get_jobs")
+    def test_get_jobs_command_polling_ignores_status_and_job_type(self, patched_get_jobs, patched_get_topology, mock_topology):
+        """
+        Given: polling=true, a single job id, and status/job_type filters provided.
+        When: get_jobs_command is invoked.
+        Then: get_jobs is called with status=None and job_type=None (filters ignored),
+              so a still-running job is not filtered out and polling can continue.
+        """
+        from Panorama import ShowJobsAllResultData, get_jobs_command
+
+        patched_get_topology.return_value = mock_topology
+        patched_get_jobs.return_value = ShowJobsAllResultData(
+            hostid="fw1",
+            id=7,
+            type="Downloadxxx",
+            tfin="",
+            status="ACT",
+            result="PEND",
+            user="admin",
+            tenq="2024/08/25 22:07:53",
+            stoppable="no",
+            positionInQ=0,
+            progress=50,
+            warnings=None,
+            description="",
+        )
+
+        result = get_jobs_command({"polling": "true", "id": "7", "status": "FIN", "job_type": "Commit"})
+
+        # Filters must be dropped while polling by id.
+        assert patched_get_jobs.call_args.kwargs["status"] is None
+        assert patched_get_jobs.call_args.kwargs["job_type"] is None
+        assert patched_get_jobs.call_args.kwargs["id"] == "7"
+        # Job is still running, so polling should continue.
+        assert result.scheduled_command is not None
+
+    @patch("Panorama.get_topology")
+    @patch("Panorama.get_jobs")
+    def test_get_jobs_command_no_polling_keeps_status_and_job_type(self, patched_get_jobs, patched_get_topology, mock_topology):
+        """
+        Given: no polling (defaults to false), a job id, and status/job_type filters.
+        When: get_jobs_command is invoked.
+        Then: get_jobs is called with the provided status/job_type (non-polling flow unchanged).
+        """
+        from Panorama import ShowJobsAllResultData, get_jobs_command
+
+        patched_get_topology.return_value = mock_topology
+        patched_get_jobs.return_value = ShowJobsAllResultData(
+            hostid="fw1",
+            id=7,
+            type="Commit",
+            tfin="2024/08/25 22:09:00",
+            status="FIN",
+            result="OK",
+            user="admin",
+            tenq="2024/08/25 22:07:53",
+            stoppable="no",
+            positionInQ=0,
+            progress=100,
+            warnings=None,
+            description="",
+        )
+
+        get_jobs_command({"id": "7", "status": "FIN", "job_type": "Commit"})
+
+        # Non-polling flow must keep applying the filters.
+        assert patched_get_jobs.call_args.kwargs["status"] == "FIN"
+        assert patched_get_jobs.call_args.kwargs["job_type"] == "Commit"
+
     def test_download_software(self, mock_topology):
         """
         Test the download software function returns the correct data.
@@ -3707,6 +3891,85 @@ class TestUniversalCommand:
         result = UniversalCommand.check_system_availability(mock_topology, "fake")
         assert result
         assert not result.up
+
+    def test_system_status_command_polling_device_up(self, mocker, mock_topology):
+        """
+        Given:
+            - polling=true and a target device that is already up (operational_mode == 'normal').
+        When:
+            - Running system_status_command.
+        Then:
+            - Polling stops immediately (no scheduled_command) and the SystemStatus context is returned.
+        """
+        from CommonServerPython import ScheduledCommand
+        from Panorama import CheckSystemStatus, system_status_command
+
+        mocker.patch("Panorama.get_topology", return_value=mock_topology)
+        mocker.patch(
+            "Panorama.system_status",
+            return_value=CheckSystemStatus(hostid=MOCK_PANORAMA_SERIAL, up=True),
+        )
+        mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
+
+        args = {"target": MOCK_PANORAMA_SERIAL, "polling": "true"}
+        result = system_status_command(args)
+
+        assert result.scheduled_command is None
+        assert result.outputs == {"hostid": MOCK_PANORAMA_SERIAL, "up": True}
+
+    def test_system_status_command_polling_device_down(self, mocker, mock_topology):
+        """
+        Given:
+            - polling=true and a target device that is not yet available (up=False).
+        When:
+            - Running system_status_command.
+        Then:
+            - A scheduled_command is returned so polling continues.
+            - A "waiting" message is shown.
+            - The last known status (up=False) is still written to context so that on
+              polling timeout the war-room shows the final PANOS.SystemStatus entry.
+        """
+        from CommonServerPython import ScheduledCommand
+        from Panorama import CheckSystemStatus, system_status_command
+
+        mocker.patch("Panorama.get_topology", return_value=mock_topology)
+        mocker.patch(
+            "Panorama.system_status",
+            return_value=CheckSystemStatus(hostid=MOCK_PANORAMA_SERIAL, up=False),
+        )
+        mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported", return_value=None)
+
+        args = {"target": MOCK_PANORAMA_SERIAL, "polling": "true"}
+        result = system_status_command(args)
+
+        assert result.scheduled_command is not None
+        assert "Waiting for device" in (result.readable_output or "")
+        # Last-known status must still be in context so a polling timeout leaves the
+        # war-room with a meaningful final entry rather than only a waiting message.
+        assert result.outputs == {"hostid": MOCK_PANORAMA_SERIAL, "up": False}
+
+    def test_system_status_command_no_polling(self, mocker, mock_topology):
+        """
+        Given:
+            - polling not provided (default false) even if the device is not up.
+        When:
+            - Running system_status_command.
+        Then:
+            - The command does not poll (no scheduled_command) and returns the current status as-is.
+        """
+        from Panorama import CheckSystemStatus, system_status_command
+
+        mocker.patch("Panorama.get_topology", return_value=mock_topology)
+        mocker.patch(
+            "Panorama.system_status",
+            return_value=CheckSystemStatus(hostid=MOCK_PANORAMA_SERIAL, up=False),
+        )
+
+        args = {"target": MOCK_PANORAMA_SERIAL}
+        result = system_status_command(args)
+
+        assert result.scheduled_command is None
+        assert result.outputs == {"hostid": MOCK_PANORAMA_SERIAL, "up": False}
 
 
 class TestFirewallCommand:
@@ -9093,21 +9356,35 @@ class TestDynamicUpdateCommands:
         elif update_phase == "start-with-polling":
             """
             Run the command for the first time, with an API response indicating the job has been enqueued.
-            Verify that the response contains a ScheduledCommand object to poll for job status.
+            Verify that the response contains a ScheduledCommand object to poll for job status and that the
+            default polling timeout/interval are applied when not provided.
             """
             panorama_download_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337"})
             returned_results = mock_command_return.call_args[0][0]
             assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+            assert returned_results.scheduled_command._timeout == "3600"
+            assert returned_results.scheduled_command._next_run == "30"
 
         elif update_phase == "check":
             """
             Run the command as if a download has been started and check for the status of it.
             Verify that when the API response shows that the job is still pending that a ScheduledCommand
-            object is returned to continue to poll for the download to complete.
+            object is returned to continue to poll for the download to complete, honoring custom
+            timeout_in_seconds/interval_in_seconds when provided.
             """
-            panorama_download_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "job_id": job_id})
+            panorama_download_latest_dynamic_update_command(
+                DynamicUpdateType.ANTIVIRUS,
+                {
+                    "target": "1337",
+                    "job_id": job_id,
+                    "timeout_in_seconds": "1200",
+                    "interval_in_seconds": "45",
+                },
+            )
             returned_results = mock_command_return.call_args[0][0]
             assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+            assert returned_results.scheduled_command._timeout == "1200"
+            assert returned_results.scheduled_command._next_run == "45"
 
         elif update_phase == "finished":
             """
@@ -9294,21 +9571,35 @@ class TestDynamicUpdateCommands:
         elif install_phase == "start-with-polling":
             """
             Run the command for the first time, with an API response indicating the job has been enqueued.
-            Verify that the response contains a ScheduledCommand object to poll for job status.
+            Verify that the response contains a ScheduledCommand object to poll for job status and that the
+            default polling timeout/interval are applied when not provided.
             """
             panorama_install_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337"})
             returned_results = mock_command_return.call_args[0][0]
             assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+            assert returned_results.scheduled_command._timeout == "3600"
+            assert returned_results.scheduled_command._next_run == "30"
 
         elif install_phase == "check":
             """
             Run the command as if an install has been started and check for the status of it.
             Verify that when the API response shows that the job is still pending that a ScheduledCommand
-            object is returned to continue to poll for the install to complete.
+            object is returned to continue to poll for the install to complete, honoring custom
+            timeout_in_seconds/interval_in_seconds when provided.
             """
-            panorama_install_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, {"target": "1337", "job_id": job_id})
+            panorama_install_latest_dynamic_update_command(
+                DynamicUpdateType.ANTIVIRUS,
+                {
+                    "target": "1337",
+                    "job_id": job_id,
+                    "timeout_in_seconds": "1200",
+                    "interval_in_seconds": "45",
+                },
+            )
             returned_results = mock_command_return.call_args[0][0]
             assert isinstance(returned_results.scheduled_command, ScheduledCommand)
+            assert returned_results.scheduled_command._timeout == "1200"
+            assert returned_results.scheduled_command._next_run == "45"
 
         elif install_phase == "finished":
             """

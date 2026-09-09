@@ -48,7 +48,8 @@
                 "cloud_runtime_security",
                 "edr",
                 "exposure_management",
-                "xsiam"
+                "xsiam",
+                "data_security"
             ]
         },
         {
@@ -71,14 +72,16 @@
                 "cloud_runtime_security",
                 "cloud_posture",
                 "xsiam",
-                "edr"
+                "edr",
+                "xti"
             ]
         },
         {
             "id": "CommonTypes",
             "supportedModules": [
                 "agentix",
-                "xsiam"
+                "xsiam",
+                "xti"
             ]
         },
         {

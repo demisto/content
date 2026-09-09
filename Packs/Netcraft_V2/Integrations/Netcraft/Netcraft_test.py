@@ -134,6 +134,115 @@ def test_fetch_incidents(mocker, data):
     assert incidents == data.outputs
 
 
+def test_fetch_incidents_lookback_first_run(mocker):
+    """
+    Given:
+        - A first fetch run with look_back configured (10 minutes).
+        - No previous last_run state exists.
+
+    When:
+        - Fetching incidents using the lookback mechanism.
+
+    Then:
+        - All incidents from the API response should be returned as XSOAR incidents.
+        - The last_run should be updated with time, limit, and found_incident_ids.
+    """
+    import Netcraft
+
+    data = fetch_incidents_lookback_first_run
+    Netcraft.PARAMS = data.params
+    mocker.patch.object(demisto, "getLastRun", return_value=data.last_run.copy())
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(Client, "_http_request", return_value=data.api_response)
+
+    incidents = Netcraft.fetch_incidents(MOCK_CLIENT)
+
+    assert len(incidents) == 2
+    assert incidents[0]["name"] == "Takedown-100"
+    assert incidents[1]["name"] == "Takedown-101"
+
+    last_run_call = set_last_run_mock.call_args[0][0]
+    assert "time" in last_run_call
+    assert "found_incident_ids" in last_run_call
+    assert "Takedown-100" in last_run_call["found_incident_ids"]
+    assert "Takedown-101" in last_run_call["found_incident_ids"]
+
+
+def test_fetch_incidents_lookback_dedup(mocker):
+    """
+    Given:
+        - A subsequent fetch run with look_back configured (10 minutes).
+        - Previous last_run contains already-fetched incident IDs (Takedown-100, Takedown-101).
+        - The API returns those same incidents plus two new ones (Takedown-102, Takedown-99).
+
+    When:
+        - Fetching incidents using the lookback mechanism.
+
+    Then:
+        - Only the new incidents (Takedown-102, Takedown-99) should be returned.
+        - Previously seen incidents should be deduplicated out.
+    """
+    import Netcraft
+
+    data = fetch_incidents_lookback_subsequent_run
+    Netcraft.PARAMS = data.params
+    mocker.patch.object(demisto, "getLastRun", return_value=data.last_run.copy())
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(Client, "_http_request", return_value=data.api_response)
+
+    incidents = Netcraft.fetch_incidents(MOCK_CLIENT)
+
+    incident_names = [inc["name"] for inc in incidents]
+    assert "Takedown-100" not in incident_names
+    assert "Takedown-101" not in incident_names
+    assert "Takedown-102" in incident_names
+    assert "Takedown-99" in incident_names
+    assert len(incidents) == 2
+
+    last_run_call = set_last_run_mock.call_args[0][0]
+    assert "found_incident_ids" in last_run_call
+    assert "Takedown-102" in last_run_call["found_incident_ids"]
+    assert "Takedown-99" in last_run_call["found_incident_ids"]
+
+
+def test_fetch_incidents_no_lookback_uses_id_based(mocker):
+    """
+    Given:
+        - look_back is set to 0 (or not configured).
+
+    When:
+        - Fetching incidents.
+
+    Then:
+        - The ID-based fetch mechanism should be used (original behavior).
+    """
+    import Netcraft
+
+    Netcraft.PARAMS = {
+        "first_fetch": "2022-02-22 00:00:00",
+        "max_fetch": "10",
+        "region": "region",
+        "look_back": "0",
+    }
+    mocker.patch.object(demisto, "getLastRun", return_value={"id": "100"})
+    mocker.patch.object(demisto, "setLastRun")
+    request = mocker.patch.object(
+        Client,
+        "_http_request",
+        return_value=[
+            {"id": "100", "date_submitted": "2022-02-22 00:01:00 UTC"},
+            {"id": "101", "date_submitted": "2022-02-22 00:02:00 UTC"},
+        ],
+    )
+
+    Netcraft.fetch_incidents(MOCK_CLIENT)
+
+    # Verify ID-based params were used (sort by id, id_after)
+    call_kwargs = request.call_args[1]
+    assert call_kwargs["params"]["sort"] == "id"
+    assert call_kwargs["params"]["id_after"] == "100"
+
+
 def test_attack_report_command(mocker):
     """
     Given:

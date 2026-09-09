@@ -1,0 +1,128 @@
+{
+    "alert": {
+        "name": "Policy V2 7770002: Sysdig Runtime Notable Events",
+        "description": "This Notable Events policy contains rules which may indicate undesired behavior including security threats. The rules are more generalized than Threat Detection policies and may result in more noise. Tuning will likely be required for the events generated from this policy.",
+        "severity": 5,
+        "severityLabel": "Medium",
+        "subject": "Sysdig Runtime Notable Events triggered at 04/28/2026 01:18 PM UTC",
+        "body": "Policy event triggered at 04/28/2026 01:18 PM UTC\n\nPolicy:             Sysdig Runtime Notable Events\nPolicy URL:         https://app.example.sysdig.com/secure//#/policies/7770002\nDescription:        This Notable Events policy contains rules which may indicate undesired behavior including security threats. The rules are more generalized than Threat Detection policies and may result in more noise. Tuning will likely be required for the events generated from this policy.\n\nTimestamp:          04/28/2026 01:18 PM UTC\nURL:                https://app.example.sysdig.com/secure//#/events/00000000000000000000000000000010\nRule:               Shared Libraries Reconnaissance Activity Detected\nRule URL:           https://app.example.sysdig.com/secure//#/policies/rules/falco/Shared%20Libraries%20Reconnaissance%20Activity%20Detected\nSeverity:           Medium\nScope:\n    container.label.io.kubernetes.pod.name:      pygoat-cronjob-29623038-nwqhs\n    host.hostName:      ip-10-0-0-1.ec2.internal\n    aws.accountId:      111122223333\n    kubernetes.job.name:      pygoat-cronjob-29623038\n    kubernetes.node.name:      ip-10-0-0-1.ec2.internal\n    kubernetes.workload.name:      pygoat-cronjob\n    kubernetes.workload.type:      cronjob\n    container.image.id:      bbb000000002\n    container.label.io.kubernetes.pod.namespace:      pygoat\n    kubernetes.cluster.name:      demo-eks-cluster\n    cloudProvider.account.id:      111122223333\n    cloudProvider.region:      us-east-1\n    aws.region:      us-east-1\n    kubernetes.cronJob.name:      pygoat-cronjob\n    host.mac:      aa:bb:cc:dd:ee:02\n    aws.instanceId:      i-0aaa1111bbbb22222\n    process.name:      grep RUNPATH.*/foo\n    container.label.io.kubernetes.container.name:      client\n    container.image.tag:      1.3\n    cloudProvider.name:      aws\n    host.id:      bbbb000011112222333344445555666677778888999900001111222233334444\n    agent.version:      14.3.1\n    orchestrator.type:      k8s\n    container.image.repo:      docker.io/example/test-app\n    kubernetes.namespace.name:      pygoat\n    container.name:      client\n    container.image.digest:      sha256:1111222233334444555566667777888899990000aaaabbbbccccddddeeeeffff\n    kubernetes.pod.name:      pygoat-cronjob-29623038-nwqhs\n    agent.variant:      traditional\nActions:            Capture Recorded\nDetails:            Shared Libraries discovery detected on client with process grep by user root (proc.name=grep proc.exepath=/usr/bin/grep proc.pname=bash proc.pexepath=/usr/bin/bash gexepath=/usr/bin/bash ggexepath=/usr/bin/dash gggexepath=/usr/local/bin/python3.9 gparent=bash ggparent=sh gggparent=python container.name=client image=docker.io/example/test-app proc.cwd=/opt/nmap-7.92/libdnet-stripped/ user.name=root proc.cmdline=grep RUNPATH.*/foo proc.pcmdline=bash ./configure --disable-option-checking --prefix=/usr/local --cache-file=/dev/null --srcdir=. user.loginuid=-1 user.uid=0 user.loginname=<NA> fd.sport=<NA> fd.name=<NA> proc.args=RUNPATH.*/foo proc.pid.ts=1777382300561624251 proc.ppid.ts=1777382298050679592 proc.hash.sha256=aaa0000000000000000000000000000000000000000000000000000000000007)"
+    },
+    "event": {
+        "url": "https://app.example.sysdig.com/secure//#/events/?from=1777382240&to=1777382301"
+    },
+    "condition": "count(policyEvent) > 0",
+    "source": "Sysdig Secure",
+    "state": "ACTIVE",
+    "timestamp": 1777382300562209,
+    "timespan": 60000000,
+    "entities": [
+        {
+            "metricValues": [
+                {
+                    "metric": "policyEvent",
+                    "aggregation": "count",
+                    "groupAggregation": "none",
+                    "value": 1
+                }
+            ],
+            "policyEvents": [
+                {
+                    "id": "00000000000000000000000000000010",
+                    "containerId": "aaa00000000d",
+                    "name": "Sysdig Runtime Notable Events",
+                    "description": "This Notable Events policy contains rules which may indicate undesired behavior including security threats. The rules are more generalized than Threat Detection policies and may result in more noise. Tuning will likely be required for the events generated from this policy.",
+                    "severity": 5,
+                    "policyId": 7770002,
+                    "actionResults": [
+                        {
+                            "type": "POLICY_ACTION_CAPTURE",
+                            "successful": true,
+                            "token": "00000000-0000-0000-0000-000000000004",
+                            "beforeEventNs": 15000000000,
+                            "afterEventNs": 30000000000
+                        }
+                    ],
+                    "output": "Shared Libraries discovery detected on client with process grep by user root (proc.name=grep proc.exepath=/usr/bin/grep proc.pname=bash proc.pexepath=/usr/bin/bash gexepath=/usr/bin/bash ggexepath=/usr/bin/dash gggexepath=/usr/local/bin/python3.9 gparent=bash ggparent=sh gggparent=python container.name=client image=docker.io/example/test-app proc.cwd=/opt/nmap-7.92/libdnet-stripped/ user.name=root proc.cmdline=grep RUNPATH.*/foo proc.pcmdline=bash ./configure --disable-option-checking --prefix=/usr/local --cache-file=/dev/null --srcdir=. user.loginuid=-1 user.uid=0 user.loginname=<NA> fd.sport=<NA> fd.name=<NA> proc.args=RUNPATH.*/foo proc.pid.ts=1777382300561624251 proc.ppid.ts=1777382298050679592 proc.hash.sha256=aaa0000000000000000000000000000000000000000000000000000000000007)",
+                    "ruleName": "Shared Libraries Reconnaissance Activity Detected",
+                    "ruleType": "RULE_TYPE_FALCO",
+                    "matchedOnDefault": false,
+                    "fields": {
+                        "proc.pname": "bash",
+                        "proc.cmdline": "grep RUNPATH.*/foo",
+                        "proc.args": "RUNPATH.*/foo",
+                        "user.name": "root",
+                        "proc.aname[2]": "bash",
+                        "proc.aname[4]": "python",
+                        "proc.aexepath[4]": "/usr/local/bin/python3.9",
+                        "proc.hash.sha256": "aaa0000000000000000000000000000000000000000000000000000000000007",
+                        "container.name": "client",
+                        "proc.name": "grep",
+                        "proc.pcmdline": "bash ./configure --disable-option-checking --prefix=/usr/local --cache-file=/dev/null --srcdir=.",
+                        "proc.aexepath[2]": "/usr/bin/bash",
+                        "fd.name": "<NA>",
+                        "user.uid": "0",
+                        "proc.cwd": "/opt/nmap-7.92/libdnet-stripped/",
+                        "fd.sport": "<NA>",
+                        "proc.pid.ts": "1777382300561624251",
+                        "proc.exepath": "/usr/bin/grep",
+                        "proc.aname[3]": "sh",
+                        "proc.aexepath[3]": "/usr/bin/dash",
+                        "user.loginuid": "-1",
+                        "proc.pexepath": "/usr/bin/bash",
+                        "container.image.repository": "docker.io/example/test-app",
+                        "proc.ppid.ts": "1777382298050679592",
+                        "user.loginname": "<NA>"
+                    },
+                    "eventLabels": {
+                        "kubernetes.node.name": "ip-10-0-0-1.ec2.internal",
+                        "kubernetes.workload.name": "pygoat-cronjob",
+                        "container.image.tag": "1.3",
+                        "host.mac": "aa:bb:cc:dd:ee:02",
+                        "kubernetes.workload.type": "cronjob",
+                        "container.image.repo": "docker.io/example/test-app",
+                        "container.name": "client",
+                        "kubernetes.pod.name": "pygoat-cronjob-29623038-nwqhs",
+                        "cloudProvider.region": "us-east-1",
+                        "container.label.io.kubernetes.pod.namespace": "pygoat",
+                        "container.label.io.kubernetes.container.name": "client",
+                        "cloudProvider.name": "aws",
+                        "host.id": "bbbb000011112222333344445555666677778888999900001111222233334444",
+                        "container.image.id": "bbb000000002",
+                        "kubernetes.namespace.name": "pygoat",
+                        "agent.variant": "traditional",
+                        "kubernetes.cronJob.name": "pygoat-cronjob",
+                        "orchestrator.type": "k8s",
+                        "kubernetes.cluster.name": "demo-eks-cluster",
+                        "kubernetes.job.name": "pygoat-cronjob-29623038",
+                        "process.name": "grep RUNPATH.*/foo",
+                        "aws.region": "us-east-1",
+                        "container.label.io.kubernetes.pod.name": "pygoat-cronjob-29623038-nwqhs",
+                        "aws.accountId": "111122223333",
+                        "container.image.digest": "sha256:1111222233334444555566667777888899990000aaaabbbbccccddddeeeeffff",
+                        "host.hostName": "ip-10-0-0-1.ec2.internal",
+                        "agent.version": "14.3.1",
+                        "cloudProvider.account.id": "111122223333",
+                        "aws.instanceId": "i-0aaa1111bbbb22222"
+                    },
+                    "falsePositive": false,
+                    "policyVersion": 160,
+                    "origin": "Sysdig",
+                    "timestamp": 1777382300562209,
+                    "hostMac": "aa:bb:cc:dd:ee:02",
+                    "isAggregated": false
+                }
+            ],
+            "policies": [
+                {
+                    "name": "Sysdig Runtime Notable Events",
+                    "description": "This Notable Events policy contains rules which may indicate undesired behavior including security threats. The rules are more generalized than Threat Detection policies and may result in more noise. Tuning will likely be required for the events generated from this policy.",
+                    "origin": "Secure UI",
+                    "versionId": "0.0.0",
+                    "severity": 5,
+                    "enabled": false,
+                    "id": 7770002
+                }
+            ]
+        }
+    ]
+}

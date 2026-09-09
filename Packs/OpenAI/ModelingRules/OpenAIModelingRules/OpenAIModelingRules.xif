@@ -78,6 +78,7 @@ alter
         type = "organization.updated",    json_extract_scalar(organization_updated, "$.id"),
         null),
     xdm.target.resource.name = if(
+        type in ("login.succeeded", "login.failed", "logout.succeeded", "logout.failed"), "OpenAI API Platform",
         type not in ("certificate.created", "certificate.updated", "certificate.deleted",
             "ip_allowlist.created", "ip_allowlist.deleted",
             "role.created", "role.updated", "group.created", "group.updated",

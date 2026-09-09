@@ -1742,6 +1742,9 @@ script:
     - description: A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parellel to the endpoints list order, therefore, the first file path in the list is related to the first endpoint and so on.
       isArray: true
       name: generic_file_path
+    - description: 'The delimiter used to separate multiple file paths. Set to a different character (for example, ";") when a file path contains a comma.'
+      name: paths_separator
+      defaultValue: ','
     - description: For polling use.
       isArray: true
       name: action_id
@@ -1816,6 +1819,9 @@ script:
       prettypredefined:
         Issue initiator file: ${issue.initiatorpath}
         Issue CGO file path: ${issue.cgopath}
+    - description: 'The delimiter used to separate multiple file paths. Set to a different character (for example, ";") when a file path contains a comma.'
+      name: paths_separator
+      defaultValue: ','
     - description: For polling use.
       isArray: true
       name: action_id
@@ -3731,6 +3737,7 @@ script:
     - description: A comma-separated list of endpoint IDs. Can be retrieved by running the core-get-endpoints command.
       name: endpoint_ids
       required: true
+      isArray: true
     - description: Unique identifier of the script. Can be retrieved by running the core-get-scripts command.
       name: script_uid
       required: true
