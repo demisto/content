@@ -1,6 +1,6 @@
 name: BoxEventsCollector
 display: Box Event Collector
-description: Collect events from Box's logs.
+description: Collect security events from Box's logs.
 category: Analytics & SIEM
 provider: Box
 supportlevelheader: xsoar
@@ -89,3 +89,4 @@ tests:
 fromversion: 6.6.0
 supportedModules:
 - xsiam
+excludefromtightlycoupled: true
