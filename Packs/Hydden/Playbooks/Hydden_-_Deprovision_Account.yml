@@ -7,23 +7,16 @@ fromversion: "6.10.0"
 inputs:
 - key: AccountId
   value:
-    complex:
-      root: alert
-      accessor: user_name
-      transformers:
-      - operator: SetIfEmpty
-        args:
-          defaultValue:
-            simple: ${alert.username}
+    simple: ${xdm.target.user.identifier}
   required: true
-  description: Cortex account identifier from the issue. Defaults to the alert user_name,
-    which is the field XDR Analytics identity issues populate, and falls back to username.
+  description: Cortex account identifier from the issue. Defaults to
+    ${xdm.target.user.identifier}.
   playbookInputQuery:
 - key: AccountIdFallback
   value:
     simple: ${incident.username}
   required: false
-  description: Incident username when the alert username is empty.
+  description: Incident username when ${xdm.target.user.identifier} is empty.
   playbookInputQuery:
 outputs:
 - contextPath: Hydden.Identity.deprovisioned

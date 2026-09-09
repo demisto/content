@@ -8,7 +8,7 @@ Requires a **Hydden Control** integration instance.
 
 ## What it does
 
-1. Reads the account identifier from `alert.user_name`, then `alert.username`, then `incident.username` if the earlier fields are empty. XDR Analytics identity issues populate `user_name`.
+1. Reads the account identifier from `${xdm.target.user.identifier}`, then `incident.username` if that field is empty.
 2. Stages that value under `Hydden.Input.AccountId`.
 3. Calls `hydden-blast-radius` with it as `account_id`.
 4. Writes `Hydden.Identity.blast_radius` (string) and the rest of the Hydden blast-radius payload. If Hydden returns an error, the playbook fails.
@@ -19,7 +19,7 @@ To run the playbook manually with an account identifier you choose, open it in t
 
  | **Name** | **Description** | **Required** |
  | --- | --- | --- |
- | AccountId | Cortex account identifier from the issue (defaults to `alert.user_name`, then `alert.username`). | Required |
+ | AccountId | Cortex account identifier from the issue (defaults to `${xdm.target.user.identifier}`). | Required |
  | AccountIdFallback | Incident username if the alert fields are empty. | Optional |
 
 ## Outputs

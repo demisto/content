@@ -48,7 +48,7 @@ After install, open **Hydden Identity System of Record** from **Dashboards & Rep
 | Identity Analytics | [Hydden - Blast Radius](./Playbooks/Hydden_-_Blast_Radius_README.md) |
 | Compromised or high-risk account | [Hydden - Deprovision Account](./Playbooks/Hydden_-_Deprovision_Account_README.md) |
 
-Both playbooks take the account identifier from the issue (`alert.user_name`, then `alert.username`, then `incident.username`) and pass it to one Hydden Control command. XDR Analytics identity issues populate `user_name`.
+Both playbooks take the account identifier from the issue (`${xdm.target.user.identifier}`, then `incident.username`) and pass it to one Hydden Control command.
 
 ## Dependencies
 

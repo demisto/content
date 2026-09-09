@@ -36,4 +36,4 @@ This integration was integrated and tested with the Hydden Control public REST A
 - If the integration reports a TLS error, verify the certificate chain on the Hydden API URL. Use **Trust any certificate (not secure)** only for temporary testing.
 - If the connection requires an outbound proxy, enable **Use system proxy settings**.
 - A cold `hydden-blast-radius` request can take several minutes while Hydden builds the tenant reachability graph. Increase **HTTP request timeout (seconds)** if the request times out.
-- If a playbook reports a missing `account_id`, confirm that the Cortex XSIAM issue contains `alert.user_name`, or supply the **AccountId** input in the Playbook Debugger.
+- If a playbook reports a missing `account_id`, confirm that the Cortex XSIAM issue contains `${xdm.target.user.identifier}`, or supply the **AccountId** input in the Playbook Debugger.
