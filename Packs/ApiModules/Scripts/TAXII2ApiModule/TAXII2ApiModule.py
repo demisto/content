@@ -516,11 +516,33 @@ class XSOAR2STIXParser:
         self.has_extension = fields_to_present != {"name", "type"}
         self.types_for_indicator_sdo = types_for_indicator_sdo or []
 
-    def create_indicators(self, indicator_searcher: IndicatorsSearcher, is_manifest: bool):
+    @staticmethod
+    def _is_known_stix_type(xsoar_type: str) -> bool:
+        """Whether the given XSOAR indicator type maps to a known STIX type.
+
+        Indicators of an unknown type never produce a STIX object / manifest entry
+        (see `create_stix_object` / `create_manifest_entry`), so they must not be
+        counted when applying the pagination offset window.
+        """
+        return bool(XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) or XSOAR_TYPES_TO_STIX_SDO.get(xsoar_type))
+
+    def create_indicators(
+        self,
+        indicator_searcher: IndicatorsSearcher,
+        is_manifest: bool,
+        offset: int = 0,
+        limit: int = -1,
+    ):
         """
         Args:
             indicator_searcher: indicators list
             is_manifest: whether this call is for manifest or indicators
+            offset: number of produced objects to skip before starting to build STIX objects.
+                Used by the no-cache pagination flow to avoid creating STIX objects for
+                indicators that would be discarded by the caller's slicing.
+            limit: maximum number of produced objects to build (STIX objects / manifest entries).
+                A negative value means no limit. Combined with `offset`, only the
+                [offset, offset + limit) window is materialized.
 
         Returns: Created indicators and its extensions.
         """
@@ -528,11 +550,33 @@ class XSOAR2STIXParser:
         extensions_dict: dict = {}
         iocs = []
         extensions = []
+        # `produced_index` counts indicators that would produce an object (matching the
+        # semantics of the previous `iocs[offset:offset + limit]` slice), so we can skip
+        # building STIX objects/manifest entries that fall outside the requested window.
+        produced_index = 0
+        window_end = offset + limit if limit >= 0 else None
+        window_full = False
         for ioc in indicator_searcher:
             found_indicators = ioc.get("iocs") or []
+            # `total` reflects the full result-set size and is returned by the server on every
+            # page, so it is already correct after the first page even if we break out early.
             total = ioc.get("total")
             for xsoar_indicator in found_indicators:
                 xsoar_type = xsoar_indicator.get("indicator_type")
+                # Skip building objects for indicators outside the requested window. We only
+                # count indicators of a known STIX type, since indicators of an unknown type
+                # never produced an object (and thus never counted towards the offset).
+                if not self._is_known_stix_type(xsoar_type):
+                    continue
+                if produced_index < offset:
+                    produced_index += 1
+                    continue
+                if window_end is not None and produced_index >= window_end:
+                    # The requested window is full - stop iterating and fetching more pages
+                    # from the searcher instead of scanning the remaining indicators.
+                    window_full = True
+                    break
+                produced_index += 1
                 if is_manifest:
                     manifest_entry = self.create_manifest_entry(xsoar_indicator, xsoar_type)
                     if manifest_entry:
@@ -549,6 +593,8 @@ class XSOAR2STIXParser:
                             extensions.append(extension_definition)
                     elif stix_ioc:
                         iocs.append(stix_ioc)
+            if window_full:
+                break
 
         demisto.info(f"T2API: indicators count: {len(iocs)}")
         if (

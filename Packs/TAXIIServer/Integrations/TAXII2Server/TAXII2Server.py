@@ -280,8 +280,11 @@ class TAXII2Server:
             objects = iocs
             demisto.info(f"T2S: total IOCs fetched for collection {collection_id} : {(offset + limit) * STIX_PERCENTAGE}")
         else:
-            objects = iocs[offset : offset + limit]
-            if iocs and not objects:
+            # In the no-cache flow, find_indicators already materialized only the requested
+            # [offset, offset + limit) window, so `iocs` are exactly the objects to return.
+            objects = iocs
+            if total and offset and not objects:
+                # requested an offset beyond the available indicators
                 raise RequestedRangeNotSatisfiable
 
         if len(objects) < len(iocs):
@@ -328,8 +331,11 @@ class TAXII2Server:
             limited_iocs = iocs
             demisto.info(f"T2S: total IOCs fetched for collection {collection_id} : {(offset + limit) * STIX_PERCENTAGE}")
         else:
-            limited_iocs = iocs[offset : offset + limit]
-            if iocs and not limited_iocs:
+            # In the no-cache flow, find_indicators already materialized only the requested
+            # [offset, offset + limit) window, so `iocs` are exactly the objects to return.
+            limited_iocs = iocs
+            if total and offset and not limited_iocs:
+                # requested an offset beyond the available indicators
                 raise RequestedRangeNotSatisfiable
             objects = limited_iocs
 
@@ -667,6 +673,14 @@ def find_indicators(
     integration_context = get_integration_context(True)
     remove_old_cache(integration_context)
 
+    # `create_indicators_offset` / `create_indicators_limit` define the window of objects to
+    # materialize. In the search_after (cache) flow the searcher already returns exactly the
+    # requested page, so no window is applied (offset=0, limit=-1). In the no-cache flow we
+    # push the offset window down into create_indicators so STIX objects are only built for
+    # the [offset, offset + limit) records instead of building all offset+limit and slicing.
+    create_indicators_offset = 0
+    create_indicators_limit = -1
+
     # check if there is a search_after value for this collection with this offset
     search_after_offset = int(offset * STIX_PERCENTAGE)
     if integration_context.get(SEARCH_AFTER_KEY_NAME, {}).get(collection_id, {}).get(str(search_after_offset)):
@@ -676,6 +690,9 @@ def find_indicators(
     else:
         demisto.info(f"{INTEGRATION_NAME}: search indicators parameters is {field_filters=}, {new_query=}, {new_limit=}")
         indicator_searcher = search_indicators(field_filters, new_query, new_limit)
+        # only build objects for the requested page, avoiding STIX creation for the skipped offset
+        create_indicators_offset = offset
+        create_indicators_limit = new_limit - offset
 
     XSOAR2STIXParser_client = XSOAR2STIXParser(
         server_version=SERVER.version,
@@ -683,7 +700,12 @@ def find_indicators(
         fields_to_present=SERVER.fields_to_present,
         types_for_indicator_sdo=SERVER.types_for_indicator_sdo,
     )
-    iocs, extensions, total = XSOAR2STIXParser_client.create_indicators(indicator_searcher, is_manifest)
+    iocs, extensions, total = XSOAR2STIXParser_client.create_indicators(
+        indicator_searcher,
+        is_manifest,
+        offset=create_indicators_offset,
+        limit=create_indicators_limit,
+    )
 
     # in case search_after_param returns in the query result - save it to the cache for the next request
     if indicator_searcher._search_after_param:

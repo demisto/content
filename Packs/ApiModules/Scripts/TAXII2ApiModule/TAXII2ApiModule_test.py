@@ -2652,6 +2652,137 @@ def test_create_indicators(mocker):
     assert iocs == expected_result
 
 
+def _build_fake_indicator_searcher(num_indicators: int, indicator_type: str = "IP"):
+    """Return an iterable that mimics IndicatorsSearcher yielding a single page of indicators."""
+
+    indicators = [
+        {
+            "value": f"1.1.1.{i}",
+            "indicator_type": indicator_type,
+            "timestamp": "2020-01-01T00:00:00Z",
+            "modified": "2020-01-01T00:00:00Z",
+        }
+        for i in range(num_indicators)
+    ]
+    return [{"iocs": indicators, "total": num_indicators}]
+
+
+def test_create_indicators_high_offset_small_limit_builds_only_window(mocker):
+    """
+    Given
+    - A searcher that returns 1000 indicators and a request for a high offset (998) with a small limit (2).
+    When
+    - Calling create_indicators with offset=998 and limit=2 (the no-cache pagination window).
+    Then
+    - Only 2 STIX objects are created (create_stix_object is called exactly limit times),
+      instead of building all offset+limit objects and discarding them.
+    """
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "6.5.0"})
+    client = XSOAR2STIXParser(
+        server_version="2.1",
+        fields_to_present={"name", "type"},
+        types_for_indicator_sdo=[],
+        namespace_uuid=uuid.uuid5(PAWN_UUID, "test"),
+    )
+    create_stix_object_spy = mocker.spy(client, "create_stix_object")
+
+    iocs, _, _ = client.create_indicators(
+        _build_fake_indicator_searcher(1000),
+        is_manifest=False,
+        offset=998,
+        limit=2,
+    )
+
+    assert create_stix_object_spy.call_count == 2
+    assert len(iocs) == 2
+
+
+def test_create_indicators_window_matches_full_then_slice(mocker):
+    """
+    Given
+    - A searcher that returns 10 indicators.
+    When
+    - Building all objects (offset=0, limit=-1) and manually slicing [offset:offset+limit],
+      vs. asking create_indicators to build only the [offset, offset+limit) window.
+    Then
+    - The windowed result is identical to the old build-everything-then-slice behavior.
+    """
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "6.5.0"})
+    offset, limit = 3, 4
+
+    client_full = XSOAR2STIXParser(
+        server_version="2.1",
+        fields_to_present={"name", "type"},
+        types_for_indicator_sdo=[],
+        namespace_uuid=uuid.uuid5(PAWN_UUID, "test"),
+    )
+    full_iocs, _, _ = client_full.create_indicators(_build_fake_indicator_searcher(10), is_manifest=False)
+    expected = full_iocs[offset : offset + limit]
+
+    client_window = XSOAR2STIXParser(
+        server_version="2.1",
+        fields_to_present={"name", "type"},
+        types_for_indicator_sdo=[],
+        namespace_uuid=uuid.uuid5(PAWN_UUID, "test"),
+    )
+    windowed_iocs, _, _ = client_window.create_indicators(
+        _build_fake_indicator_searcher(10), is_manifest=False, offset=offset, limit=limit
+    )
+
+    assert windowed_iocs == expected
+
+
+def test_create_manifest_high_offset_small_limit_builds_only_window(mocker):
+    """
+    Given
+    - A searcher that returns 1000 indicators and a manifest request for a high offset with a small limit.
+    When
+    - Calling create_indicators with is_manifest=True, offset=998, limit=2.
+    Then
+    - Only 2 manifest entries are created (create_manifest_entry is called exactly limit times).
+    """
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "6.5.0"})
+    client = XSOAR2STIXParser(
+        server_version="2.0",
+        fields_to_present={"name", "type"},
+        types_for_indicator_sdo=[],
+        namespace_uuid=uuid.uuid5(PAWN_UUID, "test"),
+    )
+    create_manifest_entry_spy = mocker.spy(client, "create_manifest_entry")
+
+    iocs, _, _ = client.create_indicators(
+        _build_fake_indicator_searcher(1000),
+        is_manifest=True,
+        offset=998,
+        limit=2,
+    )
+
+    assert create_manifest_entry_spy.call_count == 2
+    assert len(iocs) == 2
+
+
+def test_create_indicators_default_args_build_all(mocker):
+    """
+    Given
+    - A searcher that returns 5 indicators and no offset/limit provided (default behavior).
+    When
+    - Calling create_indicators without offset/limit (as other integrations do).
+    Then
+    - All 5 objects are built (backwards compatible - no window applied).
+    """
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "6.5.0"})
+    client = XSOAR2STIXParser(
+        server_version="2.1",
+        fields_to_present={"name", "type"},
+        types_for_indicator_sdo=[],
+        namespace_uuid=uuid.uuid5(PAWN_UUID, "test"),
+    )
+
+    iocs, _, _ = client.create_indicators(_build_fake_indicator_searcher(5), is_manifest=False)
+
+    assert len(iocs) == 5
+
+
 def test_create_x509_certificate_subject_issuer():
     """
     Given
