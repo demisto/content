@@ -1,5 +1,7 @@
 fromversion: 8.2.0
 id: AWS_WAF_ModelingRule
+supportedFeatures:
+- feature_eu_only
 name: AWS WAF Modeling Rule
 rules: ''
 schema: ''
