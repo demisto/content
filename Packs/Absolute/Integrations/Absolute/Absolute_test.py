@@ -1106,68 +1106,101 @@ def test_wipe_request_create_command_invalid_secure_erase_count(mocker, absolute
 def test_wipe_request_cancel_command(mocker, absolute_client_v3):
     """
     Given:
-        - All relevant arguments for the command that is executed
+        - A request_uid and default arguments
+        - The Absolute API returns HTTP 202 with an empty body (as documented for cancel-actions)
 
     When:
         - wipe_request_cancel_command is executed
 
     Then:
-        - The http request is called with the right arguments
+        - The command completes successfully without a JSON parse error (regression test for
+          the bug where resp_type defaulted to "json" and failed to parse the empty 202 body)
+        - api_request_absolute is called with resp_type="response"
+        - The readable_output confirms cancellation
     """
     from Absolute import wipe_request_cancel_command
+    from requests.models import Response
 
-    response = util_load_json("test_data/cancel_wipe_request.json")
-    mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=response)
+    # Simulate a real 202 empty-body response coming back from the Absolute API.
+    empty_202 = Response()
+    empty_202.status_code = 202
+    empty_202._content = b""
+    http_mock = mocker.patch.object(absolute_client_v3, "_http_request", return_value=empty_202)
+    api_spy = mocker.spy(absolute_client_v3, "api_request_absolute")
+
     command_results = wipe_request_cancel_command(args={"request_uid": "1"}, client=absolute_client_v3)
+
     assert command_results.readable_output == "Wipe actions for the request 1 have been successfully canceled."
+    # Regression guard: resp_type MUST be "response" so BaseClient does not try to JSON-parse b''.
+    assert api_spy.call_args.kwargs.get("resp_type") == "response"
+    # Sanity: BaseClient was called with the JWS validation URL (real path exercised end-to-end).
+    assert http_mock.call_count == 1
 
 
 def test_wipe_request_cancel_command_cancel_all(mocker, absolute_client_v3):
     """
     Given:
         - cancel_all_actions is set to true and no action_uids are provided
+        - The Absolute API returns HTTP 202 with an empty body
 
     When:
         - wipe_request_cancel_command is executed
 
     Then:
+        - The command completes successfully (no JSON parse error on empty 202)
         - The payload includes cancelAllActions=true and does not include actionUids
+        - api_request_absolute is called with resp_type="response"
     """
     from Absolute import wipe_request_cancel_command
+    from requests.models import Response
 
-    mock_api = mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=None)
+    empty_202 = Response()
+    empty_202.status_code = 202
+    empty_202._content = b""
+    mocker.patch.object(absolute_client_v3, "_http_request", return_value=empty_202)
+    api_spy = mocker.spy(absolute_client_v3, "api_request_absolute")
+
     command_results = wipe_request_cancel_command(
         args={"request_uid": "1", "cancel_all_actions": "true"},
         client=absolute_client_v3,
     )
     assert command_results.readable_output == "Wipe actions for the request 1 have been successfully canceled."
 
-    call_kwargs = mock_api.call_args
-    payload = call_kwargs.kwargs.get("body") or call_kwargs[1].get("body")
+    payload = api_spy.call_args.kwargs.get("body")
     assert payload["cancelAllActions"] is True
     assert "actionUids" not in payload
+    assert api_spy.call_args.kwargs.get("resp_type") == "response"
 
 
 def test_wipe_request_cancel_command_cancel_all_false(mocker, absolute_client_v3):
     """
     Given:
-        - cancel_all_actions is explicitly set to false
+        - cancel_all_actions is explicitly set to false with an action_uid provided
+        - The Absolute API returns HTTP 202 with an empty body
 
     When:
         - wipe_request_cancel_command is executed
 
     Then:
-        - The payload includes cancelAllActions=false (not silently dropped)
+        - The command completes successfully (no JSON parse error on empty 202)
+        - The payload includes cancelAllActions=false (not silently dropped) and actionUids
+        - api_request_absolute is called with resp_type="response"
     """
     from Absolute import wipe_request_cancel_command
+    from requests.models import Response
 
-    mock_api = mocker.patch.object(absolute_client_v3, "api_request_absolute", return_value=None)
+    empty_202 = Response()
+    empty_202.status_code = 202
+    empty_202._content = b""
+    mocker.patch.object(absolute_client_v3, "_http_request", return_value=empty_202)
+    api_spy = mocker.spy(absolute_client_v3, "api_request_absolute")
+
     wipe_request_cancel_command(
         args={"request_uid": "1", "action_uids": "uid1", "cancel_all_actions": "false"},
         client=absolute_client_v3,
     )
 
-    call_kwargs = mock_api.call_args
-    payload = call_kwargs.kwargs.get("body") or call_kwargs[1].get("body")
+    payload = api_spy.call_args.kwargs.get("body")
     assert payload["cancelAllActions"] is False
     assert payload["actionUids"] == ["uid1"]
+    assert api_spy.call_args.kwargs.get("resp_type") == "response"
