@@ -6,6 +6,4 @@ rules: ''
 schema: ''
 supportedModules:
 - xsiam
-supportedFeatures:
-- harness_v2
 tags: 'slack'
