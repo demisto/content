@@ -12,6 +12,9 @@ configuration:
   type: 8
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: Issue
   display: Select an Issue or Pull requests to Fetch
   name: fetch_object
@@ -75,6 +78,17 @@ configuration:
   type: 13
   section: Connect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  section: Collect
+  required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: GitHub app integration ID
   name: integration_id
   type: 0

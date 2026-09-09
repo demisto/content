@@ -68,6 +68,9 @@ configuration:
   type: 8
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident Name
   additionalinfo: Enter the exact column's incident name (if empty - it's the Fetch Column).
   name: incident_name
@@ -90,6 +93,9 @@ configuration:
   type: 0
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: First fetch timestamp or First fetch ID
   name: first_fetch
   type: 0
@@ -127,6 +133,19 @@ configuration:
   type: 13
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 description: 'Use the Generic SQL integration to run SQL queries on the following databases: MySQL, PostgreSQL, Microsoft SQL Server, Oracle, Teradata and Trino.'
 display: Generic SQL
 name: Generic SQL

@@ -1076,17 +1076,25 @@ def test_client_retry_policy_includes_server_errors(status_code):
     assert status_code in Client(BASE_URL, "my-token")._retry_policy.retryable_status_codes
 
 
-def test_client_get_events_uses_full_url_for_next_link(dummy_client, mocker):
+def test_client_get_events_forwards_next_link_cursor_as_params(dummy_client, mocker):
     """
-    Given: A pagination cursor.
+    Given: A pagination cursor whose query string carries the resume parameters.
     When: Requesting the next page.
-    Then: The request targets the full cursor URL rather than rebuilding the query.
+    Then: The cursor query parameters are forwarded explicitly and the target URL keeps
+          only the path, so the resume parameters cannot be dropped by the HTTP client.
+          The page size is also set explicitly so the API does not fall back to a smaller
+          default.
     """
     request_mock = mocker.patch.object(dummy_client, "_http_request", return_value=MockResponse())
 
     dummy_client.get_events(since="ignored", next_link_url=NEXT_URL)
 
-    assert request_mock.call_args.kwargs["full_url"] == NEXT_URL
+    assert request_mock.call_args.kwargs["full_url"] == "https://okta.example.com/api/v1/logs"
+    assert request_mock.call_args.kwargs["params"] == {
+        "after": "cursor2",
+        "limit": str(Config.PAGE_SIZE),
+        "sortOrder": Config.SORT_ORDER,
+    }
     assert request_mock.call_args.kwargs["resp_type"] == "response"
 
 
@@ -1349,6 +1357,58 @@ def test_get_last_run_cursor_round_trips(published):
     parsed = dateutil.parser.parse(stored["after"])
     assert (parsed.year, parsed.month, parsed.day) == (2022, 4, 17)
     assert (parsed.hour, parsed.minute, parsed.second) == (12, 32, 36)
+
+
+# endregion
+
+# region next_link pagination request
+
+
+def test_next_link_request_preserves_query_parameters(scripted_client, capfd):
+    """
+    Given: A pagination link that carries the full set of query parameters the API
+           needs to resume paging (ordering, page size and the cursor token).
+    When: The client follows that link to fetch the next page.
+    Then: Every query parameter is present on the outgoing request, so the API resumes
+          from the cursor with the expected page size and ordering.
+    """
+    next_link = (
+        "https://okta.example.com/api/v1/logs"
+        "?since=2022-04-17T00:00:00.000000&limit=1000&sortOrder=ASCENDING&after=cursor-token-123"
+    )
+    client, transport, _ = scripted_client([okta_response(200, events=id1_pub)])
+
+    with capfd.disabled():
+        client.get_events(since="unused", next_link_url=next_link)
+
+    sent_query = dict(transport.requests[0].url.params)
+    assert sent_query == {
+        "since": "2022-04-17T00:00:00.000000",
+        "limit": "1000",
+        "sortOrder": "ASCENDING",
+        "after": "cursor-token-123",
+    }
+
+
+def test_next_link_request_enforces_page_size_and_order_when_absent(scripted_client, capfd):
+    """
+    Given: A pagination link that carries only the cursor token and omits the page size
+           and ordering.
+    When: The client follows that link to fetch the next page.
+    Then: The client sets the page size and ordering explicitly on the outgoing request,
+          so the API returns a full page in the expected order instead of falling back to
+          its smaller default page or its default order. The cursor token is preserved.
+    """
+    next_link = "https://okta.example.com/api/v1/logs?after=cursor-token-123"
+    client, transport, _ = scripted_client([okta_response(200, events=id1_pub)])
+
+    with capfd.disabled():
+        client.get_events(since="unused", next_link_url=next_link)
+
+    sent_query = dict(transport.requests[0].url.params)
+    assert sent_query.get("after") == "cursor-token-123"
+    assert sent_query.get("limit") == str(Config.PAGE_SIZE)
+    assert sent_query.get("sortOrder") == Config.SORT_ORDER
 
 
 # endregion

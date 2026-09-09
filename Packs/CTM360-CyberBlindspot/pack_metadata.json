@@ -3,7 +3,7 @@
     "created": "2024-02-04T14:36:26Z",
     "description": "Take action on incidents derived from threat intelligence that is directly linked to your organization.",
     "support": "partner",
-    "currentVersion": "2.3.6",
+    "currentVersion": "2.3.7",
     "author": "CTM360",
     "url": "https://www.ctm360.com",
     "email": "xsoar@ctm360.com",
