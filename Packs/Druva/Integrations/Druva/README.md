@@ -1,6 +1,6 @@
 Druva Ransomware Response Integration provides ransomware protection for endpoints, SaaS applications and data center workloads for Druva Ransomware Recovery customers.
 
-## Configure Druva Ransomware Response in Cortex
+## Configure Druva Ransomware Response in Cortex 2
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
