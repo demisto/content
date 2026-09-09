@@ -18,9 +18,5 @@
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
-    },
-    "supportedModules": [
-        "agentix",
-        "xsiam"
-    ]
+    }
 }

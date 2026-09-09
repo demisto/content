@@ -69,11 +69,15 @@ the **Supplier segment IDs** or **Supplier tags** parameters.
 This pack includes a playbook that triages "Panorays Finding" incidents end-to-end without depending on any
 specific external ITSM tool:
 
+* Verifies the Panorays Findings API instance is enabled before triaging; otherwise the incident goes to a
+  manual review task instead of being auto-closed or handed to an unreachable integration.
 * Detects and closes duplicate incidents already tracking the same Panorays Finding ID.
-* Branches on finding severity: Critical/High findings trigger an optional notification (via any mail/chat
-  integration implementing the generic `send-notification` command) and a native remediation task with an SLA;
-  Medium findings go to an analyst review task; Low/Informational findings are auto-closed; any unrecognized or
-  empty severity value is routed to a manual review task rather than being auto-closed.
+* Branches on finding severity: Critical/High findings trigger an optional notification (via any chat
+  integration implementing the generic `send-notification` command, e.g. Slack or Microsoft Teams - this does
+  not cover email-only integrations such as Gmail/EWS, which implement `send-mail` instead) and a native
+  remediation task with an SLA; Medium findings go to an analyst review task; Low/Informational (`INFO`)
+  findings are auto-closed; any unrecognized or empty severity value is routed to a manual review task rather
+  than being auto-closed.
 * Reminds the analyst to sync the resolved status back to Panorays.
 
 ![Panorays Finding - Triage and Response](doc_files/Panorays_Finding_Triage_and_Response.png)

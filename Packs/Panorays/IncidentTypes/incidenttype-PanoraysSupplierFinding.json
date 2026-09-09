@@ -20,8 +20,5 @@
         "fieldCliNameToExtractSettings": {}
     },
     "fromVersion": "6.10.0",
-    "supportedModules": [
-        "agentix",
-        "xsiam"
-    ]
+    "layout": "Panorays Supplier Finding"
 }
