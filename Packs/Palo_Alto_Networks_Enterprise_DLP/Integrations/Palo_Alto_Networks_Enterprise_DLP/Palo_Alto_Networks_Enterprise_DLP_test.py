@@ -3,6 +3,7 @@ from datetime import UTC, datetime
 
 import demistomock as demisto
 import pytest
+from CommonServerPython import DemistoException
 from freezegun import freeze_time
 from Palo_Alto_Networks_Enterprise_DLP import (
     DEFAULT_BASE_URL as DLP_URL,
@@ -1021,33 +1022,46 @@ def test_fetch_notifications_pages_until_empty_when_total_rows_missing(requests_
 
 
 @freeze_time("2022-04-01 20:25:00 UTC")
-def test_fetch_notifications_repolls_pending_query(requests_mock, mocker):
+def test_fetch_notifications_pending_query_holds_watermark(requests_mock, mocker):
     """
     Given:
         - A first page that is acknowledged as PENDING with no rows.
     When:
         - Calling fetch_notifications.
     Then:
-        - Ensure the query token is re-polled until rows are ready, rather than treating the
-          empty PENDING page as an empty result set.
+        - Ensure the last run is returned unchanged, so the same window is re-queried on the
+          next fetch rather than being skipped as an empty one.
     """
-    mocker.patch("Palo_Alto_Networks_Enterprise_DLP.time.sleep")
     requests_mock.post(V4_INCIDENTS_URL, json={"rows": [], "status": "PENDING", "query_token": "tok-1"})
-    requests_mock.get(
-        V4_INCIDENTS_URL,
-        [
-            {"json": {"rows": [], "status": "PENDING"}},
-            {"json": {"rows": [V4_ROW], "status": "READY", "total_rows": 1}},
-        ],
-    )
 
-    _mock_fetch_env(mocker)
+    last_run = {START_TIMESTAMP_KEY: 1648844000, LAST_IDS_TIMESTAMPS_KEY: {"seen-1": 1648844000}}
+    _mock_fetch_env(mocker, last_run)
 
     client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
-    _, incidents = fetch_notifications(client, "us", first_fetch_timestamp=1648844000)
+    next_run, incidents = fetch_notifications(client, "us", first_fetch_timestamp=1648844000)
 
-    assert len(incidents) == 1
-    assert V4_ROW["incident_id"] in incidents[0]["name"]
+    assert incidents == []
+    assert next_run == last_run
+
+
+@freeze_time("2022-04-01 20:25:00 UTC")
+def test_fetch_notifications_raises_on_query_failure(requests_mock, mocker):
+    """
+    Given:
+        - An incident query that fails with a server error.
+    When:
+        - Calling fetch_notifications.
+    Then:
+        - Ensure it raises rather than returning an empty result set, so the last run is never
+          advanced past a window that was not read.
+    """
+    requests_mock.post(V4_INCIDENTS_URL, json={"error": "internal error"}, status_code=500)
+
+    _mock_fetch_env(mocker, {START_TIMESTAMP_KEY: 1648844000})
+
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+    with pytest.raises(DemistoException, match="500"):
+        fetch_notifications(client, "us", first_fetch_timestamp=1648844000)
 
 
 @freeze_time("2022-04-01 20:25:00 UTC")

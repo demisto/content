@@ -26,8 +26,6 @@ UPDATE_INCIDENT_URL = "public/incident-feedback"
 SLEEP_TIME_URL = "public/seconds-between-incident-notifications-pull"
 V4_INCIDENTS_PATH = "/v4/api/incidents"
 V4_PAGE_SIZE = 1000
-V4_PENDING_ATTEMPTS = 3  # times to re-poll the query token while the backend reports PENDING
-V4_PENDING_SLEEP = 2  # seconds between PENDING polls
 FETCH_SLEEP = 5  # sleep between fetches (in seconds)
 LAST_FETCH_TIME = "last_fetch_time"
 DEFAULT_FIRST_FETCH = "60 minutes"
@@ -817,21 +815,32 @@ def fetch_notifications(
 
     # A single query covers every configured region, so the watermark below is derived
     # from all of them rather than from whichever region happened to be queried last.
-    resp, _ = client.get_incidents_first_page(start_time_ms=start_time_ms, end_time_ms=end_time_ms, regions=regions)
+    resp, status_code = client.get_incidents_first_page(start_time_ms=start_time_ms, end_time_ms=end_time_ms, regions=regions)
+    rows: list[dict] = resp.get("rows") or []
+    demisto.debug(f"First page: {len(rows)} rows, total_rows={resp.get('total_rows')}, status={resp.get('status')}.")
+
+    # Persist a token that may have been refreshed during the call above before returning early.
+    demisto.debug("Updating integration context with access token.")
+    demisto.setIntegrationContext({ACCESS_TOKEN: client.access_token})
+
+    # An unread window must not be treated as an empty one. compute_next_run advances the
+    # watermark whenever no incidents are returned, so returning early without touching the
+    # last run is what keeps a failed query from skipping the window it never read.
+    if status_code not in (200, 201, 204):
+        error_message = resp.get("error") or "Could not determine the error reason."
+        raise DemistoException(
+            f"Failed to query incidents, got status code {status_code}. {error_message} "
+            "The last run was left unchanged, so this time window is re-queried on the next fetch."
+        )
+
+    # The backend can acknowledge a query before its results are ready. Rather than polling
+    # within the fetch, the same window is re-queried on the next fetch, widened to "now".
+    if resp.get("status") == "PENDING" and not rows:
+        demisto.debug("Query results are not ready yet. Leaving the last run unchanged to re-query this window.")
+        return last_run, []
+
     query_token = resp.get("query_token") or ""
     total_rows = resp.get("total_rows") or 0
-    rows: list[dict] = resp.get("rows") or []
-    demisto.debug(f"First page: {len(rows)} rows, {total_rows=}, status={resp.get('status')}.")
-
-    # The backend can acknowledge the query before its results are ready.
-    attempts = 0
-    while resp.get("status") == "PENDING" and not rows and query_token and attempts < V4_PENDING_ATTEMPTS:
-        attempts += 1
-        demisto.debug(f"Query is PENDING, re-polling the query token (attempt {attempts}).")
-        time.sleep(V4_PENDING_SLEEP)
-        resp, _ = client.get_incidents_next_page(query_token, 0)
-        rows = resp.get("rows") or []
-        total_rows = resp.get("total_rows") or total_rows
 
     offset = 0
     while rows:
@@ -862,9 +871,6 @@ def fetch_notifications(
 
     demisto.debug(f"Finished fetching. Got {len(new_incidents)} new incidents.")
     demisto.debug(f"Fetched incidents: {[inc.get('name') for inc in new_incidents]}.")
-
-    demisto.debug("Updating integration context with access token.")
-    demisto.setIntegrationContext({ACCESS_TOKEN: client.access_token})
 
     next_run = compute_next_run(
         fetched_incident_ids_committed_timestamps,
