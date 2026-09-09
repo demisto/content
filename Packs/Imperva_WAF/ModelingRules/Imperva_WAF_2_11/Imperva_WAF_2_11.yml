@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: Imperva_WAF_ModelingRule
-name: Imperva_WAF Modeling Rule
-rules: ''
-schema: ''
-tags: ''
-supportedModules:
-- xsiam
