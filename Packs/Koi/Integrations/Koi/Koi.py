@@ -1271,13 +1271,17 @@ def _fetch_single_log_type(
                 page_events = page_events[:remaining]
             fetched += len(page_events)
 
-            # The streaming send empties its input list, so compute the HWM (from the
-            # full page, before dedup) and the count BEFORE sending. hwm_time/hwm_ids
-            # hold only strings, so they survive the send.
+            # Parse each event's time ONCE here: stamp _time/source_log_type and update the
+            # HWM in the same pass. The streaming send empties its input list, so the HWM
+            # (from the trimmed page) and the count MUST be computed BEFORE sending;
+            # hwm_time/hwm_ids hold only strings, so they survive the send.
             for event in page_events:
+                event["source_log_type"] = log_type.title
                 event_time = extract_time_from_event(event, log_type)
                 if not event_time:
+                    demisto.debug(f"[Event Time] WARNING: Event missing time field: {event.get('id', 'unknown')}")
                     continue
+                event["_time"] = event_time
                 if hwm_time is None or event_time > hwm_time:
                     hwm_time = event_time
                     hwm_ids = set()
@@ -1287,7 +1291,6 @@ def _fetch_single_log_type(
             # Dedup against the previous run's IDs, then stream-and-flush this page.
             new_events = deduplicate_events(page_events, last_fetched_ids)
             if new_events:
-                add_time_to_events(new_events, log_type)
                 count = len(new_events)  # count before the send empties the list
                 total_new += count
                 client.send_events(new_events, use_streaming_send=True)
