@@ -15,6 +15,9 @@ filter _raw_log ~= "\d+\/\d+\/\d+\s\d+\:\d+\:\d+ \w{2}"
 | fields - tmp_time_String1, tmp_event_time1,tmp_time_String2, tmp_event_time2;
 
 
+// XSUP-75621: Winlogbeat DNS Audit path. Parse the ISO-8601 time_created explicitly so
+// _time is assigned deterministically; if the parse fails, fall back to the previous
+// behavior (_time = time_created). Implicit string coercion had scattered backfilled events.
 filter _raw_log = null AND to_string(time_created) ~= ".*\d{2}:\d{2}:\d{2}.*" AND (provider_name = "Microsoft-Windows-DNSServer" OR provider_name = "Microsoft-Windows-DNS-Server-Service")
 | alter
-    _time = time_created;
+    _time = coalesce(parse_timestamp("%FT%H:%M:%E*SZ", to_string(time_created)), time_created);
