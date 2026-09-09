@@ -6658,8 +6658,8 @@ class TestGCPComputeNetworkPeeringAdd:
     def test_gcp_compute_network_peering_add_minimal_args(self, mocker):
         """
         Given: A mocked GCP Compute service with the minimal required arguments.
-        When: gcp_compute_network_peering_add is called with network and name only.
-        Then: The addPeering API is called with the lowercased name in the body and operation details are returned.
+        When: gcp_compute_network_peering_add is called with network, name, and peer_network only.
+        Then: The addPeering API is called with the nested networkPeering object and operation details are returned.
         """
         from GCP import GCPServices, gcp_compute_network_peering_add
 
@@ -6680,12 +6680,19 @@ class TestGCPComputeNetworkPeeringAdd:
 
         mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
 
-        args = {"project_id": "test-project", "network": "my-network", "name": "My-Peering"}
+        args = {
+            "project_id": "test-project",
+            "network": "my-network",
+            "name": "my-peering",
+            "peer_network": "projects/other/global/networks/peer",
+        }
 
         result = gcp_compute_network_peering_add(mock_creds, args)
 
         mock_networks.addPeering.assert_called_once_with(
-            project="test-project", network="my-network", body={"name": "my-peering"}
+            project="test-project",
+            network="my-network",
+            body={"networkPeering": {"name": "my-peering", "network": "projects/other/global/networks/peer"}},
         )
         assert result.outputs_prefix == "GCP.Compute.Operations"
         assert result.outputs_key_field == "id"
@@ -6693,7 +6700,7 @@ class TestGCPComputeNetworkPeeringAdd:
     def test_gcp_compute_network_peering_add_all_args(self, mocker):
         """
         Given: A mocked GCP Compute service with the full peering configuration.
-        When: gcp_compute_network_peering_add is called with the networkPeering fields and booleans.
+        When: gcp_compute_network_peering_add is called with all the networkPeering fields.
         Then: The addPeering API body is built with the nested networkPeering object and converted booleans.
         """
         from GCP import GCPServices, gcp_compute_network_peering_add
@@ -6714,21 +6721,17 @@ class TestGCPComputeNetworkPeeringAdd:
             "network": "my-network",
             "name": "peering-1",
             "peer_network": "projects/other/global/networks/peer",
-            "network_peering_name": "np-name",
-            "network_peering_network": "projects/other/global/networks/np",
-            "network_peering_exchange_subnet_routes": "true",
+            "exchange_subnet_routes": "true",
         }
 
         gcp_compute_network_peering_add(mock_creds, args)
 
         expected_body = {
-            "name": "peering-1",
-            "peerNetwork": "projects/other/global/networks/peer",
             "networkPeering": {
-                "name": "np-name",
-                "network": "projects/other/global/networks/np",
+                "name": "peering-1",
+                "network": "projects/other/global/networks/peer",
                 "exchangeSubnetRoutes": True,
-            },
+            }
         }
         mock_networks.addPeering.assert_called_once_with(project="test-project", network="my-network", body=expected_body)
 
@@ -6881,29 +6884,6 @@ class TestGCPComputeNetworkPeeringRemove:
         assert result.outputs_prefix == "GCP.Compute.Operations"
         assert result.outputs_key_field == "id"
         assert result.outputs["id"] == "555"
-
-    def test_gcp_compute_network_peering_remove_empty_body_when_no_name(self, mocker):
-        """
-        Given: A mocked GCP Compute service and args without a peering name.
-        When: gcp_compute_network_peering_remove is called with only network.
-        Then: The removePeering API is called with an empty body.
-        """
-        from GCP import GCPServices, gcp_compute_network_peering_remove
-
-        mock_creds = mocker.Mock()
-        mock_compute = mocker.Mock()
-        mock_networks = mocker.Mock()
-        mock_remove_peering = mocker.Mock()
-
-        mock_compute.networks.return_value = mock_networks
-        mock_networks.removePeering.return_value = mock_remove_peering
-        mock_remove_peering.execute.return_value = {"id": "666", "name": "op-empty"}
-
-        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
-
-        gcp_compute_network_peering_remove(mock_creds, {"project_id": "test-project", "network": "my-network"})
-
-        mock_networks.removePeering.assert_called_once_with(project="test-project", network="my-network", body={})
 
     def test_gcp_compute_network_peering_remove_permission_error(self, mocker):
         """

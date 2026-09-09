@@ -2997,29 +2997,29 @@ script:
       type: string
 
 # gcp-compute-network-peering-add
-  - arguments:
-    - description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-      name: project_id
+  - name: gcp-compute-network-peering-add
+    description: "Adds a peering to the specified network. Required permission: compute.networks.addPeering."
+    arguments:
+    - name: project_id
       required: false
-    - description: The name of the network resource to add peering to.
-      name: network
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: network
       required: true
-    - description: The name of the peering, which should conform to RFC1035.
-      name: name
-    - description: The URL of the peer network. It can be either full URL or partial URL. The peer network may belong to a different project. If the partial URL does not contain project, it is assumed that the peer network is in the same project as the current network.
-      name: peer_network
-    - description: The name of this peering. Provided by the client when the peering is created. The name must comply with RFC1035. Specifically, the name must be 1-63 characters long and match regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all the following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
-      name: network_peering_name
-    - description: The URL of the peer network. It can be either full URL or partial URL. The peer network may belong to a different project. If the partial URL does not contain project, it is assumed that the peer network is in the same project as the current network.
-      name: network_peering_network
-    - auto: PREDEFINED
-      description: The setting for whether full mesh connectivity is created and managed automatically between peered networks. Currently this field should always be true since Google Compute Engine will automatically create and manage subnetwork routes between two networks when peering state is ACTIVE.
-      name: network_peering_exchange_subnet_routes
+      description: The name of the network resource to add peering to.
+    - name: name
+      required: true
+      description: The name of the peering. The name must comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all the following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
+    - name: peer_network
+      required: true
+      description: The URL of the peer network. It can be either a full URL or a partial URL. The peer network may belong to a different project. If the partial URL does not contain a project, it is assumed that the peer network is in the same project as the current network.
+    - name: exchange_subnet_routes
+      auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether full mesh connectivity is created and managed automatically between peered networks. Currently this field should always be true since Google Compute Engine will automatically create and manage subnetwork routes between two networks when the peering state is ACTIVE.
       predefined:
       - 'true'
       - 'false'
-    description: "Adds a peering to the specified network. Required permission: compute.networks.addPeering."
-    name: gcp-compute-network-peering-add
     outputs:
     - contextPath: GCP.Compute.Operations.id
       description: The unique identifier for the resource. This identifier is defined by the server.
@@ -3088,15 +3088,16 @@ script:
       description: The type of the resource. Always compute#operation for Operation resources.
       type: string
 # gcp-compute-network-delete
-  - arguments:
-    - description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-      name: project_id
-      required: false
-    - description: The name of the network to delete.
-      name: network
-      required: true
+  - name: gcp-compute-network-delete
     description: "Deletes the specified network. Required permission: compute.networks.delete."
-    name: gcp-compute-network-delete
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: network
+      required: true
+      description: The name of the network to delete.
     outputs:
     - contextPath: GCP.Compute.Operations.id
       description: The unique identifier for the resource. This identifier is defined by the server.
@@ -3165,18 +3166,19 @@ script:
       description: The type of the resource. Always compute#operation for Operation resources.
       type: string
 # gcp-compute-network-peering-remove
-  - arguments:
-    - description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
-      name: project_id
-      required: false
-    - description: The name of the network resource to remove peering from.
-      name: network
-      required: true
-    - description: The name of the peering, which should conform to RFC1035.
-      name: name
-      required: true
+  - name: gcp-compute-network-peering-remove
     description: "Removes a peering from the specified network. Required permission: compute.networks.removePeering."
-    name: gcp-compute-network-peering-remove
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: network
+      required: true
+      description: The name of the network resource to remove peering from.
+    - name: name
+      required: true
+      description: The name of the peering to remove. The name must comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all the following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
     outputs:
     - contextPath: GCP.Compute.Operations.id
       description: The unique identifier for the resource. This identifier is defined by the server.

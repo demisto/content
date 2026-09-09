@@ -2878,16 +2878,13 @@ def gcp_compute_network_peering_add(creds: Credentials, args: dict[str, Any]) ->
     project = args.get("project_id")
     network = args.get("network")
 
-    name = args.get("name")
-    config: dict[str, Any] = remove_empty_elements(
+    config = remove_empty_elements(
         {
-            "name": name.lower() if name else None,
-            "peerNetwork": args.get("peer_network"),
             "networkPeering": {
-                "name": args.get("network_peering_name"),
-                "network": args.get("network_peering_network"),
-                "exchangeSubnetRoutes": arg_to_bool_or_none(args.get("network_peering_exchange_subnet_routes")),
-            },
+                "name": args.get("name"),
+                "network": args.get("peer_network"),
+                "exchangeSubnetRoutes": arg_to_bool_or_none(args.get("exchange_subnet_routes")),
+            }
         }
     )
 
@@ -2949,9 +2946,7 @@ def gcp_compute_network_peering_remove(creds: Credentials, args: dict[str, Any])
     project = args.get("project_id")
     network = args.get("network")
 
-    config: dict[str, Any] = {}
-    if name := args.get("name"):
-        config["name"] = name
+    config: dict[str, Any] = {"name": args.get("name")}
 
     compute = GCPServices.COMPUTE.build(creds)
     demisto.debug(f"[GCP] Remove peering config for network {network} in project {project}: {config}")
