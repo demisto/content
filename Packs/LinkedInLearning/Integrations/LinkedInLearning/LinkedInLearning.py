@@ -1,4 +1,5 @@
 # ruff: noqa: F401
+import hashlib
 import traceback
 from datetime import datetime, UTC
 from math import ceil
@@ -207,9 +208,16 @@ class LinkedInLearningClient(ContentClient):
 
 
 class LinkedInLearningLastRun(ContentBaseModel):
-    """State management for fetch-events command."""
+    """State management for fetch-events command.
+
+    Attributes:
+        last_fetch_time: Cursor (epoch ms) = the highest latestDataAt processed so far.
+        seen_ids: Content hashes of events whose latestDataAt equals last_fetch_time,
+            used to drop already-sent boundary events on the next cycle.
+    """
 
     last_fetch_time: int | None = None
+    seen_ids: list[str] = []
 
 
 class LinkedInLearningGetEventsArgs(ContentBaseModel):
@@ -225,17 +233,36 @@ class LinkedInLearningGetEventsArgs(ContentBaseModel):
         return argToBoolean(v)
 
 
-def add_time_to_events(events: list[dict]) -> None:
-    """Add the _time key to events based on latestDataAt field.
+def compute_event_hash(event: dict) -> str:
+    """Compute a stable SHA-256 hash of an event's data.
+
+    Used as the XSIAM unique id and as the deduplication key.
 
     Args:
-        events: List of event dictionaries to add the _time key to.
+        event: Event dictionary to hash.
+
+    Returns:
+        Hex digest of the event's canonical JSON representation.
+    """
+    canonical = json.dumps(event, sort_keys=True, default=str)
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+def enrich_events(events: list[dict]) -> None:
+    """Add the _time and _id keys to events.
+
+    _time is derived from latestDataAt; _id is a content hash used as the XSIAM
+    unique id and the deduplication key.
+
+    Args:
+        events: List of event dictionaries to enrich in place.
     """
     for event in events:
         latest_data_at = event.get("latestDataAt")
         if latest_data_at:
             dt = datetime.fromtimestamp(latest_data_at / 1000, tz=UTC)
             event["_time"] = dt.strftime(DATE_FORMAT)
+        event["_id"] = compute_event_hash(event)
 
 
 def get_next_link(response: dict) -> str | None:
@@ -407,17 +434,29 @@ def fetch_events_command(
         demisto.debug("[Fetch events] No new events found.")
         return last_run
 
-    add_time_to_events(events)
-    create_events(events)
+    # Enrich first so every event has its content hash (_id) used for deduplication.
+    enrich_events(events)
 
-    # Determine the latest latestDataAt for next run
-    latest_time = max(
-        (event.get("latestDataAt", 0) for event in events),
-        default=started_at,
+    # Drop boundary events already sent in the previous cycle (same latestDataAt as the cursor).
+    seen_ids = set(last_run.seen_ids)
+    new_events = [event for event in events if event["_id"] not in seen_ids]
+    demisto.debug(f"[Fetch events] {len(events) - len(new_events)} duplicate boundary events dropped.")
+
+    if not new_events:
+        demisto.debug("[Fetch events] All fetched events were duplicates.")
+        return last_run
+
+    create_events(new_events)
+
+    # Cursor = highest latestDataAt seen; persist hashes of events on that boundary.
+    latest_time = max((event.get("latestDataAt", 0) for event in new_events), default=started_at)
+    next_seen_ids = [event["_id"] for event in new_events if event.get("latestDataAt", 0) == latest_time]
+
+    next_run = LinkedInLearningLastRun(last_fetch_time=latest_time, seen_ids=next_seen_ids)
+    demisto.debug(
+        f"[Fetch events] Completed. Sent {len(new_events)} events. "
+        f"Next fetch from {next_run.last_fetch_time} with {len(next_seen_ids)} boundary ids."
     )
-    # Add 1ms to avoid re-fetching the same event
-    next_run = LinkedInLearningLastRun(last_fetch_time=latest_time + 1)
-    demisto.debug(f"[Fetch events] Completed. Fetched {len(events)} events. Next fetch from {next_run.last_fetch_time}.")
     return next_run
 
 
@@ -451,7 +490,7 @@ def get_events_command(
     )
 
     if args.should_push_events and events:
-        add_time_to_events(events)
+        enrich_events(events)
         create_events(events)
 
     readable_output = tableToMarkdown("LinkedIn Learning Events", events)
@@ -518,7 +557,7 @@ def main() -> None:  # pragma: no cover
                 demisto.debug("[Main] Starting fetch-events")
                 last_run = execution.last_run
                 next_run = fetch_events_command(client, params, last_run)
-                next_run_dict = {"last_fetch_time": next_run.last_fetch_time}
+                next_run_dict = {"last_fetch_time": next_run.last_fetch_time, "seen_ids": next_run.seen_ids}
                 demisto.setLastRun(next_run_dict)
                 demisto.debug(f"[Main] fetch-events completed. Next run: {next_run_dict}")
 
