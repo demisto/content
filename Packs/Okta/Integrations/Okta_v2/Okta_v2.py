@@ -515,6 +515,13 @@ class Client(OktaClient):
 
 
 def module_test(client, args):
+    # -------------------- TEMP UCP DEBUG (remove before merge) --------------------
+    try:
+        demisto.error("[UCP][Okta_v2] module_test ENTER auth_type={} should_use_ucp_auth={}".format(
+            getattr(client, "auth_type", "?"), should_use_ucp_auth()))
+    except Exception:
+        pass
+    # ------------------ END TEMP UCP DEBUG (remove before merge) ------------------
     if client.auth_type == AuthType.OAUTH:
         # For OAuth 2.0, there's no user the token belongs to, but an app. So the '/users/me' endpoint won't work.
         uri = "/api/v1/users"
@@ -522,6 +529,12 @@ def module_test(client, args):
     else:
         uri = "/api/v1/users/me"
 
+    # -------------------- TEMP UCP DEBUG (remove before merge) --------------------
+    try:
+        demisto.error("[UCP][Okta_v2] module_test calling {} ...".format(uri))
+    except Exception:
+        pass
+    # ------------------ END TEMP UCP DEBUG (remove before merge) ------------------
     client.http_request(method="GET", url_suffix=uri)
     return "ok", None, None
 
@@ -1307,7 +1320,14 @@ def main():
             proxy=params.get("proxy", False),
             ok_codes=(200, 201, 204),
             api_token=params.get("credentials", {}).get("password") or params.get("apitoken"),
-            auth_type=AuthType.OAUTH if argToBoolean(params.get("use_oauth", False)) else AuthType.API_TOKEN,
+            # Under UCP the legacy `use_oauth` param is absent, so this used to always resolve to
+            # API_TOKEN -- which makes test-module call /api/v1/users/me and send an SSWS header.
+            # With an oauth2_private_key_jwt / oauth2_client_credentials profile the platform brokers
+            # an OAuth *app* token that has no "me" user, so /users/me returns 403 E0000005. Derive
+            # the auth type from the brokered envelope when UCP is on; keep `use_oauth` when it's off.
+            auth_type=resolve_ucp_auth_type(
+                default=AuthType.OAUTH if argToBoolean(params.get("use_oauth", False)) else AuthType.API_TOKEN
+            ),
             client_id=params.get("client_id"),
             scopes=OAUTH_TOKEN_SCOPES,
             private_key=params.get("private_key"),

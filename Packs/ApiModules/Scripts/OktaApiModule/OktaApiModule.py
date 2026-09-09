@@ -24,6 +24,38 @@ class AuthType(Enum):
     NO_AUTH = 3
 
 
+def resolve_ucp_auth_type(default=AuthType.API_TOKEN):
+    """Pick the AuthType that matches the credential UCP will actually broker.
+
+    Under UCP the legacy ``use_oauth`` param is absent, so the historic
+    ``AuthType.OAUTH if use_oauth else AuthType.API_TOKEN`` decision always
+    resolved to API_TOKEN -- which drives the ``/users/me`` test endpoint and the
+    ``SSWS`` header. But the platform can broker an ``oauth2`` credential (the
+    ``oauth2_private_key_jwt`` / ``oauth2_client_credentials`` profiles), whose
+    app token has no ``me`` user and must use ``Bearer`` + ``/api/v1/users``.
+
+    So when UCP auth is active we inspect the brokered envelope ``type`` and
+    return OAUTH for an ``oauth2*`` credential, API_TOKEN for ``api_key`` (SSWS),
+    otherwise ``default``. When UCP is off we return ``default`` and the caller's
+    legacy ``use_oauth`` logic stands.
+
+    :return: the AuthType matching the brokered credential, or ``default``.
+    :rtype: ``AuthType``
+    """
+    if not should_use_ucp_auth():
+        return default
+    try:
+        creds = get_ucp_credentials()
+        cred_type = creds.get("type") if isinstance(creds, dict) else None
+        if cred_type and str(cred_type).startswith("oauth2"):
+            return AuthType.OAUTH
+        if cred_type == "api_key":
+            return AuthType.API_TOKEN
+    except Exception as e:
+        demisto.debug("[UCP][OktaApiModule] resolve_ucp_auth_type could not read envelope: {}".format(e))
+    return default
+
+
 class OktaClient(BaseClient):
     def __init__(
         self,
@@ -268,9 +300,64 @@ class OktaClient(BaseClient):
             elif auth_type == AuthType.API_TOKEN:
                 auth_headers["Authorization"] = f"SSWS {self.api_token}"
 
+        # -------------------- TEMP UCP DEBUG (remove before merge) --------------------
+        # Localises the oauth2_private_key_jwt 403 E0000005: proves whether UCP auth is
+        # engaged, which profile/capability was selected, and what the brokered credential
+        # looks like -- WITHOUT logging the secret (only a length + first/last-4 fingerprint).
+        try:
+            _ucp_on = should_use_ucp_auth()
+            demisto.info("[UCP][OktaApiModule] http_request: should_use_ucp_auth={} auth_type={}".format(_ucp_on, auth_type))
+            if _ucp_on:
+                try:
+                    _cap, _sub = self._resolve_ucp_capability()
+                    _mid = get_ucp_method_unique_id(_cap, _sub)
+                    demisto.info("[UCP][OktaApiModule] resolved capability={} sub_capability={} method_unique_id={}".format(_cap, _sub, _mid))
+                    _creds = get_ucp_credentials(_mid)
+                    _ctype = _creds.get("type") if isinstance(_creds, dict) else type(_creds).__name__
+                    _oauth = _creds.get("oauth2", _creds) if isinstance(_creds, dict) else {}
+                    _tok = (_oauth or {}).get("access_token", "") if isinstance(_oauth, dict) else ""
+                    _fp = "len={} head={} tail={}".format(len(_tok), _tok[:4], _tok[-4:]) if _tok else "(EMPTY)"
+                    demisto.info("[UCP][OktaApiModule] envelope type={} access_token_fingerprint[{}] top_level_keys={}".format(
+                        _ctype, _fp, list(_creds.keys()) if isinstance(_creds, dict) else "n/a"))
+                    demisto.info("[UCP][OktaApiModule] oauth2_keys={}".format(list(_oauth.keys()) if isinstance(_oauth, dict) else "n/a"))
+                except Exception as _e:
+                    demisto.info("[UCP][OktaApiModule] could not introspect brokered credential: {}".format(_e))
+        except Exception as _e:
+            demisto.info("[UCP][OktaApiModule] debug block error: {}".format(_e))
+        # ------------------ END TEMP UCP DEBUG (remove before merge) ------------------
+
         original_headers = kwargs.get("headers") or self._headers or {}
         kwargs["headers"] = {**auth_headers, **original_headers}
         response = self._http_request(resp_type="response", **kwargs)
+
+        # -------------------- TEMP UCP DEBUG (remove before merge) --------------------
+        # What Okta actually received: the outgoing Authorization scheme + a safe fingerprint,
+        # plus the response status/error. Compare the fingerprint to the token that WORKED in
+        # Postman -- same value => Python is fine and the token itself is being rejected; a
+        # different/absent value => the platform injected a different/empty credential.
+        try:
+            _sent = ""
+            try:
+                _req = getattr(response, "request", None)
+                _sent = (_req.headers.get("Authorization", "") if _req is not None and _req.headers else "")
+            except Exception:
+                _sent = ""
+            if _sent:
+                _parts = _sent.split(" ", 1)
+                _scheme = _parts[0]
+                _val = _parts[1] if len(_parts) > 1 else ""
+                _sfp = "len={} head={} tail={}".format(len(_val), _val[:4], _val[-4:]) if _val else "(EMPTY)"
+                demisto.error("[UCP][OktaApiModule] OUTGOING Authorization scheme={} value_fingerprint[{}]".format(_scheme, _sfp))
+            else:
+                demisto.error("[UCP][OktaApiModule] OUTGOING request had NO Authorization header")
+            demisto.error("[UCP][OktaApiModule] Okta response status={} url={}".format(
+                getattr(response, "status_code", "?"), getattr(response, "url", "?")))
+            if getattr(response, "status_code", 200) >= 400:
+                demisto.error("[UCP][OktaApiModule] Okta error body={}".format(getattr(response, "text", "")[:500]))
+        except Exception as _e:
+            demisto.error("[UCP][OktaApiModule] response debug block error: {}".format(_e))
+        # ------------------ END TEMP UCP DEBUG (remove before merge) ------------------
+
         self.parse_response_headers(response)
 
         resp_type = resp_type.lower()

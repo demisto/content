@@ -56,8 +56,25 @@ class Client(BaseClient):
         ctx.headers["Authorization"] = f"SSWS {key}"
 
     def test_connection(self):
+        # ``users/me`` resolves the user a *token* belongs to. That works for an SSWS API token
+        # and for the api_key UCP profile, but an OAuth *app* token (oauth2_private_key_jwt /
+        # oauth2_client_credentials) belongs to no user, so ``users/me`` returns 403 E0000005.
+        # When UCP brokers an oauth2 credential, probe a user-list endpoint instead. This module
+        # (Okta_IAM) does not import OktaApiModule, so we inspect the envelope directly via the
+        # CommonServerPython UCP helpers rather than resolve_ucp_auth_type().
         uri = "users/me"
-        self._http_request(method="GET", url_suffix=uri)
+        try:
+            if should_use_ucp_auth():
+                creds = get_ucp_credentials()
+                cred_type = creds.get("type") if isinstance(creds, dict) else None
+                if cred_type and str(cred_type).startswith("oauth2"):
+                    uri = "users"
+        except Exception as e:
+            demisto.debug(f"[UCP][Okta_IAM] test_connection could not read envelope type: {e}")
+        if uri == "users":
+            self._http_request(method="GET", url_suffix=uri, params={"limit": 1})
+        else:
+            self._http_request(method="GET", url_suffix=uri)
 
     def get_user(self, filter_name: str, filter_value: str):
         filter_name = filter_name if filter_name == "id" else f"profile.{filter_name}"
