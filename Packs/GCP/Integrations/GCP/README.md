@@ -1710,55 +1710,55 @@ Lists images in a specific project. Required permission: compute.images.list.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
-| limit | The maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| limit | The maximum number of results to return. Can be 1 to 500. Default is 50. | Optional |
 | next_token | The token for the next set of items to return, used for pagination. | Optional |
-| filter | The filter expression for resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value. | Optional |
-| order_by | The order to sort list results by. By default, results are returned in alphanumerical order based on the resource name. | Optional |
+| filter | The filter expression for resources listed in the response. Must specify a field name, a comparison operator (=, !=, >, or <), and a value. | Optional |
+| order_by | The order used to sort list results. By default, results are returned in alphanumeric order based on the resource name. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Images.kind | String | The type of the resource. Always compute#image for images. |
-| GCP.Compute.Images.id | String | The unique identifier for the resource. This identifier is defined by the server. |
-| GCP.Compute.Images.creationTimestamp | Date | The creation timestamp in RFC3339 text format. |
+| GCP.Compute.Images.kind | String | The type of the resource. Always set to compute#image for images. |
+| GCP.Compute.Images.id | String | The unique identifier for the resource, defined by the server. |
+| GCP.Compute.Images.creationTimestamp | Date | The creation timestamp in RFC3339 format. |
 | GCP.Compute.Images.name | String | The name of the resource, provided by the client when the resource is created. |
 | GCP.Compute.Images.description | String | The optional description of this resource. |
-| GCP.Compute.Images.sourceType | String | The type of the image used to create this disk. The default and only value is RAW. |
+| GCP.Compute.Images.sourceType | String | The type of image used to create this disk. The default and only value is RAW. |
 | GCP.Compute.Images.rawDisk.source | String | The full Google Cloud Storage URL where the disk image is stored. |
 | GCP.Compute.Images.rawDisk.sha1Checksum | String | The optional SHA1 checksum of the disk image before unpackaging, provided by the client when the disk image is created. |
 | GCP.Compute.Images.rawDisk.containerType | String | The format used to encode and transmit the block device, which should be TAR. |
-| GCP.Compute.Images.deprecated.state | String | The deprecation state of this resource. Possible values are ACTIVE, DEPRECATED, OBSOLETE, or DELETED. |
+| GCP.Compute.Images.deprecated.state | String | The deprecation state of this resource. Can be ACTIVE, DEPRECATED, OBSOLETE, or DELETED. |
 | GCP.Compute.Images.deprecated.replacement | String | The URL of the suggested replacement for a deprecated resource. |
-| GCP.Compute.Images.deprecated.deprecated | Date | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED. |
-| GCP.Compute.Images.deprecated.obsolete | Date | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE. |
-| GCP.Compute.Images.deprecated.deleted | Date | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED. |
-| GCP.Compute.Images.status | String | The status of the image. Possible values are FAILED, PENDING, or READY. |
-| GCP.Compute.Images.archiveSizeBytes | String | The size of the image tar.gz archive stored in Google Cloud Storage, in bytes. |
-| GCP.Compute.Images.diskSizeGb | String | The size of the image when restored onto a persistent disk, in GB. |
+| GCP.Compute.Images.deprecated.deprecated | Date | The RFC3339 timestamp on or after which the state of this resource changes to DEPRECATED. |
+| GCP.Compute.Images.deprecated.obsolete | Date | The RFC3339 timestamp on or after which the state of this resource changes to OBSOLETE. |
+| GCP.Compute.Images.deprecated.deleted | Date | The RFC3339 timestamp on or after which the state of this resource changes to DELETED. |
+| GCP.Compute.Images.status | String | The status of the image. Can be FAILED, PENDING, or READY. |
+| GCP.Compute.Images.archiveSizeBytes | String | The size, in bytes, of the image tar.gz archive stored in Google Cloud Storage. |
+| GCP.Compute.Images.diskSizeGb | String | The size, in GB, of the image when restored onto a persistent disk. |
 | GCP.Compute.Images.sourceDisk | String | The URL of the source disk used to create this image. |
 | GCP.Compute.Images.sourceDiskId | String | The ID value of the disk used to create this image. |
 | GCP.Compute.Images.sourceDiskEncryptionKey.kmsKeyName | String | The name of the encryption key of the source disk that is stored in Google Cloud KMS. |
-| GCP.Compute.Images.sourceDiskEncryptionKey.sha256 | String | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects the source disk. |
+| GCP.Compute.Images.sourceDiskEncryptionKey.sha256 | String | The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source disk. |
 | GCP.Compute.Images.sourceImage | String | The URL of the source image used to create this image. |
 | GCP.Compute.Images.sourceImageId | String | The ID value of the image used to create this image. |
 | GCP.Compute.Images.sourceImageEncryptionKey.kmsKeyName | String | The name of the encryption key of the source image that is stored in Google Cloud KMS. |
-| GCP.Compute.Images.sourceImageEncryptionKey.sha256 | String | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects the source image. |
+| GCP.Compute.Images.sourceImageEncryptionKey.sha256 | String | The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source image. |
 | GCP.Compute.Images.sourceSnapshot | String | The URL of the source snapshot used to create this image. |
 | GCP.Compute.Images.sourceSnapshotId | String | The ID value of the snapshot used to create this image. |
 | GCP.Compute.Images.sourceSnapshotEncryptionKey.kmsKeyName | String | The name of the encryption key of the source snapshot that is stored in Google Cloud KMS. |
-| GCP.Compute.Images.sourceSnapshotEncryptionKey.sha256 | String | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects the source snapshot. |
+| GCP.Compute.Images.sourceSnapshotEncryptionKey.sha256 | String | The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source snapshot. |
 | GCP.Compute.Images.imageEncryptionKey.kmsKeyName | String | The name of the encryption key of the image that is stored in Google Cloud KMS. |
-| GCP.Compute.Images.imageEncryptionKey.sha256 | String | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects the image. |
+| GCP.Compute.Images.imageEncryptionKey.sha256 | String | The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the image. |
 | GCP.Compute.Images.licenses | String | The applicable license URIs. |
 | GCP.Compute.Images.licenseCodes | String | The integer license codes indicating which licenses are attached to this image. |
 | GCP.Compute.Images.family | String | The name of the image family to which this image belongs. |
 | GCP.Compute.Images.labels | Unknown | The labels applied to this image. |
-| GCP.Compute.Images.labelFingerprint | String | The fingerprint of the labels applied to this image, used for optimistic locking. |
-| GCP.Compute.Images.guestOsFeatures.type | String | The ID of a supported guest operating system feature. |
+| GCP.Compute.Images.labelFingerprint | String | The fingerprint of the labels applied to this image, which is used for optimistic locking. |
+| GCP.Compute.Images.guestOsFeatures.type | String | The ID of the supported guest operating system feature. |
 | GCP.Compute.Images.shieldedInstanceInitialState | Unknown | The initial state for the image, which is used by Shielded VM instances on boot. |
 | GCP.Compute.Images.storageLocations | String | The Cloud Storage location, either regional or multi-regional, where the image content is stored. |
-| GCP.Compute.Images.architecture | String | The architecture of the image. Possible values are ARM64 or X86_64. |
+| GCP.Compute.Images.architecture | String | The architecture of the image. Can be ARM64 or X86_64. |
 | GCP.Compute.Images.enableConfidentialCompute | Boolean | Whether the image is created from a confidential compute mode disk. |
 | GCP.Compute.Images.satisfiesPzs | Boolean | Whether the resource satisfies physical zone separation. |
 | GCP.Compute.Images.satisfiesPzi | Boolean | Whether the resource satisfies physical zone isolation. |
@@ -1787,19 +1787,19 @@ Creates an image in the specified project using the data included in the request
 | raw_disk_container_type | The format used to encode and transmit the block device, which should be TAR. Possible values are: TAR. | Optional |
 | deprecated_state | The deprecation state of this resource. Can be ACTIVE, DEPRECATED, OBSOLETE, or DELETED. Possible values are: ACTIVE, DEPRECATED, OBSOLETE, DELETED. | Optional |
 | deprecated_replacement | The URL of the suggested replacement for a deprecated resource. | Optional |
-| archive_size_bytes | The size of the image tar.gz archive stored in Google Cloud Storage (in bytes). | Optional |
-| disk_size_gb | The size of the image when restored onto a persistent disk (in GB). | Optional |
-| source_disk | The URL of the source disk used to create this image. You must provide either this property or the raw_disk_source property but not both. | Optional |
+| archive_size_bytes | The size, in bytes, of the image tar.gz archive stored in Google Cloud Storage. | Optional |
+| disk_size_gb | The size, in GB, of the image when restored onto a persistent disk. | Optional |
+| source_disk | The URL of the source disk used to create this image. This property or the raw_disk_source property must be provided, but not both. | Optional |
 | licenses | A comma-separated list of applicable license URIs. | Optional |
 | family | The name of the image family to which this image belongs. | Optional |
 | image_encryption_key_raw_key | The 256-bit customer-supplied encryption key (RFC 4648 base64) for the image. | Optional |
 | image_encryption_key_kms_key_name | The name of the encryption key that is stored in Google Cloud KMS for the image. | Optional |
 | source_disk_encryption_key_raw_key | The 256-bit customer-supplied encryption key (RFC 4648 base64) of the source disk. | Optional |
 | source_disk_encryption_key_kms_key_name | The name of the encryption key stored in Google Cloud KMS of the source disk. | Optional |
-| labels | The list of labels to apply for this resource, in tuples, e.g., key=abc,value=123;key=def,value=456. | Optional |
+| labels | The list of labels to apply for this resource, in tuples, for example, key=abc,value=123;key=def,value=456. | Optional |
 | label_fingerprint | The fingerprint of the previous set of labels for this resource. | Optional |
-| guest_os_features | A comma-separated list of guest OS features to enable on the image. | Optional |
-| license_codes | A comma-separated list of integer license codes indicating which licenses are attached to this image. | Optional |
+| guest_os_features | The comma-separated list of guest OS features to enable on the image. | Optional |
+| license_codes | The comma-separated list of integer license codes indicating which licenses are attached to this image. | Optional |
 | source_image | The URL of the source image used to create this image. | Optional |
 | source_image_encryption_key_kms_key_name | The name of the encryption key stored in Google Cloud KMS of the source image. | Optional |
 | source_snapshot | The URL of the source snapshot used to create this image. | Optional |
@@ -1810,23 +1810,23 @@ Creates an image in the specified project using the data included in the request
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Operations.kind | String | The type of the resource. Always compute#operation for operation resources. |
+| GCP.Compute.Operations.kind | String | The type of the resource. Always set to compute#operation for operation resources. |
 | GCP.Compute.Operations.id | String | The unique identifier for the operation resource, defined by the server. |
 | GCP.Compute.Operations.name | String | The name of the operation resource. |
 | GCP.Compute.Operations.zone | String | The URL of the zone where the operation resides. Only available when performing per-zone operations. |
-| GCP.Compute.Operations.clientOperationId | String | The value of requestId if it was provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.clientOperationId | String | The value of requestId if it was provided in the request. |
 | GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
 | GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. |
 | GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
-| GCP.Compute.Operations.status | String | The status of the operation. Possible values are PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.status | String | The status of the operation. Can be PENDING, RUNNING, or DONE. |
 | GCP.Compute.Operations.statusMessage | String | The optional textual description of the current status of the operation. |
 | GCP.Compute.Operations.user | String | The user who requested the operation, for example EMAILADDRESS. |
-| GCP.Compute.Operations.progress | Number | The progress of the operation as a percentage between 0 and 100. |
-| GCP.Compute.Operations.insertTime | Date | The time the operation was requested, in RFC3339 text format. |
-| GCP.Compute.Operations.startTime | Date | The time the operation was started by the server, in RFC3339 text format. |
-| GCP.Compute.Operations.endTime | Date | The time the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.progress | Number | The progress of the operation as a percentage from 0 to 100. |
+| GCP.Compute.Operations.insertTime | Date | The time the operation was requested, in RFC3339 format. |
+| GCP.Compute.Operations.startTime | Date | The time the operation was started by the server, in RFC3339 format. |
+| GCP.Compute.Operations.endTime | Date | The time the operation was completed, in RFC3339 format. |
 | GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation. |
-| GCP.Compute.Operations.warnings | Unknown | The warning messages generated during processing of the operation. |
+| GCP.Compute.Operations.warnings | Unknown | The warning messages generated during the processing of the operation. |
 | GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code returned if the operation fails. |
 | GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message returned if the operation fails, such as NOT FOUND. |
 | GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
@@ -1847,31 +1847,31 @@ Sets the labels on an image. Required permission: compute.images.setLabels.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
-| image | The name of the image resource to set labels on. | Required |
-| labels | The list of labels to apply for this resource, in tuples, e.g., key=abc,value=123;key=def,value=456. | Required |
+| image | The name of the image resource on which to set labels. | Required |
+| labels | The list of labels to apply to this resource, formatted as tuples, for example, key=abc,value=123;key=def,value=456. | Required |
 | label_fingerprint | The fingerprint of the previous set of labels for this resource, used to detect conflicts. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Operations.kind | String | The type of the resource. Always compute#operation for operation resources. |
+| GCP.Compute.Operations.kind | String | The type of the resource. Always set to compute#operation for operation resources. |
 | GCP.Compute.Operations.id | String | The unique identifier for the operation resource, defined by the server. |
 | GCP.Compute.Operations.name | String | The name of the operation resource. |
 | GCP.Compute.Operations.zone | String | The URL of the zone where the operation resides. Only available when performing per-zone operations. |
-| GCP.Compute.Operations.clientOperationId | String | The value of requestId if it was provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.clientOperationId | String | The value of the requestId if provided in the request. |
 | GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
 | GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. |
 | GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
-| GCP.Compute.Operations.status | String | The status of the operation. Possible values are PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.status | String | The status of the operation. Can be PENDING, RUNNING, or DONE. |
 | GCP.Compute.Operations.statusMessage | String | The optional textual description of the current status of the operation. |
 | GCP.Compute.Operations.user | String | The user who requested the operation, for example EMAILADDRESS. |
-| GCP.Compute.Operations.progress | Number | The progress of the operation as a percentage between 0 and 100. |
-| GCP.Compute.Operations.insertTime | Date | The time the operation was requested, in RFC3339 text format. |
-| GCP.Compute.Operations.startTime | Date | The time the operation was started by the server, in RFC3339 text format. |
-| GCP.Compute.Operations.endTime | Date | The time the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.progress | Number | The progress of the operation as a percentage from 0 to 100. |
+| GCP.Compute.Operations.insertTime | Date | The time the operation was requested, in RFC3339 format. |
+| GCP.Compute.Operations.startTime | Date | The time the operation was started by the server, in RFC3339 format. |
+| GCP.Compute.Operations.endTime | Date | The time the operation was completed, in RFC3339 format. |
 | GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation. |
-| GCP.Compute.Operations.warnings | Unknown | The warning messages generated during processing of the operation. |
+| GCP.Compute.Operations.warnings | Unknown | The warning messages generated during the processing of the operation. |
 | GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code returned if the operation fails. |
 | GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message returned if the operation fails, such as NOT FOUND. |
 | GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
@@ -1881,7 +1881,7 @@ Sets the labels on an image. Required permission: compute.images.setLabels.
 ### gcp-compute-image-get-from-family
 
 ***
-Returns the latest image that is part of an image family and is not deprecated. Required permission: compute.images.get.
+Returns the latest non-deprecated image from an image family. Required permission: compute.images.get.
 
 #### Base Command
 
@@ -1898,46 +1898,46 @@ Returns the latest image that is part of an image family and is not deprecated. 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Images.kind | String | The type of the resource. Always compute#image for images. |
-| GCP.Compute.Images.id | String | The unique identifier for the resource. This identifier is defined by the server. |
-| GCP.Compute.Images.creationTimestamp | Date | The creation timestamp in RFC3339 text format. |
+| GCP.Compute.Images.kind | String | The type of the resource. Always set to compute#image for images. |
+| GCP.Compute.Images.id | String | The unique identifier for the resource, defined by the server. |
+| GCP.Compute.Images.creationTimestamp | Date | The creation timestamp in RFC3339 format. |
 | GCP.Compute.Images.name | String | The name of the resource, provided by the client when the resource is created. |
 | GCP.Compute.Images.description | String | The optional description of this resource. |
-| GCP.Compute.Images.sourceType | String | The type of the image used to create this disk. The default and only value is RAW. |
+| GCP.Compute.Images.sourceType | String | The type of image used to create this disk. The default and only value is RAW. |
 | GCP.Compute.Images.rawDisk.source | String | The full Google Cloud Storage URL where the disk image is stored. |
 | GCP.Compute.Images.rawDisk.sha1Checksum | String | The optional SHA1 checksum of the disk image before unpackaging, provided by the client when the disk image is created. |
 | GCP.Compute.Images.rawDisk.containerType | String | The format used to encode and transmit the block device, which should be TAR. |
-| GCP.Compute.Images.deprecated.state | String | The deprecation state of this resource. Possible values are ACTIVE, DEPRECATED, OBSOLETE, or DELETED. |
+| GCP.Compute.Images.deprecated.state | String | The deprecation state of this resource. Can be ACTIVE, DEPRECATED, OBSOLETE, or DELETED. |
 | GCP.Compute.Images.deprecated.replacement | String | The URL of the suggested replacement for a deprecated resource. |
-| GCP.Compute.Images.deprecated.deprecated | Date | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED. |
-| GCP.Compute.Images.deprecated.obsolete | Date | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE. |
-| GCP.Compute.Images.deprecated.deleted | Date | The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED. |
-| GCP.Compute.Images.status | String | The status of the image. Possible values are FAILED, PENDING, or READY. |
-| GCP.Compute.Images.archiveSizeBytes | String | The size of the image tar.gz archive stored in Google Cloud Storage, in bytes. |
-| GCP.Compute.Images.diskSizeGb | String | The size of the image when restored onto a persistent disk, in GB. |
+| GCP.Compute.Images.deprecated.deprecated | Date | The RFC3339 timestamp on or after which the state of this resource changes to DEPRECATED. |
+| GCP.Compute.Images.deprecated.obsolete | Date | The RFC3339 timestamp on or after which the state of this resource changes to OBSOLETE. |
+| GCP.Compute.Images.deprecated.deleted | Date | The RFC3339 timestamp on or after which the state of this resource changes to DELETED. |
+| GCP.Compute.Images.status | String | The status of the image. Can be FAILED, PENDING, or READY. |
+| GCP.Compute.Images.archiveSizeBytes | String | The size, in bytes, of the tar.gz image archive stored in Google Cloud Storage. |
+| GCP.Compute.Images.diskSizeGb | String | The size of the image in GB when restored onto a persistent disk. |
 | GCP.Compute.Images.sourceDisk | String | The URL of the source disk used to create this image. |
 | GCP.Compute.Images.sourceDiskId | String | The ID value of the disk used to create this image. |
 | GCP.Compute.Images.sourceDiskEncryptionKey.kmsKeyName | String | The name of the encryption key of the source disk that is stored in Google Cloud KMS. |
-| GCP.Compute.Images.sourceDiskEncryptionKey.sha256 | String | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects the source disk. |
+| GCP.Compute.Images.sourceDiskEncryptionKey.sha256 | String | The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source disk. |
 | GCP.Compute.Images.sourceImage | String | The URL of the source image used to create this image. |
 | GCP.Compute.Images.sourceImageId | String | The ID value of the image used to create this image. |
 | GCP.Compute.Images.sourceImageEncryptionKey.kmsKeyName | String | The name of the encryption key of the source image that is stored in Google Cloud KMS. |
-| GCP.Compute.Images.sourceImageEncryptionKey.sha256 | String | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects the source image. |
+| GCP.Compute.Images.sourceImageEncryptionKey.sha256 | String | The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source image. |
 | GCP.Compute.Images.sourceSnapshot | String | The URL of the source snapshot used to create this image. |
 | GCP.Compute.Images.sourceSnapshotId | String | The ID value of the snapshot used to create this image. |
 | GCP.Compute.Images.sourceSnapshotEncryptionKey.kmsKeyName | String | The name of the encryption key of the source snapshot that is stored in Google Cloud KMS. |
-| GCP.Compute.Images.sourceSnapshotEncryptionKey.sha256 | String | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects the source snapshot. |
+| GCP.Compute.Images.sourceSnapshotEncryptionKey.sha256 | String | The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source snapshot. |
 | GCP.Compute.Images.imageEncryptionKey.kmsKeyName | String | The name of the encryption key of the image that is stored in Google Cloud KMS. |
-| GCP.Compute.Images.imageEncryptionKey.sha256 | String | The RFC 4648 base64 encoded SHA-256 hash of the customer-supplied encryption key that protects the image. |
+| GCP.Compute.Images.imageEncryptionKey.sha256 | String | The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the image. |
 | GCP.Compute.Images.licenses | String | The applicable license URIs. |
 | GCP.Compute.Images.licenseCodes | String | The integer license codes indicating which licenses are attached to this image. |
 | GCP.Compute.Images.family | String | The name of the image family to which this image belongs. |
 | GCP.Compute.Images.labels | Unknown | The labels applied to this image. |
-| GCP.Compute.Images.labelFingerprint | String | The fingerprint of the labels applied to this image, used for optimistic locking. |
-| GCP.Compute.Images.guestOsFeatures.type | String | The ID of a supported guest operating system feature. |
+| GCP.Compute.Images.labelFingerprint | String | The fingerprint of the labels applied to this image, which is used for optimistic locking. |
+| GCP.Compute.Images.guestOsFeatures.type | String | The ID of the supported guest operating system feature. |
 | GCP.Compute.Images.shieldedInstanceInitialState | Unknown | The initial state for the image, which is used by Shielded VM instances on boot. |
 | GCP.Compute.Images.storageLocations | String | The Cloud Storage location, either regional or multi-regional, where the image content is stored. |
-| GCP.Compute.Images.architecture | String | The architecture of the image. Possible values are ARM64 or X86_64. |
+| GCP.Compute.Images.architecture | String | The architecture of the image. Can be ARM64 or X86_64. |
 | GCP.Compute.Images.enableConfidentialCompute | Boolean | Whether the image is created from a confidential compute mode disk. |
 | GCP.Compute.Images.satisfiesPzs | Boolean | Whether the resource satisfies physical zone separation. |
 | GCP.Compute.Images.satisfiesPzi | Boolean | Whether the resource satisfies physical zone isolation. |
