@@ -1247,7 +1247,11 @@ def wipe_request_cancel_command(args, client) -> CommandResults:
 
     demisto.debug(f"{prefix} Canceling wipe actions for the request {request_uid}.\nPayload: {payload}.")
     res = client.api_request_absolute(
-        "POST", f"/v3/actions/wipe/cancel-actions/{request_uid}", body=payload, success_status_code=[202]
+        "POST",
+        f"/v3/actions/wipe/cancel-actions/{request_uid}",
+        body=payload,
+        success_status_code=[202],
+        resp_type="response",
     )
 
     return CommandResults(
