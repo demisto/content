@@ -2,6 +2,7 @@
     "id": "indicator_domaintoolsfeediplatitude",
     "version": -1,
     "name": "DomainToolsFeed IP Latitude",
+    "description": "Geographic latitude coordinate of the IP address.",
     "ownerOnly": false,
     "cliName": "domaintoolsfeediplatitude",
     "type": "number",
@@ -20,9 +21,9 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.10.0"
 }

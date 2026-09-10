@@ -11,7 +11,13 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "DomainTools",
+        "IP feeds",
+        "IP threat intelligence",
+        "IP hotlist",
+        "IP risk"
+    ],
     "certification": "certified",
     "marketplaces": [
         "xsoar",

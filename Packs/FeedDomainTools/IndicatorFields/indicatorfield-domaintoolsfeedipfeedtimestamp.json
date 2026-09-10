@@ -2,9 +2,10 @@
     "id": "indicator_domaintoolsfeedipfeedtimestamp",
     "version": -1,
     "name": "DomainToolsFeed IP Feed Timestamp",
+    "description": "ISO 8601 UTC timestamp when the IP risk assessment was last updated.",
     "ownerOnly": false,
     "cliName": "domaintoolsfeedipfeedtimestamp",
-    "type": "shortText",
+    "type": "date",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -20,9 +21,9 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.10.0"
 }

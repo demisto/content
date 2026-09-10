@@ -2,6 +2,7 @@
     "id": "indicator_domaintoolsfeedipmaliciousphishing",
     "version": -1,
     "name": "DomainToolsFeed IP Malicious Phishing",
+    "description": "Number of confirmed phishing domains on third-party intel feeds hosted on the IP.",
     "ownerOnly": false,
     "cliName": "domaintoolsfeedipmaliciousphishing",
     "type": "number",
@@ -20,9 +21,9 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.10.0"
 }

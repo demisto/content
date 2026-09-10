@@ -2,6 +2,7 @@
     "id": "indicator_domaintoolsfeedippredictedspam",
     "version": -1,
     "name": "DomainToolsFeed IP Predicted Spam",
+    "description": "Number of domains (with no confirmed threat) predicted as spam hosted on the IP.",
     "ownerOnly": false,
     "cliName": "domaintoolsfeedippredictedspam",
     "type": "number",
@@ -20,9 +21,9 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.10.0"
 }
