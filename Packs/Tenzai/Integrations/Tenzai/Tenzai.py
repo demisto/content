@@ -44,7 +44,7 @@ _HTTP_PORTS = frozenset({80, 8080})
 # Cortex ASM frequently reports a web server on a non-standard port (e.g. "HTTP
 # Server ... on version(s) ['ApacheWebServer 2.4.41']" at :15580), which carries
 # no http scheme and no known web port — so the scheme/port/classification checks
-# miss it and it would fall through to NETWORK_SERVICE. Matching a concrete web-
+# miss it and it would fall through to NETWORK_HOST. Matching a concrete web-
 # server *product* (not a bare http/https token) keeps such exposures WEB_APP and
 # scanned over https://, while an unrelated https:// URL sitting in a description
 # (e.g. an NVD reference on a PPTP exposure) does NOT trip it. Scheme/protocol are
@@ -204,7 +204,7 @@ def _derive_app_type(
     supplies for the exposure. An HTTP-server product named there (e.g. "HTTP
     Server … ApacheWebServer 2.4.41") classifies the exposure as WEB_APP even on a
     non-standard port that isn't in ``_WEB_PORTS`` — otherwise such a web exposure
-    falls through to NETWORK_SERVICE and gets scanned as a raw socket.
+    falls through to NETWORK_HOST and gets scanned as a bare network host.
     """
     if explicit_type:
         return explicit_type
@@ -220,18 +220,19 @@ def _derive_app_type(
         or bool(_WEB_PRODUCT_RE.search(hints or ""))
     ):
         return "WEB_APP"
-    # An explicit tcp/udp scheme or any specific socket (port) => network service.
-    if scheme in {"tcp", "udp"} or port is not None:
-        return "NETWORK_SERVICE"
-    # No port, no service signal => a bare host.
+    # Any non-web network exposure — with or without a specific port — is a
+    # NETWORK_HOST. A single service's port is authorized via the target's
+    # network_port_scope, not a separate application type: the platform retired
+    # NETWORK_SERVICE (ENG-6302), leaving WEB_APP / NETWORK_HOST / ANDROID_APP.
     return "NETWORK_HOST"
 
 
 def _build_target_url(host: str, app_type: str, port: int | None, protocol: str, scheme: str = "") -> str:
     """Build the single scan target in the form each app type's validator expects.
 
-    WEB_APP -> ``https://host[:port]``; NETWORK_SERVICE -> ``tcp://host:port``
-    (or ``udp://``); NETWORK_HOST -> bare ``host``.
+    WEB_APP -> ``https://host[:port]``; NETWORK_HOST -> bare ``host`` (the platform's
+    host-target validator rejects a scheme or a ``:port`` suffix — a single service's
+    port rides in the target's ``network_port_scope``, set in ``_find_or_create_app``).
     """
     if app_type == "WEB_APP":
         if protocol in {"http", "https"}:
@@ -243,12 +244,8 @@ def _build_target_url(host: str, app_type: str, port: int | None, protocol: str,
         else:
             chosen = "https"
         return f"{chosen}://{host}:{port}" if port else f"{chosen}://{host}"
-    if app_type == "NETWORK_SERVICE":
-        if not port:
-            raise ValueError("A NETWORK_SERVICE exposure requires a port to build a tcp://host:port target")
-        chosen = "udp" if protocol == "udp" or scheme == "udp" else "tcp"
-        return f"{chosen}://{host}:{port}"
-    # NETWORK_HOST
+    # NETWORK_HOST — a bare host (no scheme, no ``:port``); the port, when known,
+    # is authorized via the target's ``network_port_scope`` rather than the URL.
     return host
 
 
@@ -392,19 +389,47 @@ def _find_app_by_exact_name(client: Client, domain: str) -> dict[str, Any] | Non
     return None
 
 
-def _find_or_create_app(client: Client, domain: str, app_type: str, target_url: str, args: dict[str, Any]) -> dict[str, Any]:
-    """Reuse the app for this domain, or create it. Resilient to the create race."""
+def _find_or_create_app(
+    client: Client,
+    domain: str,
+    app_type: str,
+    target_url: str,
+    args: dict[str, Any],
+    port: int | None = None,
+    protocol: str = "",
+) -> dict[str, Any]:
+    """Reuse the app for this domain, or create it. Resilient to the create race.
+
+    For a NETWORK_HOST app the platform requires a ``networkGoal`` and expresses a
+    single authorized service port via the target's ``networkPortScope`` (the
+    host-target validator forbids a ``:port`` in the URL). ``port``/``protocol``
+    describe that single service; absent a port the scope defaults to ALL.
+    """
     existing = _find_app_by_exact_name(client, domain)
     if existing is not None:
         return existing
 
-    payload = {
+    target: dict[str, Any] = {"url": target_url}
+    payload: dict[str, Any] = {
         "applicationType": app_type,
         "name": domain,
         "description": _APP_DESCRIPTION,
-        "targets": [{"url": target_url}],
         "guidelines": _synthesize_app_guidelines(args),
     }
+    if app_type == "NETWORK_HOST":
+        # networkGoal is mandatory for NETWORK_HOST; validating a reported exposure
+        # is a targeted vulnerability-exploitation objective. A known single port is
+        # authorized via a SELECTED port scope; without one the scope defaults to ALL.
+        payload["networkGoal"] = "VULNERABILITY_EXPLOITATION"
+        # Only an in-range port yields a SELECTED scope (the port-rule schema is 1..65535);
+        # a missing or out-of-range port leaves the target at the default ALL scope.
+        if port is not None and 1 <= port <= 65535:
+            proto = "UDP" if protocol.lower() == "udp" else "TCP"
+            target["networkPortScope"] = {
+                "mode": "SELECTED",
+                "rules": [{"protocol": proto, "fromPort": port, "toPort": port}],
+            }
+    payload["targets"] = [target]
     try:
         return client.create_application(payload)
     except DemistoException as e:
@@ -416,18 +441,16 @@ def _find_or_create_app(client: Client, domain: str, app_type: str, target_url: 
             found = _find_app_by_exact_name(client, domain)
             if found is not None:
                 return found
-        # An older Tenzai backend (pre-ENG-3501) doesn't know the NETWORK_HOST /
-        # NETWORK_SERVICE application types and rejects them with a raw pydantic
-        # 422. Surface an actionable message instead of the cryptic API error —
-        # do NOT silently retry as WEB_APP (that would mis-scan a real non-HTTP
-        # service over http://).
+        # The connected Tenzai API doesn't recognise this application type and rejects
+        # it with a raw pydantic 422 — a content-pack/API version mismatch. Surface an
+        # actionable message instead of the cryptic API error; do NOT silently retry as
+        # WEB_APP (that would mis-scan a real non-HTTP service over http://).
         if "not a valid ApplicationType" in message or "valid ApplicationType" in message:
             raise DemistoException(
-                f"The Tenzai API rejected application type '{app_type}'. This exposure needs "
-                f"the '{app_type}' type, which the connected Tenzai instance does not support "
-                "(it predates the Host / Network-Service types). Upgrade the Tenzai API instance "
-                "this integration points at, or validate this exposure as a WEB_APP if it is an "
-                "HTTP service."
+                f"The Tenzai API rejected application type '{app_type}'. The connected Tenzai "
+                "instance does not recognise this type — the Tenzai content pack and the Tenzai "
+                "API version are out of sync. Update the Tenzai pack to a version aligned with "
+                "this API, or (only for a genuine HTTP service) validate the exposure as a WEB_APP."
             ) from e
         raise
 
@@ -744,7 +767,9 @@ def create_scan_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
     target_url = _build_target_url(host, app_type, port, (args.get("protocol") or "").lower(), target_scheme)
 
-    app = _find_or_create_app(client, host, app_type, target_url, args)
+    app = _find_or_create_app(
+        client, host, app_type, target_url, args, port=port, protocol=(args.get("protocol") or "").lower()
+    )
     app_id = str(app.get("id"))
 
     # NOTE: do not send ``targets`` here — targets are owned by the application

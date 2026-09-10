@@ -297,8 +297,15 @@ def test_create_scan_creates_app_on_miss(requests_mock):
 
     body = create_mock.last_request.json()
     assert body["name"] == "vpn.acme.com"
-    assert body["applicationType"] == "NETWORK_SERVICE"  # derived from tcp + port
-    assert body["targets"] == [{"url": "tcp://vpn.acme.com:22"}]
+    assert body["applicationType"] == "NETWORK_HOST"  # derived from tcp + port
+    assert body["networkGoal"] == "VULNERABILITY_EXPLOITATION"
+    # A single service = a NETWORK_HOST with a bare-host target + a SELECTED port scope.
+    assert body["targets"] == [
+        {
+            "url": "vpn.acme.com",
+            "networkPortScope": {"mode": "SELECTED", "rules": [{"protocol": "TCP", "fromPort": 22, "toPort": 22}]},
+        }
+    ]
     # Guidelines fold in exposure, supporting data, classification, issue description, and correlation.
     guidelines = body["guidelines"]
     assert "Insecure OpenSSH" in guidelines["focusArea"]
@@ -367,10 +374,10 @@ def test_create_scan_matches_concatenated_apachewebserver_token(requests_mock):
     assert body["targets"] == [{"url": "https://1.2.3.4:15580"}]
 
 
-def test_create_scan_unrelated_https_url_stays_network_service(requests_mock):
+def test_create_scan_unrelated_https_url_stays_network_host(requests_mock):
     """ENG-7120 guardrail: a non-HTTP exposure whose description merely quotes an
     https:// reference URL (no web-server product) must NOT be misclassified as
-    WEB_APP — it stays NETWORK_SERVICE. Scheme is read from the target, not text."""
+    WEB_APP — it stays NETWORK_HOST. Scheme is read from the target, not text."""
     _mock_app_list(requests_mock, [])
     create_mock = requests_mock.post(f"{BASE_URL}/v1/applications", json={"id": APP_UUID, "name": "10.0.0.5"})
     requests_mock.post(
@@ -390,11 +397,16 @@ def test_create_scan_unrelated_https_url_stays_network_service(requests_mock):
     )
 
     body = create_mock.last_request.json()
-    assert body["applicationType"] == "NETWORK_SERVICE"
-    assert body["targets"] == [{"url": "tcp://10.0.0.5:1723"}]
+    assert body["applicationType"] == "NETWORK_HOST"
+    assert body["targets"] == [
+        {
+            "url": "10.0.0.5",
+            "networkPortScope": {"mode": "SELECTED", "rules": [{"protocol": "TCP", "fromPort": 1723, "toPort": 1723}]},
+        }
+    ]
 
 
-def test_create_scan_l4_proxy_mention_stays_network_service(requests_mock):
+def test_create_scan_l4_proxy_mention_stays_network_host(requests_mock):
     """ENG-7120 guardrail: HAProxy/Envoy front raw TCP as well as HTTP, so naming one
     in a genuine TCP exposure must NOT force WEB_APP — the classifier only trusts
     products that imply an HTTP surface."""
@@ -417,20 +429,25 @@ def test_create_scan_l4_proxy_mention_stays_network_service(requests_mock):
     )
 
     body = create_mock.last_request.json()
-    assert body["applicationType"] == "NETWORK_SERVICE"
-    assert body["targets"] == [{"url": "tcp://10.0.0.9:5432"}]
+    assert body["applicationType"] == "NETWORK_HOST"
+    assert body["targets"] == [
+        {
+            "url": "10.0.0.9",
+            "networkPortScope": {"mode": "SELECTED", "rules": [{"protocol": "TCP", "fromPort": 5432, "toPort": 5432}]},
+        }
+    ]
 
 
 def test_create_scan_translates_invalid_application_type_422(requests_mock):
-    """ENG-7120: a backend that rejects the app type (pre-Host/Network-Service) gets a
-    clear, actionable error — not the raw pydantic 422, and no silent WEB_APP retry."""
+    """ENG-7723: a backend that rejects the app type gets a clear version-mismatch error —
+    not the raw pydantic 422, and no silent WEB_APP retry."""
     _mock_app_list(requests_mock, [])
     requests_mock.post(
         f"{BASE_URL}/v1/applications",
         status_code=422,
         json={
             "detail": [
-                {"type": "value_error", "loc": ["body"], "msg": "Value error, 'NETWORK_SERVICE' is not a valid ApplicationType"}
+                {"type": "value_error", "loc": ["body"], "msg": "Value error, 'NETWORK_HOST' is not a valid ApplicationType"}
             ]
         },
     )
@@ -441,9 +458,9 @@ def test_create_scan_translates_invalid_application_type_422(requests_mock):
             {"target": "10.0.0.5", "port": "1723", "protocol": "tcp", "exposure_name": "PPTP Server"},
         )
     msg = str(exc.value)
-    assert "NETWORK_SERVICE" in msg
-    assert "does not support" in msg
-    assert "Upgrade the Tenzai API instance" in msg
+    assert "NETWORK_HOST" in msg
+    assert "does not recognise this type" in msg
+    assert "Update the Tenzai pack" in msg
 
 
 def test_create_scan_race_reuses_winner_on_422(requests_mock):
@@ -580,21 +597,24 @@ def test_create_scan_cve_category_without_cve_id_downgrades(requests_mock):
 
 
 def test_create_scan_drops_out_of_range_port(requests_mock):
-    """An out-of-range port is omitted from the profile (the schema constrains 0..65535),
-    so it does not 422 the scan-create."""
+    """An out-of-range port is omitted from the EXTERNAL_LEAD profile (schema 0..65535)
+    and does not become a NETWORK_HOST port-scope (the port-rule schema is 1..65535),
+    so it does not 422 either the app-create or the scan-create."""
     _mock_app_list(requests_mock, [])
-    requests_mock.post(f"{BASE_URL}/v1/applications", json={"id": APP_UUID, "name": "10.0.0.5"})
+    create_mock = requests_mock.post(f"{BASE_URL}/v1/applications", json={"id": APP_UUID, "name": "10.0.0.5"})
     scan_mock = requests_mock.post(
         f"{BASE_URL}/v1/applications/{APP_UUID}/tests",
         json={"id": SCAN_UUID, "applicationId": APP_UUID, "status": {"type": "PENDING"}},
     )
 
-    create_scan_command(
-        build_client(),
-        {"target": "10.0.0.5", "exposure_name": "x", "port": "99999", "application_type": "NETWORK_SERVICE"},
-    )
+    create_scan_command(build_client(), {"target": "10.0.0.5", "exposure_name": "x", "port": "99999"})
 
     assert "port" not in scan_mock.last_request.json()["profileConfig"]
+    # The app is a NETWORK_HOST, but the out-of-range port leaves the target at the default
+    # (ALL) scope — no SELECTED networkPortScope with an invalid rule.
+    app_body = create_mock.last_request.json()
+    assert app_body["applicationType"] == "NETWORK_HOST"
+    assert "networkPortScope" not in app_body["targets"][0]
 
 
 def test_create_scan_alert_id_falls_back_to_service_id(requests_mock):
@@ -642,9 +662,12 @@ def test_create_scan_bare_host_is_network_host(requests_mock):
 
     create_scan_command(build_client(), {"target": "host.acme.com", "exposure_name": "Exposed host"})
 
-    assert app_create.last_request.json()["applicationType"] == "NETWORK_HOST"
+    body = app_create.last_request.json()
+    assert body["applicationType"] == "NETWORK_HOST"
+    assert body["networkGoal"] == "VULNERABILITY_EXPLOITATION"  # required for NETWORK_HOST apps
     # The derived target rides on the application (targets are app-owned), not the test body.
-    assert app_create.last_request.json()["targets"] == [{"url": "host.acme.com"}]
+    # No port signal => no SELECTED port scope (the target stays at the default ALL scope).
+    assert body["targets"] == [{"url": "host.acme.com"}]
     assert "targets" not in scan_mock.last_request.json()
 
 
