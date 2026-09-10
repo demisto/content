@@ -2804,11 +2804,11 @@ Retrieves playbooks based on the filter values provided in the command arguments
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Specify the ID of the playbook to retrieve a specific playbook.<br/><br/>Note: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be ignored.<br/><br/>For example: 1. | Optional |
-| page_size | Specify the number of playbooks to retrieve per page.<br/><br/>Note: Possible values are between 1 and 200. Default is 20. | Optional |
-| page_number | Specify a page number to retrieve the playbooks. Default is 1. | Optional |
+| id | The ID of the playbook to retrieve a specific playbook.<br/><br/>Note: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be ignored.<br/><br/>For example: 1. | Optional |
+| page_size | The number of playbooks to retrieve per page.<br/><br/>Note: Possible values are between 1 and 200. Default is 20. | Optional |
+| page_number | The page number to retrieve the playbooks. Default is 1. | Optional |
 | sort_by | A comma-separated list of attributes to sort the playbooks.<br/><br/>Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order.<br/><br/>For example: -name, created_at. | Optional |
-| filter_by | Specify the filters to filter the list of playbooks by attribute values.<br/><br/>Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Add backslash(\) before quotes.<br/><br/>Format accepted: {"attribute1_operator": "value1, value2", "attribute2_operator" : "value3, value4"}<br/><br/>For example: {"name_cont":"Spam", "updated_at_gt":"2024-10-26T10:48:16.834Z"}. | Optional |
+| filter_by | The filters to filter the list of playbooks by attribute values.<br/><br/>Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Add backslash(\) before quotes.<br/><br/>Format accepted: {"attribute1_operator": "value1, value2", "attribute2_operator" : "value3, value4"}<br/><br/>For example: {"name_cont":"Spam", "updated_at_gt":"2024-10-26T10:48:16.834Z"}. | Optional |
 | fields_to_retrieve | A comma-separated list of fields to retrieve the mentioned attributes only.<br/><br/>For example: name, description. | Optional |
 | name | A comma-separated list of playbook names to retrieve.<br/><br/>For example: Spam Playbook. | Optional |
 | active | Whether the playbooks to be retrieved are active or not.<br/><br/>Possible values are: true, false. Possible values are: true, false. | Optional |
@@ -2816,8 +2816,8 @@ Retrieves playbooks based on the filter values provided in the command arguments
 | delete_report | Whether the playbooks to be retrieved delete the report after all other actions are performed.<br/><br/>Possible values are: true, false. Possible values are: true, false. | Optional |
 | report_tags | A comma-separated list of report tags assigned by the playbook to retrieve the playbook.<br/><br/>For example: Spam, Phishing. | Optional |
 | cluster_tags | A comma-separated list of cluster tags assigned by the playbook to retrieve the playbook.<br/><br/>For example: Spam, Phishing. | Optional |
-| created_at | Specify the date and time of creation, from when to retrieve the playbooks.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional |
-| updated_at | Specify the date and time of the last update, from when to retrieve the playbooks.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional |
+| created_at | The date and time of creation, from when to retrieve the playbooks.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional |
+| updated_at | The date and time of the last update, from when to retrieve the playbooks.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional |
 
 #### Context Output
 
@@ -3046,7 +3046,7 @@ Processes the specified reports through an existing playbook. Note: This command
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | report_ids | A comma-separated list of report IDs the playbook should execute against.<br/><br/>Note: To retrieve report_ids, execute "cofense-report-list" command.<br/><br/>For example: 1,2,3. | Required |
-| playbook_id | Specify the ID of an existing playbook to execute against the specified reports.<br/><br/>Note: To retrieve playbook_id, execute "cofense-playbook-list" command.<br/><br/>For example: 3. | Required |
+| playbook_id | The ID of an existing playbook to execute against the specified reports.<br/><br/>Note: To retrieve playbook_id, execute "cofense-playbook-list" command.<br/><br/>For example: 3. | Required |
 
 #### Context Output
 
