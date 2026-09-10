@@ -540,22 +540,104 @@ def test_ensure_security_rule_reuses_existing_and_still_moves(mocker):
     When:
        - Ensuring the security rule exists.
     Then:
-       - The rule is not recreated, but the profile is applied again and the rule is moved back to
-         the top, since precedence must be re-asserted on every run.
+       - The rule is not recreated, the tag edit is still issued, and the profile is applied again
+         and the rule is moved back to the top, since precedence must be re-asserted on every run.
     """
     execute_mock = mocker.patch.object(
         demisto,
         "executeCommand",
-        side_effect=[RESPONSES["list_rules_with_rule"], RESPONSES["profile_applied"], RESPONSES["rule_moved"]],
+        side_effect=[
+            RESPONSES["list_rules_with_rule"],
+            RESPONSES["rule_tag_added"],
+            RESPONSES["profile_applied"],
+            RESPONSES["rule_moved"],
+        ],
     )
 
     build_pan_os().ensure_security_rule()
 
     assert [name for name, _ in executed_commands(execute_mock)] == [
         "pan-os-list-rules",
+        "pan-os-edit-rule",
         "pan-os-apply-security-profile",
         "pan-os-move-rule",
     ]
+
+
+def test_ensure_security_rule_adds_missing_tag_to_existing_rule(mocker):
+    """
+    Given:
+       - A rulebase that already contains the rule, but the rule does not carry the configured tag
+         (for example the tag argument was changed between runs).
+    When:
+       - Ensuring the security rule exists.
+    Then:
+       - The configured tag is added to the existing rule with behaviour=add, so its existing tags
+         are preserved, before the profile is re-applied and the rule is moved to the top.
+    """
+    execute_mock = mocker.patch.object(
+        demisto,
+        "executeCommand",
+        side_effect=[
+            RESPONSES["list_rules_with_rule"],
+            RESPONSES["rule_tag_added"],
+            RESPONSES["profile_applied"],
+            RESPONSES["rule_moved"],
+        ],
+    )
+
+    build_pan_os().ensure_security_rule()
+
+    commands = executed_commands(execute_mock)
+    assert [name for name, _ in commands] == [
+        "pan-os-list-rules",
+        "pan-os-edit-rule",
+        "pan-os-apply-security-profile",
+        "pan-os-move-rule",
+    ]
+    edit_args = commands[1][1]
+    assert edit_args["element_to_change"] == "tag"
+    assert edit_args["element_value"] == "cortex-blocked-urls"
+    assert edit_args["behaviour"] == "add"
+
+
+def test_ensure_security_rule_adds_tag_even_when_tag_present(mocker):
+    """
+    Given:
+       - A rulebase that already contains the rule, already carrying the configured tag in the
+         fetched context.
+    When:
+       - Ensuring the security rule exists.
+    Then:
+       - The add-tag edit is still issued unconditionally (with behaviour=add and the pre_post scope
+         on Panorama), because the fetched tag list can be stale and behaviour=add is idempotent on
+         the device.
+    """
+    execute_mock = mocker.patch.object(
+        demisto,
+        "executeCommand",
+        side_effect=[
+            RESPONSES["list_rules_with_rule_tagged"],
+            RESPONSES["rule_tag_added"],
+            RESPONSES["profile_applied"],
+            RESPONSES["rule_moved"],
+        ],
+    )
+
+    build_pan_os().ensure_security_rule()
+
+    commands = executed_commands(execute_mock)
+    assert [name for name, _ in commands] == [
+        "pan-os-list-rules",
+        "pan-os-edit-rule",
+        "pan-os-apply-security-profile",
+        "pan-os-move-rule",
+    ]
+    edit_args = commands[1][1]
+    assert edit_args["element_to_change"] == "tag"
+    assert edit_args["element_value"] == "cortex-blocked-urls"
+    assert edit_args["behaviour"] == "add"
+    assert "pre_post" in edit_args
 
 
 def test_rule_commands_omit_pre_post_on_firewall(mocker):
@@ -908,6 +990,116 @@ def test_pan_os_push_status_failed_job_is_a_failure(mocker):
     BlockUrl.JOB_FAILURE_MESSAGE = ""
 
 
+def test_pan_os_commit_status_error_entry_is_a_clean_failure(mocker):
+    """
+    Given:
+       - A resume on a stale/invalid commit job where pan-os-commit-status returns an error entry
+         (Type 4) whose Contents is a plain string ("Invalid Job ID error: job X not found"),
+         followed by a Type 16 file entry, exactly as the live crash showed.
+    When:
+       - Checking the commit status.
+    Then:
+       - The function does not raise 'str' object has no attribute 'get', polling stops, the status is
+         reported as a Failure, and the PAN-OS reason is published so the push is skipped.
+    """
+    import BlockUrl
+    from BlockUrl import pan_os_commit_status
+
+    BlockUrl.JOB_FAILURE_MESSAGE = ""
+    mocker.patch.object(demisto, "executeCommand", return_value=RESPONSES["commit_status_job_not_found"])
+
+    result = pan_os_commit_status({"commit_job_id": "57069"}, [])
+
+    assert BlockUrl.POLLING is False
+    assert result.outputs["Status"] == "Failure"
+    assert "job 57069 not found" in BlockUrl.JOB_FAILURE_MESSAGE
+    BlockUrl.JOB_FAILURE_MESSAGE = ""
+
+
+def test_pan_os_push_status_error_entry_is_a_clean_failure(mocker):
+    """
+    Given:
+       - A push status response that is an error entry (Type 4) with a plain string Contents, the same
+         shape as the commit-status crash.
+    When:
+       - Checking the push status.
+    Then:
+       - The function does not raise, polling stops, the status is reported as a Failure, and the
+         PAN-OS reason is published for the flow to report it.
+    """
+    import BlockUrl
+    from BlockUrl import pan_os_push_status
+
+    BlockUrl.JOB_FAILURE_MESSAGE = ""
+    mocker.patch.object(demisto, "executeCommand", return_value=RESPONSES["push_status_job_not_found"])
+
+    result = pan_os_push_status({"push_job_id": "57069"}, [])
+
+    assert BlockUrl.POLLING is False
+    assert result.outputs["Status"] == "Failure"
+    assert "job 57069 not found" in BlockUrl.JOB_FAILURE_MESSAGE
+    BlockUrl.JOB_FAILURE_MESSAGE = ""
+
+
+def test_commit_status_error_entry_skips_push_and_reports_failed(mocker):
+    """
+    Given:
+       - A polling round that resumes on a commit job whose status command returns an error entry with
+         a string Contents (the "job not found" live crash shape).
+    When:
+       - Running the PAN-OS state machine.
+    Then:
+       - No push command is issued, the flow does not crash, and every URL is reported as Failed
+         carrying the PAN-OS reason.
+    """
+    import BlockUrl
+    from BlockUrl import PanOs
+
+    BlockUrl.JOB_FAILURE_MESSAGE = ""
+    execute_mock = mocker.patch.object(demisto, "executeCommand", return_value=RESPONSES["commit_status_job_not_found"])
+    mocker.patch.object(demisto, "context", return_value={})
+    mocker.patch.object(demisto, "setContext")
+    pan_os = PanOs(build_pan_os().args | {"commit_job_id": "57069", "polling": True})
+
+    results = pan_os.manage_pan_os_flow()
+
+    executed = [name for name, _ in executed_commands(execute_mock)]
+    assert "pan-os-push-to-device-group" not in executed
+    assert results[0].outputs[0]["Result"] == "Failed"
+    assert "job 57069 not found" in results[0].outputs[0]["Message"]
+    BlockUrl.JOB_FAILURE_MESSAGE = ""
+
+
+def test_stale_commit_job_id_in_context_does_not_hijack_fresh_run(mocker):
+    """
+    Given:
+       - A brand-new (non-polling) invocation with no commit_job_id in args, but a completed previous
+         run left commit_job_id='57069' in the incident context.
+    When:
+       - Running the PAN-OS state machine.
+    Then:
+       - The stale context id is ignored (not read as a resume), so pan-os-commit-status is not called
+         with the stale id and the fresh configuration flow runs instead.
+    """
+    from BlockUrl import PanOs
+
+    # The fresh flow runs the full config sequence and then a commit. Ending on "nothing to commit"
+    # keeps the flow from polling and exercises the whole path without a push.
+    flow_responses = successful_flow_responses() + [RESPONSES["commit_nothing_to_commit"]]
+    execute_mock = mocker.patch.object(demisto, "executeCommand", side_effect=flow_responses)
+    mocker.patch.object(demisto, "context", return_value={"commit_job_id": "57069"})
+    set_context_mock = mocker.patch.object(demisto, "setContext")
+    pan_os = PanOs(build_pan_os().args | {"commit_job_id": None, "polling": True})
+
+    pan_os.manage_pan_os_flow()
+
+    executed = [name for name, _ in executed_commands(execute_mock)]
+    assert "pan-os-commit-status" not in executed
+    assert "pan-os" in executed
+    # The stale context id was scrubbed rather than trusted.
+    set_context_mock.assert_any_call("commit_job_id", "")
+
+
 def test_adopt_job_failure_clears_the_global():
     """
     Given:
@@ -1031,14 +1223,15 @@ def test_create_final_context_failure():
     assert context[0]["Message"] == "Won't modify a user-managed category"
 
 
-def test_create_rejected_results_keeps_submitted_url_empty():
+def test_create_rejected_results_uses_none_for_absent_fields():
     """
     Given:
        - URLs that were rejected before any brand was contacted.
     When:
        - Building their results.
     Then:
-       - They are reported as failures with an empty SubmittedURL, per the output contract.
+       - They are reported as failures, and every field with no meaningful value is None (real JSON
+         null) rather than an empty string, per the output contract.
     """
     from BlockUrl import create_rejected_results
 
@@ -1047,8 +1240,96 @@ def test_create_rejected_results_keeps_submitted_url_empty():
     )
 
     assert results.outputs_prefix == "BlockURLResults"
-    assert results.outputs[0]["SubmittedURL"] == ""
     assert results.outputs[0]["Result"] == "Failed"
+    for field in ("SubmittedURL", "Brand", "RuleName", "URLCategory", "JobID"):
+        assert results.outputs[0][field] is None
+    assert "" not in results.outputs[0].values()
+
+
+def test_create_final_context_uses_none_never_empty_string():
+    """
+    Given:
+       - A flow whose details carry no rule name, category or job id (all absent).
+    When:
+       - Building the final context.
+    Then:
+       - Every absent field is None (real JSON null), and no field is ever an empty string.
+    """
+    from BlockUrl import create_final_context
+
+    context = create_final_context(
+        "",
+        [{"URL": "", "SubmittedURL": ""}],
+        {"rule_name": "", "url_category": "", "job_id": "", "already_present": [], "failure_message": ""},
+    )
+
+    row = context[0]
+    for field in ("URL", "SubmittedURL", "Brand", "RuleName", "URLCategory", "JobID"):
+        assert row[field] is None
+    assert "" not in row.values()
+
+
+def test_profile_failure_aborts_before_rule_is_created(mocker):
+    """
+    Given:
+       - A flow where the URL filtering profile creation fails.
+    When:
+       - Running start_pan_os_flow.
+    Then:
+       - The flow aborts before any rule command runs, so the security rule is never created without
+         a working profile attached.
+    """
+    execute_mock = mocker.patch.object(
+        demisto,
+        "executeCommand",
+        side_effect=[
+            RESPONSES["system_info_panorama"],
+            RESPONSES["object_not_found"],
+            RESPONSES["category_created"],
+            RESPONSES["object_not_found"],
+            [{"Type": 4, "Contents": "profile creation failed", "EntryContext": {}}],
+        ],
+    )
+    mocker.patch.object(demisto, "setContext")
+    pan_os = build_pan_os()
+
+    pan_os.start_pan_os_flow()
+
+    command_names = [name for name, _ in executed_commands(execute_mock)]
+    assert "pan-os-create-rule" not in command_names
+    assert "pan-os-list-rules" not in command_names
+    assert "profile creation failed" in pan_os.failure_message
+
+
+def test_profile_edit_failure_aborts_before_rule_is_created(mocker):
+    """
+    Given:
+       - A flow where the profile exists but attaching the category to it fails.
+    When:
+       - Running start_pan_os_flow.
+    Then:
+       - The flow aborts before any rule command runs.
+    """
+    execute_mock = mocker.patch.object(
+        demisto,
+        "executeCommand",
+        side_effect=[
+            RESPONSES["system_info_panorama"],
+            RESPONSES["object_not_found"],
+            RESPONSES["category_created"],
+            RESPONSES["url_filter_dirty_other_category"],
+            [{"Type": 4, "Contents": "profile edit failed", "EntryContext": {}}],
+        ],
+    )
+    mocker.patch.object(demisto, "setContext")
+    pan_os = build_pan_os()
+
+    pan_os.start_pan_os_flow()
+
+    command_names = [name for name, _ in executed_commands(execute_mock)]
+    assert "pan-os-create-rule" not in command_names
+    assert "pan-os-list-rules" not in command_names
+    assert "profile edit failed" in pan_os.failure_message
 
 
 def test_prepare_context_and_hr_verbose_adds_per_command_entries():

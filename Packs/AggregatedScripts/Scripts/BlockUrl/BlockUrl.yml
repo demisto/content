@@ -5,41 +5,28 @@ args:
   required: true
 - description: |-
     Which integrations brands to run the command for. If not provided, the command will run for all available integrations.
-    For multi-select provide a comma-separated list. The possible values are: Panorama.
+    For multi-select provide a comma-separated list.
   isArray: true
   name: brands
-  required: false
   auto: PREDEFINED
   predefined:
   - 'Panorama'
 - defaultValue: 'Cortex - Block URLs'
   description: The name of the security rule which will be created in the relevant products.
-  isArray: false
   name: rule_name
-  required: false
 - defaultValue: 'Blocked URLs - Cortex'
   description: The name of the PAN-OS custom URL category which holds the blocked URLs.
-  isArray: false
   name: url_category
-  required: false
 - defaultValue: 'Cortex - Block URL profile'
   description: The name of the PAN-OS URL Filtering security profile which blocks the custom URL category.
-  isArray: false
   name: url_filtering_profile
-  required: false
 - description: Panorama log forwarding object name. Indicates what type of Log Forwarding setting will be specified in the PAN-OS custom rules.
-  isArray: false
   name: log_forwarding_name
-  required: false
 - defaultValue: 'cortex-blocked-urls'
   description: The designated tag name for the objects the script creates.
-  isArray: false
   name: tag
-  required: false
 - description: Whether to commit the new rule.
-  isArray: false
   name: auto_commit
-  required: false
   defaultValue: 'true'
   auto: PREDEFINED
   predefined:

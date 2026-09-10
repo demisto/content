@@ -514,10 +514,36 @@ class PanOs:
         context = get_relevant_context(res_list_rules[0].get("EntryContext", {}), "Panorama.SecurityRule")
         if check_value_exist_in_context(rule_name, context, "Name"):
             demisto.debug(f"BU: reusing the existing security rule {rule_name=}.")
+            self.add_tag_to_rule()
         else:
             self.create_security_rule()
         self.apply_profile_to_rule()
         self.move_rule_to_top()
+
+    def add_tag_to_rule(self) -> None:
+        """Add the configured tag to an existing rule unconditionally.
+
+        Uses behaviour=add so the rule's existing tags are preserved rather than replaced. The edit
+        is issued every run because the rule may have been changed outside this script (for example
+        through the PAN-OS UI), so the fetched tag list can be stale. Adding an already-present tag
+        is a no-op on the device, so this stays idempotent.
+        Raises:
+            BlockUrlError: When the edit failed.
+        """
+        tag = self.args.get("tag", "")
+        if not tag:
+            return
+        rule_name = self.args["rule_name"]
+        edit_args: dict[str, Any] = {
+            "rulename": rule_name,
+            "element_to_change": "tag",
+            "element_value": tag,
+            "behaviour": "add",
+        }
+        edit_args |= self.rule_scope_args()
+        res = run_execute_command("pan-os-edit-rule", edit_args)
+        self.responses.append(res)
+        raise_on_command_error(res, f"security rule '{rule_name}'")
 
     def create_security_rule(self) -> None:
         """Create the security rule that carries the URL filtering profile.
@@ -699,9 +725,23 @@ class PanOs:
         """
         incident_context = demisto.context()
         auto_commit = self.args["auto_commit"]
-        commit_job_id = self.args.get("commit_job_id") or demisto.get(incident_context, "commit_job_id")
+        commit_job_id = self.args.get("commit_job_id")
+        context_push_job_id = demisto.get(incident_context, "push_job_id")
+        context_commit_job_id = demisto.get(incident_context, "commit_job_id")
+        is_polling_reentry = bool(commit_job_id)
+        if not is_polling_reentry and (context_commit_job_id or context_push_job_id):
+            demisto.debug(
+                f"BU: stale polling context on a fresh invocation "
+                f"(commit={context_commit_job_id!r}, push={context_push_job_id!r}); clearing."
+            )
+            demisto.setContext("commit_job_id", "")
+            demisto.setContext("push_job_id", "")
+            demisto.setContext("panorama_responses", "")
+            demisto.setContext("pan_os_device_group", "")
+            context_push_job_id = None
+        push_job_id = context_push_job_id if is_polling_reentry else None
         # state 5
-        if push_job_id := demisto.get(incident_context, "push_job_id"):
+        if push_job_id:
             demisto.debug(f"BU: has a {push_job_id=}")
             self.restore_state_from_context(incident_context)
             self.args["push_job_id"] = push_job_id
@@ -865,14 +905,14 @@ def create_final_context(used_integration: str, url_entries: list[dict], details
             result, message = "Success", "URL was blocked successfully."
         context.append(
             {
-                "URL": entry.get("URL", ""),
-                "SubmittedURL": submitted_url,
-                "Brand": used_integration,
-                "Result": result,
-                "Message": message,
-                "RuleName": details.get("rule_name", ""),
-                "URLCategory": details.get("url_category", ""),
-                "JobID": details.get("job_id", ""),
+                "URL": entry.get("URL") or None,
+                "SubmittedURL": submitted_url or None,
+                "Brand": used_integration or None,
+                "Result": result or None,
+                "Message": message or None,
+                "RuleName": details.get("rule_name") or None,
+                "URLCategory": details.get("url_category") or None,
+                "JobID": details.get("job_id") or None,
             }
         )
     return context
@@ -888,14 +928,14 @@ def create_rejected_results(rejected: list[dict]) -> CommandResults:
     """
     context = [
         {
-            "URL": entry.get("URL", ""),
-            "SubmittedURL": "",
-            "Brand": "",
+            "URL": entry.get("URL") or None,
+            "SubmittedURL": None,
+            "Brand": None,
             "Result": "Failed",
-            "Message": entry.get("Message", ""),
-            "RuleName": "",
-            "URLCategory": "",
-            "JobID": "",
+            "Message": entry.get("Message") or None,
+            "RuleName": None,
+            "URLCategory": None,
+            "JobID": None,
         }
         for entry in rejected
     ]
@@ -1028,12 +1068,31 @@ def pan_os_commit_status(args: dict, responses: list) -> PollResult:
     commit_job_id = args["commit_job_id"]
     res_commit_status = run_execute_command("pan-os-commit-status", {"job_id": commit_job_id})
     responses.append(res_commit_status)
-    job = res_commit_status[0].get("Contents", {}).get("response", {}).get("result", {}).get("job", {})
+    global POLLING, JOB_FAILURE_MESSAGE
+    raw_contents = res_commit_status[0].get("Contents") if res_commit_status else None
+    if is_error(res_commit_status) or not isinstance(raw_contents, dict):
+        POLLING = False
+        error_reason = get_error_message(res_commit_status) or str(raw_contents)
+        JOB_FAILURE_MESSAGE = (
+            f"The PAN-OS commit job {commit_job_id} status could not be read, so the changes were not "
+            f"pushed and the URLs are not blocked. PAN-OS reason: {error_reason}"
+        )
+        demisto.debug(f"BU: the commit status returned an error entry. {JOB_FAILURE_MESSAGE=}")
+        commit_output = {"JobID": commit_job_id, "Status": "Failure"}
+        return PollResult(
+            response=CommandResults(
+                outputs=commit_output,
+                outputs_key_field="JobID",
+                readable_output=tableToMarkdown("Commit Status:", commit_output, removeNull=True),
+            ),
+            args_for_next_run=args,
+            continue_to_poll=False,
+        )
+    job = raw_contents.get("response", {}).get("result", {}).get("job", {})
     job_result = job.get("result")
     continue_to_poll = job.get("status") != COMMIT_JOB_FINISHED_STATUS
     job_failed = not continue_to_poll and job_result != COMMIT_JOB_SUCCESS_RESULT
     commit_output = {"JobID": commit_job_id, "Status": "Failure" if job_failed else "Success"}
-    global POLLING, JOB_FAILURE_MESSAGE
     POLLING = continue_to_poll
     if job_failed:
         JOB_FAILURE_MESSAGE = (
@@ -1113,6 +1172,24 @@ def pan_os_push_status(args: dict, responses: list) -> PollResult:
     push_job_id = args["push_job_id"]
     res_push_status = run_execute_command("pan-os-push-status", {"job_id": push_job_id})
     responses.append(res_push_status)
+    global POLLING, JOB_FAILURE_MESSAGE
+    if is_error(res_push_status):
+        POLLING = False
+        error_reason = get_error_message(res_push_status)
+        JOB_FAILURE_MESSAGE = (
+            f"The PAN-OS push job {push_job_id} status could not be read, so the committed changes were "
+            f"not confirmed as applied and the URLs may not be blocked. PAN-OS reason: {error_reason}"
+        )
+        demisto.debug(f"BU: the push status returned an error entry. {JOB_FAILURE_MESSAGE=}")
+        push_output = {"JobID": push_job_id, "Status": "Failure"}
+        return PollResult(
+            response=CommandResults(
+                outputs=push_output,
+                outputs_key_field="JobID",
+                readable_output=tableToMarkdown("Push to Device Group:", push_output, ["JobID", "Status"], removeNull=True),
+            ),
+            continue_to_poll=False,
+        )
     push_context = get_context_entry(res_push_status, "Panorama.Push")
     push_status = _text(push_context.get("Status"))
     push_failed = push_status in PUSH_FAILURE_STATUSES
@@ -1127,7 +1204,6 @@ def pan_os_push_status(args: dict, responses: list) -> PollResult:
         outputs=context_output,
         readable_output=tableToMarkdown("Push to Device Group:", context_output, ["JobID", "Status"], removeNull=True),
     )
-    global POLLING, JOB_FAILURE_MESSAGE
     POLLING = continue_to_poll
     if push_failed:
         details = _text(push_context.get("Details")) or _text(push_context.get("Errors"))
@@ -1181,6 +1257,7 @@ def main():  # pragma: no cover
                 executed_brands.append(brand)
                 continue
             brand_args = {
+                "url_list": [entry["SubmittedURL"] for entry in accepted_urls],
                 "url_entries": accepted_urls,
                 "rule_name": args.get("rule_name", "Cortex - Block URLs"),
                 "url_category": args.get("url_category", "Blocked URLs - Cortex"),

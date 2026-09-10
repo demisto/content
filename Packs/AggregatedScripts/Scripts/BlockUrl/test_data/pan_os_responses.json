@@ -310,6 +310,39 @@
             }
         }
     ],
+    "list_rules_with_rule_tagged": [
+        {
+            "Type": 1,
+            "Contents": {},
+            "HumanReadable": "### Security Rules:",
+            "EntryContext": {
+                "Panorama.SecurityRule(val.Name == obj.Name)": [
+                    {
+                        "Name": "Cortex - Block URLs",
+                        "Action": "allow",
+                        "DeviceGroup": "Test-Device-Group",
+                        "Tags": [
+                            "cortex-blocked-urls"
+                        ]
+                    }
+                ]
+            },
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "rule_tag_added": [
+        {
+            "Type": 1,
+            "Contents": "Rule edited successfully.",
+            "HumanReadable": "Rule edited successfully.",
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
     "rule_created": [
         {
             "Type": 1,
@@ -432,18 +465,6 @@
             }
         }
     ],
-    "push_nothing_to_push": [
-        {
-            "Type": 1,
-            "Contents": "There are no changes to push.",
-            "HumanReadable": "There are no changes to push.",
-            "EntryContext": {},
-            "Metadata": {
-                "brand": "Panorama",
-                "pollingArgs": {}
-            }
-        }
-    ],
     "push_status_pending": [
         {
             "Type": 1,
@@ -533,6 +554,48 @@
             "Type": 1,
             "Contents": {},
             "HumanReadable": "|JobID|\n|---|\n| 56957 |",
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "commit_status_job_not_found": [
+        {
+            "Type": 4,
+            "Contents": "Invalid Job ID error: job 57069 not found\n\nTraceback (most recent call last): ...",
+            "HumanReadable": null,
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        },
+        {
+            "Type": 16,
+            "File": "pan-os-commit-status.log",
+            "FileID": "abc-123",
+            "Contents": "",
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        }
+    ],
+    "push_status_job_not_found": [
+        {
+            "Type": 4,
+            "Contents": "Invalid Job ID error: job 57069 not found\n\nTraceback (most recent call last): ...",
+            "HumanReadable": null,
+            "EntryContext": {},
+            "Metadata": {
+                "brand": "Panorama"
+            }
+        },
+        {
+            "Type": 16,
+            "File": "pan-os-push-status.log",
+            "FileID": "abc-456",
+            "Contents": "",
             "EntryContext": {},
             "Metadata": {
                 "brand": "Panorama"

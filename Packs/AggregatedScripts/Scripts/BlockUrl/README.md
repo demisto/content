@@ -36,7 +36,7 @@ This script uses the following commands and scripts.
 | **Argument Name** | **Description** |
 | --- | --- |
 | url_list | List of URLs to block. The scheme is stripped before the URL is submitted to the firewall. |
-| brands | Which integrations brands to run the command for. If not provided, the command will run for all available integrations.<br/>For multi-select provide a comma-separated list. The possible values are: Panorama. |
+| brands | Which integrations brands to run the command for. If not provided, the command will run for all available integrations.<br/>For multi-select provide a comma-separated list. |
 | rule_name | The name of the security rule which will be created in the relevant products. |
 | url_category | The name of the PAN-OS custom URL category which holds the blocked URLs. |
 | url_filtering_profile | The name of the PAN-OS URL Filtering security profile which blocks the custom URL category. |
