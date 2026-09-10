@@ -12100,11 +12100,11 @@ class TestSpotlightFetchReportsHealth:
     @pytest.mark.asyncio
     async def test_successful_fetch_clears_a_previous_error(self, mocker):
         """The health write must be a non-error one, which is what actually clears the red status."""
-        from CrowdStrikeFalcon import fetch_spotlight_assets
+        import CrowdStrikeFalcon
 
         mock_health = self._run_fetch(mocker, parallel_return=(1234, {"aid-1", "aid-2"}))
 
-        await fetch_spotlight_assets()
+        await CrowdStrikeFalcon.fetch_spotlight_assets()
 
         assert mock_health.call_count == 1, "a completed Spotlight fetch reported no health at all"
         _args, kwargs = mock_health.call_args
@@ -12113,23 +12113,23 @@ class TestSpotlightFetchReportsHealth:
     @pytest.mark.asyncio
     async def test_health_reports_the_number_of_records_pulled(self, mocker):
         """Mirrors the CNAPP path's ``{"assetsPulled": n}`` so the UI shows a count, not just green."""
-        from CrowdStrikeFalcon import fetch_spotlight_assets
+        import CrowdStrikeFalcon
 
         mock_health = self._run_fetch(mocker, parallel_return=(1234, {"aid-1", "aid-2"}))
 
-        await fetch_spotlight_assets()
+        await CrowdStrikeFalcon.fetch_spotlight_assets()
 
         assert mock_health.call_args.args[0] == {"assetsPulled": 1234}
 
     @pytest.mark.asyncio
     async def test_failed_fetch_does_not_report_success(self, mocker):
         """A fetch that raises must leave the error standing rather than paint over it."""
-        from CrowdStrikeFalcon import fetch_spotlight_assets
+        import CrowdStrikeFalcon
 
         mock_health = self._run_fetch(mocker, parallel_side_effect=DemistoException("boom"))
 
         with pytest.raises(DemistoException):
-            await fetch_spotlight_assets()
+            await CrowdStrikeFalcon.fetch_spotlight_assets()
 
         assert mock_health.call_count == 0, "a failed fetch cleared the error status"
 
