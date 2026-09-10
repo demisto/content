@@ -6783,7 +6783,7 @@ class TestGCPComputeInstanceGroupsList:
         """
         Given: A mocked Compute API returning no instance groups.
         When: gcp_compute_instance_groups_list is called.
-        Then: The outputs contain no instance groups entry and the readable output reports no results.
+        Then: The instance groups entry is empty, no warning key is set and the readable output reports no results.
         """
         from GCP import gcp_compute_instance_groups_list
 
@@ -6793,8 +6793,26 @@ class TestGCPComputeInstanceGroupsList:
         args = {"project_id": "test-project", "zone": "us-central1-a"}
         result = gcp_compute_instance_groups_list(mock_creds, args)
 
-        assert "GCP.Compute.InstanceGroups(val.id && val.id == obj.id)" not in result.outputs
+        assert result.outputs["GCP.Compute.InstanceGroups(val.id && val.id == obj.id)"] == []
+        assert "InstanceGroupsWarning" not in result.outputs["GCP.Compute(true)"]
         assert "**No entries.**" in result.readable_output
+
+    def test_gcp_compute_instance_groups_list_response_warning(self, mocker):
+        """
+        Given: A mocked Compute API returning a top-level warning instead of instance groups.
+        When: gcp_compute_instance_groups_list is called.
+        Then: The warning is surfaced to the user under the InstanceGroupsWarning context key.
+        """
+        from GCP import gcp_compute_instance_groups_list
+
+        warning = {"code": "NO_RESULTS_ON_PAGE", "message": "There are no results for scope 'us-central1-a' on this page."}
+        _mock_instance_groups_resource(mocker, "list", {"warning": warning})
+        mock_creds = mocker.Mock()
+
+        args = {"project_id": "test-project", "zone": "us-central1-a"}
+        result = gcp_compute_instance_groups_list(mock_creds, args)
+
+        assert result.outputs["GCP.Compute(true)"]["InstanceGroupsWarning"] == warning
 
     def test_gcp_compute_instance_groups_list_invalid_limit_raises(self, mocker):
         """
@@ -6861,13 +6879,14 @@ class TestGCPComputeInstanceGroupsAggregatedList:
         result = gcp_compute_instance_groups_aggregated_list(mock_creds, {"project_id": "test-project"})
 
         assert result.outputs["GCP.Compute(true)"]["AggregatedInstanceGroupsWarning"] == {"code": "NO_RESULTS_ON_PAGE"}
+        assert result.outputs["GCP.Compute.InstanceGroups(val.id && val.id == obj.id)"] == [{"id": "1", "name": "group-a"}]
         assert any("returned a warning" in str(call) for call in debug_mock.call_args_list)
 
     def test_gcp_compute_instance_groups_aggregated_list_empty_response(self, mocker):
         """
         Given: A mocked Compute API returning no aggregated items.
         When: gcp_compute_instance_groups_aggregated_list is called.
-        Then: The outputs contain no instance groups entry and the readable output reports no results.
+        Then: The instance groups entry is empty, no warning key is set and the readable output reports no results.
         """
         from GCP import gcp_compute_instance_groups_aggregated_list
 
@@ -6876,7 +6895,8 @@ class TestGCPComputeInstanceGroupsAggregatedList:
 
         result = gcp_compute_instance_groups_aggregated_list(mock_creds, {"project_id": "test-project"})
 
-        assert "GCP.Compute.InstanceGroups(val.id && val.id == obj.id)" not in result.outputs
+        assert result.outputs["GCP.Compute.InstanceGroups(val.id && val.id == obj.id)"] == []
+        assert "AggregatedInstanceGroupsWarning" not in result.outputs["GCP.Compute(true)"]
         assert "**No entries.**" in result.readable_output
 
     def test_gcp_compute_instance_groups_aggregated_list_api_error(self, mocker):

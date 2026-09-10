@@ -2792,40 +2792,6 @@ def gcp_compute_instance_group_get(creds: Credentials, args: dict[str, Any]) -> 
     )
 
 
-def merge_instance_group_instances(instance_group: str, new_instances: list[dict[str, Any]]) -> list[dict[str, Any]]:
-    """
-    Merges newly fetched instances into the instances already stored in the context for the given instance group.
-
-    Instances are identified by their URL: an instance that already exists in the context is replaced in place,
-    while a new instance is appended to the end of the list. This allows accumulating instances across paginated
-    executions of the same command for the same instance group.
-
-    Args:
-        instance_group (str): The name of the instance group the instances belong to.
-        new_instances (list[dict[str, Any]]): The instances returned by the current API call.
-
-    Returns:
-        list[dict[str, Any]]: The merged list of instances for the instance group.
-    """
-    existing_groups = demisto.get(demisto.context(), "GCP.Compute.InstanceGroups") or []
-    if isinstance(existing_groups, dict):
-        existing_groups = [existing_groups]
-
-    merged_instances: dict[str, dict[str, Any]] = {}
-    for group in existing_groups:
-        if isinstance(group, dict) and group.get("id") == instance_group:
-            for instance in group.get("Instances") or []:
-                if isinstance(instance, dict) and instance.get("instance"):
-                    merged_instances[instance["instance"]] = instance
-
-    for instance in new_instances:
-        if instance.get("instance"):
-            merged_instances[instance["instance"]] = instance
-
-    demisto.debug(f"[GCP: gcp_compute_instance_group_instances_list] Instances in context after merge: {len(merged_instances)}")
-    return list(merged_instances.values())
-
-
 def gcp_compute_instance_groups_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the list of instance groups that are located in the specified project and zone.
@@ -2835,7 +2801,8 @@ def gcp_compute_instance_groups_list(creds: Credentials, args: dict[str, Any]) -
         args (dict[str, Any]): Command arguments including project_id, zone, limit, filter, order_by and next_token.
 
     Returns:
-        CommandResults: The instance groups located in the specified zone.
+        CommandResults: The instance groups located in the specified zone and, when the API returns one,
+        the informational warning under `GCP.Compute.InstanceGroupsWarning`.
     """
     zone = extract_zone_name(args["zone"])
     limit = (arg_to_number(args.get("limit"))) or 50
@@ -2863,6 +2830,11 @@ def gcp_compute_instance_groups_list(creds: Credentials, args: dict[str, Any]) -
 
     next_page_token = response.get("nextPageToken")
     instance_groups = response.get("items", [])
+    warning = response.get("warning")
+    demisto.debug(
+        f"[GCP: gcp_compute_instance_groups_list] Instance groups in zone {zone}: {len(instance_groups)}, "
+        f"{bool(next_page_token)=}, {warning.get('code') if warning else None=}"
+    )
 
     readable_output = tableToMarkdown(
         f"GCP Instance Groups in zone {zone}",
@@ -2872,15 +2844,17 @@ def gcp_compute_instance_groups_list(creds: Credentials, args: dict[str, Any]) -
         removeNull=True,
     )
 
+    compute_outputs: dict[str, Any] = {
+        "InstanceGroupsNextToken": next_page_token,
+        "InstanceGroupsSelfLink": response.get("selfLink"),
+    }
+    if warning:
+        compute_outputs["InstanceGroupsWarning"] = warning
+
     outputs = {
         "GCP.Compute.InstanceGroups(val.id && val.id == obj.id)": instance_groups,
-        "GCP.Compute(true)": {
-            "InstanceGroupsNextToken": next_page_token,
-            "InstanceGroupsSelfLink": response.get("selfLink"),
-            "InstanceGroupsWarning": response.get("warning"),
-        },
+        "GCP.Compute(true)": compute_outputs,
     }
-    outputs = remove_empty_elements(outputs)
     return CommandResults(
         readable_output=readable_output,
         outputs=outputs,
@@ -2897,7 +2871,8 @@ def gcp_compute_instance_groups_aggregated_list(creds: Credentials, args: dict[s
         args (dict[str, Any]): Command arguments including project_id, limit, filter, order_by and next_token.
 
     Returns:
-        CommandResults: The instance groups aggregated by zone.
+        CommandResults: The instance groups aggregated by zone and, when the API returns one,
+        the informational warning under `GCP.Compute.AggregatedInstanceGroupsWarning`.
     """
     limit = (arg_to_number(args.get("limit"))) or 50
 
@@ -2921,15 +2896,14 @@ def gcp_compute_instance_groups_aggregated_list(creds: Credentials, args: dict[s
         .execute()
     )
 
-    instance_groups = []
-    for scope, instance_groups_scoped_list in response.get("items", {}).items():
-        if warning := instance_groups_scoped_list.get("warning"):
-            demisto.debug(f"[GCP: gcp_compute_instance_groups_aggregated_list] Scope {scope} returned a warning: {warning}")
-            continue
-        demisto.debug(f"[GCP: gcp_compute_instance_groups_aggregated_list] Collecting instance groups from scope {scope}")
-        instance_groups.extend(instance_groups_scoped_list.get("instanceGroups", []))
+    instance_groups = collect_aggregated_items(response, "instanceGroups")
 
     next_page_token = response.get("nextPageToken")
+    warning = response.get("warning")
+    demisto.debug(
+        f"[GCP: gcp_compute_instance_groups_aggregated_list] Instance groups: {len(instance_groups)}, "
+        f"{bool(next_page_token)=}, {warning.get('code') if warning else None=}"
+    )
 
     readable_output = tableToMarkdown(
         "GCP Instance Groups",
@@ -2939,15 +2913,17 @@ def gcp_compute_instance_groups_aggregated_list(creds: Credentials, args: dict[s
         removeNull=True,
     )
 
+    compute_outputs: dict[str, Any] = {
+        "AggregatedInstanceGroupsNextToken": next_page_token,
+        "AggregatedInstanceGroupsSelfLink": response.get("selfLink"),
+    }
+    if warning:
+        compute_outputs["AggregatedInstanceGroupsWarning"] = warning
+
     outputs = {
         "GCP.Compute.InstanceGroups(val.id && val.id == obj.id)": instance_groups,
-        "GCP.Compute(true)": {
-            "AggregatedInstanceGroupsNextToken": next_page_token,
-            "AggregatedInstanceGroupsSelfLink": response.get("selfLink"),
-            "AggregatedInstanceGroupsWarning": response.get("warning"),
-        },
+        "GCP.Compute(true)": compute_outputs,
     }
-    outputs = remove_empty_elements(outputs)
     return CommandResults(
         readable_output=readable_output,
         outputs=outputs,
@@ -3008,11 +2984,17 @@ def gcp_compute_instance_group_instances_list(creds: Credentials, args: dict[str
     outputs = {
         "GCP.Compute.InstanceGroups(val.id && val.id == obj.id)": {
             "id": instance_group,
-            "Instances": merge_instance_group_instances(instance_group, instances),
+            "Instances": _merge_context_items(
+                "GCP.Compute.InstanceGroups",
+                instances,
+                id_key="instance",
+                items_key="Instances",
+                parent_id_key="id",
+                parent_id_value=instance_group,
+            ),
         },
         "GCP.Compute.InstanceGroups(true)": {"InstanceGroupsInstancesNextToken": next_page_token},
     }
-    outputs = remove_empty_elements(outputs)
     return CommandResults(
         readable_output=readable_output,
         outputs=outputs,
