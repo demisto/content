@@ -66,6 +66,44 @@ SUPPORTED_ON_PREM_BUILDS = {
 
 MARK_AS_READ_RETRY_DELAY = 0.1
 
+# Truncation cap for serialized EWS call inputs/outputs written to the debug log,
+# so a very large item/folder payload cannot flood stdout or block the log pipe.
+EWS_CALL_LOG_MAX_LEN = 4000
+
+
+def summarize_ews_object(obj) -> str:
+    """
+    Produce a safe, bounded, single-line string describing an EWS object (item, folder, account, result)
+    for input/output logging. Never raises - logging must not break the flow.
+
+    :param obj: any EWS object or value to describe.
+
+    :return: bounded string representation.
+    """
+    try:
+        if obj is None:
+            return "None"
+        if isinstance(obj, (list, tuple, set)):
+            return f"{type(obj).__name__}(len={len(obj)})=[{', '.join(summarize_ews_object(x) for x in list(obj)[:20])}]"
+        # EWS items/folders expose useful attributes; collect whichever are present.
+        attrs = ("id", "changekey", "message_id", "subject", "is_read", "name", "total_count", "datetime_received",
+                 "last_modified_time", "datetime_created", "folder_class", "absolute")
+        parts = []
+        for attr in attrs:
+            if hasattr(obj, attr):
+                try:
+                    value = getattr(obj, attr)
+                except Exception as attr_error:  # noqa: BLE001
+                    value = f"<unreadable: {attr_error}>"
+                if value is not None:
+                    parts.append(f"{attr}={value!r}")
+        rendered = f"{type(obj).__name__}({', '.join(parts)})" if parts else repr(obj)
+    except Exception as e:  # noqa: BLE001
+        return f"<unserializable {type(obj).__name__}: {e}>"
+    if len(rendered) > EWS_CALL_LOG_MAX_LEN:
+        rendered = f"{rendered[:EWS_CALL_LOG_MAX_LEN]}...(truncated, total {len(rendered)} chars)"
+    return rendered
+
 # Errors indicating Exchange is throttling or temporarily unavailable (HTTP 503/504).
 # They resolve on their own, so callers should back off and retry rather than fail outright.
 TRANSIENT_SERVER_ERRORS = (
@@ -565,19 +603,29 @@ class EWSClient:
                     access_type=self.access_type,
                     default_timezone=time_zone,
                 )
+                demisto.info(
+                    f"get_account_autodiscover: EWS call [GetFolder root/effective_rights] starting - "
+                    f"validating cached connection for {target_mailbox=}."
+                )
                 account.root.effective_rights.read  # noqa: B018 pylint: disable=E1101
+                demisto.info(
+                    f"get_account_autodiscover: EWS call [GetFolder root/effective_rights] finished - "
+                    f"cached connection valid for {target_mailbox=}."
+                )
                 return account
             except Exception as e:
                 # fixing flake8 correction where original_exc is assigned but unused
                 original_exc = e
 
         try:
+            demisto.info(f"get_account_autodiscover: EWS call [Autodiscover] starting for {self.account_email=}.")
             account = Account(
                 primary_smtp_address=self.account_email,
                 autodiscover=True,
                 credentials=self.credentials,
                 access_type=self.access_type,
             )
+            demisto.info(f"get_account_autodiscover: EWS call [Autodiscover] finished for {self.account_email=}.")
         except AutoDiscoverFailed:
             raise DemistoException("Auto discovery failed. Check credentials or configure manually")
 
@@ -608,7 +656,15 @@ class EWSClient:
             item_ids = [item_ids]
 
         items = [Item(id=x) for x in item_ids]
+        demisto.info(
+            f"get_items_from_mailbox: EWS call [GetItem] INPUT - account={summarize_ews_object(account)}, "
+            f"requested {len(items)} item id(s): {item_ids}"
+        )
         result = list(account.fetch(ids=items))
+        demisto.info(
+            f"get_items_from_mailbox: EWS call [GetItem] OUTPUT - received {len(result)} item(s): "
+            f"{summarize_ews_object(result)}"
+        )
         result = [x for x in result if not (isinstance(x, ErrorItemNotFound | ErrorInvalidIdMalformed))]
         if len(result) != len(item_ids):
             result_ids = {item.id for item in result}
@@ -695,25 +751,51 @@ class EWSClient:
                 return account.root._folders_map[path]
 
         if is_public:
+            demisto.info(
+                f"get_folder_by_path: EWS call [GetFolder public_folders_root] INPUT - {path=}, {is_public=}, "
+                f"version={self.version}, account={summarize_ews_object(account)}."
+            )
             folder = account.public_folders_root
+            demisto.info(
+                f"get_folder_by_path: EWS call [GetFolder public_folders_root] OUTPUT - {summarize_ews_object(folder)}."
+            )
         elif self.version == "O365" and path == "AllItems":
             # AllItems is only available on Office365, directly under root
+            demisto.info(
+                f"get_folder_by_path: EWS call [GetFolder root] INPUT - {path=}, version={self.version}, "
+                f"account={summarize_ews_object(account)}."
+            )
             folder = account.root
+            demisto.info(f"get_folder_by_path: EWS call [GetFolder root] OUTPUT - {summarize_ews_object(folder)}.")
         else:
             # Default, contains all of the standard folders (Inbox, Calendar, trash, etc.)
+            demisto.info(
+                f"get_folder_by_path: EWS call [GetFolder root.tois] INPUT - {path=}, version={self.version}, "
+                f"account={summarize_ews_object(account)}."
+            )
             folder = account.root.tois
+            demisto.info(f"get_folder_by_path: EWS call [GetFolder root.tois] OUTPUT - {summarize_ews_object(folder)}.")
 
         path = path.replace("/", "\\")
         path_parts = path.split("\\")
         for part in path_parts:
             try:
-                demisto.debug(f"resolving {part=} {path_parts=}")
+                demisto.info(
+                    f"get_folder_by_path: EWS call [FindFolder] INPUT - resolving {part=} of {path_parts=} "
+                    f"under parent={summarize_ews_object(folder)}."
+                )
                 folder = folder // part
+                demisto.info(
+                    f"get_folder_by_path: EWS call [FindFolder] OUTPUT - resolved {part=} to {summarize_ews_object(folder)}."
+                )
             except TRANSIENT_SERVER_ERRORS:
-                demisto.debug(f"Transient error while resolving {part=} of {path_parts=}, propagating.\n{traceback.format_exc()}")
+                demisto.info(
+                    f"get_folder_by_path: EWS call [FindFolder] transient error while resolving {part=} of "
+                    f"{path_parts=}, propagating.\n{traceback.format_exc()}"
+                )
                 raise
             except Exception as e:
-                demisto.debug(f"got error {e}")
+                demisto.info(f"get_folder_by_path: EWS call [FindFolder] failed while resolving {part=} of {path_parts=}: {e}")
                 raise ValueError(f"No such folder {path_parts}") from e
         return folder
 
@@ -1428,7 +1510,9 @@ def mark_item_as_read(client: EWSClient, args: dict) -> CommandResults:
         demisto.debug(f"mark_item_as_read: saving {item.id=} | {item.changekey=}")
 
         try:
+            demisto.info(f"mark_item_as_read: EWS call [UpdateItem] INPUT - {is_read=}, item={summarize_ews_object(item)}.")
             item.save()
+            demisto.info(f"mark_item_as_read: EWS call [UpdateItem] OUTPUT - saved item={summarize_ews_object(item)}.")
         except ErrorIrresolvableConflict as e:
             demisto.error(
                 f"mark_item_as_read: change key conflict for {item.id=} | {item.changekey=}: {e}. "
@@ -1436,9 +1520,17 @@ def mark_item_as_read(client: EWSClient, args: dict) -> CommandResults:
             )
             time.sleep(MARK_AS_READ_RETRY_DELAY)  # pylint: disable=sleep-exists
             try:
+                demisto.info(f"mark_item_as_read: EWS call [GetItem refresh] INPUT - item={summarize_ews_object(item)}.")
                 item.refresh()
+                demisto.info(f"mark_item_as_read: EWS call [GetItem refresh] OUTPUT - item={summarize_ews_object(item)}.")
                 item.is_read = is_read
+                demisto.info(
+                    f"mark_item_as_read: EWS call [UpdateItem retry] INPUT - {is_read=}, item={summarize_ews_object(item)}."
+                )
                 item.save()
+                demisto.info(
+                    f"mark_item_as_read: EWS call [UpdateItem retry] OUTPUT - saved item={summarize_ews_object(item)}."
+                )
                 demisto.debug(f"mark_item_as_read: retry succeeded for {item.id=}")
             except ErrorIrresolvableConflict as retry_error:
                 demisto.error(
