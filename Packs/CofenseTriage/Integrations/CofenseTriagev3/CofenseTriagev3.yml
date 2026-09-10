@@ -1856,7 +1856,7 @@ script:
     - description: |-
         Specify the ID of the playbook to retrieve a specific playbook.
 
-        Note: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be neglected.
+        Note: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be ignored.
 
         For example: 1.
       name: id
@@ -1870,7 +1870,7 @@ script:
       description: Specify a page number to retrieve the playbooks.
       name: page_number
     - description: |-
-        Specify the attributes to sort the playbooks.
+        A comma-separated list of attributes to sort the playbooks.
 
         Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order.
 
@@ -1887,20 +1887,20 @@ script:
         For example: {"name_cont":"Spam", "updated_at_gt":"2024-10-26T10:48:16.834Z"}.
       name: filter_by
     - description: |-
-        Specify the fields to retrieve the mentioned attributes only.
+        A comma-separated list of fields to retrieve the mentioned attributes only.
 
         For example: name, description.
       isArray: true
       name: fields_to_retrieve
     - description: |-
-        Specify the name of the playbook to retrieve the playbook.
+        A comma-separated list of playbook names to retrieve.
 
         For example: Spam Playbook.
       isArray: true
       name: name
     - auto: PREDEFINED
       description: |-
-        Specify whether the playbooks to be retrieved are active or not.
+        Whether the playbooks to be retrieved are active or not.
 
         Possible values are: true, false.
       name: active
@@ -1909,7 +1909,7 @@ script:
       - 'false'
     - auto: PREDEFINED
       description: |-
-        Specify whether the playbooks to be retrieved are only used for triggers.
+        Whether the playbooks to be retrieved are only used for triggers.
 
         Possible values are: true, false.
       name: trigger_only
@@ -1918,7 +1918,7 @@ script:
       - 'false'
     - auto: PREDEFINED
       description: |-
-        Specify whether the playbooks to be retrieved delete the report after all other actions are performed.
+        Whether the playbooks to be retrieved delete the report after all other actions are performed.
 
         Possible values are: true, false.
       name: delete_report
@@ -1926,13 +1926,13 @@ script:
       - 'true'
       - 'false'
     - description: |-
-        Specify the report tags assigned by the playbook to retrieve the playbook.
+        A comma-separated list of report tags assigned by the playbook to retrieve the playbook.
 
         For example: Spam, Phishing.
       isArray: true
       name: report_tags
     - description: |-
-        Specify the cluster tags assigned by the playbook to retrieve the playbook.
+        A comma-separated list of cluster tags assigned by the playbook to retrieve the playbook.
 
         For example: Spam, Phishing.
       isArray: true
@@ -1943,7 +1943,7 @@ script:
         Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
       name: created_at
     - description: |-
-        Specify the date and time of updation, from when to retrieve the playbooks.
+        Specify the date and time of the last update, from when to retrieve the playbooks.
 
         Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.
       name: updated_at
@@ -1984,19 +1984,19 @@ script:
       description: Whether to remove all existing cluster tags before the playbook adds any specified new ones.
       type: Boolean
     - contextPath: Cofense.Playbook.attributes.report_tags
-      description: The tags assigned to the report when a playbook runs against the reported email.
+      description: The list of tags assigned to the report when a playbook runs against the reported email.
       type: Unknown
     - contextPath: Cofense.Playbook.attributes.cluster_tags
-      description: The tags assigned to the cluster when a playbook runs against the reported email.
+      description: The list of tags assigned to the cluster when a playbook runs against the reported email.
       type: Unknown
     - contextPath: Cofense.Playbook.attributes.delete_report
       description: Whether to delete the report after all other actions are performed.
       type: Boolean
     - contextPath: Cofense.Playbook.attributes.created_at
-      description: The date and time, in ISO 8601 format, when the resource was created.
+      description: The date and time, in ISO 8601 format, when the resource was created (e.g., 2026-08-15T12:34:56Z).
       type: Date
     - contextPath: Cofense.Playbook.attributes.updated_at
-      description: The date and time, in ISO 8601 format, when the resource was last updated.
+      description: The date and time, in ISO 8601 format, when the resource was last updated (e.g., 2026-08-15T12:34:56Z).
       type: Date
     - contextPath: Cofense.Playbook.relationships.owner.links.self
       description: The link to retrieve the owner who created the playbook.
@@ -2060,7 +2060,7 @@ script:
       type: String
   - arguments:
     - description: |-
-        Specify the comma-separated list of report IDs the playbook should execute against.
+        A comma-separated list of report IDs the playbook should execute against.
 
         Note: To retrieve report_ids, execute "cofense-report-list" command.
 
@@ -2089,7 +2089,7 @@ script:
       description: The unique key of the playbook execution, built by combining the report IDs, the playbook ID, and the execution time in UTC.
       type: String
     - contextPath: Cofense.PlaybookExecution.execution_time
-      description: The time in UTC at which the playbook was executed.
+      description: The time in UTC at which the playbook was executed (e.g., 2026-08-15T12:34:56Z).
       type: Date
   dockerimage: demisto/python3:3.12.14.12844876
   isfetch: true

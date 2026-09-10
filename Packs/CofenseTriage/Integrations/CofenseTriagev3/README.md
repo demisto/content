@@ -2804,20 +2804,20 @@ Retrieves playbooks based on the filter values provided in the command arguments
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Specify the ID of the playbook to retrieve a specific playbook.<br><br>Note: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be neglected.<br><br>For example: 1. | Optional |
-| page_size | Specify the number of playbooks to retrieve per page.<br><br>Note: Possible values are between 1 and 200. Default is 20. | Optional |
+| id | Specify the ID of the playbook to retrieve a specific playbook.<br/><br/>Note: If 'id' argument is provided, then apart from 'fields_to_retrieve', all arguments will be ignored.<br/><br/>For example: 1. | Optional |
+| page_size | Specify the number of playbooks to retrieve per page.<br/><br/>Note: Possible values are between 1 and 200. Default is 20. | Optional |
 | page_number | Specify a page number to retrieve the playbooks. Default is 1. | Optional |
-| sort_by | Specify the attributes to sort the playbooks.<br><br>Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order.<br><br>For example: -name, created_at. | Optional |
-| filter_by | Specify the filters to filter the list of playbooks by attribute values.<br><br>Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Add backslash(\\) before quotes.<br><br>Format accepted: \{"attribute1_operator": "value1, value2", "attribute2_operator" : "value3, value4"\}<br><br>For example: \{"name_cont":"Spam", "updated_at_gt":"2024-10-26T10:48:16.834Z"\}. | Optional |
-| fields_to_retrieve | Specify the fields to retrieve the mentioned attributes only.<br><br>For example: name, description. | Optional |
-| name | Specify the name of the playbook to retrieve the playbook.<br><br>For example: Spam Playbook. | Optional |
-| active | Specify whether the playbooks to be retrieved are active or not.<br><br>Possible values are: true, false. | Optional |
-| trigger_only | Specify whether the playbooks to be retrieved are only used for triggers.<br><br>Possible values are: true, false. | Optional |
-| delete_report | Specify whether the playbooks to be retrieved delete the report after all other actions are performed.<br><br>Possible values are: true, false. | Optional |
-| report_tags | Specify the report tags assigned by the playbook to retrieve the playbook.<br><br>For example: Spam, Phishing. | Optional |
-| cluster_tags | Specify the cluster tags assigned by the playbook to retrieve the playbook.<br><br>For example: Spam, Phishing. | Optional |
-| created_at | Specify the date and time of creation, from when to retrieve the playbooks.<br><br>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional |
-| updated_at | Specify the date and time of updation, from when to retrieve the playbooks.<br><br>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional |
+| sort_by | A comma-separated list of attributes to sort the playbooks.<br/><br/>Note: The default sort order for an attribute is ascending. Prefix the attributes with a hyphen to sort in descending order.<br/><br/>For example: -name, created_at. | Optional |
+| filter_by | Specify the filters to filter the list of playbooks by attribute values.<br/><br/>Note: Enter values in key-value JSON format. To separate multiple values of a single attribute, use commas. Add backslash(\) before quotes.<br/><br/>Format accepted: {"attribute1_operator": "value1, value2", "attribute2_operator" : "value3, value4"}<br/><br/>For example: {"name_cont":"Spam", "updated_at_gt":"2024-10-26T10:48:16.834Z"}. | Optional |
+| fields_to_retrieve | A comma-separated list of fields to retrieve the mentioned attributes only.<br/><br/>For example: name, description. | Optional |
+| name | A comma-separated list of playbook names to retrieve.<br/><br/>For example: Spam Playbook. | Optional |
+| active | Whether the playbooks to be retrieved are active or not.<br/><br/>Possible values are: true, false. Possible values are: true, false. | Optional |
+| trigger_only | Whether the playbooks to be retrieved are only used for triggers.<br/><br/>Possible values are: true, false. Possible values are: true, false. | Optional |
+| delete_report | Whether the playbooks to be retrieved delete the report after all other actions are performed.<br/><br/>Possible values are: true, false. Possible values are: true, false. | Optional |
+| report_tags | A comma-separated list of report tags assigned by the playbook to retrieve the playbook.<br/><br/>For example: Spam, Phishing. | Optional |
+| cluster_tags | A comma-separated list of cluster tags assigned by the playbook to retrieve the playbook.<br/><br/>For example: Spam, Phishing. | Optional |
+| created_at | Specify the date and time of creation, from when to retrieve the playbooks.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional |
+| updated_at | Specify the date and time of the last update, from when to retrieve the playbooks.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | Optional |
 
 #### Context Output
 
@@ -2834,11 +2834,11 @@ Retrieves playbooks based on the filter values provided in the command arguments
 | Cofense.Playbook.attributes.add_rule_tags_to_report_tags | Boolean | Whether to add tags from matching rules to the report when the report is categorized. |
 | Cofense.Playbook.attributes.remove_existing_report_tags | Boolean | Whether to remove all existing report tags before the playbook adds any specified new ones. |
 | Cofense.Playbook.attributes.remove_existing_cluster_tags | Boolean | Whether to remove all existing cluster tags before the playbook adds any specified new ones. |
-| Cofense.Playbook.attributes.report_tags | Unknown | The tags assigned to the report when a playbook runs against the reported email. |
-| Cofense.Playbook.attributes.cluster_tags | Unknown | The tags assigned to the cluster when a playbook runs against the reported email. |
+| Cofense.Playbook.attributes.report_tags | Unknown | The list of tags assigned to the report when a playbook runs against the reported email. |
+| Cofense.Playbook.attributes.cluster_tags | Unknown | The list of tags assigned to the cluster when a playbook runs against the reported email. |
 | Cofense.Playbook.attributes.delete_report | Boolean | Whether to delete the report after all other actions are performed. |
-| Cofense.Playbook.attributes.created_at | Date | The date and time, in ISO 8601 format, when the resource was created. |
-| Cofense.Playbook.attributes.updated_at | Date | The date and time, in ISO 8601 format, when the resource was last updated. |
+| Cofense.Playbook.attributes.created_at | Date | The date and time, in ISO 8601 format, when the resource was created \(e.g., 2026-08-15T12:34:56Z\). |
+| Cofense.Playbook.attributes.updated_at | Date | The date and time, in ISO 8601 format, when the resource was last updated \(e.g., 2026-08-15T12:34:56Z\). |
 | Cofense.Playbook.relationships.owner.links.self | String | The link to retrieve the owner who created the playbook. |
 | Cofense.Playbook.relationships.owner.links.related | String | The link to retrieve the detailed information of the owner who created the playbook. |
 | Cofense.Playbook.relationships.owner.data.type | String | The type of the owner associated with the playbook. |
@@ -3035,8 +3035,7 @@ Retrieves playbooks based on the filter values provided in the command arguments
 ### cofense-playbook-execute
 
 ***
-Processes the specified reports through an existing playbook.
-Note: This command requires at least the Triage Operator role.
+Processes the specified reports through an existing playbook. Note: This command requires at least the Triage Operator role.
 
 #### Base Command
 
@@ -3046,8 +3045,8 @@ Note: This command requires at least the Triage Operator role.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_ids | Specify the comma-separated list of report IDs the playbook should execute against.<br><br>Note: To retrieve report_ids, execute "cofense-report-list" command.<br><br>For example: 1,2,3. | Required |
-| playbook_id | Specify the ID of an existing playbook to execute against the specified reports.<br><br>Note: To retrieve playbook_id, execute "cofense-playbook-list" command.<br><br>For example: 3. | Required |
+| report_ids | A comma-separated list of report IDs the playbook should execute against.<br/><br/>Note: To retrieve report_ids, execute "cofense-report-list" command.<br/><br/>For example: 1,2,3. | Required |
+| playbook_id | Specify the ID of an existing playbook to execute against the specified reports.<br/><br/>Note: To retrieve playbook_id, execute "cofense-playbook-list" command.<br/><br/>For example: 3. | Required |
 
 #### Context Output
 
@@ -3056,7 +3055,7 @@ Note: This command requires at least the Triage Operator role.
 | Cofense.PlaybookExecution.report_ids | Number | The unique identifiers of the reports the playbook was executed against. |
 | Cofense.PlaybookExecution.playbook_id | Number | The unique identifier of the executed playbook. |
 | Cofense.PlaybookExecution.execution_key | String | The unique key of the playbook execution, built by combining the report IDs, the playbook ID, and the execution time in UTC. |
-| Cofense.PlaybookExecution.execution_time | Date | The time in UTC at which the playbook was executed. |
+| Cofense.PlaybookExecution.execution_time | Date | The time in UTC at which the playbook was executed \(e.g., 2026-08-15T12:34:56Z\). |
 
 #### Command Example
 
