@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: symantec_cloud_soc_ModelingRule
+name: Symantec Cloud SOC Modeling Rule
+rules: ''
+schema: ''
+tags: SymantecCloudSOC
+supportedModules:
+- xsiam
