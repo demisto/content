@@ -376,6 +376,244 @@ script:
       description: 'A comma-separated list of modes by which to filter (path exclusions only), for example: "suppress".'
       type: string
   - arguments:
+    - description: 'List of exclusion IDs to filter by, for example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: ids
+    - description: 'List of Account IDs to filter by, for example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: account_ids
+    - description: 'List of Site IDs to filter by, for example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: site_ids
+    - auto: PREDEFINED
+      description: List of OS types to filter by.
+      isArray: true
+      name: os_types
+      predefined:
+      - windows
+      - windows_legacy
+      - macos
+      - linux
+    - auto: PREDEFINED
+      description: List of exclusion mode types to filter by.
+      isArray: true
+      name: mode_type
+      predefined:
+      - suppression
+      - agent_interoperability
+      - binary_vault
+      - endpoint
+      - all
+    - description: Free-text filter by exclusion value.
+      name: value_contains
+    - description: Free-text filter by exclusion name.
+      name: exclusion_name_contains
+    - defaultValue: "false"
+      description: Return exclusions from children scope levels. Default is false.
+      name: include_children
+    - defaultValue: "false"
+      description: Return exclusions from parent scope levels. Default is false.
+      name: include_parents
+    - description: Set to true to filter for tenant scope only.
+      name: tenant
+    - defaultValue: "10"
+      description: Maximum number of items to return (1-1000).
+      name: limit
+    - description: Cursor position returned by the last request, used to paginate beyond 1000 items.
+      name: cursor
+    description: Lists all unified exclusions that match the specified input filter. Uses the v2.1 unified-exclusions endpoint.
+    name: sentinelone-get-unified-exclusions
+    outputs:
+    - contextPath: SentinelOne.UnifiedExclusions.ID
+      description: The exclusion item ID.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Name
+      description: The exclusion item name.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Type
+      description: The exclusion mode type.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Value
+      description: Value of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.OsType
+      description: Operating system type of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Description
+      description: Description of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Source
+      description: Source of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.CreatedAt
+      description: Timestamp when the exclusion item was created.
+      type: date
+    - contextPath: SentinelOne.UnifiedExclusions.UpdatedAt
+      description: Timestamp when the exclusion item was last updated.
+      type: date
+    - contextPath: SentinelOne.UnifiedExclusions.UserName
+      description: Username of the user who created the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Conditions
+      description: Conditions applied to the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.ThreatType
+      description: Threat type associated with the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Engines
+      description: Engines associated with the exclusion item.
+      type: string
+  - arguments:
+    - description: Name of the exclusion item.
+      name: exclusion_name
+      required: true
+    - auto: PREDEFINED
+      description: Operating system type.
+      name: os_type
+      predefined:
+      - windows
+      - windows_legacy
+      - macos
+      - linux
+      required: true
+    - auto: PREDEFINED
+      description: Exclusion mode type.
+      name: mode_type
+      predefined:
+      - suppression
+      - agent_interoperability
+      - binary_vault
+      - all
+      required: true
+    - auto: PREDEFINED
+      description: Exclusion type that determines how the value is interpreted.
+      name: exclusion_type
+      predefined:
+      - file_type
+      - path
+      - white_hash
+      - certificate
+      - browser
+      required: true
+    - description: The exclusion value, for example a file path or hash.
+      name: value
+      required: true
+    - auto: PREDEFINED
+      description: Scope level for the exclusion.
+      name: scope_level
+      predefined:
+      - group
+      - site
+      - account
+      - tenant
+      required: true
+    - description: ID of the scope (group, site, or account). Not required when scope_level is tenant.
+      name: scope_level_id
+    - auto: PREDEFINED
+      description: Reason for creating the exclusion.
+      name: reason
+      predefined:
+      - performance_issue
+      - false_positive
+      - other
+      required: true
+    - description: Description of the exclusion item.
+      name: description
+    - description: Threat type associated with the exclusion, for example "EDR".
+      name: threat_type
+    - description: Engine associated with the exclusion, for example "suppress".
+      name: engines
+    - auto: PREDEFINED
+      description: Path exclusion type. Applies to path exclusions only.
+      name: path_exclusion_type
+      predefined:
+      - file
+      - folder
+      - subfolder
+    - description: SHA-256 value associated with the exclusion.
+      name: sha256_value
+    - description: Whether the exclusion applies to child processes.
+      name: child_process
+    description: Creates a new unified exclusion using a type and value (e.g. path, hash, certificate). Uses the v2.1 unified-exclusions endpoint.
+    name: sentinelone-create-unified-exclusion
+    outputs:
+    - contextPath: SentinelOne.UnifiedExclusions.ID
+      description: The created exclusion item ID.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Name
+      description: The exclusion item name.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Type
+      description: The exclusion type (e.g. path, white_hash).
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Value
+      description: The exclusion value.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.ModeType
+      description: The exclusion mode type (e.g. suppression).
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.OsType
+      description: Operating system type of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Description
+      description: Description of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.ThreatType
+      description: Threat type associated with the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Engines
+      description: Engine associated with the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.PathExclusionType
+      description: Path exclusion type (e.g. file, folder).
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Sha256Value
+      description: SHA-256 value associated with the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.Source
+      description: Source of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.ScopeName
+      description: Scope name of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.ScopePath
+      description: Full scope path of the exclusion item.
+      type: string
+    - contextPath: SentinelOne.UnifiedExclusions.CreatedAt
+      description: Timestamp when the exclusion item was created.
+      type: date
+    - contextPath: SentinelOne.UnifiedExclusions.UpdatedAt
+      description: Timestamp when the exclusion item was last updated.
+      type: date
+    - contextPath: SentinelOne.UnifiedExclusions.UserName
+      description: Username of the user who created the exclusion item.
+      type: string
+  - arguments:
+    - description: 'A comma-separated list of unified exclusion IDs to delete, for example: "225494730938493804,225494730938493915".'
+      isArray: true
+      name: ids
+      required: true
+    - auto: PREDEFINED
+      description: A comma-separated list of exclusion types corresponding to each ID (must match the order of ids).
+      isArray: true
+      name: exclusion_types
+      predefined:
+      - browser
+      - certificate
+      - commandline
+      - container_native
+      - file_type
+      - idr
+      - path
+      - white_hash
+      required: true
+    description: Deletes unified exclusion items by their IDs and types. Uses the v2.1 unified-exclusions endpoint.
+    name: sentinelone-delete-unified-exclusions
+    outputs:
+    - contextPath: SentinelOne.UnifiedExclusions.Deleted.Affected
+      description: Number of exclusion items successfully deleted.
+      type: number
+  - arguments:
     - description: The content hash.
       name: hash
       required: true
