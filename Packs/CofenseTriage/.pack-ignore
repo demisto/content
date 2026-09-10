@@ -64,6 +64,7 @@ png
 rgba
 Onboarder
 nocase
+UTC
 
 [file:playbook-Report_Categorization_-_Cofense_Triage_v3.yml]
 ignore=GR107
