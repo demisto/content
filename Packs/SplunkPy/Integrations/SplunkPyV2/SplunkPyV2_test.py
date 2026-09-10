@@ -2705,6 +2705,33 @@ def test_edit_finding_event__failed_to_update(mocker):
     assert "Failed to update Splunk ES event ID100: ValueError: Invalid owner value." in error_message
 
 
+def test_splunk_edit_event_command_forwards_note_to_update(mocker):
+    """
+    Given
+    - splunk-finding-event-edit args with status and a note.
+
+    When
+    - splunk_edit_event_command is called.
+
+    Then
+    - The note is forwarded to update_investigation_or_finding (which centralizes the version-aware
+      note handling), instead of being applied via a separate add_investigation_note call here.
+    """
+    test_args = {"event_ids": "ID100", "status": "In Progress", "note": "Handled by SOC"}
+    mock_update = mocker.patch.object(splunk, "update_investigation_or_finding")
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "debug")
+
+    splunk.splunk_edit_event_command(service=MagicMock(), args=test_args)
+
+    mock_update.assert_called_once()
+    call_kwargs = mock_update.call_args.kwargs
+    assert call_kwargs["investigation_or_finding_id"] == "ID100"
+    assert call_kwargs["note"] == "Handled by SOC"
+    # status label mapped to its id
+    assert call_kwargs["status"] == splunk.DEFAULT_STATUSES["In Progress"]
+
+
 NOTABLE = {
     "rule_name": "string",
     "rule_title": "string",
@@ -4815,8 +4842,10 @@ def test_update_remote_system_command_with_note_in_delta(mocker):
         - update_remote_system_command is called
 
     Then:
-        - add_investigation_note is called with the note content
-        - Note includes COMMENT_MIRRORED_FROM_XSOAR marker
+        - The note is forwarded to update_investigation_or_finding (which centralizes note
+          handling: embedding it in the same request on ES >=8.4, or adding it via a separate
+          call on older versions).
+        - Note includes COMMENT_MIRRORED_FROM_XSOAR marker.
     """
     # Setup
     finding_id = "test_finding_note"
@@ -4836,8 +4865,8 @@ def test_update_remote_system_command_with_note_in_delta(mocker):
     mock_mapper = MagicMock()
     mock_mapper.should_map = False
 
-    mocker.patch("SplunkPyV2.update_investigation_or_finding")
-    mock_add_note = mocker.patch("SplunkPyV2.add_investigation_note")
+    mocker.patch("SplunkPyV2.get_enterprise_security_version", return_value="8.4.0")
+    mock_update = mocker.patch("SplunkPyV2.update_investigation_or_finding")
     mocker.patch.object(demisto, "debug")
 
     # Execute
@@ -4845,11 +4874,11 @@ def test_update_remote_system_command_with_note_in_delta(mocker):
 
     # Verify
     assert result == finding_id
-    mock_add_note.assert_called_once()
-    call_args = mock_add_note.call_args
+    mock_update.assert_called_once()
+    call_args = mock_update.call_args
     assert call_args[1]["investigation_or_finding_id"] == finding_id
-    assert note_content in call_args[1]["content"]
-    assert splunk.COMMENT_MIRRORED_FROM_XSOAR in call_args[1]["content"]
+    assert note_content in call_args[1]["note"]
+    assert splunk.COMMENT_MIRRORED_FROM_XSOAR in call_args[1]["note"]
 
 
 def test_update_remote_system_command_with_entries(mocker):
@@ -5039,11 +5068,11 @@ def test_update_remote_system_command_api_error(mocker):
 
 def test_update_remote_system_command_note_api_error(mocker):
     """
-    Test update_remote_system_command when add_investigation_note fails.
+    Test update_remote_system_command when the update (which now carries the note) fails.
 
     Given:
         - Delta with note field
-        - add_investigation_note raises an exception
+        - update_investigation_or_finding raises an exception (note handling is centralized there)
 
     When:
         - update_remote_system_command is called
@@ -5069,9 +5098,9 @@ def test_update_remote_system_command_note_api_error(mocker):
     mock_mapper = MagicMock()
     mock_mapper.should_map = False
 
-    mocker.patch("SplunkPyV2.update_investigation_or_finding")
     error_message = "Note API Error"
-    mock_add_note = mocker.patch("SplunkPyV2.add_investigation_note", side_effect=Exception(error_message))
+    mocker.patch("SplunkPyV2.get_enterprise_security_version", return_value="8.4.0")
+    mock_update = mocker.patch("SplunkPyV2.update_investigation_or_finding", side_effect=Exception(error_message))
     mock_error = mocker.patch.object(demisto, "error")
     mocker.patch.object(demisto, "debug")
 
@@ -5080,7 +5109,7 @@ def test_update_remote_system_command_note_api_error(mocker):
 
     # Verify
     assert result == finding_id
-    mock_add_note.assert_called_once()
+    mock_update.assert_called_once()
     mock_error.assert_called()
     error_call_args = mock_error.call_args[0][0]
     assert finding_id in error_call_args
@@ -6109,6 +6138,176 @@ def test_update_investigation_or_finding_with_finding_time():
         body=json.dumps({"status": "closed"}),
         notable_time=finding_time,
     )
+
+
+def test_update_investigation_or_finding_note_embedded_on_es_8_4(mocker):
+    """
+    Given:
+        - A Splunk ES tenant reporting version 8.4.0 (>= 8.4).
+        - A status update together with a note.
+    When:
+        - update_investigation_or_finding is called with a note.
+    Then:
+        - The note is embedded as an incident_note field (with nested content) in the same
+          update request, satisfying the MC_0206 mandatory-note constraint.
+        - service.post is called exactly once and no separate add_investigation_note call is made.
+    """
+    mocker.patch("SplunkPyV2.get_enterprise_security_version", return_value="8.4.0")
+    mock_add_note = mocker.patch("SplunkPyV2.add_investigation_note")
+    mock_service = MagicMock()
+    expected_result = {"id": "finding-abc", "status": "105"}
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = json.dumps(expected_result).encode()
+    mock_service.post.return_value = mock_response
+
+    result = splunk.update_investigation_or_finding(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+        status="105",
+        note="Investigated and resolved",
+    )
+
+    assert result == expected_result
+    mock_service.post.assert_called_once_with(
+        "public/v2/investigations/finding-abc",
+        body=json.dumps({"status": "105", "incident_note": {"content": "Investigated and resolved"}}),
+    )
+    mock_add_note.assert_not_called()
+
+
+def test_update_investigation_or_finding_note_separate_on_es_8_3(mocker):
+    """
+    Given:
+        - A Splunk ES tenant reporting version 8.3.1 (< 8.4, incident_note unsupported).
+        - A status update together with a note.
+    When:
+        - update_investigation_or_finding is called with a note.
+    Then:
+        - The update request body does NOT contain an incident_note field.
+        - The note is applied via a separate add_investigation_note call after the update
+          (legacy behavior preserved).
+    """
+    mocker.patch("SplunkPyV2.get_enterprise_security_version", return_value="8.3.1")
+    mock_add_note = mocker.patch("SplunkPyV2.add_investigation_note")
+    mock_service = MagicMock()
+    expected_result = {"id": "finding-abc", "status": "105"}
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = json.dumps(expected_result).encode()
+    mock_service.post.return_value = mock_response
+
+    result = splunk.update_investigation_or_finding(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+        status="105",
+        note="Investigated and resolved",
+        finding_time="2024-01-15T12:34:56.000+00:00",
+    )
+
+    assert result == expected_result
+    mock_service.post.assert_called_once_with(
+        "public/v2/investigations/finding-abc",
+        body=json.dumps({"status": "105"}),
+        notable_time="2024-01-15T12:34:56.000+00:00",
+    )
+    mock_add_note.assert_called_once_with(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+        content="Investigated and resolved",
+        finding_time="2024-01-15T12:34:56.000+00:00",
+    )
+
+
+def test_update_investigation_or_finding_note_only_on_es_8_3(mocker):
+    """
+    Given:
+        - A Splunk ES tenant reporting version 8.3.0 (< 8.4).
+        - Only a note is provided (no other fields to update).
+    When:
+        - update_investigation_or_finding is called with just a note.
+    Then:
+        - No field update request is sent (service.post is not called for a field update).
+        - The note is applied via add_investigation_note only.
+    """
+    mocker.patch("SplunkPyV2.get_enterprise_security_version", return_value="8.3.0")
+    add_note_result = {"note": "added"}
+    mock_add_note = mocker.patch("SplunkPyV2.add_investigation_note", return_value=add_note_result)
+    mock_service = MagicMock()
+
+    result = splunk.update_investigation_or_finding(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+        note="Just a note",
+    )
+
+    assert result == add_note_result
+    mock_service.post.assert_not_called()
+    mock_add_note.assert_called_once_with(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+        content="Just a note",
+        finding_time=None,
+    )
+
+
+def test_update_investigation_or_finding_note_only_on_es_8_4(mocker):
+    """
+    Given:
+        - A Splunk ES tenant reporting version 8.4.2 (>= 8.4).
+        - Only a note is provided (no other fields to update).
+    When:
+        - update_investigation_or_finding is called with just a note.
+    Then:
+        - Since there are no fields to update, the note is applied via add_investigation_note
+          (an empty update request with only incident_note is not sent).
+    """
+    mocker.patch("SplunkPyV2.get_enterprise_security_version", return_value="8.4.2")
+    add_note_result = {"note": "added"}
+    mock_add_note = mocker.patch("SplunkPyV2.add_investigation_note", return_value=add_note_result)
+    mock_service = MagicMock()
+
+    result = splunk.update_investigation_or_finding(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+        note="Just a note",
+    )
+
+    assert result == add_note_result
+    mock_service.post.assert_not_called()
+    mock_add_note.assert_called_once()
+
+
+def test_update_investigation_or_finding_note_unknown_es_version(mocker):
+    """
+    Given:
+        - A Splunk ES tenant whose version cannot be determined ("unknown").
+        - A status update together with a note.
+    When:
+        - update_investigation_or_finding is called with a note.
+    Then:
+        - The version comparison fails safely (treated as < 8.4), so the note is NOT embedded
+          and is added via a separate add_investigation_note call.
+    """
+    mocker.patch("SplunkPyV2.get_enterprise_security_version", return_value="unknown")
+    mock_add_note = mocker.patch("SplunkPyV2.add_investigation_note")
+    mock_service = MagicMock()
+    expected_result = {"id": "finding-abc", "status": "105"}
+    mock_response = MagicMock()
+    mock_response.body.read.return_value = json.dumps(expected_result).encode()
+    mock_service.post.return_value = mock_response
+
+    result = splunk.update_investigation_or_finding(
+        service=mock_service,
+        investigation_or_finding_id="finding-abc",
+        status="105",
+        note="A note",
+    )
+
+    assert result == expected_result
+    mock_service.post.assert_called_once_with(
+        "public/v2/investigations/finding-abc",
+        body=json.dumps({"status": "105"}),
+    )
+    mock_add_note.assert_called_once()
 
 
 # =================================================================================
