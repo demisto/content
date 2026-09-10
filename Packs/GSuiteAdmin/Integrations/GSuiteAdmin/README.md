@@ -1945,7 +1945,7 @@ There is no context output for this command.
 ### gsuite-user-reset-password
 
 ***
-Retreive a group's details given a group key.
+Forces the user to change their password at next login, and optionally sets a temporary password for the user.
 
 ##### Required Permissions
 
@@ -1960,6 +1960,7 @@ Retreive a group's details given a group key.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user_key | One of the following: user email address, alias email address, or the unique user ID. | Required |
+| password | The temporary password to set for the user, which can contain any combination of ASCII characters (8 to 100 characters). The password will be sent as an MD5 hash. If not provided, the user's password remains unchanged, and only sets the "change password at next login" flag. | Optional |
 
 #### Context Output
 

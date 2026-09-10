@@ -1265,6 +1265,61 @@ def test_gsuite_reset_password(gsuite_client, mocker):
     assert command_result.outputs_prefix == "GSuite.User"
 
 
+def test_gsuite_reset_password_without_password_argument(gsuite_client, mocker):
+    """
+    Scenario: User reset password command executed without the optional password argument.
+
+    Given:
+    - Only a user_key argument.
+
+    When:
+    - Calling command gsuite_user_reset_password.
+
+    Then:
+    - Ensure the request body only forces a password change at next login and carries no password.
+    """
+
+    from GSuiteAdmin import user_reset_password_command
+
+    with open("test_data/user_password_reset_response.json") as file:
+        api_response = json.load(file)
+    http_request = mocker.patch("GSuiteAdmin.GSuiteClient.http_request", return_value=api_response)
+
+    user_reset_password_command(gsuite_client, {"user_key": "nikolic@demistodev.com"})
+
+    assert http_request.call_args.kwargs["body"] == {"changePasswordAtNextLogin": True}
+
+
+def test_gsuite_reset_password_with_temporary_password(gsuite_client, mocker):
+    """
+    Scenario: User reset password command executed with a temporary password.
+
+    Given:
+    - A user_key and a password argument.
+
+    When:
+    - Calling command gsuite_user_reset_password.
+
+    Then:
+    - Ensure the password is sent as an MD5 hash alongside the MD5 hashFunction and the change-at-next-login flag.
+    """
+    import hashlib
+
+    from GSuiteAdmin import user_reset_password_command
+
+    with open("test_data/user_password_reset_response.json") as file:
+        api_response = json.load(file)
+    http_request = mocker.patch("GSuiteAdmin.GSuiteClient.http_request", return_value=api_response)
+
+    user_reset_password_command(gsuite_client, {"user_key": "nikolic@demistodev.com", "password": "Temp@Pass123"})
+
+    assert http_request.call_args.kwargs["body"] == {
+        "changePasswordAtNextLogin": True,
+        "password": hashlib.md5(b"Temp@Pass123").hexdigest(),  # nosec
+        "hashFunction": "MD5",
+    }
+
+
 def test_chromebrowser_move_ou_command(gsuite_client, mocker):
     """
     Scenario: chromebrowserdevice move successful execution.
