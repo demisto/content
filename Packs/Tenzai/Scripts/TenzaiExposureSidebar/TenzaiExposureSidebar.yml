@@ -1,0 +1,22 @@
+comment: |-
+  Renders the Validate tab's left-column exposure detail: a Timeline card showing the lead's
+  status history (OPEN / IN_PROGRESS / BLOCKED … with timestamps). Reads the persisted Tenzai
+  Timeline grid field.
+commonfields:
+  id: TenzaiExposureSidebar
+  version: -1
+name: TenzaiExposureSidebar
+script: ''
+type: python
+subtype: python3
+tags:
+- dynamic-section
+timeout: '0'
+scripttarget: 0
+runas: DBotWeakRole
+dockerimage: demisto/python3:3.12.8.3296088
+enabled: true
+runonce: false
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

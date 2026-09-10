@@ -1,0 +1,856 @@
+{
+    "close": {
+        "sections": [
+            {
+                "description": "",
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_tenzaiissuevalidated",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tenzaiassessmentstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_closenotes",
+                        "isVisible": true
+                    }
+                ]
+            },
+            {
+                "description": "",
+                "isVisible": true,
+                "name": "Custom Fields",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "caseinfoid",
+                "name": "Alert Info",
+                "type": "custom",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-tenzai-case-details",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Case Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "type",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-case-details-type",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-case-details-severity",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "owner",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-case-details-owner",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourcebrand",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-case-details-sourcebrand",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "sourceinstance",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-case-details-sourceinstance",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "playbookid",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-case-details-playbookid",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ]
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-tenzai-verdict",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Tenzai Verdict",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "tenzaiissuevalidated",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-verdict-tenzaiissuevalidated",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tenzaiassessmentstatus",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-verdict-tenzaiassessmentstatus",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tenzaicreditusage",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-verdict-tenzaicreditusage",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tenzaiassessmentduration",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-verdict-tenzaiassessmentduration",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ]
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-tenzai-asset",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Affected Asset / Service",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 0,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "asmserviceid",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-asset-asmserviceid",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "asmassetid",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-asset-asmassetid",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ]
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-tenzai-remediation",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Remediation & References",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "tenzaiguidance",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-remediation-tenzaiguidance",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tenzaireferenceurl",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-remediation-tenzaireferenceurl",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ]
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-tenzai-timeline",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Timeline Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 2,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "occurred",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-timeline-occurred",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotcreated",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-timeline-dbotcreated",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotduedate",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-timeline-dbotduedate",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotmodified",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-timeline-dbotmodified",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-timeline-dbotclosed",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ]
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-tenzai-closing",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Closing Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 2,
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-closing-dbotclosed",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-closing-closereason",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 22,
+                                "id": "caseinfoid-tenzai-closing-closenotes",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ]
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-tenzai-notes",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Notes",
+                        "static": false,
+                        "type": "notes",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-tenzai-workplan",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Work Plan",
+                        "static": false,
+                        "type": "workplan",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "i": "caseinfoid-tenzai-indicators",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Indicators",
+                        "static": false,
+                        "type": "indicators",
+                        "w": 3,
+                        "x": 0,
+                        "y": 6,
+                        "query": "",
+                        "queryType": "input",
+                        "columns": [
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "indicator_type",
+                                "width": 120
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "value",
+                                "width": 300
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "score",
+                                "width": 120
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "firstSeen",
+                                "width": 275
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "lastSeen",
+                                "width": 275
+                            },
+                            {
+                                "displayed": true,
+                                "isDefault": true,
+                                "key": "timestamp",
+                                "width": 190
+                            }
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "tenzaivalidation",
+                "name": "Validate",
+                "type": "custom",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 5,
+                        "hideName": true,
+                        "i": "tenzaivalidation-actions",
+                        "isVisible": true,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Actions",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
+                        "y": 4,
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "tenzaiscanguidelines",
+                                "filters": [
+                                    [
+                                        {
+                                            "ignoreCase": false,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "tenzaiassessmentstatus"
+                                                }
+                                            },
+                                            "operator": "isEmpty",
+                                            "right": null,
+                                            "type": "shortText"
+                                        }
+                                    ]
+                                ],
+                                "height": 72,
+                                "id": "tenzai-scan-guidelines-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "service_id": {
+                                        "simple": "${alert.asmserviceid}"
+                                    },
+                                    "exposure_name": {
+                                        "simple": "${alert.name}"
+                                    },
+                                    "alert_internal_id": {
+                                        "simple": "${alert.id}"
+                                    },
+                                    "issue_description": {
+                                        "simple": "${alert.details}"
+                                    },
+                                    "guidelines": {
+                                        "simple": "${alert.tenzaiscanguidelines}"
+                                    },
+                                    "cve_id": {
+                                        "simple": "${alert.xdmvulnerabilitycveid}"
+                                    },
+                                    "rule_id": {
+                                        "simple": "${alert.ruleid}"
+                                    }
+                                },
+                                "buttonClass": "primary",
+                                "endCol": 6,
+                                "fieldId": "",
+                                "filters": [
+                                    [
+                                        {
+                                            "ignoreCase": false,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "tenzaiassessmentstatus"
+                                                }
+                                            },
+                                            "operator": "isEmpty",
+                                            "right": null,
+                                            "type": "shortText"
+                                        }
+                                    ]
+                                ],
+                                "height": 32,
+                                "hexColor": "#29B2FF",
+                                "id": "tenzai-start-validation-button",
+                                "index": 1,
+                                "name": "Start validation",
+                                "scriptId": "StartAgenticValidation",
+                                "sectionItemType": "button",
+                                "startCol": 4
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "tenzairevalidationguidelines",
+                                "filters": [
+                                    [
+                                        {
+                                            "ignoreCase": true,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "tenzaiassessmentstatus"
+                                                }
+                                            },
+                                            "operator": "isEqualString",
+                                            "right": {
+                                                "isContext": false,
+                                                "value": {
+                                                    "simple": "Complete"
+                                                }
+                                            },
+                                            "type": "shortText"
+                                        },
+                                        {
+                                            "ignoreCase": true,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "tenzaiassessmentstatus"
+                                                }
+                                            },
+                                            "operator": "isEqualString",
+                                            "right": {
+                                                "isContext": false,
+                                                "value": {
+                                                    "simple": "Error"
+                                                }
+                                            },
+                                            "type": "shortText"
+                                        }
+                                    ]
+                                ],
+                                "height": 72,
+                                "id": "tenzai-revalidation-guidelines-field",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "service_id": {
+                                        "simple": "${alert.asmserviceid}"
+                                    },
+                                    "exposure_name": {
+                                        "simple": "${alert.name}"
+                                    },
+                                    "alert_internal_id": {
+                                        "simple": "${alert.id}"
+                                    },
+                                    "issue_description": {
+                                        "simple": "${alert.details}"
+                                    },
+                                    "guidelines": {
+                                        "simple": "${alert.tenzairevalidationguidelines}"
+                                    },
+                                    "cve_id": {
+                                        "simple": "${alert.xdmvulnerabilitycveid}"
+                                    },
+                                    "rule_id": {
+                                        "simple": "${alert.ruleid}"
+                                    }
+                                },
+                                "buttonClass": "primary",
+                                "endCol": 6,
+                                "fieldId": "",
+                                "filters": [
+                                    [
+                                        {
+                                            "ignoreCase": true,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "tenzaiassessmentstatus"
+                                                }
+                                            },
+                                            "operator": "isEqualString",
+                                            "right": {
+                                                "isContext": false,
+                                                "value": {
+                                                    "simple": "Complete"
+                                                }
+                                            },
+                                            "type": "shortText"
+                                        },
+                                        {
+                                            "ignoreCase": true,
+                                            "left": {
+                                                "isContext": true,
+                                                "value": {
+                                                    "simple": "tenzaiassessmentstatus"
+                                                }
+                                            },
+                                            "operator": "isEqualString",
+                                            "right": {
+                                                "isContext": false,
+                                                "value": {
+                                                    "simple": "Error"
+                                                }
+                                            },
+                                            "type": "shortText"
+                                        }
+                                    ]
+                                ],
+                                "height": 32,
+                                "hexColor": "#29B2FF",
+                                "id": "tenzai-revalidate-button",
+                                "index": 3,
+                                "name": "Re-validate Exposure",
+                                "scriptId": "StartAgenticValidation",
+                                "sectionItemType": "button",
+                                "startCol": 4
+                            }
+                        ]
+                    },
+                    {
+                        "h": 4,
+                        "displayType": "ROW",
+                        "hideName": true,
+                        "i": "tenzaivalidation-summary",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Tenzai Validation",
+                        "query": "TenzaiValidationSummary",
+                        "queryType": "script",
+                        "static": false,
+                        "type": "dynamic",
+                        "w": 3,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "showEmptyFields": true
+            },
+            {
+                "id": "warRoom",
+                "name": "War Room",
+                "type": "warRoom"
+            },
+            {
+                "id": "workPlan",
+                "name": "Work Plan",
+                "type": "workPlan"
+            },
+            {
+                "id": "relatedIncidents",
+                "name": "Related Incidents",
+                "type": "relatedIncidents"
+            }
+        ]
+    },
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_name",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_labels",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_details",
+                        "isVisible": true
+                    }
+                ]
+            },
+            {
+                "description": "",
+                "isVisible": true,
+                "name": "Custom Fields",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
+    "group": "incident",
+    "id": "Tenzai Issue Layout",
+    "name": "Tenzai Issue Layout",
+    "quickView": {
+        "sections": [
+            {
+                "description": "",
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_type",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_severity",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_owner",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_sourcebrand",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_playbookid",
+                        "isVisible": true
+                    }
+                ]
+            },
+            {
+                "description": "",
+                "isVisible": true,
+                "name": "Tenzai Verdict",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_tenzaiissuevalidated",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tenzaiassessmentstatus",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tenzaicreditusage",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_tenzaiassessmentduration",
+                        "isVisible": true
+                    }
+                ]
+            },
+            {
+                "description": "",
+                "isVisible": true,
+                "name": "Timeline Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "",
+                "fields": [
+                    {
+                        "fieldId": "incident_occurred",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotcreated",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotduedate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbotmodified",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "incident_dbottotaltime",
+                        "isVisible": true
+                    }
+                ]
+            },
+            {
+                "description": "",
+                "isVisible": true,
+                "name": "Labels",
+                "query": null,
+                "queryType": "",
+                "readOnly": true,
+                "type": "labels",
+                "fields": [
+                    {
+                        "fieldId": "incident_labels",
+                        "isVisible": true
+                    }
+                ]
+            }
+        ]
+    },
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "description": "Layout for ASM exposures validated by Tenzai. The Alert Info tab groups case details, the Tenzai verdict, affected asset/service, remediation, timeline and closing into scannable sections; the Validate tab carries the Start/Re-validate actions and the Tenzai results panel (verdict hero, facts row, per-severity bar, and an expandable list of confirmed findings that open inline to their impact/assessment, linking to the full reproduction and fix guidance in Tenzai)."
+}

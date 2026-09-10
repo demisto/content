@@ -1,0 +1,241 @@
+id: Tenzai Agentic Issue Validation
+version: -1
+name: Tenzai Agentic Issue Validation
+description: |-
+  Validates an ASM-discovered exposure with Tenzai's agentic penetration testing.
+  Triggers a Tenzai validation assessment, polls until it completes, fetches the verdict,
+  and records the verdict in the Tenzai issue fields. It does not change the issue severity.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3f1c0a10-0000-4000-8000-000000000000
+    type: start
+    task:
+      id: 3f1c0a10-0000-4000-8000-000000000000
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 3f1c0a10-0000-4000-8000-000000000001
+    type: regular
+    task:
+      id: 3f1c0a10-0000-4000-8000-000000000001
+      version: -1
+      name: Start Tenzai validation
+      description: Triggers a Tenzai validation assessment for the exposure, stores its id, and marks the issue Running.
+      scriptName: StartAgenticValidation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      service_id:
+        complex:
+          root: alert
+          accessor: asmserviceid
+      exposure_name:
+        complex:
+          root: alert
+          accessor: name
+      alert_internal_id:
+        complex:
+          root: alert
+          accessor: id
+      issue_description:
+        complex:
+          root: alert
+          accessor: details
+      cve_id:
+        complex:
+          root: alert
+          accessor: xdmvulnerabilitycveid
+      rule_id:
+        complex:
+          root: alert
+          accessor: ruleid
+      poll:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 3f1c0a10-0000-4000-8000-000000000002
+    type: regular
+    task:
+      id: 3f1c0a10-0000-4000-8000-000000000002
+      version: -1
+      name: Poll Tenzai validation status
+      description: Polls the Tenzai assessment until it reaches a terminal state (Complete or Error).
+      script: Tenzai|||tenzai-get-scan
+      type: regular
+      iscommand: true
+      brand: Tenzai
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      id:
+        complex:
+          root: Tenzai.Scan
+          accessor: id
+      interval_in_seconds:
+        simple: "60"
+      timeout_in_seconds:
+        simple: "3600"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 3f1c0a10-0000-4000-8000-000000000003
+    type: regular
+    task:
+      id: 3f1c0a10-0000-4000-8000-000000000003
+      version: -1
+      name: Fetch result and write the verdict
+      description: >-
+        Fetches the terminal Tenzai verdict (scoped to this alert's exposure lead via the carried
+        correlation keys) and writes it to the issue through the shared writer — scalar fields, the
+        findings grid (with per-finding attribution), the timeline, and the cleared boolean verdict.
+        This is the same write path the ad-hoc button uses, so both paths persist identical results.
+      scriptName: StartAgenticValidation
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      scan_id_internal:
+        complex:
+          root: Tenzai.Scan
+          accessor: id
+      write_only:
+        simple: "true"
+      alert_id:
+        complex:
+          root: Tenzai.Scan
+          accessor: alert_id
+      cve:
+        complex:
+          root: Tenzai.Scan
+          accessor: cve
+      rule_id:
+        complex:
+          root: Tenzai.Scan
+          accessor: rule_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 3f1c0a10-0000-4000-8000-000000000007
+    type: title
+    task:
+      id: 3f1c0a10-0000-4000-8000-000000000007
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1160,
+        "width": 460,
+        "x": 230,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0
+marketplaces:
+- platform
+tests:
+- No tests (auto formatted)
