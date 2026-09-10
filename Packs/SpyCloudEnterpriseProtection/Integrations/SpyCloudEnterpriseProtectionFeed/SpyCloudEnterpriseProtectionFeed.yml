@@ -66,12 +66,13 @@ configuration:
   required: false
   type: 0
   section: Collect
-- additionalinfo: This parameter allows you to filter based on the numeric severity code.
-  defaultvalue: 20,25
+- additionalinfo: 'This parameter allows you to filter based on the numeric severity code. The codes map to the following record types: 2 = email_only, 5 = informational, 20 = breach, 25 = malware, 30 = access data. Each selected code creates incidents of the matching SpyCloud incident type.'
+  defaultvalue: 20,25,30
   display: Severity
   hidden: false
   name: severity
   options:
+  - '30'
   - '25'
   - '20'
   - '5'
@@ -152,7 +153,7 @@ configuration:
   required: false
   type: 0
   section: Collect
-description: Fetch SpyCloud watchlist data (breach and malware records) for daily monitoring, incident response, and mitigation.
+description: Fetch SpyCloud watchlist data (breach, malware and access records) for daily monitoring, incident response, and mitigation.
 display: SpyCloud Enterprise Protection Feed
 name: SpyCloudEnterpriseProtectionFeed
 script:

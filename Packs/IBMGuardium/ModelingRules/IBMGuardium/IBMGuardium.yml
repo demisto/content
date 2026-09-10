@@ -1,4 +1,5 @@
 fromversion: 8.5.0
+toversion: 8.14.0
 id: IBM_Guardium_ModelingRule
 name: IBM Guardium Modeling Rule
 rules: ''
