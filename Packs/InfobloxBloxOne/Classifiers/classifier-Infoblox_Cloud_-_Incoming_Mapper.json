@@ -370,6 +370,144 @@
                 }
             }
         },
+        "Infoblox Cloud IQ for TD Insight": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Incident Link": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incident_link",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Event Count": {
+                    "complex": {
+                        "filters": [],
+                        "root": "total_events",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Insight Evaluation End Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "evaluation_end_date",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Insight Evaluation Start Time": {
+                    "complex": {
+                        "filters": [],
+                        "root": "evaluation_start_date",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Insight ID": {
+                    "complex": {
+                        "filters": [],
+                        "root": "insight_id",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Insight Overview": {
+                    "complex": {
+                        "filters": [],
+                        "root": "overview",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Insight Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "status",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Key Recommendations": {
+                    "complex": {
+                        "filters": [],
+                        "root": "key_recommendations",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Threat Actors": {
+                    "complex": {
+                        "filters": [],
+                        "root": "threat_actors",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Threat Properties": {
+                    "complex": {
+                        "filters": [],
+                        "root": "threat_properties",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Time Saved Seconds": {
+                    "complex": {
+                        "filters": [],
+                        "root": "time_saved_seconds",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Top Assets": {
+                    "complex": {
+                        "filters": [],
+                        "root": "top_assets",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Top Indicators": {
+                    "complex": {
+                        "filters": [],
+                        "root": "top_indicators",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Total Assets": {
+                    "complex": {
+                        "filters": [],
+                        "root": "total_assets",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Total Indicators": {
+                    "complex": {
+                        "filters": [],
+                        "root": "total_indicators",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Total Users": {
+                    "complex": {
+                        "filters": [],
+                        "root": "total_users",
+                        "transformers": []
+                    }
+                },
+                "Infoblox Cloud Total Verified Assets": {
+                    "complex": {
+                        "filters": [],
+                        "root": "total_verified_assets",
+                        "transformers": []
+                    }
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "date_created",
+                        "transformers": []
+                    }
+                },
+                "Description": {
+                    "complex": {
+                        "filters": [],
+                        "root": "description",
+                        "transformers": []
+                    }
+                }
+            }
+        },
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
             "internalMapping": {
