@@ -1,21 +1,22 @@
-TwinWave’s threat analysis platform analyzes both URLs and files to detect credential phishing and malware threats. Our platform automatically navigates complex attack chains that attackers put in front of threats in order to evade analysis. In addition to detecting threats, the TwinWave platform generates actionable intelligence for threat hunting and other activities.
+TwinWave analyzes URLs and files to detect credential phishing and malware threats.
 
-Supported Cortex XSOAR versions: 6.0.0 and later.
+Supported Cortex XSOAR versions: 6.8.0 and later.
 
 ## Configure Twinwave in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| isFetch | Fetch incidents | False |
-| incidentType | Incident type | False |
-| api-token | Twinwave API token | True |
-| api-host | Twinwave API host. HTTPS is used automatically. | False |
-| first_fetch | Number of jobs to first fetch | False |
-| max_fetch |  | False |
-| source | Filter incidents by submission source. | False |
-| username | Filter UI incidents by username. Exact match only. \(Cannot use if source is all or api\) | False |
-| proxy | Use system proxy settings | False |
-| insecure | Trust any certificate \(not secure\) | False |
+| Fetch incidents | Fetch incidents | False |
+| Incident type | Incident type | False |
+| Incidents Fetch Interval |  | False |
+| Twinwave API token | Twinwave API token | True |
+| Twinwave API host | The Twinwave API host to use. HTTPS is used automatically. | False |
+| Number of jobs to first fetch | Number of jobs to first fetch | False |
+| Max Fetch |  | False |
+| Filter incidents by submission source. | Filter incidents by submission source. | False |
+| Filter UI incidents by username. Exact match only. \(Cannot use if source is all or api\) | Filter UI incidents by username. Exact match only. \(Cannot use if source is all or api\) | False |
+| Use system proxy settings | Use system proxy settings | False |
+| Trust any certificate \(not secure\) | Trust any certificate \(not secure\) | False |
 
 ## Commands
 
@@ -140,6 +141,25 @@ Download a completed job's PDF report to the War Room.
 | --- | --- | --- |
 | File.Name | Unknown | Name of the PDF report. |
 | File.EntryID | Unknown | Entry ID of the PDF report. |
+
+#### Command example
+
+```!twinwave-download-job-pdf job_id=123456```
+
+#### Context Example
+
+```json
+{
+    "File": {
+        "Name": "Twinwave job report 123456.pdf",
+        "EntryID": "sample-entry-id"
+    }
+}
+```
+
+#### Human Readable Output
+
+There is no human readable output.
 
 ### twinwave-get-job-normalized-forensics
 

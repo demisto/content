@@ -34,7 +34,7 @@ configuration:
   name: api-host
   type: 15
   required: false
-  additionalinfo: Select the Twinwave API host. HTTPS is used automatically.
+  additionalinfo: The Twinwave API host to use. HTTPS is used automatically.
   options:
   - api.twinwave.io
   - api.global2.twinwave.io
@@ -79,7 +79,7 @@ configuration:
   type: 8
   required: false
   section: Connect
-description: TwinWave’s threat analysis platform analyzes both URLs and files to detect credential phishing and malware threats. Our platform automatically navigates complex attack chains that attackers put in front of threats in order to evade analysis. In addition to detecting threats, the TwinWave platform generates actionable intelligence for threat hunting and other activities.
+description: TwinWave analyzes URLs and files to detect credential phishing and malware threats.
 display: Twinwave
 name: Twinwave
 script:
@@ -202,7 +202,7 @@ script:
     - name: task_id
       required: true
       description: The task ID.
-    description: "Get a Task's Raw Forensics."
+    description: "Gets a task's raw forensics."
     name: twinwave-get-task-raw-forensics
     outputs:
     - contextPath: Twinwave.TaskRawForensics
@@ -248,7 +248,7 @@ script:
       type: Unknown
   - arguments:
     - description: |-
-        Specify the string to search for in the specified field. (E.g. .exe or example.com).
+        The string to search for in the specified field (e.g., .exe or example.com).
       name: term
     - description: 'Enum: "filename" "url" "tag" "sha256" "md5".'
       name: field
@@ -289,11 +289,11 @@ script:
     - contextPath: Twinwave.TempArtifactURL.URL
       description: Temporary URL.
       type: Unknown
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/fastapi:0.125.0.10158186
   isfetch: true
   script: ''
   subtype: python3
   type: python
-fromversion: 6.0.0
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
