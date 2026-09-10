@@ -341,6 +341,12 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
             "compute.firewalls.get",
         ],
     ),
+    "gcp-compute-firewall-delete": (
+        GCPServices.COMPUTE,
+        [
+            "compute.firewalls.delete",
+        ],
+    ),
     "gcp-compute-snapshots-list": (
         GCPServices.COMPUTE,
         [
@@ -350,6 +356,19 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-snapshot-get": (
         GCPServices.COMPUTE,
         [
+            "compute.snapshots.get",
+        ],
+    ),
+    "gcp-compute-snapshot-delete": (
+        GCPServices.COMPUTE,
+        [
+            "compute.snapshots.delete",
+        ],
+    ),
+    "gcp-compute-snapshot-labels-set": (
+        GCPServices.COMPUTE,
+        [
+            "compute.snapshots.setLabels",
             "compute.snapshots.get",
         ],
     ),
@@ -384,6 +403,12 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     ),
     "gcp-compute-instance-start": (GCPServices.COMPUTE, ["compute.instances.start"]),
     "gcp-compute-instance-stop": (GCPServices.COMPUTE, ["compute.instances.stop"]),
+    "gcp-compute-instance-insert": (GCPServices.COMPUTE, ["compute.instances.create"]),
+    "gcp-compute-instance-delete": (GCPServices.COMPUTE, ["compute.instances.delete"]),
+    "gcp-compute-instance-reset": (GCPServices.COMPUTE, ["compute.instances.reset"]),
+    "gcp-compute-instance-metadata-set": (GCPServices.COMPUTE, ["compute.instances.setMetadata"]),
+    "gcp-compute-instance-machine-type-set": (GCPServices.COMPUTE, ["compute.instances.setMachineType"]),
+    "gcp-compute-instances-aggregated-list": (GCPServices.COMPUTE, ["compute.instances.list"]),
     "gcp-compute-instances-list": (GCPServices.COMPUTE, ["compute.instances.list"]),
     "gcp-compute-instance-get": (GCPServices.COMPUTE, ["compute.instances.get"]),
     "gcp-compute-instance-labels-set": (GCPServices.COMPUTE, ["compute.instances.setLabels"]),
@@ -461,8 +486,16 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
         GCPServices.STORAGE,
         ["storage.objects.get", "storage.objects.update"],
     ),
+    "gcp-compute-zone-operation-wait": (GCPServices.COMPUTE, ["compute.zoneOperations.get"]),
+    "gcp-compute-region-operation-wait": (GCPServices.COMPUTE, ["compute.regionOperations.get"]),
+    "gcp-compute-global-operation-wait": (GCPServices.COMPUTE, ["compute.globalOperations.get"]),
     "gcp-compute-network-get": (GCPServices.COMPUTE, ["compute.networks.get"]),
     "gcp-compute-image-get": (GCPServices.COMPUTE, ["compute.images.get"]),
+    "gcp-compute-image-get-from-family": (GCPServices.COMPUTE, ["compute.images.get"]),
+    "gcp-compute-images-list": (GCPServices.COMPUTE, ["compute.images.list"]),
+    "gcp-compute-image-delete": (GCPServices.COMPUTE, ["compute.images.delete"]),
+    "gcp-compute-image-labels-set": (GCPServices.COMPUTE, ["compute.images.setLabels"]),
+    "gcp-compute-image-insert": (GCPServices.COMPUTE, ["compute.images.create"]),
     "gcp-compute-instance-group-get": (GCPServices.COMPUTE, ["compute.instanceGroups.get"]),
     "gcp-compute-region-get": (GCPServices.COMPUTE, ["compute.regions.get"]),
     "gcp-compute-regions-list": (GCPServices.COMPUTE, ["compute.regions.list"]),
@@ -470,6 +503,9 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-zones-list": (GCPServices.COMPUTE, ["compute.zones.list"]),
     "gcp-compute-networks-list": (GCPServices.COMPUTE, ["compute.networks.list"]),
     "gcp-compute-network-insert": (GCPServices.COMPUTE, ["compute.networks.create"]),
+    "gcp-compute-network-peering-add": (GCPServices.COMPUTE, ["compute.networks.addPeering"]),
+    "gcp-compute-network-delete": (GCPServices.COMPUTE, ["compute.networks.delete"]),
+    "gcp-compute-network-peering-remove": (GCPServices.COMPUTE, ["compute.networks.removePeering"]),
     "gcp-container-cluster-security-update": (
         GCPServices.CONTAINER,
         ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
@@ -526,6 +562,17 @@ OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "s
 MAX_OBJECT_LIST_PAGES = 100
 MAX_DOWNLOAD_CHUNKS = 10000
 DEFAULT_LIST_LIMIT = 50
+# The operation table of the wait commands, which also serve regional operations.
+OPERATION_WAIT_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "region", "status"]
+OPERATION_DONE_STATUS = "DONE"  # The terminal status of a Compute Engine long-running operation.
+DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval between polling attempts for wait commands.
+DEFAULT_TIMEOUT_POLLING_COMMAND = 600  # Default timeout for polling commands.
+# Polling commands are decorated with @polling_function and therefore take (args, creds) instead of (creds, args).
+POLLING_COMMANDS = {
+    "gcp-compute-zone-operation-wait",
+    "gcp-compute-region-operation-wait",
+    "gcp-compute-global-operation-wait",
+}
 # taken from GoogleCloudCompute
 FIREWALL_RULE_REGEX = re.compile(r"ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)", flags=re.I)
 KEY_VALUE_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
@@ -596,6 +643,28 @@ def extract_zone_name(zone_input: str | None) -> str:
     if "/" in zone_input:
         return zone_input.strip().split("/")[-1]
     return zone_input.strip()
+
+
+def extract_region_name(region_input: str | None) -> str:
+    """
+    Extracts the GCP region name from a full URL or returns it directly if already a region string.
+
+    Args:
+        region_input (str): The region string or full GCP region URL.
+
+    Returns:
+        str: The region name, e.g., "us-central1".
+        https://www.googleapis.com/compute/v1/projects/test/regions/us-central1 -> us-central1
+
+    Raises:
+        DemistoException: If the region input is empty or invalid.
+    """
+    if not region_input or not region_input.strip():
+        raise DemistoException("The region argument cannot be empty")
+
+    if "/" in region_input:
+        return region_input.strip().split("/")[-1]
+    return region_input.strip()
 
 
 def parse_labels(labels_str: str) -> dict:
@@ -787,37 +856,61 @@ def _validate_bucket_policy_for_set(policy: dict[str, Any], add_mode: bool) -> N
                     raise DemistoException("Policy with IAM Conditions requires 'version' to be 3 or greater.")
 
 
-def _merge_bucket_objects(bucket_name: str, new_objects: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _merge_context_items(
+    context_path: str,
+    new_items: list[dict[str, Any]],
+    id_key: str = "name",
+    items_key: str | None = None,
+    parent_id_key: str | None = None,
+    parent_id_value: Any = None,
+) -> list[dict[str, Any]]:
     """
-    Merges newly fetched objects into the objects already stored in the context for the given bucket.
+    Merges newly fetched items into the items already stored in the context under the given path.
 
-    Objects are identified by their name: an object that already exists in the context is replaced in place,
-    while a new object is appended to the end of the list.
+    Items are identified by `id_key`: an item that already exists in the context is replaced in place,
+    while a new item is appended to the end of the list. This is useful for paginated commands, where each
+    call should extend the previously fetched results instead of overwriting them.
+
+    Two layouts are supported:
+        - Flat: `context_path` holds the items themselves (leave `items_key` as None).
+        - Nested: `context_path` holds parent entries, and the items live under the `items_key` key of the
+          parent whose `parent_id_key` equals `parent_id_value` (for example, objects inside a storage bucket).
 
     Args:
-        bucket_name (str): The name of the bucket the objects belong to.
-        new_objects (list[dict[str, Any]]): The objects returned by the current API call.
+        context_path (str): The context path holding the existing data, e.g. "GCP.Storage.Buckets".
+        new_items (list[dict[str, Any]]): The items returned by the current API call.
+        id_key (str): The key uniquely identifying an item. Defaults to "name".
+        items_key (str | None): The key holding the items inside each parent entry, for a nested layout.
+        parent_id_key (str | None): The key uniquely identifying a parent entry, for a nested layout.
+        parent_id_value (Any): The value of `parent_id_key` of the parent entry to merge into.
 
     Returns:
-        list[dict[str, Any]]: The merged list of objects for the bucket.
+        list[dict[str, Any]]: The merged list of items.
     """
-    existing_buckets = demisto.get(demisto.context(), "GCP.Storage.Buckets") or []
-    if isinstance(existing_buckets, dict):
-        existing_buckets = [existing_buckets]
+    existing_entries = demisto.get(demisto.context(), context_path) or []
+    if isinstance(existing_entries, dict):
+        existing_entries = [existing_entries]
 
-    merged_objects: dict[str, dict[str, Any]] = {}
-    for bucket in existing_buckets:
-        if isinstance(bucket, dict) and bucket.get("name") == bucket_name:
-            for obj in bucket.get("Objects") or []:
-                if isinstance(obj, dict) and obj.get("name"):
-                    merged_objects[obj["name"]] = obj
+    merged_items: dict[Any, dict[str, Any]] = {}
+    for entry in existing_entries:
+        if not isinstance(entry, dict):
+            continue
+        if items_key:
+            if parent_id_key and entry.get(parent_id_key) != parent_id_value:
+                continue
+            existing_items = entry.get(items_key) or []
+        else:
+            existing_items = [entry]
+        for item in existing_items:
+            if isinstance(item, dict) and item.get(id_key):
+                merged_items[item[id_key]] = item
 
-    for obj in new_objects:
-        if obj.get("name"):
-            merged_objects[obj["name"]] = obj
+    for item in new_items:
+        if item.get(id_key):
+            merged_items[item[id_key]] = item
 
-    demisto.debug(f"[GCP: storage_bucket_objects_list] Objects in context after merge: {len(merged_objects)}")
-    return list(merged_objects.values())
+    demisto.debug(f"[GCP] Items in context '{context_path}' after merge: {len(merged_items)}")
+    return list(merged_items.values())
 
 
 ##########
@@ -1045,7 +1138,13 @@ def storage_bucket_objects_list(creds: Credentials, args: dict[str, Any]) -> Com
     outputs = {
         "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
             "name": bucket_name,
-            "Objects": _merge_bucket_objects(bucket_name, objects),
+            "Objects": _merge_context_items(
+                "GCP.Storage.Buckets",
+                objects,
+                items_key="Objects",
+                parent_id_key="name",
+                parent_id_value=bucket_name,
+            ),
             "ObjectsNextToken": response.get("nextPageToken"),
         }
     }
@@ -1564,6 +1663,45 @@ def compute_firewall_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
     )
 
 
+def compute_firewall_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes a specific Google Cloud firewall rule.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - resource_name (str): The name of the firewall rule to delete.
+
+    Returns:
+        CommandResults: Object containing the delete operation details under `GCP.Compute.Operations`.
+    """
+    project_id = args.get("project_id")
+    resource_name = args["resource_name"]
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.firewalls().delete(project=project_id, firewall=resource_name).execute()  # pylint: disable=E1101
+    demisto.debug(
+        f"Firewall delete operation for {resource_name} in project {project_id}: "
+        f"{response.get('name')=}, {response.get('status')=}"
+    )
+
+    hr = tableToMarkdown(
+        f"GCP Compute Firewall Rule {resource_name} Delete Operation Started Successfully",
+        response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
 def compute_snapshots_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Lists all Compute Engine snapshots in a specified GCP project.
@@ -1658,6 +1796,114 @@ def compute_snapshot_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
         outputs_prefix="GCP.Compute.Snapshots",
         outputs=response,
         outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_snapshot_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes a specific Compute Engine snapshot.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - resource_name (str): The name of the snapshot to delete.
+
+    Returns:
+        CommandResults: Object containing the delete operation details under `GCP.Compute.Operations`.
+    """
+    project_id = args.get("project_id")
+    resource_name = args["resource_name"]
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.snapshots().delete(project=project_id, snapshot=resource_name).execute()  # pylint: disable=E1101
+    demisto.debug(
+        f"Snapshot delete operation for {resource_name} in project {project_id}: "
+        f"{response.get('name')=}, {response.get('status')=}"
+    )
+
+    hr = tableToMarkdown(
+        f"GCP Compute Snapshot {resource_name} Delete Operation Started Successfully",
+        response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_snapshot_labels_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets the labels on a Compute Engine snapshot.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - resource_name (str): The name of the snapshot.
+            - labels (str): Labels to apply, e.g., "key=abc,value=123;key=def,value=456".
+            - label_fingerprint (str, optional): The fingerprint of the previous set of labels, used to detect
+                conflicts. Required when add_labels is false, and ignored when add_labels is true, since the
+                fingerprint of the fetched snapshot is used instead.
+            - add_labels (bool, optional): Whether to add the labels to the existing ones or override them.
+
+    Returns:
+        CommandResults: Object containing the setLabels operation details under `GCP.Compute.Operations`.
+    """
+    project_id = args.get("project_id")
+    resource_name = args["resource_name"]
+    label_fingerprint = args.get("label_fingerprint")
+    add_labels = argToBoolean(args.get("add_labels", False))
+    if not add_labels and not label_fingerprint:
+        raise DemistoException("The 'label_fingerprint' argument is required when 'add_labels' is false.")
+    labels = parse_labels(args["labels"])
+    demisto.debug(f"The parsed {labels=}")
+
+    current_labels = {}
+    if add_labels:
+        snapshot_result = compute_snapshot_get(creds, args)
+        snapshot_info = snapshot_result.outputs
+        if not isinstance(snapshot_info, dict):
+            # The snapshot was not found, so its "not found" readable output is returned as is.
+            return snapshot_result
+        current_labels = snapshot_info.get("labels", {})
+        # The snapshot was just fetched, so its fingerprint is the most up to date one. The supplied
+        # fingerprint may already be stale, which would fail the request with a conflict error.
+        label_fingerprint = snapshot_info.get("labelFingerprint") or label_fingerprint
+        demisto.debug(f"Adding the new labels {labels=} to the current ones {current_labels}")
+
+    body = {"labels": current_labels | labels, "labelFingerprint": label_fingerprint}
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = (
+        compute.snapshots()  # pylint: disable=E1101
+        .setLabels(project=project_id, resource=resource_name, body=body)
+        .execute()
+    )
+    demisto.debug(
+        f"Snapshot setLabels operation for {resource_name} in project {project_id}: "
+        f"{response.get('name')=}, {response.get('status')=}"
+    )
+
+    hr = tableToMarkdown(
+        f"GCP Compute Snapshot {resource_name} Labels Update Operation Started Successfully",
+        response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
         raw_response=response,
     )
 
@@ -2258,7 +2504,13 @@ def storage_bucket_object_upload(creds: Credentials, args: dict[str, Any]) -> Co
     outputs = {
         "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
             "name": bucket_name,
-            "Objects": _merge_bucket_objects(bucket_name, [response]),
+            "Objects": _merge_context_items(
+                "GCP.Storage.Buckets",
+                [response],
+                items_key="Objects",
+                parent_id_key="name",
+                parent_id_value=bucket_name,
+            ),
         }
     }
 
@@ -2352,7 +2604,13 @@ def storage_bucket_object_copy(creds: Credentials, args: dict[str, Any]) -> Comm
     outputs = {
         "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
             "name": destination_bucket_name,
-            "Objects": _merge_bucket_objects(destination_bucket_name, [response]),
+            "Objects": _merge_context_items(
+                "GCP.Storage.Buckets",
+                [response],
+                items_key="Objects",
+                parent_id_key="name",
+                parent_id_value=destination_bucket_name,
+            ),
         }
     }
 
@@ -2722,6 +2980,375 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
     )
 
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
+
+
+def compute_instance_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates a Compute Engine VM instance in the specified zone.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', 'name', and 'machine_type'.
+
+    Returns:
+        CommandResults: Result of the VM instance creation operation.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    name = args.get("name")
+    metadata_items = args.get("metadata_items")
+    service_account_email = args.get("service_account_email")
+    service_account_scopes = args.get("service_account_scopes")
+    labels = args.get("labels")
+    machine_type = args.get("machine_type", "")
+
+    # Accept either a bare machine type name (e.g. n1-standard-1) or a full/partial URL
+    # (e.g. zones/zone/machineTypes/n1-standard-1), consistent with gcp-compute-instance-machine-type-set.
+    if "/" not in machine_type:
+        machine_type = f"zones/{zone}/machineTypes/{machine_type}"
+
+    if bool(service_account_email) != bool(service_account_scopes):
+        raise DemistoException(
+            "The arguments service_account_email and service_account_scopes must be provided together. "
+            "Provide both to attach a service account to the instance, or neither to omit it."
+        )
+
+    access_config: dict[str, Any] = {"natIP": args.get("external_nat_ip")}
+    if arg_to_bool_or_none(args.get("external_internet_access")):
+        access_config.update({"type": "ONE_TO_ONE_NAT", "name": "External NAT"})
+
+    # Build the full instance body, then recursively strip empty elements. Note that
+    # remove_empty_elements keeps False/0, so explicit boolean flags are preserved.
+    body = remove_empty_elements(
+        {
+            "name": name.lower() if name else None,
+            "description": args.get("description"),
+            "machineType": machine_type,
+            "canIpForward": arg_to_bool_or_none(args.get("can_ip_forward")),
+            "tags": {
+                "items": argToList(args.get("tags")),
+                "fingerprint": args.get("tags_fingerprint"),
+            },
+            "networkInterfaces": [
+                {
+                    "network": args.get("network"),
+                    "subnetwork": args.get("subnetwork"),
+                    "networkIP": args.get("network_ip"),
+                    "accessConfigs": [access_config],
+                }
+            ],
+            "disks": [
+                {
+                    "source": args.get("disk_source"),
+                    "deviceName": args.get("disk_device_name"),
+                    "boot": arg_to_bool_or_none(args.get("disk_boot")),
+                    "autoDelete": arg_to_bool_or_none(args.get("disk_auto_delete")),
+                    "initializeParams": {
+                        "sourceImage": args.get("source_image"),
+                        "diskSizeGb": arg_to_number(args.get("disk_size_gb")),
+                        "diskType": args.get("disk_type"),
+                    },
+                }
+            ],
+            "metadata": {"items": parse_metadata_items(metadata_items)} if metadata_items else None,
+            "serviceAccounts": [{"email": service_account_email, "scopes": argToList(service_account_scopes)}]
+            if service_account_email
+            else None,
+            "labels": parse_labels(labels) if labels else None,
+            "deletionProtection": arg_to_bool_or_none(args.get("deletion_protection")),
+        }
+    )
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instances().insert(project=project_id, zone=zone, body=body).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        f"VM instance {args.get('name')} is being created in project {project_id}",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_instance_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified Compute Engine VM instance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', and 'resource_name'.
+
+    Returns:
+        CommandResults: Result of the VM instance delete operation.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .delete(project=project_id, zone=zone, instance=resource_name)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        f"VM instance {resource_name} is being deleted in project {project_id}",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_instance_reset(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Performs a hard reset on the specified Compute Engine VM instance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', and 'resource_name'.
+
+    Returns:
+        CommandResults: Result of the VM instance reset operation.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .reset(project=project_id, zone=zone, instance=resource_name)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        f"VM instance {resource_name} is being reset in project {project_id}",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_instance_metadata_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets metadata for the specified Compute Engine VM instance.
+
+    Note that GCP's setMetadata API replaces the instance metadata in full rather than merging,
+    so any key absent from 'metadata_items' is removed from the instance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', 'resource_name', and
+            'metadata_items'.
+
+    Returns:
+        CommandResults: Result of the VM instance set metadata operation.
+    """
+    metadata_items = args.get("metadata_items")
+    if metadata_items is None:
+        raise DemistoException(
+            "The 'metadata_items' argument is required. The GCP setMetadata API replaces the instance "
+            "metadata in full, so omitting it would delete all existing metadata, including keys such as "
+            "ssh-keys and startup-script. Pass an empty value explicitly to clear all metadata."
+        )
+
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+
+    body: dict[str, Any] = {}
+    metadata_fingerprint = args.get("metadata_fingerprint")
+    if not metadata_fingerprint:
+        # GCP's setMetadata API requires the current metadata fingerprint for optimistic
+        # locking. When the caller does not supply one, fetch it from the current instance.
+        instance = (
+            compute.instances()  # pylint: disable=E1101
+            .get(project=project_id, zone=zone, instance=resource_name)
+            .execute()
+        )
+        metadata_fingerprint = instance.get("metadata", {}).get("fingerprint")
+    if metadata_fingerprint:
+        body["fingerprint"] = metadata_fingerprint
+    if metadata_items:
+        body["items"] = parse_metadata_items(metadata_items)
+
+    demisto.debug(f"[GCP: compute_instance_metadata_set] Body for {resource_name}: {body}")
+
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .setMetadata(project=project_id, zone=zone, instance=resource_name, body=body)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        f"VM instance {resource_name} metadata is being updated in project {project_id}",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_instance_machine_type_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Changes the machine type of a stopped Compute Engine VM instance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', 'resource_name', and 'machine_type'.
+
+    Returns:
+        CommandResults: Result of the VM instance set machine type operation.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+    machine_type = args.get("machine_type", "")
+
+    # Accept either a bare machine type name (e.g. n1-standard-1) or a full/partial URL
+    # (e.g. zones/zone/machineTypes/n1-standard-1), consistent with gcp-compute-instance-insert.
+    if "/" not in machine_type:
+        machine_type = f"zones/{zone}/machineTypes/{machine_type}"
+
+    body = {"machineType": machine_type}
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .setMachineType(project=project_id, zone=zone, instance=resource_name, body=body)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        f"VM instance {resource_name} machine type is being updated in project {project_id}",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_instances_aggregated_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves an aggregated list of Compute Engine VM instances across all zones in the project.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id'. Supports 'filter', 'order_by',
+            'limit' (1-500, defaults to 50), and 'next_token'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    project_id = args.get("project_id")
+    # A missing limit - or an explicit 0, which would request zero results - falls back to 50.
+    limit = arg_to_number(args.get("limit")) or 50
+    filter_expression = args.get("filter")
+    order_by = args.get("order_by")
+    next_token = args.get("next_token")
+    validate_limit(limit)
+
+    request_params: dict[str, Any] = {
+        "project": project_id,
+        "filter": filter_expression,
+        "maxResults": limit,
+        "orderBy": order_by,
+        "pageToken": next_token,
+    }
+    remove_nulls_from_dictionary(request_params)
+    demisto.debug(f"[GCP: compute_instances_aggregated_list] Request params: {request_params}")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instances().aggregatedList(**request_params).execute()  # pylint: disable=E1101
+
+    instances: list[dict[str, Any]] = []
+    for scope_name, scope in response.get("items", {}).items():
+        if "warning" in scope:
+            demisto.debug(f"[GCP: compute_instances_aggregated_list] Skipping scope {scope_name}: {scope['warning']}")
+            continue
+        instances.extend(scope.get("instances") or [])
+
+    demisto.debug(f"[GCP: compute_instances_aggregated_list] Instances returned: {len(instances)}")
+
+    next_page_token = response.get("nextPageToken")
+    metadata = (
+        "Run the following command to retrieve the next batch of instances:\n"
+        f"!gcp-compute-instances-aggregated-list project_id={project_id} next_token={next_page_token}"
+        if next_page_token
+        else None
+    )
+
+    readable_output = (
+        tableToMarkdown(
+            f"GCP Compute Instances in project {project_id}",
+            instances,
+            headers=["id", "name", "status", "machineType", "zone"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+            metadata=metadata,
+        )
+        if instances
+        else "No instances were found."
+    )
+
+    outputs = {
+        "GCP.Compute.Instances(val.id && val.id == obj.id)": instances,
+        # The token is always emitted, even when None, so that a token from a previous page is
+        # overwritten in the context rather than lingering after the last page was reached.
+        "GCP.Compute(true)": {"AggregatedInstancesNextToken": next_page_token},
+    }
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
 
 
 # The command is currently unsupported.
@@ -4381,6 +5008,253 @@ def gcp_compute_image_get(creds: Credentials, args: dict[str, Any]) -> CommandRe
     )
 
 
+def gcp_compute_image_get_from_family(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the latest image that is part of an image family and is not deprecated.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id' and 'family'.
+
+    Returns:
+        CommandResults: Object containing the image details under `GCP.Compute.Images`.
+    """
+    project_id = args.get("project_id")
+    family = args.get("family")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.images().getFromFamily(project=project_id, family=family).execute()  # pylint: disable=E1101
+
+    data_res = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "family": response.get("family"),
+        "creationTimestamp": response.get("creationTimestamp"),
+        "description": response.get("description"),
+    }
+    headers = ["id", "name", "family", "creationTimestamp", "description"]
+
+    readable_output = tableToMarkdown(
+        f"GCP image family {family}", data_res, headers=headers, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Images",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_images_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists all Compute Engine images in a specified GCP project.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - limit (int, optional): Maximum number of results to return (1-500).
+            - next_token (str, optional): Token for pagination.
+            - filter (str, optional): Expression for filtering listed images.
+            - order_by (str, optional): Sorts list results by a certain order.
+
+    Returns:
+        CommandResults: Object containing a list of image details under `GCP.Compute.Images`
+        and pagination token under `GCP.Compute.ImagesNextToken`.
+    """
+    project_id = args.get("project_id")
+    limit = arg_to_number(args.get("limit")) or 50
+    next_token = args.get("next_token")
+    flt = args.get("filter")
+    order_by = args.get("order_by")
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "maxResults": limit,
+        "pageToken": next_token,
+        "filter": flt,
+        "orderBy": order_by,
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.images().list(**params).execute()  # pylint: disable=E1101
+    items = response.get("items", [])
+    next_page_token = response.get("nextPageToken")
+    headers = ["name", "id", "family", "status", "creationTimestamp"]
+    readable_output = tableToMarkdown(
+        "GCP Compute Images",
+        items,
+        headers=headers,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    outputs = {
+        "GCP.Compute.Images(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"ImagesNextToken": next_page_token},
+    }
+    return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=response)
+
+
+def gcp_compute_image_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified image.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id' and 'image'.
+
+    Returns:
+        CommandResults: Object containing the human-readable status of the delete operation.
+    """
+    project_id = args.get("project_id")
+    image = args.get("image")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.images().delete(project=project_id, image=image).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Image Delete Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        raw_response=response,
+    )
+
+
+def gcp_compute_image_labels_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets the labels on an image.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id', 'image', 'labels', and 'label_fingerprint'.
+
+    Returns:
+        CommandResults: Object containing the operation details of the setLabels request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    image = args.get("image")
+    labels = parse_labels(args.get("labels", ""))
+    label_fingerprint = args.get("label_fingerprint")
+    demisto.debug(f"The parsed {labels=}")
+
+    body = {"labels": labels, "labelFingerprint": label_fingerprint}
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.images().setLabels(project=project_id, resource=image, body=body).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        f"Google Cloud Compute Image {image} Labels Update Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_image_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates an image in the specified project using the data included in the request.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id', 'name', and the various optional
+            image source and encryption fields.
+
+    Returns:
+        CommandResults: Object containing the operation details of the insert request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    force_create = argToBoolean(args.get("force_create", False))
+    name = args["name"]
+    labels = args.get("labels")
+    guest_os_features = argToList(args.get("guest_os_features"))
+
+    body = remove_empty_elements(
+        {
+            "name": name.lower(),
+            "description": args.get("description"),
+            "sourceDisk": args.get("source_disk"),
+            "sourceImage": args.get("source_image"),
+            "sourceSnapshot": args.get("source_snapshot"),
+            "family": args.get("family"),
+            "archiveSizeBytes": arg_to_number(args.get("archive_size_bytes")),
+            "diskSizeGb": arg_to_number(args.get("disk_size_gb")),
+            "licenses": argToList(args.get("licenses")),
+            "licenseCodes": argToList(args.get("license_codes")),
+            "labels": parse_labels(labels) if labels else None,
+            "labelFingerprint": args.get("label_fingerprint"),
+            "guestOsFeatures": [{"type": feature} for feature in guest_os_features],
+            "rawDisk": {
+                "source": args.get("raw_disk_source"),
+                "sha1Checksum": args.get("raw_disk_sha1_checksum"),
+                "containerType": args.get("raw_disk_container_type"),
+            },
+            "deprecated": {
+                "state": args.get("deprecated_state"),
+                "replacement": args.get("deprecated_replacement"),
+            },
+            "imageEncryptionKey": {
+                "rawKey": args.get("image_encryption_key_raw_key"),
+                "kmsKeyName": args.get("image_encryption_key_kms_key_name"),
+            },
+            "sourceDiskEncryptionKey": {
+                "rawKey": args.get("source_disk_encryption_key_raw_key"),
+                "kmsKeyName": args.get("source_disk_encryption_key_kms_key_name"),
+            },
+            "sourceImageEncryptionKey": {
+                "rawKey": args.get("source_image_encryption_key_raw_key"),
+                "kmsKeyName": args.get("source_image_encryption_key_kms_key_name"),
+            },
+            "sourceSnapshotEncryptionKey": {
+                "rawKey": args.get("source_snapshot_encryption_key_raw_key"),
+                "kmsKeyName": args.get("source_snapshot_encryption_key_kms_key_name"),
+            },
+        }
+    )
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"Image insert body keys for project {project_id}: {list(body.keys()) if isinstance(body, dict) else []}")
+    response = (
+        compute.images()  # pylint: disable=E1101
+        .insert(project=project_id, forceCreate=force_create, body=body)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Image Insert Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
 def gcp_compute_region_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Get a specified region resource.
@@ -4543,6 +5417,189 @@ def gcp_compute_zone_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
     )
 
 
+def _validate_polling_args(args: dict[str, Any]) -> None:
+    """
+    Validates the polling arguments of the Compute Engine operation wait commands.
+
+    Args:
+        args (dict[str, Any]): The command arguments, optionally including 'interval_in_seconds' and 'polling_timeout'.
+
+    Raises:
+        DemistoException: If 'interval_in_seconds' or 'polling_timeout' is not a positive number.
+    """
+    interval = arg_to_number(args.get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS
+    timeout = arg_to_number(args.get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND
+
+    if interval <= 0:
+        raise DemistoException(f"The interval_in_seconds argument must be a positive number. Currently the value is {interval}")
+    if timeout <= 0:
+        raise DemistoException(f"The polling_timeout argument must be a positive number. Currently the value is {timeout}")
+
+
+def _compute_operation_poll_result(
+    operations_resource: Any,
+    request_kwargs: dict[str, Any],
+    command_name: str,
+    outputs_prefix: str,
+) -> PollResult:
+    """
+    Retrieves a Compute Engine long-running operation and keeps polling while it is not done.
+
+    As long as the operation has not reached the ``DONE`` status, the returned PollResult instructs the
+    ``polling_function`` decorator to schedule another run of the command.
+
+    Args:
+        operations_resource (Any): The Compute Engine operations resource to query
+            (``zoneOperations()``, ``regionOperations()`` or ``globalOperations()``).
+        request_kwargs (dict[str, Any]): The scope keyword arguments of the ``get`` request,
+            including the ``operation`` name.
+        command_name (str): The command name, used for debug logging.
+        outputs_prefix (str): The context output prefix of the returned operation.
+
+    Returns:
+        PollResult: The completed operation, or an indication to poll again.
+
+    Raises:
+        DemistoException: If the operation completed with an error.
+    """
+    operation_name = request_kwargs["operation"]
+    response = operations_resource.get(**request_kwargs).execute()
+    status = response.get("status")
+    demisto.debug(f"[GCP] {command_name}: operation {operation_name} status is {status}")
+
+    if status != OPERATION_DONE_STATUS:
+        return PollResult(
+            response=None,
+            continue_to_poll=True,
+            partial_result=CommandResults(
+                readable_output=f"Waiting for operation {operation_name} to complete. Current status: {status}."
+            ),
+        )
+
+    if error := response.get("error"):
+        raise DemistoException(f"Operation {operation_name} completed with an error: {error}")
+
+    readable_output = tableToMarkdown(
+        f"Operation {operation_name} completed successfully",
+        response,
+        headers=OPERATION_WAIT_TABLE,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return PollResult(
+        response=CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=outputs_prefix,
+            outputs_key_field="id",
+            outputs=response,
+            raw_response=response,
+        ),
+        continue_to_poll=False,
+    )
+
+
+@polling_function(
+    name="gcp-compute-zone-operation-wait",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def gcp_compute_zone_operation_wait(args: dict[str, Any], creds: Credentials) -> PollResult:
+    """
+    Waits for a zonal Compute Engine operation to reach the DONE status.
+
+    Args:
+        args (dict[str, Any]): Must include 'project_id', 'zone' and 'operation_name', and optionally
+            'interval_in_seconds' and 'polling_timeout'.
+        creds (Credentials): GCP credentials.
+
+    Returns:
+        PollResult: The completed operation, or an indication to poll again.
+    """
+    _validate_polling_args(args)
+
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    operation_name = args.get("operation_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+
+    return _compute_operation_poll_result(
+        operations_resource=compute.zoneOperations(),  # pylint: disable=E1101
+        request_kwargs={"project": project_id, "zone": zone, "operation": operation_name},
+        command_name="gcp-compute-zone-operation-wait",
+        outputs_prefix="GCP.Compute.Operations",
+    )
+
+
+@polling_function(
+    name="gcp-compute-region-operation-wait",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def gcp_compute_region_operation_wait(args: dict[str, Any], creds: Credentials) -> PollResult:
+    """
+    Waits for a regional Compute Engine operation to reach the DONE status.
+
+    Args:
+        args (dict[str, Any]): Must include 'project_id', 'region' and 'operation_name', and optionally
+            'interval_in_seconds' and 'polling_timeout'.
+        creds (Credentials): GCP credentials.
+
+    Returns:
+        PollResult: The completed operation, or an indication to poll again.
+    """
+    _validate_polling_args(args)
+
+    project_id = args.get("project_id")
+    region = extract_region_name(args.get("region"))
+    operation_name = args.get("operation_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+
+    return _compute_operation_poll_result(
+        operations_resource=compute.regionOperations(),  # pylint: disable=E1101
+        request_kwargs={"project": project_id, "region": region, "operation": operation_name},
+        command_name="gcp-compute-region-operation-wait",
+        outputs_prefix="GCP.Compute.Operations",
+    )
+
+
+@polling_function(
+    name="gcp-compute-global-operation-wait",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def gcp_compute_global_operation_wait(args: dict[str, Any], creds: Credentials) -> PollResult:
+    """
+    Waits for a global Compute Engine operation to reach the DONE status.
+
+    Args:
+        args (dict[str, Any]): Must include 'project_id' and 'operation_name', and optionally
+            'interval_in_seconds' and 'polling_timeout'.
+        creds (Credentials): GCP credentials.
+
+    Returns:
+        PollResult: The completed operation, or an indication to poll again.
+    """
+    _validate_polling_args(args)
+
+    project_id = args.get("project_id")
+    operation_name = args.get("operation_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+
+    return _compute_operation_poll_result(
+        operations_resource=compute.globalOperations(),  # pylint: disable=E1101
+        request_kwargs={"project": project_id, "operation": operation_name},
+        command_name="gcp-compute-global-operation-wait",
+        outputs_prefix="GCP.Compute.Operations",
+    )
+
+
 def gcp_compute_zones_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the list of zone resources available to the specified project.
@@ -4672,6 +5729,105 @@ def gcp_compute_network_insert(creds: Credentials, args: dict[str, Any]) -> Comm
     )
 
 
+def gcp_compute_network_peering_add(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Adds a peering to the specified network.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Arguments including 'network' and the peering configuration.
+    Returns:
+        CommandResults: The result of the add peering operation.
+    """
+    project = args.get("project_id")
+    network = args.get("network")
+
+    config = remove_empty_elements(
+        {
+            "networkPeering": {
+                "name": args.get("name"),
+                "network": args.get("peer_network"),
+                "exchangeSubnetRoutes": arg_to_bool_or_none(args.get("exchange_subnet_routes")),
+            }
+        }
+    )
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Add peering config for network {network} in project {project}: {config}")
+    response = compute.networks().addPeering(project=project, network=network, body=config).execute()  # pylint: disable=E1101
+
+    readable_output = tableToMarkdown(
+        "Google Cloud Compute Operations", response, headers=OPERATION_TABLE, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_network_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified network.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Arguments including 'network', the name of the network to delete.
+    Returns:
+        CommandResults: The result of the delete network operation.
+    """
+    project = args.get("project_id")
+    network = args.get("network")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Deleting network {network} in project {project}")
+    response = compute.networks().delete(project=project, network=network).execute()  # pylint: disable=E1101
+
+    readable_output = tableToMarkdown(
+        "Google Cloud Compute Operations", response, headers=OPERATION_TABLE, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_network_peering_remove(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Removes a peering from the specified network.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Arguments including 'network' and 'name', the name of the peering to remove.
+    Returns:
+        CommandResults: The result of the remove peering operation.
+    """
+    project = args.get("project_id")
+    network = args.get("network")
+
+    config: dict[str, Any] = {"name": args.get("name")}
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Remove peering config for network {network} in project {project}: {config}")
+    response = compute.networks().removePeering(project=project, network=network, body=config).execute()  # pylint: disable=E1101
+
+    readable_output = tableToMarkdown(
+        "Google Cloud Compute Operations", response, headers=OPERATION_TABLE, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
 def gcp_compute_networks_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the list of networks available to the specified project.
@@ -4773,7 +5929,8 @@ def main():  # pragma: no cover
     params = demisto.params()
 
     try:
-        command_map: dict[str, Callable[[Any, dict], Any]] = {
+        # Handlers take (creds, args), except polling handlers (see POLLING_COMMANDS) which take (args, creds).
+        command_map: dict[str, Callable[[Any, Any], Any]] = {
             "test-module": lambda creds, _args: test_module(creds, params),
             # Compute Engine commands
             "gcp-compute-firewall-patch": compute_firewall_patch,
@@ -4781,8 +5938,11 @@ def main():  # pragma: no cover
             "gcp-compute-firewall-list": compute_firewall_list,
             "gcp-compute-firewalls-list": compute_firewall_list,
             "gcp-compute-firewall-get": compute_firewall_get,
+            "gcp-compute-firewall-delete": compute_firewall_delete,
             "gcp-compute-snapshots-list": compute_snapshots_list,
             "gcp-compute-snapshot-get": compute_snapshot_get,
+            "gcp-compute-snapshot-delete": compute_snapshot_delete,
+            "gcp-compute-snapshot-labels-set": compute_snapshot_labels_set,
             "gcp-compute-instances-aggregated-list-by-ip": compute_instances_aggregated_list_by_ip,
             "gcp-compute-network-tag-set": compute_network_tag_set,
             "gcp-compute-subnet-update": compute_subnet_update,
@@ -4790,18 +5950,35 @@ def main():  # pragma: no cover
             "gcp-compute-instance-service-account-remove": compute_instance_service_account_remove,
             "gcp-compute-instance-start": compute_instance_start,
             "gcp-compute-instance-stop": compute_instance_stop,
+            "gcp-compute-instance-insert": compute_instance_insert,
+            "gcp-compute-instance-delete": compute_instance_delete,
+            "gcp-compute-instance-reset": compute_instance_reset,
+            "gcp-compute-instance-metadata-set": compute_instance_metadata_set,
+            "gcp-compute-instance-machine-type-set": compute_instance_machine_type_set,
+            "gcp-compute-instances-aggregated-list": compute_instances_aggregated_list,
             "gcp-compute-instances-list": gcp_compute_instances_list_command,
             "gcp-compute-instance-get": gcp_compute_instance_get_command,
             "gcp-compute-instance-labels-set": gcp_compute_instance_label_set_command,
             "gcp-compute-network-get": gcp_compute_network_get_command,
             "gcp-compute-image-get": gcp_compute_image_get,
+            "gcp-compute-image-get-from-family": gcp_compute_image_get_from_family,
+            "gcp-compute-images-list": gcp_compute_images_list,
+            "gcp-compute-image-delete": gcp_compute_image_delete,
+            "gcp-compute-image-labels-set": gcp_compute_image_labels_set,
+            "gcp-compute-image-insert": gcp_compute_image_insert,
             "gcp-compute-instance-group-get": gcp_compute_instance_group_get,
             "gcp-compute-region-get": gcp_compute_region_get,
             "gcp-compute-regions-list": gcp_compute_regions_list,
             "gcp-compute-zone-get": gcp_compute_zone_get,
             "gcp-compute-zones-list": gcp_compute_zones_list,
+            "gcp-compute-zone-operation-wait": gcp_compute_zone_operation_wait,
+            "gcp-compute-region-operation-wait": gcp_compute_region_operation_wait,
+            "gcp-compute-global-operation-wait": gcp_compute_global_operation_wait,
             "gcp-compute-networks-list": gcp_compute_networks_list,
             "gcp-compute-network-insert": gcp_compute_network_insert,
+            "gcp-compute-network-peering-add": gcp_compute_network_peering_add,
+            "gcp-compute-network-delete": gcp_compute_network_delete,
+            "gcp-compute-network-peering-remove": gcp_compute_network_peering_remove,
             # Storage commands
             "gcp-storage-bucket-list": storage_bucket_list,
             "gcp-storage-buckets-list": storage_bucket_list,
@@ -4879,7 +6056,11 @@ def main():  # pragma: no cover
 
         elif command in command_map:
             creds = get_credentials(args, params)
-            return_results(command_map[command](creds, args))
+            if command in POLLING_COMMANDS:
+                demisto.debug(f"[GCP main] The {command=} is a polling command, calling it with args as the first argument.")
+                return_results(command_map[command](args, creds))
+            else:
+                return_results(command_map[command](creds, args))
         else:
             raise NotImplementedError(f"Command not implemented: {command}")
 

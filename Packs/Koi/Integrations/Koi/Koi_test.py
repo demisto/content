@@ -604,7 +604,11 @@ class TestFetchEventsCommand:
 
         fetch_events_command(mock_client)
 
-        mock_send.assert_called_once()
+        # Send-and-flush: each log type streams its page separately (Alerts + Audit = 2 sends),
+        # and every fetch-path send must use the streaming sender to keep memory flat.
+        assert mock_send.call_count == 2
+        for call in mock_send.call_args_list:
+            assert call.kwargs.get("use_streaming_send") is True
         mock_set_last_run.assert_called_once()
 
         # Verify last_run contains state for both log types
@@ -636,8 +640,10 @@ class TestFetchEventsCommand:
 
         fetch_events_command(mock_client)
 
-        # Should have sent only 1 event (alert-002, since alert-001 is deduped)
+        # Should have sent only 1 event (alert-002, since alert-001 is deduped),
+        # streamed page-by-page with the streaming sender.
         mock_send.assert_called_once()
+        assert mock_send.call_args.kwargs.get("use_streaming_send") is True
         sent_events = mock_send.call_args[0][0]
         assert len(sent_events) == 1
         assert sent_events[0]["id"] == "alert-002"
@@ -815,6 +821,258 @@ class TestFetchEventsCommand:
         assert "last_fetch_alerts" in last_run_arg
         assert "last_fetch_audit" not in last_run_arg
 
+    def test_send_and_flush_streams_one_send_per_page(self, mock_client, mocker):
+        """Events must be streamed once per page (send-and-flush), not accumulated."""
+        page_size = Config.MAX_PAGE_SIZE
+        # Two full pages then a partial page for a single log type (Audit).
+        page1 = [{"id": f"audit-{i}", "created_at": f"2024-01-01T00:{i // 60:02d}:{i % 60:02d}Z"} for i in range(page_size)]
+        page2 = [
+            {"id": f"audit-{page_size + i}", "created_at": f"2024-01-01T01:{i // 60:02d}:{i % 60:02d}Z"} for i in range(page_size)
+        ]
+        page3 = [{"id": "audit-last", "created_at": "2024-01-01T02:00:00Z"}]
+
+        mocker.patch.object(mock_client, "get_events_page", side_effect=[page1, page2, page3])
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"max_fetch": "5000", "event_types_to_fetch": "Audit"},
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_send = mocker.patch.object(mock_client, "send_events")
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        # One send per page (3 pages) — never a single accumulated send.
+        assert mock_send.call_count == 3
+        for call in mock_send.call_args_list:
+            assert call.kwargs.get("use_streaming_send") is True
+        # Every page passed to send is bounded by page_size (no single giant list).
+        assert all(len(call.args[0]) <= page_size for call in mock_send.call_args_list)
+        # Total streamed equals all events across pages.
+        total_sent = sum(len(call.args[0]) for call in mock_send.call_args_list)
+        assert total_sent == (2 * page_size) + 1
+
+        # HWM state reflects the last page's newest event.
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        assert last_run_arg["last_fetch_audit"] == "2024-01-01T02:00:00Z"
+        assert last_run_arg["previous_ids_audit"] == ["audit-last"]
+
+    def test_streaming_send_consuming_list_does_not_corrupt_state(self, mock_client, mocker):
+        """Streaming send empties its input list, but HWM/state must still be correct.
+
+        The mock clears the list (like CSP) to prove all derived values are captured
+        before the send consumes them, including the first-run aliasing case where
+        deduplicate_events returns the same page object.
+        """
+        page = [
+            {"id": "audit-1", "created_at": "2024-01-01T00:00:00Z"},
+            {"id": "audit-2", "created_at": "2024-01-01T00:00:02Z"},
+            {"id": "audit-3", "created_at": "2024-01-01T00:00:02Z"},  # ties HWM with audit-2
+        ]
+        # Single partial page (len < page_size) so pagination stops after it.
+        mocker.patch.object(mock_client, "get_events_page", side_effect=[page, []])
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"max_fetch": "5000", "event_types_to_fetch": "Audit"},
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+
+        def consuming_send(events, use_streaming_send=False):
+            # Mimic CSP streaming send: null out every slot in the passed list.
+            if use_streaming_send:
+                for i in range(len(events)):
+                    events[i] = None
+
+        mock_send = mocker.patch.object(mock_client, "send_events", side_effect=consuming_send)
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        # The page was streamed with the streaming sender (which emptied the list).
+        mock_send.assert_called_once()
+        assert mock_send.call_args.kwargs.get("use_streaming_send") is True
+
+        # Despite the send emptying the list, HWM state is intact and correct.
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        assert last_run_arg["last_fetch_audit"] == "2024-01-01T00:00:02Z"
+        assert set(last_run_arg["previous_ids_audit"]) == {"audit-2", "audit-3"}
+
+    def test_max_events_truncation_does_not_advance_hwm_past_discarded(self, mock_client, mocker):
+        """When a page is trimmed to honor max_fetch, the HWM must not advance past discarded events.
+
+        Events are sorted ascending, so trimming drops the newest events. The HWM must reflect
+        only the kept (sent) events, so the next cycle re-fetches the discarded tail.
+        """
+        max_fetch = 3
+        # A single page with more events than max_fetch; the last two are the newest.
+        page = [
+            {"id": "audit-1", "created_at": "2024-01-01T00:00:01Z"},
+            {"id": "audit-2", "created_at": "2024-01-01T00:00:02Z"},
+            {"id": "audit-3", "created_at": "2024-01-01T00:00:03Z"},  # kept HWM
+            {"id": "audit-4", "created_at": "2024-01-01T00:00:04Z"},  # discarded
+            {"id": "audit-5", "created_at": "2024-01-01T00:00:05Z"},  # discarded
+        ]
+        mocker.patch.object(mock_client, "get_events_page", side_effect=[page, []])
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"max_fetch": str(max_fetch), "event_types_to_fetch": "Audit"},
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_send = mocker.patch.object(mock_client, "send_events")
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        # Only the first max_fetch events are sent.
+        mock_send.assert_called_once()
+        assert len(mock_send.call_args[0][0]) == max_fetch
+
+        # HWM stops at the newest KEPT event (audit-3), not the discarded audit-5.
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        assert last_run_arg["last_fetch_audit"] == "2024-01-01T00:00:03Z"
+        assert last_run_arg["previous_ids_audit"] == ["audit-3"]
+
+    def test_max_pages_per_fetch_cap_is_honored(self, mock_client, mocker):
+        """Feeding MAX_PAGES_PER_FETCH + 1 full pages must stop after MAX_PAGES_PER_FETCH sends."""
+        page_size = Config.MAX_PAGE_SIZE
+        # More full pages than the cap allows; each full page forces another iteration.
+        pages = [
+            [{"id": f"audit-{p}-{i}", "created_at": f"2024-01-{p + 1:02d}T00:00:{i % 60:02d}Z"} for i in range(page_size)]
+            for p in range(Config.MAX_PAGES_PER_FETCH + 1)
+        ]
+        mocker.patch.object(mock_client, "get_events_page", side_effect=pages)
+        # max_fetch high enough that the page cap (not max_events) is the limiting factor.
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"max_fetch": str(page_size * (Config.MAX_PAGES_PER_FETCH + 5)), "event_types_to_fetch": "Audit"},
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_send = mocker.patch.object(mock_client, "send_events")
+        mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        # Exactly MAX_PAGES_PER_FETCH sends — the extra page is never fetched/sent.
+        assert mock_send.call_count == Config.MAX_PAGES_PER_FETCH
+
+    def test_mid_pagination_api_failure_preserves_last_run(self, mock_client, mocker):
+        """If get_events_page raises on page 2 (after page 1 streamed), last_run is NOT advanced.
+
+        This documents the at-least-once guarantee: page 1 will be re-sent next cycle.
+        """
+        page_size = Config.MAX_PAGE_SIZE
+        page1 = [{"id": f"audit-{i}", "created_at": f"2024-01-01T00:00:{i % 60:02d}Z"} for i in range(page_size)]
+
+        call_count = {"n": 0}
+
+        def failing_get_events_page(**kwargs):
+            call_count["n"] += 1
+            if call_count["n"] == 1:
+                return page1
+            raise Exception("API failure on page 2")
+
+        mocker.patch.object(mock_client, "get_events_page", side_effect=failing_get_events_page)
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"max_fetch": "5000", "event_types_to_fetch": "Audit"},
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_send = mocker.patch.object(mock_client, "send_events")
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        # Page 1 was streamed before the failure.
+        assert mock_send.call_count == 1
+        # The failure aborts the type, so its last_run state is NOT advanced (page 1 re-sent next cycle).
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        assert "last_fetch_audit" not in last_run_arg
+
+    def test_mid_pagination_send_failure_preserves_failing_type_but_persists_sibling(self, mock_client, alerts_response, mocker):
+        """If send_events raises for one type, its last_run is preserved and the sibling type still persists."""
+        page_size = Config.MAX_PAGE_SIZE
+        audit_page1 = [{"id": f"audit-{i}", "created_at": f"2024-01-01T00:00:{i % 60:02d}Z"} for i in range(page_size)]
+        audit_page2 = [{"id": "audit-last", "created_at": "2024-01-02T00:00:00Z"}]
+
+        def get_events_page(**kwargs):
+            if kwargs.get("log_type") == LogType.AUDIT:
+                return audit_page1 if kwargs.get("page") == 1 else audit_page2
+            return alerts_response["alerts"]
+
+        def send_events(events, use_streaming_send=False):
+            # Fail only for the audit page(s); alerts send succeeds.
+            if events and str(events[0].get("id", "")).startswith("audit"):
+                raise Exception("send failure for audit")
+
+        mocker.patch.object(mock_client, "get_events_page", side_effect=get_events_page)
+        mocker.patch.object(mock_client, "send_events", side_effect=send_events)
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"max_fetch": "5000", "event_types_to_fetch": "Alerts,Audit"},
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        # Audit send failed → its state must NOT be advanced.
+        assert "last_fetch_audit" not in last_run_arg
+        # Alerts succeeded → its state still persists via the single setLastRun.
+        assert "last_fetch_alerts" in last_run_arg
+
+    def test_events_with_no_extractable_time_leaves_state_unchanged(self, mock_client, mocker):
+        """A page whose events have no extractable time must not set an HWM or last_fetch_<type>."""
+        # Audit events with no created_at → extract_time_from_event returns None for all.
+        page = [{"id": "audit-1"}, {"id": "audit-2"}]
+        mocker.patch.object(mock_client, "get_events_page", side_effect=[page, []])
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"max_fetch": "5000", "event_types_to_fetch": "Audit"},
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mock_send = mocker.patch.object(mock_client, "send_events")
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        # Events are still sent (they have IDs) but no HWM can be computed.
+        mock_send.assert_called_once()
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        assert "last_fetch_audit" not in last_run_arg
+        assert "previous_ids_audit" not in last_run_arg
+
+    def test_out_of_order_page_uses_true_maximum_time(self, mock_client, mocker):
+        """When the newest event is NOT the last element, HWM must still reflect the true maximum."""
+        # Newest event (00:00:09) is in the middle, not last.
+        page = [
+            {"id": "audit-1", "created_at": "2024-01-01T00:00:01Z"},
+            {"id": "audit-2", "created_at": "2024-01-01T00:00:09Z"},  # true max
+            {"id": "audit-3", "created_at": "2024-01-01T00:00:05Z"},
+        ]
+        mocker.patch.object(mock_client, "get_events_page", side_effect=[page, []])
+        mocker.patch.object(
+            demisto,
+            "params",
+            return_value={"max_fetch": "5000", "event_types_to_fetch": "Audit"},
+        )
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mocker.patch.object(mock_client, "send_events")
+        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+        fetch_events_command(mock_client)
+
+        last_run_arg = mock_set_last_run.call_args[0][0]
+        assert last_run_arg["last_fetch_audit"] == "2024-01-01T00:00:09Z"
+        assert last_run_arg["previous_ids_audit"] == ["audit-2"]
+
 
 class TestLastRunState:
     """Parametrized tests for last_run state management across all scenarios."""
@@ -955,10 +1213,14 @@ class TestLastRunState:
         for key in expected_missing_keys:
             assert key not in last_run_arg, f"Unexpected key '{key}' found in last_run: {last_run_arg}"
 
-        # Verify event count
+        # Verify event count. Events are now streamed per page/log-type (send-and-flush),
+        # so sum the events across all send_events calls rather than expecting one call.
         if expected_event_count > 0:
-            mock_send.assert_called_once()
-            assert len(mock_send.call_args[0][0]) == expected_event_count
+            total_sent = sum(len(call.args[0]) for call in mock_send.call_args_list)
+            assert total_sent == expected_event_count
+            # Every fetch-path send must use the streaming sender to keep memory flat.
+            for call in mock_send.call_args_list:
+                assert call.kwargs.get("use_streaming_send") is True
         else:
             mock_send.assert_not_called()
 
@@ -3499,13 +3761,18 @@ class TestClientSendEvents:
     """Tests for the Client.send_events method."""
 
     def test_send_events_calls_send_events_to_xsiam(self, mock_client, mocker):
-        """Test that send_events delegates to send_events_to_xsiam with correct vendor/product."""
+        """Test that send_events delegates to send_events_to_xsiam with correct vendor/product.
+
+        By default (display path) streaming is off so the events survive for readable output.
+        """
         mock_send_to_xsiam = mocker.patch("Koi.send_events_to_xsiam")
         events = [{"id": "1", "_time": "2024-01-01T00:00:00Z"}, {"id": "2", "_time": "2024-01-01T00:00:01Z"}]
 
         mock_client.send_events(events)
 
-        mock_send_to_xsiam.assert_called_once_with(events=events, vendor=Config.VENDOR, product=Config.PRODUCT)
+        mock_send_to_xsiam.assert_called_once_with(
+            events=events, vendor=Config.VENDOR, product=Config.PRODUCT, use_streaming_send=False
+        )
 
     def test_send_events_with_empty_list(self, mock_client, mocker):
         """Test that send_events still calls send_events_to_xsiam when events list is empty."""
@@ -3513,7 +3780,20 @@ class TestClientSendEvents:
 
         mock_client.send_events([])
 
-        mock_send_to_xsiam.assert_called_once_with(events=[], vendor=Config.VENDOR, product=Config.PRODUCT)
+        mock_send_to_xsiam.assert_called_once_with(
+            events=[], vendor=Config.VENDOR, product=Config.PRODUCT, use_streaming_send=False
+        )
+
+    def test_send_events_streaming_forwarded(self, mock_client, mocker):
+        """Test that use_streaming_send=True is forwarded to send_events_to_xsiam (fetch path)."""
+        mock_send_to_xsiam = mocker.patch("Koi.send_events_to_xsiam")
+        events = [{"id": "1", "_time": "2024-01-01T00:00:00Z"}]
+
+        mock_client.send_events(events, use_streaming_send=True)
+
+        mock_send_to_xsiam.assert_called_once_with(
+            events=events, vendor=Config.VENDOR, product=Config.PRODUCT, use_streaming_send=True
+        )
 
 
 # endregion
