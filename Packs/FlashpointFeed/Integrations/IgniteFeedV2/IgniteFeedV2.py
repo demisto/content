@@ -57,6 +57,14 @@ SCORE_MAPPING = {
     "malicious": "malicious",
 }
 
+# Mapping of the score tier returned by the API to the DBot score of an indicator.
+DBOT_SCORE_MAPPING = {
+    "informational": Common.DBotScore.GOOD,
+    "suspicious": Common.DBotScore.SUSPICIOUS,
+    "malicious": Common.DBotScore.BAD,
+    "no_score": Common.DBotScore.NONE,
+}
+
 MESSAGES = {
     "NO_PARAM_PROVIDED": "Please provide the {}.",
     "LIMIT_ERROR": "{} is an invalid value for limit. Limit must be between 1 and {}.",
@@ -284,12 +292,15 @@ class Client(BaseClient):
                 indicator_type=res_indicator_type,
                 default_map=default_map,
             )
+            tags = set(feed_tags) | set(get_sighting_tags(resp))
+
             indicator_obj = {
                 "value": indicator_value,
                 "type": indicator_type,
                 "rawJSON": resp,
+                "score": get_dbot_score(resp),
                 "fields": {
-                    "tags": feed_tags if feed_tags else [],
+                    "tags": sorted(tags),
                 },
             }
             if tlp_color:
@@ -387,6 +398,54 @@ class Client(BaseClient):
 
 
 """ HELPER FUNCTIONS """
+
+
+def get_all_sightings(resp: dict) -> list[dict]:
+    """
+    Get every sighting of an indicator, including the latest sighting, de-duplicated by sighting ID.
+
+    :param resp: raw response of indicator.
+
+    :return: List of sightings.
+    """
+    sightings = [sighting for sighting in (resp.get("sightings") or []) if sighting]
+
+    latest_sighting = resp.get("latest_sighting") or {}
+    if latest_sighting:
+        latest_id = latest_sighting.get("id")
+        existing_ids = {sighting.get("id") for sighting in sightings if sighting.get("id")}
+        if not latest_id or latest_id not in existing_ids:
+            sightings.append(latest_sighting)
+
+    return sightings
+
+
+def get_sighting_tags(resp: dict) -> list[str]:
+    """
+    Get the tags of all the sightings of an indicator.
+
+    :param resp: raw response of indicator.
+
+    :return: Sorted list of unique tags.
+    """
+    tags: set[str] = set()
+    for sighting in get_all_sightings(resp):
+        tags.update(tag for tag in (sighting.get("tags") or []) if tag)
+
+    return sorted(tags)
+
+
+def get_dbot_score(resp: dict) -> int:
+    """
+    Get the DBot score of an indicator based on the score tier returned by the API.
+
+    :param resp: raw response of indicator.
+
+    :return: DBot score of the indicator.
+    """
+    score_value = demisto.get(resp, "score.value") or ""
+
+    return DBOT_SCORE_MAPPING.get(score_value.lower(), Common.DBotScore.NONE)
 
 
 def remove_space_from_args(args):
