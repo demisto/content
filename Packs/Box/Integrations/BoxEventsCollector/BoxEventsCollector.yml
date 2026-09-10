@@ -89,3 +89,4 @@ tests:
 fromversion: 6.6.0
 supportedModules:
 - xsiam
+excludefromtightlycoupled: true
