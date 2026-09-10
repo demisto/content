@@ -4463,7 +4463,7 @@ def test_case_list_command_extra_data_returns_normalized_cases(mocker):
     assert case["case_id"] == "100"
     assert case["case_name"] == "My Case"
     assert case["case_domain"] == "example.com"
-    assert case["Issues"] == [{"issue_id": "a1", "case_id": "100"}]
+    assert case["Issues"] == [{"issue_id": "a1", "host_ip_list": [], "case_id": "100"}]
     assert case["FileArtifacts"] == [{"name": "file.exe", "case_id": "100"}]
     assert case["NetworkArtifacts"] == [{"ip": "1.2.3.4", "case_id": "100"}]
 
