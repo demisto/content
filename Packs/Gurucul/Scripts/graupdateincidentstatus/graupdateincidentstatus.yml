@@ -1,0 +1,23 @@
+commonfields:
+  id: GRAUpdateIncidentStatus
+  version: -1
+name: GRAUpdateIncidentStatus
+script: '-'
+type: python
+tags:
+- post-processing
+comment: Updates GRA incident status when the Cortex incident is closed.
+enabled: true
+args:
+- name: closeNotes
+  description: The close notes.
+- name: closeReason
+  description: The close reason.
+scripttarget: 0
+subtype: python3
+timeout: 60s
+dockerimage: demisto/python3:3.12.8.3296088
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests

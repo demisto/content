@@ -1,0 +1,18 @@
+commonfields:
+  id: GRAAlertClassifierDisplay
+  version: -1
+name: GRAAlertClassifierDisplay
+script: '-'
+type: python
+tags:
+- dynamic-section
+comment: Displays GRA alert classifier details in a markdown table.
+enabled: true
+scripttarget: 0
+subtype: python3
+timeout: 900ns
+dockerimage: demisto/python3:3.12.8.3296088
+runas: DBotWeakRole
+fromversion: 6.0.0
+tests:
+- No tests

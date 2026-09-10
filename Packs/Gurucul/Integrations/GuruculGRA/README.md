@@ -1,4 +1,4 @@
-[Gurucul Risk Analytics (GRA)](https://gurucul.com/gurucul-risk-analytics-gra) is a data science backed cloud native platform that predicts, detects and prevents breaches. It ingests and analyzes massive amounts of data from the network, IT systems, cloud platforms, EDR, applications, IoT, HR and much more to give you a comprehensive contextual view of user and entity behaviors This Integration facilitates retrieval of High Risk Entities identified by GRA by creating a case for each entity within GRA. These high risk entities are fetched in Cortex XSOAR and a corresponding incident is created for each entity in Cortex XSOAR. As a part of this integration, workflows can be configured at Cortex XSOAR based on different commands provided by GRA. These will define the actions to be taken on a particular high risk entity based on the Risk Score.
+[Gurucul Risk Analytics (GRA)](https://gurucul.com/gurucul-risk-analytics-gra) is a data science backed cloud native platform that predicts, detects and prevents breaches. It ingests and analyzes massive amounts of data from the network, IT systems, cloud platforms, EDR, applications, IoT, HR and much more to give you a comprehensive contextual view of user and entity behaviors. This integration fetches GRA Incidents or Alerts into Cortex and exposes War Room commands for investigation and actions.  Workflows can be configured in Cortex based on the commands provided by GRA.
 
 Please make sure you look at the integration source code and comments.
 
@@ -6,21 +6,59 @@ Please make sure you look at the integration source code and comments.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Server URL \(e.g. `https://soar.monstersofhack.com`\) | True |
-| apikey | API Key | True |
-| isFetch | Fetch incidents | False |
-| Classifier| Classifier for incident|False|
-| IncidentType | Incident type | False |
-| Mapper | Mapping incoming data|False|
-| insecure | Trust any certificate \(not secure\) | False |
-| proxy | Use system proxy settings | False |
-| first_fetch | First fetch time | False |
-| max_fetch | Maximum number of incidents per fetch | False |
+| Server URL (e.g. https://example.net) | The GRA server URL. | True |
+| Authorization Key | The API key used to authenticate to GRA. | True |
+| Fetch incidents | Whether this instance fetches incidents. | False |
+| Incident type | The incident type to assign to fetched incidents. | False |
+| Trust any certificate (not secure) | Whether to trust any certificate. | False |
+| Use system proxy settings | Whether to use the system proxy settings. | False |
+| First fetch time | The first-fetch time window used only when no ID cursor exists yet. | False |
+| Maximum number of incidents per fetch | The maximum number of incidents to fetch per run. | False |
+| Fetch type | The objects to import from GRA (`Incidents` or `Alerts`). Default: **Incidents**. Cases are no longer fetched. Use a separate instance for Alerts. | False |
+| GRA server timezone | Set the timezone of the GRA server (IANA id). Used when fetching Incidents and Alerts. Not used for First fetch time. Default **UTC**. | False |
+
+### Fetch setup (Incidents vs Alerts)
+
+Use two integration instances when you need both types:
+
+| Instance | Fetch type | Classifier | Mapper (incoming) | Incident type |
+| --- | --- | --- | --- | --- |
+| Incidents | Incidents (YAML default) | None / Select | GRAIncident-Mapper (YAML default) | GRAIncident (YAML default) |
+| Alerts | Alerts | None / Select | GRAAlert-Mapper | GRAAlert |
+
+> **Important:** Check **Do not use by default** on all Gurucul-GRA instances. If it is unchecked, Cortex can run War Room commands against this instance alongside all other enabled instances that are still use-by-default.
+
+New instances default to **Fetch type** = `Incidents`, with Mapper (incoming) = `GRAIncident-Mapper` and Incident type = `GRAIncident` (YAML defaults). On an Alerts instance, set Fetch type to `Alerts`, then set Mapper and Incident type to the Alert values above so fields and layouts map correctly.
+
+Set **GRA server timezone** to the GRA server timezone so **Occurred** matches GRA (default UTC). It is not used for **First fetch time**. War Room commands still return GRA date strings unchanged.
+
+## Upgrading from Case fetch (2.1.0)
+
+If you already run a Gurucul instance that fetched **Cases**, update carefully so fetch does not run with the wrong type/mapper mid-upgrade:
+
+1. **Disable** **Fetches incidents** on the existing Cases instance (or disable the instance).
+2. **Update** the Gurucul pack to **2.1.0** .
+3. Open the same instance and confirm or set:
+   - **Classifier** = None / Select
+   - **Fetch type** = `Incidents` (integration default; was not used for Cases fetch on older versions)
+   - **Mapper (incoming)** = `GRAIncident-Mapper` (default on new instances)
+   - **Incident type** = `GRAIncident` (default on new instances)
+4. Check **Do not use by default** checkbox.
+5. Save, then **re-enable** fetch.
+
+Notes:
+
+- Existing **GRACase** incidents in Cortex remain; use `gra-case-*` commands for actions on them. Cases are no longer fetched.
+- If the instance last-run still has `maxCaseId` and no `maxIncidentId`, that Case cursor is reused as `maxIncidentId` so the first Incident fetch does not use the initial date window from **First fetch time**.
+- For Alerts, create a **separate** instance using the Alerts row in the table above.
+- **GRA nomenclature:** GRA now uses **Data Source** instead of **Resource**. Incident and Alert fields use Data Source. Deprecated Resource account commands remain; prefer the Data Source replacements. Existing **GRACase** incidents and Case commands keep Resource so they continue to work. The Alert field **GRA Alert Resource** is replaced by **GRA Alert Data Source**.
 
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+> **Important:** Always specify the target instance on War Room commands by passing `using="InstanceName"`, for example `!gra-incidents status=OPEN using="Your-Incidents-instance"`. Without `using`, the command may not reach the intended Gurucul-GRA instance and can fail or return results from another instance.
 
 ### gra-fetch-users
 
@@ -56,6 +94,7 @@ Retrieve List of All Users (Identities)
 | Gra.Users.joiningDate | String | Joining Date. |
 | Gra.Users.exitDate | String | Exit Date. |
 | Gra.Users.userRisk | String | User Risk. |
+| Gra.Users.profilePicturePath | String | Profile Picture Path. |
 
 #### Command Example
 
@@ -106,7 +145,7 @@ Retrieve all Accounts Information
 | Gra.Accounts.created_on | Date | Created On. |
 | Gra.Accounts.department | String | Department. |
 | Gra.Accounts.description | String | Description. |
-| Gra.Accounts.resource | String | Resource Name. |
+| Gra.Accounts.datasourcename | String | Data Source Name. |
 | Gra.Accounts.domain | String | Domain. |
 | Gra.Accounts.high_risk | String | High Risk. |
 | Gra.Accounts.is_orphan | String | Is Orphan. |
@@ -129,7 +168,7 @@ Retrieve all Accounts Information
       "created_on":"05/16/2019 06:49:18",
       "department":null,
       "description":null,
-      "resource":"Windows Security",
+      "datasourcename":"Windows Security",
       "domain":"in",
       "high_risk":null,
       "is_orphan":"No",
@@ -148,6 +187,8 @@ Retrieve all Accounts Information
 
 ***
 Retrieve List of All Active Accounts for a Given Resource.
+
+Deprecated. Use ***gra-fetch-active-datasource-accounts*** instead.
 
 #### Base Command
 
@@ -207,6 +248,69 @@ Retrieve List of All Active Accounts for a Given Resource.
 
 #### Human Readable Output
 
+### gra-fetch-active-datasource-accounts
+
+***
+Retrieve list of all active accounts for a specified data source.
+
+#### Base Command
+
+`gra-fetch-active-datasource-accounts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| datasource_name | Data Source Name. | Required |
+| page | Page no. | Optional |
+| max | Per page record count | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Active.Datasource.Accounts.id | Number | Account Id. |
+| Gra.Active.Datasource.Accounts.name | String | Account Name. |
+| Gra.Active.Datasource.Accounts.type | String | Account type. |
+| Gra.Active.Datasource.Accounts.created_on | Date | Created On. |
+| Gra.Active.Datasource.Accounts.department | String | Department. |
+| Gra.Active.Datasource.Accounts.description | String | Description. |
+| Gra.Active.Datasource.Accounts.datasourcename | String | Data Source Name. |
+| Gra.Active.Datasource.Accounts.domain | String | Domain. |
+| Gra.Active.Datasource.Accounts.high_risk | String | High Risk. |
+| Gra.Active.Datasource.Accounts.is_orphan | String | Is Orphan. |
+| Gra.Active.Datasource.Accounts.is_reassigned | String | Is Reassigned. |
+| Gra.Active.Datasource.Accounts.risk_score | Number | Risk Score. |
+| Gra.Active.Datasource.Accounts.updated_on | Date | Updated on. |
+
+#### Command Example
+
+```!gra-fetch-active-datasource-accounts datasource_name="Linux" page=1 max=25```
+
+#### Context Example
+
+```
+[
+    {
+      "id":93,
+      "name":"Asher.Guthrie",
+      "type":null,
+      "created_on":"05/16/2019 06:49:18",
+      "department":null,
+      "description":null,
+      "datasourcename":"Windows Security",
+      "domain":"in",
+      "high_risk":null,
+      "is_orphan":"No",
+      "is_reassigned":null,
+      "risk_score":0,
+      "updated_on":null
+    }
+]
+```
+
+#### Human Readable Output
+
 ### gra-fetch-user-accounts
 
 ***
@@ -234,7 +338,7 @@ Retrieve List of All Active Accounts for a Given Resource.
 | Gra.User.Accounts.created_on | Date | Created On. |
 | Gra.User.Accounts.department | String | Department. |
 | Gra.User.Accounts.description | String | Description. |
-| Gra.User.Accounts.resource | String | Resource Name. |
+| Gra.User.Accounts.datasourcename | String | Data Source Name. |
 | Gra.User.Accounts.domain | String | Domain Name. |
 | Gra.User.Accounts.high_risk | String | High Risk. |
 | Gra.User.Accounts.is_orphan | String | Is Account Orphan. |
@@ -256,7 +360,7 @@ Retrieve List of All Active Accounts for a Given Resource.
       "created_on":"02/09/2018 10:00:00",
       "department":null,
       "description":null,
-      "resource":"IPS",
+      "datasourcename":"IPS",
       "domain":"com",
       "high_risk":null,
       "is_orphan":"No",
@@ -272,6 +376,8 @@ Retrieve List of All Active Accounts for a Given Resource.
 
 ***
 Retrieve High Risk Accounts for a Given Resource
+
+Deprecated. Use ***gra-fetch-datasource-highrisk-accounts*** instead.
 
 #### Base Command
 
@@ -357,7 +463,7 @@ Retrieve List of All High Risk Privileged Accounts.
 | Gra.Hpa.created_on | Date | Created On. |
 | Gra.Hpa.department | String | Department. |
 | Gra.Hpa.description | String | Description. |
-| Gra.Hpa.resource | String | Resource Name. |
+| Gra.Hpa.datasourcename | String | Data Source Name. |
 | Gra.Hpa.domain | String | Domain Name. |
 | Gra.Hpa.high_risk | String | High Risk. |
 | Gra.Hpa.is_orphan | String | Is Account Orphan. |
@@ -379,7 +485,7 @@ Retrieve List of All High Risk Privileged Accounts.
       "created_on":"02/09/2018 10:00:00",
       "department":null,
       "description":null,
-      "resource":"IPS",
+      "datasourcename":"IPS",
       "domain":"com",
       "high_risk":null,
       "is_orphan":"No",
@@ -397,6 +503,8 @@ Retrieve List of All High Risk Privileged Accounts.
 
 ***
 Retrieve all High Privileged Accounts for a Given Resource.
+
+Deprecated. Use ***gra-fetch-datasource-hpa*** instead.
 
 #### Base Command
 
@@ -480,7 +588,7 @@ Retrieve List of All Orphan / Rogue Accounts.
 | Gra.Orphan.Accounts.created_on | Date | Created On. |
 | Gra.Orphan.Accounts.department | String | Department. |
 | Gra.Orphan.Accounts.description | String | Description. |
-| Gra.Orphan.Accounts.resource | String | Resource Name. |
+| Gra.Orphan.Accounts.datasourcename | String | Data Source Name. |
 | Gra.Orphan.Accounts.domain | String | Domain Name. |
 | Gra.Orphan.Accounts.high_risk | String | High Risk. |
 | Gra.Orphan.Accounts.is_orphan | String | Is Account Orphan. |
@@ -502,7 +610,7 @@ Retrieve List of All Orphan / Rogue Accounts.
       "created_on":"02/09/2017 10:00:00",
       "department":null,
       "description":null,
-      "resource":"Linux",
+      "datasourcename":"Linux",
       "domain":"com",
       "high_risk":null,
       "is_orphan":"No",
@@ -518,6 +626,8 @@ Retrieve List of All Orphan / Rogue Accounts.
 
 ***
 Retrieve All Orphan / Rogue Accounts for a Given Resource.
+
+Deprecated. Use ***gra-fetch-datasource-orphan-accounts*** instead.
 
 #### Base Command
 
@@ -575,12 +685,199 @@ Retrieve All Orphan / Rogue Accounts for a Given Resource.
 
 #### Human Readable Output
 
->###
-
-### gra-fetch-orphan-accounts
+### gra-fetch-datasource-highrisk-accounts
 
 ***
-Retrieve List of All Orphan / Rogue Accounts.
+Retrieve high risk accounts for a specified data source.
+
+#### Base Command
+
+`gra-fetch-datasource-highrisk-accounts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| datasource_name | Data Source Name. | Required |
+| page | Page no. | Optional |
+| max | Per page record count | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Datasource.Highrisk.Accounts.id | Number | Account Id. |
+| Gra.Datasource.Highrisk.Accounts.name | String | Account Name. |
+| Gra.Datasource.Highrisk.Accounts.type | String | Account type. |
+| Gra.Datasource.Highrisk.Accounts.created_on | Date | Created On. |
+| Gra.Datasource.Highrisk.Accounts.department | String | Department. |
+| Gra.Datasource.Highrisk.Accounts.description | String | Description. |
+| Gra.Datasource.Highrisk.Accounts.datasourcename | String | Data Source Name. |
+| Gra.Datasource.Highrisk.Accounts.domain | String | Domain. |
+| Gra.Datasource.Highrisk.Accounts.high_risk | String | High Risk. |
+| Gra.Datasource.Highrisk.Accounts.is_orphan | String | Is Orphan. |
+| Gra.Datasource.Highrisk.Accounts.is_reassigned | String | Is Reassigned. |
+| Gra.Datasource.Highrisk.Accounts.risk_score | Number | Risk Score. |
+| Gra.Datasource.Highrisk.Accounts.updated_on | Date | Updated on. |
+
+#### Command Example
+
+```!gra-fetch-datasource-highrisk-accounts datasource_name="Linux" page=1 max=25```
+
+#### Context Example
+
+```
+[
+    {
+      "id":93,
+      "name":"Asher.Guthrie",
+      "type":null,
+      "created_on":"05/16/2019 06:49:18",
+      "department":null,
+      "description":null,
+      "datasourcename":"Windows Security",
+      "domain":"in",
+      "high_risk":null,
+      "is_orphan":"No",
+      "is_reassigned":null,
+      "risk_score":0,
+      "updated_on":null
+    }
+]
+```
+
+#### Human Readable Output
+
+### gra-fetch-datasource-hpa
+
+***
+Retrieve high privileged accounts for a specified data source.
+
+#### Base Command
+
+`gra-fetch-datasource-hpa`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| datasource_name | Data Source Name. | Required |
+| page | Page no. | Optional |
+| max | Per page record count | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Datasource.Hpa.id | Number | Account Id. |
+| Gra.Datasource.Hpa.name | String | Account Name. |
+| Gra.Datasource.Hpa.type | String | Account type. |
+| Gra.Datasource.Hpa.created_on | Date | Created On. |
+| Gra.Datasource.Hpa.department | String | Department. |
+| Gra.Datasource.Hpa.description | String | Description. |
+| Gra.Datasource.Hpa.datasourcename | String | Data Source Name. |
+| Gra.Datasource.Hpa.domain | String | Domain. |
+| Gra.Datasource.Hpa.high_risk | String | High Risk. |
+| Gra.Datasource.Hpa.is_orphan | String | Is Orphan. |
+| Gra.Datasource.Hpa.is_reassigned | String | Is Reassigned. |
+| Gra.Datasource.Hpa.risk_score | Number | Risk Score. |
+| Gra.Datasource.Hpa.updated_on | Date | Updated on. |
+
+#### Command Example
+
+```!gra-fetch-datasource-hpa datasource_name="Linux" page=1 max=25```
+
+#### Context Example
+
+```
+[
+    {
+      "id":93,
+      "name":"Asher.Guthrie",
+      "type":null,
+      "created_on":"05/16/2019 06:49:18",
+      "department":null,
+      "description":null,
+      "datasourcename":"Windows Security",
+      "domain":"in",
+      "high_risk":null,
+      "is_orphan":"No",
+      "is_reassigned":null,
+      "risk_score":0,
+      "updated_on":null
+    }
+]
+```
+
+#### Human Readable Output
+
+### gra-fetch-datasource-orphan-accounts
+
+***
+Retrieve orphan / rogue accounts for a specified data source.
+
+#### Base Command
+
+`gra-fetch-datasource-orphan-accounts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| datasource_name | Data Source Name. | Required |
+| page | Page no. | Optional |
+| max | Per page record count | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Datasource.Orphan.Accounts.id | Number | Account Id. |
+| Gra.Datasource.Orphan.Accounts.name | String | Account Name. |
+| Gra.Datasource.Orphan.Accounts.type | String | Account type. |
+| Gra.Datasource.Orphan.Accounts.created_on | Date | Created On. |
+| Gra.Datasource.Orphan.Accounts.department | String | Department. |
+| Gra.Datasource.Orphan.Accounts.description | String | Description. |
+| Gra.Datasource.Orphan.Accounts.datasourcename | String | Data Source Name. |
+| Gra.Datasource.Orphan.Accounts.domain | String | Domain. |
+| Gra.Datasource.Orphan.Accounts.high_risk | String | High Risk. |
+| Gra.Datasource.Orphan.Accounts.is_orphan | String | Is Orphan. |
+| Gra.Datasource.Orphan.Accounts.is_reassigned | String | Is Reassigned. |
+| Gra.Datasource.Orphan.Accounts.risk_score | Number | Risk Score. |
+| Gra.Datasource.Orphan.Accounts.updated_on | Date | Updated on. |
+
+#### Command Example
+
+```!gra-fetch-datasource-orphan-accounts datasource_name="Linux" page=1 max=25```
+
+#### Context Example
+
+```
+[
+    {
+      "id":93,
+      "name":"Asher.Guthrie",
+      "type":null,
+      "created_on":"05/16/2019 06:49:18",
+      "department":null,
+      "description":null,
+      "datasourcename":"Windows Security",
+      "domain":"in",
+      "high_risk":null,
+      "is_orphan":"No",
+      "is_reassigned":null,
+      "risk_score":0,
+      "updated_on":null
+    }
+]
+```
+
+#### Human Readable Output
+
+### gra-user-activities
+
+***
+Retrieve activity for a specified user.
 
 #### Base Command
 
@@ -600,7 +897,7 @@ Retrieve List of All Orphan / Rogue Accounts.
 | --- | --- | --- |
 | Gra.User.Activity.employee_id | String | Employee Id . |
 | Gra.User.Activity.account_name | String | Account Name . |
-| Gra.User.Activity.resource_name | String | Resource Name . |
+| Gra.User.Activity.datasource_name | String | Data Source Name. |
 | Gra.User.Activity.event_desc | String | Event Description . |
 | Gra.User.Activity.event_date | String | Event Date . |
 | Gra.User.Activity.risk_score | Number | Risk Score . |
@@ -615,7 +912,7 @@ Retrieve List of All Orphan / Rogue Accounts.
 {
 "employee_id":"aa17600",
 "account_name":null,
-"resource_name":"Print",
+"datasource_name":"Print",
 "event_desc":"Print",
 "event_date":"09/02/2019 11:51:14",
 "risk_score":0.0
@@ -689,10 +986,10 @@ get details of the user.
 
 #### Human Readable Output
 
-### gra-fetch-users-details
+### gra-highRisk-users
 
 ***
-get details of the user.
+Retrieve list of all high risk users.
 
 #### Base Command
 
@@ -709,34 +1006,21 @@ get details of the user.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Gra.Highrisk.Users.id | Number | User Id . |
-| Gra.Highrisk.Users.name | String |  User Name. |
-| Gra.Highrisk.Users.type | String |  Type. |
-| Gra.Highrisk.Users.created_on | Date | Created On . |
-| Gra.Highrisk.Users.department | String |  Department. |
-| Gra.Highrisk.Users.description | String |  Description. |
-| Gra.Highrisk.Users.resource | String | Resource Name. |
-| Gra.Highrisk.Users.domain | String | Domain. |
-| Gra.Highrisk.Users.high_risk | String | High Risk. |
-| Gra.Highrisk.Users.is_orphan | String | Is Orphan Account . |
-| Gra.Highrisk.Users.is_reassigned | String | Is Reassigned . |
-| Gra.Highrisk.Users.updated_on | Date | Updated On . |
-| Gra.Highrisk.Users.exitDate | Date | Exit Date . |
-| Gra.Highrisk.Users.created_on | Date | Created On . |
-| Gra.Highrisk.Users.joiningDate | Date | Joining Date . |
-| Gra.Highrisk.Users.manager | String | Manager . |
-| Gra.Highrisk.Users.employeeId | String | Employee Id . |
-| Gra.Highrisk.Users.firstName | String | First Name . |
-| Gra.Highrisk.Users.middleName | String | Middle Name . |
-| Gra.Highrisk.Users.lastName | String | Last Name . |
-| Gra.Highrisk.Users.location | String | Location . |
-| Gra.Highrisk.Users.title | String | Title . |
-| Gra.Highrisk.Users.userRisk | Number | User Risk . |
-| Gra.Highrisk.Users.riskScore | Number | Risk Score . |
-| Gra.Highrisk.Users.description | String | Description . |
-| Gra.Highrisk.Users.is_orphan | String | Is Orphan . |
-| Gra.Highrisk.Users.phone | String | Phone . |
-| Gra.Highrisk.Users.email | String | Email . |
+| Gra.Highrisk.Users.firstName | String | First Name. |
+| Gra.Highrisk.Users.middleName | String | Middle Name. |
+| Gra.Highrisk.Users.lastName | String | Last Name. |
+| Gra.Highrisk.Users.employeeId | String | Employee Id. |
+| Gra.Highrisk.Users.riskScore | Number | Risk Score. |
+| Gra.Highrisk.Users.userRisk | Number | User Risk. |
+| Gra.Highrisk.Users.department | String | Department. |
+| Gra.Highrisk.Users.email | String | Email. |
+| Gra.Highrisk.Users.phone | String | Phone. |
+| Gra.Highrisk.Users.location | String | Location. |
+| Gra.Highrisk.Users.manager | String | Manager. |
+| Gra.Highrisk.Users.title | String | Title. |
+| Gra.Highrisk.Users.joiningDate | Date | Joining Date. |
+| Gra.Highrisk.Users.exitDate | Date | Exit Date. |
+| Gra.Highrisk.Users.profilePicturePath | String | Profile Picture Path. |
 
 #### Command Example
 
@@ -747,20 +1031,22 @@ get details of the user.
 ```
 [
   {
-      "id":188,
-      "name":"Vitoria Inger",
-      "type":null,
-      "created_on":"02/02/2020 10:00:00",
-      "department":null,
-      "description":"Mozilla/5.0 (Windows NT) AppleWebKit/534.20 (KHTML, like Gecko) Chrome/11.0.672.2 Safari/534.20",
-      "resource":"AIX",
-      "domain":"163.com",
-      "high_risk":null,
-      "is_orphan":"No",
-      "is_reassigned":null,
-      "risk_score":88,
-      "updated_on":null
-   }
+    "firstName":"Jonathan",
+    "middleName":null,
+    "lastName":"Osterman01_NN",
+    "employeeId":"AB1234",
+    "riskScore":95,
+    "userRisk":95,
+    "department":"IT",
+    "email":"Jonathan.Osterman@abc.com",
+    "phone":"(91)-123-4567-890",
+    "location":"USA",
+    "manager":"Thor.Odinson01_NN",
+    "title":"Sr.Developer",
+    "joiningDate":"01/01/2017 12:47:00",
+    "exitDate":"12/31/2019 23:47:00",
+    "profilePicturePath":null
+  }
 ]
 ```
 
@@ -769,6 +1055,8 @@ get details of the user.
 ### gra-cases
 
 ***
+Deprecated. GRA Cases are no longer imported by this integration. This command remains available for existing GRACase incidents.
+
 get details of the user.
 
 #### Base Command
@@ -815,7 +1103,7 @@ get details of the user.
       "openDate":"10/13/2020 18:44:06",
       "ownerId":1,
       "ownerType":"User",
-      "ownerName":"graadmin",
+      "ownerName":"Yuki.Jacob",
       "riskDate":"10/12/2020 00:00:00",
       "status":"Open"
    }
@@ -972,13 +1260,14 @@ Retrieve detailed anomaly summary of specified anomaly name.
 | --- | --- | --- |
 | Gra.Investigate.Anomaly.Summary.analyticalFeatures | String | Analytical Features  |
 | Gra.Investigate.Anomaly.Summary.entityCount | String | Entity Count |
-| Gra.Investigate.Anomaly.Summary.resourceCount | String | Resource Count |
+| Gra.Investigate.Anomaly.Summary.datasourceCount | String | Data Source Count |
 | Gra.Investigate.Anomaly.Summary.records | String | Records |
 | Gra.Investigate.Anomaly.Summary.anomalyBaseline | String | Anomaly Baseline |
 | Gra.Investigate.Anomaly.Summary.anomalyLastCatch | String | Anomaly Last Catch |
 | Gra.Investigate.Anomaly.Summary.executionDays | String | Execution Days |
 | Gra.Investigate.Anomaly.Summary.chainDetails | String | Chain Details |
-| Gra.Investigate.Anomaly.Summary.resourceName | String | resourceName |
+| Gra.Investigate.Anomaly.Summary.datasourcename | String | datasourcename |
+| Gra.Investigate.Anomaly.Summary.datasource | String | Data Source (nested anomalous-account rows) |
 | Gra.Investigate.Anomaly.Summary.type | String | type |
 | Gra.Investigate.Anomaly.Summary.value | String | value |
 | Gra.Investigate.Anomaly.Summary.anomalousActivity | Number | anomalousActivity |
@@ -1001,21 +1290,21 @@ Retrieve detailed anomaly summary of specified anomaly name.
     "eventdesc": 8
   },
   "entityCount": "466",
-  "resourceCount": "4",
+  "datasourceCount": "4",
   "records": {
     "anomalyBaseline": "Baseline period is not configured.",
     "anomalyLastCatch": "2020-12-06 10:00:59",
     "executionDays": "null",
     "chainDetails": [
       {
-        "resourceName": "resourceName",
+        "datasourcename": "datasourcename",
         "type": "model",
         "value": "modelName"
       }
     ],
     "anomalousActivity": 0,
     "anomalyName": "modelName",
-    "classifier": "Categories -> Categories Name, Categories -> Default, Resources -> resourceName",
+    "classifier": "Categories -> Categories Name, Categories -> Default, Data Sources -> datasourcename",
     "anomalyFirstCatch": "2020-11-08 12:15:00",
     "anomalyDescription": "This template can be used to create models using the saved search query."
   },
@@ -1094,7 +1383,7 @@ Retrieve analytical features for specified entity value and model name.
 ### gra-cases-anomaly
 
 ***
-Retrieve anomalies for specified case id from GRA and update in XSOAR.
+Retrieve anomalies for specified case id from GRA and update in Cortex.
 
 #### Base Command
 
@@ -1145,6 +1434,588 @@ Retrieve anomalies for specified case id from GRA and update in XSOAR.
         "status": "Closed"
     }
 ]
+```
+
+#### Human Readable Output
+
+### gra-incidents
+
+***
+Retrieve list of GRA incidents for a specified status.
+
+#### Base Command
+
+`gra-incidents`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| status | Incident Status. | Required |
+| page | Page no. | Optional |
+| max | Per page record count | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Incidents.entityId | Number | Entity Id. |
+| Gra.Incidents.entityTypeId | Number | Entity Type Id. |
+| Gra.Incidents.entity | String | Entity Name. |
+| Gra.Incidents.incidentId | Number | Incident Id. |
+| Gra.Incidents.openDate | Date | Open Date. |
+| Gra.Incidents.ownerId | Number | Owner Id. |
+| Gra.Incidents.ownerType | String | Owner Type. |
+| Gra.Incidents.ownerName | String | Owner Name. |
+| Gra.Incidents.riskDate | Date | Risk Date. |
+| Gra.Incidents.status | String | Status. |
+| Gra.Incidents.riskScore | Number | Risk Score. |
+| Gra.Incidents.graweblink | String | GRA Weblink. |
+| Gra.Incidents.anomalies | String | Anomalies. |
+| Gra.Incidents.anomalies.anomalyName | String | Incident Anomaly name. |
+| Gra.Incidents.anomalies.status | String | Current status of anomaly. |
+| Gra.Incidents.anomalies.datasourcename | String | Data Source Name. |
+| Gra.Incidents.anomalies.assignee | String | Assignee name. |
+| Gra.Incidents.anomalies.assigneeType | String | Assignee type (User/Role). |
+| Gra.Incidents.anomalies.riskScore | Number | Risk score for anomaly. |
+| Gra.Incidents.anomalies.riskAcceptedDate | Date | Risk accepted date of anomaly. |
+
+#### Command Example
+
+```!gra-incidents status="OPEN" page=1 max=25```
+
+#### Context Example
+
+```
+[
+ {
+      "entityId":366,
+      "entityTypeId":2,
+      "entity":"Ulises Ellerby",
+      "incidentId":58,
+      "openDate":"10/13/2020 18:44:06",
+      "ownerId":1,
+      "ownerType":"User",
+      "ownerName":"Yuki.Jacob",
+      "riskDate":"10/12/2020 00:00:00",
+      "status":"Open",
+      "riskScore":72,
+      "graweblink":"https://gra.example/incidents/58",
+      "anomalies":[
+        {
+          "anomalyName":"Anomaly Name 1",
+          "status":"Open",
+          "datasourcename":"Windows Security",
+          "assignee":"Yuki.Jacob",
+          "assigneeType":"User",
+          "riskScore":72,
+          "riskAcceptedDate":null
+        }
+      ]
+   }
+]
+```
+
+#### Human Readable Output
+
+### gra-incident-action
+
+***
+Close a GRA incident and update anomaly status as Closed / Risk Managed / Model Reviewed.
+
+#### Base Command
+
+`gra-incident-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action | Action (closeIncident, modelReviewIncident, riskManageIncident). | Required |
+| incidentId | Incident Id. | Required |
+| subOption | Sub Option. | Required |
+| incidentComment | Incident Comment. | Required |
+| riskAcceptDate | Risk Accept Date in yyyy-MM-dd format (riskManageIncident only). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Incident.Action.Message | String | Message. |
+
+#### Command Example
+
+```!gra-incident-action action=closeIncident incidentId=5 subOption="True Incident" incidentComment="Closed from Cortex"```
+
+#### Context Example
+
+```
+[
+  {
+    "Message": "Incident closed successfully."
+  }
+]
+```
+
+#### Human Readable Output
+
+### gra-incident-action-anomaly
+
+***
+Close anomalies within a GRA incident.
+
+#### Base Command
+
+`gra-incident-action-anomaly`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action | Action (closeIncidentAnomaly, modelReviewIncidentAnomaly, riskAcceptIncidentAnomaly). | Required |
+| incidentId | Incident Id. | Required |
+| anomalyNames | Anomaly Names. | Required |
+| subOption | Sub Option. | Required |
+| incidentComment | Incident Comment. | Required |
+| riskAcceptDate | Risk Accept Date in yyyy-MM-dd format (riskAcceptIncidentAnomaly only). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Incident.Action.Anomaly.Message | String | Message. |
+
+#### Command Example
+
+```!gra-incident-action-anomaly action=closeIncidentAnomaly incidentId=5 anomalyNames=anomalyName1 subOption="True Incident" incidentComment="Done"```
+
+#### Context Example
+
+```
+[
+  {
+    "Message": "1 Anomalies in this incident closed successfully."
+  }
+]
+```
+
+#### Human Readable Output
+
+### gra-incidents-anomaly
+
+***
+Retrieve anomalies for a specified GRA incident id.
+
+#### Base Command
+
+`gra-incidents-anomaly`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incidentId | GRA Incident Id. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Incidents.anomalies.anomalyName | String | Incident Anomaly name. |
+| Gra.Incidents.anomalies.status | String | Current status of anomaly. |
+| Gra.Incidents.anomalies.datasourcename | String | Data Source Name. |
+| Gra.Incidents.anomalies.assignee | String | Assignee name. |
+| Gra.Incidents.anomalies.assigneeType | String | Assignee type (User/Role). |
+| Gra.Incidents.anomalies.riskScore | Number | Risk score for anomaly. |
+| Gra.Incidents.anomalies.riskAcceptedDate | Date | Risk accepted date of anomaly. |
+
+#### Command Example
+
+```!gra-incidents-anomaly incidentId=10```
+
+#### Context Example
+
+```
+[
+    {
+        "anomalyName": "Anomaly Name 1",
+        "riskAcceptedDate": "2023-02-01T18:30:00Z",
+        "datasourcename": "Windows Security",
+        "riskScore": 0,
+        "assignee": "Assignee 1",
+        "assigneeType": "User",
+        "status": "Open"
+    },
+    {
+        "anomalyName": "Anomaly Name 2",
+        "riskAcceptedDate": null,
+        "datasourcename": "Linux",
+        "riskScore": 0,
+        "assignee": "Assignee 2",
+        "assigneeType": "User",
+        "status": "Closed"
+    }
+]
+```
+
+#### Human Readable Output
+
+### gra-alerts
+
+***
+Retrieve list of GRA alerts for a specified status and date range.
+
+#### Base Command
+
+`gra-alerts`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| status | Status (OPEN, CLOSED, IN PROGRESS, ALL). | Required |
+| startDate | Start Date (yyyy-MM-dd HH:mm:ss). | Required |
+| endDate | End Date (yyyy-MM-dd HH:mm:ss). | Required |
+| page | Page no. | Optional |
+| max | Per page record count | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Alerts.alertId | Number | Alert Id. |
+| Gra.Alerts.anomalyName | String | Anomaly Name. |
+| Gra.Alerts.entityId | Number | Entity Id. |
+| Gra.Alerts.entityTypeId | Number | Entity Type Id. |
+| Gra.Alerts.entity | String | Entity. |
+| Gra.Alerts.statusName | String | Status. |
+| Gra.Alerts.detectionTimestamp | Date | Detection Timestamp. |
+| Gra.Alerts.severity | Number | Severity. |
+| Gra.Alerts.datasourcename | String | Data Source Name. |
+| Gra.Alerts.riskScore | Number | Risk Score. |
+| Gra.Alerts.graweblink | String | GRA Weblink. |
+| Gra.Alerts.incidentType | String | Incident Type. |
+| Gra.Alerts.assigneeIds | String | Assignee Ids. |
+| Gra.Alerts.assigneeType | String | Assignee Type. |
+| Gra.Alerts.assignee | String | Assignee. |
+| Gra.Alerts.classifierList | String | Classifier List. |
+| Gra.Alerts.subStatusName | String | Sub Status Name. |
+
+#### Command Example
+
+```!gra-alerts status="OPEN" startDate="2026-01-01 00:00:00" endDate="2026-12-31 23:59:59" page=1 max=25```
+
+#### Context Example
+
+```
+[
+  {
+    "alertId": 101,
+    "anomalyName": "Anomaly Name 1",
+    "entityId": 366,
+    "entityTypeId": 2,
+    "entity": "Ulises Ellerby",
+    "statusName": "OPEN",
+    "detectionTimestamp": "2026-01-15 10:00:00",
+    "severity": 3,
+    "datasourcename": "Windows Security",
+    "riskScore": 72,
+    "graweblink": "https://gra.example/alerts/101",
+    "incidentType": null,
+    "assigneeIds": "1",
+    "assigneeType": "GRA_USER",
+    "assignee": "Yuki.Jacob",
+    "classifierList": ["Classifier 1"],
+    "subStatusName": null
+  }
+]
+```
+
+#### Human Readable Output
+
+### gra-alert-get
+
+***
+Retrieve a single GRA alert by id.
+
+#### Base Command
+
+`gra-alert-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Alert Id. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Alert.alertId | Number | Alert Id. |
+| Gra.Alert.anomalyName | String | Anomaly Name. |
+| Gra.Alert.entityId | Number | Entity Id. |
+| Gra.Alert.entityTypeId | Number | Entity Type Id. |
+| Gra.Alert.entity | String | Entity. |
+| Gra.Alert.statusName | String | Status. |
+| Gra.Alert.detectionTimestamp | Date | Detection Timestamp. |
+| Gra.Alert.severity | Number | Severity. |
+| Gra.Alert.datasourcename | String | Data Source Name. |
+| Gra.Alert.riskScore | Number | Risk Score. |
+| Gra.Alert.graweblink | String | GRA Weblink. |
+| Gra.Alert.incidentType | String | Incident Type. |
+| Gra.Alert.assigneeIds | String | Assignee Ids. |
+| Gra.Alert.assigneeType | String | Assignee Type. |
+| Gra.Alert.assignee | String | Assignee. |
+| Gra.Alert.classifierList | String | Classifier List. |
+| Gra.Alert.subStatusName | String | Sub Status Name. |
+| Gra.Alert.analyticalFeatures | String | Analytical Features. |
+| Gra.Alert.analyticalFeatureValues | String | Analytical Feature Values. |
+
+#### Command Example
+
+```!gra-alert-get id=101```
+
+#### Context Example
+
+```
+{
+  "alertId": 101,
+  "anomalyName": "Anomaly Name 1",
+  "entityId": 366,
+  "entityTypeId": 2,
+  "entity": "Ulises Ellerby",
+  "statusName": "OPEN",
+  "detectionTimestamp": "2026-01-15 10:00:00",
+  "severity": 3,
+  "datasourcename": "Windows Security",
+  "riskScore": 72,
+  "graweblink": "https://gra.example/alerts/101",
+  "incidentType": null,
+  "assigneeIds": "1",
+  "assigneeType": "GRA_USER",
+  "assignee": "Yuki.Jacob",
+  "classifierList": ["Classifier 1"],
+  "subStatusName": null,
+  "analyticalFeatures": {"feature1": "value1"},
+  "analyticalFeatureValues": {"feature1": ["value1"]}
+}
+```
+
+#### Human Readable Output
+
+### gra-alert-action
+
+***
+Perform an action on a GRA alert (close, assign, in progress, comment).
+
+#### Base Command
+
+`gra-alert-action`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| action | Action (closeAlert, inProgressAlert, assignAlert, addCommentOnAlert). | Required |
+| alertId | Alert Id. | Required |
+| alertComment | Alert Comment. | Required |
+| incidentType | Incident or Not An Incident (closeAlert). | Optional |
+| subStatus | Close sub-status (closeAlert). | Optional |
+| assigneeType | Assignee type (assignAlert). | Optional |
+| assigneeName | Assignee name (assignAlert). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Alert.Action.Message | String | Message. |
+
+#### Command Example
+
+```!gra-alert-action action=closeAlert alertId=101 alertComment="Closed" incidentType="Incident" subStatus="True Positive"```
+
+#### Context Example
+
+```
+[
+  {
+    "Message": "Alert closed successfully."
+  }
+]
+```
+
+#### Human Readable Output
+
+### gra-alert-comment
+
+***
+Add a comment on a GRA alert (thin wrapper for addCommentOnAlert).
+
+#### Base Command
+
+`gra-alert-comment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alertId | Alert Id. | Required |
+| alertComment | Alert Comment. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Alert.Action.Message | String | Message. |
+
+#### Command Example
+
+```!gra-alert-comment alertId=101 alertComment="Investigating"```
+
+#### Context Example
+
+```
+[
+  {
+    "Message": "Comment added successfully."
+  }
+]
+```
+
+#### Human Readable Output
+
+### gra-alert-assign
+
+***
+Assign a GRA alert (thin wrapper for assignAlert).
+
+#### Base Command
+
+`gra-alert-assign`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alertId | Alert Id. | Required |
+| assigneeType | Assignee type. | Required |
+| assigneeName | Assignee name. | Required |
+| alertComment | Alert Comment. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Alert.Action.Message | String | Message. |
+
+#### Command Example
+
+```!gra-alert-assign alertId=101 assigneeType=GRA_USER assigneeName="Yuki.Jacob" alertComment="Assigning via XSOAR"```
+
+#### Context Example
+
+```
+[
+  {
+    "Message": "Alert assigned successfully."
+  }
+]
+```
+
+#### Human Readable Output
+
+### gra-alert-in-progress
+
+***
+Mark a GRA alert in progress (thin wrapper for inProgressAlert).
+
+#### Base Command
+
+`gra-alert-in-progress`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alertId | Alert Id. | Required |
+| alertComment | Alert Comment. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Alert.Action.Message | String | Message. |
+
+#### Command Example
+
+```!gra-alert-in-progress alertId=101 alertComment="Working this alert"```
+
+#### Context Example
+
+```
+[
+  {
+    "Message": "Alert set to In Progress."
+  }
+]
+```
+
+#### Human Readable Output
+
+### gra-alert-update-history
+
+***
+Retrieve update history for a GRA alert.
+
+#### Base Command
+
+`gra-alert-update-history`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alertId | Alert Id. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Gra.Alert.History.count | Number | Number of history entries. |
+| Gra.Alert.History.alertDetails | String | Alert history details. |
+| Gra.Alert.History.alertDetails.firstName | String | First name. |
+| Gra.Alert.History.alertDetails.lastName | String | Last name. |
+| Gra.Alert.History.alertDetails.addedDate | Date | Added date. |
+| Gra.Alert.History.alertDetails.eventBy | String | Event by. |
+| Gra.Alert.History.alertDetails.addedBy | String | Added by. |
+| Gra.Alert.History.alertDetails.id | Number | History entry id. |
+| Gra.Alert.History.alertDetails.profilePicturePath | String | Profile picture path. |
+| Gra.Alert.History.alertDetails.actionName | String | Action name. |
+| Gra.Alert.History.alertDetails.comment | String | Comment. |
+
+#### Command Example
+
+```!gra-alert-update-history alertId=101```
+
+#### Context Example
+
+```
+{
+  "count": 1,
+  "alertDetails": [
+    {
+      "firstName": "Yuki",
+      "lastName": "Jacob",
+      "addedDate": "2026-01-15 10:05:00",
+      "eventBy": "Yuki.Jacob",
+      "addedBy": "Yuki.Jacob",
+      "id": 1,
+      "profilePicturePath": null,
+      "actionName": "Comment",
+      "comment": "Investigating"
+    }
+  ]
+}
 ```
 
 #### Human Readable Output
