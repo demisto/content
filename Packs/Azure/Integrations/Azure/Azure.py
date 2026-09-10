@@ -3281,18 +3281,28 @@ def update_nic_properties(args: dict, params: dict, properties: dict):
 
 
 def log_analytics_tags_arg_to_request_format(tags: str | None) -> list[dict[str, str]] | None:
-    """Convert a 'name=value;name=value' tags argument into the API request format."""
+    """Convert a 'name=value;name=value' tags argument into the API request format.
+
+    Args:
+        tags (str | None): The tags argument as a string in the format 'name=value;name=value'.
+            Multiple tags are separated by semicolons, and each tag's name and value are separated
+            by an equals sign. Can be None or empty.
+
+    Returns:
+        list[dict[str, str]] | None: A list of dictionaries, each with 'name' and 'value' keys
+            representing a single tag, or None if the input is empty or None.
+
+    Raises:
+        DemistoException: If any tag is not in the expected 'name=value' format.
+    """
     bad_arg_msg = "The `tags` argument is malformed. Value should be in the following format: `name=value;name=value`"
     if not tags:
         return None
-    try:
-        parsed_tags = [tag.split("=") for tag in tags.split(";")]
-        for tag in parsed_tags:
-            if len(tag) != 2:
-                raise DemistoException(bad_arg_msg)
-        return [{"name": tag[0], "value": tag[1]} for tag in parsed_tags]
-    except IndexError as e:
-        raise DemistoException(bad_arg_msg) from e
+    parsed_tags = [tag.split("=") for tag in tags.split(";")]
+    for tag in parsed_tags:
+        if len(tag) != 2:
+            raise DemistoException(bad_arg_msg)
+    return [{"name": tag[0], "value": tag[1]} for tag in parsed_tags]
 
 
 """ COMMAND FUNCTIONS """
@@ -5506,7 +5516,7 @@ def log_analytics_saved_searches_list_command(client: AzureClient, params: dict,
     Args:
         client (AzureClient): The Azure client instance.
         params (dict): Configuration parameters.
-        args (dict): Command arguments including optional limit and page.
+        args (dict): Command arguments.
 
     Returns:
         CommandResults: The list of saved searches.
@@ -5514,17 +5524,11 @@ def log_analytics_saved_searches_list_command(client: AzureClient, params: dict,
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     workspace_name = get_from_args_or_params(params=params, args=args, key="workspace_name")
-    page = arg_to_number(args.get("page")) or 0
-    limit = arg_to_number(args.get("limit")) or 50
 
     response = client.log_analytics_saved_searches_list(
         subscription_id=subscription_id, resource_group_name=resource_group_name, workspace_name=workspace_name
     )
-    saved_searches = response.get("value", [])
-
-    from_index = min(page * limit, len(saved_searches))
-    to_index = min(from_index + limit, len(saved_searches))
-    output = saved_searches[from_index:to_index]
+    output = response.get("value", [])
 
     readable_output = tableToMarkdown(
         "Saved Searches", output, headers=LOG_ANALYTICS_SAVED_SEARCH_HEADERS, headerTransform=pascalToSpace, removeNull=True
@@ -5688,11 +5692,11 @@ def log_analytics_workspaces_list_command(client: AzureClient, params: dict, arg
             "Name": workspace.get("name"),
             "Location": workspace.get("location"),
             "Tags": workspace.get("tags"),
-            "Provisioning State": workspace.get("properties", {}).get("provisioningState"),
+            "ProvisioningState": workspace.get("properties", {}).get("provisioningState"),
         }
         for workspace in value
     ]
-    readable_output = tableToMarkdown("Workspaces List", workspaces, removeNull=True)
+    readable_output = tableToMarkdown("Workspaces List", workspaces, removeNull=True, headerTransform=pascalToSpace)
 
     return CommandResults(
         outputs_prefix="Azure.LogAnalytics.Workspaces",
@@ -5743,7 +5747,7 @@ def log_analytics_table_get_command(client: AzureClient, params: dict, args: dic
         "provisioningState": properties.get("provisioningState"),
     }
     return CommandResults(
-        readable_output=tableToMarkdown("Search Job", readable, removeNull=True),
+        readable_output=tableToMarkdown("Search Job", readable, removeNull=True, headerTransform=pascalToSpace),
         outputs=response,
         outputs_prefix="Azure.LogAnalytics.Tables",
         outputs_key_field="id",
@@ -5776,8 +5780,8 @@ def log_analytics_table_run_command(args: dict, client: AzureClient, params: dic
         raise DemistoException(f"The table_name should end with '{LOG_ANALYTICS_TABLE_NAME_SUFFIX}' suffix.")
 
     if argToBoolean(args.get("first_run", True)):
-        start_search_time = arg_to_datetime(args.get("start_search_time", "1 day ago"), "start_search_time")
-        end_search_time = arg_to_datetime(args.get("end_search_time", "now"), "end_search_time")
+        start_search_time = arg_to_datetime(args.get("start_search_time", "1 day ago"))
+        end_search_time = arg_to_datetime(args.get("end_search_time", "now"))
         data = {
             "properties": {
                 "searchResults": remove_empty_elements(

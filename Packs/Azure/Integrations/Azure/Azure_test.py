@@ -7649,27 +7649,6 @@ def test_log_analytics_saved_searches_list_command_success(mocker):
     assert result.outputs[0]["properties"]["displayName"] == "mock saved search"
 
 
-def test_log_analytics_saved_searches_list_command_pagination(mocker):
-    """
-    Given:
-        - An Azure client returning two saved searches and a page/limit that selects only the second.
-    When:
-        - log_analytics_saved_searches_list_command is called with limit=1 and page=1.
-    Then:
-        - It returns only the second saved search.
-    """
-    from Azure import log_analytics_saved_searches_list_command
-
-    client = mocker.MagicMock()
-    mocker.patch.object(client, "log_analytics_saved_searches_list", return_value=MOCKED_LA_SAVED_SEARCHES_OUTPUT)
-
-    args = dict(LOG_ANALYTICS_ARGS) | {"limit": "1", "page": "1"}
-    result = log_analytics_saved_searches_list_command(client, {}, args)
-
-    assert len(result.outputs) == 1
-    assert result.outputs[0]["id"] == "mock_id/another_saved_search"
-
-
 def test_log_analytics_saved_search_get_command_success(mocker):
     """
     Given:
@@ -7878,6 +7857,25 @@ def test_log_analytics_table_run_command_invalid_table_name(mocker):
     client = mocker.MagicMock()
     args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_table", "query": "AuditLogs", "first_run": "true"}
     with pytest.raises(DemistoException, match="_SRCH"):
+        log_analytics_table_run_command(args, client, {})
+
+
+def test_log_analytics_table_run_command_api_failure(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_table_run raises an error from the API call.
+    When:
+        - log_analytics_table_run_command is called with first_run=True.
+    Then:
+        - The raised exception propagates out of the command (terminal failure).
+    """
+    from Azure import log_analytics_table_run_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_table_run", side_effect=DemistoException("API error"))
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_SRCH", "query": "AuditLogs", "first_run": "true"}
+    with pytest.raises(DemistoException, match="API error"):
         log_analytics_table_run_command(args, client, {})
 
 

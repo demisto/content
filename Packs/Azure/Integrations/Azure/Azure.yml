@@ -11042,12 +11042,6 @@ script:
       description: The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
       required: false
       required:platform: true
-    - name: limit
-      description: The maximum number of saved searches to return.
-      defaultValue: '50'
-    - name: page
-      description: The page number from which to start a search.
-      defaultValue: '0'
     - name: resource_group_name
       description: "The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration."
     - name: workspace_name
@@ -11254,28 +11248,28 @@ script:
       description: The resource tags.
       type: Unknown
     - contextPath: Azure.LogAnalytics.Workspaces.properties.createdDate
-      description: Workspace creation date.
+      description: The workspace creation date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Azure.LogAnalytics.Workspaces.properties.customerId
-      description: This is a read-only property. Represents the ID associated with the workspace.
+      description: The ID associated with the workspace.
       type: String
     - contextPath: Azure.LogAnalytics.Workspaces.properties.defaultDataCollectionRuleResourceId
       description: The resource ID of the default Data Collection Rule to use for this workspace.
       type: String
     - contextPath: Azure.LogAnalytics.Workspaces.properties.failover
-      description: Workspace failover properties.
+      description: The workspace failover properties.
       type: Unknown
     - contextPath: Azure.LogAnalytics.Workspaces.properties.features
-      description: Workspace features.
+      description: The workspace features.
       type: Unknown
     - contextPath: Azure.LogAnalytics.Workspaces.properties.forceCmkForQuery
-      description: Indicates whether customer managed storage is mandatory for query management.
+      description: Whether customer managed storage is mandatory for query management.
       type: Boolean
     - contextPath: Azure.LogAnalytics.Workspaces.properties.modifiedDate
-      description: Workspace modification date.
+      description: The workspace modification date in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: Azure.LogAnalytics.Workspaces.properties.privateLinkScopedResources
-      description: List of linked private link scope resources.
+      description: The list of linked private link scope resources.
       type: Unknown
     - contextPath: Azure.LogAnalytics.Workspaces.properties.provisioningState
       description: The provisioning state of the workspace.
@@ -11328,40 +11322,40 @@ script:
       description: The tables long-term retention in days. Calculated as (totalRetentionInDays-retentionInDays).
       type: Number
     - contextPath: Azure.LogAnalytics.Tables.properties.lastPlanModifiedDate
-      description: The timestamp that table plan was last modified (UTC).
+      description: The timestamp that table plan was last modified (UTC) in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: String
     - contextPath: Azure.LogAnalytics.Tables.properties.plan
-      description: Instruct the system how to handle and charge the logs ingested to this table.
+      description: The instruction for the system on how to handle and charge the logs ingested to this table.
       type: String
     - contextPath: Azure.LogAnalytics.Tables.properties.protectionLevel
       description: The protection level of the table. Determines the default data access isolation behavior.
       type: String
     - contextPath: Azure.LogAnalytics.Tables.properties.provisioningState
-      description: Table's current provisioning state. If set to 'updating', indicates a resource lock due to ongoing operation, forbidding any update to the table until the ongoing operation is concluded.
+      description: The table's current provisioning state. If set to 'updating', indicates a resource lock due to ongoing operation, forbidding any update to the table until the ongoing operation is concluded.
       type: String
     - contextPath: Azure.LogAnalytics.Tables.properties.restoredLogs
-      description: Parameters of the restore operation that initiated this table.
+      description: The parameters of the restore operation that initiated this table.
       type: Unknown
     - contextPath: Azure.LogAnalytics.Tables.properties.resultStatistics
-      description: Search job execution statistics.
+      description: The search job execution statistics.
       type: Unknown
     - contextPath: Azure.LogAnalytics.Tables.properties.retentionInDays
       description: "In Analytics table: the tables analytics retention in days, between 4 and 730. Setting this property to -1 will default to the workspace retention. In Basic and Auxiliary table: read only property."
       type: Number
     - contextPath: Azure.LogAnalytics.Tables.properties.retentionInDaysAsDefault
-      description: True - Value originates from workspace retention in days, False - Customer specific.
+      description: Whether the value originates from workspace retention in days (true) or is customer specific (false).
       type: Boolean
     - contextPath: Azure.LogAnalytics.Tables.properties.schema
-      description: Table schema.
+      description: The table schema.
       type: Unknown
     - contextPath: Azure.LogAnalytics.Tables.properties.searchResults
-      description: Parameters of the search job that initiated this table.
+      description: The parameters of the search job that initiated this table.
       type: Unknown
     - contextPath: Azure.LogAnalytics.Tables.properties.totalRetentionInDays
       description: The table total retention in days, between 4 and 4383. Setting this property to -1 will default to retentionInDays.
       type: Number
     - contextPath: Azure.LogAnalytics.Tables.properties.totalRetentionInDaysAsDefault
-      description: True - Value originates from retention in days, False - Customer specific.
+      description: Whether the value originates from retention in days (true) or is customer specific (false).
       type: Boolean
     - contextPath: Azure.LogAnalytics.Tables.systemData
       description: The Azure Resource Manager metadata containing createdBy and modifiedBy information.
@@ -11378,16 +11372,16 @@ script:
       description: "The name of the table to add. Must contain '_SRCH' suffix. Example value: AuditLogs_SRCH."
       required: true
     - name: limit
-      description: Maximum number of records in the result set, up to one million records.
+      description: The maximum number of records in the result set, up to one million records.
       defaultValue: '50'
     - name: query
-      description: "Log query written in KQL format to retrieve data. Search job queries must always start with a table name."
+      description: "The log query written in KQL format to retrieve data. Search job queries must always start with a table name."
       required: true
     - name: start_search_time
-      description: "Start of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as '2023-10-31T00:00:00Z'."
-      defaultValue: 1 day
+      description: "The start of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as '2023-10-31T00:00:00Z'."
+      defaultValue: '1 day'
     - name: end_search_time
-      description: "End of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as '2023-10-31T00:00:00Z'."
+      description: "The end of the time range to search. The value can either be in minutes, days, weeks, or a simple ISO 8601 format such as '2023-10-31T00:00:00Z'."
       defaultValue: now
     - name: timeout
       description: The timeout in seconds until polling ends.
@@ -11396,11 +11390,11 @@ script:
       description: The interval in seconds between each poll.
       defaultValue: '60'
     - name: first_run
-      description: Used internally to determine whether the current execution is the initial run. Do not set manually.
+      description: Whether the current execution is the initial run. Used internally, do not set manually.
       hidden: true
       defaultValue: 'true'
     - name: hide_polling_output
-      description: Hide the polling message and only print the final status at the end.
+      description: Whether to hide the polling message and only print the final status at the end.
       hidden: true
     - name: resource_group_name
       description: "The name of the resource group. Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration."
