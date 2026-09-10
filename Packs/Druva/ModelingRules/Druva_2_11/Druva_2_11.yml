@@ -1,5 +1,4 @@
-fromversion: 8.6.0
-toversion: 8.14.0
+fromversion: 8.15.0
 id: Druva_Druva_ModelingRule
 name: Druva Druva Modeling Rule
 rules: ''
