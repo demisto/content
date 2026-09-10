@@ -1,0 +1,8 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "BC both loosely and tightly.",
+	"forceUpdate": {
+        "breakingChangesNotesLoosely": "BC only loosely.",
+        "breakingChangesNotesTightly": ""
+    }
+}

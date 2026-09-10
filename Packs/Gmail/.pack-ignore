@@ -19,3 +19,6 @@ ignore=PB105
 [known_words]
 subplaybook
 attachmentName
+
+[file:pack_metadata.json]
+ignore=RN105
