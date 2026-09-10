@@ -2,6 +2,7 @@
     "id": "indicator_domaintoolsfeedipmaliciousspam",
     "version": -1,
     "name": "DomainToolsFeed IP Malicious Spam",
+    "description": "Number of confirmed spam domains on third-party intel feeds hosted on the IP.",
     "ownerOnly": false,
     "cliName": "domaintoolsfeedipmaliciousspam",
     "type": "number",
@@ -20,9 +21,9 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.10.0"
 }

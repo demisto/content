@@ -2,6 +2,7 @@
     "id": "indicator_domaintoolsfeedipbadpdnsresolutions",
     "version": -1,
     "name": "DomainToolsFeed IP Bad PDNS Resolutions",
+    "description": "Number of confirmed bad domains seen on the IP in the last 24 hours.",
     "ownerOnly": false,
     "cliName": "domaintoolsfeedipbadpdnsresolutions",
     "type": "number",
@@ -20,9 +21,9 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.10.0"
 }

@@ -1,8 +1,8 @@
 {
     "id": "DomainToolsFeed IP",
     "version": -1,
-    "fromVersion": "5.5.0",
-    "regex": "\\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])(?:\\[\\.\\]|\\.)){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\\b",
+    "fromVersion": "6.10.0",
+    "regex": "",
     "details": "DomainToolsFeed IP",
     "reputationCommand": "ip",
     "system": false,
@@ -13,6 +13,6 @@
     "mergeContext": false,
     "contextPath": "IP(val.Address \u0026\u0026 val.Address === obj.Address)",
     "contextValue": "Address",
-    "expiration": 10080,
+    "expiration": 0,
     "layout": "DomainToolsFeed IP Indicator"
 }

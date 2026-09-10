@@ -2,6 +2,7 @@
     "id": "indicator_domaintoolsfeedipasn",
     "version": -1,
     "name": "DomainToolsFeed IP ASN",
+    "description": "The IP's ASN (autonomous system number, routing provider).",
     "ownerOnly": false,
     "cliName": "domaintoolsfeedipasn",
     "type": "number",
@@ -20,9 +21,9 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.10.0"
 }

@@ -2,6 +2,7 @@
     "id": "indicator_domaintoolsfeedippercentspam",
     "version": -1,
     "name": "DomainToolsFeed IP Percent Spam",
+    "description": "Percentage of total domains on the IP that are confirmed spam.",
     "ownerOnly": false,
     "cliName": "domaintoolsfeedippercentspam",
     "type": "number",
@@ -20,9 +21,9 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.10.0"
 }

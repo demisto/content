@@ -2,6 +2,7 @@
     "id": "indicator_domaintoolsfeedipthirdpartythreats",
     "version": -1,
     "name": "DomainToolsFeed IP Third Party Threats",
+    "description": "Number of domains on the IP confirmed with any threat on a third-party intel feed.",
     "ownerOnly": false,
     "cliName": "domaintoolsfeedipthirdpartythreats",
     "type": "number",
@@ -20,9 +21,9 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.10.0"
 }

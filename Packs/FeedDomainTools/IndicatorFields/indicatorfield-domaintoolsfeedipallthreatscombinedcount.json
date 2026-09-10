@@ -2,6 +2,7 @@
     "id": "indicator_domaintoolsfeedipallthreatscombinedcount",
     "version": -1,
     "name": "DomainToolsFeed IP All Threats Combined Count",
+    "description": "Number of confirmed or predicted malicious domains hosted on the IP.",
     "ownerOnly": false,
     "cliName": "domaintoolsfeedipallthreatscombinedcount",
     "type": "number",
@@ -20,9 +21,9 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.10.0"
 }

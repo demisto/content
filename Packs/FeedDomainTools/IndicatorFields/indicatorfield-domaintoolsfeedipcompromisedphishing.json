@@ -2,6 +2,7 @@
     "id": "indicator_domaintoolsfeedipcompromisedphishing",
     "version": -1,
     "name": "DomainToolsFeed IP Compromised Phishing",
+    "description": "Number of compromised phishing domains hosted on the IP.",
     "ownerOnly": false,
     "cliName": "domaintoolsfeedipcompromisedphishing",
     "type": "number",
@@ -20,9 +21,9 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "5.5.0"
+    "fromVersion": "6.10.0"
 }
