@@ -388,6 +388,53 @@ script:
     - contextPath: GCP.Compute.Firewalls.targetTags
       description: Target instance tags.
       type: Unknown
+  - name: gcp-compute-firewall-delete
+    description: "Deletes the specified firewall rule. Required permission: compute.firewalls.delete."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: resource_name
+      required: true
+      description: The name of the firewall rule to delete.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation resource, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource, for example compute#operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: The current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: The progress of the operation as a percentage between 0 and 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID of the resource affected by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the target resource modified by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The date and time when the operation resource was created.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The date and time when the operation started running.
+      type: Date
+    - contextPath: GCP.Compute.Operations.user
+      description: The user account that performed the operation.
+      type: String
   - name: gcp-compute-snapshots-list
     description: "Lists snapshots in a specific project. Required permission: compute.snapshots.list."
     arguments:
@@ -549,6 +596,113 @@ script:
     - contextPath: GCP.Compute.Snapshots.storageLocations
       description: List of storage locations for the snapshot.
       type: Unknown
+  - name: gcp-compute-snapshot-delete
+    description: "Deletes the specified snapshot. Deleting a single snapshot might not delete all data on that snapshot. If any data on the snapshot marked for deletion is needed for subsequent snapshots, the data is moved to the next corresponding snapshot. Required permission: compute.snapshots.delete."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: resource_name
+      required: true
+      description: The name of the snapshot to delete.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation resource, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource, for example compute#operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: The current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: The progress of the operation as a percentage between 0 and 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID of the resource affected by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the target resource modified by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The date and time when the operation resource was created.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The date and time when the operation started running.
+      type: Date
+    - contextPath: GCP.Compute.Operations.user
+      description: The user account that performed the operation.
+      type: String
+  - name: gcp-compute-snapshot-labels-set
+    description: "Sets the labels on a snapshot. Required permissions: compute.snapshots.setLabels, compute.snapshots.get."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: resource_name
+      required: true
+      description: The name of the snapshot for this request.
+    - name: labels
+      required: true
+      description: 'The labels to apply for this resource. Each label key and value must comply with RFC1035. Example: key=abc,value=123;key=def,value=456.'
+    - name: label_fingerprint
+      required: false
+      description: The fingerprint of the previous set of labels for this resource, used to detect conflicts. Run gcp-compute-snapshot-get to retrieve the latest fingerprint. Ignored when add_labels is true, since the fingerprint of the fetched snapshot is used instead. When add_labels is false, a label_fingerprint must be provided.
+    - name: add_labels
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to add the new labels to the existing ones or override the previous labels with the new ones. True - add, False - override.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation resource, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource, for example compute#operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: The current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: The progress of the operation as a percentage between 0 and 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID of the resource affected by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the target resource modified by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The date and time when the operation resource was created.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The date and time when the operation started running.
+      type: Date
+    - contextPath: GCP.Compute.Operations.user
+      description: The user account that performed the operation.
+      type: String
   - name: gcp-compute-instances-aggregated-list-by-ip
     description: "Returns an aggregated list of instances across all zones that can be filtered by internal or external IP. Required permission: cloudasset.assets.searchAllResources."
     arguments:
@@ -4393,6 +4547,549 @@ script:
       description: Type of the resource. Always compute#image for images.
       type: string
 
+# gcp-compute-image-get-from-family
+  - name: gcp-compute-image-get-from-family
+    description: "Returns the latest non-deprecated image from an image family. Required permission: compute.images.get."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: family
+      required: true
+      description: The name of the image family to search for.
+    outputs:
+    - contextPath: GCP.Compute.Images.kind
+      description: The type of the resource. Always set to compute#image for images.
+      type: String
+    - contextPath: GCP.Compute.Images.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Images.creationTimestamp
+      description: The creation timestamp in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Images.name
+      description: The name of the resource, provided by the client when the resource is created.
+      type: String
+    - contextPath: GCP.Compute.Images.description
+      description: The optional description of this resource.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceType
+      description: The type of image used to create this disk. The default and only value is RAW.
+      type: String
+    - contextPath: GCP.Compute.Images.rawDisk.source
+      description: The full Google Cloud Storage URL where the disk image is stored.
+      type: String
+    - contextPath: GCP.Compute.Images.rawDisk.sha1Checksum
+      description: The optional SHA1 checksum of the disk image before unpackaging, provided by the client when the disk image is created.
+      type: String
+    - contextPath: GCP.Compute.Images.rawDisk.containerType
+      description: The format used to encode and transmit the block device, which should be TAR.
+      type: String
+    - contextPath: GCP.Compute.Images.deprecated.state
+      description: The deprecation state of this resource. Can be ACTIVE, DEPRECATED, OBSOLETE, or DELETED.
+      type: String
+    - contextPath: GCP.Compute.Images.deprecated.replacement
+      description: The URL of the suggested replacement for a deprecated resource.
+      type: String
+    - contextPath: GCP.Compute.Images.deprecated.deprecated
+      description: The RFC3339 timestamp on or after which the state of this resource changes to DEPRECATED.
+      type: Date
+    - contextPath: GCP.Compute.Images.deprecated.obsolete
+      description: The RFC3339 timestamp on or after which the state of this resource changes to OBSOLETE.
+      type: Date
+    - contextPath: GCP.Compute.Images.deprecated.deleted
+      description: The RFC3339 timestamp on or after which the state of this resource changes to DELETED.
+      type: Date
+    - contextPath: GCP.Compute.Images.status
+      description: The status of the image. Can be FAILED, PENDING, or READY.
+      type: String
+    - contextPath: GCP.Compute.Images.archiveSizeBytes
+      description: The size, in bytes, of the tar.gz image archive stored in Google Cloud Storage.
+      type: String
+    - contextPath: GCP.Compute.Images.diskSizeGb
+      description: The size of the image in GB when restored onto a persistent disk.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDisk
+      description: The URL of the source disk used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDiskId
+      description: The ID value of the disk used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDiskEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the source disk that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDiskEncryptionKey.sha256
+      description: The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source disk.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImage
+      description: The URL of the source image used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImageId
+      description: The ID value of the image used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImageEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the source image that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImageEncryptionKey.sha256
+      description: The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshot
+      description: The URL of the source snapshot used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshotId
+      description: The ID value of the snapshot used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshotEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the source snapshot that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshotEncryptionKey.sha256
+      description: The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source snapshot.
+      type: String
+    - contextPath: GCP.Compute.Images.imageEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the image that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.imageEncryptionKey.sha256
+      description: The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the image.
+      type: String
+    - contextPath: GCP.Compute.Images.licenses
+      description: The applicable license URIs.
+      type: String
+    - contextPath: GCP.Compute.Images.licenseCodes
+      description: The integer license codes indicating which licenses are attached to this image.
+      type: String
+    - contextPath: GCP.Compute.Images.family
+      description: The name of the image family to which this image belongs.
+      type: String
+    - contextPath: GCP.Compute.Images.labels
+      description: The labels applied to this image.
+      type: Unknown
+    - contextPath: GCP.Compute.Images.labelFingerprint
+      description: The fingerprint of the labels applied to this image, which is used for optimistic locking.
+      type: String
+    - contextPath: GCP.Compute.Images.guestOsFeatures.type
+      description: The ID of the supported guest operating system feature.
+      type: String
+    - contextPath: GCP.Compute.Images.shieldedInstanceInitialState
+      description: The initial state for the image, which is used by Shielded VM instances on boot.
+      type: Unknown
+    - contextPath: GCP.Compute.Images.storageLocations
+      description: The Cloud Storage location, either regional or multi-regional, where the image content is stored.
+      type: String
+    - contextPath: GCP.Compute.Images.architecture
+      description: The architecture of the image. Can be ARM64 or X86_64.
+      type: String
+    - contextPath: GCP.Compute.Images.enableConfidentialCompute
+      description: Whether the image is created from a confidential compute mode disk.
+      type: Boolean
+    - contextPath: GCP.Compute.Images.satisfiesPzs
+      description: Whether the resource satisfies physical zone separation.
+      type: Boolean
+    - contextPath: GCP.Compute.Images.satisfiesPzi
+      description: Whether the resource satisfies physical zone isolation.
+      type: Boolean
+    - contextPath: GCP.Compute.Images.selfLink
+      description: The server-defined URL for the resource.
+      type: String
+
+# gcp-compute-images-list
+  - name: gcp-compute-images-list
+    description: "Lists images in a specific project. Required permission: compute.images.list."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: limit
+      defaultValue: '50'
+      description: "The maximum number of results to return. Can be 1 to 500."
+    - name: next_token
+      required: false
+      description: The token for the next set of items to return, used for pagination.
+    - name: filter
+      description: "The filter expression for resources listed in the response. Must specify a field name, a comparison operator (=, !=, >, or <), and a value."
+    - name: order_by
+      description: The order used to sort list results. By default, results are returned in alphanumeric order based on the resource name.
+    outputs:
+    - contextPath: GCP.Compute.Images.kind
+      description: The type of the resource. Always set to compute#image for images.
+      type: String
+    - contextPath: GCP.Compute.Images.id
+      description: The unique identifier for the resource, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Images.creationTimestamp
+      description: The creation timestamp in RFC3339 format.
+      type: Date
+    - contextPath: GCP.Compute.Images.name
+      description: The name of the resource, provided by the client when the resource is created.
+      type: String
+    - contextPath: GCP.Compute.Images.description
+      description: The optional description of this resource.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceType
+      description: The type of image used to create this disk. The default and only value is RAW.
+      type: String
+    - contextPath: GCP.Compute.Images.rawDisk.source
+      description: The full Google Cloud Storage URL where the disk image is stored.
+      type: String
+    - contextPath: GCP.Compute.Images.rawDisk.sha1Checksum
+      description: The optional SHA1 checksum of the disk image before unpackaging, provided by the client when the disk image is created.
+      type: String
+    - contextPath: GCP.Compute.Images.rawDisk.containerType
+      description: The format used to encode and transmit the block device, which should be TAR.
+      type: String
+    - contextPath: GCP.Compute.Images.deprecated.state
+      description: The deprecation state of this resource. Can be ACTIVE, DEPRECATED, OBSOLETE, or DELETED.
+      type: String
+    - contextPath: GCP.Compute.Images.deprecated.replacement
+      description: The URL of the suggested replacement for a deprecated resource.
+      type: String
+    - contextPath: GCP.Compute.Images.deprecated.deprecated
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED.
+      type: Date
+    - contextPath: GCP.Compute.Images.deprecated.obsolete
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE.
+      type: Date
+    - contextPath: GCP.Compute.Images.deprecated.deleted
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED.
+      type: Date
+    - contextPath: GCP.Compute.Images.status
+      description: The status of the image. Can be FAILED, PENDING, or READY.
+      type: String
+    - contextPath: GCP.Compute.Images.archiveSizeBytes
+      description: The size, in bytes, of the image tar.gz archive stored in Google Cloud Storage.
+      type: String
+    - contextPath: GCP.Compute.Images.diskSizeGb
+      description: The size, in GB, of the image when restored onto a persistent disk.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDisk
+      description: The URL of the source disk used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDiskId
+      description: The ID value of the disk used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDiskEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the source disk that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDiskEncryptionKey.sha256
+      description: The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source disk.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImage
+      description: The URL of the source image used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImageId
+      description: The ID value of the image used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImageEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the source image that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImageEncryptionKey.sha256
+      description: The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshot
+      description: The URL of the source snapshot used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshotId
+      description: The ID value of the snapshot used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshotEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the source snapshot that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshotEncryptionKey.sha256
+      description: The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source snapshot.
+      type: String
+    - contextPath: GCP.Compute.Images.imageEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the image that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.imageEncryptionKey.sha256
+      description: The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the image.
+      type: String
+    - contextPath: GCP.Compute.Images.licenses
+      description: The applicable license URIs.
+      type: String
+    - contextPath: GCP.Compute.Images.licenseCodes
+      description: The integer license codes indicating which licenses are attached to this image.
+      type: String
+    - contextPath: GCP.Compute.Images.family
+      description: The name of the image family to which this image belongs.
+      type: String
+    - contextPath: GCP.Compute.Images.labels
+      description: The labels applied to this image.
+      type: Unknown
+    - contextPath: GCP.Compute.Images.labelFingerprint
+      description: The fingerprint of the labels applied to this image, which is used for optimistic locking.
+      type: String
+    - contextPath: GCP.Compute.Images.guestOsFeatures.type
+      description: The ID of the supported guest operating system feature.
+      type: String
+    - contextPath: GCP.Compute.Images.shieldedInstanceInitialState
+      description: The initial state for the image, which is used by Shielded VM instances on boot.
+      type: Unknown
+    - contextPath: GCP.Compute.Images.storageLocations
+      description: The Cloud Storage location, either regional or multi-regional, where the image content is stored.
+      type: String
+    - contextPath: GCP.Compute.Images.architecture
+      description: The architecture of the image. Can be ARM64 or X86_64.
+      type: String
+    - contextPath: GCP.Compute.Images.enableConfidentialCompute
+      description: Whether the image is created from a confidential compute mode disk.
+      type: Boolean
+    - contextPath: GCP.Compute.Images.satisfiesPzs
+      description: Whether the resource satisfies physical zone separation.
+      type: Boolean
+    - contextPath: GCP.Compute.Images.satisfiesPzi
+      description: Whether the resource satisfies physical zone isolation.
+      type: Boolean
+    - contextPath: GCP.Compute.Images.selfLink
+      description: The server-defined URL for the resource.
+      type: String
+    - contextPath: GCP.Compute.ImagesNextToken
+      description: The token to use as the next_token argument to retrieve the next page of results.
+      type: String
+
+# gcp-compute-image-delete
+  - name: gcp-compute-image-delete
+    description: "Deletes the specified image. Required permission: compute.images.delete."
+    execution: true
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: image
+      required: true
+      description: The name of the image resource to delete.
+
+# gcp-compute-image-labels-set
+  - name: gcp-compute-image-labels-set
+    description: "Sets the labels on an image. Required permission: compute.images.setLabels."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: image
+      required: true
+      description: The name of the image resource on which to set labels.
+    - name: labels
+      required: true
+      description: 'The list of labels to apply to this resource, formatted as tuples, for example, key=abc,value=123;key=def,value=456.'
+    - name: label_fingerprint
+      required: true
+      description: The fingerprint of the previous set of labels for this resource, used to detect conflicts. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels.
+    outputs:
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource. Always set to compute#operation for operation resources.
+      type: String
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation resource, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides. Only available when performing per-zone operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the requestId if provided in the request.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: The status of the operation. Can be PENDING, RUNNING, or DONE.
+      type: String
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example EMAILADDRESS.
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: The progress of the operation as a percentage from 0 to 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time the operation was requested, in RFC3339 format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time the operation was started by the server, in RFC3339 format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time the operation was completed, in RFC3339 format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.error.errors
+      description: The array of errors encountered while processing the operation.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during the processing of the operation.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails.
+      type: Number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails, such as NOT FOUND.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides. Only available when performing regional operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.description
+      description: The textual description of the operation, which is set when the operation is created.
+      type: String
+
+# gcp-compute-image-insert
+  - name: gcp-compute-image-insert
+    description: "Creates an image in the specified project using the data included in the request. Required permission: compute.images.create."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: name
+      required: true
+      description: The name of the resource; provided by the client when the resource is created.
+    - name: force_create
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to attempt to create the image even if OS features or license validation fails.
+    - name: description
+      description: The optional description of this resource.
+    - name: raw_disk_source
+      description: The full Google Cloud Storage URL where the disk image is stored.
+    - name: raw_disk_sha1_checksum
+      description: The optional SHA1 checksum of the disk image before unpackaging.
+    - name: raw_disk_container_type
+      auto: PREDEFINED
+      predefined:
+      - TAR
+      description: The format used to encode and transmit the block device, which should be TAR.
+    - name: deprecated_state
+      auto: PREDEFINED
+      predefined:
+      - ACTIVE
+      - DEPRECATED
+      - OBSOLETE
+      - DELETED
+      description: The deprecation state of this resource. Can be ACTIVE, DEPRECATED, OBSOLETE, or DELETED.
+    - name: deprecated_replacement
+      description: The URL of the suggested replacement for a deprecated resource.
+    - name: archive_size_bytes
+      description: The size, in bytes, of the image tar.gz archive stored in Google Cloud Storage.
+    - name: disk_size_gb
+      description: The size, in GB, of the image when restored onto a persistent disk.
+    - name: source_disk
+      description: The URL of the source disk used to create this image. This property or the raw_disk_source property must be provided, but not both.
+    - name: licenses
+      isArray: true
+      description: A comma-separated list of applicable license URIs.
+    - name: family
+      description: The name of the image family to which this image belongs.
+    - name: image_encryption_key_raw_key
+      description: The 256-bit customer-supplied encryption key (RFC 4648 base64) for the image.
+    - name: image_encryption_key_kms_key_name
+      description: The name of the encryption key that is stored in Google Cloud KMS for the image.
+    - name: source_disk_encryption_key_raw_key
+      description: The 256-bit customer-supplied encryption key (RFC 4648 base64) of the source disk.
+    - name: source_disk_encryption_key_kms_key_name
+      description: The name of the encryption key stored in Google Cloud KMS of the source disk.
+    - name: labels
+      description: 'The list of labels to apply for this resource, in tuples, for example, key=abc,value=123;key=def,value=456.'
+    - name: label_fingerprint
+      description: The fingerprint of the previous set of labels for this resource.
+    - name: guest_os_features
+      isArray: true
+      description: The comma-separated list of guest OS features to enable on the image.
+    - name: license_codes
+      isArray: true
+      description: The comma-separated list of integer license codes indicating which licenses are attached to this image.
+    - name: source_image
+      description: The URL of the source image used to create this image.
+    - name: source_image_encryption_key_kms_key_name
+      description: The name of the encryption key stored in Google Cloud KMS of the source image.
+    - name: source_snapshot
+      description: The URL of the source snapshot used to create this image.
+    - name: source_snapshot_encryption_key_raw_key
+      description: The 256-bit customer-supplied encryption key (RFC 4648 base64) of the source snapshot.
+    - name: source_snapshot_encryption_key_kms_key_name
+      description: The name of the encryption key stored in Google Cloud KMS of the source snapshot.
+    outputs:
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource. Always set to compute#operation for operation resources.
+      type: String
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation resource, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides. Only available when performing per-zone operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of requestId if it was provided in the request.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: The status of the operation. Can be PENDING, RUNNING, or DONE.
+      type: String
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example EMAILADDRESS.
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: The progress of the operation as a percentage from 0 to 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time the operation was requested, in RFC3339 format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time the operation was started by the server, in RFC3339 format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time the operation was completed, in RFC3339 format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.error.errors
+      description: The array of errors encountered while processing the operation.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during processing of the operation.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails.
+      type: Number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails, such as NOT FOUND.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides. Only available when performing regional operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.description
+      description: The textual description of the operation, which is set when the operation is created.
+      type: String
+
 # gcp-compute-region-get
   - arguments:
     - description: Name of the region resource to return.
@@ -5025,8 +5722,637 @@ script:
       description: A textual description of the operation, which is set when the operation is created.
       type: string
     - contextPath: GCP.Compute.Operations.kind
-      description: Type of the resource. Always compute#operation for Operation resources.
+      description: The type of the resource, which is always compute#operation for Operation resources.
       type: string
+  - name: gcp-compute-instance-insert
+    description: "Creates a Compute Engine VM instance in the specified project and zone. Returns a zone operation resource describing the asynchronous creation. Required permission: compute.instances.create."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: zone
+      description: The name of the zone for this request.
+      required: true
+    - name: name
+      description: The name of the instance to create.
+      required: true
+    - name: machine_type
+      description: 'The machine type. Can be a bare name (for example, n1-standard-1), in which case the zone-qualified URL is built automatically, or a full/partial URL (for example, zones/zone/machineTypes/n1-standard-1).'
+      required: true
+    - name: description
+      description: The optional description for the instance.
+    - name: tags
+      description: The comma-separated list of network tags to apply to the instance.
+      isArray: true
+    - name: tags_fingerprint
+      description: The fingerprint hash of the tags contents, used for optimistic locking.
+    - name: can_ip_forward
+      description: Whether the instance is allowed to send and receive packets with non-matching destination or source IPs.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: network
+      description: The URL of the network resource for this instance.
+    - name: subnetwork
+      description: The URL of the subnetwork resource for this instance.
+    - name: network_ip
+      description: The IPv4 internal IP address to assign to the instance.
+    - name: external_internet_access
+      description: Whether to grant the instance external internet access by adding a ONE_TO_ONE_NAT access configuration.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: external_nat_ip
+      description: The static external IP address to assign to the instance. Requires the external_internet_access argument.
+    - name: disk_source
+      description: The URL of an existing persistent disk to attach to the instance.
+    - name: disk_device_name
+      description: The unique device name for the attached disk, reflected in the /dev/disk/by-id/google-* tree.
+    - name: disk_boot
+      description: Whether this is a boot disk. Only one boot disk can be attached to an instance.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: disk_auto_delete
+      description: Whether the disk is deleted automatically when the instance is deleted.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: source_image
+      description: The source image URL from which to create the boot disk. For example, projects/debian-cloud/global/images/family/debian-11.
+    - name: disk_size_gb
+      description: The size of the boot disk to create, in GB.
+    - name: disk_type
+      description: The disk type URL for the created boot disk, for example zones/zone/diskTypes/pd-standard.
+    - name: metadata_items
+      description: 'The metadata key/value pairs to assign to the instance, in the format: key=abc,value=123;key=fed,value=456.'
+    - name: service_account_email
+      description: The email address of the service account to associate with the instance. Must be provided together with the service_account_scopes argument.
+    - name: service_account_scopes
+      description: A comma-separated list of OAuth2 scopes for the service account. Must be provided together with service_account_email.
+      isArray: true
+    - name: labels
+      description: 'The labels to apply to the instance, in the format: key=abc,value=123;key=fed,value=456.'
+    - name: deletion_protection
+      description: Whether the instance should be protected against deletion.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The server-defined unique identifier for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides, available only for per-zone operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of requestId if provided in the request. Not present otherwise.
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: 'The type of operation. For example: insert, update, or delete.'
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation. Can be one of the following: PENDING RUNNING or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, EMAILADDRESS.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: The optional progress indicator, ranging from 0 to 100. The number monotonically increases as the operation progresses, but is not linear, does not support specific granularity, and should not be used to estimate completion time.
+      type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time the operation was requested, in RFC3339 format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time that the operation was started by the server, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time that the operation was completed, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails (for example, 404 if the resource is not found).
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails (for example, NOT FOUND).
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides, available only for regional operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.description
+      description: A textual description of the operation, which is set when the operation is created.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource, which is always compute#operation for Operation resources.
+      type: string
+  - name: gcp-compute-instance-delete
+    description: Deletes the specified Compute Engine VM instance and returns a zone Operation resource describing the asynchronous deletion (requires the compute.instances.delete permission).
+    execution: true
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: zone
+      description: The name of the zone for this request.
+      required: true
+    - name: resource_name
+      description: The name of the instance resource to delete.
+      required: true
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The server-defined unique identifier for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides, available only for per-zone operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of requestId, if provided in the request.
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource modified by the operation. For snapshot creation operations, this points to the source persistent disk.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING RUNNING or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, EMAILADDRESS.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: The optional progress indicator, ranging from 0 to 100. The number monotonically increases as the operation progresses, but is not linear, does not guarantee specific operation granularity, and should not be used to estimate completion time.
+      type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The date and time when the operation was requested, in RFC3339 format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The date and time when the operation was started by the server, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The date and time that the operation was completed, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails (for example, 404 if the resource is not found).
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails (for example, NOT FOUND).
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides, available only for regional operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.description
+      description: The textual description of the operation, which is set when the operation is created.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource, which is always compute#operation for Operation resources.
+      type: string
+  - name: gcp-compute-instance-reset
+    description: Performs a hard reset on the specified Compute Engine VM instance and returns a zone Operation resource describing the asynchronous reset (requires the compute.instances.reset permission).
+    execution: true
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: zone
+      description: The name of the zone for this request.
+      required: true
+    - name: resource_name
+      description: The name of the instance resource to reset.
+      required: true
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The server-defined unique identifier for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: The resource name.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides, available only for per-zone operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of requestId, if provided in the request.
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource modified by the operation. For snapshot creation operations, this points to the source persistent disk.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING RUNNING or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, EMAILADDRESS.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: The optional progress indicator, ranging from 0 to 100. The number monotonically increases as the operation progresses, but is not linear, does not support specific granularity, and should not be used to estimate completion time.
+      type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The date and time that this operation was requested, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The date and time that this operation was started by the server, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The date and time that this operation was completed, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails (for example, 404 if the resource is not found).
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails (for example, NOT FOUND).
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined resource URL.
+      type: string
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides, available only for regional operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.description
+      description: A textual description of the operation, which is set when the operation is created.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource, which is always compute#operation for Operation resources.
+      type: string
+  - name: gcp-compute-instance-metadata-set
+    description: "Sets metadata for the specified Compute Engine VM instance. Returns a zone Operation resource describing the asynchronous update. Required permission: compute.instances.setMetadata."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: zone
+      description: The name of the zone for this request.
+      required: true
+    - name: resource_name
+      description: The name of the instance resource for which to set metadata.
+      required: true
+    - name: metadata_fingerprint
+      description: A fingerprint hash of the metadata's contents, used for optimistic locking. If not provided, the current fingerprint is fetched automatically from the instance (requires the compute.instances.get permission).
+    - name: metadata_items
+      description: 'The metadata key/value pairs to set on the instance, in the format: key=abc,value=123;key=fed,value=456. This replaces the instance metadata in full rather than merging, so any key that is not listed is removed, including keys such as ssh-keys and startup-script. Pass an empty value to clear all metadata.'
+      required: true
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The server-defined unique identifier for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides, available only for per-zone operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of requestId, if provided in the request. 
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource modified by the operation. For snapshot creation operations, this points to the source persistent disk.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING RUNNING or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: An optional textual description of the current operation status.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, EMAILADDRESS.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: The optional progress indicator, ranging from 0 to 100. The number monotonically increases as the operation progresses, but is not linear, does not support specific granularity, and should not be used to estimate completion time.
+      type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The date and time that this operation was requested, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The date and time that this operation was started by the server, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The date and time that this operation was completed, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails (for example, 404 if the resource is not found).
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails (for example, NOT FOUND).
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides, available only for regional operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.description
+      description: A textual description of the operation, which is set when the operation is created.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource, which is always compute#operation for Operation resources.
+      type: string
+  - name: gcp-compute-instance-machine-type-set
+    description: "Changes the machine type of a stopped Compute Engine VM instance. Returns a zone Operation resource describing the asynchronous update. Required permission: compute.instances.setMachineType."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: zone
+      description: The name of the zone for this request.
+      required: true
+    - name: resource_name
+      description: The name of the instance resource for which to set the machine type.
+      required: true
+    - name: machine_type
+      description: 'The machine type. Can be a bare name (for example, n1-standard-1), in which case the zone-qualified URL is built automatically, or a full/partial URL (for example, zones/zone/machineTypes/n1-standard-1).'
+      required: true
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The server-defined unique identifier for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides, available only for per-zone operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of requestId, if provided in the request. 
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete, and so on.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING RUNNING or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, EMAILADDRESS.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
+      type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time that this operation was requested. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time that this operation was started by the server. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time that this operation was completed. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails (for example, 404 if the resource is not found).
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails (for example, NOT FOUND).
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined resource URL.
+      type: string
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides, available only for regional operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.description
+      description: A textual description of the operation, which is set when the operation is created.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource, which is always compute#operation for Operation resources.
+      type: string
+  - name: gcp-compute-instances-aggregated-list
+    description: Retrieves an aggregated list of Compute Engine VM instances across all zones in the project (requires the compute.instances.list permission).
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: filter
+      description: The filter expression for resources listed in the response. Must specify a field name, comparison operator (=, !=, >, <), and value (string, number, or boolean), for example, name != example-instance.
+    - name: limit
+      description: The maximum number of results to return per page. Acceptable values are 1 to 500.
+      defaultValue: '50'
+    - name: order_by
+      description: The sort order for list results, defaulting to alphanumerical order by resource name. To sort by creation timestamp in descending order, use order_by=creationTimestamp desc.
+    - name: next_token
+      description: The page token used to retrieve the next page of results. Set next_token to the AggregatedInstancesNextToken value returned from a previous request.
+    outputs:
+    - contextPath: GCP.Compute.Instances.kind
+      description: The type of the resource, which is always compute#instance for instances.
+      type: String
+    - contextPath: GCP.Compute.Instances.id
+      description: The unique identifier of the resource.
+      type: String
+    - contextPath: GCP.Compute.Instances.creationTimestamp
+      description: The creation timestamp in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: String
+    - contextPath: GCP.Compute.Instances.name
+      description: The name of the resource, provided by the client when the resource is first created.
+      type: String
+    - contextPath: GCP.Compute.Instances.description
+      description: The optional description for this resource.
+      type: String
+    - contextPath: GCP.Compute.Instances.machineType
+      description: 'The full or partial URL of the machine type resource for this instance, in the format: zones/zone/machineTypes/machine-type.'
+      type: String
+    - contextPath: GCP.Compute.Instances.status
+      description: The status of the instance.
+      type: String
+    - contextPath: GCP.Compute.Instances.zone
+      description: The URL of the zone where the instance resides.
+      type: String
+    - contextPath: GCP.Compute.Instances.tags
+      description: The tags to apply to this instance.
+      type: String
+    - contextPath: GCP.Compute.Instances.statusMessage
+      description: The optional, human-readable explanation of the status.
+      type: String
+    - contextPath: GCP.Compute.Instances.canIpForward
+      description: Allows this instance to send and receive packets with non-matching destination or source IPs.
+      type: String
+    - contextPath: GCP.Compute.Instances.networkInterfaces
+      description: The array of network configurations for the instance.
+      type: Object
+    - contextPath: GCP.Compute.Instances.disks
+      description: The array of disks associated with the instance.
+      type: Object
+    - contextPath: GCP.Compute.Instances.metadata
+      description: The metadata key/value pairs assigned to the instance.
+      type: Object
+    - contextPath: GCP.Compute.Instances.serviceAccounts
+      description: The list of service accounts, with their specified scopes, authorized for the instance.
+      type: Object
+    - contextPath: GCP.Compute.Instances.selfLink
+      description: The server-defined resource URL.
+      type: String
+    - contextPath: GCP.Compute.Instances.scheduling
+      description: Sets the scheduling options for the instance.
+      type: Object
+    - contextPath: GCP.Compute.Instances.cpuPlatform
+      description: The CPU platform used by the instance.
+      type: String
+    - contextPath: GCP.Compute.Instances.labels
+      description: The labels to apply to the instance.
+      type: String
+    - contextPath: GCP.Compute.Instances.labelFingerprint
+      description: The fingerprint for this request, which is a hash of the label's contents and used for optimistic locking.
+      type: String
+    - contextPath: GCP.Compute.Instances.instanceEncryptionKey
+      description: Encrypts suspended data for an instance with a customer-managed encryption key.
+      type: Object
+    - contextPath: GCP.Compute.Instances.minCpuPlatform
+      description: Specifies a minimum CPU platform for the VM instance.
+      type: String
+    - contextPath: GCP.Compute.Instances.guestAccelerators
+      description: The list of the type and count of accelerator cards attached to the instance.
+      type: Object
+    - contextPath: GCP.Compute.Instances.startRestricted
+      description: Whether a VM has been restricted from starting because Compute Engine detected suspicious activity.
+      type: Boolean
+    - contextPath: GCP.Compute.Instances.deletionProtection
+      description: Whether the resource should be protected against deletion.
+      type: Boolean
+    - contextPath: GCP.Compute.Instances.resourcePolicies
+      description: The resource policies applied to this instance.
+      type: String
+    - contextPath: GCP.Compute.Instances.sourceMachineImage
+      description: The source machine image.
+      type: String
+    - contextPath: GCP.Compute.Instances.reservationAffinity
+      description: The reservations that the instance can consume.
+      type: Object
+    - contextPath: GCP.Compute.Instances.hostname
+      description: The hostname of the instance.
+      type: String
+    - contextPath: GCP.Compute.Instances.displayDevice
+      description: The display device configuration for the instance.
+      type: Object
+    - contextPath: GCP.Compute.Instances.shieldedInstanceConfig
+      description: The Shielded VM configuration for the instance.
+      type: Object
+    - contextPath: GCP.Compute.Instances.sourceMachineImageEncryptionKey
+      description: The source machine image encryption key used when creating an instance from a machine image.
+      type: Object
+    - contextPath: GCP.Compute.Instances.confidentialInstanceConfig
+      description: The confidential computing configuration for the instance.
+      type: Object
+    - contextPath: GCP.Compute.Instances.fingerprint
+      description: The fingerprint for the resource, which is a hash of the instance contents used for optimistic locking.
+      type: String
+    - contextPath: GCP.Compute.Instances.privateIpv6GoogleAccess
+      description: The private IPv6 Google access type for the VM.
+      type: String
+    - contextPath: GCP.Compute.Instances.advancedMachineFeatures
+      description: The controls for the advanced machine-related behavior features.
+      type: Object
+    - contextPath: GCP.Compute.Instances.lastStartTimestamp
+      description: The last start timestamp in RFC3339 format (for example, 2024-01-15T12:34:56Z).
+      type: String
+    - contextPath: GCP.Compute.Instances.lastStopTimestamp
+      description: The last stop timestamp in RFC3339 format (for example, 2024-01-15T12:34:56Z).
+      type: String
+    - contextPath: GCP.Compute.Instances.lastSuspendedTimestamp
+      description: The last suspended timestamp in RFC3339 format (for example, 2024-01-15T12:34:56Z).
+      type: String
+    - contextPath: GCP.Compute.Instances.satisfiesPzs
+      description: Indicates whether the instance satisfies physical zone separation requirements.
+      type: String
+    - contextPath: GCP.Compute.Instances.satisfiesPzi
+      description: Indicates whether the instance satisfies physical zone isolation requirements.
+      type: String
+    - contextPath: GCP.Compute.Instances.resourceStatus
+      description: The resource status.
+      type: Object
+    - contextPath: GCP.Compute.Instances.networkPerformanceConfig
+      description: The network performance configuration.
+      type: Object
+    - contextPath: GCP.Compute.Instances.keyRevocationActionType
+      description: The KeyRevocationActionType of the instance.
+      type: String
+    - contextPath: GCP.Compute.AggregatedInstancesNextToken
+      description: The token to use to retrieve the next page of aggregated instances results.
+      type: String
   - arguments:
     - name: project_id
       required: false
