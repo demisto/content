@@ -341,6 +341,12 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
             "compute.firewalls.get",
         ],
     ),
+    "gcp-compute-firewall-delete": (
+        GCPServices.COMPUTE,
+        [
+            "compute.firewalls.delete",
+        ],
+    ),
     "gcp-compute-snapshots-list": (
         GCPServices.COMPUTE,
         [
@@ -350,6 +356,19 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-snapshot-get": (
         GCPServices.COMPUTE,
         [
+            "compute.snapshots.get",
+        ],
+    ),
+    "gcp-compute-snapshot-delete": (
+        GCPServices.COMPUTE,
+        [
+            "compute.snapshots.delete",
+        ],
+    ),
+    "gcp-compute-snapshot-labels-set": (
+        GCPServices.COMPUTE,
+        [
+            "compute.snapshots.setLabels",
             "compute.snapshots.get",
         ],
     ),
@@ -1575,6 +1594,45 @@ def compute_firewall_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
     )
 
 
+def compute_firewall_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes a specific Google Cloud firewall rule.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - resource_name (str): The name of the firewall rule to delete.
+
+    Returns:
+        CommandResults: Object containing the delete operation details under `GCP.Compute.Operations`.
+    """
+    project_id = args.get("project_id")
+    resource_name = args["resource_name"]
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.firewalls().delete(project=project_id, firewall=resource_name).execute()  # pylint: disable=E1101
+    demisto.debug(
+        f"Firewall delete operation for {resource_name} in project {project_id}: "
+        f"{response.get('name')=}, {response.get('status')=}"
+    )
+
+    hr = tableToMarkdown(
+        f"GCP Compute Firewall Rule {resource_name} Delete Operation Started Successfully",
+        response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
 def compute_snapshots_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Lists all Compute Engine snapshots in a specified GCP project.
@@ -1669,6 +1727,114 @@ def compute_snapshot_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
         outputs_prefix="GCP.Compute.Snapshots",
         outputs=response,
         outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_snapshot_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes a specific Compute Engine snapshot.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - resource_name (str): The name of the snapshot to delete.
+
+    Returns:
+        CommandResults: Object containing the delete operation details under `GCP.Compute.Operations`.
+    """
+    project_id = args.get("project_id")
+    resource_name = args["resource_name"]
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.snapshots().delete(project=project_id, snapshot=resource_name).execute()  # pylint: disable=E1101
+    demisto.debug(
+        f"Snapshot delete operation for {resource_name} in project {project_id}: "
+        f"{response.get('name')=}, {response.get('status')=}"
+    )
+
+    hr = tableToMarkdown(
+        f"GCP Compute Snapshot {resource_name} Delete Operation Started Successfully",
+        response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_snapshot_labels_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets the labels on a Compute Engine snapshot.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - resource_name (str): The name of the snapshot.
+            - labels (str): Labels to apply, e.g., "key=abc,value=123;key=def,value=456".
+            - label_fingerprint (str, optional): The fingerprint of the previous set of labels, used to detect
+                conflicts. Required when add_labels is false, and ignored when add_labels is true, since the
+                fingerprint of the fetched snapshot is used instead.
+            - add_labels (bool, optional): Whether to add the labels to the existing ones or override them.
+
+    Returns:
+        CommandResults: Object containing the setLabels operation details under `GCP.Compute.Operations`.
+    """
+    project_id = args.get("project_id")
+    resource_name = args["resource_name"]
+    label_fingerprint = args.get("label_fingerprint")
+    add_labels = argToBoolean(args.get("add_labels", False))
+    if not add_labels and not label_fingerprint:
+        raise DemistoException("The 'label_fingerprint' argument is required when 'add_labels' is false.")
+    labels = parse_labels(args["labels"])
+    demisto.debug(f"The parsed {labels=}")
+
+    current_labels = {}
+    if add_labels:
+        snapshot_result = compute_snapshot_get(creds, args)
+        snapshot_info = snapshot_result.outputs
+        if not isinstance(snapshot_info, dict):
+            # The snapshot was not found, so its "not found" readable output is returned as is.
+            return snapshot_result
+        current_labels = snapshot_info.get("labels", {})
+        # The snapshot was just fetched, so its fingerprint is the most up to date one. The supplied
+        # fingerprint may already be stale, which would fail the request with a conflict error.
+        label_fingerprint = snapshot_info.get("labelFingerprint") or label_fingerprint
+        demisto.debug(f"Adding the new labels {labels=} to the current ones {current_labels}")
+
+    body = {"labels": current_labels | labels, "labelFingerprint": label_fingerprint}
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = (
+        compute.snapshots()  # pylint: disable=E1101
+        .setLabels(project=project_id, resource=resource_name, body=body)
+        .execute()
+    )
+    demisto.debug(
+        f"Snapshot setLabels operation for {resource_name} in project {project_id}: "
+        f"{response.get('name')=}, {response.get('status')=}"
+    )
+
+    hr = tableToMarkdown(
+        f"GCP Compute Snapshot {resource_name} Labels Update Operation Started Successfully",
+        response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
         raw_response=response,
     )
 
@@ -5408,8 +5574,11 @@ def main():  # pragma: no cover
             "gcp-compute-firewall-list": compute_firewall_list,
             "gcp-compute-firewalls-list": compute_firewall_list,
             "gcp-compute-firewall-get": compute_firewall_get,
+            "gcp-compute-firewall-delete": compute_firewall_delete,
             "gcp-compute-snapshots-list": compute_snapshots_list,
             "gcp-compute-snapshot-get": compute_snapshot_get,
+            "gcp-compute-snapshot-delete": compute_snapshot_delete,
+            "gcp-compute-snapshot-labels-set": compute_snapshot_labels_set,
             "gcp-compute-instances-aggregated-list-by-ip": compute_instances_aggregated_list_by_ip,
             "gcp-compute-network-tag-set": compute_network_tag_set,
             "gcp-compute-subnet-update": compute_subnet_update,
