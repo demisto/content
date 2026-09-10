@@ -20,7 +20,7 @@ The script was specifically developed for use by the `Delete Reported Email` lay
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| delete_type | The type of deletion - soft allows restoring, hard doesn't. Not relevant for O365 and Search &amp;amp; Compliance. |
+| delete_type | The type of deletion - soft allows restoring, hard doesn't. |
 | delete_from_brand | The brand for which to delete this email from. The default value is the incident using the brand. |
 | search_name | Argument used for the generic polling flow within the security and compliance search. |
 | polling | Use the Cortex XSOAR built-in polling to retrieve the result when it's ready. |
