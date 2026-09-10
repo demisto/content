@@ -5429,6 +5429,363 @@ class TestGCPComputeNetworksList:
         assert "custom-token" in result.readable_output
 
 
+# gcp_compute_regions_list
+
+
+class TestGCPComputeRegionsList:
+    def test_gcp_compute_regions_list_default_limit(self, mocker):
+        """
+        Given: A mocked Compute API returning a single region item.
+        When: gcp_compute_regions_list is called with only the project_id argument.
+        Then: The API is called with the default maxResults of 50 and the region is returned in the outputs.
+        """
+        from GCP import GCPServices, gcp_compute_regions_list
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_regions = mocker.Mock()
+        mock_list = mocker.Mock()
+
+        mock_list.execute.return_value = {
+            "items": [{"id": "1000", "name": "us-central1", "status": "UP", "creationTimestamp": "2023-01-01T00:00:00Z"}]
+        }
+        mock_regions.list.return_value = mock_list
+        mock_compute.regions.return_value = mock_regions
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        result = gcp_compute_regions_list(mock_creds, {"project_id": "test-project"})
+
+        mock_regions.list.assert_called_once_with(project="test-project", maxResults=50)
+        regions = result.outputs["GCP.Compute.Regions(val.id && val.id == obj.id)"]
+        assert len(regions) == 1
+        assert regions[0]["name"] == "us-central1"
+        assert "us-central1" in result.readable_output
+
+    def test_gcp_compute_regions_list_with_all_parameters(self, mocker):
+        """
+        Given: A mocked Compute API returning a region item along with a next page token.
+        When: gcp_compute_regions_list is called with limit, filter, order_by and next_token.
+        Then: The API is called with all the provided parameters and the next token is returned in the outputs.
+        """
+        from GCP import GCPServices, gcp_compute_regions_list
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_regions = mocker.Mock()
+        mock_list = mocker.Mock()
+
+        mock_list.execute.return_value = {
+            "items": [{"id": "2000", "name": "europe-west1", "status": "UP"}],
+            "nextPageToken": "next-token-123",
+        }
+        mock_regions.list.return_value = mock_list
+        mock_compute.regions.return_value = mock_regions
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        args = {
+            "project_id": "test-project",
+            "limit": "25",
+            "filter": "name=europe*",
+            "order_by": "name",
+            "next_token": "prev-token",
+        }
+        result = gcp_compute_regions_list(mock_creds, args)
+
+        mock_regions.list.assert_called_once_with(
+            project="test-project", maxResults=25, filter="name=europe*", orderBy="name", pageToken="prev-token"
+        )
+        assert result.outputs["GCP.Compute(true)"]["RegionsNextToken"] == "next-token-123"
+
+    def test_gcp_compute_regions_list_empty_response(self, mocker):
+        """
+        Given: A mocked Compute API returning an empty response.
+        When: gcp_compute_regions_list is called with the project ID.
+        Then: A no-results message is returned and no context outputs are set.
+        """
+        from GCP import GCPServices, gcp_compute_regions_list
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_regions = mocker.Mock()
+        mock_list = mocker.Mock()
+
+        mock_list.execute.return_value = {}
+        mock_regions.list.return_value = mock_list
+        mock_compute.regions.return_value = mock_regions
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        result = gcp_compute_regions_list(mock_creds, {"project_id": "test-project"})
+
+        assert result.readable_output == "No regions were found in project 'test-project'."
+        assert not result.outputs
+
+    def test_gcp_compute_regions_list_empty_items_with_next_token(self, mocker):
+        """
+        Given: A mocked Compute API returning no items but a next page token.
+        When: gcp_compute_regions_list is called with the project ID.
+        Then: A no-results message is returned and no context outputs are set.
+        """
+        from GCP import GCPServices, gcp_compute_regions_list
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_regions = mocker.Mock()
+        mock_list = mocker.Mock()
+
+        mock_list.execute.return_value = {"items": [], "nextPageToken": "next-token-789"}
+        mock_regions.list.return_value = mock_list
+        mock_compute.regions.return_value = mock_regions
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        result = gcp_compute_regions_list(mock_creds, {"project_id": "test-project"})
+
+        assert result.readable_output == "No regions were found in project 'test-project'."
+        assert not result.outputs
+
+    @pytest.mark.parametrize("limit", ["", "0"])
+    def test_gcp_compute_regions_list_falsy_limit_falls_back_to_default(self, mocker, limit):
+        """
+        Given: A limit argument that resolves to a falsy value (an empty string or zero).
+        When: gcp_compute_regions_list is called.
+        Then: The default limit is used instead of raising a TypeError or requesting zero results.
+        """
+        from GCP import GCPServices, gcp_compute_regions_list
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_regions = mocker.Mock()
+        mock_list = mocker.Mock()
+
+        mock_list.execute.return_value = {"items": [{"id": "1000", "name": "us-central1", "status": "UP"}]}
+        mock_regions.list.return_value = mock_list
+        mock_compute.regions.return_value = mock_regions
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        gcp_compute_regions_list(mock_creds, {"project_id": "test-project", "limit": limit})
+
+        assert mock_regions.list.call_args[1]["maxResults"] == 50
+
+    def test_gcp_compute_regions_list_api_exception(self, mocker):
+        """
+        Given: A mocked Compute API that raises an error when listing regions.
+        When: gcp_compute_regions_list is called.
+        Then: The error propagates so main can route it to the permission error handler.
+        """
+        from GCP import GCPServices, gcp_compute_regions_list
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_regions = mocker.Mock()
+        mock_list = mocker.Mock()
+
+        mock_list.execute.side_effect = Exception("API Error")
+        mock_regions.list.return_value = mock_list
+        mock_compute.regions.return_value = mock_regions
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        with pytest.raises(Exception, match="API Error"):
+            gcp_compute_regions_list(mock_creds, {"project_id": "test-project"})
+
+    def test_gcp_compute_regions_list_invalid_limit(self, mocker):
+        """
+        Given: A limit argument outside the acceptable range of 1 to 500.
+        When: gcp_compute_regions_list is called.
+        Then: A DemistoException is raised and no API call is made.
+        """
+        from CommonServerPython import DemistoException
+        from GCP import GCPServices, gcp_compute_regions_list
+
+        mock_creds = mocker.Mock()
+        mock_build = mocker.patch.object(GCPServices.COMPUTE, "build")
+
+        with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 500"):
+            gcp_compute_regions_list(mock_creds, {"project_id": "test-project", "limit": "501"})
+
+        mock_build.assert_not_called()
+
+
+# gcp_compute_zones_list
+
+
+class TestGCPComputeZonesList:
+    def test_gcp_compute_zones_list_default_limit(self, mocker):
+        """
+        Given: A mocked Compute API returning a single zone item.
+        When: gcp_compute_zones_list is called with only the project_id argument.
+        Then: The API is called with the default maxResults of 50 and the zone is returned in the outputs.
+        """
+        from GCP import GCPServices, gcp_compute_zones_list
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_zones = mocker.Mock()
+        mock_list = mocker.Mock()
+
+        mock_list.execute.return_value = {
+            "items": [
+                {
+                    "id": "3000",
+                    "name": "us-central1-a",
+                    "status": "UP",
+                    "region": "https://www.googleapis.com/compute/v1/projects/test-project/regions/us-central1",
+                }
+            ]
+        }
+        mock_zones.list.return_value = mock_list
+        mock_compute.zones.return_value = mock_zones
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        result = gcp_compute_zones_list(mock_creds, {"project_id": "test-project"})
+
+        mock_zones.list.assert_called_once_with(project="test-project", maxResults=50)
+        zones = result.outputs["GCP.Compute.Zones(val.id && val.id == obj.id)"]
+        assert len(zones) == 1
+        assert zones[0]["name"] == "us-central1-a"
+        assert "us-central1-a" in result.readable_output
+
+    def test_gcp_compute_zones_list_with_all_parameters(self, mocker):
+        """
+        Given: A mocked Compute API returning a zone item along with a next page token.
+        When: gcp_compute_zones_list is called with limit, filter, order_by and next_token.
+        Then: The API is called with all the provided parameters and the next token is returned in the outputs.
+        """
+        from GCP import GCPServices, gcp_compute_zones_list
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_zones = mocker.Mock()
+        mock_list = mocker.Mock()
+
+        mock_list.execute.return_value = {
+            "items": [{"id": "4000", "name": "europe-west1-b", "status": "UP"}],
+            "nextPageToken": "next-token-456",
+        }
+        mock_zones.list.return_value = mock_list
+        mock_compute.zones.return_value = mock_zones
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        args = {
+            "project_id": "test-project",
+            "limit": "10",
+            "filter": "name=europe*",
+            "order_by": "name",
+            "next_token": "prev-token",
+        }
+        result = gcp_compute_zones_list(mock_creds, args)
+
+        mock_zones.list.assert_called_once_with(
+            project="test-project", maxResults=10, filter="name=europe*", orderBy="name", pageToken="prev-token"
+        )
+        assert result.outputs["GCP.Compute(true)"]["ZonesNextToken"] == "next-token-456"
+
+    def test_gcp_compute_zones_list_empty_response(self, mocker):
+        """
+        Given: A mocked Compute API returning an empty response.
+        When: gcp_compute_zones_list is called with the project ID.
+        Then: A no-results message is returned and no context outputs are set.
+        """
+        from GCP import GCPServices, gcp_compute_zones_list
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_zones = mocker.Mock()
+        mock_list = mocker.Mock()
+
+        mock_list.execute.return_value = {}
+        mock_zones.list.return_value = mock_list
+        mock_compute.zones.return_value = mock_zones
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        result = gcp_compute_zones_list(mock_creds, {"project_id": "test-project"})
+
+        assert result.readable_output == "No zones were found in project 'test-project'."
+        assert not result.outputs
+
+    def test_gcp_compute_zones_list_empty_items_with_next_token(self, mocker):
+        """
+        Given: A mocked Compute API returning no items but a next page token.
+        When: gcp_compute_zones_list is called with the project ID.
+        Then: A no-results message is returned and no context outputs are set.
+        """
+        from GCP import GCPServices, gcp_compute_zones_list
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_zones = mocker.Mock()
+        mock_list = mocker.Mock()
+
+        mock_list.execute.return_value = {"items": [], "nextPageToken": "next-token-abc"}
+        mock_zones.list.return_value = mock_list
+        mock_compute.zones.return_value = mock_zones
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        result = gcp_compute_zones_list(mock_creds, {"project_id": "test-project"})
+
+        assert result.readable_output == "No zones were found in project 'test-project'."
+        assert not result.outputs
+
+    @pytest.mark.parametrize("limit", ["", "0"])
+    def test_gcp_compute_zones_list_falsy_limit_falls_back_to_default(self, mocker, limit):
+        """
+        Given: A limit argument that resolves to a falsy value (an empty string or zero).
+        When: gcp_compute_zones_list is called.
+        Then: The default limit is used instead of raising a TypeError or requesting zero results.
+        """
+        from GCP import GCPServices, gcp_compute_zones_list
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_zones = mocker.Mock()
+        mock_list = mocker.Mock()
+
+        mock_list.execute.return_value = {"items": [{"id": "3000", "name": "us-central1-a", "status": "UP"}]}
+        mock_zones.list.return_value = mock_list
+        mock_compute.zones.return_value = mock_zones
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        gcp_compute_zones_list(mock_creds, {"project_id": "test-project", "limit": limit})
+
+        assert mock_zones.list.call_args[1]["maxResults"] == 50
+
+    def test_gcp_compute_zones_list_api_exception(self, mocker):
+        """
+        Given: A mocked Compute API that raises an error when listing zones.
+        When: gcp_compute_zones_list is called.
+        Then: The error propagates so main can route it to the permission error handler.
+        """
+        from GCP import GCPServices, gcp_compute_zones_list
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_zones = mocker.Mock()
+        mock_list = mocker.Mock()
+
+        mock_list.execute.side_effect = Exception("API Error")
+        mock_zones.list.return_value = mock_list
+        mock_compute.zones.return_value = mock_zones
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        with pytest.raises(Exception, match="API Error"):
+            gcp_compute_zones_list(mock_creds, {"project_id": "test-project"})
+
+    def test_gcp_compute_zones_list_invalid_limit(self, mocker):
+        """
+        Given: A limit argument outside the acceptable range of 1 to 500.
+        When: gcp_compute_zones_list is called.
+        Then: A DemistoException is raised and no API call is made.
+        """
+        from CommonServerPython import DemistoException
+        from GCP import GCPServices, gcp_compute_zones_list
+
+        mock_creds = mocker.Mock()
+        mock_build = mocker.patch.object(GCPServices.COMPUTE, "build")
+
+        with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 500"):
+            gcp_compute_zones_list(mock_creds, {"project_id": "test-project", "limit": "501"})
+
+        mock_build.assert_not_called()
+
+
 def test_bq_dataset_policy_remove_command_remove_user(mocker):
     """
     Given:
@@ -9128,3 +9485,763 @@ def test_kms_test_connectivity_uses_locations_list(mocker):
     mock_client.projects.return_value.locations.return_value.list.assert_called_once_with(
         name="projects/mock_project_id", pageSize=1
     )
+
+
+# ---------------------------------------------------------------------------
+# gcp-compute-instance-insert
+# ---------------------------------------------------------------------------
+def test_compute_instance_insert_success(mocker):
+    """
+    Given: A mocked GCP compute client returning a zone Operation.
+    When: compute_instance_insert is called with the required and several optional arguments.
+    Then: It returns CommandResults with the GCP.Compute.Operations prefix and builds the
+          instance body with the correct zone-qualified machine type and nested fields.
+    """
+    from GCP import compute_instance_insert
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "name": "My-Instance",
+        "machine_type": "n1-standard-1",
+        "tags": "web-server,database",
+        "tags_fingerprint": "tags-fp-123",
+        "network": "global/networks/default",
+        "external_internet_access": "true",
+        "metadata_items": "key=foo,value=bar",
+        "labels": "key=env,value=prod",
+        "deletion_protection": "true",
+    }
+    mock_response = {"id": "op-1", "name": "operation-insert", "status": "RUNNING", "operationType": "insert"}
+
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.insert.return_value.execute.return_value = mock_response
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    result = compute_instance_insert(mocker.Mock(spec=Credentials), args)
+
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+    assert result.outputs == mock_response
+    call_kwargs = mock_instances.insert.call_args[1]
+    assert call_kwargs["project"] == "test-project"
+    assert call_kwargs["zone"] == "us-central1-a"
+    body = call_kwargs["body"]
+    assert body["name"] == "my-instance"
+    assert body["machineType"] == "zones/us-central1-a/machineTypes/n1-standard-1"
+    assert body["tags"] == {"items": ["web-server", "database"], "fingerprint": "tags-fp-123"}
+    assert body["networkInterfaces"][0]["network"] == "global/networks/default"
+    assert body["networkInterfaces"][0]["accessConfigs"][0]["type"] == "ONE_TO_ONE_NAT"
+    assert body["metadata"]["items"] == [{"key": "foo", "value": "bar"}]
+    assert body["labels"] == {"env": "prod"}
+    assert body["deletionProtection"] is True
+
+
+def test_compute_instance_insert_minimal_body(mocker):
+    """
+    Given: A mocked GCP compute client and only the required arguments.
+    When: compute_instance_insert is called.
+    Then: The built body contains only name and machineType and no optional nested keys.
+    """
+    from GCP import compute_instance_insert
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "name": "instance-1",
+        "machine_type": "e2-medium",
+    }
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.insert.return_value.execute.return_value = {"id": "op-2", "status": "PENDING"}
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    compute_instance_insert(mocker.Mock(spec=Credentials), args)
+
+    body = mock_instances.insert.call_args[1]["body"]
+    assert body == {"name": "instance-1", "machineType": "zones/us-central1-a/machineTypes/e2-medium"}
+
+
+@pytest.mark.parametrize(
+    "machine_type, expected",
+    [
+        pytest.param("e2-medium", "zones/us-central1-a/machineTypes/e2-medium", id="bare_name"),
+        pytest.param(
+            "zones/us-central1-a/machineTypes/e2-medium",
+            "zones/us-central1-a/machineTypes/e2-medium",
+            id="partial_url",
+        ),
+        pytest.param(
+            "https://www.googleapis.com/compute/v1/projects/p/zones/us-central1-a/machineTypes/e2-medium",
+            "https://www.googleapis.com/compute/v1/projects/p/zones/us-central1-a/machineTypes/e2-medium",
+            id="full_url",
+        ),
+    ],
+)
+def test_compute_instance_insert_machine_type_formats(mocker, machine_type, expected):
+    """
+    Given: A machine_type given as a bare name, a partial URL, or a full URL.
+    When: compute_instance_insert is called.
+    Then: The bare name is zone-qualified and URLs are passed through unchanged,
+          consistent with compute_instance_machine_type_set.
+    """
+    from GCP import compute_instance_insert
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "name": "instance-1",
+        "machine_type": machine_type,
+    }
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.insert.return_value.execute.return_value = {"id": "op-4", "status": "PENDING"}
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    compute_instance_insert(mocker.Mock(spec=Credentials), args)
+
+    assert mock_instances.insert.call_args[1]["body"]["machineType"] == expected
+
+
+def test_compute_instance_insert_invalid_metadata(mocker):
+    """
+    Given: metadata_items in an invalid format.
+    When: compute_instance_insert is called.
+    Then: It raises a ValueError from parse_metadata_items.
+    """
+    from GCP import compute_instance_insert
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "name": "instance-1",
+        "machine_type": "e2-medium",
+        "metadata_items": "not-a-valid-format",
+    }
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mocker.Mock())
+
+    with pytest.raises(ValueError, match="Could not parse field"):
+        compute_instance_insert(mocker.Mock(spec=Credentials), args)
+
+
+@pytest.mark.parametrize(
+    "service_account_args",
+    [
+        pytest.param({"service_account_email": "sa@test-project.iam.gserviceaccount.com"}, id="email_only"),
+        pytest.param({"service_account_scopes": "https://www.googleapis.com/auth/compute"}, id="scopes_only"),
+    ],
+)
+def test_compute_instance_insert_partial_service_account(mocker, service_account_args):
+    """
+    Given: Only one of service_account_email and service_account_scopes.
+    When: compute_instance_insert is called.
+    Then: It raises a DemistoException instead of silently omitting the service account.
+    """
+    from GCP import compute_instance_insert, DemistoException
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "name": "instance-1",
+        "machine_type": "e2-medium",
+        **service_account_args,
+    }
+    mock_compute = mocker.Mock()
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    with pytest.raises(DemistoException, match="must be provided together"):
+        compute_instance_insert(mocker.Mock(spec=Credentials), args)
+
+    mock_compute.instances.return_value.insert.assert_not_called()
+
+
+def test_compute_instance_insert_with_service_account(mocker):
+    """
+    Given: Both service_account_email and service_account_scopes.
+    When: compute_instance_insert is called.
+    Then: The serviceAccounts entry is built with the email and the parsed scopes list.
+    """
+    from GCP import compute_instance_insert
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "name": "instance-1",
+        "machine_type": "e2-medium",
+        "service_account_email": "sa@test-project.iam.gserviceaccount.com",
+        "service_account_scopes": "https://www.googleapis.com/auth/compute,https://www.googleapis.com/auth/logging.write",
+    }
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.insert.return_value.execute.return_value = {"id": "op-3", "status": "PENDING"}
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    compute_instance_insert(mocker.Mock(spec=Credentials), args)
+
+    body = mock_instances.insert.call_args[1]["body"]
+    assert body["serviceAccounts"] == [
+        {
+            "email": "sa@test-project.iam.gserviceaccount.com",
+            "scopes": ["https://www.googleapis.com/auth/compute", "https://www.googleapis.com/auth/logging.write"],
+        }
+    ]
+
+
+# ---------------------------------------------------------------------------
+# gcp-compute-instance-delete
+# ---------------------------------------------------------------------------
+def test_compute_instance_delete_success(mocker):
+    """
+    Given: A mocked GCP compute client returning a zone Operation.
+    When: compute_instance_delete is called.
+    Then: It calls instances().delete with the correct params and returns the Operations output.
+    """
+    from GCP import compute_instance_delete
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "resource_name": "instance-1"}
+    mock_response = {"id": "op-del", "name": "operation-delete", "status": "RUNNING", "operationType": "delete"}
+
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.delete.return_value.execute.return_value = mock_response
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    result = compute_instance_delete(mocker.Mock(spec=Credentials), args)
+
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+    assert result.outputs == mock_response
+    mock_instances.delete.assert_called_once_with(project="test-project", zone="us-central1-a", instance="instance-1")
+    assert "VM instance instance-1 is being deleted in project test-project" in result.readable_output
+
+
+def test_compute_instance_delete_extracts_zone_from_url(mocker):
+    """
+    Given: A zone provided as a full URL.
+    When: compute_instance_delete is called.
+    Then: The zone is reduced to the short zone name before calling the API.
+    """
+    from GCP import compute_instance_delete
+
+    args = {
+        "project_id": "test-project",
+        "zone": "https://www.googleapis.com/compute/v1/projects/test-project/zones/us-central1-a",
+        "resource_name": "instance-1",
+    }
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.delete.return_value.execute.return_value = {"id": "op-del"}
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    compute_instance_delete(mocker.Mock(spec=Credentials), args)
+
+    assert mock_instances.delete.call_args[1]["zone"] == "us-central1-a"
+
+
+def test_compute_instance_delete_permission_error(mocker):
+    """
+    Given: The compute delete API raising an HttpError (permission denied).
+    When: compute_instance_delete is called.
+    Then: The HttpError propagates (to be handled by main()'s handle_permission_error).
+    """
+    from GCP import compute_instance_delete
+    from googleapiclient.errors import HttpError
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "resource_name": "instance-1"}
+    http_error = HttpError(resp=MagicMock(status=403), content=b'{"error": {"message": "permission denied"}}')
+
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.delete.return_value.execute.side_effect = http_error
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    with pytest.raises(HttpError):
+        compute_instance_delete(mocker.Mock(spec=Credentials), args)
+
+
+# ---------------------------------------------------------------------------
+# gcp-compute-instance-reset
+# ---------------------------------------------------------------------------
+def test_compute_instance_reset_success(mocker):
+    """
+    Given: A mocked GCP compute client returning a zone Operation.
+    When: compute_instance_reset is called.
+    Then: It calls instances().reset with the correct params and returns the Operations output.
+    """
+    from GCP import compute_instance_reset
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "resource_name": "instance-1"}
+    mock_response = {"id": "op-reset", "name": "operation-reset", "status": "RUNNING", "operationType": "reset"}
+
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.reset.return_value.execute.return_value = mock_response
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    result = compute_instance_reset(mocker.Mock(spec=Credentials), args)
+
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+    assert result.outputs == mock_response
+    mock_instances.reset.assert_called_once_with(project="test-project", zone="us-central1-a", instance="instance-1")
+    assert "VM instance instance-1 is being reset in project test-project" in result.readable_output
+
+
+def test_compute_instance_reset_permission_error(mocker):
+    """
+    Given: The compute reset API raising an HttpError.
+    When: compute_instance_reset is called.
+    Then: The HttpError propagates to be handled by main().
+    """
+    from GCP import compute_instance_reset
+    from googleapiclient.errors import HttpError
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "resource_name": "instance-1"}
+    http_error = HttpError(resp=MagicMock(status=403), content=b'{"error": {"message": "permission denied"}}')
+
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.reset.return_value.execute.side_effect = http_error
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    with pytest.raises(HttpError):
+        compute_instance_reset(mocker.Mock(spec=Credentials), args)
+
+
+# ---------------------------------------------------------------------------
+# gcp-compute-instance-metadata-set
+# ---------------------------------------------------------------------------
+def test_compute_instance_metadata_set_success(mocker):
+    """
+    Given: A mocked GCP compute client and metadata items plus a fingerprint.
+    When: compute_instance_metadata_set is called.
+    Then: The body contains the parsed items and the fingerprint, and it returns Operations output.
+    """
+    from GCP import compute_instance_metadata_set
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "resource_name": "instance-1",
+        "metadata_fingerprint": "abc123",
+        "metadata_items": "key=foo,value=bar;key=baz,value=qux",
+    }
+    mock_response = {"id": "op-meta", "status": "RUNNING", "operationType": "setMetadata"}
+
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.setMetadata.return_value.execute.return_value = mock_response
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    result = compute_instance_metadata_set(mocker.Mock(spec=Credentials), args)
+
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+    body = mock_instances.setMetadata.call_args[1]["body"]
+    assert body["fingerprint"] == "abc123"
+    assert body["items"] == [{"key": "foo", "value": "bar"}, {"key": "baz", "value": "qux"}]
+
+
+def test_compute_instance_metadata_set_auto_fetch_fingerprint(mocker):
+    """
+    Given: metadata_items but no metadata_fingerprint.
+    When: compute_instance_metadata_set is called.
+    Then: The current fingerprint is fetched via instances().get() and included in the body.
+    """
+    from GCP import compute_instance_metadata_set
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "resource_name": "instance-1",
+        "metadata_items": "key=foo,value=bar",
+    }
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.get.return_value.execute.return_value = {"metadata": {"fingerprint": "fetched-fp"}}
+    mock_instances.setMetadata.return_value.execute.return_value = {"id": "op-meta"}
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    compute_instance_metadata_set(mocker.Mock(spec=Credentials), args)
+
+    mock_instances.get.assert_called_once_with(project="test-project", zone="us-central1-a", instance="instance-1")
+    body = mock_instances.setMetadata.call_args[1]["body"]
+    assert body["fingerprint"] == "fetched-fp"
+    assert body["items"] == [{"key": "foo", "value": "bar"}]
+
+
+def test_compute_instance_metadata_set_missing_items_is_rejected(mocker):
+    """
+    Given: No metadata_items argument at all.
+    When: compute_instance_metadata_set is called.
+    Then: A DemistoException is raised before any API call, since setMetadata replaces metadata
+          in full and would otherwise silently delete all existing keys.
+    """
+    from GCP import compute_instance_metadata_set, DemistoException
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "resource_name": "instance-1"}
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    with pytest.raises(DemistoException, match="The 'metadata_items' argument is required"):
+        compute_instance_metadata_set(mocker.Mock(spec=Credentials), args)
+
+    mock_instances.setMetadata.assert_not_called()
+    mock_instances.get.assert_not_called()
+
+
+def test_compute_instance_metadata_set_explicit_empty_clears_metadata(mocker):
+    """
+    Given: An explicitly empty metadata_items value and an instance with no metadata fingerprint.
+    When: compute_instance_metadata_set is called.
+    Then: An empty body is sent, deliberately clearing all instance metadata.
+    """
+    from GCP import compute_instance_metadata_set
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "resource_name": "instance-1", "metadata_items": ""}
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.get.return_value.execute.return_value = {"metadata": {}}
+    mock_instances.setMetadata.return_value.execute.return_value = {"id": "op-meta"}
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    compute_instance_metadata_set(mocker.Mock(spec=Credentials), args)
+
+    assert mock_instances.setMetadata.call_args[1]["body"] == {}
+
+
+def test_compute_instance_insert_false_booleans_are_preserved(mocker):
+    """
+    Given: Boolean arguments explicitly set to false.
+    When: compute_instance_insert is called.
+    Then: The false values survive remove_empty_elements and reach the API body, rather than
+          being stripped as empty or dropped as None.
+    """
+    from GCP import compute_instance_insert
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "name": "instance-1",
+        "machine_type": "e2-medium",
+        "can_ip_forward": "false",
+        "disk_boot": "false",
+        "disk_auto_delete": "false",
+        "deletion_protection": "false",
+        "disk_source": "disks/disk-1",
+    }
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.insert.return_value.execute.return_value = {"id": "op-bool"}
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    compute_instance_insert(mocker.Mock(spec=Credentials), args)
+
+    body = mock_instances.insert.call_args[1]["body"]
+    assert body["canIpForward"] is False
+    assert body["deletionProtection"] is False
+    assert body["disks"][0]["boot"] is False
+    assert body["disks"][0]["autoDelete"] is False
+
+
+def test_compute_instance_insert_invalid_boolean_is_rejected(mocker):
+    """
+    Given: A boolean argument with a non-boolean value.
+    When: compute_instance_insert is called.
+    Then: arg_to_bool_or_none raises rather than silently coercing the value.
+    """
+    from GCP import compute_instance_insert
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "name": "instance-1",
+        "machine_type": "e2-medium",
+        "deletion_protection": "not-a-bool",
+    }
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mocker.Mock())
+
+    with pytest.raises(ValueError):
+        compute_instance_insert(mocker.Mock(spec=Credentials), args)
+
+
+def test_compute_instance_metadata_set_invalid_items(mocker):
+    """
+    Given: metadata_items in an invalid format.
+    When: compute_instance_metadata_set is called.
+    Then: It raises a ValueError from parse_metadata_items.
+    """
+    from GCP import compute_instance_metadata_set
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "resource_name": "instance-1",
+        "metadata_items": "bad-format",
+    }
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mocker.Mock())
+
+    with pytest.raises(ValueError, match="Could not parse field"):
+        compute_instance_metadata_set(mocker.Mock(spec=Credentials), args)
+
+
+# ---------------------------------------------------------------------------
+# gcp-compute-instance-machine-type-set
+# ---------------------------------------------------------------------------
+def test_compute_instance_machine_type_set_success(mocker):
+    """
+    Given: A mocked GCP compute client and a target machine type.
+    When: compute_instance_machine_type_set is called.
+    Then: The body contains the machineType and it returns Operations output.
+    """
+    from GCP import compute_instance_machine_type_set
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "resource_name": "instance-1",
+        "machine_type": "zones/us-central1-a/machineTypes/n1-standard-2",
+    }
+    mock_response = {"id": "op-mt", "status": "RUNNING", "operationType": "setMachineType"}
+
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.setMachineType.return_value.execute.return_value = mock_response
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    result = compute_instance_machine_type_set(mocker.Mock(spec=Credentials), args)
+
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+    call_kwargs = mock_instances.setMachineType.call_args[1]
+    assert call_kwargs["body"] == {"machineType": "zones/us-central1-a/machineTypes/n1-standard-2"}
+    assert call_kwargs["instance"] == "instance-1"
+
+
+def test_compute_instance_machine_type_set_bare_name_builds_url(mocker):
+    """
+    Given: A bare machine type name (no slash) instead of a full URL.
+    When: compute_instance_machine_type_set is called.
+    Then: The zone-qualified machineType URL is built automatically, consistent with insert.
+    """
+    from GCP import compute_instance_machine_type_set
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "resource_name": "instance-1",
+        "machine_type": "e2-small",
+    }
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.setMachineType.return_value.execute.return_value = {"id": "op-mt", "status": "RUNNING"}
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    compute_instance_machine_type_set(mocker.Mock(spec=Credentials), args)
+
+    body = mock_instances.setMachineType.call_args[1]["body"]
+    assert body == {"machineType": "zones/us-central1-a/machineTypes/e2-small"}
+
+
+def test_compute_instance_machine_type_set_permission_error(mocker):
+    """
+    Given: The setMachineType API raising an HttpError.
+    When: compute_instance_machine_type_set is called.
+    Then: The HttpError propagates to be handled by main().
+    """
+    from GCP import compute_instance_machine_type_set
+    from googleapiclient.errors import HttpError
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "resource_name": "instance-1",
+        "machine_type": "zones/us-central1-a/machineTypes/n1-standard-2",
+    }
+    http_error = HttpError(resp=MagicMock(status=403), content=b'{"error": {"message": "permission denied"}}')
+
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.setMachineType.return_value.execute.side_effect = http_error
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    with pytest.raises(HttpError):
+        compute_instance_machine_type_set(mocker.Mock(spec=Credentials), args)
+
+
+# ---------------------------------------------------------------------------
+# gcp-compute-instances-aggregated-list
+# ---------------------------------------------------------------------------
+def test_compute_instances_aggregated_list_success(mocker):
+    """
+    Given: A mocked aggregatedList response spanning multiple zones with a warning scope.
+    When: compute_instances_aggregated_list is called.
+    Then: Only real instances are collected (warning scopes skipped) and outputs are populated.
+    """
+    from GCP import compute_instances_aggregated_list
+
+    args = {"project_id": "test-project"}
+    mock_response = {
+        "items": {
+            "zones/us-central1-a": {
+                "instances": [
+                    {"id": "1", "name": "inst-a", "status": "RUNNING", "zone": "zones/us-central1-a"},
+                ]
+            },
+            "zones/us-east1-b": {
+                "instances": [
+                    {"id": "2", "name": "inst-b", "status": "TERMINATED", "zone": "zones/us-east1-b"},
+                ]
+            },
+            "zones/us-west1-a": {"warning": {"code": "NO_RESULTS_ON_PAGE"}},
+        },
+        "nextPageToken": "token-xyz",
+    }
+
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.aggregatedList.return_value.execute.return_value = mock_response
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    result = compute_instances_aggregated_list(mocker.Mock(spec=Credentials), args)
+
+    instances = result.outputs["GCP.Compute.Instances(val.id && val.id == obj.id)"]
+    assert len(instances) == 2
+    assert {i["id"] for i in instances} == {"1", "2"}
+    assert result.outputs["GCP.Compute(true)"]["AggregatedInstancesNextToken"] == "token-xyz"
+    # The declared YAML default of 50 is applied when the caller omits limit.
+    mock_instances.aggregatedList.assert_called_once_with(project="test-project", maxResults=50)
+    assert "inst-a" in result.readable_output
+    assert "next_token=token-xyz" in result.readable_output
+
+
+def test_compute_instances_aggregated_list_with_filter_and_pagination(mocker):
+    """
+    Given: filter, order_by, limit and next_token arguments.
+    When: compute_instances_aggregated_list is called.
+    Then: All request params are forwarded and null params are omitted.
+    """
+    from GCP import compute_instances_aggregated_list
+
+    args = {
+        "project_id": "test-project",
+        "filter": "status=RUNNING",
+        "order_by": "creationTimestamp desc",
+        "limit": "10",
+        "next_token": "page-1",
+    }
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.aggregatedList.return_value.execute.return_value = {"items": {}}
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    compute_instances_aggregated_list(mocker.Mock(spec=Credentials), args)
+
+    mock_instances.aggregatedList.assert_called_once_with(
+        project="test-project",
+        filter="status=RUNNING",
+        maxResults=10,
+        orderBy="creationTimestamp desc",
+        pageToken="page-1",
+    )
+
+
+def test_compute_instances_aggregated_list_empty(mocker):
+    """
+    Given: An aggregatedList response with no instances.
+    When: compute_instances_aggregated_list is called.
+    Then: It returns an empty instances list, a null next token that clears any stale
+          context value, and a "no results" readable output.
+    """
+    from GCP import compute_instances_aggregated_list
+
+    args = {"project_id": "test-project"}
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.aggregatedList.return_value.execute.return_value = {"items": {}}
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    result = compute_instances_aggregated_list(mocker.Mock(spec=Credentials), args)
+
+    assert result.outputs["GCP.Compute.Instances(val.id && val.id == obj.id)"] == []
+    assert result.outputs["GCP.Compute(true)"]["AggregatedInstancesNextToken"] is None
+    assert result.readable_output == "No instances were found."
+
+
+def test_compute_instances_aggregated_list_last_page_clears_token(mocker):
+    """
+    Given: An aggregatedList response for the last page, which carries no nextPageToken.
+    When: compute_instances_aggregated_list is called.
+    Then: AggregatedInstancesNextToken is emitted as None so a token left in the context by a
+          previous page is overwritten rather than re-used.
+    """
+    from GCP import compute_instances_aggregated_list
+
+    args = {"project_id": "test-project", "next_token": "page-2"}
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.aggregatedList.return_value.execute.return_value = {
+        "items": {"zones/us-central1-a": {"instances": [{"id": "9", "name": "inst-last"}]}}
+    }
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    result = compute_instances_aggregated_list(mocker.Mock(spec=Credentials), args)
+
+    assert result.outputs["GCP.Compute(true)"]["AggregatedInstancesNextToken"] is None
+    assert "Run the following command" not in result.readable_output
+
+
+def test_compute_instances_aggregated_list_limit_above_max(mocker):
+    """
+    Given: A limit above the accepted 1-500 range.
+    When: compute_instances_aggregated_list is called.
+    Then: A DemistoException is raised before any API call is made.
+    """
+    from GCP import compute_instances_aggregated_list, DemistoException
+
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    with pytest.raises(DemistoException, match="The acceptable values of the argument limit are 1 to 500"):
+        compute_instances_aggregated_list(mocker.Mock(spec=Credentials), {"project_id": "test-project", "limit": "501"})
+
+    mock_instances.aggregatedList.assert_not_called()
+
+
+def test_compute_instances_aggregated_list_zero_limit_falls_back_to_default(mocker):
+    """
+    Given: An explicit limit of 0, which would otherwise request zero results.
+    When: compute_instances_aggregated_list is called.
+    Then: The limit falls back to the default of 50 rather than being sent as 0.
+    """
+    from GCP import compute_instances_aggregated_list
+
+    mock_compute = mocker.Mock()
+    mock_instances = mocker.Mock()
+    mock_compute.instances.return_value = mock_instances
+    mock_instances.aggregatedList.return_value.execute.return_value = {"items": {}}
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    compute_instances_aggregated_list(mocker.Mock(spec=Credentials), {"project_id": "test-project", "limit": "0"})
+
+    mock_instances.aggregatedList.assert_called_once_with(project="test-project", maxResults=50)
