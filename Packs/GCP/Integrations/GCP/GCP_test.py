@@ -401,6 +401,320 @@ def test_compute_snapshot_get_found_and_not_found(mocker):
     assert "not found" in res2.readable_output
 
 
+def test_compute_firewall_delete_success(mocker):
+    """
+    Given: A project ID and a firewall rule name
+    When: compute_firewall_delete is called
+    Then: The delete request is issued with the given project and firewall, and the operation is returned
+    """
+    from GCP import compute_firewall_delete
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_firewalls = mocker.Mock()
+    mock_compute.firewalls.return_value = mock_firewalls
+    mock_firewalls.delete.return_value.execute.return_value = {"id": "op-1", "status": "RUNNING", "operationType": "delete"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_firewall_delete(mock_creds, {"project_id": "p1", "resource_name": "fw-1"})
+
+    mock_firewalls.delete.assert_called_once_with(project="p1", firewall="fw-1")
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+    assert res.outputs_key_field == "id"
+    assert res.outputs == {"id": "op-1", "status": "RUNNING", "operationType": "delete"}
+    assert "fw-1" in res.readable_output
+
+
+def test_compute_firewall_delete_empty_response(mocker):
+    """
+    Given: A GCP API that returns an empty operation body
+    When: compute_firewall_delete is called
+    Then: CommandResults is still returned with the empty response and no exception is raised
+    """
+    from GCP import compute_firewall_delete
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_firewalls = mocker.Mock()
+    mock_compute.firewalls.return_value = mock_firewalls
+    mock_firewalls.delete.return_value.execute.return_value = {}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_firewall_delete(mock_creds, {"project_id": "p1", "resource_name": "fw-1"})
+
+    assert res.outputs == {}
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+
+
+def test_compute_firewall_delete_permission_error_propagates(mocker):
+    """
+    Given: A GCP API that raises a 403 HttpError
+    When: compute_firewall_delete is called
+    Then: The HttpError propagates so main() can map it to a permission error
+    """
+    from GCP import compute_firewall_delete
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_firewalls = mocker.Mock()
+    mock_compute.firewalls.return_value = mock_firewalls
+    resp = mocker.MagicMock()
+    resp.status = 403
+    mock_firewalls.delete.return_value.execute.side_effect = HttpError(
+        resp, b'{"error": {"message": "Required compute.firewalls.delete permission"}}'
+    )
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    with pytest.raises(HttpError):
+        compute_firewall_delete(mock_creds, {"project_id": "p1", "resource_name": "fw-1"})
+
+
+def test_compute_snapshot_delete_success(mocker):
+    """
+    Given: A project ID and a snapshot name
+    When: compute_snapshot_delete is called
+    Then: The delete request is issued with the given project and snapshot, and the operation is returned
+    """
+    from GCP import compute_snapshot_delete
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+    mock_snapshots.delete.return_value.execute.return_value = {"id": "op-2", "status": "PENDING", "operationType": "delete"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_snapshot_delete(mock_creds, {"project_id": "p1", "resource_name": "snap-1"})
+
+    mock_snapshots.delete.assert_called_once_with(project="p1", snapshot="snap-1")
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+    assert res.outputs == {"id": "op-2", "status": "PENDING", "operationType": "delete"}
+    assert "snap-1" in res.readable_output
+
+
+def test_compute_snapshot_delete_empty_response(mocker):
+    """
+    Given: A GCP API that returns an empty operation body
+    When: compute_snapshot_delete is called
+    Then: CommandResults is still returned with the empty response and no exception is raised
+    """
+    from GCP import compute_snapshot_delete
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+    mock_snapshots.delete.return_value.execute.return_value = {}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_snapshot_delete(mock_creds, {"project_id": "p1", "resource_name": "snap-1"})
+
+    assert res.outputs == {}
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+
+
+def test_compute_snapshot_delete_not_found_error_propagates(mocker):
+    """
+    Given: A GCP API that raises a 404 HttpError for a missing snapshot
+    When: compute_snapshot_delete is called
+    Then: The HttpError propagates to main() instead of being swallowed
+    """
+    from GCP import compute_snapshot_delete
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+    resp = mocker.MagicMock()
+    resp.status = 404
+    mock_snapshots.delete.return_value.execute.side_effect = HttpError(
+        resp, b'{"error": {"message": "The resource snap-2 was not found"}}'
+    )
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    with pytest.raises(HttpError):
+        compute_snapshot_delete(mock_creds, {"project_id": "p1", "resource_name": "snap-2"})
+
+
+def test_compute_snapshot_labels_set_override(mocker):
+    """
+    Given: Labels and a fingerprint with add_labels left at its default
+    When: compute_snapshot_labels_set is called
+    Then: The body contains only the new labels, overriding the existing ones
+    """
+    from GCP import compute_snapshot_labels_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+    mock_snapshots.setLabels.return_value.execute.return_value = {"id": "op-3", "status": "RUNNING"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "p1",
+        "resource_name": "snap-1",
+        "labels": "key=env,value=prod",
+        "label_fingerprint": "fp-123",
+    }
+    res = compute_snapshot_labels_set(mock_creds, args)
+
+    called_kwargs = mock_snapshots.setLabels.call_args[1]
+    assert called_kwargs["project"] == "p1"
+    assert called_kwargs["resource"] == "snap-1"
+    assert called_kwargs["body"] == {"labels": {"env": "prod"}, "labelFingerprint": "fp-123"}
+    mock_snapshots.get.assert_not_called()
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+
+
+def test_compute_snapshot_labels_set_add_merges_existing(mocker):
+    """
+    Given: add_labels set to true and a snapshot that already has labels and a fresh fingerprint
+    When: compute_snapshot_labels_set is called
+    Then: The existing labels are fetched and merged with the new ones, and the fingerprint of the
+          fetched snapshot is used instead of the supplied one
+    """
+    from GCP import compute_snapshot_labels_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+    mock_snapshots.get.return_value.execute.return_value = {
+        "name": "snap-1",
+        "labels": {"owner": "team-a"},
+        "labelFingerprint": "fp-fresh",
+    }
+    mock_snapshots.setLabels.return_value.execute.return_value = {"id": "op-3", "status": "RUNNING"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "p1",
+        "resource_name": "snap-1",
+        "labels": "key=env,value=prod",
+        "label_fingerprint": "fp-stale",
+        "add_labels": "true",
+    }
+    compute_snapshot_labels_set(mock_creds, args)
+
+    body = mock_snapshots.setLabels.call_args[1]["body"]
+    assert body["labels"] == {"owner": "team-a", "env": "prod"}
+    assert body["labelFingerprint"] == "fp-fresh"
+    mock_snapshots.get.assert_called_once_with(project="p1", snapshot="snap-1")
+
+
+def test_compute_snapshot_labels_set_add_falls_back_to_supplied_fingerprint(mocker):
+    """
+    Given: add_labels set to true and a snapshot response that has no labelFingerprint
+    When: compute_snapshot_labels_set is called
+    Then: The supplied fingerprint is used
+    """
+    from GCP import compute_snapshot_labels_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+    mock_snapshots.get.return_value.execute.return_value = {"name": "snap-1", "labels": {"owner": "team-a"}}
+    mock_snapshots.setLabels.return_value.execute.return_value = {"id": "op-3", "status": "RUNNING"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "p1",
+        "resource_name": "snap-1",
+        "labels": "key=env,value=prod",
+        "label_fingerprint": "fp-123",
+        "add_labels": "true",
+    }
+    compute_snapshot_labels_set(mock_creds, args)
+
+    assert mock_snapshots.setLabels.call_args[1]["body"]["labelFingerprint"] == "fp-123"
+
+
+def test_compute_snapshot_labels_set_invalid_labels(mocker):
+    """
+    Given: A malformed labels string
+    When: compute_snapshot_labels_set is called
+    Then: A ValueError is raised and no API call is made
+    """
+    from GCP import compute_snapshot_labels_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {"project_id": "p1", "resource_name": "snap-1", "labels": "wrong=format", "label_fingerprint": "fp-123"}
+    with pytest.raises(ValueError) as e:
+        compute_snapshot_labels_set(mock_creds, args)
+
+    assert "Could not parse field" in str(e.value)
+    mock_compute.snapshots.return_value.setLabels.assert_not_called()
+
+
+def test_compute_snapshot_labels_set_add_snapshot_not_found(mocker):
+    """
+    Given: add_labels set to true and a snapshot that does not exist
+    When: compute_snapshot_labels_set is called
+    Then: The "not found" result of compute_snapshot_get is returned and no setLabels call is made
+    """
+    from GCP import compute_snapshot_labels_set
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+    resp = mocker.MagicMock()
+    resp.status = 404
+    mock_snapshots.get.return_value.execute.side_effect = HttpError(
+        resp, b'{"error": {"message": "The resource snap-1 was not found"}}'
+    )
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "p1",
+        "resource_name": "snap-1",
+        "labels": "key=env,value=prod",
+        "add_labels": "true",
+    }
+    res = compute_snapshot_labels_set(mock_creds, args)
+
+    assert res.readable_output == "Snapshot 'snap-1' not found in project 'p1'"
+    mock_snapshots.setLabels.assert_not_called()
+
+
+def test_compute_snapshot_labels_set_override_without_fingerprint(mocker):
+    """
+    Given: add_labels left at its default and no label_fingerprint
+    When: compute_snapshot_labels_set is called
+    Then: A DemistoException is raised and no API call is made
+    """
+    from GCP import DemistoException, compute_snapshot_labels_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {"project_id": "p1", "resource_name": "snap-1", "labels": "key=env,value=prod"}
+    with pytest.raises(DemistoException) as e:
+        compute_snapshot_labels_set(mock_creds, args)
+
+    assert "label_fingerprint" in str(e.value)
+    mock_compute.snapshots.return_value.setLabels.assert_not_called()
+
+
 def test_compute_instances_aggregated_list_by_ip_internal(mocker):
     """
     Given: An internal IP to match
