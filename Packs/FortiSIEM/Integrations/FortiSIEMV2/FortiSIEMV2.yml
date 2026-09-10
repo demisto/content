@@ -352,7 +352,7 @@ script:
     - defaultValue: '1'
       description: The page number of the results to retrieve. Minimum value is 1.
       name: page
-    description: Lists events by the specified incident ID. Available for FortiSiem version 6.6 and earlier.
+    description: 'Lists events by the specified incident ID. Available for FortiSIEM version 7.3.2 and earlier. Deprecated. For versions 7.3.3 and later, please use the fortisiem-event-list-by-incident-query command instead.'
     name: fortisiem-event-list-by-incident
     outputs:
     - contextPath: FortiSIEM.Event.eventType
@@ -376,6 +376,121 @@ script:
     - contextPath: FortiSIEM.Event.custId
       description: The customer ID the event is related to.
       type: Number
+  - arguments:
+    - description: The incident ID for which we are retrieving underlying events.
+      name: incident_id
+      required: true
+    - description: 'This is the ending time range to retrieve raw events for this incident. Note: The max interval from time_to and time_from cannot exceed 24 hours. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".'
+      name: time_to
+      required: true
+    - description: 'This is the start time range to search raw events for the given incident ID. Note: The max interval from time_to and time_from cannot exceed 24 hours. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".'
+      name: time_from
+      required: true
+    - defaultValue: '50'
+      description: The number of raw events to return. Maximum is 100.
+      name: limit
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Use Cortex XSOAR built-in polling to retrieve the result when it's ready.
+      name: polling
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The query ID retrieved in the start call response. Intended for use by the polling process; does not need to be provided by the user.
+      name: query_id
+    - description: How long to wait between command executions (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 10.
+      name: interval_in_seconds
+    - description: The time in seconds until the polling sequence timeouts. Default is 600.
+      name: timeout_in_seconds
+    description: Query events by the specified incident ID using the polling mechanism (start, progress, result). Available for FortiSIEM version 7.3.3 and later.
+    polling: true
+    name: fortisiem-event-list-by-incident-query
+    outputs:
+    - contextPath: FortiSIEM.Event.custId
+      description: The customer ID the event is related to.
+      type: Number
+    - contextPath: FortiSIEM.Event.index
+      description: Event index in the list.
+      type: Number
+    - contextPath: FortiSIEM.Event.id
+      description: Event ID.
+      type: String
+    - contextPath: FortiSIEM.Event.eventType
+      description: FortiSIEM event type.
+      type: String
+    - contextPath: FortiSIEM.Event.receiveTime
+      description: The date when the event was received by FortiSIEM.
+      type: Date
+    - contextPath: FortiSIEM.Event.nid
+      description: Event natural ID.
+      type: String
+    - contextPath: FortiSIEM.Event.attributes
+      description: Additional attributes of the event.
+      type: Unknown
+  - arguments:
+    - description: The incident ID for which we are retrieving underlying events.
+      name: incident_id
+      required: true
+    - description: 'This is the ending time range to retrieve raw events for this incident. Note: The max interval from time_to and time_from cannot exceed 24 hours. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".'
+      name: time_to
+      required: true
+    - description: 'This is the start time range to search raw events for the given incident ID. Note: The max interval from time_to and time_from cannot exceed 24 hours. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".'
+      name: time_from
+      required: true
+    - defaultValue: '50'
+      description: The number of raw events to return. Maximum is 100.
+      name: limit
+    description: Initiates the request to get triggering events by query. Available for FortiSIEM version 7.3.3 and later.
+    name: fortisiem-event-list-by-incident-query-start
+    outputs:
+    - contextPath: FortiSIEM.TriggeringEventQuery.QueryID
+      description: The query ID used to retrieve the progress and result of the triggering events query.
+      type: String
+  - arguments:
+    - description: The query ID retrieved in the start call response.
+      name: query_id
+      required: true
+    description: Retrieve the progress of the triggering event query. Available for FortiSIEM version 7.3.3 and later.
+    name: fortisiem-event-list-by-incident-query-progress
+    outputs:
+    - contextPath: FortiSIEM.TriggeringEventQuery.QueryID
+      description: The query ID the progress status refers to.
+      type: String
+    - contextPath: FortiSIEM.TriggeringEventQuery.Status
+      description: A number between 0 to 100 representing the percentage progress of the triggering events query.
+      type: Number
+  - arguments:
+    - description: The query ID retrieved in the start call response.
+      name: query_id
+      required: true
+    - description: The number of raw events to return. Maximum is 100.
+      name: limit
+    - description: The incident ID to associate the returned events with (used for the human readable output).
+      name: incident_id
+    description: Retrieves the response data for the triggering events query ID. Available for FortiSIEM version 7.3.3 and later.
+    name: fortisiem-event-list-by-incident-query-result
+    outputs:
+    - contextPath: FortiSIEM.Event.custId
+      description: The customer ID the event is related to.
+      type: Number
+    - contextPath: FortiSIEM.Event.index
+      description: Event index in the list.
+      type: Number
+    - contextPath: FortiSIEM.Event.id
+      description: Event ID.
+      type: String
+    - contextPath: FortiSIEM.Event.eventType
+      description: FortiSIEM event type.
+      type: String
+    - contextPath: FortiSIEM.Event.receiveTime
+      description: The date when the event was received by FortiSIEM.
+      type: Date
+    - contextPath: FortiSIEM.Event.nid
+      description: Event natural ID.
+      type: String
+    - contextPath: FortiSIEM.Event.attributes
+      description: Additional attributes of the event.
+      type: Unknown
   - arguments:
     - defaultValue: '50'
       description: The maximum number of watchlists to return.

@@ -18,6 +18,7 @@ EVENTS_TIME_BUFFER_MS = 5 * 60 * 1000  # 5 minutes buffer in milliseconds
 DEFAULT_FETCH = DEFAULT_LIMIT
 DEFAULT_EVENTS_FETCH = "20"
 ALL_STATUS_FILTER = "All"
+MAX_TRIGGERING_EVENTS_INTERVAL_MS = 24 * 60 * 60 * 1000  # 24 hours in milliseconds
 
 INCIDENT_STATUS_VALUE_MAPPING = {"Active": 0, "Auto Cleared": 1, "Manually Cleared": 2, "System Cleared": 3}
 
@@ -250,6 +251,65 @@ class FortiSIEMClient(BaseClient):
         elapsed = (datetime.now() - start_time).total_seconds()
         event_count = len(response.get("data", [])) if isinstance(response, dict) else "N/A"
         demisto.debug(f"Events fetch for incident {incident_id} completed in {elapsed:.2f}s, got {event_count} events.")
+        return response
+
+    def triggering_events_query_start_request(
+        self, incident_id: str, time_to: int, time_from: int, size: int | None = None
+    ) -> dict[str, Any]:
+        """
+        Initiate the triggering events query for the specified incident (FortiSIEM v7.3.3+).
+
+        This is the first step of the three-step asynchronous flow that replaces the deprecated
+        single-call 'pub/incident/triggeringEvents' endpoint.
+
+        Args:
+            incident_id (str): The ID of the incident for which we retrieve underlying events.
+            time_to (int): End of the time range in epoch milliseconds.
+            time_from (int): Start of the time range in epoch milliseconds.
+            size (int | None): Optional number of raw events to return (max 100).
+
+        Returns:
+            Dict[str, Any]: API response containing the queryId.
+        """
+        params = assign_params(incidentId=incident_id, timeTo=time_to, timeFrom=time_from, size=size)
+        demisto.debug(f"Starting triggering events query for incident {incident_id} (timeFrom={time_from}, timeTo={time_to}).")
+        response = self._http_request(
+            "GET", "pub/incident/triggeringEvents/start", params=params, ok_codes=(200, 201, 204), timeout=60
+        )
+        return response
+
+    def triggering_events_query_progress_request(self, query_id: str) -> Any:
+        """
+        Retrieve the progress (percentage) of a triggering events query (FortiSIEM v7.3.3+).
+
+        Args:
+            query_id (str): The query ID returned by the start request.
+
+        Returns:
+            Any: API response - a bare integer percentage (0-100).
+        """
+        demisto.debug(f"Checking progress for triggering events query {query_id}.")
+        response = self._http_request(
+            "GET", f"pub/incident/triggeringEvents/progress/{query_id}", ok_codes=(200, 201, 204), timeout=60
+        )
+        return response
+
+    def triggering_events_query_result_request(self, query_id: str, size: int | None = None) -> dict[str, Any]:
+        """
+        Retrieve the result data of a triggering events query (FortiSIEM v7.3.3+).
+
+        Args:
+            query_id (str): The query ID returned by the start request.
+            size (int | None): Optional number of raw events to return (max 100).
+
+        Returns:
+            Dict[str, Any]: API response containing the events under the 'data' key.
+        """
+        params = assign_params(size=size)
+        demisto.debug(f"Fetching result for triggering events query {query_id}.")
+        response = self._http_request(
+            "GET", f"pub/incident/triggeringEvents/result/{query_id}", params=params, ok_codes=(200, 201, 204), timeout=60
+        )
         return response
 
     def watchlist_list_by_entry_value_request(self, entry_value: str):
@@ -840,6 +900,154 @@ def events_list_command(client: FortiSIEMClient, args: dict[str, Any]) -> Comman
         outputs_prefix="FortiSIEM.Event", outputs_key_field="id", outputs=outputs, readable_output=readable_output
     )
     return command_results
+
+
+def event_list_by_incident_query_start_command(client: FortiSIEMClient, args: dict[str, Any]) -> CommandResults:
+    """
+    Initiate the triggering events query for the specified incident (FortiSIEM v7.3.3+).
+
+    Args:
+        client (FortiSIEMClient): FortiSIEM client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Command results with raw response, outputs and readable outputs.
+    """
+    incident_id = args["incident_id"]
+    time_to = convert_date_to_timestamp(arg_to_datetime(args["time_to"]))  # type: ignore[arg-type]
+    time_from = convert_date_to_timestamp(arg_to_datetime(args["time_from"]))  # type: ignore[arg-type]
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+    validate_triggering_events_time_interval(time_from, time_to)  # type: ignore[arg-type]
+
+    response = client.triggering_events_query_start_request(incident_id, time_to, time_from, limit)  # type: ignore[arg-type]
+    query_id = response.get("queryId") if isinstance(response, dict) else response
+    outputs = {"QueryID": query_id}
+    readable_output = tableToMarkdown(
+        f"Successfully Initiated triggering events query for incident {incident_id}",
+        {"Query Id": query_id},
+        headers=["Query Id"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        outputs_prefix="FortiSIEM.TriggeringEventQuery",
+        outputs_key_field="QueryID",
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
+def event_list_by_incident_query_progress_command(client: FortiSIEMClient, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieve the progress of a triggering events query (FortiSIEM v7.3.3+).
+
+    Args:
+        client (FortiSIEMClient): FortiSIEM client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Command results with raw response, outputs and readable outputs.
+    """
+    query_id = args["query_id"]
+    response = client.triggering_events_query_progress_request(query_id)
+    # The progress endpoint returns a bare integer percentage (0-100) per the API schema.
+    status = str(response)
+    outputs = {"QueryID": query_id, "Status": status}
+    readable_output = tableToMarkdown(
+        f"Triggering events query: {query_id} progress",
+        {"Status": status},
+        headers=["Status"],
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        outputs_prefix="FortiSIEM.TriggeringEventQuery",
+        outputs_key_field="QueryID",
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
+def event_list_by_incident_query_result_command(client: FortiSIEMClient, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieve the result data of a triggering events query (FortiSIEM v7.3.3+).
+
+    Args:
+        client (FortiSIEMClient): FortiSIEM client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Command results with raw response, outputs and readable outputs.
+    """
+    query_id = args["query_id"]
+    limit = arg_to_number(args.get("limit"))
+    incident_id = args.get("incident_id")
+    response = client.triggering_events_query_result_request(query_id, limit)
+    events = response.get("data", []) if isinstance(response, dict) else []
+    outputs = format_triggering_events_output(events, incident_id)
+    header = f"List Events Of incident: {incident_id}" if incident_id else "List Events"
+    readable_output = tableToMarkdown(
+        header,
+        get_triggering_events_readable_output(outputs),
+        headers=["Id", "Cust Id", "Index", "Event Type", "Receive Time"],
+    )
+    return CommandResults(
+        outputs_prefix="FortiSIEM.Event",
+        outputs_key_field="id",
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
+def event_list_by_incident_query_with_polling_command(client: FortiSIEMClient, args: dict[str, Any]) -> CommandResults:
+    """
+    Run the triggering events query end-to-end using XSOAR built-in polling (FortiSIEM v7.3.3+).
+
+    The flow: start (get queryId) -> progress (poll until 100) -> result.
+
+    Args:
+        client (FortiSIEMClient): FortiSIEM client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    ScheduledCommand.raise_error_if_not_supported()
+    interval_in_secs = arg_to_number(args.get("interval_in_seconds", "10"))
+    if interval_in_secs < 10:  # type: ignore[operator]
+        raise ValueError("The minimum time to wait between command execution when 'polling' should be at least 10 seconds.")
+    timeout = arg_to_number(args.get("timeout_in_seconds", "600"))
+    cmd = "fortisiem-event-list-by-incident-query"
+
+    if "query_id" not in args:
+        command_results = event_list_by_incident_query_start_command(client, args)
+        start_outputs: dict = command_results.outputs  # type: ignore[assignment]
+        query_id = start_outputs.get("QueryID")
+        polling_args = {"query_id": query_id, "interval_in_seconds": interval_in_secs, "polling": True, **args}
+        scheduled_command = ScheduledCommand(
+            command=cmd,
+            next_run_in_seconds=interval_in_secs,  # type: ignore[arg-type]
+            args=polling_args,
+            timeout_in_seconds=timeout,
+        )
+        command_results.scheduled_command = scheduled_command
+        return command_results
+
+    progress_results = event_list_by_incident_query_progress_command(client, args)
+    progress_outputs: dict = progress_results.outputs  # type: ignore[assignment]
+    status = str(progress_outputs.get("Status"))
+    if status != "100":
+        polling_args = {"interval_in_seconds": interval_in_secs, "polling": True, **args}
+        scheduled_command = ScheduledCommand(
+            command=cmd,
+            next_run_in_seconds=interval_in_secs,  # type: ignore[arg-type]
+            args=polling_args,
+            timeout_in_seconds=timeout,
+        )
+        return CommandResults(scheduled_command=scheduled_command)
+
+    return event_list_by_incident_query_result_command(client, args)
 
 
 def watchlist_list_command(client: FortiSIEMClient, args: dict[str, Any]) -> CommandResults:
@@ -2057,6 +2265,72 @@ def get_list_events_readable_output(outputs: List[dict]) -> List[dict]:
     return readable_outputs
 
 
+def validate_triggering_events_time_interval(time_from: int, time_to: int) -> None:
+    """
+    Validate the triggering events query time interval does not exceed 24 hours.
+
+    Args:
+        time_from (int): Start of the time range in epoch milliseconds.
+        time_to (int): End of the time range in epoch milliseconds.
+
+    Raises:
+        ValueError: If the interval is invalid or exceeds 24 hours.
+    """
+    if time_to < time_from:
+        raise ValueError("The 'time_to' argument must be greater than or equal to the 'time_from' argument.")
+    if (time_to - time_from) > MAX_TRIGGERING_EVENTS_INTERVAL_MS:
+        raise ValueError("The interval between 'time_from' and 'time_to' cannot exceed 24 hours.")
+
+
+def format_triggering_events_output(events: List[dict], incident_id: str | None) -> List[dict]:
+    """
+    Format triggering events query result output for the FortiSIEM.Event context.
+
+    Args:
+        events (List[dict]): The list of event dicts from the result response 'data' key.
+        incident_id (str | None): The incident ID to attach to each event, if provided.
+
+    Returns:
+        List[dict]: Formatted event outputs.
+    """
+    if not events:
+        return []
+    format_outputs_time_attributes_to_iso(events)
+    for event in events:
+        # Stringify the id to avoid it being overridden by XSOAR since it's a huge number.
+        if "id" in event:
+            event["id"] = str(event["id"])
+        if "nid" in event:
+            event["nid"] = str(event["nid"])
+        if incident_id:
+            event["incidentId"] = incident_id
+    return events
+
+
+def get_triggering_events_readable_output(outputs: List[dict]) -> List[dict]:
+    """
+    Get the human readable table for the triggering events query result command.
+
+    Args:
+        outputs (List[dict]): The formatted event outputs.
+
+    Returns:
+        List[dict]: Human readable table rows matching the design doc (5 columns).
+    """
+    readable_outputs = []
+    for event in outputs:
+        readable_outputs.append(
+            {
+                "Id": event.get("id"),
+                "Cust Id": event.get("custId"),
+                "Index": event.get("index"),
+                "Event Type": event.get("eventType"),
+                "Receive Time": event.get("receiveTime"),
+            }
+        )
+    return readable_outputs
+
+
 def datetime_to_age_out_in_days(age_out_date: datetime) -> str:
     """
     Convert age out parameter from datetime value to the the required format in FortiSIEM API.
@@ -2119,6 +2393,9 @@ def main() -> None:
             "fortisiem-cmdb-device-get": cmdb_device_get_command,
             "fortisiem-monitored-organizations-list": monitored_organizations_list_command,
             "fortisiem-event-list-by-incident": events_list_command,
+            "fortisiem-event-list-by-incident-query-start": event_list_by_incident_query_start_command,
+            "fortisiem-event-list-by-incident-query-progress": event_list_by_incident_query_progress_command,
+            "fortisiem-event-list-by-incident-query-result": event_list_by_incident_query_result_command,
             "fortisiem-incident-update": incident_update_command,
             "fortisiem-watchlist-list": watchlist_list_command,
             "fortisiem-watchlist-get": watchlist_get_command,
@@ -2160,6 +2437,8 @@ def main() -> None:
                 )
             else:
                 return_results(events_search_init_command(client, args))
+        elif command == "fortisiem-event-list-by-incident-query":
+            return_results(event_list_by_incident_query_with_polling_command(client, args))
         elif command in commands:
             return_results(commands[command](client, args))
         else:
