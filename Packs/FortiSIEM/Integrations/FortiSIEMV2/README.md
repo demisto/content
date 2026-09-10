@@ -369,7 +369,7 @@ List of monitored organizations in service provider deployments.
 ### fortisiem-event-list-by-incident
 
 ***
-Lists events by the specified incident ID. Available for FortiSiem version 6.6 and earlier.
+Lists events by the specified incident ID. Available for FortiSIEM version 7.3.2 and earlier. Deprecated. For versions 7.3.3 and later, please use the fortisiem-event-list-by-incident-query command instead.
 
 #### Base Command
 
@@ -394,67 +394,6 @@ Lists events by the specified incident ID. Available for FortiSiem version 6.6 a
 | FortiSIEM.Event.nid | String | Event natural ID. |
 | FortiSIEM.Event.index | Number | Event index in the list. |
 | FortiSIEM.Event.custId | Number | The customer ID the event is related to. |
-
-#### Command Example
-
-```!fortisiem-event-list-by-incident incident_id=102 limit=1 page=1```
-
-#### Context Example
-
-```json
-{
-    "FortiSIEM": {
-        "Event": {
-            "attributes": {
-                "Connection Id": "0",
-                "Destination Interface SNMP Index": 29034,
-                "Destination TCP/UDP Port": 53,
-                "Event ID": 9071234812238931000,
-                "Event Parse Status": 1,
-                "Event Receive Time": 1640085152000,
-                "Event Type": "ASA-Built-Conn",
-                "External Event Receive Protocol": "NetFlow",
-                "IP Protocol": 17,
-                "Organization ID": 1,
-                "Received Bytes64": 136,
-                "Received Packets64": 1,
-                "Relaying IP": "192.168.30.254",
-                "Reporting Device": "Palo Alto",
-                "Reporting IP": "192.168.30.254",
-                "Reporting Model": "ASA",
-                "Reporting Vendor": "Cisco",
-                "Source IP": "192.168.1.1",
-                "Source Interface SNMP Index": 29054,
-                "Source TCP/UDP Port": 52377,
-                "System Event Category": 4,
-                "Total Bytes64": 136,
-                "Total Flows": 0,
-                "Total Packets64": 1
-            },
-            "custId": 1,
-            "dataStr": {},
-            "eventAttributes": [],
-            "eventType": "ASA-Built-Conn",
-            "id": 9071234812238931000,
-            "incidentId": "102",
-            "index": 0,
-            "nid": "9071234812238930440",
-            "rawMessage": null,
-            "receiveTime": "2021-12-21T11:12:32"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### List Events Of incident: 102
->
->Showing page 1 out of others that may exist. Current page size: 1.
->
->|Id|Cust Id|Index|Event Type|Receive Time|
->|---|---|---|---|---|
->| 9071234812238930440 | 1 | 0 | ASA-Built-Conn | 2021-12-21T11:12:32 ||
 
 ### fortisiem-watchlist-list
 
@@ -1076,3 +1015,112 @@ The following sections list the changes in this version.
 ***fortisiem-watchlist-entry-get***
 
 #### The fetch incidents command can also fetch triggered events
+
+### fortisiem-event-list-by-incident-query-start
+
+***
+Initiates the request to get triggering events by query. Available for FortiSIEM version 7.3.3 and later.
+
+#### Base Command
+
+`fortisiem-event-list-by-incident-query-start`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident ID for which we are retrieving underlying events. | Required |
+| time_to | This is the ending time range to retrieve raw events for this incident. Note: The max interval from time_to and time_from cannot exceed 24 hours. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10". | Required |
+| time_from | This is the start time range to search raw events for the given incident ID. Note: The max interval from time_to and time_from cannot exceed 24 hours. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10". | Required |
+| limit | The number of raw events to return. Maximum is 100. Default is 50. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiSIEM.TriggeringEventQuery.QueryID | String | The query ID used to retrieve the progress and result of the triggering events query. |
+
+### fortisiem-event-list-by-incident-query-progress
+
+***
+Retrieve the progress of the triggering event query. Available for FortiSIEM version 7.3.3 and later.
+
+#### Base Command
+
+`fortisiem-event-list-by-incident-query-progress`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_id | The query ID retrieved in the start call response. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiSIEM.TriggeringEventQuery.QueryID | String | The query ID the progress status refers to. |
+| FortiSIEM.TriggeringEventQuery.Status | Number | A number between 0 to 100 representing the percentage progress of the triggering events query. |
+
+### fortisiem-event-list-by-incident-query-result
+
+***
+Retrieves the response data for the triggering events query ID. Available for FortiSIEM version 7.3.3 and later.
+
+#### Base Command
+
+`fortisiem-event-list-by-incident-query-result`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query_id | The query ID retrieved in the start call response. | Required |
+| limit | The number of raw events to return. Maximum is 100. | Optional |
+| incident_id | The incident ID to associate the returned events with (used for the human readable output). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiSIEM.Event.custId | Number | The customer ID the event is related to. |
+| FortiSIEM.Event.index | Number | Event index in the list. |
+| FortiSIEM.Event.id | String | Event ID. |
+| FortiSIEM.Event.eventType | String | FortiSIEM event type. |
+| FortiSIEM.Event.receiveTime | Date | The date when the event was received by FortiSIEM. |
+| FortiSIEM.Event.nid | String | Event natural ID. |
+| FortiSIEM.Event.attributes | Unknown | Additional attributes of the event. |
+
+### fortisiem-event-list-by-incident-query
+
+***
+Query events by the specified incident ID using the polling mechanism (start, progress, result). Available for FortiSIEM version 7.3.3 and later.
+
+#### Base Command
+
+`fortisiem-event-list-by-incident-query`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The incident ID for which we are retrieving underlying events. | Required |
+| time_to | This is the ending time range to retrieve raw events for this incident. Note: The max interval from time_to and time_from cannot exceed 24 hours. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10". | Required |
+| time_from | This is the start time range to search raw events for the given incident ID. Note: The max interval from time_to and time_from cannot exceed 24 hours. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10". | Required |
+| limit | The number of raw events to return. Maximum is 100. Default is 50. | Optional |
+| polling | Use Cortex XSOAR built-in polling to retrieve the result when it's ready. Possible values are: true, false. Default is false. | Optional |
+| query_id | The query ID retrieved in the start call response. Intended for use by the polling process; does not need to be provided by the user. | Optional |
+| interval_in_seconds | How long to wait between command executions (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 10. | Optional |
+| timeout_in_seconds | The time in seconds until the polling sequence timeouts. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiSIEM.Event.custId | Number | The customer ID the event is related to. |
+| FortiSIEM.Event.index | Number | Event index in the list. |
+| FortiSIEM.Event.id | String | Event ID. |
+| FortiSIEM.Event.eventType | String | FortiSIEM event type. |
+| FortiSIEM.Event.receiveTime | Date | The date when the event was received by FortiSIEM. |
+| FortiSIEM.Event.nid | String | Event natural ID. |
+| FortiSIEM.Event.attributes | Unknown | Additional attributes of the event. |

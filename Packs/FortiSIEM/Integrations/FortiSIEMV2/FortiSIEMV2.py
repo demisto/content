@@ -1022,7 +1022,8 @@ def event_list_by_incident_query_with_polling_command(client: FortiSIEMClient, a
 
     if "query_id" not in args:
         command_results = event_list_by_incident_query_start_command(client, args)
-        query_id = command_results.outputs.get("QueryID")  # type: ignore[union-attr]
+        start_outputs: dict = command_results.outputs  # type: ignore[assignment]
+        query_id = start_outputs.get("QueryID")
         polling_args = {"query_id": query_id, "interval_in_seconds": interval_in_secs, "polling": True, **args}
         scheduled_command = ScheduledCommand(
             command=cmd,
@@ -1034,7 +1035,8 @@ def event_list_by_incident_query_with_polling_command(client: FortiSIEMClient, a
         return command_results
 
     progress_results = event_list_by_incident_query_progress_command(client, args)
-    status = str(progress_results.outputs.get("Status"))  # type: ignore[union-attr]
+    progress_outputs: dict = progress_results.outputs  # type: ignore[assignment]
+    status = str(progress_outputs.get("Status"))
     if status != "100":
         polling_args = {"interval_in_seconds": interval_in_secs, "polling": True, **args}
         scheduled_command = ScheduledCommand(
