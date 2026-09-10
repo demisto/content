@@ -11361,7 +11361,7 @@ script:
       description: The Azure Resource Manager metadata containing createdBy and modifiedBy information.
       type: Unknown
   - name: azure-log-analytics-table-run
-    description: "Runs a search job to fetch records from large datasets into a new search results table in your workspace, and polls until the table is provisioned. Required Permissions: Microsoft.OperationalInsights/workspaces/tables/read, Microsoft.OperationalInsights/workspaces/tables/write."
+    description: "Runs a search job to fetch records from large datasets into a new search results table in your workspace, and polls until the table is provisioned. Required Permissions: Microsoft.OperationalInsights/workspaces/tables/read, Microsoft.OperationalInsights/workspaces/tables/write, Microsoft.OperationalInsights/workspaces/searchJobs/write."
     polling: true
     arguments:
     - name: subscription_id

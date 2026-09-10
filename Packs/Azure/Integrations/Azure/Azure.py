@@ -353,6 +353,7 @@ PERMISSIONS_TO_COMMANDS = {
     "Microsoft.OperationalInsights/workspaces/tables/delete": [
         "azure-log-analytics-table-delete",
     ],
+    "Microsoft.OperationalInsights/workspaces/searchJobs/write": ["azure-log-analytics-table-run"],
 }
 
 API_FUNCTION_TO_PERMISSIONS = {
@@ -442,6 +443,7 @@ API_FUNCTION_TO_PERMISSIONS = {
     "log_analytics_table_run": [
         "Microsoft.OperationalInsights/workspaces/tables/read",
         "Microsoft.OperationalInsights/workspaces/tables/write",
+        "Microsoft.OperationalInsights/workspaces/searchJobs/write",
     ],
     "log_analytics_table_delete": ["Microsoft.OperationalInsights/workspaces/tables/delete"],
 }
@@ -507,6 +509,7 @@ REQUIRED_ROLE_PERMISSIONS = [
     "Microsoft.OperationalInsights/workspaces/tables/read",
     "Microsoft.OperationalInsights/workspaces/tables/write",
     "Microsoft.OperationalInsights/workspaces/tables/delete",
+    "Microsoft.OperationalInsights/workspaces/searchJobs/write",
 ]
 REQUIRED_API_PERMISSIONS = ["GroupMember.ReadWrite.All", "RoleManagement.ReadWrite.Directory"]
 
