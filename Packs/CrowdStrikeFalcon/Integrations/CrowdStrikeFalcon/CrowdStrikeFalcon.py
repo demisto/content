@@ -5498,6 +5498,15 @@ async def fetch_spotlight_assets():
             "info",
         )
 
+        # An error written with is_error=True latches: it stays on the instance until something
+        # overwrites it with a non-error status. The only such write used to be at the end of
+        # fetch_cnapp_assets, which never runs when Spotlight is collected on its own - not when
+        # "Spotlight" is the only selected assets type, and not in the long-running mode, which
+        # calls this function directly. Those instances kept displaying a transient XSIAM error long
+        # after collection had recovered. send_data_to_xsiam_async does not write health at all, so
+        # reporting it here is the only way to clear the status.
+        demisto.updateModuleHealth({"assetsPulled": total_vulnerabilities})
+
     except (ContentClientError, Exception) as e:
         log_falcon_assets(f"Error during Spotlight fetch: {e}", "error")
 
