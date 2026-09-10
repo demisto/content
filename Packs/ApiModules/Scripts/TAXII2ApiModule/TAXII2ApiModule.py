@@ -517,14 +517,26 @@ class XSOAR2STIXParser:
         self.types_for_indicator_sdo = types_for_indicator_sdo or []
 
     @staticmethod
-    def _is_known_stix_type(xsoar_type: str) -> bool:
-        """Whether the given XSOAR indicator type maps to a known STIX type.
+    def _produces_object(xsoar_indicator: dict, xsoar_type: str | None, is_manifest: bool) -> bool:
+        """Whether the given XSOAR indicator would produce a STIX object / manifest entry.
 
-        Indicators of an unknown type never produce a STIX object / manifest entry
-        (see `create_stix_object` / `create_manifest_entry`), so they must not be
-        counted when applying the pagination offset window.
+        Indicators that never produce an output must not be counted when applying the
+        pagination offset window, otherwise the produced-object count drifts from the
+        actual number of emitted objects/entries. Two cases are skipped:
+        - Indicators whose type does not map to a known STIX type
+          (see `create_manifest_entry` / `create_stix_object`).
+        - In the non-manifest flow only, `file` indicators whose value is not a valid
+          hash (`get_hash_type` returns "Unknown"), which `create_stix_object` skips
+          (`create_manifest_entry` still emits an entry for them).
         """
-        return bool(XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) or XSOAR_TYPES_TO_STIX_SDO.get(xsoar_type))
+        if not xsoar_type:
+            return False
+        stix_type = XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) or XSOAR_TYPES_TO_STIX_SDO.get(xsoar_type)
+        if not stix_type:
+            return False
+        if not is_manifest and stix_type == "file" and get_hash_type(xsoar_indicator.get("value")) == "Unknown":
+            return False
+        return True
 
     def create_indicators(
         self,
@@ -564,9 +576,9 @@ class XSOAR2STIXParser:
             for xsoar_indicator in found_indicators:
                 xsoar_type = xsoar_indicator.get("indicator_type")
                 # Skip building objects for indicators outside the requested window. We only
-                # count indicators of a known STIX type, since indicators of an unknown type
-                # never produced an object (and thus never counted towards the offset).
-                if not self._is_known_stix_type(xsoar_type):
+                # count indicators that would actually produce an object, since indicators
+                # that never produced one never counted towards the offset.
+                if not self._produces_object(xsoar_indicator, xsoar_type, is_manifest):
                     continue
                 if produced_index < offset:
                     produced_index += 1

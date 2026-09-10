@@ -287,9 +287,6 @@ class TAXII2Server:
                 # requested an offset beyond the available indicators
                 raise RequestedRangeNotSatisfiable
 
-        if len(objects) < len(iocs):
-            demisto.info(f"T2S: WARNING: number of created IOCs is higher than limit {len(objects)=} {len(iocs)=}")
-
         if objects:
             first_added = objects[-1].get("date_added")
             last_added = objects[0].get("date_added")
@@ -338,9 +335,6 @@ class TAXII2Server:
                 # requested an offset beyond the available indicators
                 raise RequestedRangeNotSatisfiable
             objects = limited_iocs
-
-        if len(objects) < len(iocs):
-            demisto.info(f"T2S: WARNING: number of created IOCs is higher than limit {len(objects)=} {len(iocs)=}")
 
         if SERVER.has_extension:
             limited_extensions = get_limited_extensions(limited_iocs, extensions)

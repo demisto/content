@@ -2761,6 +2761,43 @@ def test_create_manifest_high_offset_small_limit_builds_only_window(mocker):
     assert len(iocs) == 2
 
 
+def test_create_indicators_skips_file_indicators_with_unknown_hash(mocker):
+    """
+    Given
+    - A searcher that returns 'file' indicators whose value is not a valid hash (get_hash_type -> "Unknown"),
+      interleaved with valid indicators, and an offset that skips into the window.
+    When
+    - Calling create_indicators with is_manifest=False (the STIX-object flow).
+    Then
+    - file/Unknown indicators are not counted towards the offset window (create_stix_object skips them),
+      so the produced-object count matches the number of actually emitted objects.
+    """
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "6.5.0"})
+    client = XSOAR2STIXParser(
+        server_version="2.1",
+        fields_to_present={"name", "type"},
+        types_for_indicator_sdo=[],
+        namespace_uuid=uuid.uuid5(PAWN_UUID, "test"),
+    )
+
+    # 2 valid IPs, then a file indicator with an invalid (non-hash) value, then 2 more valid IPs.
+    ts = {"timestamp": "2020-01-01T00:00:00Z", "modified": "2020-01-01T00:00:00Z"}
+    indicators = [
+        {"value": f"1.1.1.{1}", "indicator_type": "IP", **ts},
+        {"value": f"1.1.1.{2}", "indicator_type": "IP", **ts},
+        {"value": "not-a-hash", "indicator_type": "File", **ts},
+        {"value": f"1.1.1.{3}", "indicator_type": "IP", **ts},
+        {"value": f"1.1.1.{4}", "indicator_type": "IP", **ts},
+    ]
+    searcher = [{"iocs": indicators, "total": len(indicators)}]
+
+    iocs, _, _ = client.create_indicators(searcher, is_manifest=False)
+
+    # The file/Unknown indicator produces no STIX object; only the 4 valid IPs are emitted.
+    assert len(iocs) == 4
+    assert all(ioc.get("type") != "file" for ioc in iocs)
+
+
 def test_create_indicators_default_args_build_all(mocker):
     """
     Given
