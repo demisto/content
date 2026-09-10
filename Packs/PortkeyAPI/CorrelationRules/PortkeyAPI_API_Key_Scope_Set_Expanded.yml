@@ -1,0 +1,66 @@
+name: Portkey - API Key Scope Set Expanded - by GoCortexIO
+description: Reports an existing API key whose granted scope set grew within the window. Creating a broadly scoped key is conspicuous and already detected; widening a key that already exists is the quieter move, and the inventory snapshot cannot show it because it holds only what the key looks like now.
+severity: SEV_040_HIGH
+xql_query: |-
+  // PROVENANCE
+  //   Pattern:   access obtained by widening an identity that already exists rather than by
+  //              creating one or stealing a credential.
+  //   Basis:     the audit request body, which carries the intended scope set of every key
+  //              write. The api key INVENTORY cannot answer this: it holds current state, so
+  //              a key that gained scopes looks identical to one that always had them.
+  //   ATT&CK:    T1098
+  //   Threshold: none. The test is that the count grew, which is a boundary rather than a
+  //              tuned number.
+  //   Direction IS asserted here, and only because the measure is a COUNT. max above min
+  //              means the key held more scopes at one point in the window than at another.
+  //              It does not assert which came last; the drilldown gives the order. A rule
+  //              that claimed net escalation from an unordered aggregate would be overstating
+  //              what the query can see.
+  //   Grouping:  per key. The key id is absent on a create, because the URI carries no id
+  //              until the resource exists, so the name is the fallback reference.
+  //   Guardrail writes are EXCLUDED by URL: this field carries a scope list for a key and a
+  //              check count for a guardrail, so counting both would compare unlike things.
+  datamodel dataset = portkey_audit_raw
+  | filter xdm.network.http.url contains "/api-keys"
+        and xdm.target.resource.value != null
+        and xdm.event.outcome_reason != null
+  | alter key_ref = coalesce(xdm.target.resource.name, xdm.target.resource.id),
+          scope_count = array_length(split(to_string(xdm.target.resource.value), "|"))
+  | comp min(scope_count) as fewest_scopes,
+         max(scope_count) as most_scopes,
+         count() as key_writes,
+         values(xdm.source.user.identifier) as actors,
+         values(xdm.source.ipv4) as source_addresses,
+         min(_time) as first_seen,
+         max(_time) as last_seen
+      by key_ref, xdm.event.type
+  | filter most_scopes > fewest_scopes
+  | sort desc most_scopes
+  | fields key_ref, xdm.event.type, fewest_scopes, most_scopes, key_writes, actors, source_addresses, first_seen, last_seen
+alert_name: Portkey - API key $key_ref scope set changed, $fewest_scopes to $most_scopes
+alert_category: User Defined
+user_defined_category: xdm.event.type
+alert_description: API key $key_ref was written $key_writes time(s) by $actors from $source_addresses, holding as few as $fewest_scopes and as many as $most_scopes scopes within the window. Read the ordered writes in the drilldown to establish direction, then confirm the widest scope set was intended.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0004 - Privilege Escalation:
+  - T1098 - Account Manipulation
+suppression_fields:
+- key_ref
+- most_scopes
+global_rule_id: 1eb027f7-d1f3-4628-93c3-19f5a8271129
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 26 hours
+timezone: Australia/Melbourne
+crontab: '31 * * * *'
+suppression_enabled: true
+suppression_duration: 24 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_audit_raw | filter uri contains "/api-keys" and method != "DELETE"
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0
