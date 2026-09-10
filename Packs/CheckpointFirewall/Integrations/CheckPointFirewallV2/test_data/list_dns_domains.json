@@ -1,0 +1,29 @@
+{
+  "objects": [
+    {
+      "uid": "dns-uid-1",
+      "name": ".example.com",
+      "type": "dns-domain",
+      "is-sub-domain": true,
+      "domain": {
+        "uid": "domain-uid",
+        "name": "SMC User",
+        "domain-type": "domain"
+      }
+    },
+    {
+      "uid": "dns-uid-2",
+      "name": ".test.org",
+      "type": "dns-domain",
+      "is-sub-domain": false,
+      "domain": {
+        "uid": "domain-uid",
+        "name": "SMC User",
+        "domain-type": "domain"
+      }
+    }
+  ],
+  "from": 1,
+  "to": 2,
+  "total": 2
+}
