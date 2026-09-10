@@ -1,0 +1,32 @@
+{
+    "izoologic_izoologic_raw": {
+        "incidentID": {
+            "type": "string",
+            "is_array": false
+        },
+        "incidentType": {
+            "type": "string",
+            "is_array": false
+        },
+        "subIncidentType": {
+            "type": "string",
+            "is_array": false
+        },
+        "url": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": false
+        },
+        "threatType": {
+            "type": "string",
+            "is_array": false
+        },
+        "detectedBy": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
