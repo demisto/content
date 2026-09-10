@@ -15,7 +15,7 @@ RESOLUTION_V8 = (
 def main():
     try:
         if is_demisto_version_ge("8.0.0"):
-            uri = "xsoar/public/v1/contentpacks/installed-expired"
+            uri = "contentpacks/installed-expired"
             resolution = RESOLUTION_V8
         else:
             account_name = demisto.incidents()[0].get("account", "")
