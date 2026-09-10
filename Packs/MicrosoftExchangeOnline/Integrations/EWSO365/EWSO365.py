@@ -26,7 +26,6 @@ from exchangelib.errors import (
     ErrorMailboxMoveInProgress,
     ErrorMailboxStoreUnavailable,
     MalformedResponseError,
-    RateLimitError,
 )
 from exchangelib.items import Contact, Message
 from requests.exceptions import ConnectionError
@@ -78,6 +77,8 @@ LAST_RUN_IDS = "ids"
 LAST_RUN_IDS_DICT_REPRESENTATION = "ids_dict"
 LAST_RUN_FOLDER = "folderName"
 ERROR_COUNTER = "errorCounter"
+
+MAX_CONSECUTIVE_TRANSIENT_ERRORS = 2
 
 # Types of filter
 MODIFIED_FILTER = "modified-time"
@@ -1719,14 +1720,22 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
 
         return incidents
 
-    except RateLimitError:
+    except TRANSIENT_SERVER_ERRORS as e:
         if LAST_RUN_TIME in last_run:
             last_run[LAST_RUN_TIME] = last_run[LAST_RUN_TIME].ewsformat()
         if ERROR_COUNTER not in last_run:
             last_run[ERROR_COUNTER] = 0
         last_run[ERROR_COUNTER] += 1
         demisto.setLastRun(last_run)
-        if last_run[ERROR_COUNTER] > 2:
+        demisto.debug(
+            f"[Fetch] Transient error on fetch ({type(e).__name__}: {e}). "
+            f"Consecutive failures: {last_run[ERROR_COUNTER]}/{MAX_CONSECUTIVE_TRANSIENT_ERRORS}.\n{traceback.format_exc()}"
+        )
+        if last_run[ERROR_COUNTER] > MAX_CONSECUTIVE_TRANSIENT_ERRORS:
+            demisto.error(
+                f"[Fetch] Transient error persisted for {last_run[ERROR_COUNTER]} consecutive fetches, failing: {e}\n"
+                f"{traceback.format_exc()}"
+            )
             raise
         return []
 
@@ -1742,7 +1751,12 @@ def fetch_last_emails(
     :param (Optional) exclude_ids: exclude ids from fetch
     :return: list of exchangelib.Items
     """
+    demisto.info(
+        f"fetch_last_emails: EWS call [GetFolder] INPUT - folder_name={folder_name!r}, "
+        f"is_public={client.is_public_folder}."
+    )
     qs = client.get_folder_by_path(folder_name, is_public=client.is_public_folder)
+    demisto.info(f"fetch_last_emails: EWS call [GetFolder] OUTPUT - {summarize_ews_object(qs)}.")
     demisto.debug(f"Finished getting the folder named {folder_name} by path")
     if since_datetime:
         if incident_filter == RECEIVED_FILTER:
@@ -1773,6 +1787,12 @@ def fetch_last_emails(
     qs.page_size = min(client.max_fetch, 100)
     demisto.debug("Before iterating on queryset")
     demisto.debug(f"Size of the queryset object in fetch-incidents: {sys.getsizeof(qs)}")
+    demisto.info(
+        f"fetch_last_emails: EWS call [FindItem] INPUT - folder={folder_name!r}, since={since_datetime}, "
+        f"filter={incident_filter}, order_by={'datetime_received' if incident_filter == RECEIVED_FILTER else 'last_modified_time'}, "
+        f"chunk_size={qs.chunk_size}, page_size={qs.page_size}, max_fetch={client.max_fetch}, "
+        f"exclude_ids_count={len(exclude_ids)}."
+    )
     for item in qs:
         demisto.debug("next iteration of the queryset in fetch-incidents")
         if isinstance(item, Message):
@@ -1787,9 +1807,14 @@ def fetch_last_emails(
                 )
                 continue
             demisto.debug(f"Appending {item.subject=} with {item.message_id=}")
+            demisto.info(f"fetch_last_emails: EWS call [FindItem] OUTPUT item - {summarize_ews_object(item)}")
             result.append(item)
             if len(result) >= client.max_fetch:
                 break
+    demisto.info(
+        f"fetch_last_emails: EWS call [FindItem] OUTPUT - collected {len(result)} item(s) from {folder_name!r}: "
+        f"{summarize_ews_object(result)}"
+    )
     demisto.debug(f"{APP_NAME} - Got total of {len(result)} from ews query.")
     return result
 
@@ -2001,6 +2026,12 @@ def sub_main():  # pragma: no cover
         exchangelib_cleanup()
         if log_stream:
             try:
+                # Emit the full raw SOAP request/response traffic captured for this run
+                # (exchangelib logs it at DEBUG into log_stream). This was previously only surfaced on error;
+                # emit it on every run to debug latency/hangs.
+                raw_traffic = log_stream.getvalue()
+                if raw_traffic:
+                    demisto.info(f"EWS raw SOAP traffic for this run ({demisto.command()}):\n{raw_traffic}")
                 logging.getLogger().removeHandler(log_handler)  # type: ignore
                 log_stream.close()
             except Exception as ex:

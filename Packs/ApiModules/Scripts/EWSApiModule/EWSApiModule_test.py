@@ -647,6 +647,68 @@ def test_client_get_folder_by_path(mocker, mock_account):
     assert account.root.tois.__floordiv__.call_args_list == expected_calls  # type: ignore
 
 
+def test_get_folder_by_path_propagates_transient_error(mock_account):
+    """
+    Given:
+        - Exchange raises a transient error (HTTP 503) while resolving a folder path segment
+    When:
+        - client.get_folder_by_path is called
+    Then:
+        - The transient error is propagated unchanged (not masked as a "No such folder" ValueError),
+          so the caller can back off and retry
+    """
+    from exchangelib.errors import ErrorServerBusy
+
+    client = EWSClient(
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        access_type=ACCESS_TYPE,
+        default_target_mailbox=DEFAULT_TARGET_MAILBOX,
+        ews_server=EWS_SERVER,
+        max_fetch=MAX_FETCH,
+        auth_type=AUTH_TYPE,
+        version=VERSION_STR,
+        folder=FOLDER,
+        is_public_folder=True,
+    )
+    account = client.get_account()
+    account.root.tois.__floordiv__.side_effect = ErrorServerBusy("Reraised from ErrorInternalServerTransientError")
+
+    with pytest.raises(ErrorServerBusy):
+        client.get_folder_by_path("Inbox/Phishing", account)
+
+
+def test_get_folder_by_path_wraps_non_transient_error(mock_account):
+    """
+    Given:
+        - A non-transient error is raised while resolving a folder path segment
+    When:
+        - client.get_folder_by_path is called
+    Then:
+        - It is wrapped in a "No such folder" ValueError, preserving the original cause via exception chaining
+    """
+    client = EWSClient(
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
+        access_type=ACCESS_TYPE,
+        default_target_mailbox=DEFAULT_TARGET_MAILBOX,
+        ews_server=EWS_SERVER,
+        max_fetch=MAX_FETCH,
+        auth_type=AUTH_TYPE,
+        version=VERSION_STR,
+        folder=FOLDER,
+        is_public_folder=True,
+    )
+    account = client.get_account()
+    original_error = KeyError("root")
+    account.root.tois.__floordiv__.side_effect = original_error
+
+    with pytest.raises(ValueError, match="No such folder") as exc_info:
+        client.get_folder_by_path("Inbox/Phishing", account)
+
+    assert exc_info.value.__cause__ is original_error
+
+
 def test_client_send_email(mocker, mock_account):
     """
     Given:
@@ -1376,6 +1438,74 @@ def test_mark_item_as_read(mocker, client):
         assert item.is_read == (item.id in expected_read_items)
 
     assert result.outputs == expected_output
+
+
+def test_mark_item_as_read_retries_on_change_key_conflict(mocker, client):
+    """
+    Given:
+        - An item with a stale change key, so save() keeps failing with ErrorIrresolvableConflict
+          until the item is refreshed (as exchangelib re-sends the cached change key on every save)
+    When:
+        - Calling mark_item_as_read
+    Then:
+        - The item is refreshed and save() is retried after a short delay, and the item is reported as marked
+        - is_read is re-applied after the refresh, which overwrites all fields with the server values
+    """
+    from exchangelib.errors import ErrorIrresolvableConflict
+
+    item = MagicMock(spec=Message, id="item1", is_read=False, message_id="msg1", changekey="stale")
+
+    def save():
+        # exchangelib sends the currently cached change key, so the conflict persists until refresh().
+        if item.changekey == "stale":
+            raise ErrorIrresolvableConflict("stale change key")
+
+    def refresh():
+        # refresh() overwrites all fields with the server state, including is_read.
+        item.changekey = "fresh"
+        item.is_read = False
+
+    item.save.side_effect = save
+    item.refresh.side_effect = refresh
+    mocker.patch.object(EWSClient, "get_items_from_mailbox", return_value=[item])
+    sleep_mock = mocker.patch.object(EWSApiModule.time, "sleep")
+
+    result = mark_item_as_read(client, {"item_ids": "item1", "operation": "read"})
+
+    assert item.save.call_count == 2
+    item.refresh.assert_called_once()
+    assert item.is_read is True
+    sleep_mock.assert_called_once_with(EWSApiModule.MARK_AS_READ_RETRY_DELAY)
+    assert result.outputs == [{"itemId": "item1", "messageId": "msg1", "action": "marked-as-read"}]
+
+
+def test_mark_item_as_read_skips_item_on_persistent_conflict(mocker, client):
+    """
+    Given:
+        - An item whose save() raises ErrorIrresolvableConflict on both the initial call and the retry,
+          even after being refreshed
+    When:
+        - Calling mark_item_as_read
+    Then:
+        - The item is skipped (not included in the outputs) instead of failing the whole command
+    """
+    from exchangelib.errors import ErrorIrresolvableConflict
+
+    conflicting = MagicMock(spec=Message, id="item1", is_read=False, message_id="msg1", changekey="stale")
+    conflicting.save.side_effect = ErrorIrresolvableConflict("stale change key")
+    ok_item = MagicMock(spec=Message, id="item2", is_read=False, message_id="msg2", changekey="ck2")
+    ok_item.save.return_value = None
+    mock_items = [conflicting, ok_item]
+    mocker.patch.object(
+        EWSClient, "get_items_from_mailbox", side_effect=lambda _target, ids: [item for item in mock_items if item.id in ids]
+    )
+    mocker.patch.object(EWSApiModule.time, "sleep")
+
+    result = mark_item_as_read(client, {"item_ids": "item1, item2", "operation": "read"})
+
+    assert conflicting.save.call_count == 2
+    conflicting.refresh.assert_called_once()
+    assert result.outputs == [{"itemId": "item2", "messageId": "msg2", "action": "marked-as-read"}]
 
 
 def test_escape_hr_item_ids():
