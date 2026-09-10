@@ -791,6 +791,11 @@ async def fetch_siem_events(
     if not is_within_last_24_hours(start_date):
         demisto.info(f"{log_prefix} {start_date=} is older than 24 hours. Skipping forward to last 23 hours.")
         start_date = convert_to_siem_filter_format(UTC_NOW - timedelta(hours=23))
+        # The stored next_page cursor belongs to the old (out-of-range) window.
+        # It must be cleared, otherwise the stale next_page (which the API honors over the date range)
+        # keeps returning empty pages.
+        demisto.info(f"{log_prefix} Resetting stale next_page and last_fetched_ids to match the new start date.")
+        next_page = None
 
     siem_events, new_next_page = await get_siem_events(
         client,
@@ -800,10 +805,19 @@ async def fetch_siem_events(
         next_page=next_page,
     )
 
-    # Handle empty results
+    # Handle empty results.
+    # The Mimecast SIEM v2 endpoint is a checkpoint stream: even empty responses return a fresh @nextPage cursor
+    # pointing at the current tip of each channel. We MUST persist that cursor (and advance the window) so the next
+    # cycle resumes from the checkpoint. Otherwise we cold-start from "now - 1 minute" every run and only ever catch
+    # events that happen to land in that ~60s slice between fetches.
     if not siem_events:
-        demisto.debug(f"{log_prefix} No new events found. Keeping {siem_last_run=}.")
-        return siem_last_run, []
+        siem_next_run = {
+            START_DATE_KEY: start_date,
+            LAST_FETCHED_IDS_KEY: last_fetched_ids,
+            NEXT_PAGE_KEY: new_next_page if new_next_page is not None else next_page,
+        }
+        demisto.debug(f"{log_prefix} No new events found. Advancing cursor. Updating {siem_next_run=}.")
+        return siem_next_run, []
 
     # Update state with newest events
     new_start_time, new_last_fetched_ids = get_siem_new_start_time_last_fetched_ids(siem_events)
