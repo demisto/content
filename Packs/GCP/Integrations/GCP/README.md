@@ -919,6 +919,75 @@ Retrieves details for a specific snapshot. Required permission: compute.snapshot
 | GCP.Compute.Snapshots.storageBytesStatus | String | Status of the storage bytes usage, for example UP_TO_DATE. |
 | GCP.Compute.Snapshots.storageLocations | Unknown | List of storage locations for the snapshot. |
 
+### gcp-compute-snapshot-delete
+
+***
+Deletes the specified snapshot. Deleting a single snapshot might not delete all data on that snapshot. If any data on the snapshot marked for deletion is needed for subsequent snapshots, the data is moved to the next corresponding snapshot. Required permission: compute.snapshots.delete.
+
+#### Base Command
+
+`gcp-compute-snapshot-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_name | The name of the snapshot to delete. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation resource, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation resource. |
+| GCP.Compute.Operations.kind | String | The type of the resource, for example compute\#operation. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | The current status of the operation. |
+| GCP.Compute.Operations.progress | Number | The progress of the operation as a percentage between 0 and 100. |
+| GCP.Compute.Operations.targetId | String | The unique target ID of the resource affected by the operation. |
+| GCP.Compute.Operations.targetLink | String | The URL of the target resource modified by the operation. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the operation resource. |
+| GCP.Compute.Operations.insertTime | Date | The date and time when the operation resource was created. |
+| GCP.Compute.Operations.startTime | Date | The date and time when the operation started running. |
+| GCP.Compute.Operations.user | String | The user account that performed the operation. |
+
+### gcp-compute-snapshot-labels-set
+
+***
+Sets the labels on a snapshot. Required permissions: compute.snapshots.setLabels, compute.snapshots.get.
+
+#### Base Command
+
+`gcp-compute-snapshot-labels-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_name | The name of the snapshot for this request. | Required |
+| labels | The labels to apply for this resource. Each label key and value must comply with RFC1035. Example: key=abc,value=123;key=def,value=456. | Required |
+| label_fingerprint | The fingerprint of the previous set of labels for this resource, used to detect conflicts. Run gcp-compute-snapshot-get to retrieve the latest fingerprint. Ignored when add_labels is true, since the fingerprint of the fetched snapshot is used instead. When add_labels is false, a label_fingerprint must be provided. | Optional |
+| add_labels | Whether to add the new labels to the existing ones or override the previous labels with the new ones. True - add, False - override. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation resource, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation resource. |
+| GCP.Compute.Operations.kind | String | The type of the resource, for example compute\#operation. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | The current status of the operation. |
+| GCP.Compute.Operations.progress | Number | The progress of the operation as a percentage between 0 and 100. |
+| GCP.Compute.Operations.targetId | String | The unique target ID of the resource affected by the operation. |
+| GCP.Compute.Operations.targetLink | String | The URL of the target resource modified by the operation. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the operation resource. |
+| GCP.Compute.Operations.insertTime | Date | The date and time when the operation resource was created. |
+| GCP.Compute.Operations.startTime | Date | The date and time when the operation started running. |
+| GCP.Compute.Operations.user | String | The user account that performed the operation. |
+
 ### gcp-compute-instances-aggregated-list-by-ip
 
 ***
@@ -1364,6 +1433,148 @@ Retrieves the list of zone resources available to the specified project. Require
 >| 2231 | us-central1-a | UP | https://www.googleapis.com/compute/v1/projects/project-id/regions/us-central1 | 1969-12-31T16:00:00.000-08:00 |
 >| 2232 | us-central1-b | UP | https://www.googleapis.com/compute/v1/projects/project-id/regions/us-central1 | 1969-12-31T16:00:00.000-08:00 |
 
+### gcp-compute-zone-operation-wait
+
+***
+Polls a zonal Compute Engine operation until it reaches the DONE status. Required permission: compute.zoneOperations.get.
+
+#### Base Command
+
+`gcp-compute-zone-operation-wait`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone for this request. | Required |
+| operation_name | The name of the Operation resource to wait for. | Required |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The timeout, in seconds, until polling ends. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique identifier for the server-defined resource. |
+| GCP.Compute.Operations.name | string | The name of the resource. |
+| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. Only available when performing per-zone operations. |
+| GCP.Compute.Operations.clientOperationId | string | The value of the requestId field provided when the operation was created. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING, RUNNING or DONE. |
+| GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | The user who requested the operation, for example, EMAILADDRESS. |
+| GCP.Compute.Operations.progress | number | The optional progress indicator that ranges from 0 to 100. |
+| GCP.Compute.Operations.insertTime | string | The time that this operation was requested, in RFC3339 format. |
+| GCP.Compute.Operations.startTime | string | The time that this operation was started by the server, in RFC3339 format. |
+| GCP.Compute.Operations.endTime | string | The time that this operation was completed, in RFC3339 format. |
+| GCP.Compute.Operations.error.errors | unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
+| GCP.Compute.Operations.warnings.code | string | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
+| GCP.Compute.Operations.warnings.message | string | The human-readable description of the warning code. |
+| GCP.Compute.Operations.warnings.data | unknown | The metadata about this warning, in key: value format. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP status code returned if the operation fails. For example, 404 indicates that the resource is not found. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Operations.description | string | The textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.operationGroupId | string | The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request. |
+| GCP.Compute.Operations.kind | string | The type of the resource, which is always compute\#operation for Operation resources. |
+
+### gcp-compute-region-operation-wait
+
+***
+Polls a regional Compute Engine operation until it reaches the DONE status. Required permission: compute.regionOperations.get.
+
+#### Base Command
+
+`gcp-compute-region-operation-wait`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The name of the region for this request. | Required |
+| operation_name | The name of the Operation resource to wait for. | Required |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The timeout, in seconds, until polling ends. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique identifier for the server-defined resource. |
+| GCP.Compute.Operations.name | string | The name of the resource. |
+| GCP.Compute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. |
+| GCP.Compute.Operations.clientOperationId | string | The value of the requestId field provided when the operation was created. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING, RUNNING or DONE. |
+| GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | The user who requested the operation, for example, EMAILADDRESS. |
+| GCP.Compute.Operations.progress | number | The optional progress indicator that ranges from 0 to 100. |
+| GCP.Compute.Operations.insertTime | string | The time that this operation was requested, in RFC3339 format. |
+| GCP.Compute.Operations.startTime | string | The time that this operation was started by the server, in RFC3339 format. |
+| GCP.Compute.Operations.endTime | string | The time that this operation was completed, in RFC3339 format. |
+| GCP.Compute.Operations.error.errors | unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
+| GCP.Compute.Operations.warnings.code | string | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
+| GCP.Compute.Operations.warnings.message | string | The human-readable description of the warning code. |
+| GCP.Compute.Operations.warnings.data | unknown | The metadata about this warning, in key: value format. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP status code returned if the operation fails. For example, 404 indicates that the resource is not found. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Operations.description | string | The textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.operationGroupId | string | The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request. |
+| GCP.Compute.Operations.kind | string | The type of the resource, which is always compute\#operation for Operation resources. |
+
+### gcp-compute-global-operation-wait
+
+***
+Polls a global Compute Engine operation until it reaches the DONE status. Required permission: compute.globalOperations.get.
+
+#### Base Command
+
+`gcp-compute-global-operation-wait`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| operation_name | The name of the Operation resource to wait for. | Required |
+| interval_in_seconds | The interval, in seconds, between polling attempts. Must be a positive number. Default is 30. | Optional |
+| polling_timeout | The timeout, in seconds, until polling ends. Must be a positive number. Default is 600. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique identifier for the server-defined resource. |
+| GCP.Compute.Operations.name | string | The name of the resource. |
+| GCP.Compute.Operations.clientOperationId | string | The value of the requestId field provided when the operation was created. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING, RUNNING or DONE. |
+| GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | The user who requested the operation, for example, EMAILADDRESS. |
+| GCP.Compute.Operations.progress | number | The optional progress indicator that ranges from 0 to 100. |
+| GCP.Compute.Operations.insertTime | string | The time that this operation was requested, in RFC3339 format. |
+| GCP.Compute.Operations.startTime | string | The time that this operation was started by the server, in RFC3339 format. |
+| GCP.Compute.Operations.endTime | string | The time that this operation was completed, in RFC3339 format. |
+| GCP.Compute.Operations.error.errors | unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
+| GCP.Compute.Operations.warnings.code | string | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
+| GCP.Compute.Operations.warnings.message | string | The human-readable description of the warning code. |
+| GCP.Compute.Operations.warnings.data | unknown | The metadata about this warning, in key: value format. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP status code returned if the operation fails. For example, 404 indicates that the resource is not found. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Operations.description | string | The textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.operationGroupId | string | The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request. |
+| GCP.Compute.Operations.kind | string | The type of the resource, which is always compute\#operation for Operation resources. |
+
 ### gcp-compute-networks-list
 
 ***
@@ -1611,6 +1822,39 @@ Retrieves a specific firewall rule by name. Required permission: compute.firewal
 | GCP.Compute.Firewalls.allowed | Unknown | Allowed tuples. |
 | GCP.Compute.Firewalls.denied | Unknown | Denied tuples. |
 | GCP.Compute.Firewalls.targetTags | Unknown | Target instance tags. |
+
+### gcp-compute-firewall-delete
+
+***
+Deletes the specified firewall rule. Required permission: compute.firewalls.delete.
+
+#### Base Command
+
+`gcp-compute-firewall-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_name | The name of the firewall rule to delete. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation resource, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation resource. |
+| GCP.Compute.Operations.kind | String | The type of the resource, for example compute\#operation. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.status | String | The current status of the operation. |
+| GCP.Compute.Operations.progress | Number | The progress of the operation as a percentage between 0 and 100. |
+| GCP.Compute.Operations.targetId | String | The unique target ID of the resource affected by the operation. |
+| GCP.Compute.Operations.targetLink | String | The URL of the target resource modified by the operation. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the operation resource. |
+| GCP.Compute.Operations.insertTime | Date | The date and time when the operation resource was created. |
+| GCP.Compute.Operations.startTime | Date | The date and time when the operation started running. |
+| GCP.Compute.Operations.user | String | The user account that performed the operation. |
 
 ### gcp-compute-snapshots-list
 
@@ -3046,3 +3290,403 @@ Changes the machine type of a stopped Compute Engine VM instance. Returns a zone
 | GCP.Compute.Operations.region | string | The URL of the region where the operation resides, available only for regional operations. This must be specified in the HTTP request URL and is not configurable in the request body. |
 | GCP.Compute.Operations.description | string | A textual description of the operation, which is set when the operation is created. |
 | GCP.Compute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. |
+
+### gcp-compute-image-delete
+
+***
+Deletes the specified image. Required permission: compute.images.delete.
+
+#### Base Command
+
+`gcp-compute-image-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| image | The name of the image resource to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### gcp-compute-images-list
+
+***
+Lists images in a specific project. Required permission: compute.images.list.
+
+#### Base Command
+
+`gcp-compute-images-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| limit | The maximum number of results to return. Can be 1 to 500. Default is 50. | Optional |
+| next_token | The token for the next set of items to return, used for pagination. | Optional |
+| filter | The filter expression for resources listed in the response. Must specify a field name, a comparison operator (=, !=, >, or <), and a value. | Optional |
+| order_by | The order used to sort list results. By default, results are returned in alphanumeric order based on the resource name. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Images.kind | String | The type of the resource. Always set to compute#image for images. |
+| GCP.Compute.Images.id | String | The unique identifier for the resource, defined by the server. |
+| GCP.Compute.Images.creationTimestamp | Date | The creation timestamp in RFC3339 format. |
+| GCP.Compute.Images.name | String | The name of the resource, provided by the client when the resource is created. |
+| GCP.Compute.Images.description | String | The optional description of this resource. |
+| GCP.Compute.Images.sourceType | String | The type of image used to create this disk. The default and only value is RAW. |
+| GCP.Compute.Images.rawDisk.source | String | The full Google Cloud Storage URL where the disk image is stored. |
+| GCP.Compute.Images.rawDisk.sha1Checksum | String | The optional SHA1 checksum of the disk image before unpackaging, provided by the client when the disk image is created. |
+| GCP.Compute.Images.rawDisk.containerType | String | The format used to encode and transmit the block device, which should be TAR. |
+| GCP.Compute.Images.deprecated.state | String | The deprecation state of this resource. Can be ACTIVE, DEPRECATED, OBSOLETE, or DELETED. |
+| GCP.Compute.Images.deprecated.replacement | String | The URL of the suggested replacement for a deprecated resource. |
+| GCP.Compute.Images.deprecated.deprecated | Date | The RFC3339 timestamp on or after which the state of this resource changes to DEPRECATED. |
+| GCP.Compute.Images.deprecated.obsolete | Date | The RFC3339 timestamp on or after which the state of this resource changes to OBSOLETE. |
+| GCP.Compute.Images.deprecated.deleted | Date | The RFC3339 timestamp on or after which the state of this resource changes to DELETED. |
+| GCP.Compute.Images.status | String | The status of the image. Can be FAILED, PENDING, or READY. |
+| GCP.Compute.Images.archiveSizeBytes | String | The size, in bytes, of the image tar.gz archive stored in Google Cloud Storage. |
+| GCP.Compute.Images.diskSizeGb | String | The size, in GB, of the image when restored onto a persistent disk. |
+| GCP.Compute.Images.sourceDisk | String | The URL of the source disk used to create this image. |
+| GCP.Compute.Images.sourceDiskId | String | The ID value of the disk used to create this image. |
+| GCP.Compute.Images.sourceDiskEncryptionKey.kmsKeyName | String | The name of the encryption key of the source disk that is stored in Google Cloud KMS. |
+| GCP.Compute.Images.sourceDiskEncryptionKey.sha256 | String | The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source disk. |
+| GCP.Compute.Images.sourceImage | String | The URL of the source image used to create this image. |
+| GCP.Compute.Images.sourceImageId | String | The ID value of the image used to create this image. |
+| GCP.Compute.Images.sourceImageEncryptionKey.kmsKeyName | String | The name of the encryption key of the source image that is stored in Google Cloud KMS. |
+| GCP.Compute.Images.sourceImageEncryptionKey.sha256 | String | The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source image. |
+| GCP.Compute.Images.sourceSnapshot | String | The URL of the source snapshot used to create this image. |
+| GCP.Compute.Images.sourceSnapshotId | String | The ID value of the snapshot used to create this image. |
+| GCP.Compute.Images.sourceSnapshotEncryptionKey.kmsKeyName | String | The name of the encryption key of the source snapshot that is stored in Google Cloud KMS. |
+| GCP.Compute.Images.sourceSnapshotEncryptionKey.sha256 | String | The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source snapshot. |
+| GCP.Compute.Images.imageEncryptionKey.kmsKeyName | String | The name of the encryption key of the image that is stored in Google Cloud KMS. |
+| GCP.Compute.Images.imageEncryptionKey.sha256 | String | The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the image. |
+| GCP.Compute.Images.licenses | String | The applicable license URIs. |
+| GCP.Compute.Images.licenseCodes | String | The integer license codes indicating which licenses are attached to this image. |
+| GCP.Compute.Images.family | String | The name of the image family to which this image belongs. |
+| GCP.Compute.Images.labels | Unknown | The labels applied to this image. |
+| GCP.Compute.Images.labelFingerprint | String | The fingerprint of the labels applied to this image, which is used for optimistic locking. |
+| GCP.Compute.Images.guestOsFeatures.type | String | The ID of the supported guest operating system feature. |
+| GCP.Compute.Images.shieldedInstanceInitialState | Unknown | The initial state for the image, which is used by Shielded VM instances on boot. |
+| GCP.Compute.Images.storageLocations | String | The Cloud Storage location, either regional or multi-regional, where the image content is stored. |
+| GCP.Compute.Images.architecture | String | The architecture of the image. Can be ARM64 or X86_64. |
+| GCP.Compute.Images.enableConfidentialCompute | Boolean | Whether the image is created from a confidential compute mode disk. |
+| GCP.Compute.Images.satisfiesPzs | Boolean | Whether the resource satisfies physical zone separation. |
+| GCP.Compute.Images.satisfiesPzi | Boolean | Whether the resource satisfies physical zone isolation. |
+| GCP.Compute.Images.selfLink | String | The server-defined URL for the resource. |
+| GCP.Compute.ImagesNextToken | String | The token to use as the next_token argument to retrieve the next page of results. |
+
+### gcp-compute-image-insert
+
+***
+Creates an image in the specified project using the data included in the request. Required permission: compute.images.create.
+
+#### Base Command
+
+`gcp-compute-image-insert`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| name | The name of the resource; provided by the client when the resource is created. | Required |
+| force_create | Whether to attempt to create the image even if OS features or license validation fails. Possible values are: true, false. | Optional |
+| description | The optional description of this resource. | Optional |
+| raw_disk_source | The full Google Cloud Storage URL where the disk image is stored. | Optional |
+| raw_disk_sha1_checksum | The optional SHA1 checksum of the disk image before unpackaging. | Optional |
+| raw_disk_container_type | The format used to encode and transmit the block device, which should be TAR. Possible values are: TAR. | Optional |
+| deprecated_state | The deprecation state of this resource. Can be ACTIVE, DEPRECATED, OBSOLETE, or DELETED. Possible values are: ACTIVE, DEPRECATED, OBSOLETE, DELETED. | Optional |
+| deprecated_replacement | The URL of the suggested replacement for a deprecated resource. | Optional |
+| archive_size_bytes | The size, in bytes, of the image tar.gz archive stored in Google Cloud Storage. | Optional |
+| disk_size_gb | The size, in GB, of the image when restored onto a persistent disk. | Optional |
+| source_disk | The URL of the source disk used to create this image. This property or the raw_disk_source property must be provided, but not both. | Optional |
+| licenses | A comma-separated list of applicable license URIs. | Optional |
+| family | The name of the image family to which this image belongs. | Optional |
+| image_encryption_key_raw_key | The 256-bit customer-supplied encryption key (RFC 4648 base64) for the image. | Optional |
+| image_encryption_key_kms_key_name | The name of the encryption key that is stored in Google Cloud KMS for the image. | Optional |
+| source_disk_encryption_key_raw_key | The 256-bit customer-supplied encryption key (RFC 4648 base64) of the source disk. | Optional |
+| source_disk_encryption_key_kms_key_name | The name of the encryption key stored in Google Cloud KMS of the source disk. | Optional |
+| labels | The list of labels to apply for this resource, in tuples, for example, key=abc,value=123;key=def,value=456. | Optional |
+| label_fingerprint | The fingerprint of the previous set of labels for this resource. | Optional |
+| guest_os_features | The comma-separated list of guest OS features to enable on the image. | Optional |
+| license_codes | The comma-separated list of integer license codes indicating which licenses are attached to this image. | Optional |
+| source_image | The URL of the source image used to create this image. | Optional |
+| source_image_encryption_key_kms_key_name | The name of the encryption key stored in Google Cloud KMS of the source image. | Optional |
+| source_snapshot | The URL of the source snapshot used to create this image. | Optional |
+| source_snapshot_encryption_key_raw_key | The 256-bit customer-supplied encryption key (RFC 4648 base64) of the source snapshot. | Optional |
+| source_snapshot_encryption_key_kms_key_name | The name of the encryption key stored in Google Cloud KMS of the source snapshot. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.kind | String | The type of the resource. Always set to compute#operation for operation resources. |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation resource, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation resource. |
+| GCP.Compute.Operations.zone | String | The URL of the zone where the operation resides. Only available when performing per-zone operations. |
+| GCP.Compute.Operations.clientOperationId | String | The value of requestId if it was provided in the request. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. |
+| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | String | The status of the operation. Can be PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | String | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | String | The user who requested the operation, for example EMAILADDRESS. |
+| GCP.Compute.Operations.progress | Number | The progress of the operation as a percentage from 0 to 100. |
+| GCP.Compute.Operations.insertTime | Date | The time the operation was requested, in RFC3339 format. |
+| GCP.Compute.Operations.startTime | Date | The time the operation was started by the server, in RFC3339 format. |
+| GCP.Compute.Operations.endTime | Date | The time the operation was completed, in RFC3339 format. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation. |
+| GCP.Compute.Operations.warnings | Unknown | The warning messages generated during the processing of the operation. |
+| GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code returned if the operation fails. |
+| GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
+| GCP.Compute.Operations.region | String | The URL of the region where the operation resides. Only available when performing regional operations. |
+| GCP.Compute.Operations.description | String | The textual description of the operation, which is set when the operation is created. |
+
+### gcp-compute-image-labels-set
+
+***
+Sets the labels on an image. Required permission: compute.images.setLabels.
+
+#### Base Command
+
+`gcp-compute-image-labels-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| image | The name of the image resource on which to set labels. | Required |
+| labels | The list of labels to apply to this resource, formatted as tuples, for example, key=abc,value=123;key=def,value=456. | Required |
+| label_fingerprint | The fingerprint of the previous set of labels for this resource, used to detect conflicts. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.kind | String | The type of the resource. Always set to compute#operation for operation resources. |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation resource, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation resource. |
+| GCP.Compute.Operations.zone | String | The URL of the zone where the operation resides. Only available when performing per-zone operations. |
+| GCP.Compute.Operations.clientOperationId | String | The value of the requestId if provided in the request. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. |
+| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | String | The status of the operation. Can be PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | String | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | String | The user who requested the operation, for example EMAILADDRESS. |
+| GCP.Compute.Operations.progress | Number | The progress of the operation as a percentage from 0 to 100. |
+| GCP.Compute.Operations.insertTime | Date | The time the operation was requested, in RFC3339 format. |
+| GCP.Compute.Operations.startTime | Date | The time the operation was started by the server, in RFC3339 format. |
+| GCP.Compute.Operations.endTime | Date | The time the operation was completed, in RFC3339 format. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation. |
+| GCP.Compute.Operations.warnings | Unknown | The warning messages generated during the processing of the operation. |
+| GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code returned if the operation fails. |
+| GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
+| GCP.Compute.Operations.region | String | The URL of the region where the operation resides. Only available when performing regional operations. |
+| GCP.Compute.Operations.description | String | The textual description of the operation, which is set when the operation is created. |
+
+### gcp-compute-image-get-from-family
+
+***
+Returns the latest non-deprecated image from an image family. Required permission: compute.images.get.
+
+#### Base Command
+
+`gcp-compute-image-get-from-family`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration. | Optional |
+| family | The name of the image family to search for. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Images.kind | String | The type of the resource. Always set to compute#image for images. |
+| GCP.Compute.Images.id | String | The unique identifier for the resource, defined by the server. |
+| GCP.Compute.Images.creationTimestamp | Date | The creation timestamp in RFC3339 format. |
+| GCP.Compute.Images.name | String | The name of the resource, provided by the client when the resource is created. |
+| GCP.Compute.Images.description | String | The optional description of this resource. |
+| GCP.Compute.Images.sourceType | String | The type of image used to create this disk. The default and only value is RAW. |
+| GCP.Compute.Images.rawDisk.source | String | The full Google Cloud Storage URL where the disk image is stored. |
+| GCP.Compute.Images.rawDisk.sha1Checksum | String | The optional SHA1 checksum of the disk image before unpackaging, provided by the client when the disk image is created. |
+| GCP.Compute.Images.rawDisk.containerType | String | The format used to encode and transmit the block device, which should be TAR. |
+| GCP.Compute.Images.deprecated.state | String | The deprecation state of this resource. Can be ACTIVE, DEPRECATED, OBSOLETE, or DELETED. |
+| GCP.Compute.Images.deprecated.replacement | String | The URL of the suggested replacement for a deprecated resource. |
+| GCP.Compute.Images.deprecated.deprecated | Date | The RFC3339 timestamp on or after which the state of this resource changes to DEPRECATED. |
+| GCP.Compute.Images.deprecated.obsolete | Date | The RFC3339 timestamp on or after which the state of this resource changes to OBSOLETE. |
+| GCP.Compute.Images.deprecated.deleted | Date | The RFC3339 timestamp on or after which the state of this resource changes to DELETED. |
+| GCP.Compute.Images.status | String | The status of the image. Can be FAILED, PENDING, or READY. |
+| GCP.Compute.Images.archiveSizeBytes | String | The size, in bytes, of the tar.gz image archive stored in Google Cloud Storage. |
+| GCP.Compute.Images.diskSizeGb | String | The size of the image in GB when restored onto a persistent disk. |
+| GCP.Compute.Images.sourceDisk | String | The URL of the source disk used to create this image. |
+| GCP.Compute.Images.sourceDiskId | String | The ID value of the disk used to create this image. |
+| GCP.Compute.Images.sourceDiskEncryptionKey.kmsKeyName | String | The name of the encryption key of the source disk that is stored in Google Cloud KMS. |
+| GCP.Compute.Images.sourceDiskEncryptionKey.sha256 | String | The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source disk. |
+| GCP.Compute.Images.sourceImage | String | The URL of the source image used to create this image. |
+| GCP.Compute.Images.sourceImageId | String | The ID value of the image used to create this image. |
+| GCP.Compute.Images.sourceImageEncryptionKey.kmsKeyName | String | The name of the encryption key of the source image that is stored in Google Cloud KMS. |
+| GCP.Compute.Images.sourceImageEncryptionKey.sha256 | String | The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source image. |
+| GCP.Compute.Images.sourceSnapshot | String | The URL of the source snapshot used to create this image. |
+| GCP.Compute.Images.sourceSnapshotId | String | The ID value of the snapshot used to create this image. |
+| GCP.Compute.Images.sourceSnapshotEncryptionKey.kmsKeyName | String | The name of the encryption key of the source snapshot that is stored in Google Cloud KMS. |
+| GCP.Compute.Images.sourceSnapshotEncryptionKey.sha256 | String | The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source snapshot. |
+| GCP.Compute.Images.imageEncryptionKey.kmsKeyName | String | The name of the encryption key of the image that is stored in Google Cloud KMS. |
+| GCP.Compute.Images.imageEncryptionKey.sha256 | String | The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the image. |
+| GCP.Compute.Images.licenses | String | The applicable license URIs. |
+| GCP.Compute.Images.licenseCodes | String | The integer license codes indicating which licenses are attached to this image. |
+| GCP.Compute.Images.family | String | The name of the image family to which this image belongs. |
+| GCP.Compute.Images.labels | Unknown | The labels applied to this image. |
+| GCP.Compute.Images.labelFingerprint | String | The fingerprint of the labels applied to this image, which is used for optimistic locking. |
+| GCP.Compute.Images.guestOsFeatures.type | String | The ID of the supported guest operating system feature. |
+| GCP.Compute.Images.shieldedInstanceInitialState | Unknown | The initial state for the image, which is used by Shielded VM instances on boot. |
+| GCP.Compute.Images.storageLocations | String | The Cloud Storage location, either regional or multi-regional, where the image content is stored. |
+| GCP.Compute.Images.architecture | String | The architecture of the image. Can be ARM64 or X86_64. |
+| GCP.Compute.Images.enableConfidentialCompute | Boolean | Whether the image is created from a confidential compute mode disk. |
+| GCP.Compute.Images.satisfiesPzs | Boolean | Whether the resource satisfies physical zone separation. |
+| GCP.Compute.Images.satisfiesPzi | Boolean | Whether the resource satisfies physical zone isolation. |
+| GCP.Compute.Images.selfLink | String | The server-defined URL for the resource. |
+
+### gcp-compute-network-delete
+
+***
+Deletes the specified network. Required permission: compute.networks.delete.
+
+#### Base Command
+
+`gcp-compute-network-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| network | The name of the network to delete. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique server-defined identifier for the resource. |
+| GCP.Compute.Operations.name | string | The name of the resource. |
+| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. Only available when performing per-zone operations. Must be specified as part of the HTTP request URL and cannot be set as a field in the request body. |
+| GCP.Compute.Operations.clientOperationId | string | The value of the requestId if provided in the request. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING RUNNING or DONE. |
+| GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | The user who requested the operation, for example, EMAILADDRESS. |
+| GCP.Compute.Operations.progress | number | The progress indicator, ranging from 0 to 100. There is no requirement that this be linear or support any granularity of operations. Must not be used to guess when the operation will be completed. This number monotonically increases as the operation progresses. |
+| GCP.Compute.Operations.insertTime | string | The time that this operation was requested, in RFC3339 format. |
+| GCP.Compute.Operations.startTime | string | The time that this operation was started by the server, in RFC3339 format. |
+| GCP.Compute.Operations.endTime | string | The time that this operation was completed, in RFC3339 format. |
+| GCP.Compute.Operations.error | string | The errors generated during processing of the operation, if any. Populated when errors occur. |
+| GCP.Compute.Operations.warnings | string | The warning messages generated during processing of the operation, if any. Populated when warnings occur. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that is returned if the operation fails. For example, a 404 means the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that is returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. Must be specified as part of the HTTP request URL and cannot be set as a field in the request body. |
+| GCP.Compute.Operations.description | string | The textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.kind | string | The type of the resource, which is always compute\#operation for Operation resources. |
+
+### gcp-compute-network-peering-add
+
+***
+Adds a peering connection to the specified network. Required permission: compute.networks.addPeering.
+
+#### Base Command
+
+`gcp-compute-network-peering-add`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| network | The name of the network resource to which to add a peering connection. | Required |
+| name | The name of the peering connection. The name must comply with RFC1035 (the Internet standard for domain name syntax and conventions). Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required |
+| peer_network | The URL of the peer network. Can be a full URL or a partial URL. The peer network can belong to a different project. If the partial URL does not contain a project, the peer network is assumed to be in the same project as the current network. | Required |
+| exchange_subnet_routes | Whether full mesh connectivity is created and managed automatically between peered networks. Currently, this field should always be set to true because Google Compute Engine automatically creates and manages subnetwork routes between two networks when the peering state is ACTIVE. Possible values are: true, false. Default is true. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique server-defined identifier for the resource. |
+| GCP.Compute.Operations.name | string | The name of the resource. |
+| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. Only available when performing per-zone operations. Must be specified as part of the HTTP request URL and cannot be set as a field in the request body. |
+| GCP.Compute.Operations.clientOperationId | string | The value of the requestId if provided in the request. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING RUNNING or DONE. |
+| GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | The user who requested the operation, for example, EMAILADDRESS. |
+| GCP.Compute.Operations.progress | number | The progress indicator, ranging from 0 to 100. There is no requirement that this be linear or support any granularity of operations. Must not be used to guess when the operation will be completed. This number monotonically increases as the operation progresses. |
+| GCP.Compute.Operations.insertTime | string | The date and time when the operation was requested, in RFC3339 format; for example, 2024-01-15T12:34:56Z. |
+| GCP.Compute.Operations.startTime | string | The time that this operation was started by the server, in RFC3339 format. |
+| GCP.Compute.Operations.endTime | string | The time that this operation was completed, in RFC3339 format. |
+| GCP.Compute.Operations.error | string | The errors generated during processing of the operation, if any. Populated when errors occur. |
+| GCP.Compute.Operations.warnings | string | The warning messages generated during processing of the operation, if any. Populated when warnings occur. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that is returned if the operation fails. For example, a 404 means the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that is returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. Must be specified as part of the HTTP request URL and cannot be set as a field in the request body. |
+| GCP.Compute.Operations.description | string | The textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.kind | string | The type of the resource, which is always compute\#operation for Operation resources. |
+
+### gcp-compute-network-peering-remove
+
+***
+Removes a peering connection from the specified network. Required permission: compute.networks.removePeering.
+
+#### Base Command
+
+`gcp-compute-network-peering-remove`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| network | The name of the network resource from which to remove the peering connection. | Required |
+| name | The name of the peering connection to remove. The name must comply with RFC1035 (the Internet standard for domain name syntax and conventions). Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique server-defined identifier for the resource. |
+| GCP.Compute.Operations.name | string | The name of the resource. |
+| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. Only available when performing per-zone operations. Must be specified as part of the HTTP request URL and cannot be set as a field in the request body. |
+| GCP.Compute.Operations.clientOperationId | string | The value of the requestId if provided in the request. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING RUNNING or DONE. |
+| GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | The user who requested the operation, for example, EMAILADDRESS. |
+| GCP.Compute.Operations.progress | number | The progress indicator, ranging from 0 to 100. There is no requirement that this be linear or support any granularity of operations. Must not be used to guess when the operation will be completed. This number monotonically increases as the operation progresses. |
+| GCP.Compute.Operations.insertTime | string | The time that this operation was requested, in RFC3339 format. |
+| GCP.Compute.Operations.startTime | string | The time that this operation was started by the server, in RFC3339 format. |
+| GCP.Compute.Operations.endTime | string | The time that this operation was completed, in RFC3339 format. |
+| GCP.Compute.Operations.error | string | The errors generated during processing of the operation, if any. Populated when errors occur. |
+| GCP.Compute.Operations.warnings | string | The warning messages generated during processing of the operation, if any. Populated when warnings occur. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that is returned if the operation fails. For example, a 404 means the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that is returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. Must be specified as part of the HTTP request URL and cannot be set as a field in the request body. |
+| GCP.Compute.Operations.description | string | The textual description of the operation, which is set when the operation is created. |
+| GCP.Compute.Operations.kind | string | The type of the resource, which is always compute\#operation for Operation resources. |

@@ -43,6 +43,11 @@ PLATFORM_STANDARD_ARGS = {"project_id", "account_id"}
 # but the entry is built by the platform, so no handler prefix exists to match.
 PLATFORM_STANDARD_OUTPUT_PREFIXES = {"File"}
 
+# Polling arguments consumed by the @polling_function decorator (and the shared
+# polling-args validation helper) rather than by the handler body itself. They are
+# exempt from the per-handler verbatim arg check.
+POLLING_STANDARD_ARGS = {"interval_in_seconds", "polling_timeout", "hide_polling_output"}
+
 
 def test_parse_firewall_rule_valid_input():
     """
@@ -399,6 +404,320 @@ def test_compute_snapshot_get_found_and_not_found(mocker):
     mock_snapshots.get.return_value.execute.side_effect = error
     res2 = compute_snapshot_get(mock_creds, {"project_id": "p1", "resource_name": "snap-2"})
     assert "not found" in res2.readable_output
+
+
+def test_compute_firewall_delete_success(mocker):
+    """
+    Given: A project ID and a firewall rule name
+    When: compute_firewall_delete is called
+    Then: The delete request is issued with the given project and firewall, and the operation is returned
+    """
+    from GCP import compute_firewall_delete
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_firewalls = mocker.Mock()
+    mock_compute.firewalls.return_value = mock_firewalls
+    mock_firewalls.delete.return_value.execute.return_value = {"id": "op-1", "status": "RUNNING", "operationType": "delete"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_firewall_delete(mock_creds, {"project_id": "p1", "resource_name": "fw-1"})
+
+    mock_firewalls.delete.assert_called_once_with(project="p1", firewall="fw-1")
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+    assert res.outputs_key_field == "id"
+    assert res.outputs == {"id": "op-1", "status": "RUNNING", "operationType": "delete"}
+    assert "fw-1" in res.readable_output
+
+
+def test_compute_firewall_delete_empty_response(mocker):
+    """
+    Given: A GCP API that returns an empty operation body
+    When: compute_firewall_delete is called
+    Then: CommandResults is still returned with the empty response and no exception is raised
+    """
+    from GCP import compute_firewall_delete
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_firewalls = mocker.Mock()
+    mock_compute.firewalls.return_value = mock_firewalls
+    mock_firewalls.delete.return_value.execute.return_value = {}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_firewall_delete(mock_creds, {"project_id": "p1", "resource_name": "fw-1"})
+
+    assert res.outputs == {}
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+
+
+def test_compute_firewall_delete_permission_error_propagates(mocker):
+    """
+    Given: A GCP API that raises a 403 HttpError
+    When: compute_firewall_delete is called
+    Then: The HttpError propagates so main() can map it to a permission error
+    """
+    from GCP import compute_firewall_delete
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_firewalls = mocker.Mock()
+    mock_compute.firewalls.return_value = mock_firewalls
+    resp = mocker.MagicMock()
+    resp.status = 403
+    mock_firewalls.delete.return_value.execute.side_effect = HttpError(
+        resp, b'{"error": {"message": "Required compute.firewalls.delete permission"}}'
+    )
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    with pytest.raises(HttpError):
+        compute_firewall_delete(mock_creds, {"project_id": "p1", "resource_name": "fw-1"})
+
+
+def test_compute_snapshot_delete_success(mocker):
+    """
+    Given: A project ID and a snapshot name
+    When: compute_snapshot_delete is called
+    Then: The delete request is issued with the given project and snapshot, and the operation is returned
+    """
+    from GCP import compute_snapshot_delete
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+    mock_snapshots.delete.return_value.execute.return_value = {"id": "op-2", "status": "PENDING", "operationType": "delete"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_snapshot_delete(mock_creds, {"project_id": "p1", "resource_name": "snap-1"})
+
+    mock_snapshots.delete.assert_called_once_with(project="p1", snapshot="snap-1")
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+    assert res.outputs == {"id": "op-2", "status": "PENDING", "operationType": "delete"}
+    assert "snap-1" in res.readable_output
+
+
+def test_compute_snapshot_delete_empty_response(mocker):
+    """
+    Given: A GCP API that returns an empty operation body
+    When: compute_snapshot_delete is called
+    Then: CommandResults is still returned with the empty response and no exception is raised
+    """
+    from GCP import compute_snapshot_delete
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+    mock_snapshots.delete.return_value.execute.return_value = {}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_snapshot_delete(mock_creds, {"project_id": "p1", "resource_name": "snap-1"})
+
+    assert res.outputs == {}
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+
+
+def test_compute_snapshot_delete_not_found_error_propagates(mocker):
+    """
+    Given: A GCP API that raises a 404 HttpError for a missing snapshot
+    When: compute_snapshot_delete is called
+    Then: The HttpError propagates to main() instead of being swallowed
+    """
+    from GCP import compute_snapshot_delete
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+    resp = mocker.MagicMock()
+    resp.status = 404
+    mock_snapshots.delete.return_value.execute.side_effect = HttpError(
+        resp, b'{"error": {"message": "The resource snap-2 was not found"}}'
+    )
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    with pytest.raises(HttpError):
+        compute_snapshot_delete(mock_creds, {"project_id": "p1", "resource_name": "snap-2"})
+
+
+def test_compute_snapshot_labels_set_override(mocker):
+    """
+    Given: Labels and a fingerprint with add_labels left at its default
+    When: compute_snapshot_labels_set is called
+    Then: The body contains only the new labels, overriding the existing ones
+    """
+    from GCP import compute_snapshot_labels_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+    mock_snapshots.setLabels.return_value.execute.return_value = {"id": "op-3", "status": "RUNNING"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "p1",
+        "resource_name": "snap-1",
+        "labels": "key=env,value=prod",
+        "label_fingerprint": "fp-123",
+    }
+    res = compute_snapshot_labels_set(mock_creds, args)
+
+    called_kwargs = mock_snapshots.setLabels.call_args[1]
+    assert called_kwargs["project"] == "p1"
+    assert called_kwargs["resource"] == "snap-1"
+    assert called_kwargs["body"] == {"labels": {"env": "prod"}, "labelFingerprint": "fp-123"}
+    mock_snapshots.get.assert_not_called()
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+
+
+def test_compute_snapshot_labels_set_add_merges_existing(mocker):
+    """
+    Given: add_labels set to true and a snapshot that already has labels and a fresh fingerprint
+    When: compute_snapshot_labels_set is called
+    Then: The existing labels are fetched and merged with the new ones, and the fingerprint of the
+          fetched snapshot is used instead of the supplied one
+    """
+    from GCP import compute_snapshot_labels_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+    mock_snapshots.get.return_value.execute.return_value = {
+        "name": "snap-1",
+        "labels": {"owner": "team-a"},
+        "labelFingerprint": "fp-fresh",
+    }
+    mock_snapshots.setLabels.return_value.execute.return_value = {"id": "op-3", "status": "RUNNING"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "p1",
+        "resource_name": "snap-1",
+        "labels": "key=env,value=prod",
+        "label_fingerprint": "fp-stale",
+        "add_labels": "true",
+    }
+    compute_snapshot_labels_set(mock_creds, args)
+
+    body = mock_snapshots.setLabels.call_args[1]["body"]
+    assert body["labels"] == {"owner": "team-a", "env": "prod"}
+    assert body["labelFingerprint"] == "fp-fresh"
+    mock_snapshots.get.assert_called_once_with(project="p1", snapshot="snap-1")
+
+
+def test_compute_snapshot_labels_set_add_falls_back_to_supplied_fingerprint(mocker):
+    """
+    Given: add_labels set to true and a snapshot response that has no labelFingerprint
+    When: compute_snapshot_labels_set is called
+    Then: The supplied fingerprint is used
+    """
+    from GCP import compute_snapshot_labels_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+    mock_snapshots.get.return_value.execute.return_value = {"name": "snap-1", "labels": {"owner": "team-a"}}
+    mock_snapshots.setLabels.return_value.execute.return_value = {"id": "op-3", "status": "RUNNING"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "p1",
+        "resource_name": "snap-1",
+        "labels": "key=env,value=prod",
+        "label_fingerprint": "fp-123",
+        "add_labels": "true",
+    }
+    compute_snapshot_labels_set(mock_creds, args)
+
+    assert mock_snapshots.setLabels.call_args[1]["body"]["labelFingerprint"] == "fp-123"
+
+
+def test_compute_snapshot_labels_set_invalid_labels(mocker):
+    """
+    Given: A malformed labels string
+    When: compute_snapshot_labels_set is called
+    Then: A ValueError is raised and no API call is made
+    """
+    from GCP import compute_snapshot_labels_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {"project_id": "p1", "resource_name": "snap-1", "labels": "wrong=format", "label_fingerprint": "fp-123"}
+    with pytest.raises(ValueError) as e:
+        compute_snapshot_labels_set(mock_creds, args)
+
+    assert "Could not parse field" in str(e.value)
+    mock_compute.snapshots.return_value.setLabels.assert_not_called()
+
+
+def test_compute_snapshot_labels_set_add_snapshot_not_found(mocker):
+    """
+    Given: add_labels set to true and a snapshot that does not exist
+    When: compute_snapshot_labels_set is called
+    Then: The "not found" result of compute_snapshot_get is returned and no setLabels call is made
+    """
+    from GCP import compute_snapshot_labels_set
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_snapshots = mocker.Mock()
+    mock_compute.snapshots.return_value = mock_snapshots
+    resp = mocker.MagicMock()
+    resp.status = 404
+    mock_snapshots.get.return_value.execute.side_effect = HttpError(
+        resp, b'{"error": {"message": "The resource snap-1 was not found"}}'
+    )
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "p1",
+        "resource_name": "snap-1",
+        "labels": "key=env,value=prod",
+        "add_labels": "true",
+    }
+    res = compute_snapshot_labels_set(mock_creds, args)
+
+    assert res.readable_output == "Snapshot 'snap-1' not found in project 'p1'"
+    mock_snapshots.setLabels.assert_not_called()
+
+
+def test_compute_snapshot_labels_set_override_without_fingerprint(mocker):
+    """
+    Given: add_labels left at its default and no label_fingerprint
+    When: compute_snapshot_labels_set is called
+    Then: A DemistoException is raised and no API call is made
+    """
+    from GCP import DemistoException, compute_snapshot_labels_set
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    args = {"project_id": "p1", "resource_name": "snap-1", "labels": "key=env,value=prod"}
+    with pytest.raises(DemistoException) as e:
+        compute_snapshot_labels_set(mock_creds, args)
+
+    assert "label_fingerprint" in str(e.value)
+    mock_compute.snapshots.return_value.setLabels.assert_not_called()
 
 
 def test_compute_instances_aggregated_list_by_ip_internal(mocker):
@@ -3134,6 +3453,176 @@ def test_storage_bucket_objects_list_merges_with_context(mocker):
         {"name": "o1", "bucket": "b1", "size": "2"},
         {"name": "o2", "bucket": "b1", "size": "3"},
     ]
+
+
+def test_merge_context_items_flat_layout_replaces_and_appends(mocker):
+    """
+    Given:
+        - A context path holding a flat list of items, one of which is returned again by the new page.
+    When:
+        - _merge_context_items is called without items_key (flat layout).
+    Then:
+        - The already-known item is replaced by the fresh version, the unseen item is appended,
+          and the original ordering is preserved.
+    """
+    # Given
+    from GCP import _merge_context_items
+
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={"GCP": {"Compute": {"Firewall": [{"name": "f1", "size": "1"}, {"name": "f2", "size": "2"}]}}},
+    )
+
+    # When
+    merged = _merge_context_items("GCP.Compute.Firewall", [{"name": "f1", "size": "9"}, {"name": "f3", "size": "3"}])
+
+    # Then
+    assert merged == [
+        {"name": "f1", "size": "9"},
+        {"name": "f2", "size": "2"},
+        {"name": "f3", "size": "3"},
+    ]
+
+
+def test_merge_context_items_flat_layout_with_custom_id_key(mocker):
+    """
+    Given:
+        - A context path holding items identified by "id" rather than the default "name".
+    When:
+        - _merge_context_items is called with id_key="id".
+    Then:
+        - Items are de-duplicated by "id", so the existing entry is replaced instead of duplicated.
+    """
+    # Given
+    from GCP import _merge_context_items
+
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={"GCP": {"Compute": {"Snapshots": [{"id": "s1", "name": "old"}]}}},
+    )
+
+    # When
+    merged = _merge_context_items(
+        "GCP.Compute.Snapshots",
+        [{"id": "s1", "name": "new"}, {"id": "s2", "name": "second"}],
+        id_key="id",
+    )
+
+    # Then
+    assert merged == [{"id": "s1", "name": "new"}, {"id": "s2", "name": "second"}]
+
+
+def test_merge_context_items_flat_layout_normalizes_single_dict(mocker):
+    """
+    Given:
+        - A context path holding a single item as a dict rather than a list.
+    When:
+        - _merge_context_items is called.
+    Then:
+        - The single dict is treated as a one-item list and merged rather than being discarded.
+    """
+    # Given
+    from GCP import _merge_context_items
+
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={"GCP": {"Compute": {"Firewall": {"name": "f1", "size": "1"}}}},
+    )
+
+    # When
+    merged = _merge_context_items("GCP.Compute.Firewall", [{"name": "f2", "size": "2"}])
+
+    # Then
+    assert merged == [{"name": "f1", "size": "1"}, {"name": "f2", "size": "2"}]
+
+
+def test_merge_context_items_nested_layout_merges_only_matching_parent(mocker):
+    """
+    Given:
+        - A context path holding parent entries, each nesting its own items list.
+    When:
+        - _merge_context_items is called with items_key, parent_id_key and parent_id_value.
+    Then:
+        - Only the items of the matching parent are merged, and items of other parents are ignored.
+    """
+    # Given
+    from GCP import _merge_context_items
+
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={
+            "GCP": {
+                "Storage": {
+                    "Buckets": [
+                        {"name": "b1", "Objects": [{"name": "o1", "size": "1"}]},
+                        {"name": "b2", "Objects": [{"name": "other", "size": "9"}]},
+                    ]
+                }
+            }
+        },
+    )
+
+    # When
+    merged = _merge_context_items(
+        "GCP.Storage.Buckets",
+        [{"name": "o2", "size": "2"}],
+        items_key="Objects",
+        parent_id_key="name",
+        parent_id_value="b1",
+    )
+
+    # Then
+    assert merged == [{"name": "o1", "size": "1"}, {"name": "o2", "size": "2"}]
+
+
+def test_merge_context_items_when_context_is_empty_returns_new_items_only(mocker):
+    """
+    Given:
+        - An empty context, as on the very first page of a paginated command.
+    When:
+        - _merge_context_items is called.
+    Then:
+        - Only the newly fetched items are returned, with no error raised.
+    """
+    # Given
+    from GCP import _merge_context_items
+
+    mocker.patch.object(demisto, "context", return_value={})
+
+    # When
+    merged = _merge_context_items("GCP.Storage.Buckets", [{"name": "o1"}])
+
+    # Then
+    assert merged == [{"name": "o1"}]
+
+
+def test_merge_context_items_skips_malformed_entries_and_items_without_id(mocker):
+    """
+    Given:
+        - A context containing a non-dict entry, and new items where one is missing the identifying key.
+    When:
+        - _merge_context_items is called.
+    Then:
+        - The malformed context entry and the unidentifiable item are skipped instead of raising.
+    """
+    # Given
+    from GCP import _merge_context_items
+
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={"GCP": {"Compute": {"Firewall": ["not-a-dict", {"name": "f1"}, {"no_name": "x"}]}}},
+    )
+
+    # When
+    merged = _merge_context_items("GCP.Compute.Firewall", [{"name": "f2"}, {"no_name": "y"}])
+
+    # Then
+    assert merged == [{"name": "f1"}, {"name": "f2"}]
 
 
 def test_storage_bucket_policy_list_with_version(mocker):
@@ -6741,6 +7230,413 @@ def test_get_credentials_marketplace_no_project_id_anywhere_raises(mocker):
         get_credentials(args, params)
 
 
+@pytest.mark.parametrize(
+    "region_input, expected_region",
+    [
+        ("us-central1", "us-central1"),
+        ("  us-central1  ", "us-central1"),
+        ("https://www.googleapis.com/compute/v1/projects/test-project/regions/us-central1", "us-central1"),
+    ],
+)
+def test_extract_region_name_valid_input(region_input, expected_region):
+    """
+    Given: A bare region name, a padded region name or a full GCP region URL.
+    When: extract_region_name is called.
+    Then: The bare region name is returned.
+    """
+    from GCP import extract_region_name
+
+    assert extract_region_name(region_input) == expected_region
+
+
+@pytest.mark.parametrize("region_input", [None, "", "   "])
+def test_extract_region_name_empty_input_raises(region_input):
+    """
+    Given: An empty, blank or missing region input.
+    When: extract_region_name is called.
+    Then: A DemistoException is raised.
+    """
+    from GCP import extract_region_name, DemistoException
+
+    with pytest.raises(DemistoException, match="The region argument cannot be empty"):
+        extract_region_name(region_input)
+
+
+@pytest.mark.parametrize(
+    "polling_args",
+    [
+        {},
+        {"interval_in_seconds": "15", "polling_timeout": "120"},
+    ],
+)
+def test_validate_polling_args_valid_input(polling_args):
+    """
+    Given: Missing polling arguments, or positive interval_in_seconds and polling_timeout arguments.
+    When: _validate_polling_args is called.
+    Then: No exception is raised.
+    """
+    from GCP import _validate_polling_args
+
+    _validate_polling_args(polling_args)
+
+
+@pytest.mark.parametrize(
+    "polling_args, expected_error",
+    [
+        ({"interval_in_seconds": "-5"}, "The interval_in_seconds argument must be a positive number"),
+        ({"polling_timeout": "-1"}, "The polling_timeout argument must be a positive number"),
+    ],
+)
+def test_validate_polling_args_non_positive_input_raises(polling_args, expected_error):
+    """
+    Given: A negative interval_in_seconds or polling_timeout argument.
+    When: _validate_polling_args is called.
+    Then: A DemistoException naming the invalid argument is raised.
+    """
+    from GCP import _validate_polling_args, DemistoException
+
+    with pytest.raises(DemistoException, match=expected_error):
+        _validate_polling_args(polling_args)
+
+
+# gcp-compute-zone-operation-wait / gcp-compute-region-operation-wait / gcp-compute-global-operation-wait
+def test_gcp_compute_zone_operation_wait_done(mocker):
+    """
+    Given: A mocked GCP compute client returning a zonal operation with a DONE status.
+    When: gcp_compute_zone_operation_wait is called.
+    Then: The operation is returned under GCP.Compute.Operations without scheduling another poll.
+    """
+    from GCP import gcp_compute_zone_operation_wait
+
+    mock_response = {
+        "id": "op-1",
+        "kind": "compute#operation",
+        "name": "operation-123",
+        "operationType": "insert",
+        "progress": 100,
+        "zone": "https://www.googleapis.com/compute/v1/projects/test-project/zones/us-central1-a",
+        "status": "DONE",
+    }
+
+    mock_compute = mocker.Mock()
+    mock_zone_operations = mocker.Mock()
+    mock_compute.zoneOperations.return_value = mock_zone_operations
+    mock_zone_operations.get.return_value.execute.return_value = mock_response
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "operation_name": "operation-123"}
+    result = gcp_compute_zone_operation_wait(args, mock_creds)
+
+    mock_zone_operations.get.assert_called_once_with(project="test-project", zone="us-central1-a", operation="operation-123")
+    assert result.scheduled_command is None
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
+    assert "operation-123 completed successfully" in result.readable_output
+
+
+def test_gcp_compute_zone_operation_wait_not_done_schedules_poll(mocker):
+    """
+    Given: A mocked GCP compute client returning a zonal operation with a RUNNING status.
+    When: gcp_compute_zone_operation_wait is called.
+    Then: A ScheduledCommand is returned so the command polls again with the same arguments.
+    """
+    from GCP import DEFAULT_INTERVAL_IN_SECONDS, DEFAULT_TIMEOUT_POLLING_COMMAND, gcp_compute_zone_operation_wait
+
+    mock_compute = mocker.Mock()
+    mock_zone_operations = mocker.Mock()
+    mock_compute.zoneOperations.return_value = mock_zone_operations
+    mock_zone_operations.get.return_value.execute.return_value = {"name": "operation-123", "status": "RUNNING"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "operation_name": "operation-123",
+    }
+    result = gcp_compute_zone_operation_wait(args, mock_creds)
+
+    assert result.scheduled_command is not None
+    assert result.scheduled_command._command == "gcp-compute-zone-operation-wait"
+    assert result.scheduled_command._args == args
+    # The polling_function decorator hides the polling message on the following runs.
+    assert args["hide_polling_output"] is True
+    assert result.scheduled_command._next_run == str(DEFAULT_INTERVAL_IN_SECONDS)
+    assert result.scheduled_command._timeout == str(DEFAULT_TIMEOUT_POLLING_COMMAND)
+    assert "Current status: RUNNING" in result.readable_output
+
+
+def test_gcp_compute_zone_operation_wait_done_with_error_raises(mocker):
+    """
+    Given: A mocked GCP compute client returning a DONE zonal operation carrying an error.
+    When: gcp_compute_zone_operation_wait is called.
+    Then: A DemistoException is raised describing the operation failure.
+    """
+    from GCP import gcp_compute_zone_operation_wait, DemistoException
+
+    mock_compute = mocker.Mock()
+    mock_zone_operations = mocker.Mock()
+    mock_compute.zoneOperations.return_value = mock_zone_operations
+    mock_zone_operations.get.return_value.execute.return_value = {
+        "name": "operation-123",
+        "status": "DONE",
+        "error": {"errors": [{"code": "RESOURCE_NOT_FOUND", "message": "The resource was not found."}]},
+    }
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "operation_name": "operation-123"}
+
+    with pytest.raises(DemistoException, match="Operation operation-123 completed with an error"):
+        gcp_compute_zone_operation_wait(args, mock_creds)
+
+
+def test_gcp_compute_zone_operation_wait_extracts_zone_from_url(mocker):
+    """
+    Given: A zone provided as a full GCP URL rather than a bare zone name.
+    When: gcp_compute_zone_operation_wait is called.
+    Then: Only the zone name is sent to the API.
+    """
+    from GCP import gcp_compute_zone_operation_wait
+
+    mock_compute = mocker.Mock()
+    mock_zone_operations = mocker.Mock()
+    mock_compute.zoneOperations.return_value = mock_zone_operations
+    mock_zone_operations.get.return_value.execute.return_value = {"name": "operation-123", "status": "DONE"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "test-project",
+        "zone": "https://www.googleapis.com/compute/v1/projects/test-project/zones/us-central1-a",
+        "operation_name": "operation-123",
+    }
+    gcp_compute_zone_operation_wait(args, mock_creds)
+
+    mock_zone_operations.get.assert_called_once_with(project="test-project", zone="us-central1-a", operation="operation-123")
+
+
+@pytest.mark.parametrize(
+    "polling_args, expected_error",
+    [
+        ({"interval_in_seconds": "-5"}, "The interval_in_seconds argument must be a positive number"),
+        ({"polling_timeout": "-1"}, "The polling_timeout argument must be a positive number"),
+    ],
+)
+def test_gcp_compute_zone_operation_wait_non_positive_polling_args_raise(mocker, polling_args, expected_error):
+    """
+    Given: A negative interval_in_seconds or polling_timeout argument.
+    When: gcp_compute_zone_operation_wait is called.
+    Then: A DemistoException is raised and no API call is made.
+    """
+    from GCP import gcp_compute_zone_operation_wait, DemistoException
+
+    mock_compute = mocker.Mock()
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "operation_name": "operation-123"} | polling_args
+
+    with pytest.raises(DemistoException, match=expected_error):
+        gcp_compute_zone_operation_wait(args, mock_creds)
+    mock_compute.zoneOperations.assert_not_called()
+
+
+def test_gcp_compute_region_operation_wait_done(mocker):
+    """
+    Given: A mocked GCP compute client returning a regional operation with a DONE status.
+    When: gcp_compute_region_operation_wait is called.
+    Then: The operation is returned under GCP.Compute.Operations without scheduling another poll,
+          and the region is included in the readable output.
+    """
+    from GCP import gcp_compute_region_operation_wait
+
+    mock_response = {
+        "id": "op-2",
+        "name": "operation-456",
+        "status": "DONE",
+        "operationType": "delete",
+        "region": "https://www.googleapis.com/compute/v1/projects/test-project/regions/us-central1",
+    }
+
+    mock_compute = mocker.Mock()
+    mock_region_operations = mocker.Mock()
+    mock_compute.regionOperations.return_value = mock_region_operations
+    mock_region_operations.get.return_value.execute.return_value = mock_response
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "region": "us-central1", "operation_name": "operation-456"}
+    result = gcp_compute_region_operation_wait(args, mock_creds)
+
+    mock_region_operations.get.assert_called_once_with(project="test-project", region="us-central1", operation="operation-456")
+    assert result.scheduled_command is None
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+    assert result.outputs == mock_response
+    assert "Region" in result.readable_output
+
+
+def test_gcp_compute_region_operation_wait_extracts_region_from_url(mocker):
+    """
+    Given: A region provided as a full GCP URL rather than a bare region name.
+    When: gcp_compute_region_operation_wait is called.
+    Then: Only the region name is sent to the API.
+    """
+    from GCP import gcp_compute_region_operation_wait
+
+    mock_compute = mocker.Mock()
+    mock_region_operations = mocker.Mock()
+    mock_compute.regionOperations.return_value = mock_region_operations
+    mock_region_operations.get.return_value.execute.return_value = {"name": "operation-456", "status": "DONE"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "test-project",
+        "region": "https://www.googleapis.com/compute/v1/projects/test-project/regions/us-central1",
+        "operation_name": "operation-456",
+    }
+    gcp_compute_region_operation_wait(args, mock_creds)
+
+    mock_region_operations.get.assert_called_once_with(project="test-project", region="us-central1", operation="operation-456")
+
+
+def test_gcp_compute_region_operation_wait_not_done_schedules_poll(mocker):
+    """
+    Given: A mocked GCP compute client returning a regional operation with a PENDING status.
+    When: gcp_compute_region_operation_wait is called without explicit polling arguments.
+    Then: A ScheduledCommand is returned using the default interval and timeout.
+    """
+    from GCP import gcp_compute_region_operation_wait, DEFAULT_INTERVAL_IN_SECONDS, DEFAULT_TIMEOUT_POLLING_COMMAND
+
+    mock_compute = mocker.Mock()
+    mock_region_operations = mocker.Mock()
+    mock_compute.regionOperations.return_value = mock_region_operations
+    mock_region_operations.get.return_value.execute.return_value = {"name": "operation-456", "status": "PENDING"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "region": "us-central1", "operation_name": "operation-456"}
+    result = gcp_compute_region_operation_wait(args, mock_creds)
+
+    assert result.scheduled_command is not None
+    assert result.scheduled_command._command == "gcp-compute-region-operation-wait"
+    assert result.scheduled_command._next_run == str(DEFAULT_INTERVAL_IN_SECONDS)
+    assert result.scheduled_command._timeout == str(DEFAULT_TIMEOUT_POLLING_COMMAND)
+
+
+def test_gcp_compute_region_operation_wait_done_with_error_raises(mocker):
+    """
+    Given: A mocked GCP compute client returning a DONE regional operation carrying an error.
+    When: gcp_compute_region_operation_wait is called.
+    Then: A DemistoException is raised describing the operation failure.
+    """
+    from GCP import gcp_compute_region_operation_wait, DemistoException
+
+    mock_compute = mocker.Mock()
+    mock_region_operations = mocker.Mock()
+    mock_compute.regionOperations.return_value = mock_region_operations
+    mock_region_operations.get.return_value.execute.return_value = {
+        "name": "operation-456",
+        "status": "DONE",
+        "error": {"errors": [{"code": "QUOTA_EXCEEDED", "message": "Quota exceeded."}]},
+    }
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "region": "us-central1", "operation_name": "operation-456"}
+
+    with pytest.raises(DemistoException, match="Operation operation-456 completed with an error"):
+        gcp_compute_region_operation_wait(args, mock_creds)
+
+
+def test_gcp_compute_global_operation_wait_done(mocker):
+    """
+    Given: A mocked GCP compute client returning a global operation with a DONE status.
+    When: gcp_compute_global_operation_wait is called.
+    Then: The operation is returned under GCP.Compute.Operations without scheduling another poll.
+    """
+    from GCP import gcp_compute_global_operation_wait
+
+    mock_response = {"id": "op-3", "name": "operation-789", "status": "DONE", "operationType": "insert"}
+
+    mock_compute = mocker.Mock()
+    mock_global_operations = mocker.Mock()
+    mock_compute.globalOperations.return_value = mock_global_operations
+    mock_global_operations.get.return_value.execute.return_value = mock_response
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "operation_name": "operation-789"}
+    result = gcp_compute_global_operation_wait(args, mock_creds)
+
+    mock_global_operations.get.assert_called_once_with(project="test-project", operation="operation-789")
+    assert result.scheduled_command is None
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+    assert result.outputs == mock_response
+
+
+def test_gcp_compute_global_operation_wait_not_done_schedules_poll(mocker):
+    """
+    Given: A mocked GCP compute client returning a global operation with a RUNNING status.
+    When: gcp_compute_global_operation_wait is called.
+    Then: A ScheduledCommand is returned so the command polls again.
+    """
+    from GCP import gcp_compute_global_operation_wait
+
+    mock_compute = mocker.Mock()
+    mock_global_operations = mocker.Mock()
+    mock_compute.globalOperations.return_value = mock_global_operations
+    mock_global_operations.get.return_value.execute.return_value = {"name": "operation-789", "status": "RUNNING"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "operation_name": "operation-789"}
+    result = gcp_compute_global_operation_wait(args, mock_creds)
+
+    assert result.scheduled_command is not None
+    assert result.scheduled_command._command == "gcp-compute-global-operation-wait"
+    assert "Current status: RUNNING" in result.readable_output
+
+
+def test_gcp_compute_global_operation_wait_done_with_error_raises(mocker):
+    """
+    Given: A mocked GCP compute client returning a DONE global operation carrying an error.
+    When: gcp_compute_global_operation_wait is called.
+    Then: A DemistoException is raised describing the operation failure.
+    """
+    from GCP import gcp_compute_global_operation_wait, DemistoException
+
+    mock_compute = mocker.Mock()
+    mock_global_operations = mocker.Mock()
+    mock_compute.globalOperations.return_value = mock_global_operations
+    mock_global_operations.get.return_value.execute.return_value = {
+        "name": "operation-789",
+        "status": "DONE",
+        "error": {"errors": [{"code": "INTERNAL_ERROR", "message": "Internal error."}]},
+    }
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "operation_name": "operation-789"}
+
+    with pytest.raises(DemistoException, match="Operation operation-789 completed with an error"):
+        gcp_compute_global_operation_wait(args, mock_creds)
+
+
 # ---------------------------------------------------------------------------
 # YML <-> PY wiring assertion tests
 #
@@ -7085,6 +7981,9 @@ def test_yml_args_match_py_handler_verbatim():
         for arg_name in _YML_SPEC[command_name]["args"]:
             if arg_name in PLATFORM_STANDARD_ARGS:
                 # Resolved centrally via credentials, not per-handler args.get(...).
+                continue
+            if arg_name in POLLING_STANDARD_ARGS:
+                # Consumed by the @polling_function decorator, not per-handler args.get(...).
                 continue
             if arg_name not in handler_args:
                 mismatches.append(f'{command_name} (handler {handler}) -> args.get("{arg_name}")')
@@ -10245,3 +11144,643 @@ def test_compute_instances_aggregated_list_zero_limit_falls_back_to_default(mock
     compute_instances_aggregated_list(mocker.Mock(spec=Credentials), {"project_id": "test-project", "limit": "0"})
 
     mock_instances.aggregatedList.assert_called_once_with(project="test-project", maxResults=50)
+
+
+# gcp_compute_image_get_from_family
+def test_gcp_compute_image_get_from_family_success(mocker):
+    """
+    Given: A mocked GCP compute client returning the latest image of a family.
+    When: gcp_compute_image_get_from_family is called with project_id and family.
+    Then: It returns CommandResults with the GCP.Compute.Images prefix and calls getFromFamily.
+    """
+    from GCP import gcp_compute_image_get_from_family, GCPServices
+
+    args = {"project_id": "test-project", "family": "ubuntu-2004-lts"}
+    mock_response = {
+        "id": "111",
+        "name": "ubuntu-2004-focal-v20230724",
+        "family": "ubuntu-2004-lts",
+        "status": "READY",
+    }
+    mock_compute = mocker.Mock()
+    mock_images = mocker.Mock()
+    mock_compute.images.return_value = mock_images
+    mock_images.getFromFamily.return_value.execute.return_value = mock_response
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    result = gcp_compute_image_get_from_family(mocker.Mock(spec=Credentials), args)
+
+    mock_images.getFromFamily.assert_called_once_with(project="test-project", family="ubuntu-2004-lts")
+    assert result.outputs_prefix == "GCP.Compute.Images"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
+
+
+def test_gcp_compute_image_get_from_family_minimal_response(mocker):
+    """
+    Given: A mocked GCP compute client returning a response with only an id.
+    When: gcp_compute_image_get_from_family is called.
+    Then: It returns CommandResults without raising on missing optional fields.
+    """
+    from GCP import gcp_compute_image_get_from_family, GCPServices
+
+    args = {"project_id": "test-project", "family": "custom-family"}
+    mock_compute = mocker.Mock()
+    mock_compute.images.return_value.getFromFamily.return_value.execute.return_value = {"id": "222"}
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    result = gcp_compute_image_get_from_family(mocker.Mock(spec=Credentials), args)
+
+    assert result.outputs == {"id": "222"}
+
+
+def test_gcp_compute_image_get_from_family_permission_error_propagates(mocker):
+    """
+    Given: A mocked GCP compute client that raises HttpError on getFromFamily.
+    When: gcp_compute_image_get_from_family is called.
+    Then: The HttpError propagates to be handled by main().
+    """
+    from GCP import gcp_compute_image_get_from_family, GCPServices
+    from googleapiclient.errors import HttpError
+
+    args = {"project_id": "test-project", "family": "no-perm"}
+    resp = MagicMock()
+    resp.status = 403
+    http_error = HttpError(resp=resp, content=b'{"error": {"message": "forbidden"}}')
+    mock_compute = mocker.Mock()
+    mock_compute.images.return_value.getFromFamily.return_value.execute.side_effect = http_error
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    with pytest.raises(HttpError):
+        gcp_compute_image_get_from_family(mocker.Mock(spec=Credentials), args)
+
+
+# gcp_compute_images_list
+def test_gcp_compute_images_list_with_pagination(mocker):
+    """
+    Given: Pagination, filter, and order_by arguments and a response with a next page token.
+    When: gcp_compute_images_list is called.
+    Then: The next token is emitted under GCP.Compute.ImagesNextToken and the API is called with the params.
+    """
+    from GCP import gcp_compute_images_list, GCPServices
+
+    args = {
+        "project_id": "p1",
+        "limit": "2",
+        "next_token": "t0",
+        "filter": "name eq image-*",
+        "order_by": "creationTimestamp desc",
+    }
+    mock_compute = mocker.Mock()
+    mock_images = mocker.Mock()
+    mock_compute.images.return_value = mock_images
+    mock_images.list.return_value.execute.return_value = {
+        "items": [{"name": "image-1", "id": "1"}],
+        "nextPageToken": "t1",
+    }
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    result = gcp_compute_images_list(mocker.Mock(spec=Credentials), args)
+
+    call_kwargs = mock_images.list.call_args[1]
+    assert call_kwargs["project"] == "p1"
+    assert call_kwargs["maxResults"] == 2
+    assert call_kwargs["pageToken"] == "t0"
+    assert call_kwargs["filter"] == "name eq image-*"
+    assert call_kwargs["orderBy"] == "creationTimestamp desc"
+    assert result.outputs["GCP.Compute.Images(val.id && val.id == obj.id)"] == [{"name": "image-1", "id": "1"}]
+    assert result.outputs["GCP.Compute(true)"] == {"ImagesNextToken": "t1"}
+
+
+def test_gcp_compute_images_list_empty(mocker):
+    """
+    Given: A response with no items and no next page token, and no limit argument provided.
+    When: gcp_compute_images_list is called.
+    Then: The default limit of 50 is applied and the outputs contain an empty list and no next token.
+    """
+    from GCP import gcp_compute_images_list, GCPServices
+
+    args = {"project_id": "p1"}
+    mock_compute = mocker.Mock()
+    mock_images = mocker.Mock()
+    mock_compute.images.return_value = mock_images
+    mock_images.list.return_value.execute.return_value = {}
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    result = gcp_compute_images_list(mocker.Mock(spec=Credentials), args)
+
+    assert mock_images.list.call_args[1]["maxResults"] == 50
+    assert result.outputs["GCP.Compute.Images(val.id && val.id == obj.id)"] == []
+    assert result.outputs["GCP.Compute(true)"] == {"ImagesNextToken": None}
+
+
+def test_gcp_compute_images_list_invalid_limit(mocker):
+    """
+    Given: A limit outside the accepted range.
+    When: gcp_compute_images_list is called.
+    Then: validate_limit raises a DemistoException.
+    """
+    from GCP import gcp_compute_images_list, GCPServices
+    from CommonServerPython import DemistoException
+
+    args = {"project_id": "p1", "limit": "9999"}
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mocker.Mock())
+
+    with pytest.raises(DemistoException):
+        gcp_compute_images_list(mocker.Mock(spec=Credentials), args)
+
+
+# gcp_compute_image_delete
+def test_gcp_compute_image_delete_success(mocker):
+    """
+    Given: A mocked GCP compute client returning an operation.
+    When: gcp_compute_image_delete is called with project_id and image.
+    Then: It calls delete and returns a readable status without any context outputs.
+    """
+    from GCP import gcp_compute_image_delete, GCPServices
+
+    args = {"project_id": "p1", "image": "img-1"}
+    mock_response = {"id": "op-1", "name": "operation-del", "operationType": "delete", "status": "PENDING"}
+    mock_compute = mocker.Mock()
+    mock_images = mocker.Mock()
+    mock_compute.images.return_value = mock_images
+    mock_images.delete.return_value.execute.return_value = mock_response
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    result = gcp_compute_image_delete(mocker.Mock(spec=Credentials), args)
+
+    mock_images.delete.assert_called_once_with(project="p1", image="img-1")
+    assert "Delete Operation Started Successfully" in result.readable_output
+    assert result.outputs is None
+    assert result.outputs_prefix is None
+    assert result.raw_response == mock_response
+
+
+def test_gcp_compute_image_delete_no_context(mocker):
+    """
+    Given: A mocked GCP compute client returning a partial operation.
+    When: gcp_compute_image_delete is called.
+    Then: No context outputs are set (delete returns status only), and the raw response is preserved.
+    """
+    from GCP import gcp_compute_image_delete, GCPServices
+
+    args = {"project_id": "p1", "image": "img-2"}
+    mock_compute = mocker.Mock()
+    mock_compute.images.return_value.delete.return_value.execute.return_value = {"id": "op-2"}
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    result = gcp_compute_image_delete(mocker.Mock(spec=Credentials), args)
+
+    assert result.outputs is None
+    assert result.raw_response == {"id": "op-2"}
+
+
+def test_gcp_compute_image_delete_error_propagates(mocker):
+    """
+    Given: A mocked GCP compute client that raises HttpError on delete.
+    When: gcp_compute_image_delete is called.
+    Then: The HttpError propagates to be handled by main().
+    """
+    from GCP import gcp_compute_image_delete, GCPServices
+    from googleapiclient.errors import HttpError
+
+    args = {"project_id": "p1", "image": "img-3"}
+    resp = MagicMock()
+    resp.status = 404
+    http_error = HttpError(resp=resp, content=b'{"error": {"message": "not found"}}')
+    mock_compute = mocker.Mock()
+    mock_compute.images.return_value.delete.return_value.execute.side_effect = http_error
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    with pytest.raises(HttpError):
+        gcp_compute_image_delete(mocker.Mock(spec=Credentials), args)
+
+
+# gcp_compute_image_labels_set
+def test_gcp_compute_image_labels_set_success(mocker):
+    """
+    Given: A mocked GCP compute client and a labels string plus a fingerprint.
+    When: gcp_compute_image_labels_set is called.
+    Then: The setLabels body carries the parsed labels and fingerprint, and outputs use Operations.
+    """
+    from GCP import gcp_compute_image_labels_set, GCPServices
+
+    args = {
+        "project_id": "p1",
+        "image": "img-1",
+        "labels": "key=env,value=prod;key=team,value=cloud",
+        "label_fingerprint": "abc123==",
+    }
+    mock_response = {"id": "op-1", "operationType": "setLabels", "status": "PENDING"}
+    mock_compute = mocker.Mock()
+    mock_images = mocker.Mock()
+    mock_compute.images.return_value = mock_images
+    mock_images.setLabels.return_value.execute.return_value = mock_response
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    result = gcp_compute_image_labels_set(mocker.Mock(spec=Credentials), args)
+
+    call_kwargs = mock_images.setLabels.call_args[1]
+    assert call_kwargs["project"] == "p1"
+    assert call_kwargs["resource"] == "img-1"
+    assert call_kwargs["body"] == {"labels": {"env": "prod", "team": "cloud"}, "labelFingerprint": "abc123=="}
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+
+
+def test_gcp_compute_image_labels_set_invalid_labels(mocker):
+    """
+    Given: A malformed labels string.
+    When: gcp_compute_image_labels_set is called.
+    Then: parse_labels raises a ValueError before any API call.
+    """
+    from GCP import gcp_compute_image_labels_set, GCPServices
+
+    args = {"project_id": "p1", "image": "img-1", "labels": "not-valid", "label_fingerprint": "abc"}
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mocker.Mock())
+
+    with pytest.raises(ValueError):
+        gcp_compute_image_labels_set(mocker.Mock(spec=Credentials), args)
+
+
+def test_gcp_compute_image_labels_set_error_propagates(mocker):
+    """
+    Given: A mocked GCP compute client that raises HttpError on setLabels.
+    When: gcp_compute_image_labels_set is called.
+    Then: The HttpError propagates to be handled by main().
+    """
+    from GCP import gcp_compute_image_labels_set, GCPServices
+    from googleapiclient.errors import HttpError
+
+    args = {"project_id": "p1", "image": "img-1", "labels": "key=a,value=b", "label_fingerprint": "fp"}
+    resp = MagicMock()
+    resp.status = 412
+    http_error = HttpError(resp=resp, content=b'{"error": {"message": "conditionNotMet"}}')
+    mock_compute = mocker.Mock()
+    mock_compute.images.return_value.setLabels.return_value.execute.side_effect = http_error
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    with pytest.raises(HttpError):
+        gcp_compute_image_labels_set(mocker.Mock(spec=Credentials), args)
+
+
+# gcp_compute_image_insert
+def test_gcp_compute_image_insert_minimal(mocker):
+    """
+    Given: Minimal args (name only) for creating an image.
+    When: gcp_compute_image_insert is called.
+    Then: The body contains only the lowercased name and forceCreate defaults to False.
+    """
+    from GCP import gcp_compute_image_insert, GCPServices
+
+    args = {"project_id": "p1", "name": "MyImage"}
+    mock_compute = mocker.Mock()
+    mock_images = mocker.Mock()
+    mock_compute.images.return_value = mock_images
+    mock_images.insert.return_value.execute.return_value = {"id": "op-1", "status": "PENDING"}
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    result = gcp_compute_image_insert(mocker.Mock(spec=Credentials), args)
+
+    call_kwargs = mock_images.insert.call_args[1]
+    assert call_kwargs["project"] == "p1"
+    assert call_kwargs["forceCreate"] is False
+    assert call_kwargs["body"] == {"name": "myimage"}
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+
+
+def test_gcp_compute_image_insert_full_body(mocker):
+    """
+    Given: A rich set of args including nested encryption, raw disk, deprecated, and list fields.
+    When: gcp_compute_image_insert is called.
+    Then: The request body reflects all conversions, parsing, and nested object construction.
+    """
+    from GCP import gcp_compute_image_insert, GCPServices
+
+    args = {
+        "project_id": "p1",
+        "name": "Full-Image",
+        "force_create": "true",
+        "description": "desc",
+        "source_disk": "zones/z/disks/d",
+        "family": "my-family",
+        "archive_size_bytes": "1024",
+        "disk_size_gb": "20",
+        "licenses": "lic-a,lic-b",
+        "license_codes": "111,222",
+        "labels": "key=env,value=prod",
+        "label_fingerprint": "fp==",
+        "guest_os_features": "UEFI_COMPATIBLE,VIRTIO_SCSI_MULTIQUEUE",
+        "raw_disk_source": "gs://bucket/image.tar.gz",
+        "raw_disk_sha1_checksum": "sha1val",
+        "raw_disk_container_type": "TAR",
+        "deprecated_state": "DEPRECATED",
+        "deprecated_replacement": "projects/p/global/images/new",
+        "image_encryption_key_kms_key_name": "kms-key",
+        "source_disk_encryption_key_raw_key": "raw-key",
+    }
+    mock_compute = mocker.Mock()
+    mock_images = mocker.Mock()
+    mock_compute.images.return_value = mock_images
+    mock_images.insert.return_value.execute.return_value = {"id": "op-1", "status": "PENDING"}
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    gcp_compute_image_insert(mocker.Mock(spec=Credentials), args)
+
+    call_kwargs = mock_images.insert.call_args[1]
+    assert call_kwargs["forceCreate"] is True
+    body = call_kwargs["body"]
+    assert body["name"] == "full-image"
+    assert body["description"] == "desc"
+    assert body["sourceDisk"] == "zones/z/disks/d"
+    assert body["family"] == "my-family"
+    assert body["archiveSizeBytes"] == 1024
+    assert body["diskSizeGb"] == 20
+    assert body["licenses"] == ["lic-a", "lic-b"]
+    assert body["licenseCodes"] == ["111", "222"]
+    assert body["labels"] == {"env": "prod"}
+    assert body["labelFingerprint"] == "fp=="
+    assert body["guestOsFeatures"] == [{"type": "UEFI_COMPATIBLE"}, {"type": "VIRTIO_SCSI_MULTIQUEUE"}]
+    assert body["rawDisk"] == {"source": "gs://bucket/image.tar.gz", "sha1Checksum": "sha1val", "containerType": "TAR"}
+    assert body["deprecated"] == {"state": "DEPRECATED", "replacement": "projects/p/global/images/new"}
+    assert body["imageEncryptionKey"] == {"kmsKeyName": "kms-key"}
+    assert body["sourceDiskEncryptionKey"] == {"rawKey": "raw-key"}
+
+
+def test_gcp_compute_image_insert_error_propagates(mocker):
+    """
+    Given: A mocked GCP compute client that raises HttpError on insert.
+    When: gcp_compute_image_insert is called.
+    Then: The HttpError propagates to be handled by main().
+    """
+    from GCP import gcp_compute_image_insert, GCPServices
+    from googleapiclient.errors import HttpError
+
+    args = {"project_id": "p1", "name": "img"}
+    resp = MagicMock()
+    resp.status = 409
+    http_error = HttpError(resp=resp, content=b'{"error": {"message": "already exists"}}')
+    mock_compute = mocker.Mock()
+    mock_compute.images.return_value.insert.return_value.execute.side_effect = http_error
+    mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+    with pytest.raises(HttpError):
+        gcp_compute_image_insert(mocker.Mock(spec=Credentials), args)
+
+
+class TestGCPComputeNetworkPeeringAdd:
+    def test_gcp_compute_network_peering_add_minimal_args(self, mocker):
+        """
+        Given: A mocked GCP Compute service with the minimal required arguments.
+        When: gcp_compute_network_peering_add is called with network, name, and peer_network only.
+        Then: The addPeering API is called with the nested networkPeering object and operation details are returned.
+        """
+        from GCP import GCPServices, gcp_compute_network_peering_add
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_add_peering = mocker.Mock()
+
+        mock_compute.networks.return_value = mock_networks
+        mock_networks.addPeering.return_value = mock_add_peering
+        mock_add_peering.execute.return_value = {
+            "status": "PENDING",
+            "kind": "compute#operation",
+            "name": "operation-1",
+            "id": "111",
+            "operationType": "addPeering",
+        }
+
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        args = {
+            "project_id": "test-project",
+            "network": "my-network",
+            "name": "my-peering",
+            "peer_network": "projects/other/global/networks/peer",
+        }
+
+        result = gcp_compute_network_peering_add(mock_creds, args)
+
+        mock_networks.addPeering.assert_called_once_with(
+            project="test-project",
+            network="my-network",
+            body={"networkPeering": {"name": "my-peering", "network": "projects/other/global/networks/peer"}},
+        )
+        assert result.outputs_prefix == "GCP.Compute.Operations"
+        assert result.outputs_key_field == "id"
+
+    def test_gcp_compute_network_peering_add_all_args(self, mocker):
+        """
+        Given: A mocked GCP Compute service with the full peering configuration.
+        When: gcp_compute_network_peering_add is called with all the networkPeering fields.
+        Then: The addPeering API body is built with the nested networkPeering object and converted booleans.
+        """
+        from GCP import GCPServices, gcp_compute_network_peering_add
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_add_peering = mocker.Mock()
+
+        mock_compute.networks.return_value = mock_networks
+        mock_networks.addPeering.return_value = mock_add_peering
+        mock_add_peering.execute.return_value = {"id": "222", "name": "operation-2", "status": "DONE"}
+
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        args = {
+            "project_id": "test-project",
+            "network": "my-network",
+            "name": "peering-1",
+            "peer_network": "projects/other/global/networks/peer",
+            "exchange_subnet_routes": "true",
+        }
+
+        gcp_compute_network_peering_add(mock_creds, args)
+
+        expected_body = {
+            "networkPeering": {
+                "name": "peering-1",
+                "network": "projects/other/global/networks/peer",
+                "exchangeSubnetRoutes": True,
+            }
+        }
+        mock_networks.addPeering.assert_called_once_with(project="test-project", network="my-network", body=expected_body)
+
+    def test_gcp_compute_network_peering_add_permission_error(self, mocker):
+        """
+        Given: A mocked GCP Compute service whose addPeering raises an HttpError.
+        When: gcp_compute_network_peering_add is called.
+        Then: The HttpError propagates so main() can convert it into a structured permission error.
+        """
+        from GCP import GCPServices, gcp_compute_network_peering_add
+        from googleapiclient.errors import HttpError
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_add_peering = mocker.Mock()
+
+        mock_compute.networks.return_value = mock_networks
+        mock_networks.addPeering.return_value = mock_add_peering
+        mock_resp = mocker.Mock()
+        mock_resp.status = 403
+        mock_add_peering.execute.side_effect = HttpError(mock_resp, b'{"error": {"message": "Permission denied"}}')
+
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        args = {"project_id": "test-project", "network": "my-network", "name": "peering-1"}
+
+        with pytest.raises(HttpError):
+            gcp_compute_network_peering_add(mock_creds, args)
+
+
+class TestGCPComputeDeleteNetwork:
+    def test_gcp_compute_network_delete_success(self, mocker):
+        """
+        Given: A mocked GCP Compute service returning an operation.
+        When: gcp_compute_network_delete is called with a project_id and network.
+        Then: The delete API is called and operation details are returned under GCP.Compute.Operations.
+        """
+        from GCP import GCPServices, gcp_compute_network_delete
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_delete = mocker.Mock()
+
+        mock_compute.networks.return_value = mock_networks
+        mock_networks.delete.return_value = mock_delete
+        mock_delete.execute.return_value = {
+            "status": "PENDING",
+            "kind": "compute#operation",
+            "name": "operation-del",
+            "id": "333",
+            "operationType": "delete",
+        }
+
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        args = {"project_id": "test-project", "network": "my-network"}
+
+        result = gcp_compute_network_delete(mock_creds, args)
+
+        mock_networks.delete.assert_called_once_with(project="test-project", network="my-network")
+        assert result.outputs_prefix == "GCP.Compute.Operations"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "333"
+
+    def test_gcp_compute_network_delete_minimal_response(self, mocker):
+        """
+        Given: A mocked GCP Compute service returning an operation with few fields.
+        When: gcp_compute_network_delete is called.
+        Then: The command still returns CommandResults referencing the operation id.
+        """
+        from GCP import GCPServices, gcp_compute_network_delete
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_delete = mocker.Mock()
+
+        mock_compute.networks.return_value = mock_networks
+        mock_networks.delete.return_value = mock_delete
+        mock_delete.execute.return_value = {"id": "444", "name": "op-min"}
+
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        result = gcp_compute_network_delete(mock_creds, {"project_id": "test-project", "network": "n"})
+
+        assert result.outputs["id"] == "444"
+        assert result.outputs_prefix == "GCP.Compute.Operations"
+
+    def test_gcp_compute_network_delete_permission_error(self, mocker):
+        """
+        Given: A mocked GCP Compute service whose delete raises an HttpError.
+        When: gcp_compute_network_delete is called.
+        Then: The HttpError propagates so main() can convert it into a structured permission error.
+        """
+        from GCP import GCPServices, gcp_compute_network_delete
+        from googleapiclient.errors import HttpError
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_delete = mocker.Mock()
+
+        mock_compute.networks.return_value = mock_networks
+        mock_networks.delete.return_value = mock_delete
+        mock_resp = mocker.Mock()
+        mock_resp.status = 403
+        mock_delete.execute.side_effect = HttpError(mock_resp, b'{"error": {"message": "Permission denied"}}')
+
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        with pytest.raises(HttpError):
+            gcp_compute_network_delete(mock_creds, {"project_id": "test-project", "network": "n"})
+
+
+class TestGCPComputeNetworkPeeringRemove:
+    def test_gcp_compute_network_peering_remove_success(self, mocker):
+        """
+        Given: A mocked GCP Compute service returning an operation.
+        When: gcp_compute_network_peering_remove is called with network and name.
+        Then: The removePeering API is called with the name in the body and operation details are returned.
+        """
+        from GCP import GCPServices, gcp_compute_network_peering_remove
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_remove_peering = mocker.Mock()
+
+        mock_compute.networks.return_value = mock_networks
+        mock_networks.removePeering.return_value = mock_remove_peering
+        mock_remove_peering.execute.return_value = {
+            "status": "PENDING",
+            "kind": "compute#operation",
+            "name": "operation-rp",
+            "id": "555",
+            "operationType": "removePeering",
+        }
+
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        args = {"project_id": "test-project", "network": "my-network", "name": "peering-1"}
+
+        result = gcp_compute_network_peering_remove(mock_creds, args)
+
+        mock_networks.removePeering.assert_called_once_with(
+            project="test-project", network="my-network", body={"name": "peering-1"}
+        )
+        assert result.outputs_prefix == "GCP.Compute.Operations"
+        assert result.outputs_key_field == "id"
+        assert result.outputs["id"] == "555"
+
+    def test_gcp_compute_network_peering_remove_permission_error(self, mocker):
+        """
+        Given: A mocked GCP Compute service whose removePeering raises an HttpError.
+        When: gcp_compute_network_peering_remove is called.
+        Then: The HttpError propagates so main() can convert it into a structured permission error.
+        """
+        from GCP import GCPServices, gcp_compute_network_peering_remove
+        from googleapiclient.errors import HttpError
+
+        mock_creds = mocker.Mock()
+        mock_compute = mocker.Mock()
+        mock_networks = mocker.Mock()
+        mock_remove_peering = mocker.Mock()
+
+        mock_compute.networks.return_value = mock_networks
+        mock_networks.removePeering.return_value = mock_remove_peering
+        mock_resp = mocker.Mock()
+        mock_resp.status = 403
+        mock_remove_peering.execute.side_effect = HttpError(mock_resp, b'{"error": {"message": "Permission denied"}}')
+
+        mocker.patch.object(GCPServices.COMPUTE, "build", return_value=mock_compute)
+
+        args = {"project_id": "test-project", "network": "my-network", "name": "peering-1"}
+
+        with pytest.raises(HttpError):
+            gcp_compute_network_peering_remove(mock_creds, args)
