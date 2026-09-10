@@ -187,7 +187,7 @@ configuration:
   type: 8
   required: false
   section: Collect
-  additionalinfo: When set to True, the "ip" command retrieves ip data from the Censys host enrichment API.
+  additionalinfo: When set to True, the "ip" command retrieves IP data from the Censys host enrichment API.
 - display: Source Reliability
   name: integration_reliability
   defaultvalue: C - Fairly reliable
@@ -471,7 +471,7 @@ script:
       type: textArea
       default: true
     - name: use_enrichment_endpoint
-      description: "Whether to retrieve the ip data from the Censys host enrichment API.\n\nNote: This argument overrides the \"Use enrichment API for the ip command\" configuration parameter."
+      description: "Whether to retrieve the IP data from the Censys host enrichment API.\n\nNote: This argument overrides the \"Use enrichment API for the ip command\" configuration parameter."
       auto: PREDEFINED
       predefined:
       - "True"

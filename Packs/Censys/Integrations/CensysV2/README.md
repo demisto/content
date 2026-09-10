@@ -15,7 +15,7 @@ This integration was integrated and tested with version 2.0 of Censys.
 | IP Suspicious labels | Used when \`Determine IP score by labels\` is set.<br/>Labels to classify IP as Suspicious.<br/>Input can be an array or comma-separated values. | False |
 | Malicious labels threshold | Determines the minimum number of labels returned that are classified as malicious for IP. | False |
 | Suspicious labels threshold | Determines the minimum number of labels returned that are classified as suspicious for IP. | False |
-| Use enrichment API for the ip command | When set to True, the "ip" command retrieves ip data from the Censys host enrichment API. | False |
+| Use enrichment API for the ip command | When set to True, the "ip" command retrieves IP data from the Censys host enrichment API. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. |  |
 
 ## Commands
@@ -1566,7 +1566,7 @@ Runs reputation on IPs.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ip | IP address or a list of IP addresses to assess reputation. | Required |
-| use_enrichment_endpoint | Whether to retrieve the ip data from the Censys host enrichment API.<br/><br/>Note: This argument overrides the "Use enrichment API for the ip command" configuration parameter. Possible values are: True, False. | Optional |
+| use_enrichment_endpoint | Whether to retrieve the IP data from the Censys host enrichment API.<br/><br/>Note: This argument overrides the "Use enrichment API for the ip command" configuration parameter. Possible values are: True, False. | Optional |
 
 #### Context Output
 

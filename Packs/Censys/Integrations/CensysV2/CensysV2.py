@@ -1,4 +1,5 @@
 from collections.abc import Callable
+from itertools import zip_longest
 from typing import Any
 
 import demistomock as demisto
@@ -14,7 +15,7 @@ STATUS_CODE_TO_RETRY = (429, *(status_code for status_code in requests.status_co
 OK_CODES = (200, 201)
 BACKOFF_FACTOR = 7.5  # Sleep for [0s, 15s, 30s, 60s] between retries.
 DATE_FORMAT: str = "%Y-%m-%dT%H:%M:%S.000Z"
-PACK_VERSION = get_pack_version() or "3.1.0"
+PACK_VERSION = get_pack_version() or "3.2.0"
 DEMISTO_XSOAR_VERSION = get_demisto_version_as_str().split("-")[0]
 CONNECTOR_NAME_VERSION = f"CensysXSOAR/{PACK_VERSION} (XSOAR/{DEMISTO_XSOAR_VERSION}; ts={int(time.time())})"
 
@@ -783,15 +784,16 @@ def prepare_hr_for_ip_info(resource: dict) -> str:
     Returns:
         Human-readable output string for the IP information section
     """
-    networks = resource.get("network") or []
-    privacies = resource.get("privacy") or []
+    networks: list[dict] = resource.get("network") or []
+    privacies: list[dict] = resource.get("privacy") or []
     if not networks and not privacies:
         return ""
 
     hr_data = []
+    empty_entry: dict = {}
 
     # The network and the privacy data are reported as parallel lists, one entry per source.
-    for network, privacy in zip(networks, privacies):
+    for network, privacy in zip_longest(networks, privacies, fillvalue=empty_entry):
         hr_data.append(
             {
                 "Network Hosting": network.get("hosting"),
@@ -1212,7 +1214,10 @@ def get_ip_data_using_enrichment_endpoint(
             results.append(prepare_command_result_for_ip_resource(resource, params, raw_response, host_enrichment_used=True))
             execution_metrics.success += 1
         except (DemistoException, ValueError) as e:
-            demisto.error(f"ip_command: host enrichment failed for IP {ip}, falling back to search. Error: {e!s}")
+            demisto.error(
+                f"ip_command: host enrichment failed for IP {ip}, falling back to search. "
+                f"Error: {e!s}\n\nTraceback: {traceback.format_exc()}"
+            )
             failed_ips.append(ip)
 
     return results, failed_ips
