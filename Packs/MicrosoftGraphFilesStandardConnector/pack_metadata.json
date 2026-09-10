@@ -22,7 +22,9 @@
         "cloud_runtime_security",
         "xsiam",
         "edr",
-        "cloud"
+        "cloud",
+        "cloud_posture",
+        "data_security"
     ],
     "hidden": false
 }
