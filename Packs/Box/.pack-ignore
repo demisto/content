@@ -21,3 +21,6 @@ ignore=PR101
 
 [file:BoxEventsCollector_2_11.yml]
 ignore=MR108
+
+[file:pack_metadata.json]
+ignore=RN105
