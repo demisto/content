@@ -5,6 +5,7 @@ alter
 | alter
 	xdm.event.id = to_string(incident_id),
 	xdm.event.outcome_reason = classification,
+	xdm.event.description = to_json_string(object_create("mitigation", arraymap(mitigations -> [], json_extract_scalar("@element","$.mailbox_email")))),
 	xdm.email.sender = sender_email,
 	xdm.email.recipients = arraycreate(name),
 	xdm.observer.action = themis_verdict,
