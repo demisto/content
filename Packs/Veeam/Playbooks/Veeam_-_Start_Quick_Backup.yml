@@ -1,0 +1,550 @@
+description: Starts a Quick Backup session for a specific virtual machine.
+id: Veeam - Start Quick Backup
+inputs:
+- description: ""
+  key: Instance
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      accessor: sourceInstance
+      root: incident
+- description: ""
+  key: backupObjectId
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      accessor: veeambackupobjectid
+      root: incident
+name: Veeam - Start Quick Backup
+outputs: []
+quiet: true
+starttaskid: "0"
+fromversion: "6.10.0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 00b44e86-d062-40d1-8089-2f58e96d31a9
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 00b44e86-d062-40d1-8089-2f58e96d31a9
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -150
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      hostName:
+        complex:
+          accessor: vcenter_name
+          root: Veeam.VBR.backup_object
+      name:
+        complex:
+          accessor: name
+          root: Veeam.VBR.backup_object
+      objectId:
+        complex:
+          accessor: objectId
+          root: Veeam.VBR.backup_object
+      platform:
+        complex:
+          accessor: platformName
+          root: Veeam.VBR.backup_object
+      type:
+        complex:
+          accessor: viType
+          root: Veeam.VBR.backup_object
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Starts a Quick Backup session for a VMware vSphere VM.
+      id: 111e67cf-846d-47b3-8f80-e6205acc884b
+      iscommand: true
+      name: Start Quick Backup
+      script: VBR REST API|||veeam-vbr-start-vsphere-quick-backup
+      type: regular
+      version: -1
+    taskid: 111e67cf-846d-47b3-8f80-e6205acc884b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 500
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: a7776a8f-7eff-4804-8d27-8948eca4b06b
+      iscommand: false
+      name: Clear Context Data
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: a7776a8f-7eff-4804-8d27-8948eca4b06b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": -10
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id_:
+        complex:
+          root: inputs.backupObjectId
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Gets a backup object.
+      id: 462a673a-943c-4c07-8099-4a561ad62925
+      iscommand: true
+      name: Get Backup Object
+      script: VBR REST API|||veeam-vbr-get-backup-object
+      type: regular
+      version: -1
+    taskid: 462a673a-943c-4c07-8099-4a561ad62925
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 710,
+          "y": 120
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0f941001-193f-4de0-8061-dd98450550a4
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 0f941001-193f-4de0-8061-dd98450550a4
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 1570
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: using
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: inputs.Instance
+      Ids:
+        complex:
+          accessor: id
+          root: Veeam.VBR.start_vsphere_quick_backup
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: id_
+      PollingCommandName:
+        simple: veeam-vbr-get-session
+      Timeout:
+        simple: "120"
+      dt:
+        simple: Veeam.VBR.get_session(val.state != 'Stopped').id
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: 9a848c0b-e899-4f23-8197-fd1883d7b121
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: 9a848c0b-e899-4f23-8197-fd1883d7b121
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 680
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: true
+    quietmode: 2
+    scriptarguments:
+      id_:
+        complex:
+          accessor: id
+          root: Veeam.VBR.start_vsphere_quick_backup
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Gets session data.
+      id: 5bd27235-1e6d-449e-8b79-a4993aa0b54c
+      iscommand: true
+      name: Get Session
+      script: VBR REST API|||veeam-vbr-get-session
+      type: regular
+      version: -1
+    taskid: 5bd27235-1e6d-449e-8b79-a4993aa0b54c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 850
+        }
+      }
+  "7":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: result
+                root: Veeam.VBR.get_session.result
+          operator: isEqualString
+          right:
+            value:
+              simple: Success
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: result
+                root: Veeam.VBR.get_session.result
+          operator: isEqualString
+          right:
+            value:
+              simple: Warning
+      label: "yes"
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check Session State.
+      id: ad15e735-4a7f-4a8f-8fc1-92f234f2b9cf
+      iscommand: false
+      name: Check Session State
+      type: condition
+      version: -1
+    taskid: ad15e735-4a7f-4a8f-8fc1-92f234f2b9cf
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 1010
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e6563267-02d3-4dd8-80bc-c6e180a263d7
+      iscommand: false
+      name: Success
+      type: title
+      version: -1
+      description: ''
+    taskid: e6563267-02d3-4dd8-80bc-c6e180a263d7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 1240
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Finish:
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns an error if a Quick Backup session has not been completed.
+      id: 077f3bda-453e-4dcc-8f54-101809e06e97
+      iscommand: false
+      name: Failed
+      type: condition
+      version: -1
+    taskid: 077f3bda-453e-4dcc-8f54-101809e06e97
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 190,
+          "y": 1290
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: true
+    quietmode: 0
+    scriptarguments:
+      hostName:
+        complex:
+          accessor: vcenter_name
+          root: Veeam.VBR.backup_object
+      name:
+        complex:
+          accessor: name
+          root: Veeam.VBR.backup_object
+      objectId:
+        complex:
+          accessor: objectId
+          root: Veeam.VBR.backup_object
+      platform:
+        simple: VSphere
+      type:
+        complex:
+          accessor: viType
+          root: Veeam.VBR.backup_object
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Start a Quick Backup session for a VMware vSphere VM.
+      id: 8bf94a77-deb9-4120-8810-381984bb4b64
+      iscommand: true
+      name: Start Quick Backup
+      script: VBR REST API|||veeam-vbr-start-vsphere-quick-backup
+      type: regular
+      version: -1
+    taskid: 8bf94a77-deb9-4120-8810-381984bb4b64
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 930,
+          "y": 490
+        }
+      }
+  "11":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: lastRunFailed
+                root: Veeam.VBR.backup_object
+          operator: isNotExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check Last Run Failed.
+      id: 2ae425ce-a82d-4365-8f7d-d7dbe76a9ef0
+      iscommand: false
+      name: Check Last Run Failed
+      type: condition
+      version: -1
+    taskid: 2ae425ce-a82d-4365-8f7d-d7dbe76a9ef0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 280
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1785,
+        "width": 1120,
+        "x": 190,
+        "y": -150
+      }
+    }
+  }
