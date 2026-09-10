@@ -26,5 +26,8 @@
     ],
     "marketplaces": [
         "marketplacev2"
+    ],
+    "supportedModules": [
+        "xsiam"
     ]
 }
