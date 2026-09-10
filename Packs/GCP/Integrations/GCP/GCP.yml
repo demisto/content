@@ -2998,7 +2998,7 @@ script:
 
 # gcp-compute-network-peering-add
   - name: gcp-compute-network-peering-add
-    description: "Adds a peering to the specified network. Required permission: compute.networks.addPeering."
+    description: "Adds a peering connection to the specified network. Required permission: compute.networks.addPeering."
     arguments:
     - name: project_id
       required: false
@@ -3006,38 +3006,38 @@ script:
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: network
       required: true
-      description: The name of the network resource to add peering to.
+      description: The name of the network resource to which to add a peering connection.
     - name: name
       required: true
-      description: The name of the peering. The name must comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all the following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
+      description: The name of the peering connection. The name must comply with RFC1035 (the Internet standard for domain name syntax and conventions). Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
     - name: peer_network
       required: true
-      description: The URL of the peer network. It can be either a full URL or a partial URL. The peer network may belong to a different project. If the partial URL does not contain a project, it is assumed that the peer network is in the same project as the current network.
+      description: The URL of the peer network. Can be a full URL or a partial URL. The peer network can belong to a different project. If the partial URL does not contain a project, the peer network is assumed to be in the same project as the current network.
     - name: exchange_subnet_routes
       auto: PREDEFINED
       defaultValue: 'true'
-      description: Whether full mesh connectivity is created and managed automatically between peered networks. Currently this field should always be true since Google Compute Engine will automatically create and manage subnetwork routes between two networks when the peering state is ACTIVE.
+      description: Whether full mesh connectivity is created and managed automatically between peered networks. Currently, this field should always be set to true because Google Compute Engine automatically creates and manages subnetwork routes between two networks when the peering state is ACTIVE.
       predefined:
       - 'true'
       - 'false'
     outputs:
     - contextPath: GCP.Compute.Operations.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique server-defined identifier for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.name
       description: The name of the resource.
       type: string
     - contextPath: GCP.Compute.Operations.zone
-      description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+      description: The URL of the zone where the operation resides. Only available when performing per-zone operations. Must be specified as part of the HTTP request URL and cannot be set as a field in the request body.
       type: string
     - contextPath: GCP.Compute.Operations.clientOperationId
-      description: The value of requestId if you provided it in the request. Not present otherwise.
+      description: The value of the requestId if provided in the request.
       type: string
     - contextPath: GCP.Compute.Operations.operationType
-      description: The type of operation, such as insert, update, or delete, and so on.
+      description: The type of operation, such as insert, update, or delete.
       type: string
     - contextPath: GCP.Compute.Operations.targetLink
-      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from.
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created.
       type: string
     - contextPath: GCP.Compute.Operations.targetId
       description: The unique target ID, which identifies a specific incarnation of the target resource.
@@ -3052,40 +3052,40 @@ script:
       description: The user who requested the operation, for example, EMAILADDRESS.
       type: string
     - contextPath: GCP.Compute.Operations.progress
-      description: The optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
+      description: The progress indicator, ranging from 0 to 100. There is no requirement that this be linear or support any granularity of operations. Must not be used to guess when the operation will be completed. This number monotonically increases as the operation progresses.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
-      description: The time that this operation was requested. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time when the operation was requested, in RFC3339 format; for example, 2024-01-15T12:34:56Z.
       type: string
     - contextPath: GCP.Compute.Operations.startTime
-      description: The time that this operation was started by the server. This value is in RFC3339 text format.
+      description: The time that this operation was started by the server, in RFC3339 format.
       type: string
     - contextPath: GCP.Compute.Operations.endTime
-      description: The time that this operation was completed. This value is in RFC3339 text format.
+      description: The time that this operation was completed, in RFC3339 format.
       type: string
     - contextPath: GCP.Compute.Operations.error
-      description: The errors generated during processing of the operation, if any. This field will be populated when errors occur.
+      description: The errors generated during processing of the operation, if any. Populated when errors occur.
       type: string
     - contextPath: GCP.Compute.Operations.warnings
-      description: The warning messages generated during processing of the operation, if any. This field will be populated when warnings occur.
+      description: The warning messages generated during processing of the operation, if any. Populated when warnings occur.
       type: string
     - contextPath: GCP.Compute.Operations.httpErrorStatusCode
-      description: The HTTP error status code that was returned if the operation fails. For example, a 404 means the resource was not found.
+      description: The HTTP error status code that is returned if the operation fails. For example, a 404 means the resource was not found.
       type: number
     - contextPath: GCP.Compute.Operations.httpErrorMessage
-      description: The HTTP error message that was returned if the operation fails, such as NOT FOUND.
+      description: The HTTP error message that is returned if the operation fails, such as NOT FOUND.
       type: string
     - contextPath: GCP.Compute.Operations.selfLink
       description: The server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.region
-      description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+      description: The URL of the region where the operation resides. Only available when performing regional operations. Must be specified as part of the HTTP request URL and cannot be set as a field in the request body.
       type: string
     - contextPath: GCP.Compute.Operations.description
       description: The textual description of the operation, which is set when the operation is created.
       type: string
     - contextPath: GCP.Compute.Operations.kind
-      description: The type of the resource. Always compute#operation for Operation resources.
+      description: The type of the resource, which is always compute#operation for Operation resources.
       type: string
 # gcp-compute-network-delete
   - name: gcp-compute-network-delete
@@ -3100,22 +3100,22 @@ script:
       description: The name of the network to delete.
     outputs:
     - contextPath: GCP.Compute.Operations.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique server-defined identifier for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.name
       description: The name of the resource.
       type: string
     - contextPath: GCP.Compute.Operations.zone
-      description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+      description: The URL of the zone where the operation resides. Only available when performing per-zone operations. Must be specified as part of the HTTP request URL and cannot be set as a field in the request body.
       type: string
     - contextPath: GCP.Compute.Operations.clientOperationId
-      description: The value of requestId if you provided it in the request. Not present otherwise.
+      description: The value of the requestId if provided in the request.
       type: string
     - contextPath: GCP.Compute.Operations.operationType
-      description: The type of operation, such as insert, update, or delete, and so on.
+      description: The type of operation, such as insert, update, or delete.
       type: string
     - contextPath: GCP.Compute.Operations.targetLink
-      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from.
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created.
       type: string
     - contextPath: GCP.Compute.Operations.targetId
       description: The unique target ID, which identifies a specific incarnation of the target resource.
@@ -3130,44 +3130,44 @@ script:
       description: The user who requested the operation, for example, EMAILADDRESS.
       type: string
     - contextPath: GCP.Compute.Operations.progress
-      description: The optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
+      description: The progress indicator, ranging from 0 to 100. There is no requirement that this be linear or support any granularity of operations. Must not be used to guess when the operation will be completed. This number monotonically increases as the operation progresses.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
-      description: The time that this operation was requested. This value is in RFC3339 text format.
+      description: The time that this operation was requested, in RFC3339 format.
       type: string
     - contextPath: GCP.Compute.Operations.startTime
-      description: The time that this operation was started by the server. This value is in RFC3339 text format.
+      description: The time that this operation was started by the server, in RFC3339 format.
       type: string
     - contextPath: GCP.Compute.Operations.endTime
-      description: The time that this operation was completed. This value is in RFC3339 text format.
+      description: The time that this operation was completed, in RFC3339 format.
       type: string
     - contextPath: GCP.Compute.Operations.error
-      description: The errors generated during processing of the operation, if any. This field will be populated when errors occur.
+      description: The errors generated during processing of the operation, if any. Populated when errors occur.
       type: string
     - contextPath: GCP.Compute.Operations.warnings
-      description: The warning messages generated during processing of the operation, if any. This field will be populated when warnings occur.
+      description: The warning messages generated during processing of the operation, if any. Populated when warnings occur.
       type: string
     - contextPath: GCP.Compute.Operations.httpErrorStatusCode
-      description: The HTTP error status code that was returned if the operation fails. For example, a 404 means the resource was not found.
+      description: The HTTP error status code that is returned if the operation fails. For example, a 404 means the resource was not found.
       type: number
     - contextPath: GCP.Compute.Operations.httpErrorMessage
-      description: The HTTP error message that was returned if the operation fails, such as NOT FOUND.
+      description: The HTTP error message that is returned if the operation fails, such as NOT FOUND.
       type: string
     - contextPath: GCP.Compute.Operations.selfLink
       description: The server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.region
-      description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+      description: The URL of the region where the operation resides. Only available when performing regional operations. Must be specified as part of the HTTP request URL and cannot be set as a field in the request body.
       type: string
     - contextPath: GCP.Compute.Operations.description
       description: The textual description of the operation, which is set when the operation is created.
       type: string
     - contextPath: GCP.Compute.Operations.kind
-      description: The type of the resource. Always compute#operation for Operation resources.
+      description: The type of the resource, which is always compute#operation for Operation resources.
       type: string
 # gcp-compute-network-peering-remove
   - name: gcp-compute-network-peering-remove
-    description: "Removes a peering from the specified network. Required permission: compute.networks.removePeering."
+    description: "Removes a peering connection from the specified network. Required permission: compute.networks.removePeering."
     arguments:
     - name: project_id
       required: false
@@ -3175,28 +3175,28 @@ script:
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: network
       required: true
-      description: The name of the network resource to remove peering from.
+      description: The name of the network resource from which to remove the peering connection.
     - name: name
       required: true
-      description: The name of the peering to remove. The name must comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all the following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
+      description: The name of the peering connection to remove. The name must comply with RFC1035 (the Internet standard for domain name syntax and conventions). Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
     outputs:
     - contextPath: GCP.Compute.Operations.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique server-defined identifier for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.name
       description: The name of the resource.
       type: string
     - contextPath: GCP.Compute.Operations.zone
-      description: The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+      description: The URL of the zone where the operation resides. Only available when performing per-zone operations. Must be specified as part of the HTTP request URL and cannot be set as a field in the request body.
       type: string
     - contextPath: GCP.Compute.Operations.clientOperationId
-      description: The value of requestId if you provided it in the request. Not present otherwise.
+      description: The value of the requestId if provided in the request.
       type: string
     - contextPath: GCP.Compute.Operations.operationType
-      description: The type of operation, such as insert, update, or delete, and so on.
+      description: The type of operation, such as insert, update, or delete.
       type: string
     - contextPath: GCP.Compute.Operations.targetLink
-      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from.
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created.
       type: string
     - contextPath: GCP.Compute.Operations.targetId
       description: The unique target ID, which identifies a specific incarnation of the target resource.
@@ -3211,40 +3211,40 @@ script:
       description: The user who requested the operation, for example, EMAILADDRESS.
       type: string
     - contextPath: GCP.Compute.Operations.progress
-      description: The optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
+      description: The progress indicator, ranging from 0 to 100. There is no requirement that this be linear or support any granularity of operations. Must not be used to guess when the operation will be completed. This number monotonically increases as the operation progresses.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
-      description: The time that this operation was requested. This value is in RFC3339 text format.
+      description: The time that this operation was requested, in RFC3339 format.
       type: string
     - contextPath: GCP.Compute.Operations.startTime
-      description: The time that this operation was started by the server. This value is in RFC3339 text format.
+      description: The time that this operation was started by the server, in RFC3339 format.
       type: string
     - contextPath: GCP.Compute.Operations.endTime
-      description: The time that this operation was completed. This value is in RFC3339 text format.
+      description: The time that this operation was completed, in RFC3339 format.
       type: string
     - contextPath: GCP.Compute.Operations.error
-      description: The errors generated during processing of the operation, if any. This field will be populated when errors occur.
+      description: The errors generated during processing of the operation, if any. Populated when errors occur.
       type: string
     - contextPath: GCP.Compute.Operations.warnings
-      description: The warning messages generated during processing of the operation, if any. This field will be populated when warnings occur.
+      description: The warning messages generated during processing of the operation, if any. Populated when warnings occur.
       type: string
     - contextPath: GCP.Compute.Operations.httpErrorStatusCode
-      description: The HTTP error status code that was returned if the operation fails. For example, a 404 means the resource was not found.
+      description: The HTTP error status code that is returned if the operation fails. For example, a 404 means the resource was not found.
       type: number
     - contextPath: GCP.Compute.Operations.httpErrorMessage
-      description: The HTTP error message that was returned if the operation fails, such as NOT FOUND.
+      description: The HTTP error message that is returned if the operation fails, such as NOT FOUND.
       type: string
     - contextPath: GCP.Compute.Operations.selfLink
       description: The server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.region
-      description: The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body.
+      description: The URL of the region where the operation resides. Only available when performing regional operations. Must be specified as part of the HTTP request URL and cannot be set as a field in the request body.
       type: string
     - contextPath: GCP.Compute.Operations.description
       description: The textual description of the operation, which is set when the operation is created.
       type: string
     - contextPath: GCP.Compute.Operations.kind
-      description: The type of the resource. Always compute#operation for Operation resources.
+      description: The type of the resource, which is always compute#operation for Operation resources.
       type: string
 
 
