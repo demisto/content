@@ -388,6 +388,53 @@ script:
     - contextPath: GCP.Compute.Firewalls.targetTags
       description: Target instance tags.
       type: Unknown
+  - name: gcp-compute-firewall-delete
+    description: "Deletes the specified firewall rule. Required permission: compute.firewalls.delete."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: resource_name
+      required: true
+      description: The name of the firewall rule to delete.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation resource, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource, for example compute#operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: The current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: The progress of the operation as a percentage between 0 and 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID of the resource affected by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the target resource modified by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The date and time when the operation resource was created.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The date and time when the operation started running.
+      type: Date
+    - contextPath: GCP.Compute.Operations.user
+      description: The user account that performed the operation.
+      type: String
   - name: gcp-compute-snapshots-list
     description: "Lists snapshots in a specific project. Required permission: compute.snapshots.list."
     arguments:
@@ -549,6 +596,113 @@ script:
     - contextPath: GCP.Compute.Snapshots.storageLocations
       description: List of storage locations for the snapshot.
       type: Unknown
+  - name: gcp-compute-snapshot-delete
+    description: "Deletes the specified snapshot. Deleting a single snapshot might not delete all data on that snapshot. If any data on the snapshot marked for deletion is needed for subsequent snapshots, the data is moved to the next corresponding snapshot. Required permission: compute.snapshots.delete."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: resource_name
+      required: true
+      description: The name of the snapshot to delete.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation resource, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource, for example compute#operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: The current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: The progress of the operation as a percentage between 0 and 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID of the resource affected by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the target resource modified by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The date and time when the operation resource was created.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The date and time when the operation started running.
+      type: Date
+    - contextPath: GCP.Compute.Operations.user
+      description: The user account that performed the operation.
+      type: String
+  - name: gcp-compute-snapshot-labels-set
+    description: "Sets the labels on a snapshot. Required permissions: compute.snapshots.setLabels, compute.snapshots.get."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: resource_name
+      required: true
+      description: The name of the snapshot for this request.
+    - name: labels
+      required: true
+      description: 'The labels to apply for this resource. Each label key and value must comply with RFC1035. Example: key=abc,value=123;key=def,value=456.'
+    - name: label_fingerprint
+      required: false
+      description: The fingerprint of the previous set of labels for this resource, used to detect conflicts. Run gcp-compute-snapshot-get to retrieve the latest fingerprint. Ignored when add_labels is true, since the fingerprint of the fetched snapshot is used instead. When add_labels is false, a label_fingerprint must be provided.
+    - name: add_labels
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to add the new labels to the existing ones or override the previous labels with the new ones. True - add, False - override.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation resource, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource, for example compute#operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: The current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: The progress of the operation as a percentage between 0 and 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID of the resource affected by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the target resource modified by the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The date and time when the operation resource was created.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The date and time when the operation started running.
+      type: Date
+    - contextPath: GCP.Compute.Operations.user
+      description: The user account that performed the operation.
+      type: String
   - name: gcp-compute-instances-aggregated-list-by-ip
     description: "Returns an aggregated list of instances across all zones that can be filtered by internal or external IP. Required permission: cloudasset.assets.searchAllResources."
     arguments:
@@ -1577,6 +1731,682 @@ script:
       description: The path to the custom 404 page for the bucket website.
       type: String
 
+  - name: gcp-storage-bucket-create
+    description: "Creates a new Google Cloud Storage (GCS) bucket in the specified project. Required permission: storage.buckets.create."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: bucket_name
+      required: true
+      description: The name of the bucket to create.
+    - name: location
+      required: false
+      description: The location of the bucket (for example, US, EU, ASIA, us-central1). If not provided, the GCS API default (US) is used.
+    - name: bucket_acl
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - authenticatedRead
+      - private
+      - projectPrivate
+      - publicRead
+      - publicReadWrite
+      description: The predefined ACL to apply to the bucket.
+    - name: default_object_acl
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - authenticatedRead
+      - bucketOwnerFullControl
+      - bucketOwnerRead
+      - private
+      - projectPrivate
+      - publicRead
+      description: The predefined default object ACL to apply to objects added to the bucket.
+    - name: uniform_bucket_level_access
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to enable Uniform Bucket-Level Access (UBLA) on the bucket.
+    outputs:
+    - contextPath: GCP.Storage.Buckets.id
+      description: The unique identifier for the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.name
+      description: The name of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.kind
+      description: The type of resource (for example, storage#bucket).
+      type: String
+    - contextPath: GCP.Storage.Buckets.selfLink
+      description: The link to the bucket resource on the GCP API.
+      type: String
+    - contextPath: GCP.Storage.Buckets.projectNumber
+      description: The GCP project number associated with the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.location
+      description: The location of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.locationType
+      description: The type of location (for example, multi-region).
+      type: String
+    - contextPath: GCP.Storage.Buckets.storageClass
+      description: The storage class of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.rpo
+      description: The recovery point objective setting of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.etag
+      description: The HTTP entity tag of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.metageneration
+      description: The metageneration number of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.timeCreated
+      description: The time the bucket was created.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.updated
+      description: The time the bucket was last updated.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.iamConfiguration.publicAccessPrevention
+      description: The public access prevention setting of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.iamConfiguration.uniformBucketLevelAccess
+      description: The Uniform Bucket-Level Access (UBLA) configuration, including whether it is enabled and the deadline for disabling it.
+      type: Object
+    - contextPath: GCP.Storage.Buckets.versioning.enabled
+      description: Whether object versioning is enabled for the bucket.
+      type: Boolean
+    - contextPath: GCP.Storage.Buckets.defaultEventBasedHold
+      description: The default value for the event-based hold on newly created objects in the bucket.
+      type: Boolean
+    - contextPath: GCP.Storage.Buckets.generation
+      description: The generation (version) number of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.softDeleteTime
+      description: The date and time when the bucket was soft-deleted.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.hardDeleteTime
+      description: The time the bucket will be permanently deleted.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.hierarchicalNamespace.enabled
+      description: Whether hierarchical namespace is enabled for the bucket.
+      type: Boolean
+    - contextPath: GCP.Storage.Buckets.encryption.defaultKmsKeyName
+      description: The Cloud KMS key used to encrypt objects written to the bucket when no encryption method is specified.
+      type: String
+    - contextPath: GCP.Storage.Buckets.acl
+      description: The access controls on the bucket (bucketAccessControls resources). Omitted when Uniform Bucket-Level Access is enabled.
+      type: Unknown
+    - contextPath: GCP.Storage.Buckets.defaultObjectAcl
+      description: The default access controls applied to new objects when no ACL is provided. Omitted when Uniform Bucket-Level Access is enabled.
+      type: Unknown
+    - contextPath: GCP.Storage.Buckets.website.mainPageSuffix
+      description: The suffix appended to requests for a directory-like URL, used for static website hosting.
+      type: String
+    - contextPath: GCP.Storage.Buckets.website.notFoundPage
+      description: The object served when a requested resource is not found, used for static website hosting.
+      type: String
+    - contextPath: GCP.Storage.Buckets.owner.entity
+      description: The entity that owns the bucket, in the form project-owner-projectId.
+      type: String
+    - contextPath: GCP.Storage.Buckets.owner.entityId
+      description: The ID of the entity that owns the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.logging.logBucket
+      description: The destination bucket where the bucket's logs are placed.
+      type: String
+    - contextPath: GCP.Storage.Buckets.logging.logObjectPrefix
+      description: The prefix for log object names.
+      type: String
+    - contextPath: GCP.Storage.Buckets.cors
+      description: The bucket's Cross-Origin Resource Sharing (CORS) configuration.
+      type: Unknown
+    - contextPath: GCP.Storage.Buckets.lifecycle.rule
+      description: The bucket's lifecycle management rules.
+      type: Unknown
+    - contextPath: GCP.Storage.Buckets.autoclass.enabled
+      description: Whether Autoclass is enabled for the bucket.
+      type: Boolean
+    - contextPath: GCP.Storage.Buckets.autoclass.toggleTime
+      description: The date and time when Autoclass was last enabled or disabled for the bucket.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.autoclass.terminalStorageClass
+      description: The coldest storage class that an object transitions to in an Autoclass-enabled bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.autoclass.terminalStorageClassUpdateTime
+      description: The date and time when the terminal storage class was last updated for the bucket.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.labels
+      description: The user-provided bucket labels, as key-value pairs.
+      type: Unknown
+    - contextPath: GCP.Storage.Buckets.retentionPolicy.retentionPeriod
+      description: The minimum age in seconds that objects must reach before they can be deleted or replaced.
+      type: String
+    - contextPath: GCP.Storage.Buckets.retentionPolicy.effectiveTime
+      description: The date and time from which the retention policy was effective.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.retentionPolicy.isLocked
+      description: Whether the retention policy is locked.
+      type: Boolean
+    - contextPath: GCP.Storage.Buckets.objectRetention.mode
+      description: The bucket's object retention mode. When enabled, retention configurations can be set on objects.
+      type: String
+    - contextPath: GCP.Storage.Buckets.billing.requesterPays
+      description: Whether Requester Pays is enabled for the bucket.
+      type: Boolean
+    - contextPath: GCP.Storage.Buckets.softDeletePolicy.retentionDurationSeconds
+      description: The period in seconds during which a soft-deleted object is retained and cannot be permanently deleted.
+      type: String
+    - contextPath: GCP.Storage.Buckets.softDeletePolicy.effectiveTime
+      description: The date and time when the soft delete policy becomes effective.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.customPlacementConfig.dataLocations
+      description: The list of individual regions that comprise a configurable dual-region bucket.
+      type: Unknown
+    - contextPath: GCP.Storage.Buckets.ipFilter.mode
+      description: The state of the IP filter configuration (Enabled or Disabled).
+      type: String
+
+  - name: gcp-storage-bucket-delete
+    description: "Deletes a Google Cloud Storage (GCS) bucket. The bucket must be empty unless the force argument is set to true. Required permissions: storage.buckets.delete, storage.objects.list, storage.objects.delete."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: bucket_name
+      required: true
+      description: The name of the bucket to delete.
+    - name: force
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      defaultValue: "false"
+      description: Whether to delete all objects in the bucket before deleting the bucket itself. When false, deleting a non-empty bucket fails.
+    outputs: []
+
+  - name: gcp-storage-bucket-public-access-block
+    description: "Sets the public access prevention configuration on a GCS bucket. Required permissions: storage.buckets.update, storage.buckets.setIamPolicy."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: bucket_name
+      required: true
+      description: The name of the bucket.
+    - name: public_access_prevention
+      required: false
+      description: The public access prevention setting to apply. "enforced" blocks all public access; "inherited" defers to the organization policy.
+      auto: PREDEFINED
+      predefined:
+      - enforced
+      - inherited
+      defaultValue: enforced
+    outputs:
+    - contextPath: GCP.Storage.Buckets.id
+      description: The unique identifier for the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.name
+      description: The name of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.kind
+      description: The type of resource (for example, storage#bucket).
+      type: String
+    - contextPath: GCP.Storage.Buckets.selfLink
+      description: The link to the bucket resource on the GCP API.
+      type: String
+    - contextPath: GCP.Storage.Buckets.projectNumber
+      description: The GCP project number associated with the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.location
+      description: The location of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.locationType
+      description: The type of location (for example, multi-region).
+      type: String
+    - contextPath: GCP.Storage.Buckets.storageClass
+      description: The storage class of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.rpo
+      description: The recovery point objective setting of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.etag
+      description: The HTTP entity tag of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.metageneration
+      description: The metageneration number of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.timeCreated
+      description: The time the bucket was created.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.updated
+      description: The time the bucket was last updated.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.iamConfiguration.publicAccessPrevention
+      description: The public access prevention setting of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.iamConfiguration.uniformBucketLevelAccess
+      description: The Uniform Bucket-Level Access (UBLA) configuration, including whether it is enabled and the deadline for disabling it.
+      type: Object
+    - contextPath: GCP.Storage.Buckets.versioning.enabled
+      description: Whether object versioning is enabled for the bucket.
+      type: Boolean
+    - contextPath: GCP.Storage.Buckets.defaultEventBasedHold
+      description: The default value for the event-based hold on newly created objects in the bucket.
+      type: Boolean
+    - contextPath: GCP.Storage.Buckets.generation
+      description: The generation (version) number of the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.softDeleteTime
+      description: The date and time when the bucket was soft-deleted.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.hardDeleteTime
+      description: The time the bucket will be permanently deleted.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.hierarchicalNamespace.enabled
+      description: Whether hierarchical namespace is enabled for the bucket.
+      type: Boolean
+    - contextPath: GCP.Storage.Buckets.encryption.defaultKmsKeyName
+      description: The Cloud KMS key used to encrypt objects written to the bucket when no encryption method is specified.
+      type: String
+    - contextPath: GCP.Storage.Buckets.acl
+      description: The access controls on the bucket (bucketAccessControls resources). Omitted when Uniform Bucket-Level Access is enabled.
+      type: Unknown
+    - contextPath: GCP.Storage.Buckets.defaultObjectAcl
+      description: The default access controls applied to new objects when no ACL is provided. Omitted when Uniform Bucket-Level Access is enabled.
+      type: Unknown
+    - contextPath: GCP.Storage.Buckets.website.mainPageSuffix
+      description: The suffix appended to requests for a directory-like URL, used for static website hosting.
+      type: String
+    - contextPath: GCP.Storage.Buckets.website.notFoundPage
+      description: The object served when a requested resource is not found, used for static website hosting.
+      type: String
+    - contextPath: GCP.Storage.Buckets.owner.entity
+      description: The entity that owns the bucket, in the form project-owner-projectId.
+      type: String
+    - contextPath: GCP.Storage.Buckets.owner.entityId
+      description: The ID of the entity that owns the bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.logging.logBucket
+      description: The destination bucket where the bucket's logs are placed.
+      type: String
+    - contextPath: GCP.Storage.Buckets.logging.logObjectPrefix
+      description: The prefix for log object names.
+      type: String
+    - contextPath: GCP.Storage.Buckets.cors
+      description: The bucket's Cross-Origin Resource Sharing (CORS) configuration.
+      type: Unknown
+    - contextPath: GCP.Storage.Buckets.lifecycle.rule
+      description: The bucket's lifecycle management rules.
+      type: Unknown
+    - contextPath: GCP.Storage.Buckets.autoclass.enabled
+      description: Whether Autoclass is enabled for the bucket.
+      type: Boolean
+    - contextPath: GCP.Storage.Buckets.autoclass.toggleTime
+      description: The date and time when Autoclass was last enabled or disabled for the bucket.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.autoclass.terminalStorageClass
+      description: The coldest storage class that an object transitions to in an Autoclass-enabled bucket.
+      type: String
+    - contextPath: GCP.Storage.Buckets.autoclass.terminalStorageClassUpdateTime
+      description: The date and time when the terminal storage class was last updated for the bucket.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.labels
+      description: The user-provided bucket labels, as key-value pairs.
+      type: Unknown
+    - contextPath: GCP.Storage.Buckets.retentionPolicy.retentionPeriod
+      description: The minimum age in seconds that objects must reach before they can be deleted or replaced.
+      type: String
+    - contextPath: GCP.Storage.Buckets.retentionPolicy.effectiveTime
+      description: The date and time from which the retention policy was effective.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.retentionPolicy.isLocked
+      description: Whether the retention policy is locked.
+      type: Boolean
+    - contextPath: GCP.Storage.Buckets.objectRetention.mode
+      description: The bucket's object retention mode. When enabled, retention configurations can be set on objects.
+      type: String
+    - contextPath: GCP.Storage.Buckets.billing.requesterPays
+      description: Whether Requester Pays is enabled for the bucket.
+      type: Boolean
+    - contextPath: GCP.Storage.Buckets.softDeletePolicy.retentionDurationSeconds
+      description: The period in seconds during which a soft-deleted object is retained and cannot be permanently deleted.
+      type: String
+    - contextPath: GCP.Storage.Buckets.softDeletePolicy.effectiveTime
+      description: The date and time when the soft delete policy becomes effective.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.customPlacementConfig.dataLocations
+      description: The list of individual regions that comprise a configurable dual-region bucket.
+      type: Unknown
+    - contextPath: GCP.Storage.Buckets.ipFilter.mode
+      description: The state of the IP filter configuration (Enabled or Disabled).
+      type: String
+
+  - name: gcp-storage-bucket-object-upload
+    description: "Uploads a War Room file (by entry ID) to a GCS bucket as an object. Required permission: storage.objects.create."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: bucket_name
+      required: true
+      description: The name of the bucket to upload the object to.
+    - name: object_name
+      required: true
+      description: The name to give the uploaded object in the bucket.
+    - name: entry_id
+      required: true
+      description: The War Room entry ID of the file to upload.
+    - name: object_acl
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - authenticatedRead
+      - bucketOwnerFullControl
+      - bucketOwnerRead
+      - private
+      - projectPrivate
+      - publicRead
+      description: The predefined ACL to apply to the uploaded object. Cannot be used when Uniform Bucket-Level Access is enabled on the bucket.
+    outputs:
+    - contextPath: GCP.Storage.Buckets.name
+      description: The name of the bucket containing the uploaded object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.kind
+      description: The kind of item this is. For objects, this is always storage#object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.id
+      description: The ID of the uploaded object, including the bucket name, object name, and generation number.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.selfLink
+      description: The link to the uploaded object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.mediaLink
+      description: The media download link for the uploaded object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.name
+      description: The name of the uploaded object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.bucket
+      description: The name of the bucket containing the object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.generation
+      description: The content generation of the uploaded object. Used for object versioning.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.metageneration
+      description: The version of the metadata for the object at this generation.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.contentType
+      description: The content type of the uploaded object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.storageClass
+      description: The storage class of the uploaded object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.size
+      description: The content length of the uploaded object in bytes.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.md5Hash
+      description: The MD5 hash of the uploaded object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.crc32c
+      description: The CRC32c checksum of the uploaded object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.etag
+      description: The HTTP 1.1 Entity tag for the uploaded object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.timeCreated
+      description: The creation time of the uploaded object in RFC 3339 format.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.Objects.updated
+      description: The modification time of the uploaded object metadata in RFC 3339 format.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.Objects.timeStorageClassUpdated
+      description: The date and time when the object's storage class was last changed, in RFC 3339 format.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.Objects.contentEncoding
+      description: The content encoding of the uploaded object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.contentDisposition
+      description: The content disposition of the uploaded object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.contentLanguage
+      description: The content language of the uploaded object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.cacheControl
+      description: The cache control directive for the uploaded object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.metadata
+      description: The user-provided metadata, in key/value pairs.
+      type: Unknown
+    - contextPath: GCP.Storage.Buckets.Objects.acl
+      description: The access control list for the uploaded object.
+      type: Unknown
+    - contextPath: GCP.Storage.Buckets.Objects.owner
+      description: The owner of the object, including the owner entity and entity ID.
+      type: Object
+    - contextPath: GCP.Storage.Buckets.Objects.componentCount
+      description: The number of component objects that make up a composite object.
+      type: Number
+    - contextPath: GCP.Storage.Buckets.Objects.customTime
+      description: The user-specified timestamp for the uploaded object, in RFC 3339 format.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.Objects.eventBasedHold
+      description: Whether an event-based hold is active on the uploaded object.
+      type: Boolean
+    - contextPath: GCP.Storage.Buckets.Objects.temporaryHold
+      description: Whether a temporary hold is active on the uploaded object.
+      type: Boolean
+    - contextPath: GCP.Storage.Buckets.Objects.retentionExpirationTime
+      description: The earliest date and time when the object can be deleted based on the bucket's retention policy, in RFC 3339 format.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.Objects.kmsKeyName
+      description: The Cloud KMS key used to encrypt the uploaded object, if any.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.customerEncryption
+      description: The customer-supplied encryption key information, including the algorithm and the SHA256 hash of the key.
+      type: Object
+
+  - name: gcp-storage-bucket-object-download
+    description: "Downloads an object from a GCS bucket and returns it as a War Room file. Required permission: storage.objects.get."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: bucket_name
+      required: true
+      description: The name of the bucket containing the object.
+    - name: object_name
+      required: true
+      description: The name of the object to download.
+    - name: saved_file_name
+      required: false
+      description: The name to give the downloaded file in the War Room. Defaults to the last path segment of the object name.
+    outputs:
+    - contextPath: File.Name
+      description: The name of the downloaded file.
+      type: String
+    - contextPath: File.EntryID
+      description: The War Room entry ID of the downloaded file.
+      type: String
+    - contextPath: File.Size
+      description: The size of the downloaded file in bytes.
+      type: Number
+    - contextPath: File.MD5
+      description: The MD5 hash of the downloaded file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the downloaded file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the downloaded file.
+      type: String
+
+  - name: gcp-storage-bucket-object-copy
+    description: "Copies an object from a source bucket to a destination bucket. Required permissions: storage.objects.get, storage.objects.create."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: source_bucket_name
+      required: true
+      description: The name of the source bucket containing the object to copy.
+    - name: source_object_name
+      required: true
+      description: The name of the object to copy.
+    - name: destination_bucket_name
+      required: true
+      description: The name of the destination bucket to copy the object to.
+    - name: destination_object_name
+      required: false
+      description: The name to give the copied object in the destination bucket. Defaults to the source object name.
+    outputs:
+    - contextPath: GCP.Storage.Buckets.name
+      description: The name of the destination bucket containing the copied object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.kind
+      description: The kind of item this is. For objects, this is always storage#object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.id
+      description: The ID of the copied object, including the bucket name, object name, and generation number.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.selfLink
+      description: The link to the copied object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.mediaLink
+      description: The media download link for the copied object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.name
+      description: The name of the copied object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.bucket
+      description: The name of the bucket containing the object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.generation
+      description: The content generation of the copied object. Used for object versioning.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.metageneration
+      description: The version of the metadata for the object at this generation.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.contentType
+      description: The content type of the copied object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.storageClass
+      description: The storage class of the copied object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.size
+      description: The content length of the copied object in bytes.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.md5Hash
+      description: The MD5 hash of the copied object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.crc32c
+      description: The CRC32c checksum of the copied object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.etag
+      description: The HTTP 1.1 Entity tag for the copied object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.timeCreated
+      description: The creation date and time of the copied object, in RFC 3339 format.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.Objects.updated
+      description: The modification time of the copied object metadata, in RFC 3339 format.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.Objects.timeStorageClassUpdated
+      description: The date and time when the object's storage class was last changed, in RFC 3339 format.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.Objects.contentEncoding
+      description: The content encoding of the copied object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.contentDisposition
+      description: The content disposition of the copied object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.contentLanguage
+      description: The content language of the copied object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.cacheControl
+      description: The cache control directive for the copied object.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.metadata
+      description: The user-provided metadata, in key/value pairs.
+      type: Unknown
+    - contextPath: GCP.Storage.Buckets.Objects.acl
+      description: The access control list for the copied object.
+      type: Unknown
+    - contextPath: GCP.Storage.Buckets.Objects.owner
+      description: The owner of the object, including the owner entity and entity ID.
+      type: Object
+    - contextPath: GCP.Storage.Buckets.Objects.componentCount
+      description: The number of component objects that make up a composite object.
+      type: Number
+    - contextPath: GCP.Storage.Buckets.Objects.customTime
+      description: The user-specified timestamp for the copied object, in RFC 3339 format.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.Objects.eventBasedHold
+      description: Whether an event-based hold is active on the copied object.
+      type: Boolean
+    - contextPath: GCP.Storage.Buckets.Objects.temporaryHold
+      description: Whether a temporary hold is active on the copied object.
+      type: Boolean
+    - contextPath: GCP.Storage.Buckets.Objects.retentionExpirationTime
+      description: The earliest date and time when the object can be deleted based on the bucket's retention policy, in RFC 3339 format.
+      type: Date
+    - contextPath: GCP.Storage.Buckets.Objects.kmsKeyName
+      description: The Cloud KMS key used to encrypt the copied object, if any.
+      type: String
+    - contextPath: GCP.Storage.Buckets.Objects.customerEncryption
+      description: The customer-supplied encryption key information, including the algorithm and the SHA256 hash of the key.
+      type: Object
+
+  - name: gcp-storage-bucket-object-delete
+    description: "Deletes an object from a GCS bucket. Required permission: storage.objects.delete."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: bucket_name
+      required: true
+      description: The name of the bucket containing the object.
+    - name: object_name
+      required: true
+      description: The name of the object to delete.
+    - name: generation
+      required: false
+      description: The specific revision of the object to permanently delete instead of the latest version.
+    outputs: []
+
+  - name: gcp-storage-bucket-object-policy-delete
+    description: "Removes an ACL entry (entity) from a GCS object's access control list. If Uniform Bucket-Level Access is enabled on the bucket, use gcp-storage-bucket-policy-delete instead. Required permissions: storage.objects.get, storage.objects.update."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: bucket_name
+      required: true
+      description: The name of the bucket containing the object.
+    - name: object_name
+      required: true
+      description: The name of the object to remove the ACL entry from.
+    - name: entity
+      required: true
+      description: The entity to remove from the object's ACL (for example, allUsers, allAuthenticatedUsers, user-test@example.com).
+    - name: generation
+      required: false
+      description: The specific revision of the object to target.
+    outputs: []
+
   - name: gcp-storage-bucket-metadata-update-enable-GCP-bucket-versioning-quick-action
     description: "Enables versioning on a GCP storage bucket to preserve object versions. Required permission: storage.buckets.update."
     prettyname: Enable GCP Bucket Versioning
@@ -2335,6 +3165,826 @@ script:
       - contextPath: GCP.BigQuery.Datasets.catalogSource
         description: The origin of the dataset.
         type: String
+  - name: gcp-kms-key-rings-list
+    description: "Lists the Cloud KMS key rings in a given location, or across all locations. Required Permissions: cloudkms.keyRings.list."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: all_locations
+      description: Whether to return the key rings from all supported locations. When set to true, the location argument is ignored.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: limit
+      description: The maximum number of key rings to return per location. Valid range is 1-500.
+      required: false
+      defaultValue: '50'
+    - name: page_token
+      description: The token for the next page of results, used for pagination. Ignored when all_locations is set to true, because a page token is bound to a single location.
+      required: false
+    outputs:
+      - contextPath: GCP.KMS.KeyRings.Name
+        description: The ID of the key ring.
+        type: String
+      - contextPath: GCP.KMS.KeyRings.ResourceName
+        description: The full resource name of the key ring.
+        type: String
+      - contextPath: GCP.KMS.KeyRings.Project
+        description: The project that holds the key ring.
+        type: String
+      - contextPath: GCP.KMS.KeyRings.Location
+        description: The location of the key ring.
+        type: String
+      - contextPath: GCP.KMS.KeyRings.createTime
+        description: The time at which the key ring was created.
+        type: Date
+      - contextPath: GCP.KMS.KeyRingsNextToken
+        description: The token to pass as the page_token argument to retrieve the next page of key rings.
+        type: String
+  - name: gcp-kms-keys-list
+    description: "Lists the crypto keys of a given Cloud KMS key ring. Required Permissions: cloudkms.cryptoKeys.list."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto keys.
+      required: true
+    - name: key_state
+      description: 'The state of the primary crypto key version to filter by. Leave empty to return all keys.'
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - ENABLED
+      - DISABLED
+      - DESTROYED
+      - DESTROY_SCHEDULED
+      - PENDING_GENERATION
+      - PENDING_IMPORT
+      - IMPORT_FAILED
+    - name: limit
+      description: The maximum number of crypto keys to return. Valid range is 1-500.
+      required: false
+      defaultValue: '50'
+    - name: page_token
+      description: The token for the next page of results, used for pagination.
+      required: false
+    outputs:
+      - contextPath: GCP.KMS.CryptoKeys.Name
+        description: The ID of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.ResourceName
+        description: The full resource name of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Project
+        description: The project that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Location
+        description: The location of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.KeyRing
+        description: The key ring that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.purpose
+        description: The immutable purpose of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.createTime
+        description: The time at which the crypto key was created.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.nextRotationTime
+        description: The time at which the next scheduled rotation is due to run.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.rotationPeriod
+        description: The time period between automatic key rotations.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.labels
+        description: The labels with user-defined metadata.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.versionTemplate
+        description: The version template of the crypto key, containing the protectionLevel and algorithm fields.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.primary
+        description: The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeysNextToken
+        description: The token to use when requesting the next set of crypto keys.
+        type: String
+  - name: gcp-kms-keys-list-all
+    description: "Lists every crypto key across all key rings in a location, or across all locations. Required Permissions: cloudkms.keyRings.list, cloudkms.cryptoKeys.list."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: all_locations
+      description: Whether to return the crypto keys from all supported locations. When set to true, the location argument is ignored.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: key_state
+      description: 'Returns only keys whose primary crypto key version is in this state. Leave empty to return all keys.'
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - ENABLED
+      - DISABLED
+      - DESTROYED
+      - DESTROY_SCHEDULED
+      - PENDING_GENERATION
+      - PENDING_IMPORT
+      - IMPORT_FAILED
+    - name: limit
+      description: The maximum number of crypto keys to return per key ring. Valid range is 1-500. This command aggregates results across key rings and cannot be paged. If any key ring holds more keys than this limit, a truncation notice is returned. Use gcp-kms-keys-list to page through a single key ring.
+      required: false
+      defaultValue: '50'
+    outputs:
+      - contextPath: GCP.KMS.CryptoKeys.Name
+        description: The ID of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.ResourceName
+        description: The full resource name of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Project
+        description: The project that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Location
+        description: The location of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.KeyRing
+        description: The key ring that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.purpose
+        description: The immutable purpose of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.createTime
+        description: The time at which the crypto key was created.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.nextRotationTime
+        description: The time at which the next scheduled rotation is due to run.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.rotationPeriod
+        description: The period between automatic key rotations.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.labels
+        description: The labels with user-defined metadata.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.versionTemplate
+        description: The version template of the crypto key, containing the protectionLevel and algorithm fields.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.primary
+        description: The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields.
+        type: Unknown
+  - name: gcp-kms-key-get
+    description: "Returns the metadata of a given crypto key and its primary crypto key version. Required Permissions: cloudkms.cryptoKeys.get."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the crypto key to fetch.
+      required: true
+    outputs:
+      - contextPath: GCP.KMS.CryptoKeys.Name
+        description: The ID of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.ResourceName
+        description: The full resource name of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Project
+        description: The project that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Location
+        description: The location of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.KeyRing
+        description: The key ring that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.purpose
+        description: The immutable purpose of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.createTime
+        description: The time at which the crypto key was created.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.nextRotationTime
+        description: The time at which the next scheduled rotation is due to run.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.rotationPeriod
+        description: The time period between automatic key rotations.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.labels
+        description: The labels with user-defined metadata.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.versionTemplate
+        description: The version template of the crypto key, containing the protectionLevel and algorithm fields.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.primary
+        description: The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields.
+        type: Unknown
+  - name: gcp-kms-key-create
+    description: "Creates a new crypto key within a given key ring. Required Permissions: cloudkms.cryptoKeys.create."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring in which to create the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the crypto key to create. Must be unique within the key ring and match the regular expression [a-zA-Z0-9_-]{1,63}.
+      required: true
+    - name: purpose
+      description: The immutable cryptographic capability of the crypto key.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - ENCRYPT_DECRYPT
+      - ASYMMETRIC_SIGN
+      - ASYMMETRIC_DECRYPT
+      defaultValue: ENCRYPT_DECRYPT
+    - name: algorithm
+      description: The algorithm to use when creating a crypto key version based on this template.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - GOOGLE_SYMMETRIC_ENCRYPTION
+      - RSA_SIGN_PSS_2048_SHA256
+      - RSA_SIGN_PSS_3072_SHA256
+      - RSA_SIGN_PSS_4096_SHA256
+      - RSA_SIGN_PSS_4096_SHA512
+      - RSA_SIGN_PKCS1_2048_SHA256
+      - RSA_SIGN_PKCS1_3072_SHA256
+      - RSA_SIGN_PKCS1_4096_SHA256
+      - RSA_SIGN_PKCS1_4096_SHA512
+      - RSA_DECRYPT_OAEP_2048_SHA256
+      - RSA_DECRYPT_OAEP_3072_SHA256
+      - RSA_DECRYPT_OAEP_4096_SHA256
+      - RSA_DECRYPT_OAEP_4096_SHA512
+      - EC_SIGN_P256_SHA256
+      - EC_SIGN_P384_SHA384
+      defaultValue: GOOGLE_SYMMETRIC_ENCRYPTION
+    - name: protection_level
+      description: The protection level to use when creating a crypto key version based on this template.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - SOFTWARE
+      - HSM
+      defaultValue: SOFTWARE
+    - name: rotation_period
+      description: The time period between automatic key rotations, in seconds (for example, 7776000s). Must be between 24 hours and 876,000 hours. Supported only for keys whose purpose is ENCRYPT_DECRYPT.
+      required: false
+    - name: next_rotation_time
+      description: The time of the next scheduled rotation. Accepts an absolute timestamp in RFC3339 UTC "Zulu" format (for example, 2024-10-02T15:01:23Z) or a relative expression (for example, "in 30 days"). Supported only for keys whose purpose is ENCRYPT_DECRYPT.
+      required: false
+    - name: labels
+      description: The labels with user-defined metadata, in the format key=abc,value=123;key=def,value=456.
+      required: false
+    - name: skip_initial_version_creation
+      description: Whether to create the crypto key without an initial crypto key version. When set to true, a crypto key version must be created before the key can be used.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+      - contextPath: GCP.KMS.CryptoKeys.Name
+        description: The ID of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.ResourceName
+        description: The full resource name of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Project
+        description: The project that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Location
+        description: The location of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.KeyRing
+        description: The key ring that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.purpose
+        description: The immutable purpose of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.createTime
+        description: The time at which the crypto key was created.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.nextRotationTime
+        description: The time at which the next scheduled rotation is due to run.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.rotationPeriod
+        description: The period between automatic key rotations.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.labels
+        description: The labels with user-defined metadata.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.versionTemplate
+        description: The version template of the crypto key, containing the protectionLevel and algorithm fields.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.primary
+        description: The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields.
+        type: Unknown
+  - name: gcp-kms-key-update
+    description: "Updates the mutable fields of a given crypto key. Only the supplied fields are updated. Required Permissions: cloudkms.cryptoKeys.update."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the crypto key to update.
+      required: true
+    - name: labels
+      description: The labels with user-defined metadata, in the format key=abc,value=123;key=def,value=456.
+      required: false
+    - name: next_rotation_time
+      description: The time of the next scheduled rotation. Accepts an absolute timestamp in RFC3339 UTC "Zulu" format (for example, 2024-10-02T15:01:23Z) or a relative expression (for example, "in 30 days").
+      required: false
+    - name: rotation_period
+      description: The time period between automatic key rotations, in seconds (for example, 7776000s). Must be between 24 hours and 876,000 hours.
+      required: false
+    - name: algorithm
+      description: The algorithm to use when creating a crypto key version based on this template.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - GOOGLE_SYMMETRIC_ENCRYPTION
+      - RSA_SIGN_PSS_2048_SHA256
+      - RSA_SIGN_PSS_3072_SHA256
+      - RSA_SIGN_PSS_4096_SHA256
+      - RSA_SIGN_PSS_4096_SHA512
+      - RSA_SIGN_PKCS1_2048_SHA256
+      - RSA_SIGN_PKCS1_3072_SHA256
+      - RSA_SIGN_PKCS1_4096_SHA256
+      - RSA_SIGN_PKCS1_4096_SHA512
+      - RSA_DECRYPT_OAEP_2048_SHA256
+      - RSA_DECRYPT_OAEP_3072_SHA256
+      - RSA_DECRYPT_OAEP_4096_SHA256
+      - RSA_DECRYPT_OAEP_4096_SHA512
+      - EC_SIGN_P256_SHA256
+      - EC_SIGN_P384_SHA384
+    - name: protection_level
+      description: The protection level to use when creating a crypto key version based on this template.
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - SOFTWARE
+      - HSM
+    outputs:
+      - contextPath: GCP.KMS.CryptoKeys.Name
+        description: The ID of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.ResourceName
+        description: The full resource name of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Project
+        description: The project that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.Location
+        description: The location of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.KeyRing
+        description: The key ring that holds the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.purpose
+        description: The immutable purpose of the crypto key.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.createTime
+        description: The time at which the crypto key was created.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.nextRotationTime
+        description: The time at which the next scheduled rotation is due to run.
+        type: Date
+      - contextPath: GCP.KMS.CryptoKeys.rotationPeriod
+        description: The time period between automatic key rotations.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeys.labels
+        description: The labels with user-defined metadata.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.versionTemplate
+        description: The version template of the crypto key, containing the protectionLevel and algorithm fields.
+        type: Unknown
+      - contextPath: GCP.KMS.CryptoKeys.primary
+        description: The primary crypto key version, containing the name, state, createTime, protectionLevel, algorithm, and generateTime fields.
+        type: Unknown
+  - name: gcp-kms-key-version-enable
+    description: "Enables a crypto key version of a given crypto key. Required Permissions: cloudkms.cryptoKeyVersions.update, cloudkms.cryptoKeys.get."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the crypto key to enable.
+      required: true
+    - name: crypto_key_version
+      description: The ID of the crypto key version to enable. Use the keyword default to target the primary crypto key version of the given crypto key.
+      required: false
+      defaultValue: default
+    outputs:
+      - contextPath: GCP.KMS.CryptoKeyVersions.name
+        description: The resource name of the crypto key version.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.state
+        description: The current state of the crypto key version.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.protectionLevel
+        description: The protection level describing how cryptographic operations are performed.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.algorithm
+        description: The algorithm that the crypto key version supports.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.createTime
+        description: The date and time when the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z).
+        type: Date
+  - name: gcp-kms-key-version-disable
+    description: "Disables a crypto key version of a given crypto key. Required Permissions: cloudkms.cryptoKeyVersions.update, cloudkms.cryptoKeys.get."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the crypto key to disable.
+      required: true
+    - name: crypto_key_version
+      description: The ID of the crypto key version to disable. Use the keyword default to target the primary crypto key version of the given crypto key.
+      required: false
+      defaultValue: default
+    outputs:
+      - contextPath: GCP.KMS.CryptoKeyVersions.name
+        description: The resource name of the crypto key version.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.state
+        description: The current state of the crypto key version.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.protectionLevel
+        description: The protection level describing how cryptographic operations are performed.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.algorithm
+        description: The algorithm that the crypto key version supports.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.createTime
+        description: The date and time when the crypto key version was created. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z).
+        type: Date
+  - name: gcp-kms-key-version-destroy
+    description: "Schedules a crypto key version for destruction. The key material is destroyed 24 hours later. Required Permissions: cloudkms.cryptoKeyVersions.destroy, cloudkms.cryptoKeys.get."
+    execution: true
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the crypto key to destroy.
+      required: true
+    - name: crypto_key_version
+      description: The ID of the crypto key version to destroy. Use the keyword default to target the primary crypto key version of the given crypto key.
+      required: false
+      defaultValue: default
+    outputs:
+      - contextPath: GCP.KMS.CryptoKeyVersions.name
+        description: The resource name of the crypto key version.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.state
+        description: The current state of the crypto key version.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.destroyTime
+        description: The date and time when the crypto key version material is scheduled to be destroyed. The value is an RFC 3339 UTC timestamp (for example, 2024-01-15T12:34:56.789012Z).
+        type: Date
+  - name: gcp-kms-key-version-restore
+    description: "Restores a crypto key version that is scheduled for destruction. Required Permissions: cloudkms.cryptoKeyVersions.restore, cloudkms.cryptoKeys.get."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the crypto key to restore.
+      required: true
+    - name: crypto_key_version
+      description: The ID of the crypto key version to restore. Use the keyword default to target the primary crypto key version of the given crypto key.
+      required: false
+      defaultValue: default
+    outputs:
+      - contextPath: GCP.KMS.CryptoKeyVersions.name
+        description: The resource name of the crypto key version.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.state
+        description: The current state of the crypto key version.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.protectionLevel
+        description: The protection level describing how cryptographic operations are performed.
+        type: String
+      - contextPath: GCP.KMS.CryptoKeyVersions.algorithm
+        description: The algorithm that the crypto key version supports.
+        type: String
+  - name: gcp-kms-public-key-get
+    description: "Returns the public key of a given asymmetric crypto key version. Required Permissions: cloudkms.cryptoKeyVersions.viewPublicKey."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the asymmetric crypto key.
+      required: true
+    - name: crypto_key_version
+      description: The ID of the crypto key version whose public key is returned.
+      required: false
+      defaultValue: '1'
+    outputs:
+      - contextPath: GCP.KMS.PublicKey.CryptoKey
+        description: The crypto key to which the public key belongs.
+        type: String
+      - contextPath: GCP.KMS.PublicKey.CryptoKeyVersion
+        description: The resource name of the crypto key version.
+        type: String
+      - contextPath: GCP.KMS.PublicKey.pem
+        description: The public key in PEM format.
+        type: String
+      - contextPath: GCP.KMS.PublicKey.pemCrc32c
+        description: The CRC32C checksum of the returned PEM public key.
+        type: String
+      - contextPath: GCP.KMS.PublicKey.algorithm
+        description: The algorithm of the public key.
+        type: String
+      - contextPath: GCP.KMS.PublicKey.name
+        description: The resource name of the crypto key version returned by the API.
+        type: String
+      - contextPath: GCP.KMS.PublicKey.protectionLevel
+        description: The protection level of the crypto key version.
+        type: String
+  - name: gcp-kms-symmetric-encrypt
+    description: "Encrypts data using a symmetric crypto key. Required Permissions: cloudkms.cryptoKeyVersions.useToEncrypt."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the crypto key to encrypt with.
+      required: true
+    - name: plaintext
+      description: The plain text to encrypt. Must be no larger than 64KB. Mutually exclusive with base64_plaintext and entry_id.
+      required: false
+      secret: true
+    - name: base64_plaintext
+      description: The Base64-encoded plain text to encrypt. Mutually exclusive with plaintext and entry_id.
+      required: false
+      secret: true
+    - name: entry_id
+      description: The War Room entry ID of the file to encrypt. Mutually exclusive with plaintext and base64_plaintext.
+      required: false
+    - name: additional_authenticated_data
+      description: The Base64-encoded additional authenticated data (AAD). The same value must be supplied when decrypting.
+      required: false
+    outputs:
+      - contextPath: GCP.KMS.SymmetricEncrypt.CryptoKey
+        description: The crypto key used for the encryption.
+        type: String
+      - contextPath: GCP.KMS.SymmetricEncrypt.ResourceName
+        description: The full resource name of the crypto key used for the encryption.
+        type: String
+      - contextPath: GCP.KMS.SymmetricEncrypt.ciphertext
+        description: The Base64-encoded encrypted ciphertext.
+        type: String
+      - contextPath: GCP.KMS.SymmetricEncrypt.ciphertextCrc32c
+        description: The CRC32C checksum of the returned ciphertext.
+        type: String
+      - contextPath: GCP.KMS.SymmetricEncrypt.verifiedPlaintextCrc32c
+        description: Whether the API verified the CRC32C checksum of the supplied plaintext.
+        type: Boolean
+      - contextPath: GCP.KMS.SymmetricEncrypt.name
+        description: The resource name of the crypto key version used for the encryption.
+        type: String
+      - contextPath: GCP.KMS.SymmetricEncrypt.protectionLevel
+        description: The protection level of the crypto key version used for the encryption.
+        type: String
+  - name: gcp-kms-symmetric-decrypt
+    description: "Decrypts data that was encrypted with a symmetric crypto key. Required Permissions: cloudkms.cryptoKeyVersions.useToDecrypt."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the crypto key to decrypt with.
+      required: true
+    - name: ciphertext
+      description: The Base64-encoded ciphertext to decrypt. Mutually exclusive with entry_id.
+      required: false
+      secret: true
+    - name: entry_id
+      description: The War Room entry ID of the file holding the raw cipher text bytes to decrypt. Mutually exclusive with ciphertext.
+      required: false
+    - name: additional_authenticated_data
+      description: The Base64-encoded additional authenticated data (AAD) that was supplied during encryption.
+      required: false
+    outputs:
+      - contextPath: GCP.KMS.SymmetricDecrypt.CryptoKey
+        description: The crypto key used for the decryption.
+        type: String
+      - contextPath: GCP.KMS.SymmetricDecrypt.ResourceName
+        description: The full resource name of the crypto key used for the decryption.
+        type: String
+      - contextPath: GCP.KMS.SymmetricDecrypt.Plaintext
+        description: The decrypted plain text. Omitted when the decrypted data is binary, in which case it is returned as a file instead.
+        type: String
+      - contextPath: GCP.KMS.SymmetricDecrypt.FullResponse
+        description: The full API response returned by the decrypt operation.
+        type: Unknown
+  - name: gcp-kms-asymmetric-encrypt
+    description: "Encrypts data with the public key of an asymmetric crypto key version. The encryption is performed locally using the retrieved public key. Required Permissions: cloudkms.cryptoKeyVersions.viewPublicKey."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the asymmetric crypto key to encrypt with.
+      required: true
+    - name: crypto_key_version
+      description: The ID of the crypto key version to encrypt with.
+      required: false
+      defaultValue: '1'
+    - name: plaintext
+      description: The plain text to encrypt. Mutually exclusive with base64_plaintext and entry_id.
+      required: false
+      secret: true
+    - name: base64_plaintext
+      description: The Base64-encoded plaintext to encrypt. Mutually exclusive with plaintext and entry_id.
+      required: false
+      secret: true
+    - name: entry_id
+      description: The War Room entry ID of the file to encrypt. Mutually exclusive with plaintext and base64_plaintext.
+      required: false
+    outputs:
+      - contextPath: GCP.KMS.AsymmetricEncrypt.CryptoKey
+        description: The crypto key used for the encryption.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricEncrypt.CryptoKeyVersion
+        description: The resource name of the crypto key version used for the encryption.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricEncrypt.Ciphertext
+        description: The Base64-encoded encrypted cipher text.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricEncrypt.pem
+        description: The public key, in PEM format, that was used for the encryption.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricEncrypt.algorithm
+        description: The algorithm of the public key that was used for the encryption.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricEncrypt.name
+        description: The resource name of the crypto key version returned by the API.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricEncrypt.protectionLevel
+        description: The protection level of the crypto key version used for the encryption.
+        type: String
+  - name: gcp-kms-asymmetric-decrypt
+    description: "Decrypts data using an asymmetric crypto key version. Required Permissions: cloudkms.cryptoKeyVersions.useToDecrypt."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: location
+      description: The geographical region where the Cloud KMS resources are handled. For more information, see https://cloud.google.com/kms/docs/locations.
+      required: false
+      defaultValue: global
+    - name: key_ring
+      description: The ID of the key ring that holds the crypto key.
+      required: true
+    - name: crypto_key
+      description: The ID of the asymmetric crypto key to decrypt with.
+      required: true
+    - name: crypto_key_version
+      description: The ID of the crypto key version to decrypt with.
+      required: false
+      defaultValue: '1'
+    - name: ciphertext
+      description: The Base64-encoded cipher text to decrypt. Mutually exclusive with entry_id.
+      required: false
+      secret: true
+    - name: entry_id
+      description: The War Room entry ID of the file holding the raw cipher text bytes to decrypt. Mutually exclusive with ciphertext.
+      required: false
+    outputs:
+      - contextPath: GCP.KMS.AsymmetricDecrypt.CryptoKey
+        description: The crypto key used for the decryption.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricDecrypt.CryptoKeyVersion
+        description: The resource name of the crypto key version used for the decryption.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricDecrypt.Plaintext
+        description: The decrypted plain text. Omitted when the decrypted data is binary, in which case it is returned as a file instead.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricDecrypt.plaintextCrc32c
+        description: The CRC32C checksum of the returned plaintext.
+        type: String
+      - contextPath: GCP.KMS.AsymmetricDecrypt.verifiedCiphertextCrc32c
+        description: Whether the API verified the CRC32C checksum of the supplied ciphertext.
+        type: Boolean
+      - contextPath: GCP.KMS.AsymmetricDecrypt.protectionLevel
+        description: The protection level of the crypto key version used for the decryption.
+        type: String
 
 # The command is currently unsupported.
 #  - name: gcp-iam-project-deny-policy-create
@@ -2897,6 +4547,549 @@ script:
       description: Type of the resource. Always compute#image for images.
       type: string
 
+# gcp-compute-image-get-from-family
+  - name: gcp-compute-image-get-from-family
+    description: "Returns the latest non-deprecated image from an image family. Required permission: compute.images.get."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: family
+      required: true
+      description: The name of the image family to search for.
+    outputs:
+    - contextPath: GCP.Compute.Images.kind
+      description: The type of the resource. Always set to compute#image for images.
+      type: String
+    - contextPath: GCP.Compute.Images.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Images.creationTimestamp
+      description: The creation timestamp in RFC3339 text format.
+      type: Date
+    - contextPath: GCP.Compute.Images.name
+      description: The name of the resource, provided by the client when the resource is created.
+      type: String
+    - contextPath: GCP.Compute.Images.description
+      description: The optional description of this resource.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceType
+      description: The type of image used to create this disk. The default and only value is RAW.
+      type: String
+    - contextPath: GCP.Compute.Images.rawDisk.source
+      description: The full Google Cloud Storage URL where the disk image is stored.
+      type: String
+    - contextPath: GCP.Compute.Images.rawDisk.sha1Checksum
+      description: The optional SHA1 checksum of the disk image before unpackaging, provided by the client when the disk image is created.
+      type: String
+    - contextPath: GCP.Compute.Images.rawDisk.containerType
+      description: The format used to encode and transmit the block device, which should be TAR.
+      type: String
+    - contextPath: GCP.Compute.Images.deprecated.state
+      description: The deprecation state of this resource. Can be ACTIVE, DEPRECATED, OBSOLETE, or DELETED.
+      type: String
+    - contextPath: GCP.Compute.Images.deprecated.replacement
+      description: The URL of the suggested replacement for a deprecated resource.
+      type: String
+    - contextPath: GCP.Compute.Images.deprecated.deprecated
+      description: The RFC3339 timestamp on or after which the state of this resource changes to DEPRECATED.
+      type: Date
+    - contextPath: GCP.Compute.Images.deprecated.obsolete
+      description: The RFC3339 timestamp on or after which the state of this resource changes to OBSOLETE.
+      type: Date
+    - contextPath: GCP.Compute.Images.deprecated.deleted
+      description: The RFC3339 timestamp on or after which the state of this resource changes to DELETED.
+      type: Date
+    - contextPath: GCP.Compute.Images.status
+      description: The status of the image. Can be FAILED, PENDING, or READY.
+      type: String
+    - contextPath: GCP.Compute.Images.archiveSizeBytes
+      description: The size, in bytes, of the tar.gz image archive stored in Google Cloud Storage.
+      type: String
+    - contextPath: GCP.Compute.Images.diskSizeGb
+      description: The size of the image in GB when restored onto a persistent disk.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDisk
+      description: The URL of the source disk used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDiskId
+      description: The ID value of the disk used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDiskEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the source disk that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDiskEncryptionKey.sha256
+      description: The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source disk.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImage
+      description: The URL of the source image used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImageId
+      description: The ID value of the image used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImageEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the source image that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImageEncryptionKey.sha256
+      description: The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshot
+      description: The URL of the source snapshot used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshotId
+      description: The ID value of the snapshot used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshotEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the source snapshot that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshotEncryptionKey.sha256
+      description: The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source snapshot.
+      type: String
+    - contextPath: GCP.Compute.Images.imageEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the image that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.imageEncryptionKey.sha256
+      description: The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the image.
+      type: String
+    - contextPath: GCP.Compute.Images.licenses
+      description: The applicable license URIs.
+      type: String
+    - contextPath: GCP.Compute.Images.licenseCodes
+      description: The integer license codes indicating which licenses are attached to this image.
+      type: String
+    - contextPath: GCP.Compute.Images.family
+      description: The name of the image family to which this image belongs.
+      type: String
+    - contextPath: GCP.Compute.Images.labels
+      description: The labels applied to this image.
+      type: Unknown
+    - contextPath: GCP.Compute.Images.labelFingerprint
+      description: The fingerprint of the labels applied to this image, which is used for optimistic locking.
+      type: String
+    - contextPath: GCP.Compute.Images.guestOsFeatures.type
+      description: The ID of the supported guest operating system feature.
+      type: String
+    - contextPath: GCP.Compute.Images.shieldedInstanceInitialState
+      description: The initial state for the image, which is used by Shielded VM instances on boot.
+      type: Unknown
+    - contextPath: GCP.Compute.Images.storageLocations
+      description: The Cloud Storage location, either regional or multi-regional, where the image content is stored.
+      type: String
+    - contextPath: GCP.Compute.Images.architecture
+      description: The architecture of the image. Can be ARM64 or X86_64.
+      type: String
+    - contextPath: GCP.Compute.Images.enableConfidentialCompute
+      description: Whether the image is created from a confidential compute mode disk.
+      type: Boolean
+    - contextPath: GCP.Compute.Images.satisfiesPzs
+      description: Whether the resource satisfies physical zone separation.
+      type: Boolean
+    - contextPath: GCP.Compute.Images.satisfiesPzi
+      description: Whether the resource satisfies physical zone isolation.
+      type: Boolean
+    - contextPath: GCP.Compute.Images.selfLink
+      description: The server-defined URL for the resource.
+      type: String
+
+# gcp-compute-images-list
+  - name: gcp-compute-images-list
+    description: "Lists images in a specific project. Required permission: compute.images.list."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: limit
+      defaultValue: '50'
+      description: "The maximum number of results to return. Can be 1 to 500."
+    - name: next_token
+      required: false
+      description: The token for the next set of items to return, used for pagination.
+    - name: filter
+      description: "The filter expression for resources listed in the response. Must specify a field name, a comparison operator (=, !=, >, or <), and a value."
+    - name: order_by
+      description: The order used to sort list results. By default, results are returned in alphanumeric order based on the resource name.
+    outputs:
+    - contextPath: GCP.Compute.Images.kind
+      description: The type of the resource. Always set to compute#image for images.
+      type: String
+    - contextPath: GCP.Compute.Images.id
+      description: The unique identifier for the resource, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Images.creationTimestamp
+      description: The creation timestamp in RFC3339 format.
+      type: Date
+    - contextPath: GCP.Compute.Images.name
+      description: The name of the resource, provided by the client when the resource is created.
+      type: String
+    - contextPath: GCP.Compute.Images.description
+      description: The optional description of this resource.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceType
+      description: The type of image used to create this disk. The default and only value is RAW.
+      type: String
+    - contextPath: GCP.Compute.Images.rawDisk.source
+      description: The full Google Cloud Storage URL where the disk image is stored.
+      type: String
+    - contextPath: GCP.Compute.Images.rawDisk.sha1Checksum
+      description: The optional SHA1 checksum of the disk image before unpackaging, provided by the client when the disk image is created.
+      type: String
+    - contextPath: GCP.Compute.Images.rawDisk.containerType
+      description: The format used to encode and transmit the block device, which should be TAR.
+      type: String
+    - contextPath: GCP.Compute.Images.deprecated.state
+      description: The deprecation state of this resource. Can be ACTIVE, DEPRECATED, OBSOLETE, or DELETED.
+      type: String
+    - contextPath: GCP.Compute.Images.deprecated.replacement
+      description: The URL of the suggested replacement for a deprecated resource.
+      type: String
+    - contextPath: GCP.Compute.Images.deprecated.deprecated
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED.
+      type: Date
+    - contextPath: GCP.Compute.Images.deprecated.obsolete
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE.
+      type: Date
+    - contextPath: GCP.Compute.Images.deprecated.deleted
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED.
+      type: Date
+    - contextPath: GCP.Compute.Images.status
+      description: The status of the image. Can be FAILED, PENDING, or READY.
+      type: String
+    - contextPath: GCP.Compute.Images.archiveSizeBytes
+      description: The size, in bytes, of the image tar.gz archive stored in Google Cloud Storage.
+      type: String
+    - contextPath: GCP.Compute.Images.diskSizeGb
+      description: The size, in GB, of the image when restored onto a persistent disk.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDisk
+      description: The URL of the source disk used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDiskId
+      description: The ID value of the disk used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDiskEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the source disk that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceDiskEncryptionKey.sha256
+      description: The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source disk.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImage
+      description: The URL of the source image used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImageId
+      description: The ID value of the image used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImageEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the source image that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceImageEncryptionKey.sha256
+      description: The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshot
+      description: The URL of the source snapshot used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshotId
+      description: The ID value of the snapshot used to create this image.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshotEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the source snapshot that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.sourceSnapshotEncryptionKey.sha256
+      description: The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the source snapshot.
+      type: String
+    - contextPath: GCP.Compute.Images.imageEncryptionKey.kmsKeyName
+      description: The name of the encryption key of the image that is stored in Google Cloud KMS.
+      type: String
+    - contextPath: GCP.Compute.Images.imageEncryptionKey.sha256
+      description: The RFC 4648 base64-encoded SHA-256 hash of the customer-supplied encryption key that protects the image.
+      type: String
+    - contextPath: GCP.Compute.Images.licenses
+      description: The applicable license URIs.
+      type: String
+    - contextPath: GCP.Compute.Images.licenseCodes
+      description: The integer license codes indicating which licenses are attached to this image.
+      type: String
+    - contextPath: GCP.Compute.Images.family
+      description: The name of the image family to which this image belongs.
+      type: String
+    - contextPath: GCP.Compute.Images.labels
+      description: The labels applied to this image.
+      type: Unknown
+    - contextPath: GCP.Compute.Images.labelFingerprint
+      description: The fingerprint of the labels applied to this image, which is used for optimistic locking.
+      type: String
+    - contextPath: GCP.Compute.Images.guestOsFeatures.type
+      description: The ID of the supported guest operating system feature.
+      type: String
+    - contextPath: GCP.Compute.Images.shieldedInstanceInitialState
+      description: The initial state for the image, which is used by Shielded VM instances on boot.
+      type: Unknown
+    - contextPath: GCP.Compute.Images.storageLocations
+      description: The Cloud Storage location, either regional or multi-regional, where the image content is stored.
+      type: String
+    - contextPath: GCP.Compute.Images.architecture
+      description: The architecture of the image. Can be ARM64 or X86_64.
+      type: String
+    - contextPath: GCP.Compute.Images.enableConfidentialCompute
+      description: Whether the image is created from a confidential compute mode disk.
+      type: Boolean
+    - contextPath: GCP.Compute.Images.satisfiesPzs
+      description: Whether the resource satisfies physical zone separation.
+      type: Boolean
+    - contextPath: GCP.Compute.Images.satisfiesPzi
+      description: Whether the resource satisfies physical zone isolation.
+      type: Boolean
+    - contextPath: GCP.Compute.Images.selfLink
+      description: The server-defined URL for the resource.
+      type: String
+    - contextPath: GCP.Compute.ImagesNextToken
+      description: The token to use as the next_token argument to retrieve the next page of results.
+      type: String
+
+# gcp-compute-image-delete
+  - name: gcp-compute-image-delete
+    description: "Deletes the specified image. Required permission: compute.images.delete."
+    execution: true
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: image
+      required: true
+      description: The name of the image resource to delete.
+
+# gcp-compute-image-labels-set
+  - name: gcp-compute-image-labels-set
+    description: "Sets the labels on an image. Required permission: compute.images.setLabels."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: image
+      required: true
+      description: The name of the image resource on which to set labels.
+    - name: labels
+      required: true
+      description: 'The list of labels to apply to this resource, formatted as tuples, for example, key=abc,value=123;key=def,value=456.'
+    - name: label_fingerprint
+      required: true
+      description: The fingerprint of the previous set of labels for this resource, used to detect conflicts. The fingerprint is initially generated by Compute Engine and changes after every request to modify or update labels.
+    outputs:
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource. Always set to compute#operation for operation resources.
+      type: String
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation resource, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides. Only available when performing per-zone operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the requestId if provided in the request.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: The status of the operation. Can be PENDING, RUNNING, or DONE.
+      type: String
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example EMAILADDRESS.
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: The progress of the operation as a percentage from 0 to 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time the operation was requested, in RFC3339 format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time the operation was started by the server, in RFC3339 format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time the operation was completed, in RFC3339 format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.error.errors
+      description: The array of errors encountered while processing the operation.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during the processing of the operation.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails.
+      type: Number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails, such as NOT FOUND.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides. Only available when performing regional operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.description
+      description: The textual description of the operation, which is set when the operation is created.
+      type: String
+
+# gcp-compute-image-insert
+  - name: gcp-compute-image-insert
+    description: "Creates an image in the specified project using the data included in the request. Required permission: compute.images.create."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: name
+      required: true
+      description: The name of the resource; provided by the client when the resource is created.
+    - name: force_create
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to attempt to create the image even if OS features or license validation fails.
+    - name: description
+      description: The optional description of this resource.
+    - name: raw_disk_source
+      description: The full Google Cloud Storage URL where the disk image is stored.
+    - name: raw_disk_sha1_checksum
+      description: The optional SHA1 checksum of the disk image before unpackaging.
+    - name: raw_disk_container_type
+      auto: PREDEFINED
+      predefined:
+      - TAR
+      description: The format used to encode and transmit the block device, which should be TAR.
+    - name: deprecated_state
+      auto: PREDEFINED
+      predefined:
+      - ACTIVE
+      - DEPRECATED
+      - OBSOLETE
+      - DELETED
+      description: The deprecation state of this resource. Can be ACTIVE, DEPRECATED, OBSOLETE, or DELETED.
+    - name: deprecated_replacement
+      description: The URL of the suggested replacement for a deprecated resource.
+    - name: archive_size_bytes
+      description: The size, in bytes, of the image tar.gz archive stored in Google Cloud Storage.
+    - name: disk_size_gb
+      description: The size, in GB, of the image when restored onto a persistent disk.
+    - name: source_disk
+      description: The URL of the source disk used to create this image. This property or the raw_disk_source property must be provided, but not both.
+    - name: licenses
+      isArray: true
+      description: A comma-separated list of applicable license URIs.
+    - name: family
+      description: The name of the image family to which this image belongs.
+    - name: image_encryption_key_raw_key
+      description: The 256-bit customer-supplied encryption key (RFC 4648 base64) for the image.
+    - name: image_encryption_key_kms_key_name
+      description: The name of the encryption key that is stored in Google Cloud KMS for the image.
+    - name: source_disk_encryption_key_raw_key
+      description: The 256-bit customer-supplied encryption key (RFC 4648 base64) of the source disk.
+    - name: source_disk_encryption_key_kms_key_name
+      description: The name of the encryption key stored in Google Cloud KMS of the source disk.
+    - name: labels
+      description: 'The list of labels to apply for this resource, in tuples, for example, key=abc,value=123;key=def,value=456.'
+    - name: label_fingerprint
+      description: The fingerprint of the previous set of labels for this resource.
+    - name: guest_os_features
+      isArray: true
+      description: The comma-separated list of guest OS features to enable on the image.
+    - name: license_codes
+      isArray: true
+      description: The comma-separated list of integer license codes indicating which licenses are attached to this image.
+    - name: source_image
+      description: The URL of the source image used to create this image.
+    - name: source_image_encryption_key_kms_key_name
+      description: The name of the encryption key stored in Google Cloud KMS of the source image.
+    - name: source_snapshot
+      description: The URL of the source snapshot used to create this image.
+    - name: source_snapshot_encryption_key_raw_key
+      description: The 256-bit customer-supplied encryption key (RFC 4648 base64) of the source snapshot.
+    - name: source_snapshot_encryption_key_kms_key_name
+      description: The name of the encryption key stored in Google Cloud KMS of the source snapshot.
+    outputs:
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource. Always set to compute#operation for operation resources.
+      type: String
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique identifier for the operation resource, defined by the server.
+      type: String
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the operation resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides. Only available when performing per-zone operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of requestId if it was provided in the request.
+      type: String
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies.
+      type: String
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.status
+      description: The status of the operation. Can be PENDING, RUNNING, or DONE.
+      type: String
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: String
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example EMAILADDRESS.
+      type: String
+    - contextPath: GCP.Compute.Operations.progress
+      description: The progress of the operation as a percentage from 0 to 100.
+      type: Number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time the operation was requested, in RFC3339 format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time the operation was started by the server, in RFC3339 format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time the operation was completed, in RFC3339 format.
+      type: Date
+    - contextPath: GCP.Compute.Operations.error.errors
+      description: The array of errors encountered while processing the operation.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during processing of the operation.
+      type: Unknown
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails.
+      type: Number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails, such as NOT FOUND.
+      type: String
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: String
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides. Only available when performing regional operations.
+      type: String
+    - contextPath: GCP.Compute.Operations.description
+      description: The textual description of the operation, which is set when the operation is created.
+      type: String
+
 # gcp-compute-region-get
   - arguments:
     - description: Name of the region resource to return.
@@ -2965,6 +5158,100 @@ script:
       type: string
     - contextPath: GCP.Compute.Regions.kind
       description: Type of the resource. Always compute#region for regions.
+      type: string
+
+# gcp-compute-regions-list
+  - name: gcp-compute-regions-list
+    description: "Retrieves the list of region resources available to the specified project. Required permission: compute.regions.list."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: limit
+      description: 'The maximum number of results per page to return, ranging from 1 to 500. If the number of available results is larger than the limit, a token is returned in the nextPageToken field to retrieve the next page of results in subsequent list requests.'
+      defaultValue: '50'
+    - name: filter
+      description: The filter expression to use for filtering resources listed in the response. Must specify the field name, a comparison operator, and the filtering value. The value can be a string, a number, or a boolean. The comparison operator must be "=", "!=", ">", or "<". For example, to exclude a region named "example-region", specify name != example-region.
+    - name: order_by
+      description: The order in which to sort the list results. Can be "alphanumerical" (default, based on the resource name) or "creationTimestamp desc" (reverse chronological order, latest result first).
+    - name: next_token
+      description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results.
+    outputs:
+    - contextPath: GCP.Compute.Regions.id
+      description: The unique identifier for the resource, defined by the server.
+      type: string
+    - contextPath: GCP.Compute.Regions.creationTimestamp
+      description: The creation timestamp in RFC3339 text format (for example, 2024-01-15T12:34:56.000-07:00).
+      type: string
+    - contextPath: GCP.Compute.Regions.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Regions.description
+      description: The textual description of the resource.
+      type: string
+    - contextPath: GCP.Compute.Regions.status
+      description: The status of the region, either UP or DOWN.
+      type: string
+    - contextPath: GCP.Compute.Regions.zones
+      description: The list of zones available in this region, in the form of resource URLs.
+      type: string
+    - contextPath: GCP.Compute.Regions.quotas
+      description: The quotas assigned to this region.
+      type: string
+    - contextPath: GCP.Compute.Regions.quotas.metric
+      description: The name of the quota metric.
+      type: string
+    - contextPath: GCP.Compute.Regions.quotas.limit
+      description: The quota limit for this metric.
+      type: number
+    - contextPath: GCP.Compute.Regions.quotas.usage
+      description: The current usage of this metric.
+      type: number
+    - contextPath: GCP.Compute.Regions.quotas.owner
+      description: The resource to which this quota applies.
+      type: string
+    - contextPath: GCP.Compute.Regions.deprecated
+      description: The deprecation status associated with this region.
+      type: string
+    - contextPath: GCP.Compute.Regions.deprecated.state
+      description: The deprecation state of this resource. Can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error.
+      type: string
+    - contextPath: GCP.Compute.Regions.deprecated.replacement
+      description: The URL of the suggested replacement for a deprecated resource. The replacement resource must be the same type of resource as the deprecated resource.
+      type: string
+    - contextPath: GCP.Compute.Regions.deprecated.deprecated
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.
+      type: string
+    - contextPath: GCP.Compute.Regions.deprecated.obsolete
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.
+      type: string
+    - contextPath: GCP.Compute.Regions.deprecated.deleted
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.
+      type: string
+    - contextPath: GCP.Compute.Regions.selfLink
+      description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Regions.supportsPzs
+      description: Whether the region supports physical zone separation. Reserved for future use.
+      type: boolean
+    - contextPath: GCP.Compute.Regions.quotaStatusWarning
+      description: The warning raised while fetching the quotas field for this region. This field is populated only if fetching of the quotas field fails.
+      type: string
+    - contextPath: GCP.Compute.Regions.quotaStatusWarning.code
+      description: The warning code, if applicable. For example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no results in the response.
+      type: string
+    - contextPath: GCP.Compute.Regions.quotaStatusWarning.message
+      description: The human-readable description of the warning code.
+      type: string
+    - contextPath: GCP.Compute.Regions.quotaStatusWarning.data
+      description: The metadata about this warning, in key-value format.
+      type: string
+    - contextPath: GCP.Compute.Regions.kind
+      description: The type of the resource. Always compute#region for regions.
+      type: string
+    - contextPath: GCP.Compute.RegionsNextToken
+      description: The next page token to use for retrieving the next page of regions.
       type: string
 
 # gcp-compute-instance-group-get
@@ -3084,6 +5371,82 @@ script:
       type: string
     - contextPath: GCP.Compute.Zones.kind
       description: Type of the resource. Always compute#zone for zones.
+      type: string
+
+# gcp-compute-zones-list
+  - name: gcp-compute-zones-list
+    description: "Retrieves the list of zone resources available to the specified project. Required permission: compute.zones.list."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: limit
+      description: 'The maximum number of results per page to return, ranging from 1 to 500. If the number of available results is larger than the limit, a token is returned in the nextPageToken field to retrieve the next page of results in subsequent list requests.'
+      defaultValue: '50'
+    - name: filter
+      description: The filter expression to use for filtering resources listed in the response. Must specify the field name, a comparison operator, and the filtering value. The value can be a string, a number, or a boolean. The comparison operator must be "=", "!=", ">", or "<". For example, to exclude a zone named "example-zone", specify name != example-zone.
+    - name: order_by
+      description: The order in which to sort the list results. Can be "alphanumerical" (default, based on the resource name) or "creationTimestamp desc" (reverse chronological order, latest result first).
+    - name: next_token
+      description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results.
+    outputs:
+    - contextPath: GCP.Compute.Zones.id
+      description: The unique identifier for the resource. This identifier is defined by the server.
+      type: string
+    - contextPath: GCP.Compute.Zones.creationTimestamp
+      description: The creation timestamp in RFC3339 text format (for example, 2024-01-15T12:34:56.000-07:00).
+      type: string
+    - contextPath: GCP.Compute.Zones.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Zones.description
+      description: The textual description of the resource.
+      type: string
+    - contextPath: GCP.Compute.Zones.status
+      description: The status of the zone, either UP or DOWN.
+      type: string
+    - contextPath: GCP.Compute.Zones.deprecated
+      description: The deprecation status associated with this zone.
+      type: string
+    - contextPath: GCP.Compute.Zones.deprecated.state
+      description: The deprecation state of this resource. Can be ACTIVE DEPRECATED, OBSOLETE, or DELETED. Operations which communicate the end of life date for an image can use ACTIVE. Operations which create a new resource using a DEPRECATED resource will return successfully, but with a warning indicating the deprecated resource and recommending its replacement. Operations which use OBSOLETE or DELETED resources will be rejected and result in an error.
+      type: string
+    - contextPath: GCP.Compute.Zones.deprecated.replacement
+      description: The URL of the suggested replacement for a deprecated resource. The replacement resource must be the same type of resource as the deprecated resource.
+      type: string
+    - contextPath: GCP.Compute.Zones.deprecated.deprecated
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DEPRECATED (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.
+      type: string
+    - contextPath: GCP.Compute.Zones.deprecated.obsolete
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to OBSOLETE (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.
+      type: string
+    - contextPath: GCP.Compute.Zones.deprecated.deleted
+      description: The optional RFC3339 timestamp on or after which the state of this resource is intended to change to DELETED (for example, 2024-01-15T12:34:56.000-07:00). This is only informational and the status will not change unless the client explicitly changes it.
+      type: string
+    - contextPath: GCP.Compute.Zones.region
+      description: The full URL reference to the region which hosts the zone.
+      type: string
+    - contextPath: GCP.Compute.Zones.selfLink
+      description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Zones.availableCpuPlatforms
+      description: The available CPU platform selections for the zone.
+      type: string
+    - contextPath: GCP.Compute.Zones.supportsPzs
+      description: Whether the zone supports physical zone separation. Reserved for future use.
+      type: boolean
+    - contextPath: GCP.Compute.Zones.resourceStatus
+      description: The additional status details of the zone.
+      type: Unknown
+    - contextPath: GCP.Compute.Zones.resourceStatus.upcomingMaintenances
+      description: The list of upcoming maintenances scheduled for this zone.
+      type: Unknown
+    - contextPath: GCP.Compute.Zones.kind
+      description: The type of the resource. Always compute#zone for zones.
+      type: string
+    - contextPath: GCP.Compute.ZonesNextToken
+      description: The next page token to use for retrieving the next page of zones.
       type: string
 
 # gcp-compute-zone-operation-wait
@@ -3610,6 +5973,257 @@ script:
       description: Type of the resource. Always compute#operation for Operation resources.
       type: string
 
+# gcp-compute-network-peering-add
+  - name: gcp-compute-network-peering-add
+    description: "Adds a peering connection to the specified network. Required permission: compute.networks.addPeering."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: network
+      required: true
+      description: The name of the network resource to which to add a peering connection.
+    - name: name
+      required: true
+      description: The name of the peering connection. The name must comply with RFC1035 (the Internet standard for domain name syntax and conventions). Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
+    - name: peer_network
+      required: true
+      description: The URL of the peer network. Can be a full URL or a partial URL. The peer network can belong to a different project. If the partial URL does not contain a project, the peer network is assumed to be in the same project as the current network.
+    - name: exchange_subnet_routes
+      auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether full mesh connectivity is created and managed automatically between peered networks. Currently, this field should always be set to true because Google Compute Engine automatically creates and manages subnetwork routes between two networks when the peering state is ACTIVE.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique server-defined identifier for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides. Only available when performing per-zone operations. Must be specified as part of the HTTP request URL and cannot be set as a field in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the requestId if provided in the request.
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING RUNNING or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, EMAILADDRESS.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: The progress indicator, ranging from 0 to 100. There is no requirement that this be linear or support any granularity of operations. Must not be used to guess when the operation will be completed. This number monotonically increases as the operation progresses.
+      type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The date and time when the operation was requested, in RFC3339 format; for example, 2024-01-15T12:34:56Z.
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time that this operation was started by the server, in RFC3339 format.
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time that this operation was completed, in RFC3339 format.
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during processing of the operation, if any. Populated when errors occur.
+      type: string
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during processing of the operation, if any. Populated when warnings occur.
+      type: string
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code that is returned if the operation fails. For example, a 404 means the resource was not found.
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message that is returned if the operation fails, such as NOT FOUND.
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides. Only available when performing regional operations. Must be specified as part of the HTTP request URL and cannot be set as a field in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.description
+      description: The textual description of the operation, which is set when the operation is created.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource, which is always compute#operation for Operation resources.
+      type: string
+# gcp-compute-network-delete
+  - name: gcp-compute-network-delete
+    description: "Deletes the specified network. Required permission: compute.networks.delete."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: network
+      required: true
+      description: The name of the network to delete.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique server-defined identifier for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides. Only available when performing per-zone operations. Must be specified as part of the HTTP request URL and cannot be set as a field in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the requestId if provided in the request.
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING RUNNING or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, EMAILADDRESS.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: The progress indicator, ranging from 0 to 100. There is no requirement that this be linear or support any granularity of operations. Must not be used to guess when the operation will be completed. This number monotonically increases as the operation progresses.
+      type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time that this operation was requested, in RFC3339 format.
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time that this operation was started by the server, in RFC3339 format.
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time that this operation was completed, in RFC3339 format.
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during processing of the operation, if any. Populated when errors occur.
+      type: string
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during processing of the operation, if any. Populated when warnings occur.
+      type: string
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code that is returned if the operation fails. For example, a 404 means the resource was not found.
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message that is returned if the operation fails, such as NOT FOUND.
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides. Only available when performing regional operations. Must be specified as part of the HTTP request URL and cannot be set as a field in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.description
+      description: The textual description of the operation, which is set when the operation is created.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource, which is always compute#operation for Operation resources.
+      type: string
+# gcp-compute-network-peering-remove
+  - name: gcp-compute-network-peering-remove
+    description: "Removes a peering connection from the specified network. Required permission: compute.networks.removePeering."
+    arguments:
+    - name: project_id
+      required: false
+      required:platform: true
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+    - name: network
+      required: true
+      description: The name of the network resource from which to remove the peering connection.
+    - name: name
+      required: true
+      description: The name of the peering connection to remove. The name must comply with RFC1035 (the Internet standard for domain name syntax and conventions). Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])? which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The unique server-defined identifier for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides. Only available when performing per-zone operations. Must be specified as part of the HTTP request URL and cannot be set as a field in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of the requestId if provided in the request.
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING RUNNING or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, EMAILADDRESS.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: The progress indicator, ranging from 0 to 100. There is no requirement that this be linear or support any granularity of operations. Must not be used to guess when the operation will be completed. This number monotonically increases as the operation progresses.
+      type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time that this operation was requested, in RFC3339 format.
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time that this operation was started by the server, in RFC3339 format.
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time that this operation was completed, in RFC3339 format.
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during processing of the operation, if any. Populated when errors occur.
+      type: string
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during processing of the operation, if any. Populated when warnings occur.
+      type: string
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code that is returned if the operation fails. For example, a 404 means the resource was not found.
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message that is returned if the operation fails, such as NOT FOUND.
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides. Only available when performing regional operations. Must be specified as part of the HTTP request URL and cannot be set as a field in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.description
+      description: The textual description of the operation, which is set when the operation is created.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource, which is always compute#operation for Operation resources.
+      type: string
+
 
   - name: gcp-compute-instance-stop
     description: "Stops and cleanly shuts down a running instance, allowing you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using such as persistent disks and static IP addresses will continue to be charged until they are deleted. Required permission: compute.instances.stop."
@@ -3689,8 +6303,637 @@ script:
       description: A textual description of the operation, which is set when the operation is created.
       type: string
     - contextPath: GCP.Compute.Operations.kind
-      description: Type of the resource. Always compute#operation for Operation resources.
+      description: The type of the resource, which is always compute#operation for Operation resources.
       type: string
+  - name: gcp-compute-instance-insert
+    description: "Creates a Compute Engine VM instance in the specified project and zone. Returns a zone operation resource describing the asynchronous creation. Required permission: compute.instances.create."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: zone
+      description: The name of the zone for this request.
+      required: true
+    - name: name
+      description: The name of the instance to create.
+      required: true
+    - name: machine_type
+      description: 'The machine type. Can be a bare name (for example, n1-standard-1), in which case the zone-qualified URL is built automatically, or a full/partial URL (for example, zones/zone/machineTypes/n1-standard-1).'
+      required: true
+    - name: description
+      description: The optional description for the instance.
+    - name: tags
+      description: The comma-separated list of network tags to apply to the instance.
+      isArray: true
+    - name: tags_fingerprint
+      description: The fingerprint hash of the tags contents, used for optimistic locking.
+    - name: can_ip_forward
+      description: Whether the instance is allowed to send and receive packets with non-matching destination or source IPs.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: network
+      description: The URL of the network resource for this instance.
+    - name: subnetwork
+      description: The URL of the subnetwork resource for this instance.
+    - name: network_ip
+      description: The IPv4 internal IP address to assign to the instance.
+    - name: external_internet_access
+      description: Whether to grant the instance external internet access by adding a ONE_TO_ONE_NAT access configuration.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: external_nat_ip
+      description: The static external IP address to assign to the instance. Requires the external_internet_access argument.
+    - name: disk_source
+      description: The URL of an existing persistent disk to attach to the instance.
+    - name: disk_device_name
+      description: The unique device name for the attached disk, reflected in the /dev/disk/by-id/google-* tree.
+    - name: disk_boot
+      description: Whether this is a boot disk. Only one boot disk can be attached to an instance.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: disk_auto_delete
+      description: Whether the disk is deleted automatically when the instance is deleted.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: source_image
+      description: The source image URL from which to create the boot disk. For example, projects/debian-cloud/global/images/family/debian-11.
+    - name: disk_size_gb
+      description: The size of the boot disk to create, in GB.
+    - name: disk_type
+      description: The disk type URL for the created boot disk, for example zones/zone/diskTypes/pd-standard.
+    - name: metadata_items
+      description: 'The metadata key/value pairs to assign to the instance, in the format: key=abc,value=123;key=fed,value=456.'
+    - name: service_account_email
+      description: The email address of the service account to associate with the instance. Must be provided together with the service_account_scopes argument.
+    - name: service_account_scopes
+      description: A comma-separated list of OAuth2 scopes for the service account. Must be provided together with service_account_email.
+      isArray: true
+    - name: labels
+      description: 'The labels to apply to the instance, in the format: key=abc,value=123;key=fed,value=456.'
+    - name: deletion_protection
+      description: Whether the instance should be protected against deletion.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The server-defined unique identifier for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides, available only for per-zone operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of requestId if provided in the request. Not present otherwise.
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: 'The type of operation. For example: insert, update, or delete.'
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation. Can be one of the following: PENDING RUNNING or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, EMAILADDRESS.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: The optional progress indicator, ranging from 0 to 100. The number monotonically increases as the operation progresses, but is not linear, does not support specific granularity, and should not be used to estimate completion time.
+      type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time the operation was requested, in RFC3339 format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time that the operation was started by the server, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time that the operation was completed, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails (for example, 404 if the resource is not found).
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails (for example, NOT FOUND).
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides, available only for regional operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.description
+      description: A textual description of the operation, which is set when the operation is created.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource, which is always compute#operation for Operation resources.
+      type: string
+  - name: gcp-compute-instance-delete
+    description: Deletes the specified Compute Engine VM instance and returns a zone Operation resource describing the asynchronous deletion (requires the compute.instances.delete permission).
+    execution: true
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: zone
+      description: The name of the zone for this request.
+      required: true
+    - name: resource_name
+      description: The name of the instance resource to delete.
+      required: true
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The server-defined unique identifier for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides, available only for per-zone operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of requestId, if provided in the request.
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource modified by the operation. For snapshot creation operations, this points to the source persistent disk.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING RUNNING or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, EMAILADDRESS.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: The optional progress indicator, ranging from 0 to 100. The number monotonically increases as the operation progresses, but is not linear, does not guarantee specific operation granularity, and should not be used to estimate completion time.
+      type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The date and time when the operation was requested, in RFC3339 format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The date and time when the operation was started by the server, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The date and time that the operation was completed, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails (for example, 404 if the resource is not found).
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails (for example, NOT FOUND).
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides, available only for regional operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.description
+      description: The textual description of the operation, which is set when the operation is created.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource, which is always compute#operation for Operation resources.
+      type: string
+  - name: gcp-compute-instance-reset
+    description: Performs a hard reset on the specified Compute Engine VM instance and returns a zone Operation resource describing the asynchronous reset (requires the compute.instances.reset permission).
+    execution: true
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: zone
+      description: The name of the zone for this request.
+      required: true
+    - name: resource_name
+      description: The name of the instance resource to reset.
+      required: true
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The server-defined unique identifier for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: The resource name.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides, available only for per-zone operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of requestId, if provided in the request.
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource modified by the operation. For snapshot creation operations, this points to the source persistent disk.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING RUNNING or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, EMAILADDRESS.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: The optional progress indicator, ranging from 0 to 100. The number monotonically increases as the operation progresses, but is not linear, does not support specific granularity, and should not be used to estimate completion time.
+      type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The date and time that this operation was requested, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The date and time that this operation was started by the server, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The date and time that this operation was completed, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails (for example, 404 if the resource is not found).
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails (for example, NOT FOUND).
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined resource URL.
+      type: string
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides, available only for regional operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.description
+      description: A textual description of the operation, which is set when the operation is created.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource, which is always compute#operation for Operation resources.
+      type: string
+  - name: gcp-compute-instance-metadata-set
+    description: "Sets metadata for the specified Compute Engine VM instance. Returns a zone Operation resource describing the asynchronous update. Required permission: compute.instances.setMetadata."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: zone
+      description: The name of the zone for this request.
+      required: true
+    - name: resource_name
+      description: The name of the instance resource for which to set metadata.
+      required: true
+    - name: metadata_fingerprint
+      description: A fingerprint hash of the metadata's contents, used for optimistic locking. If not provided, the current fingerprint is fetched automatically from the instance (requires the compute.instances.get permission).
+    - name: metadata_items
+      description: 'The metadata key/value pairs to set on the instance, in the format: key=abc,value=123;key=fed,value=456. This replaces the instance metadata in full rather than merging, so any key that is not listed is removed, including keys such as ssh-keys and startup-script. Pass an empty value to clear all metadata.'
+      required: true
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The server-defined unique identifier for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides, available only for per-zone operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of requestId, if provided in the request. 
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource modified by the operation. For snapshot creation operations, this points to the source persistent disk.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING RUNNING or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: An optional textual description of the current operation status.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, EMAILADDRESS.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: The optional progress indicator, ranging from 0 to 100. The number monotonically increases as the operation progresses, but is not linear, does not support specific granularity, and should not be used to estimate completion time.
+      type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The date and time that this operation was requested, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The date and time that this operation was started by the server, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The date and time that this operation was completed, in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails (for example, 404 if the resource is not found).
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails (for example, NOT FOUND).
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: Server-defined URL for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides, available only for regional operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.description
+      description: A textual description of the operation, which is set when the operation is created.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource, which is always compute#operation for Operation resources.
+      type: string
+  - name: gcp-compute-instance-machine-type-set
+    description: "Changes the machine type of a stopped Compute Engine VM instance. Returns a zone Operation resource describing the asynchronous update. Required permission: compute.instances.setMachineType."
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: zone
+      description: The name of the zone for this request.
+      required: true
+    - name: resource_name
+      description: The name of the instance resource for which to set the machine type.
+      required: true
+    - name: machine_type
+      description: 'The machine type. Can be a bare name (for example, n1-standard-1), in which case the zone-qualified URL is built automatically, or a full/partial URL (for example, zones/zone/machineTypes/n1-standard-1).'
+      required: true
+    outputs:
+    - contextPath: GCP.Compute.Operations.id
+      description: The server-defined unique identifier for the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.name
+      description: The name of the resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.zone
+      description: The URL of the zone where the operation resides, available only for per-zone operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.clientOperationId
+      description: The value of requestId, if provided in the request. 
+      type: string
+    - contextPath: GCP.Compute.Operations.operationType
+      description: The type of operation, such as insert, update, or delete, and so on.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetLink
+      description: The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk from which the snapshot was created.
+      type: string
+    - contextPath: GCP.Compute.Operations.targetId
+      description: The unique target ID, which identifies a specific incarnation of the target resource.
+      type: string
+    - contextPath: GCP.Compute.Operations.status
+      description: 'The status of the operation, which can be one of the following: PENDING RUNNING or DONE.'
+      type: string
+    - contextPath: GCP.Compute.Operations.statusMessage
+      description: The optional textual description of the current status of the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.user
+      description: The user who requested the operation, for example, EMAILADDRESS.
+      type: string
+    - contextPath: GCP.Compute.Operations.progress
+      description: An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses.
+      type: number
+    - contextPath: GCP.Compute.Operations.insertTime
+      description: The time that this operation was requested. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.startTime
+      description: The time that this operation was started by the server. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.endTime
+      description: The time that this operation was completed. This value is in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: string
+    - contextPath: GCP.Compute.Operations.error
+      description: The errors generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.warnings
+      description: The warning messages generated during the operation.
+      type: string
+    - contextPath: GCP.Compute.Operations.httpErrorStatusCode
+      description: The HTTP error status code returned if the operation fails (for example, 404 if the resource is not found).
+      type: number
+    - contextPath: GCP.Compute.Operations.httpErrorMessage
+      description: The HTTP error message returned if the operation fails (for example, NOT FOUND).
+      type: string
+    - contextPath: GCP.Compute.Operations.selfLink
+      description: The server-defined resource URL.
+      type: string
+    - contextPath: GCP.Compute.Operations.region
+      description: The URL of the region where the operation resides, available only for regional operations. This must be specified in the HTTP request URL and is not configurable in the request body.
+      type: string
+    - contextPath: GCP.Compute.Operations.description
+      description: A textual description of the operation, which is set when the operation is created.
+      type: string
+    - contextPath: GCP.Compute.Operations.kind
+      description: The type of the resource, which is always compute#operation for Operation resources.
+      type: string
+  - name: gcp-compute-instances-aggregated-list
+    description: Retrieves an aggregated list of Compute Engine VM instances across all zones in the project (requires the compute.instances.list permission).
+    arguments:
+    - name: project_id
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      required: false
+      required:platform: true
+    - name: filter
+      description: The filter expression for resources listed in the response. Must specify a field name, comparison operator (=, !=, >, <), and value (string, number, or boolean), for example, name != example-instance.
+    - name: limit
+      description: The maximum number of results to return per page. Acceptable values are 1 to 500.
+      defaultValue: '50'
+    - name: order_by
+      description: The sort order for list results, defaulting to alphanumerical order by resource name. To sort by creation timestamp in descending order, use order_by=creationTimestamp desc.
+    - name: next_token
+      description: The page token used to retrieve the next page of results. Set next_token to the AggregatedInstancesNextToken value returned from a previous request.
+    outputs:
+    - contextPath: GCP.Compute.Instances.kind
+      description: The type of the resource, which is always compute#instance for instances.
+      type: String
+    - contextPath: GCP.Compute.Instances.id
+      description: The unique identifier of the resource.
+      type: String
+    - contextPath: GCP.Compute.Instances.creationTimestamp
+      description: The creation timestamp in RFC3339 text format (for example, 2024-01-15T12:34:56Z).
+      type: String
+    - contextPath: GCP.Compute.Instances.name
+      description: The name of the resource, provided by the client when the resource is first created.
+      type: String
+    - contextPath: GCP.Compute.Instances.description
+      description: The optional description for this resource.
+      type: String
+    - contextPath: GCP.Compute.Instances.machineType
+      description: 'The full or partial URL of the machine type resource for this instance, in the format: zones/zone/machineTypes/machine-type.'
+      type: String
+    - contextPath: GCP.Compute.Instances.status
+      description: The status of the instance.
+      type: String
+    - contextPath: GCP.Compute.Instances.zone
+      description: The URL of the zone where the instance resides.
+      type: String
+    - contextPath: GCP.Compute.Instances.tags
+      description: The tags to apply to this instance.
+      type: String
+    - contextPath: GCP.Compute.Instances.statusMessage
+      description: The optional, human-readable explanation of the status.
+      type: String
+    - contextPath: GCP.Compute.Instances.canIpForward
+      description: Allows this instance to send and receive packets with non-matching destination or source IPs.
+      type: String
+    - contextPath: GCP.Compute.Instances.networkInterfaces
+      description: The array of network configurations for the instance.
+      type: Object
+    - contextPath: GCP.Compute.Instances.disks
+      description: The array of disks associated with the instance.
+      type: Object
+    - contextPath: GCP.Compute.Instances.metadata
+      description: The metadata key/value pairs assigned to the instance.
+      type: Object
+    - contextPath: GCP.Compute.Instances.serviceAccounts
+      description: The list of service accounts, with their specified scopes, authorized for the instance.
+      type: Object
+    - contextPath: GCP.Compute.Instances.selfLink
+      description: The server-defined resource URL.
+      type: String
+    - contextPath: GCP.Compute.Instances.scheduling
+      description: Sets the scheduling options for the instance.
+      type: Object
+    - contextPath: GCP.Compute.Instances.cpuPlatform
+      description: The CPU platform used by the instance.
+      type: String
+    - contextPath: GCP.Compute.Instances.labels
+      description: The labels to apply to the instance.
+      type: String
+    - contextPath: GCP.Compute.Instances.labelFingerprint
+      description: The fingerprint for this request, which is a hash of the label's contents and used for optimistic locking.
+      type: String
+    - contextPath: GCP.Compute.Instances.instanceEncryptionKey
+      description: Encrypts suspended data for an instance with a customer-managed encryption key.
+      type: Object
+    - contextPath: GCP.Compute.Instances.minCpuPlatform
+      description: Specifies a minimum CPU platform for the VM instance.
+      type: String
+    - contextPath: GCP.Compute.Instances.guestAccelerators
+      description: The list of the type and count of accelerator cards attached to the instance.
+      type: Object
+    - contextPath: GCP.Compute.Instances.startRestricted
+      description: Whether a VM has been restricted from starting because Compute Engine detected suspicious activity.
+      type: Boolean
+    - contextPath: GCP.Compute.Instances.deletionProtection
+      description: Whether the resource should be protected against deletion.
+      type: Boolean
+    - contextPath: GCP.Compute.Instances.resourcePolicies
+      description: The resource policies applied to this instance.
+      type: String
+    - contextPath: GCP.Compute.Instances.sourceMachineImage
+      description: The source machine image.
+      type: String
+    - contextPath: GCP.Compute.Instances.reservationAffinity
+      description: The reservations that the instance can consume.
+      type: Object
+    - contextPath: GCP.Compute.Instances.hostname
+      description: The hostname of the instance.
+      type: String
+    - contextPath: GCP.Compute.Instances.displayDevice
+      description: The display device configuration for the instance.
+      type: Object
+    - contextPath: GCP.Compute.Instances.shieldedInstanceConfig
+      description: The Shielded VM configuration for the instance.
+      type: Object
+    - contextPath: GCP.Compute.Instances.sourceMachineImageEncryptionKey
+      description: The source machine image encryption key used when creating an instance from a machine image.
+      type: Object
+    - contextPath: GCP.Compute.Instances.confidentialInstanceConfig
+      description: The confidential computing configuration for the instance.
+      type: Object
+    - contextPath: GCP.Compute.Instances.fingerprint
+      description: The fingerprint for the resource, which is a hash of the instance contents used for optimistic locking.
+      type: String
+    - contextPath: GCP.Compute.Instances.privateIpv6GoogleAccess
+      description: The private IPv6 Google access type for the VM.
+      type: String
+    - contextPath: GCP.Compute.Instances.advancedMachineFeatures
+      description: The controls for the advanced machine-related behavior features.
+      type: Object
+    - contextPath: GCP.Compute.Instances.lastStartTimestamp
+      description: The last start timestamp in RFC3339 format (for example, 2024-01-15T12:34:56Z).
+      type: String
+    - contextPath: GCP.Compute.Instances.lastStopTimestamp
+      description: The last stop timestamp in RFC3339 format (for example, 2024-01-15T12:34:56Z).
+      type: String
+    - contextPath: GCP.Compute.Instances.lastSuspendedTimestamp
+      description: The last suspended timestamp in RFC3339 format (for example, 2024-01-15T12:34:56Z).
+      type: String
+    - contextPath: GCP.Compute.Instances.satisfiesPzs
+      description: Indicates whether the instance satisfies physical zone separation requirements.
+      type: String
+    - contextPath: GCP.Compute.Instances.satisfiesPzi
+      description: Indicates whether the instance satisfies physical zone isolation requirements.
+      type: String
+    - contextPath: GCP.Compute.Instances.resourceStatus
+      description: The resource status.
+      type: Object
+    - contextPath: GCP.Compute.Instances.networkPerformanceConfig
+      description: The network performance configuration.
+      type: Object
+    - contextPath: GCP.Compute.Instances.keyRevocationActionType
+      description: The KeyRevocationActionType of the instance.
+      type: String
+    - contextPath: GCP.Compute.AggregatedInstancesNextToken
+      description: The token to use to retrieve the next page of aggregated instances results.
+      type: String
   - arguments:
     - name: project_id
       required: false
