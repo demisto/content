@@ -42,6 +42,17 @@ MAX_FETCH_PAGES_PER_RUN = 1000
 # Map Doppel alert severities to XSOAR incident severities (0 = Unknown).
 SEVERITY_MAP = {"low": 1, "medium": 2, "high": 3, "critical": 4}
 
+# Queue states that mean the alert needs attention again. When Doppel's Revival
+# Monitoring reopens an alert (same alert id, no new row), it lands in doppel_review
+# or actioned; needs_confirmation is included because it also requires customer action.
+ACTIVE_QUEUE_STATES = {"doppel_review", "actioned", "needs_confirmation"}
+
+# Client attribution sent with every Doppel API request (usage attribution only; the header
+# is optional server-side and never affects request handling). The version is the pack
+# version and must be bumped on each release (pack_metadata.json is not readable at runtime).
+PACK_VERSION = "1.2.0"
+CLIENT_ATTRIBUTION = f"xsoar/{PACK_VERSION}"
+
 
 """ CLIENT CLASS """
 
@@ -70,7 +81,12 @@ class Client(BaseClient):
     ):
         super().__init__(base_url, verify=verify, proxy=proxy)
 
-        self._headers = {"accept": "application/json", "x-api-key": api_key}
+        self._headers = {
+            "accept": "application/json",
+            "x-api-key": api_key,
+            "x-doppel-client": CLIENT_ATTRIBUTION,
+            "User-Agent": f"doppel-{CLIENT_ATTRIBUTION}",
+        }
         if user_api_key:
             self._headers["x-user-api-key"] = user_api_key
         if organization_code:
@@ -238,6 +254,49 @@ def _normalize_entity_content_for_grid(entity_content: Any) -> list[dict[str, An
     return []
 
 
+def _normalize_queue_state(value: Any) -> str:
+    """Normalize a queue-state-ish string ("Doppel Review" / "doppel_review") for comparison."""
+    return str(value or "").strip().lower().replace(" ", "_")
+
+
+def _ensure_aware(dt):
+    """Treat naive datetimes as UTC so aware/naive comparisons cannot raise."""
+    if dt and dt.tzinfo is None:
+        return dt.replace(tzinfo=UTC)
+    return dt
+
+
+def _reopen_entry_if_revived(updated_doppel_alert: dict, audit_logs: Any, last_update) -> dict | None:
+    """Return a dbotIncidentReopen entry when the alert re-entered an active queue after last_update.
+
+    Doppel's Revival Monitoring reopens the same alert (e.g. a parked domain going live, or a
+    taken-down domain coming back) by moving it into an active queue. Without this entry, a
+    closed XSOAR incident would only get silent field updates and the revival would be missed.
+    The reopen fires only on a transition observed in the audit trail *after* the incident's
+    last sync, so an incident closed by an analyst while the alert simply stays active is not
+    reopened on every mirror cycle.
+    """
+    queue_state = _normalize_queue_state(updated_doppel_alert.get("queue_state"))
+    if queue_state not in ACTIVE_QUEUE_STATES or not last_update or not isinstance(audit_logs, list):
+        return None
+
+    last_update = _ensure_aware(last_update)
+    for audit_log in audit_logs:
+        if not isinstance(audit_log, dict) or _normalize_queue_state(audit_log.get("value")) != queue_state:
+            continue
+        try:
+            log_time = _ensure_aware(arg_to_datetime(str(audit_log.get("timestamp")), required=False))
+        except ValueError:
+            continue
+        if log_time and log_time > last_update:
+            demisto.debug(
+                f"Doppel - Alert moved into active queue {queue_state!r} at {audit_log.get('timestamp')}; "
+                f"sending reopen entry."
+            )
+            return {"Type": EntryType.NOTE, "Contents": {"dbotIncidentReopen": True}, "ContentsFormat": EntryFormat.JSON}
+    return None
+
+
 def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id: str, last_update_str: str):
     """
     Retrieves updated incident data from the remote system based on the given alert ID and last update timestamp.
@@ -289,6 +348,12 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
         most_recent_audit_log = max(audit_logs, key=lambda audit_log: str(audit_log.get("timestamp") or ""))
         demisto.debug(f"Most recent audit log is {most_recent_audit_log}")
         entries = [{"Type": EntryType.NOTE, "Contents": most_recent_audit_log, "ContentsFormat": EntryFormat.JSON, "Note": True}]
+
+    # Revived alerts (Revival Monitoring moved the alert back into an active queue) must
+    # reopen a closed incident instead of silently updating its fields.
+    reopen_entry = _reopen_entry_if_revived(updated_doppel_alert, audit_logs, last_update)
+    if reopen_entry:
+        entries.append(reopen_entry)
 
     demisto.debug(f"Successfully returning the updated alert and entries: {updated_doppel_alert, entries}")
     return updated_doppel_alert, entries
@@ -485,6 +550,7 @@ def doppel_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandRe
 
     created_before = format_datetime(args.get("created_before"))
     created_after = format_datetime(args.get("created_after"))
+    last_activity_timestamp = format_datetime(args.get("last_activity_timestamp"))
 
     # Extract query parameters directly from arguments
     query_params = {
@@ -493,9 +559,11 @@ def doppel_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandRe
         "product": args.get("product"),
         "created_before": created_before,
         "created_after": created_after,
+        "last_activity_timestamp": last_activity_timestamp,
         "sort_type": args.get("sort_type"),
         "sort_order": args.get("sort_order"),
         "page": args.get("page"),
+        "page_size": args.get("page_size"),
         "tags": argToList(args.get("tags"), separator=",", transform=None),
     }
 

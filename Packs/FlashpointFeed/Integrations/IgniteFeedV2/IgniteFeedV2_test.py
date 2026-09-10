@@ -8,7 +8,7 @@ import pytest
 from requests.exceptions import HTTPError
 
 import IgniteFeedV2
-from CommonServerPython import DemistoException
+from CommonServerPython import Common, DemistoException
 from IgniteFeedV2 import (
     HTTP_ERRORS,
     MAX_FETCH,
@@ -25,6 +25,9 @@ from IgniteFeedV2 import (
     prepare_hr_for_indicators,
     remove_space_from_args,
     validate_score_params,
+    get_all_sightings,
+    get_dbot_score,
+    get_sighting_tags,
 )
 from IgniteFeedV2 import test_module as main_test_module
 
@@ -721,9 +724,35 @@ class TestClientMethods:
         assert len(indicators) == 1
         assert indicators[0]["value"] == "0.0.0.1"
         assert indicators[0]["type"] == "IP"
+        assert indicators[0]["score"] == Common.DBotScore.BAD
         assert indicators[0]["fields"]["trafficlightprotocol"] == "AMBER"
         assert indicators[0]["fields"]["flashpointfeedindicatorid"] == "dummy-id-1"
         assert indicators[0]["fields"]["flashpointfeedindicatortype"] == "ipv4"
+        assert indicators[0]["fields"]["tags"] == ["malware:dummy-malware", "tag1"]
+
+    def test_create_indicators_from_response_with_sighting_tags(self, mock_client):
+        """
+        Test case for create_indicators_from_response method when the sightings contain tags.
+
+        Given:
+            - V2 API response items containing sightings with tags.
+        When:
+            - Calling `create_indicators_from_response` method.
+        Then:
+            - The sighting tags are added to the 'tags' field along with the configured feed tags.
+        """
+        api_responses = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/api_responses.json"))
+        response = [api_responses["system_fields"]]
+
+        params = {"feedTags": ["tag1"]}
+        indicators = mock_client.create_indicators_from_response(response, params)
+
+        assert indicators[0]["fields"]["tags"] == [
+            "actor:dummy-actor",
+            "malware:dummy-malware",
+            "source:dummy_source_1",
+            "tag1",
+        ]
 
     def test_create_indicators_from_response_file_type(self, mock_client):
         """
@@ -772,6 +801,72 @@ class TestClientMethods:
         assert indicator_obj["fields"]["flashpointfeedplatformurl"] == "https://app.example.com/iocs/dummy-id-1"
         assert indicator_obj["fields"]["flashpointfeedlastscoredate"] == "2026-01-01T00:00:00Z"
         assert indicator_obj["fields"]["flashpointfeedmodifieddate"] == "2026-01-01T00:00:00Z"
+
+
+class TestSystemFieldHelpers:
+    """Test cases for the helpers that populate the system indicator fields."""
+
+    @pytest.fixture
+    def resp(self):
+        """Return a V2 API indicator response containing sightings."""
+        api_responses = util_load_json(os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/api_responses.json"))
+        return api_responses["system_fields"]
+
+    def test_get_all_sightings(self, resp):
+        """
+        Test case for get_all_sightings function.
+
+        Given:
+            - An indicator response where the latest sighting is also part of the sightings list.
+        When:
+            - Calling `get_all_sightings` function.
+        Then:
+            - Returns the sightings without duplicating the latest sighting.
+        """
+        sightings = get_all_sightings(resp)
+
+        assert [sighting["id"] for sighting in sightings] == ["dummy-sighting-1", "dummy-sighting-2"]
+
+    def test_get_all_sightings_when_latest_sighting_is_not_in_sightings(self):
+        """
+        Test case for get_all_sightings function when the latest sighting is not part of the sightings list.
+
+        Given:
+            - An indicator response where the latest sighting is not part of the sightings list.
+        When:
+            - Calling `get_all_sightings` function.
+        Then:
+            - Returns the sightings including the latest sighting.
+        """
+        resp = {"sightings": [{"id": "sighting-1"}], "latest_sighting": {"id": "sighting-2"}}
+
+        assert get_all_sightings(resp) == [{"id": "sighting-1"}, {"id": "sighting-2"}]
+
+    def test_get_all_sightings_when_no_sightings_are_returned(self):
+        """
+        Test case for get_all_sightings function when no sightings are returned.
+
+        Given:
+            - An indicator response without sightings.
+        When:
+            - Calling `get_all_sightings` function.
+        Then:
+            - Returns an empty list.
+        """
+        assert get_all_sightings({}) == []
+
+    def test_get_sighting_tags(self, resp):
+        """
+        Test case for get_sighting_tags function.
+
+        Given:
+            - An indicator response containing sightings with tags.
+        When:
+            - Calling `get_sighting_tags` function.
+        Then:
+            - Returns a sorted list of the unique tags of all the sightings.
+        """
+        assert get_sighting_tags(resp) == ["actor:dummy-actor", "malware:dummy-malware", "source:dummy_source_1"]
 
 
 class TestPrepareHrForIndicators:
@@ -1073,3 +1168,50 @@ class TestValidateScoreParamsEdgeCases:
         min_val, max_val = validate_score_params("INFORMATIONAL", "MALICIOUS")
         assert min_val == "informational"
         assert max_val == "malicious"
+
+    @pytest.mark.parametrize(
+        "score_value, expected_score",
+        [
+            ("informational", Common.DBotScore.GOOD),
+            ("suspicious", Common.DBotScore.SUSPICIOUS),
+            ("malicious", Common.DBotScore.BAD),
+            ("no_score", Common.DBotScore.NONE),
+            ("MALICIOUS", Common.DBotScore.BAD),
+        ],
+    )
+    def test_get_dbot_score(self, score_value, expected_score):
+        """
+        Test case for get_dbot_score function.
+
+        Given:
+            - An indicator response with a score tier returned by the API.
+        When:
+            - Calling `get_dbot_score` function.
+        Then:
+            - Returns the DBot score that matches the score tier.
+        """
+        assert get_dbot_score({"score": {"value": score_value}}) == expected_score
+
+    @pytest.mark.parametrize(
+        "resp",
+        [
+            {},
+            {"score": None},
+            {"score": {}},
+            {"score": {"value": None}},
+            {"score": {"value": ""}},
+            {"score": {"value": "unknown"}},
+        ],
+    )
+    def test_get_dbot_score_when_the_score_tier_is_not_available(self, resp):
+        """
+        Test case for get_dbot_score function when the API does not return a known score tier.
+
+        Given:
+            - An indicator response with a missing, empty, or unknown score tier.
+        When:
+            - Calling `get_dbot_score` function.
+        Then:
+            - Returns the None DBot score.
+        """
+        assert get_dbot_score(resp) == Common.DBotScore.NONE
