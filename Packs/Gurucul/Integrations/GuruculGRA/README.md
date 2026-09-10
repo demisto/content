@@ -14,7 +14,7 @@ Please make sure you look at the integration source code and comments.
 | Use system proxy settings | Whether to use the system proxy settings. | False |
 | First fetch time | The first-fetch time window used only when no ID cursor exists yet. | False |
 | Maximum number of incidents per fetch | The maximum number of incidents to fetch per run. | False |
-| Fetch type | The objects to import from GRA (`Incidents` or `Alerts`). Default: **Incidents**. Cases are no longer fetched. Fetch imports OPEN Incidents or OPEN Alerts only. Use a separate instance for Alerts. | False |
+| Fetch type | The objects to import from GRA (`Incidents` or `Alerts`). Default: **Incidents**. Cases are no longer fetched. Use a separate instance for Alerts. | False |
 | GRA server timezone | Set the timezone of the GRA server (IANA id). Used when fetching Incidents and Alerts. Not used for First fetch time. Default **UTC**. | False |
 
 ### Fetch setup (Incidents vs Alerts)
@@ -28,7 +28,7 @@ Use two integration instances when you need both types:
 
 > **Important:** Check **Do not use by default** on all Gurucul-GRA instances. If it is unchecked, Cortex can run War Room commands against this instance alongside all other enabled instances that are still use-by-default.
 
-New instances default to **Fetch type** = `Incidents`, with Mapper (incoming) = `GRAIncident-Mapper` and Incident type = `GRAIncident` (YAML defaults). On an Alerts instance, set Fetch type to `Alerts`, then set Mapper and Incident type to the Alert values above so fields and layouts map correctly. Fetch imports OPEN Incidents or OPEN Alerts only.
+New instances default to **Fetch type** = `Incidents`, with Mapper (incoming) = `GRAIncident-Mapper` and Incident type = `GRAIncident` (YAML defaults). On an Alerts instance, set Fetch type to `Alerts`, then set Mapper and Incident type to the Alert values above so fields and layouts map correctly.
 
 Set **GRA server timezone** to the GRA server timezone so **Occurred** matches GRA (default UTC). It is not used for **First fetch time**. War Room commands still return GRA date strings unchanged.
 

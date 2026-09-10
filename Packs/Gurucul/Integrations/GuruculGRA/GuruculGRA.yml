@@ -74,7 +74,7 @@ configuration:
   options:
   - Incidents
   - Alerts
-  additionalinfo: The objects to import from GRA. Cases are no longer fetched. Fetch imports OPEN Incidents or OPEN Alerts only. Legacy GRACase incidents remain actionable via gra-case-* commands. Use a separate instance for Alerts. Default Fetch type is Incidents. New instances default to Mapper (incoming) GRAIncident-Mapper and Incident type GRAIncident. On an Alerts instance, set Fetch type to Alerts, Mapper (incoming) to GRAAlert-Mapper, and Incident type to GRAAlert. After the first bootstrap, fetch continues with maxIncidentId or maxAlertId only.
+  additionalinfo: The objects to import from GRA. Cases are no longer fetched. Legacy GRACase incidents remain actionable via gra-case-* commands. Use a separate instance for Alerts. Default Fetch type is Incidents. New instances default to Mapper (incoming) GRAIncident-Mapper and Incident type GRAIncident. On an Alerts instance, set Fetch type to Alerts, Mapper (incoming) to GRAAlert-Mapper, and Incident type to GRAAlert. After the first bootstrap, fetch continues with maxIncidentId or maxAlertId only.
 - display: GRA server timezone
   name: gra_server_timezone
   defaultvalue: UTC

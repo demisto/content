@@ -3,7 +3,8 @@
 - This integration requires **GRA 14.5.0** or later.
 - Contact Gurucul support to obtain an API key for this integration.
 - Cases are no longer fetched. Set **Fetch type** to Incidents or Alerts. Use a **separate instance** for each type.
-- Fetch imports **OPEN** Incidents or **OPEN** Alerts only.
+- Fetch imports incidents with statuses: Open, Reopened, In Progress, and On Hold.
+- Fetch imports alerts with Open status only.
 - **Incidents** instance: Set **Fetch type** to Incidents, **Classifier** to None / Select, **Incident type** to **GRAIncident**, and **Mapper (incoming)** to **GRAIncident-Mapper**.
 - **Alerts** instance: Set **Fetch type** to Alerts, **Classifier** to None / Select, **Incident type** to **GRAAlert**, and **Mapper (incoming)** to **GRAAlert-Mapper**.
 - If **Do not use by default** is unchecked, War Room commands with no `using` run on this instance and every other default-enabled instance. Check **Do not use by default** on all instances.
