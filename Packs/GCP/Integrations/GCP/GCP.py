@@ -2504,7 +2504,13 @@ def storage_bucket_object_upload(creds: Credentials, args: dict[str, Any]) -> Co
     outputs = {
         "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
             "name": bucket_name,
-            "Objects": _merge_bucket_objects(bucket_name, [response]),
+            "Objects": _merge_context_items(
+                "GCP.Storage.Buckets",
+                [response],
+                items_key="Objects",
+                parent_id_key="name",
+                parent_id_value=bucket_name,
+            ),
         }
     }
 
@@ -2598,7 +2604,13 @@ def storage_bucket_object_copy(creds: Credentials, args: dict[str, Any]) -> Comm
     outputs = {
         "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
             "name": destination_bucket_name,
-            "Objects": _merge_bucket_objects(destination_bucket_name, [response]),
+            "Objects": _merge_context_items(
+                "GCP.Storage.Buckets",
+                [response],
+                items_key="Objects",
+                parent_id_key="name",
+                parent_id_value=destination_bucket_name,
+            ),
         }
     }
 
