@@ -1,0 +1,6 @@
+id: CircleCIAPIModelingRules
+name: CircleCI API Modeling Rule
+fromversion: 8.3.0
+tags: CircleCIAPI
+rules: ''
+schema: ''
