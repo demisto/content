@@ -1671,7 +1671,7 @@ script:
       name: xql_query_tag
     description: Deletes XQL queries from the library.
     name: xdr-xql-library-delete
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.14.12844876
   runonce: false
   script: '-'
   subtype: python3
