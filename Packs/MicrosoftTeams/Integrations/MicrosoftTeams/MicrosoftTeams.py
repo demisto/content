@@ -3575,12 +3575,16 @@ def messages() -> Response:
                 # In TeamsAsk process
                 demisto.info("Got response from user in MicrosoftTeamsAsk process")
                 entitlement_handler(integration_context, request_body, value, conversation_id)
-            elif conversation_type == "personal":
+            elif conversation_type == "personal" and request_body.get("type") == "message":
                 demisto.info("Got direct message to the bot")
                 demisto.debug(f"Text is : {request_body.get('text')}")
-                if request_body.get("membersAdded", []):
-                    demisto.debug("the bot was added to a one-to-one chat")
                 direct_message_handler(integration_context, request_body, conversation, formatted_message)
+            elif conversation_type == "personal":
+                # e.g. conversationUpdate (membersAdded) or installationUpdate activities fired when the bot is
+                # installed/added to a one-to-one chat - not an actual message, so there's nothing to reply to.
+                demisto.debug(
+                    f"Got a non-message personal-scope activity (type={request_body.get('type')}) - no reply needed"
+                )
             else:
                 demisto.info("Got message mentioning the bot")
                 demisto.debug(f"the message is from: {request_body.get('from', {})}")
