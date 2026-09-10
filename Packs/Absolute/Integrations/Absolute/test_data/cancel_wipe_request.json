@@ -1,0 +1,11 @@
+{
+  "code": "INVALID_REQUEST",
+  "message": "invalid request",
+  "details": [
+    {
+      "message": "invalid json",
+      "code": "INVALID_JSON",
+      "field": "deviceUids"
+    }
+  ]
+}
