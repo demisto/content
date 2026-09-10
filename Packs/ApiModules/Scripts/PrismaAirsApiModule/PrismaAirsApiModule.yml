@@ -8,7 +8,7 @@ subtype: python3
 tags:
 - infra
 - server
-comment: Common Prisma AIRS code (OAuth2 client, plane routing, scanner transport) appended into each Prisma AIRS integration when it's deployed.
+comment: Provides shared Prisma AIRS code (OAuth2 client, plane routing, and scanner transport) that each Prisma AIRS integration reuses.
 system: true
 scripttarget: 0
 dependson: {}

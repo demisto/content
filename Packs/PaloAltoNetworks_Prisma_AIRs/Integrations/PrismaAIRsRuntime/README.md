@@ -1179,7 +1179,7 @@ Create a new DLP data profile with detection rules.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The profile name. Note that although the API spec states a 64-character maximum, the server rejects names longer than 32 characters with an HTTP 400 error, so keep the name to 1-32 characters. | Required |
+| name | The profile name. Keep it to 1-32 characters. The API spec states a 64-character maximum, but the server rejects longer names with an HTTP 400 error. | Required |
 | detection_rules | The detection rules as JSON array. Each rule must have rule_type (expression_tree or multi_profile) and corresponding structure. | Required |
 | description | The profile description. | Optional |
 | is_granular_data_profile | Whether this is a granular data profile. Possible values are: true, false. | Optional |
@@ -1248,7 +1248,7 @@ Replace (full update) a DLP data profile. This replaces the entire profile confi
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | profile_id | The ID of the DLP data profile to replace. | Required |
-| name | The profile name. Note that although the API spec states a 64-character maximum, the server rejects names longer than 32 characters with an HTTP 400 error, so keep the name to 1-32 characters. | Required |
+| name | The profile name. Keep it to 1-32 characters. The API spec states a 64-character maximum, but the server rejects longer names with an HTTP 400 error. | Required |
 | detection_rules | The detection rules as JSON array. | Required |
 | description | The profile description. | Optional |
 | is_granular_data_profile | Whether this is a granular data profile. Possible values are: true, false. | Optional |
@@ -1433,7 +1433,7 @@ Create a new DLP dictionary by uploading a keyword file.
 | --- | --- | --- |
 | name | The dictionary name. | Required |
 | category | The dictionary category. Possible values are: Academic, Confidential, Employment, Financial, Government, Healthcare, Legal, Marketing, Source Code. | Required |
-| region_name | The dictionary region. Must be one of the allowed tenant region labels (the UI exposes these as a pick list); any other value (e.g. an AWS-style code such as us-west-2) makes the API return HTTP 400. Possible values are: Australia, Brazil, Canada, France, Germany, India, Japan, Saudi Arabia, Singapore, Switzerland, United Kingdom, United States. Default is United States. | Required |
+| region_name | The dictionary region. Must be one of the allowed tenant region labels shown in the pick list. Any other value, such as an AWS-style code like us-west-2, makes the API return HTTP 400. Possible values are: Australia, Brazil, Canada, France, Germany, India, Japan, Saudi Arabia, Singapore, Switzerland, United Kingdom, United States. Default is United States. | Required |
 | entry_id | The war room entry ID of the keyword file to upload. | Required |
 | description | The dictionary description. | Optional |
 | is_case_sensitive | Whether the dictionary is case sensitive. Possible values are: true, false. | Optional |
@@ -1508,7 +1508,7 @@ Replace (full update) a DLP dictionary by uploading a new keyword file.
 | dictionary_id | The ID of the DLP dictionary to replace. | Required |
 | name | The dictionary name. | Required |
 | category | The dictionary category. Possible values are: Academic, Confidential, Employment, Financial, Government, Healthcare, Legal, Marketing, Source Code. | Required |
-| region_name | The dictionary region. Must be one of the allowed tenant region labels (the UI exposes these as a pick list); any other value (e.g. an AWS-style code such as us-west-2) makes the API return HTTP 400. Possible values are: Australia, Brazil, Canada, France, Germany, India, Japan, Saudi Arabia, Singapore, Switzerland, United Kingdom, United States. Default is United States. | Required |
+| region_name | The dictionary region. Must be one of the allowed tenant region labels shown in the pick list. Any other value, such as an AWS-style code like us-west-2, makes the API return HTTP 400. Possible values are: Australia, Brazil, Canada, France, Germany, India, Japan, Saudi Arabia, Singapore, Switzerland, United Kingdom, United States. Default is United States. | Required |
 | entry_id | The war room entry ID of the keyword file to upload. | Required |
 | description | The dictionary description. | Optional |
 | is_case_sensitive | Whether the dictionary is case sensitive. Possible values are: true, false. | Optional |
@@ -2061,7 +2061,7 @@ Replace (full update) a DLP data pattern. This replaces the entire pattern confi
 ### prisma-airs-runtime-dlp-patterns-delete
 
 ***
-Delete (soft-delete/archive) a DLP data pattern; returns HTTP 204 on success and the pattern is archived server-side. Note: if the pattern is still referenced by an active data profile, the API returns HTTP 400 and the pattern cannot be deleted until the reference is removed. This action cannot be undone.
+Delete (soft-delete/archive) a DLP data pattern. Returns HTTP 204 on success and the pattern is archived server-side. Note: if the pattern is still referenced by an active data profile, the API returns HTTP 400 and the pattern cannot be deleted until the reference is removed. This action cannot be undone.
 
 #### Base Command
 
