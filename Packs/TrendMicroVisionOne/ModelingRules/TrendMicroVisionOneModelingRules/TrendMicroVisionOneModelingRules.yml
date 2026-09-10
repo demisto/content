@@ -1,5 +1,4 @@
 fromversion: 6.10.0
-toversion: 8.14.0
 id: trend_micro_vision_one_ModelingRule
 name: TrendAI Vision One™ Modeling Rule
 rules: ''
