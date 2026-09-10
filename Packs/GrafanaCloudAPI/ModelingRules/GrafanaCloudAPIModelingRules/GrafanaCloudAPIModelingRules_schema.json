@@ -1,0 +1,192 @@
+{
+    "grafana_service_accounts_raw": {
+        "uid": {
+            "type": "string",
+            "is_array": false
+        },
+        "name": {
+            "type": "string",
+            "is_array": false
+        },
+        "login": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "int",
+            "is_array": false
+        },
+        "role": {
+            "type": "string",
+            "is_array": false
+        },
+        "orgId": {
+            "type": "int",
+            "is_array": false
+        },
+        "grafana_instance": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "isDisabled": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "isExternal": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "token_count": {
+            "type": "int",
+            "is_array": false
+        },
+        "tokens_without_expiry": {
+            "type": "int",
+            "is_array": false
+        },
+        "tokens_never_used": {
+            "type": "int",
+            "is_array": false
+        },
+        "tokens_expired": {
+            "type": "int",
+            "is_array": false
+        },
+        "tokens_revoked": {
+            "type": "int",
+            "is_array": false
+        },
+        "token_names": {
+            "type": "string",
+            "is_array": false
+        },
+        "oldest_token_created": {
+            "type": "datetime",
+            "is_array": false
+        }
+    },
+    "grafana_datasources_raw": {
+        "uid": {
+            "type": "string",
+            "is_array": false
+        },
+        "name": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "typeName": {
+            "type": "string",
+            "is_array": false
+        },
+        "url": {
+            "type": "string",
+            "is_array": false
+        },
+        "user": {
+            "type": "string",
+            "is_array": false
+        },
+        "database": {
+            "type": "string",
+            "is_array": false
+        },
+        "orgId": {
+            "type": "int",
+            "is_array": false
+        },
+        "grafana_instance": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "access": {
+            "type": "string",
+            "is_array": false
+        },
+        "basicAuth": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "readOnly": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "isDefault": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "has_url": {
+            "type": "boolean",
+            "is_array": false
+        }
+    },
+    "grafana_org_users_raw": {
+        "uid": {
+            "type": "string",
+            "is_array": false
+        },
+        "login": {
+            "type": "string",
+            "is_array": false
+        },
+        "email": {
+            "type": "string",
+            "is_array": false
+        },
+        "userId": {
+            "type": "int",
+            "is_array": false
+        },
+        "role": {
+            "type": "string",
+            "is_array": false
+        },
+        "orgId": {
+            "type": "int",
+            "is_array": false
+        },
+        "grafana_instance": {
+            "type": "string",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "isDisabled": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "isExternallySynced": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "isProvisioned": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "auth_labels": {
+            "type": "string",
+            "is_array": false
+        },
+        "created": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "lastSeenAt": {
+            "type": "datetime",
+            "is_array": false
+        }
+    }
+}
