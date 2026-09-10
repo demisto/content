@@ -12,7 +12,9 @@ from Unit42Feed import (
     sort_indicator_types_by_priority,
     fetch_indicator_type,
     fetch_threat_objects_with_limit,
+    build_fetch_units,
     calculate_limit_per_type,
+    THREAT_OBJECTS_TYPE,
     INDICATOR_TYPE_MAPPING,
     VERDICT_TO_SCORE,
     VALID_REGIONS,
@@ -857,9 +859,11 @@ def test_fetch_indicators_basic(client, mocker):
     }
 
     current_time = datetime.now()
-    result = fetch_indicators(client, params, current_time)
+    result, next_run = fetch_indicators(client, params, current_time)
 
     assert result >= 2  # At least one indicator and one threat object
+    # Nothing left to resume, so only the last successful run time is stored
+    assert next_run == {"last_successful_run": current_time.strftime(DATE_FORMAT)}
 
     # Check that both indicators and threat objects were pushed to the server
     pushed_items = [item for call in mock_create_indicators.call_args_list for item in call[0][0]]
@@ -902,9 +906,10 @@ def test_fetch_indicators_pagination(client, mocker):
     params = {"feed_types": ["Indicators"], "indicator_types": ["ip"], "feed_tags": [], "tlp_color": None}
 
     current_time = datetime.now()
-    result = fetch_indicators(client, params, current_time)
+    result, next_run = fetch_indicators(client, params, current_time)
 
     assert result == 2
+    assert next_run == {"last_successful_run": current_time.strftime(DATE_FORMAT)}
 
     # Should have indicators from both pages, pushed to the server
     pushed_items = [item for call in mock_create_indicators.call_args_list for item in call[0][0]]
@@ -1077,7 +1082,7 @@ def test_main_function_test_module(mocker):
         - Executes test_module and returns results
     """
     # Mock demisto functions
-    mock_params = {"insecure": False, "proxy": False, "feedFetchInterval": "720"}
+    mock_params = {"insecure": False, "proxy": False, "feedFetchInterval": "60"}
     mocker.patch("Unit42Feed.demisto.params", return_value=mock_params)
     mocker.patch("Unit42Feed.demisto.command", return_value="test-module")
     mocker.patch("Unit42Feed.demisto.getLicenseID", return_value="test_license")
@@ -1104,7 +1109,7 @@ def test_main_function_fetch_indicators(mocker):
         - main() itself no longer accumulates or re-batches indicators
     """
     # Mock demisto functions
-    mock_params = {"insecure": False, "proxy": False, "feedFetchInterval": "720"}
+    mock_params = {"insecure": False, "proxy": False, "feedFetchInterval": "60"}
     mocker.patch("Unit42Feed.demisto.params", return_value=mock_params)
     mocker.patch("Unit42Feed.demisto.command", return_value="fetch-indicators")
     mocker.patch("Unit42Feed.demisto.getLicenseID", return_value="test_license")
@@ -1114,13 +1119,15 @@ def test_main_function_fetch_indicators(mocker):
     # Mock Client and fetch_indicators (fetch_indicators now returns a count and pushes internally)
     mock_client = mocker.Mock()
     mocker.patch("Unit42Feed.Client", return_value=mock_client)
-    mock_fetch_indicators = mocker.patch("Unit42Feed.fetch_indicators", return_value=1)
+    next_run = {"last_successful_run": "2023-06-02T12:00:00Z"}
+    mock_fetch_indicators = mocker.patch("Unit42Feed.fetch_indicators", return_value=(1, next_run))
     mocker.patch("Unit42Feed.datetime")
 
     main()
 
     mock_fetch_indicators.assert_called_once()
-    mock_set_last_run.assert_called_once()
+    # main() stores whatever next run state fetch_indicators produced
+    mock_set_last_run.assert_called_once_with(next_run)
     mock_info.assert_called_once()
 
 
@@ -1134,7 +1141,7 @@ def test_main_function_get_indicators_command(mocker):
         - Executes get_indicators_command and returns results
     """
     # Mock demisto functions
-    mock_params = {"insecure": False, "proxy": False, "feedFetchInterval": "720"}
+    mock_params = {"insecure": False, "proxy": False, "feedFetchInterval": "60"}
     mocker.patch("Unit42Feed.demisto.params", return_value=mock_params)
     mocker.patch("Unit42Feed.demisto.command", return_value="unit42-get-indicators")
     mocker.patch("Unit42Feed.demisto.args", return_value={"limit": "10"})
@@ -1162,7 +1169,7 @@ def test_main_function_get_threat_objects_command(mocker):
         - Executes get_threat_objects_command and returns results
     """
     # Mock demisto functions
-    mock_params = {"insecure": False, "proxy": False, "feedFetchInterval": "720"}
+    mock_params = {"insecure": False, "proxy": False, "feedFetchInterval": "60"}
     mocker.patch("Unit42Feed.demisto.params", return_value=mock_params)
     mocker.patch("Unit42Feed.demisto.command", return_value="unit42-get-threat-objects")
     mocker.patch("Unit42Feed.demisto.args", return_value={"limit": "5"})
@@ -1180,29 +1187,6 @@ def test_main_function_get_threat_objects_command(mocker):
     mock_return_results.assert_called_once_with(mock_command_results)
 
 
-def test_main_function_invalid_fetch_interval(mocker):
-    """
-    Given:
-        - Main function with invalid feedFetchInterval (less than 720 minutes)
-    When:
-        - Calling main function
-    Then:
-        - Returns error about minimum fetch interval
-    """
-    # Mock demisto functions
-    mock_params = {
-        "insecure": False,
-        "proxy": False,
-        "feedFetchInterval": "600",  # Less than 720 minutes
-    }
-    mocker.patch("Unit42Feed.demisto.params", return_value=mock_params)
-    mock_return_error = mocker.patch("Unit42Feed.return_error")
-
-    main()
-
-    mock_return_error.assert_called_once_with("Feed Fetch Interval parameter must be set to at least 12 hours.")
-
-
 def test_main_function_exception_handling(mocker):
     """
     Given:
@@ -1213,7 +1197,7 @@ def test_main_function_exception_handling(mocker):
         - Handles exception and returns error message
     """
     # Mock demisto functions
-    mock_params = {"insecure": False, "proxy": False, "feedFetchInterval": "720"}
+    mock_params = {"insecure": False, "proxy": False, "feedFetchInterval": "60"}
     mocker.patch("Unit42Feed.demisto.params", return_value=mock_params)
     mocker.patch("Unit42Feed.demisto.command", return_value="test-module")
     mocker.patch("Unit42Feed.demisto.getLicenseID", return_value="test_license")
@@ -1300,8 +1284,8 @@ def test_fetch_indicator_type_with_limit(client, mocker):
     When:
         - Calling fetch_indicator_type with limit smaller than API response
     Then:
-        - Returns a count of only up to the limit
-        - Pushes only up to the limit to the server
+        - Fetches full pages without truncation, so the count may overshoot the limit
+        - Pushes every parsed indicator from each fetched page to the server
         - Makes correct API calls with page_limit
     """
     # Mock responses - first page has 100 items, second page has 50
@@ -1319,22 +1303,25 @@ def test_fetch_indicator_type_with_limit(client, mocker):
     mock_get_indicators.side_effect = [first_response, second_response]
     mock_create_indicators = mocker.patch("Unit42Feed.demisto.createIndicators")
 
-    # Fetch with limit of 120 (should get 100 from first page, 20 from second)
-    result = fetch_indicator_type(
+    # Fetch with limit of 120: first page pushes 100 (total 100 < 120 -> fetch again),
+    # second page pushes its full 50 (total 150), overshooting the limit by one page
+    result, next_page_token = fetch_indicator_type(
         client=client, indicator_type="IP", limit=120, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
     )
 
-    assert result == 120
+    assert result == 150
+    assert next_page_token is None  # Last page reported no further pages
     assert mock_get_indicators.call_count == 2
 
     pushed_items = [item for call in mock_create_indicators.call_args_list for item in call[0][0]]
-    assert len(pushed_items) == 120
+    assert len(pushed_items) == 150
 
     # Check first call had limit of 100 (min of API_LIMIT and remaining)
     first_call_args = mock_get_indicators.call_args_list[0][1]
     assert first_call_args["limit"] <= API_LIMIT
 
-    # Check second call had limit of 20 (remaining after first page)
+    # Check second call requested only the remaining 20 (page_limit), even though the
+    # mocked page returns 50 and the full page is still pushed
     second_call_args = mock_get_indicators.call_args_list[1][1]
     assert second_call_args["limit"] == 20
 
@@ -1346,8 +1333,9 @@ def test_fetch_indicator_type_stops_at_limit(client, mocker):
     When:
         - Calling fetch_indicator_type with small limit
     Then:
-        - Stops fetching when limit is reached
-        - Returns exactly limit number of indicators
+        - Pushes the full first page without truncation, so the count overshoots the limit
+        - Stops fetching further pages once the limit is met or exceeded
+        - Returns the page token so the surplus page's successor can be resumed
     """
     # Mock response with 100 items
     mock_response = {
@@ -1358,12 +1346,15 @@ def test_fetch_indicator_type_stops_at_limit(client, mocker):
     mock_get_indicators = mocker.patch.object(client, "get_indicators", return_value=mock_response)
     mocker.patch("Unit42Feed.demisto.createIndicators")
 
-    # Fetch with limit of 50
-    result = fetch_indicator_type(
+    # Fetch with limit of 50: the full 100-item page is pushed (total 100), then the
+    # while-guard sees 100 >= 50 and stops before fetching another page
+    result, next_page_token = fetch_indicator_type(
         client=client, indicator_type="IP", limit=50, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
     )
 
-    assert result == 50
+    assert result == 100
+    # Limit was hit while more pages exist, so the token is returned for the next fetch
+    assert next_page_token == "page2"
     assert mock_get_indicators.call_count == 1  # Should only make one call
 
 
@@ -1381,11 +1372,12 @@ def test_fetch_indicator_type_no_data(client, mocker):
     mocker.patch.object(client, "get_indicators", return_value=mock_response)
     mock_create_indicators = mocker.patch("Unit42Feed.demisto.createIndicators")
 
-    result = fetch_indicator_type(
+    result, next_page_token = fetch_indicator_type(
         client=client, indicator_type="IP", limit=100, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
     )
 
     assert result == 0
+    assert next_page_token is None
     mock_create_indicators.assert_not_called()
 
 
@@ -1396,13 +1388,14 @@ def test_fetch_threat_objects_with_limit(client, mocker):
     When:
         - Calling fetch_threat_objects_with_limit
     Then:
-        - Returns count of threat objects up to the limit
-        - Pushes threat objects to the server
+        - Counts consumed API objects (len(data)) and fetches full pages without truncation
+        - Pushes every parsed threat object from each page, overshooting the limit by one page
         - Handles pagination correctly
     """
     mock_demisto_params(mocker)
 
-    # Mock responses
+    # Mock responses. These threat objects have no regions, so each maps to exactly one
+    # indicator (no location expansion); len(data) therefore equals the pushed count.
     first_response = {
         "data": [{"name": f"APT{i}", "threat_object_class": "actor", "publications": []} for i in range(100)],
         "metadata": {"next_page_token": "page2"},
@@ -1417,14 +1410,16 @@ def test_fetch_threat_objects_with_limit(client, mocker):
     mock_get_threat_objects.side_effect = [first_response, second_response]
     mock_create_indicators = mocker.patch("Unit42Feed.demisto.createIndicators")
 
-    # Fetch with limit of 120
-    result = fetch_threat_objects_with_limit(client=client, limit=120, feed_tags=[], tlp_color=None)
+    # Fetch with limit of 120: first page consumes 100 API objects (total 100 < 120 ->
+    # fetch again), second page consumes its full 50 (total 150), overshooting the limit
+    result, next_page_token = fetch_threat_objects_with_limit(client=client, limit=120, feed_tags=[], tlp_color=None)
 
-    assert result == 120
+    assert result == 150
+    assert next_page_token is None
     assert mock_get_threat_objects.call_count == 2
 
     pushed_items = [item for call in mock_create_indicators.call_args_list for item in call[0][0]]
-    assert len(pushed_items) == 120
+    assert len(pushed_items) == 150
 
 
 def test_fetch_indicators_limit_validation(client, mocker):
@@ -1539,7 +1534,8 @@ def test_fetch_indicator_type_pagination(client, mocker):
     When:
         - Calling fetch_indicator_type
     Then:
-        - Fetches multiple pages until limit is reached
+        - Fetches multiple pages until the limit is met or exceeded
+        - Pushes each page in full, so the final page overshoots the limit
         - Calculates correct page_limit for each request
     """
     # Create responses for pagination
@@ -1558,15 +1554,18 @@ def test_fetch_indicator_type_pagination(client, mocker):
     mock_get_indicators.side_effect = responses
     mocker.patch("Unit42Feed.demisto.createIndicators")
 
-    # Fetch with limit of 250 (should get 100 + 100 + 50)
-    result = fetch_indicator_type(
+    # Fetch with limit of 250: pages push 100 + 100 (total 200 < 250 -> fetch again) then
+    # the third page pushes its full 100, reaching 300 and overshooting the limit
+    result, next_page_token = fetch_indicator_type(
         client=client, indicator_type="IP", limit=250, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
     )
 
-    assert result == 250
+    assert result == 300
+    assert next_page_token is None
     assert mock_get_indicators.call_count == 3
 
-    # Verify the third call requested only 50 (remaining)
+    # Verify the third call requested only 50 (remaining), even though the full 100-item
+    # page is still pushed
     third_call_args = mock_get_indicators.call_args_list[2][1]
     assert third_call_args["limit"] == 50
 
@@ -1592,9 +1591,10 @@ def test_fetch_threat_objects_with_limit_stops_early(client, mocker):
     mocker.patch("Unit42Feed.demisto.createIndicators")
 
     # Request limit of 100, but only 25 available
-    result = fetch_threat_objects_with_limit(client=client, limit=100, feed_tags=[], tlp_color=None)
+    result, next_page_token = fetch_threat_objects_with_limit(client=client, limit=100, feed_tags=[], tlp_color=None)
 
     assert result == 25
+    assert next_page_token is None
     assert mock_get_threat_objects.call_count == 1
 
 
@@ -1837,3 +1837,716 @@ def test_parse_threat_objects_unknown_threat_class(mocker):
     main_objects = [obj for obj in result if obj["type"] == ThreatIntel.ObjectsNames.TOOL]
     assert len(main_objects) == 1
     assert main_objects[0]["value"] == "ScreenConnect"
+
+
+def test_fetch_indicator_type_resumes_from_page_token(client, mocker):
+    """
+    Given:
+        - A page token from a previous fetch that stopped at the limit
+    When:
+        - Calling fetch_indicator_type with that next_page_token
+    Then:
+        - The first API call is made with the given page token instead of starting from scratch
+    """
+    mock_response = {
+        "data": [{"indicator_value": "1.2.3.4", "indicator_type": "ip", "verdict": "malicious"}],
+        "metadata": {"next_page_token": None},
+    }
+    mock_get_indicators = mocker.patch.object(client, "get_indicators", return_value=mock_response)
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+
+    result, next_page_token = fetch_indicator_type(
+        client=client,
+        indicator_type="IP",
+        limit=100,
+        start_time="2023-01-01T00:00:00Z",
+        feed_tags=[],
+        tlp_color=None,
+        next_page_token="resume_token",
+    )
+
+    assert result == 1
+    assert next_page_token is None
+    assert mock_get_indicators.call_args_list[0][1]["next_page_token"] == "resume_token"
+
+
+def test_fetch_threat_objects_resumes_from_page_token(client, mocker):
+    """
+    Given:
+        - A page token from a previous threat objects fetch that stopped at the limit
+    When:
+        - Calling fetch_threat_objects_with_limit with that next_page_token
+    Then:
+        - The first API call is made with the given page token
+    """
+    mock_demisto_params(mocker)
+
+    mock_response = {
+        "data": [{"name": "APT29", "threat_object_class": "actor", "publications": []}],
+        "metadata": {"next_page_token": None},
+    }
+    mock_get_threat_objects = mocker.patch.object(client, "get_threat_objects", return_value=mock_response)
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+
+    result, next_page_token = fetch_threat_objects_with_limit(
+        client=client, limit=100, feed_tags=[], tlp_color=None, next_page_token="resume_token"
+    )
+
+    assert result == 1
+    assert next_page_token is None
+    assert mock_get_threat_objects.call_args_list[0][1]["next_page_token"] == "resume_token"
+
+
+def test_fetch_threat_objects_returns_token_when_limit_hit(client, mocker):
+    """
+    Given:
+        - An API returning more threat objects than the requested limit, with more pages available
+    When:
+        - Calling fetch_threat_objects_with_limit
+    Then:
+        - Pushes the full first page without truncation, so the count overshoots the limit
+        - Stops fetching further pages once the limit is met or exceeded
+        - Returns the page token to resume from
+    """
+    mock_demisto_params(mocker)
+
+    mock_response = {
+        "data": [{"name": f"APT{i}", "threat_object_class": "actor", "publications": []} for i in range(100)],
+        "metadata": {"next_page_token": "page2"},
+    }
+    mocker.patch.object(client, "get_threat_objects", return_value=mock_response)
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+
+    # Limit of 50: the full 100-object page is consumed (total 100), then the while-guard
+    # sees 100 >= 50 and stops before fetching another page
+    result, next_page_token = fetch_threat_objects_with_limit(client=client, limit=50, feed_tags=[], tlp_color=None)
+
+    assert result == 100
+    assert next_page_token == "page2"
+
+
+def test_fetch_indicator_type_invalid_response_clears_token(client, mocker):
+    """
+    Given:
+        - A first page with a next page token, followed by an invalid (None) response
+    When:
+        - Calling fetch_indicator_type
+    Then:
+        - The stale token from the first page is cleared, so no pending work is reported
+    """
+    first_response = {
+        "data": [{"indicator_value": "1.2.3.4", "indicator_type": "ip", "verdict": "malicious"}],
+        "metadata": {"next_page_token": "page2"},
+    }
+
+    mock_get_indicators = mocker.patch.object(client, "get_indicators")
+    mock_get_indicators.side_effect = [first_response, None]
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+
+    result, next_page_token = fetch_indicator_type(
+        client=client, indicator_type="IP", limit=100, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
+    )
+
+    assert result == 1
+    assert next_page_token is None
+
+
+def test_fetch_indicator_type_empty_page_clears_token(client, mocker):
+    """
+    Given:
+        - A first page with a next page token, followed by a page with no data
+    When:
+        - Calling fetch_indicator_type
+    Then:
+        - The stale token from the first page is cleared, so no pending work is reported
+    """
+    first_response = {
+        "data": [{"indicator_value": "1.2.3.4", "indicator_type": "ip", "verdict": "malicious"}],
+        "metadata": {"next_page_token": "page2"},
+    }
+    second_response = {"data": [], "metadata": {"next_page_token": "page3"}}
+
+    mock_get_indicators = mocker.patch.object(client, "get_indicators")
+    mock_get_indicators.side_effect = [first_response, second_response]
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+
+    result, next_page_token = fetch_indicator_type(
+        client=client, indicator_type="IP", limit=100, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
+    )
+
+    assert result == 1
+    assert next_page_token is None
+
+
+def test_build_fetch_units_fresh_run():
+    """
+    Given:
+        - An empty last run (no pending units)
+    When:
+        - Calling build_fetch_units
+    Then:
+        - Builds a fresh unit list with threat objects first, then indicator types by priority
+        - All page tokens are None
+    """
+    units = build_fetch_units(
+        feed_types=["Indicators", THREAT_OBJECTS_TYPE], indicator_types=["File", "URL", "Domain", "IP"], last_run={}
+    )
+
+    assert [unit["type"] for unit in units] == [THREAT_OBJECTS_TYPE, "IP", "Domain", "URL", "File"]
+    assert all(unit["page_token"] is None for unit in units)
+
+
+def test_build_fetch_units_indicators_only():
+    """
+    Given:
+        - A configuration with only Indicators enabled
+    When:
+        - Calling build_fetch_units
+    Then:
+        - No threat objects unit is included
+    """
+    units = build_fetch_units(feed_types=["Indicators"], indicator_types=["IP", "Domain"], last_run={})
+
+    assert [unit["type"] for unit in units] == ["IP", "Domain"]
+
+
+def test_build_fetch_units_resumes_pending_units():
+    """
+    Given:
+        - A last run holding pending units from an interrupted fetch
+    When:
+        - Calling build_fetch_units
+    Then:
+        - Returns the pending units as-is, ignoring the configured types
+    """
+    pending_units = [{"type": "IP", "page_token": "token123"}]
+
+    units = build_fetch_units(
+        feed_types=["Indicators", THREAT_OBJECTS_TYPE],
+        indicator_types=["IP", "Domain"],
+        last_run={"pending_units": pending_units},
+    )
+
+    assert units == pending_units
+
+
+def test_fetch_indicators_stores_pending_units_when_limit_hit(client, mocker):
+    """
+    Given:
+        - An API with more indicators available than the configured maximum per fetch
+    When:
+        - Calling fetch_indicators
+    Then:
+        - The full first page is pushed without truncation, so the count overshoots the limit
+        - The next run holds the pending unit with its page token and the original start time
+        - No last_successful_run is stored, so the same time window is resumed
+    """
+    from Unit42Feed import fetch_indicators
+
+    mock_demisto_params(mocker)
+
+    mock_response = {
+        "data": [{"indicator_value": f"1.2.3.{i}", "indicator_type": "ip", "verdict": "malicious"} for i in range(100)],
+        "metadata": {"next_page_token": "page2"},
+    }
+    mocker.patch.object(client, "get_indicators", return_value=mock_response)
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={"last_successful_run": "2023-06-01T12:00:00Z"})
+
+    params = {"limit": "50", "feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
+
+    current_time = datetime(2023, 6, 2, 12, 0, 0)
+    total_fetched, next_run = fetch_indicators(client, params, current_time)
+
+    # Limit of 50 vs a 100-item page: the full page is pushed (total 100) before the guard stops
+    assert total_fetched == 100
+    assert next_run == {
+        "start_time": "2023-06-01T12:00:00Z",
+        "pending_units": [{"type": "IP", "page_token": "page2"}],
+        "cycle_start_time": "2023-06-02T12:00:00Z",
+    }
+    assert "last_successful_run" not in next_run
+
+
+def test_fetch_indicators_resumes_pending_units(client, mocker):
+    """
+    Given:
+        - A last run holding pending units and the start time of the interrupted fetch
+    When:
+        - Calling fetch_indicators
+    Then:
+        - Only the pending unit is fetched, resumed from its page token
+        - The stored start time is reused instead of last_successful_run
+    """
+    from Unit42Feed import fetch_indicators
+
+    mock_demisto_params(mocker)
+
+    mock_response = {
+        "data": [{"indicator_value": "1.2.3.4", "indicator_type": "ip", "verdict": "malicious"}],
+        "metadata": {"next_page_token": None},
+    }
+    mock_get_indicators = mocker.patch.object(client, "get_indicators", return_value=mock_response)
+    mock_get_threat_objects = mocker.patch.object(client, "get_threat_objects")
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+    mocker.patch(
+        "Unit42Feed.demisto.getLastRun",
+        return_value={"start_time": "2023-06-01T12:00:00Z", "pending_units": [{"type": "IP", "page_token": "page2"}]},
+    )
+
+    params = {
+        "limit": "50",
+        "feed_types": ["Indicators", "Threat Objects"],
+        "indicator_types": ["IP", "Domain"],
+        "feedTags": [],
+        "tlp_color": None,
+    }
+
+    current_time = datetime(2023, 6, 2, 12, 0, 0)
+    total_fetched, next_run = fetch_indicators(client, params, current_time)
+
+    assert total_fetched == 1
+
+    # Only the pending IP unit was fetched - Domain and threat objects were skipped
+    assert mock_get_indicators.call_count == 1
+    mock_get_threat_objects.assert_not_called()
+
+    call_kwargs = mock_get_indicators.call_args[1]
+    assert call_kwargs["next_page_token"] == "page2"
+    assert call_kwargs["start_time"] == "2023-06-01T12:00:00Z"
+
+    # Everything pending was consumed, so the cycle completes normally
+    assert next_run == {"last_successful_run": current_time.strftime(DATE_FORMAT)}
+
+
+def test_fetch_indicators_pending_units_without_start_time(client, mocker):
+    """
+    Given:
+        - A last run with pending units but no stored start time
+    When:
+        - Calling fetch_indicators
+    Then:
+        - Falls back to the default start time (24 hours ago)
+    """
+    from Unit42Feed import fetch_indicators
+
+    mock_demisto_params(mocker)
+
+    mock_response = {"data": [], "metadata": {}}
+    mock_get_indicators = mocker.patch.object(client, "get_indicators", return_value=mock_response)
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={"pending_units": [{"type": "IP", "page_token": "page2"}]})
+
+    params = {"feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
+
+    current_time = datetime(2023, 6, 2, 12, 0, 0)
+    fetch_indicators(client, params, current_time)
+
+    expected_default = (current_time - timedelta(hours=24)).strftime(DATE_FORMAT)
+    assert mock_get_indicators.call_args[1]["start_time"] == expected_default
+
+
+def test_fetch_indicators_stores_pending_threat_objects(client, mocker):
+    """
+    Given:
+        - Threat objects with more pages available than the configured limit allows
+    When:
+        - Calling fetch_indicators
+    Then:
+        - The threat objects unit is stored as pending using its dedicated type key
+    """
+    from Unit42Feed import fetch_indicators
+
+    mock_demisto_params(mocker)
+
+    mock_response = {
+        "data": [{"name": f"APT{i}", "threat_object_class": "actor", "publications": []} for i in range(100)],
+        "metadata": {"next_page_token": "page2"},
+    }
+    mocker.patch.object(client, "get_threat_objects", return_value=mock_response)
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={})
+
+    params = {"limit": "50", "feed_types": ["Threat Objects"], "indicator_types": [], "feedTags": [], "tlp_color": None}
+
+    current_time = datetime(2023, 6, 2, 12, 0, 0)
+    _, next_run = fetch_indicators(client, params, current_time)
+
+    assert next_run["pending_units"] == [{"type": THREAT_OBJECTS_TYPE, "page_token": "page2"}]
+
+
+def test_fetch_indicators_initializes_cycle_start_time_on_first_pending_run(client, mocker):
+    """
+    Given:
+        - A last run holding only last_successful_run (no pending cycle in progress)
+        - An API with more indicators available than the configured maximum per fetch
+    When:
+        - Calling fetch_indicators
+    Then:
+        - The current fetch time is stored as the cycle start time, marking the start of the cycle
+        - The original start time is preserved so the same time window is resumed
+        - No last_successful_run is stored while the cycle is still in progress
+    """
+    from Unit42Feed import fetch_indicators
+
+    mock_demisto_params(mocker)
+
+    mock_response = {
+        "data": [{"indicator_value": f"1.2.3.{i}", "indicator_type": "ip", "verdict": "malicious"} for i in range(100)],
+        "metadata": {"next_page_token": "page2"},
+    }
+    mocker.patch.object(client, "get_indicators", return_value=mock_response)
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={"last_successful_run": "2023-06-01T12:00:00Z"})
+
+    params = {"limit": "50", "feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
+
+    current_time = datetime(2023, 6, 2, 12, 0, 0)
+    _, next_run = fetch_indicators(client, params, current_time)
+
+    assert next_run["cycle_start_time"] == current_time.strftime(DATE_FORMAT)
+    assert next_run["start_time"] == "2023-06-01T12:00:00Z"
+    assert next_run["pending_units"] == [{"type": "IP", "page_token": "page2"}]
+    assert "last_successful_run" not in next_run
+
+
+def test_fetch_indicators_carries_cycle_start_time_across_multiple_resumed_runs(client, mocker):
+    """
+    Given:
+        - A fetch cycle that keeps hitting the maximum indicators per fetch limit
+    When:
+        - Calling fetch_indicators repeatedly, feeding the previous next run back in as the last run
+    Then:
+        - The cycle start time stays pinned to the run that initiated the cycle
+        - The start time stays pinned to the original time window on every resumed run
+        - No last_successful_run is stored while the cycle is still in progress
+    """
+    from Unit42Feed import fetch_indicators
+
+    mock_demisto_params(mocker)
+
+    mock_response = {
+        "data": [{"indicator_value": f"1.2.3.{i}", "indicator_type": "ip", "verdict": "malicious"} for i in range(100)],
+        "metadata": {"next_page_token": "page2"},
+    }
+    mocker.patch.object(client, "get_indicators", return_value=mock_response)
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={"last_successful_run": "2023-06-01T12:00:00Z"})
+
+    params = {"limit": "50", "feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
+
+    # The run that initiates the pending cycle
+    current_time = datetime(2023, 6, 2, 12, 0, 0)
+    _, next_run = fetch_indicators(client, params, current_time)
+
+    expected_cycle_start_time = current_time.strftime(DATE_FORMAT)
+    assert next_run["cycle_start_time"] == expected_cycle_start_time
+
+    # Three more interrupted runs, each resuming the pending cycle
+    for hours in range(1, 4):
+        mocker.patch("Unit42Feed.demisto.getLastRun", return_value=next_run)
+        _, next_run = fetch_indicators(client, params, current_time + timedelta(hours=hours))
+
+        assert next_run["cycle_start_time"] == expected_cycle_start_time
+        assert next_run["start_time"] == "2023-06-01T12:00:00Z"
+        assert next_run["pending_units"] == [{"type": "IP", "page_token": "page2"}]
+        assert "last_successful_run" not in next_run
+
+
+def test_fetch_indicators_stores_original_cycle_start_time_when_pending_exhausted(client, mocker):
+    """
+    Given:
+        - A last run holding pending units and the cycle start time of the interrupted fetch
+        - An API that returns no further pages, so the pending cycle completes
+    When:
+        - Calling fetch_indicators
+    Then:
+        - The stored last_successful_run is the original cycle start time, not the current fetch time
+        - This guarantees the next full cycle re-queries the window covered by the resumed runs,
+          so indicators that arrived while the cycle was in progress are not missed
+    """
+    from Unit42Feed import fetch_indicators
+
+    mock_demisto_params(mocker)
+
+    mock_response = {
+        "data": [{"indicator_value": "1.2.3.4", "indicator_type": "ip", "verdict": "malicious"}],
+        "metadata": {"next_page_token": None},
+    }
+    mocker.patch.object(client, "get_indicators", return_value=mock_response)
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+    mocker.patch(
+        "Unit42Feed.demisto.getLastRun",
+        return_value={
+            "start_time": "2023-06-01T12:00:00Z",
+            "pending_units": [{"type": "IP", "page_token": "page2"}],
+            "cycle_start_time": "2023-06-02T12:00:00Z",
+        },
+    )
+
+    params = {"limit": "50", "feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
+
+    # Deliberately distinct from the cycle start time, so the two cannot be confused
+    current_time = datetime(2023, 6, 3, 18, 0, 0)
+    _, next_run = fetch_indicators(client, params, current_time)
+
+    assert next_run == {"last_successful_run": "2023-06-02T12:00:00Z"}
+    assert next_run["last_successful_run"] != current_time.strftime(DATE_FORMAT)
+
+
+def test_fetch_indicators_upgrade_path_last_run_without_cycle_start_time(client, mocker):
+    """
+    Given:
+        - A last run written before the cycle start time was introduced (holds only last_successful_run)
+        - An API with more indicators available than the configured maximum per fetch
+    When:
+        - Calling fetch_indicators
+    Then:
+        - The stored start time is preserved, so no time window is skipped
+        - A fresh cycle start time is created from the current fetch time, without raising a KeyError
+    """
+    from Unit42Feed import fetch_indicators
+
+    mock_demisto_params(mocker)
+
+    mock_response = {
+        "data": [{"indicator_value": f"1.2.3.{i}", "indicator_type": "ip", "verdict": "malicious"} for i in range(100)],
+        "metadata": {"next_page_token": "page2"},
+    }
+    mock_get_indicators = mocker.patch.object(client, "get_indicators", return_value=mock_response)
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={"last_successful_run": "2023-06-01T12:00:00Z"})
+
+    params = {"limit": "50", "feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
+
+    current_time = datetime(2023, 6, 2, 12, 0, 0)
+    _, next_run = fetch_indicators(client, params, current_time)
+
+    assert mock_get_indicators.call_args[1]["start_time"] == "2023-06-01T12:00:00Z"
+    assert next_run["start_time"] == "2023-06-01T12:00:00Z"
+    assert next_run["cycle_start_time"] == current_time.strftime(DATE_FORMAT)
+    assert next_run["pending_units"] == [{"type": "IP", "page_token": "page2"}]
+
+
+def test_fetch_indicators_upgrade_path_no_pending_units(client, mocker):
+    """
+    Given:
+        - A last run written before the cycle start time was introduced (holds only last_successful_run)
+        - An API that returns everything within the configured limit
+    When:
+        - Calling fetch_indicators
+    Then:
+        - The query uses the stored last successful run as the start time
+        - The next run advances to the current fetch time, so the feed does not stall on the old window
+    """
+    from Unit42Feed import fetch_indicators
+
+    mock_demisto_params(mocker)
+
+    mock_response = {
+        "data": [{"indicator_value": "1.2.3.4", "indicator_type": "ip", "verdict": "malicious"}],
+        "metadata": {"next_page_token": None},
+    }
+    mock_get_indicators = mocker.patch.object(client, "get_indicators", return_value=mock_response)
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={"last_successful_run": "2023-06-01T12:00:00Z"})
+
+    params = {"limit": "50", "feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
+
+    current_time = datetime(2023, 6, 2, 12, 0, 0)
+    _, next_run = fetch_indicators(client, params, current_time)
+
+    assert mock_get_indicators.call_args[1]["start_time"] == "2023-06-01T12:00:00Z"
+    assert next_run == {"last_successful_run": current_time.strftime(DATE_FORMAT)}
+
+
+def test_fetch_indicators_normal_run_stores_current_time_as_last_successful_run(client, mocker):
+    """
+    Given:
+        - An empty last run (a first fetch, with no pending cycle)
+        - An API that returns everything within the configured limit for every type
+    When:
+        - Calling fetch_indicators
+    Then:
+        - The next run holds only the current fetch time as the last successful run
+        - Neither pending_units nor cycle_start_time leak into the next run
+    """
+    from Unit42Feed import fetch_indicators
+
+    mock_demisto_params(mocker)
+
+    mock_response = {
+        "data": [{"indicator_value": "1.2.3.4", "indicator_type": "ip", "verdict": "malicious"}],
+        "metadata": {"next_page_token": None},
+    }
+    mocker.patch.object(client, "get_indicators", return_value=mock_response)
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={})
+
+    params = {
+        "limit": "50",
+        "feed_types": ["Indicators"],
+        "indicator_types": ["IP", "Domain"],
+        "feedTags": [],
+        "tlp_color": None,
+    }
+
+    current_time = datetime(2023, 6, 2, 12, 0, 0)
+    _, next_run = fetch_indicators(client, params, current_time)
+
+    assert next_run == {"last_successful_run": current_time.strftime(DATE_FORMAT)}
+    assert "pending_units" not in next_run
+    assert "cycle_start_time" not in next_run
+
+
+def test_fetch_indicators_resume_across_runs_skips_no_indicators(client, mocker):
+    """
+    Given:
+        - A single indicator type (IP) with limit=50 and a feed of three pages, each larger
+          than the limit: page A (100 items, next_page_token="tokenB"),
+          page B (100 items, next_page_token="tokenC"), page C (40 items, next_page_token=None).
+        - Every indicator across all three pages has a unique value (240 unique values total).
+    When:
+        - Running fetch_indicators three times, feeding each run's next_run back in as the
+          getLastRun of the following run (simulating the real resume-across-runs behavior).
+    Then:
+        - Run 1 pushes the FULL overshooting page A (not a truncated 50 items) and stores a
+          pending unit resuming from "tokenB".
+        - Run 2 resumes from "tokenB", pushes the full page B, and resumes from "tokenC".
+        - Run 3 resumes from "tokenC", pushes page C, sees a null token, and completes the
+          cycle (next_run holds last_successful_run, no pending_units).
+        - The UNION of every indicator value pushed across runs 1+2+3 equals the full set of
+          240 unique values, with NO value missing and NO value duplicated.
+    """
+    from Unit42Feed import fetch_indicators
+
+    mock_demisto_params(mocker)
+
+    # Build three pages of IP indicators with globally unique values.
+    def make_page(start: int, count: int, next_token: str | None) -> dict:
+        return {
+            "data": [
+                {"indicator_value": f"1.2.3.{i}", "indicator_type": "ip", "verdict": "malicious"}
+                for i in range(start, start + count)
+            ],
+            "metadata": {"next_page_token": next_token},
+        }
+
+    page_a = make_page(0, 100, "tokenB")
+    page_b = make_page(100, 100, "tokenC")
+    page_c = make_page(200, 40, None)
+    all_expected_values = {f"1.2.3.{i}" for i in range(240)}
+
+    # get_indicators returns page A, then page B, then page C on successive calls.
+    mock_get_indicators = mocker.patch.object(client, "get_indicators", side_effect=[page_a, page_b, page_c])
+
+    # Capture every indicator value handed to createIndicators across all runs, tracking
+    # duplicates explicitly so the assertion can distinguish "missing" from "duplicated".
+    pushed_values: list[str] = []
+
+    def capture_created(indicators_batch):
+        pushed_values.extend(indicator["value"] for indicator in indicators_batch)
+
+    mocker.patch("Unit42Feed.demisto.createIndicators", side_effect=capture_created)
+
+    params = {"limit": "50", "feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
+    current_time = datetime(2023, 6, 2, 12, 0, 0)
+
+    # --- Run 1: fresh cycle, page A overshoots limit -> resume from "tokenB" ---
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={"last_successful_run": "2023-06-01T12:00:00Z"})
+    values_before_run1 = len(pushed_values)
+    total_run1, next_run_1 = fetch_indicators(client, params, current_time)
+    run1_values = pushed_values[values_before_run1:]
+
+    # The full 100-item page A was pushed (overshoot), not truncated to 50.
+    assert total_run1 == 100
+    assert len(run1_values) == 100
+    assert next_run_1.get("pending_units") == [{"type": "IP", "page_token": "tokenB"}]
+    # Run 1 started the cycle: it queried with no resume token.
+    assert mock_get_indicators.call_args_list[0][1]["next_page_token"] is None
+
+    # --- Run 2: resume from "tokenB", page B overshoots -> resume from "tokenC" ---
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value=next_run_1)
+    values_before_run2 = len(pushed_values)
+    total_run2, next_run_2 = fetch_indicators(client, params, current_time)
+    run2_values = pushed_values[values_before_run2:]
+
+    assert total_run2 == 100
+    assert len(run2_values) == 100
+    # Run 2 resumed from the token page A returned, and produced the next token.
+    assert mock_get_indicators.call_args_list[1][1]["next_page_token"] == "tokenB"
+    assert next_run_2.get("pending_units") == [{"type": "IP", "page_token": "tokenC"}]
+
+    # --- Run 3: resume from "tokenC", page C ends the cycle (null token) ---
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value=next_run_2)
+    values_before_run3 = len(pushed_values)
+    total_run3, next_run_3 = fetch_indicators(client, params, current_time)
+    run3_values = pushed_values[values_before_run3:]
+
+    assert total_run3 == 40
+    assert len(run3_values) == 40
+    # Run 3 resumed from the token page B returned.
+    assert mock_get_indicators.call_args_list[2][1]["next_page_token"] == "tokenC"
+    # Cycle completed: next run is a last_successful_run shape with nothing left pending.
+    assert "pending_units" not in next_run_3
+    assert next_run_3 == {"last_successful_run": current_time.strftime(DATE_FORMAT)}
+
+    # --- The crucial anti-regression property: exact coverage, no gap, no duplicate ---
+    union_of_pushed = set(pushed_values)
+    # Nothing was skipped across the run boundary (would fail if truncation returns).
+    assert union_of_pushed == all_expected_values
+    assert all_expected_values - union_of_pushed == set(), "indicator values were skipped across the resume boundary"
+    # And nothing was pushed twice: 240 unique values from exactly 240 pushes.
+    assert len(pushed_values) == 240
+    assert len(union_of_pushed) == 240
+
+
+def test_fetch_threat_objects_counts_api_objects_not_expanded_indicators(client, mocker):
+    """
+    Given:
+        - A single page of 3 actor threat objects that is under the limit (limit=10) in
+          API-object count, but where each object carries 2 valid affected_regions, so
+          each expands into 1 threat object + 2 location indicators = 3 indicators
+          (9 pushed indicators total for 3 API objects), with no next page token.
+    When:
+        - Calling fetch_threat_objects_with_limit.
+    Then:
+        - The full page is pushed without truncation (9 indicators reach createIndicators),
+          confirming expansion actually occurred.
+        - The returned total_fetched equals the API object count, NOT the expanded indicator count.
+        - next_page_token is None (the fetch cycle completed).
+    """
+    mock_demisto_params(mocker)
+
+    # Each actor has 2 valid regions -> map_threat_object returns 3 indicators per object
+    # (1 threat object + 2 location indicators) when relationships are enabled.
+    single_page = {
+        "data": [
+            {
+                "name": f"APT{i}",
+                "threat_object_class": "actor",
+                "publications": [],
+                "battlecard_details": {
+                    "threat_actor_details": {
+                        "affected_regions": ["North America", "Europe"],
+                    }
+                },
+            }
+            for i in range(3)
+        ],
+        "metadata": {"next_page_token": None},
+    }
+
+    mock_get_threat_objects = mocker.patch.object(client, "get_threat_objects", return_value=single_page)
+    mock_create_indicators = mocker.patch("Unit42Feed.demisto.createIndicators")
+
+    result, next_page_token = fetch_threat_objects_with_limit(client=client, limit=10, feed_tags=[], tlp_color=None)
+
+    # Verify expansion actually happened: 3 API objects x 3 indicators each = 9 pushed.
+    # Without this, the counter assertion below would prove nothing.
+    pushed_items = [item for call in mock_create_indicators.call_args_list for item in call[0][0]]
+    assert len(pushed_items) == 9
+
+    # total_fetched counts consumed API objects (len(data) == 3), not the 9 derived indicators that were pushed.
+    assert result == 3
+    assert next_page_token is None
+    assert mock_get_threat_objects.call_count == 1
