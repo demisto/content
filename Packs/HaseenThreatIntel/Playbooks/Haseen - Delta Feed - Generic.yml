@@ -1,10 +1,7 @@
-id: Haseen-delta-in-feed-generic_playbook
+id: Haseen - Delta Feed - Generic
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
-name: Haseen-delta-in-feed-generic_playbook
-description: Stages indicators newly fetched by the Haseen Threat Intel feed, gathers
-  their relationships, and walks the analyst through a hunt, manual-block-validation,
-  and closure flow.
+name: Haseen - Delta Feed - Generic
+description: "This is a template playbook which should be used in Feed Delta Job i.e. triggers automatically once there are new indicators fetched from Haseen.\nThe playbook Stages indicators newly fetched by the Haseen Threat Intel feed, gathers their relationships, and walks the analyst through a hunt, manual-block-validation,and closure flow.\nPlease Note The playbook requires customization as  Hunt, Block and Closure flows are dummy/Empty , you need to replace them with your standard flows."
 starttaskid: "0"
 tasks:
   "0":
@@ -17,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "50"
@@ -47,6 +45,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -76,6 +75,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "47"
@@ -106,6 +106,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -133,6 +134,7 @@ tasks:
       id: bd993979-641c-4928-8392-3fc2fd8cebb5
       version: -1
       name: Check if results are returned from Threat Hunting
+      description: Branches on whether the hunt flow returned any results.
       type: condition
       iscommand: false
       brand: ""
@@ -164,8 +166,8 @@ tasks:
     task:
       id: c75f1053-9b1c-436b-8af6-6615c4351d57
       version: -1
-      name: Increase incident severity to high
-      description: commands.local.cmd.set.incident
+      name: Increase incident severity to high if hunt process found matches.
+      description: Analyst can set the severity if matches found to any value suitable for hunt prioritization process, but recommended to be either High or Critical.
       script: Builtin|||setIncident
       type: regular
       iscommand: true
@@ -203,6 +205,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "54"
@@ -230,6 +233,7 @@ tasks:
       id: c31dbb0a-bbbe-43da-88af-17ae677d99f6
       version: -1
       name: Check if any IOCs selected for blocking ?
+      description: Branches on whether the analyst selected at least one IOC for blocking.
       type: condition
       iscommand: false
       brand: ""
@@ -287,10 +291,7 @@ tasks:
       id: 52beea17-563f-48e1-8deb-e92e4b73d272
       version: -1
       name: 'Following IOCs will be Blocked Please confirm if you want to proceed '
-      description: "Following IOCs will be Blocked Please confirm if you want to proceed
-        \n\nIPs: ${Block IOCs Manual Validation.Answers.1}\n\nDomains: ${Block IOCs
-        Manual Validation.Answers.0}\n\nURLs: ${Block IOCs Manual Validation.Answers.2}\n\nHashes
-        (SHA 256): ${Block IOCs Manual Validation.Answers.3}\n"
+      description: "Following IOCs will be Blocked Please confirm if you want to proceed \n\nIPs: ${Block IOCs Manual Validation.Answers.1}\n\nDomains: ${Block IOCs Manual Validation.Answers.0}\n\nURLs: ${Block IOCs Manual Validation.Answers.2}\n\nHashes (SHA 256): ${Block IOCs Manual Validation.Answers.3}\n"
       type: condition
       iscommand: false
       brand: ""
@@ -326,6 +327,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "33"
@@ -356,6 +358,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "49"
@@ -383,8 +386,7 @@ tasks:
       id: 7d018a87-d699-4da0-8b5c-bc729764bfb7
       version: -1
       name: Replace with your Hunting Flow  (Found Indicators are the input)
-      description: "hunt for IOCs parsed under the following context paths \n\nStixIndicators.value
-        and  foundIndicators.value"
+      description: "hunt for IOCs parsed under the following context path foundIndicators.value"
       type: regular
       iscommand: false
       brand: ""
@@ -415,9 +417,7 @@ tasks:
       id: d2bccb59-02d8-49e6-8c06-552357982ff4
       version: -1
       name: 'Replace with your Blocking flow  '
-      description: "pass the IOCs selected \n${Block IOCs Manual Validation.Answers.0}\n${Block
-        IOCs Manual Validation.Answers.1}\n${Block IOCs Manual Validation.Answers.2}\n${Block
-        IOCs Manual Validation.Answers.3}\nto your blocking logic"
+      description: "pass the IOCs selected \n${Block IOCs Manual Validation.Answers.0}\n${Block IOCs Manual Validation.Answers.1}\n${Block IOCs Manual Validation.Answers.2}\n${Block IOCs Manual Validation.Answers.3}\nto your blocking logic"
       type: regular
       iscommand: false
       brand: ""
@@ -448,6 +448,7 @@ tasks:
       id: 2b3f09bc-34b8-462d-8b4e-809a2c4933e9
       version: -1
       name: Replace with your Incident Closure logic
+      description: Placeholder - replace with your incident closure flow per your SOC's SOP.
       type: regular
       iscommand: false
       brand: ""
@@ -479,11 +480,15 @@ tasks:
       version: -1
       name: Stage the fetched indicators
       description: |-
-        Searches Cortex XSOAR Indicators.
+        Searches for the new indicators fetched from Haseen.
 
-        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
+        Haseen Usually updates its STIX bundle once per 24 hours, hence the search
+        task searches for the indicators created or updated 24 hours ago, you can 
+        customize this timewindow as fits you.
 
-        You can add additional fields from the indicators using the add_field_to_context argument.
+        SearchIndicator command by default returns 25 value , Haseen update never exceeds 
+        500 new indicator so result limit is changed to 500. 
+        Analyst is free to change this limit value or use other approaches
       scriptName: SearchIndicator
       type: regular
       iscommand: false
@@ -493,10 +498,9 @@ tasks:
       - "51"
     scriptarguments:
       query:
-        simple: (sourceBrands:"Haseen Threat Intel") and (sourcetimestamp:>="24
-          hours ago" or lastSeen:>="24 hours ago")
+        simple: (sourceBrands:"Haseen Threat Intel") and (sourcetimestamp:>="24 hours ago" or lastSeen:>="24 hours ago")
       size:
-        simple: "300"
+        simple: "500"
     reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
@@ -522,11 +526,7 @@ tasks:
       id: 4ef1ef26-3eb2-4fda-860b-376540f0872e
       version: -1
       name: 'Search Relationships '
-      description: This automation outputs the indicator relationships to context
-        according to the provided query, using the entities, entityTypes, and relationships
-        arguments. All arguments will use the AND operator. For example, using the
-        following arguments entities=8.8.8.8 entities_types=Domain will provide only
-        relationships that the 8.8.8.8 indicator has with indicators of type domain.
+      description: "This automation outputs the indicator relationships to context according to the provided query, using the entities, entityTypes, and relationships arguments. All arguments will use the AND operator. For example, using the following arguments entities=8.8.8.8 entities_types=Domain will provide only relationships that the 8.8.8.8 indicator has with indicators of type domain.\n\nSearchIndicatorRelationships command by default returns 20 value Haseen update never exceeds 500  indicator relationships so result limit is changed to 500. Analyst is free to change this limit value or use other approaches."
       scriptName: SearchIndicatorRelationships
       type: regular
       iscommand: false
@@ -540,7 +540,7 @@ tasks:
           root: foundIndicators
           accessor: value
       limit:
-        simple: "300"
+        simple: "500"
     reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
@@ -566,7 +566,9 @@ tasks:
       id: 8bf29037-590a-4edc-8394-fe477a6bec75
       version: -1
       name: Add all indicators to the incident
-      description: commands.local.cmd.associate.indicators
+      description: |-
+        This to overcome the missing SourceInstance value for  Haseen Indicators fetched
+        from the Relatinship objects not from STIX SDO nor SCO Objects .
       script: Builtin|||associateIndicatorsToIncident
       type: regular
       iscommand: true
@@ -613,11 +615,13 @@ tasks:
       version: -1
       name: Prepare all indicators for hunt and block
       description: |-
-        Searches Cortex XSOAR Indicators.
+        This second SearchIndicator Ensures that all new fetched Indicators along with
+        indicators from Haseen Relationship Objects are staged for the hunt and block.
 
-        Search for XSOAR Indicators and returns the id, indicator_type, value, and score/verdict.
-
-        You can add additional fields from the indicators using the add_field_to_context argument.
+        As we mentioned SearchIndicator command by default returns 25 value ,
+        Haseen update never exceeds 500 new indicators and 500 indicator relationship Objects
+        so result limit is changed to 1000 Analyst is free to change this limit value or use 
+        other approaches.
       scriptName: SearchIndicator
       type: regular
       iscommand: false
@@ -627,9 +631,17 @@ tasks:
       - "7"
     scriptarguments:
       query:
-        simple: incident.id:${incident.id}
+        complex:
+          root: incident
+          accessor: id
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: "incident.id:"
       size:
-        simple: "500"
+        simple: "1000"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -654,7 +666,7 @@ tasks:
       id: 384d73d1-0d83-40d3-879b-8b112125bb98
       version: -1
       name: IOCs Analyst Validation for Blocking ?
-      description: Checks whether the "BlockIndicators" playbook input is set to True.
+      description: Checks with analyst which indocators need to be blocked.
       type: collection
       iscommand: false
       brand: ""
@@ -674,13 +686,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
+      to:
+      subject:
       body: {}
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -848,6 +860,7 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: 4a07cd12-173b-47c4-8da6-928eaec9f03b
-fromversion: "6.10.0"
-toversion: ""
+fromversion: "8.9.0"
+tests:
+- No tests (auto formatted)
+issilent: true

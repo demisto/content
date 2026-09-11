@@ -27,11 +27,11 @@ def load_bundle() -> dict:
         ("[domain-name:value = 'example.com']", "domain-name", "example.com"),
         ("[url:value = 'https://evil.example/x']", "url", "https://evil.example/x"),
         ("[file:hashes.'SHA-256' = 'abc123']", "file", "abc123"),
-        ("[file:hashes.'MD5' = 'fd4390f36e6e60b9533f2f5c6047ce73']", "file", "fd4390f36e6e60b9533f2f5c6047ce73"),
+        ("[file:hashes.'MD5' = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']", "file", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
         (
-            "[file:hashes.'SHA-1' = '20608406d5bb6d6a9c921118b226f8e084097055']",
+            "[file:hashes.'SHA-1' = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb']",
             "file",
-            "20608406d5bb6d6a9c921118b226f8e084097055",
+            "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
         ),
     ],
 )
@@ -46,13 +46,13 @@ def test_parse_stix_bundle_types():
     types = {i["type"] for i in indicators}
     assert types == {"IP", "Domain", "File", "URL"}
 
-    # Spot-check exact values present in the real feed.
+    # Spot-check exact values present in the synthetic feed.
     values = {i["value"] for i in indicators}
-    assert "89.46.223.88" in values  # ipv4-addr
-    assert "globalbusiness-checkers-it.azurewebsites.net" in values  # domain-name
-    assert "adclick.g.doubleclick.net/pcs/click" in values  # url
-    assert "fd4390f36e6e60b9533f2f5c6047ce73" in values  # MD5
-    assert "d85c1e6750b46ab77dde45ec04683e7ad84ad29db6a22392af1f22c395909c30" in values  # SHA-256
+    assert "192.0.2.1" in values  # ipv4-addr
+    assert "malware.example.com" in values  # domain-name
+    assert "https://example.com/payload" in values  # url
+    assert "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" in values  # MD5
+    assert "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd" in values  # SHA-256
 
 
 def test_parse_stix_bundle_skips_orphan_relationship():
