@@ -1,0 +1,621 @@
+{
+  "type": "bundle",
+  "id": "bundle--aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+  "objects": [
+    {
+      "id": "indicator--00000000-0000-4000-8000-000000000001",
+      "spec_version": "2.1",
+      "type": "indicator",
+      "created": "2024-01-01T00:00:00.000000Z",
+      "modified": "2024-01-01T00:00:00.000000Z",
+      "name": "malware.example.com",
+      "pattern": "[domain-name:value = 'malware.example.com']",
+      "pattern_type": "stix",
+      "valid_from": "2024-01-01T00:00:00.000000Z",
+      "x_attributes": [
+        {
+          "name": "severity",
+          "value": "Critical"
+        }
+      ]
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--00000000-0000-4000-8000-000000000101",
+      "relationship_type": "attributed-to",
+      "source_ref": "indicator--00000000-0000-4000-8000-000000000001",
+      "target_ref": "threat-actor--00000000-0000-4000-8000-0000000000aa",
+      "created": "2024-01-01T00:00:00.000000Z"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--00000000-0000-4000-8000-000000000102",
+      "relationship_type": "attributed-to",
+      "source_ref": "indicator--00000000-0000-4000-8000-000000000001",
+      "target_ref": "threat-actor--00000000-0000-4000-8000-0000000000aa",
+      "created": "2024-01-01T00:00:00.000000Z"
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-000000000002",
+      "spec_version": "2.1",
+      "type": "indicator",
+      "created": "2024-01-02T00:00:00.000000Z",
+      "modified": "2024-01-02T00:00:00.000000Z",
+      "name": "c2.example.com",
+      "pattern": "[domain-name:value = 'c2.example.com']",
+      "pattern_type": "stix",
+      "valid_from": "2024-01-02T00:00:00.000000Z",
+      "x_attributes": [
+        {
+          "name": "severity",
+          "value": "Critical"
+        }
+      ]
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--00000000-0000-4000-8000-000000000201",
+      "relationship_type": "attributed-to",
+      "source_ref": "indicator--00000000-0000-4000-8000-000000000002",
+      "target_ref": "threat-actor--00000000-0000-4000-8000-0000000000aa",
+      "created": "2024-01-02T00:00:00.000000Z"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--00000000-0000-4000-8000-000000000202",
+      "relationship_type": "attributed-to",
+      "source_ref": "indicator--00000000-0000-4000-8000-000000000002",
+      "target_ref": "threat-actor--00000000-0000-4000-8000-0000000000aa",
+      "created": "2024-01-02T00:00:00.000000Z"
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-000000000003",
+      "spec_version": "2.1",
+      "type": "indicator",
+      "created": "2024-01-03T00:00:00.000000Z",
+      "modified": "2024-01-03T00:00:00.000000Z",
+      "name": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "pattern": "[file:hashes.'MD5' = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']",
+      "pattern_type": "stix",
+      "valid_from": "2024-01-03T00:00:00.000000Z",
+      "x_attributes": [
+        {
+          "name": "severity",
+          "value": "High"
+        },
+        {
+          "name": "File Size",
+          "value": "123456"
+        }
+      ]
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-000000000004",
+      "spec_version": "2.1",
+      "type": "indicator",
+      "created": "2024-01-04T00:00:00.000000Z",
+      "modified": "2024-01-04T00:00:00.000000Z",
+      "name": "192.0.2.1",
+      "pattern": "[ipv4-addr:value = '192.0.2.1']",
+      "pattern_type": "stix",
+      "valid_from": "2024-01-04T00:00:00.000000Z",
+      "x_attributes": [
+        {
+          "name": "severity",
+          "value": "Critical"
+        },
+        {
+          "name": "Threat Detail",
+          "value": "Example CVE description"
+        }
+      ]
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-000000000005",
+      "spec_version": "2.1",
+      "type": "indicator",
+      "created": "2024-01-05T00:00:00.000000Z",
+      "modified": "2024-01-05T00:00:00.000000Z",
+      "name": "192.0.2.2",
+      "pattern": "[ipv4-addr:value = '192.0.2.2']",
+      "pattern_type": "stix",
+      "valid_from": "2024-01-05T00:00:00.000000Z",
+      "x_attributes": [
+        {
+          "name": "severity",
+          "value": "Critical"
+        }
+      ]
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-000000000006",
+      "spec_version": "2.1",
+      "type": "indicator",
+      "created": "2024-01-06T00:00:00.000000Z",
+      "modified": "2024-01-06T00:00:00.000000Z",
+      "name": "phishing.example.com",
+      "pattern": "[domain-name:value = 'phishing.example.com']",
+      "pattern_type": "stix",
+      "valid_from": "2024-01-06T00:00:00.000000Z",
+      "x_attributes": [
+        {
+          "name": "severity",
+          "value": "Critical"
+        },
+        {
+          "name": "Scheme",
+          "value": "https"
+        },
+        {
+          "name": "Scheme",
+          "value": "http"
+        },
+        {
+          "name": "Threat Type",
+          "value": "Ransomware"
+        },
+        {
+          "name": "Threat Type",
+          "value": "Criminal"
+        },
+        {
+          "name": "Network Type",
+          "value": "network"
+        },
+        {
+          "name": "Network Type",
+          "value": "url"
+        },
+        {
+          "name": "Port Number",
+          "value": "443"
+        },
+        {
+          "name": "Port Number",
+          "value": "80"
+        }
+      ]
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--00000000-0000-4000-8000-000000000301",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--00000000-0000-4000-8000-000000000006",
+      "target_ref": "malware--00000000-0000-4000-8000-0000000000bb",
+      "created": "2024-01-06T00:00:00.000000Z"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--00000000-0000-4000-8000-000000000302",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--00000000-0000-4000-8000-000000000006",
+      "target_ref": "malware--00000000-0000-4000-8000-0000000000bb",
+      "created": "2024-01-06T00:00:00.000000Z"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--00000000-0000-4000-8000-000000000303",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--00000000-0000-4000-8000-000000000006",
+      "target_ref": "malware--00000000-0000-4000-8000-0000000000cc",
+      "created": "2024-01-06T00:00:00.000000Z"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--00000000-0000-4000-8000-000000000304",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--00000000-0000-4000-8000-000000000006",
+      "target_ref": "malware--00000000-0000-4000-8000-0000000000cc",
+      "created": "2024-01-06T00:00:00.000000Z"
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-000000000007",
+      "spec_version": "2.1",
+      "type": "indicator",
+      "created": "2024-01-07T00:00:00.000000Z",
+      "modified": "2024-01-07T00:00:00.000000Z",
+      "name": "banking.example.com",
+      "pattern": "[domain-name:value = 'banking.example.com']",
+      "pattern_type": "stix",
+      "valid_from": "2024-01-07T00:00:00.000000Z",
+      "x_attributes": [
+        {
+          "name": "severity",
+          "value": "Critical"
+        },
+        {
+          "name": "Scheme",
+          "value": "http"
+        },
+        {
+          "name": "Scheme",
+          "value": "https"
+        },
+        {
+          "name": "Threat Type",
+          "value": "Ransomware"
+        },
+        {
+          "name": "Threat Type",
+          "value": "Criminal"
+        },
+        {
+          "name": "Network Type",
+          "value": "url"
+        },
+        {
+          "name": "Network Type",
+          "value": "network"
+        },
+        {
+          "name": "Port Number",
+          "value": "443"
+        },
+        {
+          "name": "Port Number",
+          "value": "80"
+        },
+        {
+          "name": "Domain Type",
+          "value": "C2Domain"
+        }
+      ]
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--00000000-0000-4000-8000-000000000401",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--00000000-0000-4000-8000-000000000007",
+      "target_ref": "malware--00000000-0000-4000-8000-0000000000bb",
+      "created": "2024-01-07T00:00:00.000000Z"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--00000000-0000-4000-8000-000000000402",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--00000000-0000-4000-8000-000000000007",
+      "target_ref": "malware--00000000-0000-4000-8000-0000000000bb",
+      "created": "2024-01-07T00:00:00.000000Z"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--00000000-0000-4000-8000-000000000403",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--00000000-0000-4000-8000-000000000007",
+      "target_ref": "malware--00000000-0000-4000-8000-0000000000cc",
+      "created": "2024-01-07T00:00:00.000000Z"
+    },
+    {
+      "type": "relationship",
+      "id": "relationship--00000000-0000-4000-8000-000000000404",
+      "relationship_type": "indicates",
+      "source_ref": "indicator--00000000-0000-4000-8000-000000000007",
+      "target_ref": "malware--00000000-0000-4000-8000-0000000000cc",
+      "created": "2024-01-07T00:00:00.000000Z"
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-000000000008",
+      "spec_version": "2.1",
+      "type": "indicator",
+      "created": "2024-01-08T00:00:00.000000Z",
+      "modified": "2024-01-08T00:00:00.000000Z",
+      "name": "downloads.example.com",
+      "pattern": "[domain-name:value = 'downloads.example.com']",
+      "pattern_type": "stix",
+      "valid_from": "2024-01-08T00:00:00.000000Z",
+      "x_attributes": [
+        {
+          "name": "severity",
+          "value": "Critical"
+        },
+        {
+          "name": "Network Type",
+          "value": "network"
+        }
+      ]
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-000000000009",
+      "spec_version": "2.1",
+      "type": "indicator",
+      "created": "2024-01-09T00:00:00.000000Z",
+      "modified": "2024-01-09T00:00:00.000000Z",
+      "name": "192.0.2.3",
+      "pattern": "[ipv4-addr:value = '192.0.2.3']",
+      "pattern_type": "stix",
+      "valid_from": "2024-01-09T00:00:00.000000Z",
+      "x_attributes": [
+        {
+          "name": "severity",
+          "value": "Critical"
+        },
+        {
+          "name": "Role",
+          "value": "Command and control location used by malware"
+        }
+      ]
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-00000000000a",
+      "spec_version": "2.1",
+      "type": "indicator",
+      "created": "2024-01-10T00:00:00.000000Z",
+      "modified": "2024-01-10T00:00:00.000000Z",
+      "name": "192.0.2.4",
+      "pattern": "[ipv4-addr:value = '192.0.2.4']",
+      "pattern_type": "stix",
+      "valid_from": "2024-01-10T00:00:00.000000Z",
+      "x_attributes": [
+        {
+          "name": "severity",
+          "value": "Critical"
+        },
+        {
+          "name": "Role",
+          "value": "Command and control location used by malware"
+        }
+      ]
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-00000000000b",
+      "spec_version": "2.1",
+      "type": "indicator",
+      "created": "2024-01-11T00:00:00.000000Z",
+      "modified": "2024-01-11T00:00:00.000000Z",
+      "name": "192.0.2.5",
+      "pattern": "[ipv4-addr:value = '192.0.2.5']",
+      "pattern_type": "stix",
+      "valid_from": "2024-01-11T00:00:00.000000Z",
+      "x_attributes": [
+        {
+          "name": "severity",
+          "value": "Critical"
+        },
+        {
+          "name": "Role",
+          "value": "Command and control location used by malware"
+        },
+        {
+          "name": "Role",
+          "value": "Location from which a payload is obtained"
+        }
+      ]
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-00000000000c",
+      "spec_version": "2.1",
+      "type": "indicator",
+      "created": "2024-01-12T00:00:00.000000Z",
+      "modified": "2024-01-12T00:00:00.000000Z",
+      "name": "192.0.2.6",
+      "pattern": "[ipv4-addr:value = '192.0.2.6']",
+      "pattern_type": "stix",
+      "valid_from": "2024-01-12T00:00:00.000000Z",
+      "x_attributes": [
+        {
+          "name": "severity",
+          "value": "Critical"
+        },
+        {
+          "name": "Scheme",
+          "value": "https"
+        },
+        {
+          "name": "Scheme",
+          "value": "http"
+        },
+        {
+          "name": "Threat Type",
+          "value": "Banking"
+        },
+        {
+          "name": "Threat Type",
+          "value": "Criminal"
+        },
+        {
+          "name": "Threat Type",
+          "value": "Brute Force"
+        },
+        {
+          "name": "Network Type",
+          "value": "url"
+        },
+        {
+          "name": "Network Type",
+          "value": "network"
+        }
+      ]
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-00000000000d",
+      "spec_version": "2.1",
+      "type": "indicator",
+      "created": "2024-01-13T00:00:00.000000Z",
+      "modified": "2024-01-13T00:00:00.000000Z",
+      "name": "https://example.com/payload",
+      "pattern": "[url:value = 'https://example.com/payload']",
+      "pattern_type": "stix",
+      "valid_from": "2024-01-13T00:00:00.000000Z",
+      "x_attributes": [
+        {
+          "name": "severity",
+          "value": "Critical"
+        },
+        {
+          "name": "Scheme",
+          "value": "https"
+        },
+        {
+          "name": "Role",
+          "value": "Credential Phishing"
+        },
+        {
+          "name": "Network Type",
+          "value": "url"
+        },
+        {
+          "name": "Threat Type",
+          "value": "Phishing"
+        }
+      ]
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-00000000000e",
+      "spec_version": "2.1",
+      "type": "indicator",
+      "created": "2024-01-14T00:00:00.000000Z",
+      "modified": "2024-01-14T00:00:00.000000Z",
+      "name": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "pattern": "[file:hashes.'SHA-1' = 'bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb']",
+      "pattern_type": "stix",
+      "valid_from": "2024-01-14T00:00:00.000000Z",
+      "x_attributes": [
+        {
+          "name": "severity",
+          "value": "Critical"
+        },
+        {
+          "name": "Threat Type",
+          "value": "Ransomware"
+        },
+        {
+          "name": "Threat Type",
+          "value": "Criminal"
+        },
+        {
+          "name": "File Size",
+          "value": "50176"
+        }
+      ]
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-00000000000f",
+      "spec_version": "2.1",
+      "type": "indicator",
+      "created": "2024-01-15T00:00:00.000000Z",
+      "modified": "2024-01-15T00:00:00.000000Z",
+      "name": "download.example.com",
+      "pattern": "[domain-name:value = 'download.example.com']",
+      "pattern_type": "stix",
+      "valid_from": "2024-01-15T00:00:00.000000Z",
+      "x_attributes": [
+        {
+          "name": "severity",
+          "value": "Critical"
+        }
+      ]
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-000000000010",
+      "spec_version": "2.1",
+      "type": "indicator",
+      "created": "2024-01-16T00:00:00.000000Z",
+      "modified": "2024-01-16T00:00:00.000000Z",
+      "name": "192.0.2.7",
+      "pattern": "[ipv4-addr:value = '192.0.2.7']",
+      "pattern_type": "stix",
+      "valid_from": "2024-01-16T00:00:00.000000Z",
+      "x_attributes": [
+        {
+          "name": "severity",
+          "value": "Critical"
+        },
+        {
+          "name": "Role",
+          "value": "Location from which a payload is obtained"
+        },
+        {
+          "name": "Role",
+          "value": "Command and control location used by malware"
+        }
+      ]
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-000000000011",
+      "spec_version": "2.1",
+      "type": "indicator",
+      "created": "2024-01-17T00:00:00.000000Z",
+      "modified": "2024-01-17T00:00:00.000000Z",
+      "name": "cccccccccccccccccccccccccccccccc",
+      "pattern": "[file:hashes.'MD5' = 'cccccccccccccccccccccccccccccccc']",
+      "pattern_type": "stix",
+      "valid_from": "2024-01-17T00:00:00.000000Z",
+      "x_attributes": [
+        {
+          "name": "severity",
+          "value": "Critical"
+        },
+        {
+          "name": "Threat Type",
+          "value": "Ransomware"
+        },
+        {
+          "name": "Threat Type",
+          "value": "Criminal"
+        },
+        {
+          "name": "File Size",
+          "value": "50176"
+        }
+      ]
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-000000000012",
+      "spec_version": "2.1",
+      "type": "indicator",
+      "created": "2024-01-18T00:00:00.000000Z",
+      "modified": "2024-01-18T00:00:00.000000Z",
+      "name": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "pattern": "[file:hashes.'SHA-256' = 'dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd']",
+      "pattern_type": "stix",
+      "valid_from": "2024-01-18T00:00:00.000000Z",
+      "x_attributes": [
+        {
+          "name": "severity",
+          "value": "Critical"
+        },
+        {
+          "name": "Threat Type",
+          "value": "Ransomware"
+        },
+        {
+          "name": "Threat Type",
+          "value": "Criminal"
+        },
+        {
+          "name": "File Size",
+          "value": "50176"
+        }
+      ]
+    },
+    {
+      "id": "indicator--00000000-0000-4000-8000-000000000013",
+      "spec_version": "2.1",
+      "type": "indicator",
+      "created": "2024-01-19T00:00:00.000000Z",
+      "modified": "2024-01-19T00:00:00.000000Z",
+      "name": "legit-looking.example.com",
+      "pattern": "[domain-name:value = 'legit-looking.example.com']",
+      "pattern_type": "stix",
+      "valid_from": "2024-01-19T00:00:00.000000Z",
+      "x_attributes": [
+        {
+          "name": "severity",
+          "value": "Critical"
+        },
+        {
+          "name": "Report Number",
+          "value": "REPORT-0001"
+        },
+        {
+          "name": "Report Number",
+          "value": "REPORT-0002"
+        },
+        {
+          "name": "Subject Number",
+          "value": "SUBJECT-0001"
+        }
+      ]
+    }
+  ]
+}

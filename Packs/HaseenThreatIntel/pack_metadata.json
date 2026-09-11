@@ -1,0 +1,29 @@
+{
+    "name": "HaseenThreatIntel",
+    "description": "Ingest national threat intelligence from Haseen into Cortex XSOAR. Automatically fetch and parse STIX 2.x indicators and relationships.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Mohamed Abdelrahman",
+    "url": "https://share.haseen.gov.sa",
+    "email": "mohamed.abdelrahman01@outlook.com",
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Threat Intelligence Management",
+        "STIX"
+    ],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "STIX",
+        "Threat Intelligence",
+        "Feed",
+        "Indicators"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
