@@ -1,0 +1,29 @@
+{
+    "id": "indicator_domaintoolsfeedipcity",
+    "version": -1,
+    "name": "DomainToolsFeed IP City",
+    "description": "City derived from geolocation data for the IP address.",
+    "ownerOnly": false,
+    "cliName": "domaintoolsfeedipcity",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "associatedTypes": [
+        "DomainToolsFeed IP"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}
