@@ -1,0 +1,1429 @@
+id: ANYRUN Detonate File Linux for XDR
+version: 2
+fromversion: 6.0.0
+vcShouldKeepItemLegacyProdMachine: false
+aclrelations: []
+aclowner:
+  id: ""
+  type: ""
+  name: ""
+name: ANYRUN Detonate File Linux for XDR
+description: This playbook submits a file retrieved from a Cortex XDR endpoint to
+  the ANY.RUN Cloud Sandbox for dynamic analysis in a Linux environment. It helps
+  to automate malware detonation and behavior observation on Linux OS.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e9b17277-f0de-4fec-8db5-cd0c1163e61a
+    type: start
+    task:
+      id: e9b17277-f0de-4fec-8db5-cd0c1163e61a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 73c38156-9191-4ecd-9273-bf9f12651c90
+    type: condition
+    task:
+      id: 73c38156-9191-4ecd-9273-bf9f12651c90
+      version: -1
+      name: Is a specific ANY.RUN instance provided?
+      description: Checks whether the "Using" playbook input was provided, to
+        determine which ANY.RUN Cloud Sandbox instance to run commands against.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "42"
+      "yes":
+      - "41"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Using
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: c0c8106b-3844-4b52-b6fb-507550dbffc9
+    type: regular
+    task:
+      id: c0c8106b-3844-4b52-b6fb-507550dbffc9
+      version: -1
+      name: Set instance to use (from input)
+      description: Sets the selected ANY.RUN integration instance in playbook context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: ANYRUNInstance
+      value:
+        simple: ${inputs.Using}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 4c23db59-2b68-4731-9b3d-98d8a686175a
+    type: regular
+    task:
+      id: 4c23db59-2b68-4731-9b3d-98d8a686175a
+      version: -1
+      name: Get active ANY.RUN Cloud Sandbox instances
+      description: Returns active ANY.RUN Cloud Sandbox integration instances.
+      scriptName: GetInstances
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      brand:
+        simple: ANY.RUN Cloud Sandbox
+      instance_status:
+        simple: active
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 6c83b3a1-73ec-4ff2-b9c5-ac99462680b1
+    type: regular
+    task:
+      id: 6c83b3a1-73ec-4ff2-b9c5-ac99462680b1
+      version: -1
+      name: Set instance to use (first active instance)
+      description: Sets the first active ANY.RUN integration instance in playbook context.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: ANYRUNInstance
+      value:
+        complex:
+          root: Modules
+          accessor: name
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 65de8af9-f2b1-4d0f-8c5d-f5f20aa54fda
+    type: regular
+    task:
+      id: 65de8af9-f2b1-4d0f-8c5d-f5f20aa54fda
+      version: -1
+      name: '[ANY.RUN] Detonate File Linux'
+      description: Performs file analysis using a Linux VM in ANY.RUN Cloud Sandbox.
+      script: '|||anyrun-detonate-file-linux'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
+      env_locale:
+        simple: ${inputs.env_locale}
+      env_os:
+        simple: ${inputs.env_os}
+      file:
+        simple: ${SelectedOriginalFile.EntryID}
+      obj_ext_cmd:
+        simple: ${inputs.obj_ext_cmd}
+      obj_ext_extension:
+        simple: ${inputs.obj_ext_extension}
+      obj_ext_startfolder:
+        simple: ${inputs.obj_ext_startfolder}
+      opt_network_connect:
+        simple: ${inputs.opt_network_connect}
+      opt_network_fakenet:
+        simple: ${inputs.opt_network_fakenet}
+      opt_network_geo:
+        simple: ${inputs.opt_network_geo}
+      opt_network_mitm:
+        simple: ${inputs.opt_network_mitm}
+      opt_network_residential_proxy:
+        simple: ${inputs.opt_network_residential_proxy}
+      opt_network_residential_proxy_geo:
+        simple: ${inputs.opt_network_residential_proxy_geo}
+      opt_network_tor:
+        simple: ${inputs.opt_network_tor}
+      opt_privacy_type:
+        simple: ${inputs.opt_privacy_type}
+      opt_timeout:
+        simple: ${inputs.opt_timeout}
+      run_as_root:
+        simple: ${inputs.run_as_root}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 2950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: a1b84003-ab1b-48af-86b3-d15b240dcd28
+    type: regular
+    task:
+      id: a1b84003-ab1b-48af-86b3-d15b240dcd28
+      version: -1
+      name: '[ANY.RUN] Get analysis summary'
+      description: Returns the ANY.RUN analysis report in HTML format.
+      script: '|||anyrun-get-analysis-report'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
+      report_format:
+        simple: html
+      task_uuid:
+        simple: ${ANYRUN_DetonateFileLinux.TaskID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 3505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 407e75d8-69ff-4a35-83f5-49b06c30f716
+    type: title
+    task:
+      id: 407e75d8-69ff-4a35-83f5-49b06c30f716
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 182.5,
+          "y": 4430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 2725d55e-a7cf-4dda-8dac-386d8956cde1
+    type: condition
+    task:
+      id: 2725d55e-a7cf-4dda-8dac-386d8956cde1
+      version: -1
+      name: Is there an active ANY.RUN instance?
+      description: Returns yes if ANY.RUN Cloud Sandbox integration is available.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "36"
+    scriptarguments:
+      brandname:
+        simple: ANY.RUN Cloud Sandbox
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 152.5,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: b920a4c2-a219-4641-89aa-2a188f870831
+    type: condition
+    task:
+      id: b920a4c2-a219-4641-89aa-2a188f870831
+      version: -1
+      name: Was a malicious or suspicious verdict received?
+      description: Checks whether ANY.RUN verdict is not equal to No threats detected.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: ANYRUN.SandboxAnalysisReportVerdict
+            iscontext: true
+          right:
+            value:
+              simple: No threats detected
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 3320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: e36d01ac-20cd-439b-84a3-1ec9650384f9
+    type: regular
+    task:
+      id: e36d01ac-20cd-439b-84a3-1ec9650384f9
+      version: -1
+      name: '[ANY.RUN] Get analysis verdict'
+      description: 'Returns a threat level text. Possible values: No threats detected,
+        Suspicious activity, Malicious activity.'
+      script: '|||anyrun-get-analysis-verdict'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
+      task_uuid:
+        simple: ${ANYRUN_DetonateFileLinux.TaskID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 602.5,
+          "y": 3135
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 1950e00e-5296-46ec-8ce3-1f6327458982
+    type: regular
+    task:
+      id: 1950e00e-5296-46ec-8ce3-1f6327458982
+      version: -1
+      name: '[ANY.RUN] Load IOCs to Threat Intel'
+      description: Returns the ANY.RUN analysis report in IOC format and loads IOCs
+        to context.
+      script: '|||anyrun-get-analysis-report'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
+      report_format:
+        simple: ioc
+      task_uuid:
+        simple: ${ANYRUN_DetonateFileLinux.TaskID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 3690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 3ffbc2a9-2fe8-4233-8325-9615f56264e4
+    type: condition
+    task:
+      id: 3ffbc2a9-2fe8-4233-8325-9615f56264e4
+      version: -1
+      name: Are endpoint ID and file path provided for endpoint retrieval?
+      description: Checks whether the minimum inputs are available to retrieve the
+        file from a Cortex XDR endpoint when no explicit file EntryID was provided.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.endpoint_id
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.file_path
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: cc61dc69-ce9f-4b80-8528-a418508ceba1
+    type: regular
+    task:
+      id: cc61dc69-ce9f-4b80-8528-a418508ceba1
+      version: -1
+      name: '[XDR] Retrieve file from endpoint'
+      description: Starts a Cortex Core IR file retrieval action for the requested
+        Linux file path. The task uses built-in polling arguments, so a separate core-action-status-get
+        task is not required.
+      script: '|||core-retrieve-files'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      endpoint_ids:
+        simple: ${inputs.endpoint_id}
+      interval_in_seconds:
+        simple: ${inputs.retrieve_poll_interval_seconds}
+      linux_file_paths:
+        simple: ${inputs.file_path}
+      timeout_in_seconds:
+        simple: ${inputs.retrieve_timeout_seconds}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 34529cc7-27a4-48be-89a4-ab07a8568ccd
+    type: regular
+    task:
+      id: 34529cc7-27a4-48be-89a4-ab07a8568ccd
+      version: -1
+      name: '[XDR] Get retrieved file details'
+      description: Creates a War Room File entry for the Cortex XDR retrieved archive
+        using the action ID returned by core-retrieve-files.
+      script: '|||core-retrieve-file-details'
+      type: regular
+      iscommand: true
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      action_id:
+        simple: ${Core.RetrievedFiles.action_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1655
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: b55fd135-5e05-44df-85e3-415eb914d202
+    type: regular
+    task:
+      id: b55fd135-5e05-44df-85e3-415eb914d202
+      version: -1
+      name: '[XDR] Unzip retrieved archive'
+      description: Unzips the retrieved archive and uploads extracted files to the
+        War Room as File entries.
+      scriptName: UnzipFile
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      entryID:
+        simple: ${ANYRUN.RetrievedArchive.EntryID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 2025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: b8a32590-4653-410d-8419-cf1545e173df
+    type: regular
+    task:
+      id: b8a32590-4653-410d-8419-cf1545e173df
+      version: -1
+      name: '[XDR] Extract requested file name from path'
+      description: Extracts the basename from inputs.file_path and stores it in ANYRUN.Input.FileName.
+        The playbook uses the filename to select the extracted original sample.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ANYRUN.Input.FileName
+      value:
+        complex:
+          root: inputs.file_path
+          transformers:
+          - operator: FirstArrayElement
+          - operator: RegexExtractAll
+            args:
+              regex:
+                value:
+                  simple: '[^\\/]+$'
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 2210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: f259122f-cc3c-4c96-812c-d0ece79be17d
+    type: regular
+    task:
+      id: f259122f-cc3c-4c96-812c-d0ece79be17d
+      version: -1
+      name: '[XDR] Select original file EntryID by file name'
+      description: Selects the extracted original sample by matching File.Name to
+        the basename extracted from inputs.file_path, then stores its EntryID in SelectedOriginalFile.EntryID.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: SelectedOriginalFile.EntryID
+      value:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: ANYRUN.Input.FileName
+                iscontext: true
+          accessor: EntryID
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 2395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: a8c73f4c-3c33-4415-8afb-8087a3cf8f9a
+    type: regular
+    task:
+      id: a8c73f4c-3c33-4415-8afb-8087a3cf8f9a
+      version: -1
+      name: '[XDR] Store selected file name'
+      description: Stores the selected file name for visibility and downstream reporting.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: SelectedOriginalFile.Name
+      value:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: ANYRUN.Input.FileName
+                iscontext: true
+          accessor: Name
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 2580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 546a99ae-d374-4765-870a-4ccc71256f83
+    type: condition
+    task:
+      id: 546a99ae-d374-4765-870a-4ccc71256f83
+      version: -1
+      name: Was the original file selected?
+      description: Checks whether SelectedOriginalFile.EntryID exists before submitting
+        to ANY.RUN.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: SelectedOriginalFile.EntryID
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 490,
+          "y": 2765
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 40a5759c-e6af-43d1-8474-bd1bb3680796
+    type: regular
+    task:
+      id: 40a5759c-e6af-43d1-8474-bd1bb3680796
+      version: -1
+      name: '[XDR] Add ANY.RUN IOCs to XDR IOC rules'
+      description: Upload the IOC rules to XSIAM. When the ioc_object is defined,
+        disregard any other provided arguments, as the ioc_object takes precedence.
+        Validate the indicator parameters when ioc_object is used. If `vendor_name`,
+        `vendor_reputation`, and `vendor_reliability` are used, only a single vendor
+        is supported. For multiple vendors, utilize an `ioc_object` in JSON format.
+        Adding a rule with the same indicator, but with different parameters, will
+        update the existing rule.
+      script: Cortex Core - IR|||core-add-indicator-rule
+      type: regular
+      iscommand: true
+      brand: Cortex Core - IR
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      input_format:
+        simple: JSON
+      ioc_object:
+        simple: ${ANYRUN.IOCDetails.ioc_object}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 4245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: ecc1f907-b493-495c-80ea-4210cf5225c8
+    type: condition
+    task:
+      id: ecc1f907-b493-495c-80ea-4210cf5225c8
+      version: -1
+      name: Are there ANY.RUN IOC details to add to XDR?
+      description: Checks whether ANY.RUN returned IOCDetails.ioc_object before calling
+        core-add-indicator-rule.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ANYRUN.IOCDetails.ioc_object
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 715,
+          "y": 3875
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 567802c5-ccee-471e-8059-08de2fa57f19
+    type: regular
+    task:
+      id: 567802c5-ccee-471e-8059-08de2fa57f19
+      version: -1
+      name: '[XDR] Store retrieved archive EntryID'
+      description: Stores only the newly created retrieved archive EntryID. This prevents
+        UnzipFile from iterating over every File.EntryID already present in the incident
+        context.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ANYRUN.RetrievedArchive.EntryID
+      value:
+        complex:
+          root: File
+          accessor: EntryID
+          transformers:
+          - operator: LastArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: effa26e4-7a94-4876-8505-89fcdc49001f
+    type: condition
+    task:
+      id: effa26e4-7a94-4876-8505-89fcdc49001f
+      version: -1
+      name: Was an existing file EntryID provided?
+      description: Checks whether an explicit War Room file EntryID was provided.
+        If yes, endpoint retrieval is skipped. If not, the playbook attempts Cortex
+        XDR endpoint retrieval using endpoint_id and file_path inputs.
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "13"
+      "yes":
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.file_entry_id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 720c49ec-d837-4281-8756-be83cc4bd1c3
+    type: regular
+    task:
+      id: 720c49ec-d837-4281-8756-be83cc4bd1c3
+      version: -1
+      name: '[Context] Use provided file EntryID'
+      description: Stores the explicitly provided War Room file EntryID as SelectedOriginalFile.EntryID.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: SelectedOriginalFile.EntryID
+      value:
+        simple: ${inputs.file_entry_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 705,
+          "y": 2580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 289ed81a-2210-425e-8d6f-1158ffab281c
+    type: condition
+    task:
+      id: 289ed81a-2210-425e-8d6f-1158ffab281c
+      version: -1
+      name: Is Cortex Core - IR available?
+      description: Returns 'yes' if Cortex Core - IR is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "14"
+    scriptarguments:
+      brandname:
+        simple: Cortex Core - IR
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: d2097d35-ff7c-403b-8875-f073c8829a34
+    type: condition
+    task:
+      id: d2097d35-ff7c-403b-8875-f073c8829a34
+      version: -1
+      name: Is Cortex Core - IR available?
+      description: Returns 'yes' if Cortex Core - IR is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+      playbooktaskmissingcomponent: null
+      istaskmissingcomponenterrordismissed: false
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "22"
+    scriptarguments:
+      brandname:
+        simple: Cortex Core - IR
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 827.5,
+          "y": 4060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+outlinetasks: {}
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 4440,
+        "width": 1270,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Using
+  value: {}
+  required: false
+  description: |-
+    The name of the ANY.RUN Cloud Sandbox integration instance to use for running commands in this playbook.
+    If left empty, and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
+  playbookInputQuery: null
+- key: file_entry_id
+  value: {}
+  required: false
+  description: Existing War Room file EntryID. If provided, endpoint retrieval is
+    skipped and this file is submitted to ANY.RUN.
+  playbookInputQuery: null
+- key: endpoint_id
+  value:
+    simple: ${issue.xdmsourceagentidentifier}
+  required: false
+  description: Cortex XDR endpoint/agent ID. Used only when file_entry_id is not provided.
+  playbookInputQuery: null
+- key: file_path
+  value:
+    simple: ${issue.initiatorpath}
+  required: false
+  description: Full Linux path to the file on the endpoint. Used for retrieval and
+    filename matching when file_entry_id is not provided.
+  playbookInputQuery: null
+- key: retrieve_timeout_seconds
+  value:
+    simple: "240"
+  required: false
+  description: Timeout for Cortex XDR file retrieve polling.
+  playbookInputQuery: null
+- key: retrieve_poll_interval_seconds
+  value:
+    simple: "30"
+  required: false
+  description: Polling interval for Cortex XDR file retrieve action status checks.
+  playbookInputQuery: null
+- key: env_locale
+  value:
+    simple: en-US
+  required: false
+  description: 'Operation system language. Use locale identifier or country name (Ex:
+    "en-US" or "Brazil"). Case insensitive.'
+  playbookInputQuery: null
+- key: env_os
+  value:
+    simple: ubuntu
+  required: false
+  description: Operation system. Possible values - ubuntu, debian
+  playbookInputQuery: null
+- key: run_as_root
+  value:
+    simple: "False"
+  required: false
+  description: Run file with superuser privileges
+  playbookInputQuery: null
+- key: opt_network_connect
+  value:
+    simple: "True"
+  required: false
+  description: Network connection state.
+  playbookInputQuery: null
+- key: opt_network_fakenet
+  value:
+    simple: "False"
+  required: false
+  description: FakeNet feature status.
+  playbookInputQuery: null
+- key: opt_network_tor
+  value:
+    simple: "False"
+  required: false
+  description: TOR using.
+  playbookInputQuery: null
+- key: opt_network_geo
+  value:
+    simple: fastest
+  required: false
+  description: 'Tor geo location option. Example: US, AU.'
+  playbookInputQuery: null
+- key: opt_network_mitm
+  value:
+    simple: "False"
+  required: false
+  description: HTTPS MITM proxy option.
+  playbookInputQuery: null
+- key: opt_network_residential_proxy
+  value:
+    simple: "False"
+  required: false
+  description: Residential proxy using.
+  playbookInputQuery: null
+- key: opt_network_residential_proxy_geo
+  value:
+    simple: fastest
+  required: false
+  description: 'Residential proxy geo location option. Example: US, AU.'
+  playbookInputQuery: null
+- key: opt_privacy_type
+  value:
+    simple: bylink
+  required: false
+  description: 'Privacy settings. Supports: public, bylink, owner, byteam.'
+  playbookInputQuery: null
+- key: opt_timeout
+  value:
+    simple: "240"
+  required: false
+  description: 'Timeout option. Size range: 10-660.'
+  playbookInputQuery: null
+- key: obj_ext_cmd
+  value: {}
+  required: false
+  description: Optional command line
+  playbookInputQuery: null
+- key: obj_ext_startfolder
+  value:
+    simple: temp
+  required: false
+  description: 'Start object from. Supports: desktop, home, downloads, appdata, temp,
+    windows, root'
+  playbookInputQuery: null
+- key: obj_ext_extension
+  value:
+    simple: "True"
+  required: false
+  description: Change extension to valid
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - Using
+  - file_entry_id
+  - endpoint_id
+  - file_path
+  - retrieve_timeout_seconds
+  - retrieve_poll_interval_seconds
+  name: Sample and Instance Selection
+  description: Optionally select the ANY.RUN instance with Using. If file_entry_id is
+    provided, the playbook uses it directly. Otherwise it retrieves the file from the
+    Cortex XDR endpoint using endpoint_id and file_path, then selects the extracted file
+    by filename.
+- inputs:
+  - env_locale
+  - env_os
+  - run_as_root
+  name: ANY.RUN Environment
+  description: ""
+- inputs:
+  - opt_network_connect
+  - opt_network_fakenet
+  - opt_network_tor
+  - opt_network_geo
+  - opt_network_mitm
+  - opt_network_residential_proxy
+  - opt_network_residential_proxy_geo
+  - opt_privacy_type
+  - opt_timeout
+  name: ANY.RUN Options
+  description: ""
+- inputs:
+  - obj_ext_cmd
+  - obj_ext_startfolder
+  - obj_ext_extension
+  name: ANY.RUN Object
+  description: ""
+outputSections:
+- outputs:
+  - SelectedOriginalFile.EntryID
+  - SelectedOriginalFile.Name
+  - ANYRUN_DetonateFileLinux.TaskID
+  - ANYRUN.SandboxAnalysisReportVerdict
+  - ANYRUN.IOCs
+  - ANYRUN.IOCDetails
+  name: General
+  description: Main outputs.
+outputs:
+- contextPath: SelectedOriginalFile.EntryID
+  description: War Room EntryID of the selected original file sent to ANY.RUN.
+  type: String
+- contextPath: SelectedOriginalFile.Name
+  description: Name of the selected original file.
+  type: String
+- contextPath: ANYRUN_DetonateFileLinux.TaskID
+  description: ANY.RUN task UUID.
+  type: String
+- contextPath: ANYRUN.SandboxAnalysisReportVerdict
+  description: ANY.RUN verdict.
+  type: String
+- contextPath: ANYRUN.IOCs
+  description: IOCs extracted from ANY.RUN report.
+  type: Unknown
+- contextPath: ANYRUN.IOCDetails
+  description: Detailed IOC objects prepared for Cortex XDR indicator rules.
+  type: Unknown
+quiet: true
+dirtyInputs: true
+adopted: true
+possibleresponses: []
+marketplaces:
+- platform
+- marketplacev2
+supportedModules:
+- edr

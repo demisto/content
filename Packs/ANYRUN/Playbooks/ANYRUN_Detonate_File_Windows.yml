@@ -20,7 +20,7 @@ tasks:
       description: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "20"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -28,6 +28,171 @@ tasks:
         "position": {
           "x": 50,
           "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: fe196060-84e5-406c-bccf-1b25d6000758
+    type: condition
+    task:
+      id: fe196060-84e5-406c-bccf-1b25d6000758
+      version: -1
+      name: Is a specific ANY.RUN instance provided?
+      description: Checks whether the "Using" playbook input was provided, to
+        determine which ANY.RUN Cloud Sandbox instance to run commands
+        against.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Using
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 472f8493-b890-4bb6-8cce-71b9d705cc14
+    type: regular
+    task:
+      id: 472f8493-b890-4bb6-8cce-71b9d705cc14
+      version: -1
+      name: Set instance to use (from input)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: ANYRUNInstance
+      value:
+        simple: ${inputs.Using}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 3f0e0342-5c72-4fd5-8b7d-82e864cce987
+    type: regular
+    task:
+      id: 3f0e0342-5c72-4fd5-8b7d-82e864cce987
+      version: -1
+      name: Get active ANY.RUN Cloud Sandbox instances
+      description: Returns integration instances configured in Cortex XSOAR.
+        You can filter by instance status and/or brand name (vendor).
+      scriptName: GetInstances
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      brand:
+        simple: ANY.RUN Cloud Sandbox
+      instance_status:
+        simple: active
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: b09072ea-858a-4cc4-9dae-674b062ce603
+    type: regular
+    task:
+      id: b09072ea-858a-4cc4-9dae-674b062ce603
+      version: -1
+      name: Set instance to use (first active instance)
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      key:
+        simple: ANYRUNInstance
+      value:
+        complex:
+          root: Modules
+          accessor: name
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 495
         }
       }
     note: false
@@ -54,6 +219,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
       env_bitness:
         simple: ${inputs.env_bitness}
       env_locale:
@@ -72,6 +239,8 @@ tasks:
         simple: ${inputs.obj_ext_startfolder}
       obj_force_elevation:
         simple: ${inputs.obj_force_elevation}
+      opt_automated_interactivity:
+        simple: ${inputs.opt_automated_interactivity}
       opt_network_connect:
         simple: ${inputs.opt_network_connect}
       opt_network_fakenet:
@@ -96,7 +265,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 560
+          "y": 1000
         }
       }
     note: false
@@ -123,6 +292,8 @@ tasks:
       '#none#':
       - "10"
     scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
       report_format:
         simple: html
       task_uuid:
@@ -133,7 +304,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1085
+          "y": 1525
         }
       }
     note: false
@@ -161,7 +332,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1785
+          "y": 2225
         }
       }
     note: false
@@ -204,7 +375,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 385
+          "y": 825
         }
       }
     note: false
@@ -242,7 +413,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 210
+          "y": 650
         }
       }
     note: false
@@ -287,7 +458,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 910
+          "y": 1350
         }
       }
     note: false
@@ -315,6 +486,8 @@ tasks:
       '#none#':
       - "8"
     scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
       task_uuid:
         simple: ${ANYRUN_DetonateFileWindows.TaskID}
     separatecontext: false
@@ -323,7 +496,7 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 735
+          "y": 1175
         }
       }
     note: false
@@ -350,6 +523,8 @@ tasks:
       '#none#':
       - "12"
     scriptarguments:
+      using:
+        simple: ${ANYRUNInstance}
       report_format:
         simple: ioc
       task_uuid:
@@ -360,7 +535,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1260
+          "y": 1700
         }
       }
     note: false
@@ -399,7 +574,7 @@ tasks:
       {
         "position": {
           "x": 542.5,
-          "y": 1610
+          "y": 2050
         }
       }
     note: false
@@ -445,7 +620,7 @@ tasks:
       {
         "position": {
           "x": 387.5,
-          "y": 1435
+          "y": 1875
         }
       }
     note: false
@@ -463,14 +638,21 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1795,
-        "width": 872.5,
+        "height": 2235,
+        "width": 1172.5,
         "x": 50,
         "y": 50
       }
     }
   }
 inputs:
+- key: Using
+  value: {}
+  required: false
+  description: |-
+    The name of the ANY.RUN Cloud Sandbox integration instance to use for running commands in this playbook.
+    If left empty, and more than one instance is enabled, the playbook automatically selects the first active instance instead of running the commands on every enabled instance.
+  playbookInputQuery:
 - key: file
   value:
     simple: ${File.EntryID}
@@ -557,6 +739,12 @@ inputs:
   required: false
   description: 'Timeout option. Size range: 10-660.'
   playbookInputQuery:
+- key: opt_automated_interactivity
+  value:
+    simple: "True"
+  required: false
+  description: Automated interactivity.
+  playbookInputQuery:
 - key: obj_ext_cmd
   value: {}
   required: false
@@ -585,6 +773,7 @@ inputs:
 inputSections:
 - inputs:
   - file
+  - Using
   name: General (Inputs group)
   description: Generic group for inputs
 - inputs:
@@ -604,6 +793,7 @@ inputSections:
   - opt_network_residential_proxy_geo
   - opt_privacy_type
   - opt_timeout
+  - opt_automated_interactivity
   name: Options
   description: ""
 - inputs:
@@ -621,3 +811,14 @@ outputs: []
 quiet: true
 tests:
 - No tests (auto formatted)
+marketplaces:
+- xsoar
+- platform
+- xpanse
+- xsoar_saas
+- marketplacev2
+supportedModules:
+- agentix
+- xsiam
+- cloud
+- cloud_runtime_security
