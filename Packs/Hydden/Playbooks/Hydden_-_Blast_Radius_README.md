@@ -8,7 +8,7 @@ Requires a **Hydden Control** integration instance.
 
 ## What it does
 
-1. Reads the account identifier from `${xdm.target.user.identifier}`, then `incident.username` if that field is empty.
+1. Reads the account identifier from `xdm.target.user.identifier`, then `incident.username` if that field is empty.
 2. Stages that value under `Hydden.Input.AccountId`.
 3. Calls `hydden-blast-radius` with it as `account_id`.
 4. Writes `Hydden.Identity.blast_radius` (string) and the rest of the Hydden blast-radius payload. If Hydden returns an error, the playbook fails.
@@ -17,13 +17,13 @@ To run the playbook manually with an account identifier you choose, open it in t
 
 ## Inputs
 
- | **Name** | **Description** | **Required** |
- | --- | --- | --- |
- | AccountId | Cortex account identifier from the issue (defaults to `${xdm.target.user.identifier}`). | Required |
- | AccountIdFallback | Incident username if the alert fields are empty. | Optional |
+| **Name** | **Description** | **Required** |
+| --- | --- | --- |
+| AccountId | Cortex account identifier from the issue (defaults to `xdm.target.user.identifier`). | Required |
+| AccountIdFallback | Incident username if the alert fields are empty. | Optional |
 
 ## Outputs
 
- | **Path** | **Description** | **Type** |
- | --- | --- | --- |
- | Hydden.Identity.blast_radius | Blast radius score from Hydden Control, as a string. | String |
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| Hydden.Identity.blast_radius | Blast radius score from Hydden Control, as a string. | String |

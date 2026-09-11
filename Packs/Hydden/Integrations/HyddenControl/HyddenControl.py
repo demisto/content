@@ -41,10 +41,7 @@ def _as_blast_radius_string(response: Any) -> str:
         if value is None:
             # Name what did come back, so a contract change diagnoses itself.
             returned = ", ".join(sorted(response)) if response else "(empty response)"
-            raise DemistoException(
-                "Hydden response did not include a blast radius score. "
-                f"Fields returned: {returned}"
-            )
+            raise DemistoException("Hydden response did not include a blast radius score. " f"Fields returned: {returned}")
     else:
         value = response
     if value is None or (isinstance(value, str) and value.strip() == ""):

@@ -1,5 +1,5 @@
-
 ![Hydden logo](./doc_files/icon.png)
+
 # Hydden
 
 Places the Hydden identity fabric system of record underneath Cortex XSIAM Identity Analytics and enables Hydden Control actions as manual or automated responses.
@@ -19,13 +19,13 @@ Other identity packs tell you what one product saw. This pack tells the analyst 
 2. Search for Hydden Control.
 3. Click **Add instance** to create and configure a new integration instance.
 
- | **Parameter** | **Description** | **Required** |
- | --- | --- | --- |
- | Hydden API URL | Public API root, for example `https://control.hydden.ai/api/public/v1`. | True |
- | Client ID / Client Secret | Credentials for a Hydden API user with `rest_api` access. | True |
- | HTTP request timeout (seconds) | Optional. Default 300. | False |
- | Trust any certificate (not secure) | Optional. | False |
- | Use system proxy settings | Optional. | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Hydden API URL | Public API root, for example `https://control.hydden.ai/api/public/v1`. | True |
+    | Client ID / Client Secret | Credentials for a Hydden API user with `rest_api` access. | True |
+    | HTTP request timeout (seconds) | Optional. Default 300. | False |
+    | Trust any certificate (not secure) | Optional. | False |
+    | Use system proxy settings | Optional. | False |
 
 4. Click **Test**, then **Save & Exit**. Leave the instance enabled.
 
@@ -48,7 +48,7 @@ After install, open **Hydden Identity System of Record** from **Dashboards & Rep
 | Identity Analytics | [Hydden - Blast Radius](./Playbooks/Hydden_-_Blast_Radius_README.md) |
 | Compromised or high-risk account | [Hydden - Deprovision Account](./Playbooks/Hydden_-_Deprovision_Account_README.md) |
 
-Both playbooks take the account identifier from the issue (`${xdm.target.user.identifier}`, then `incident.username`) and pass it to one Hydden Control command.
+Both playbooks take the account identifier from the issue (`xdm.target.user.identifier`, then `incident.username`) and pass it to one Hydden Control command.
 
 ## Dependencies
 

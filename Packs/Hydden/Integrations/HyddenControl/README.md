@@ -6,14 +6,14 @@ This is the Hydden Control integration for Cortex XSIAM.
 2. Search for Hydden Control.
 3. Click **Add instance** to create and configure a new integration instance.
 
- | **Parameter** | **Description** | **Required** |
- | --- | --- | --- |
- | Hydden API URL (e.g., https://control.hydden.ai/api/public/v1) | The public API root. | True |
- | Client ID | The client ID for the Hydden REST API. | True |
- | Client Secret | The client secret for the Hydden REST API. | True |
- | HTTP request timeout (seconds) | The maximum request duration in seconds. A cold blast-radius call can take several minutes. | False |
- | Trust any certificate (not secure) | Whether to skip TLS certificate validation. | False |
- | Use system proxy settings | Whether to use the Cortex XSIAM system proxy. | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Hydden API URL (e.g., https://control.hydden.ai/api/public/v1) | The public API root. | True |
+    | Client ID | The client ID for the Hydden REST API. | True |
+    | Client Secret | The client secret for the Hydden REST API. | True |
+    | HTTP request timeout (seconds) | The maximum request duration in seconds. A cold blast-radius call can take several minutes. | False |
+    | Trust any certificate (not secure) | Whether to skip TLS certificate validation. | False |
+    | Use system proxy settings | Whether to use the Cortex XSIAM system proxy. | False |
 
 4. Click **Test** to validate the URL, credentials, and connection.
 
@@ -25,7 +25,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### hydden-blast-radius
 
 ***
-Return the subject's blast radius from Hydden Control. Calls `GET /blast-radius?ref=<account_id>&type=<type>`.
+Return the subject's blast radius from Hydden Control. Calls `GET /blast-radius?ref=ACCOUNT_ID&type=TYPE`.
 
 #### Base Command
 
@@ -79,7 +79,7 @@ Return the subject's blast radius from Hydden Control. Calls `GET /blast-radius?
 ### hydden-deprovision-account
 
 ***
-Deprovision an account across the fabric, including disabling the account and removing group and role memberships. Calls `POST /account-actions/deprovision?ref=<account_id>`. This command is potentially harmful.
+Deprovision an account across the fabric, including disabling the account and removing group and role memberships. Calls `POST /account-actions/deprovision?ref=ACCOUNT_ID`. This command is potentially harmful.
 
 #### Base Command
 

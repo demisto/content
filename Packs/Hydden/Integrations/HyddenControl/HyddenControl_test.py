@@ -45,7 +45,7 @@ def _install_cortex_test_stubs() -> None:
     if "ContentClientApiModule" not in sys.modules:
         content_client_mod = ModuleType("ContentClientApiModule")
         csp = sys.modules["CommonServerPython"]
-        content_client_mod.ContentClient = getattr(csp, "ContentClient", getattr(csp, "BaseClient"))
+        content_client_mod.ContentClient = csp.ContentClient if hasattr(csp, "ContentClient") else csp.BaseClient
         sys.modules["ContentClientApiModule"] = content_client_mod
 
 
@@ -198,9 +198,7 @@ def test_hydden_blast_radius_command_keeps_a_zero_score() -> None:
 
 
 def test_as_blast_radius_string_falls_back_to_a_flat_blast_radius_field() -> None:
-    assert _as_blast_radius_string({"blast_radius": "high privilege across 7 resources"}) == (
-        "high privilege across 7 resources"
-    )
+    assert _as_blast_radius_string({"blast_radius": "high privilege across 7 resources"}) == ("high privilege across 7 resources")
 
 
 def test_as_blast_radius_string_requires_a_score_field() -> None:
