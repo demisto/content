@@ -117,6 +117,13 @@ configuration:
   supportedModules:
   - agentix
   - xsiam
+- additionalinfo: When enabled, incoming mirroring downloads the alert screenshot and attaches it to the incident as a War Room file entry whenever the screenshot version changes. Screenshots are stored in your Cortex XSOAR instance. The doppel-get-alert-screenshot command works regardless of this setting.
+  display: Attach alert screenshots to incidents
+  name: attach_screenshots
+  type: 8
+  required: false
+  defaultvalue: "false"
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -491,6 +498,29 @@ script:
     - contextPath: Doppel.GetAlerts.metadata.page_size
       description: 'The number of alerts per page.'
       type: Integer
+  - arguments:
+    - description: The Doppel alert ID to fetch the screenshot for.
+      name: id
+      required: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Re-download and attach the screenshot even when the attached version is already current.
+      name: force
+      predefined:
+      - 'true'
+      - 'false'
+    description: Fetch the alert's current screenshot from Doppel and attach it to the incident as a War Room file entry. The image is downloaded immediately after the URL is signed and stored durably in Cortex XSOAR, so the signed URL's expiry does not matter. A file is attached only when the screenshot version changed since the last attachment; otherwise the command reports that the attached screenshot is already current.
+    name: doppel-get-alert-screenshot
+    outputs:
+    - contextPath: Doppel.AlertScreenshot.id
+      description: 'The Doppel alert ID.'
+      type: String
+    - contextPath: Doppel.AlertScreenshot.version
+      description: 'The screenshot version identifier (storage object name) currently attached.'
+      type: String
+    - contextPath: Doppel.AlertScreenshot.attached
+      description: 'Whether this run attached a new screenshot file.'
+      type: Boolean
   - arguments: []
     description: Returns the list of fields for an incident type.
     name: get-mapping-fields

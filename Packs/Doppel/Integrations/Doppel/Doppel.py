@@ -15,6 +15,7 @@ and the commands to perform different updates on the alerts
 
 import urllib3
 from typing import Any, Callable  # noqa: UP035
+from urllib.parse import urlsplit
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -51,7 +52,7 @@ ACTIVE_QUEUE_STATES = {"doppel_review", "actioned", "needs_confirmation"}
 # Client attribution sent with every Doppel API request (usage attribution only; the header
 # is optional server-side and never affects request handling). The version is the pack
 # version and must be bumped on each release (pack_metadata.json is not readable at runtime).
-PACK_VERSION = "1.3.0"
+PACK_VERSION = "1.4.0"
 CLIENT_ATTRIBUTION = f"xsoar/{PACK_VERSION}"
 
 # --- API V2 (OAuth 2.0 client credentials) constants ---
@@ -61,6 +62,10 @@ OAUTH_TOKEN_PATH = "/oauth/token"
 OAUTH_AUDIENCE = "doppel-external"
 # Key under which the minted token is cached in the integration context.
 OAUTH_CONTEXT_KEY = "oauth_token"
+# Tracks which screenshot version (GCS blob path) was last attached per alert, so
+# re-signed URLs for an unchanged screenshot never produce duplicate file entries.
+SCREENSHOT_VERSIONS_CONTEXT_KEY = "screenshot_versions"
+SCREENSHOT_VERSIONS_MAX_TRACKED = 5000
 # Tokens are valid for 24h; refresh a bit early so a token never expires mid-request.
 OAUTH_EXPIRY_SAFETY_MARGIN_SECONDS = 300
 # Fallback if the token response omits expires_in (documented value: 86400 = 24h).
@@ -250,6 +255,30 @@ class Client(BaseClient):
         )
         return response_content
 
+    def download_screenshot(self, signed_url: str) -> bytes:
+        """Download the alert screenshot binary from its pre-signed GCS URL.
+
+        The URL is authenticated by its own signature, so this call deliberately goes
+        through ``super()._http_request`` (bypassing the V2 bearer-token wrapper) with
+        explicit minimal headers: Doppel API keys or OAuth tokens must never be sent
+        to the storage host.
+
+        :type signed_url: ``str``
+        :param signed_url: The pre-signed screenshot URL from an alert payload.
+
+        :return: The raw image bytes.
+        :rtype: ``bytes``
+        """
+        return super()._http_request(
+            method="GET",
+            full_url=signed_url,
+            headers={"Accept": "*/*"},
+            resp_type="content",
+            retries=self._retries,
+            backoff_factor=self._backoff_factor,
+            status_list_to_retry=self._status_list_to_retry,
+        )
+
     def update_alert(
         self,
         queue_state: str,
@@ -417,6 +446,71 @@ def _reopen_entry_if_revived(updated_doppel_alert: dict, audit_logs: Any, last_u
     return None
 
 
+def _screenshot_blob_path(screenshot_url: str) -> str:
+    """Return the stable identity of a screenshot: host + object path, without the signature.
+
+    Doppel signs screenshot URLs fresh on every API response (the signature and expiry
+    live in the query string), while the underlying GCS object path only changes when a
+    genuinely new screenshot version is captured. Stripping the query string therefore
+    yields a stable dedup key across re-signed URLs.
+    """
+    parts = urlsplit(screenshot_url)
+    return f"{parts.netloc}{parts.path}"
+
+
+def _screenshot_version_label(blob_path: str) -> str:
+    """Short human-readable version label: the GCS object basename."""
+    return blob_path.rsplit("/", 1)[-1] or blob_path
+
+
+def _screenshot_file_name(alert_id: str, blob_path: str) -> str:
+    """Version-stamped file name so successive screenshot versions coexist in the War Room."""
+    base = _screenshot_version_label(blob_path)
+    if "." not in base:
+        base = f"{base}.png"
+    return f"{alert_id}-screenshot-{base}"
+
+
+def _get_tracked_screenshot_versions() -> dict[str, str]:
+    return (get_integration_context() or {}).get(SCREENSHOT_VERSIONS_CONTEXT_KEY) or {}
+
+
+def _track_screenshot_version(alert_id: str, blob_path: str) -> None:
+    """Record the attached screenshot version, pruning the oldest entries beyond the cap."""
+    context = get_integration_context() or {}
+    versions: dict[str, str] = context.get(SCREENSHOT_VERSIONS_CONTEXT_KEY) or {}
+    versions.pop(alert_id, None)  # re-insert to refresh recency (dicts keep insertion order)
+    versions[alert_id] = blob_path
+    while len(versions) > SCREENSHOT_VERSIONS_MAX_TRACKED:
+        versions.pop(next(iter(versions)))
+    context[SCREENSHOT_VERSIONS_CONTEXT_KEY] = versions
+    set_integration_context(context)
+
+
+def _attach_screenshot_if_new(
+    client: Client, alert_id: str, screenshot_url: str | None, force: bool = False
+) -> tuple[dict[str, Any] | None, str | None, str]:
+    """Download and build a file entry when the alert's screenshot version is new.
+
+    Shared by the ``doppel-get-alert-screenshot`` command (manual/playbook trigger) and
+    incoming mirroring (opt-in auto-attach): fetch happens seconds after the URL is
+    signed, so the 60-minute signed-URL expiry can never bite, and the file bytes are
+    stored durably in XSOAR itself.
+
+    :return: (file entry or None, blob path or None, human-readable message)
+    """
+    if not screenshot_url:
+        return None, None, f"Alert {alert_id} has no screenshot available."
+    blob_path = _screenshot_blob_path(screenshot_url)
+    version = _screenshot_version_label(blob_path)
+    if not force and _get_tracked_screenshot_versions().get(alert_id) == blob_path:
+        return None, blob_path, f"Screenshot for alert {alert_id} is already current (version {version}); nothing attached."
+    image_bytes = client.download_screenshot(screenshot_url)
+    file_entry = fileResult(_screenshot_file_name(alert_id, blob_path), image_bytes)
+    _track_screenshot_version(alert_id, blob_path)
+    return file_entry, blob_path, f"Attached screenshot version {version} for alert {alert_id}."
+
+
 def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id: str, last_update_str: str):
     """
     Retrieves updated incident data from the remote system based on the given alert ID and last update timestamp.
@@ -474,6 +568,19 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
     reopen_entry = _reopen_entry_if_revived(updated_doppel_alert, audit_logs, last_update)
     if reopen_entry:
         entries.append(reopen_entry)
+
+    # Opt-in: attach the alert screenshot as a durable file entry when its version changed.
+    # A failed download must never block the field sync itself.
+    if argToBoolean(demisto.params().get("attach_screenshots", False)):
+        try:
+            screenshot_entry, _, message = _attach_screenshot_if_new(
+                client, doppel_alert_id, updated_doppel_alert.get("screenshot_url")
+            )
+            demisto.debug(f"Doppel - {message}")
+            if screenshot_entry:
+                entries.append(screenshot_entry)
+        except Exception as e:
+            demisto.debug(f"Doppel - Failed to attach screenshot for {doppel_alert_id}: {e}")
 
     demisto.debug(f"Successfully returning the updated alert and entries: {updated_doppel_alert, entries}")
     return updated_doppel_alert, entries
@@ -765,6 +872,46 @@ def doppel_create_abuse_alert_command(client: Client, args: dict[str, Any]) -> C
         readable_output=human_readable,
         raw_response=result,
     )
+
+
+def doppel_get_alert_screenshot_command(client: Client, args: dict[str, Any]) -> list:
+    """Fetch the alert's current screenshot and attach it to the incident as a file entry.
+
+    Re-fetches the alert from Doppel (which signs a fresh screenshot URL), then attaches
+    the image only when its version differs from the one already attached — so analysts
+    can safely re-run this on stale incidents to confirm they hold the latest evidence.
+
+    :param client: Client instance to interact with the API.
+    :param args: ``id`` (required) the Doppel alert ID; ``force`` re-attach even when current.
+    :return: list of results — a file entry when attached, plus a summary CommandResults.
+    """
+    alert_id = args.get("id")
+    if not alert_id:
+        raise ValueError("id must be specified to fetch the alert screenshot.")
+    force = argToBoolean(args.get("force", False))
+
+    alert = client.get_alert(id=alert_id, entity="")
+    if not alert:
+        raise Exception(f"Failed to fetch the alert {alert_id} to retrieve its screenshot.")
+
+    file_entry, blob_path, message = _attach_screenshot_if_new(client, alert_id, alert.get("screenshot_url"), force=force)
+
+    results: list = []
+    if file_entry:
+        results.append(file_entry)
+    results.append(
+        CommandResults(
+            readable_output=message,
+            outputs_prefix="Doppel.AlertScreenshot",
+            outputs_key_field="id",
+            outputs={
+                "id": alert_id,
+                "version": _screenshot_version_label(blob_path) if blob_path else None,
+                "attached": bool(file_entry),
+            },
+        )
+    )
+    return results
 
 
 def _parse_fetch_timeout():
@@ -1161,6 +1308,7 @@ def main() -> None:
         "doppel-get-alerts": doppel_get_alerts_command,
         "doppel-create-alert": doppel_create_alert_command,
         "doppel-create-abuse-alert": doppel_create_abuse_alert_command,
+        "doppel-get-alert-screenshot": doppel_get_alert_screenshot_command,
     }
 
     # Special case for 'test-module' which does not take args
