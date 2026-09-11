@@ -1,0 +1,31 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Asimily CVE",
+        "Asimily Anomaly"
+    ],
+    "caseInsensitive": true,
+    "cliName": "asimilydevicelocationlastlocatedat",
+    "closeForm": true,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_asimilydevicelocationlastlocatedat",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Asimily Device Location Last Located At",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "date",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
