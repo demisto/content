@@ -41,6 +41,8 @@ URL_SUFFIX = {
     "REPORT_ATTACHMENT_PAYLOAD": "/api/public/v2/reports/{}/attachment_payloads",
     "REPORT_ATTACHMENT": "/api/public/v2/reports/{}/attachments",
     "REPORT_ATTACHMENT_DOWNLOAD": "api/public/v2/attachments/{}/download",
+    "PLAYBOOK": "api/public/v2/playbooks",
+    "PLAYBOOK_EXECUTION": "api/public/v2/playbook_executions",
 }
 
 OUTPUT_PREFIX = {
@@ -55,6 +57,8 @@ OUTPUT_PREFIX = {
     "INTEGRATION_SUBMISSION": "Cofense.IntegrationSubmission",
     "COMMENT": "Cofense.Comment",
     "CLUSTER": "Cofense.Cluster",
+    "PLAYBOOK": "Cofense.Playbook",
+    "PLAYBOOK_EXECUTION": "Cofense.PlaybookExecution",
 }
 
 MESSAGES = {
@@ -91,11 +95,11 @@ VALID_IMAGE_TYPE = ["png", "jpg"]
 MIRROR_DIRECTION = {"None": None, "Incoming": "In"}
 
 HTTP_ERRORS = {
-    400: "Bad request: an error occurred while fetching the data.",
-    401: "Authentication error: please provide valid Client ID and Client Secret.",
-    403: "Forbidden: please provide valid Client ID and Client Secret.",
-    404: "Resource not found: invalid endpoint was called.",
-    500: "The server encountered an internal error for Cofense Triage v3 and was unable to complete your request.",
+    400: "Bad request 400: an error occurred while fetching the data.",
+    401: "Authentication error 401: please provide valid Client ID and Client Secret.",
+    403: "Forbidden 403: please provide valid Client ID and Client Secret.",
+    404: "Resource not found 404: invalid endpoint was called.",
+    500: "Internal server error 500: Cofense Triage v3 was unable to complete your request.",
 }
 
 """ CLIENT CLASS """
@@ -581,6 +585,53 @@ def prepare_hr_for_rules(rules: List[dict[str, Any]]) -> str:
     )
 
 
+def prepare_hr_for_playbooks(playbooks: List[dict[str, Any]], fields_to_retrieve: str = "") -> str:
+    """
+    Prepare human readable for list playbooks command.
+    When the 'fields_to_retrieve' argument is provided, the headers are derived from the attributes
+    present in the response, so that the requested attributes are displayed.
+    Otherwise, a static set of headers is displayed.
+    :param playbooks: The playbook data.
+    :param fields_to_retrieve: The value of the 'fields_to_retrieve' argument provided by the user.
+    :return: Human readable.
+    """
+    hr_list = []
+    attribute_keys: List[str] = []
+    for playbook in playbooks:
+        hr_record: dict[str, Any] = {
+            "Playbook ID": playbook.get("id", ""),
+        }
+        for key, value in (playbook.get("attributes") or {}).items():
+            if key not in attribute_keys:
+                attribute_keys.append(key)
+            hr_record[string_to_table_header(key)] = ", ".join(map(str, value)) if isinstance(value, list) else value
+
+        hr_list.append(hr_record)
+
+    if fields_to_retrieve:
+        headers = ["Playbook ID"] + [string_to_table_header(key) for key in attribute_keys]
+    else:
+        headers = [
+            "Playbook ID",
+            "Name",
+            "Description",
+            "Active",
+            "Trigger Only",
+            "Report Tags",
+            "Cluster Tags",
+            "Delete Report",
+            CREATED_AT,
+            UPDATED_AT,
+        ]
+
+    return tableToMarkdown(
+        "Playbook(s)",
+        hr_list,
+        headers,
+        removeNull=True,
+    )
+
+
 def validate_tags_argument(args: dict[str, str]) -> dict:
     """
     Validate tags argument.
@@ -836,6 +887,69 @@ def validate_list_rule_args(args: dict[str, str]) -> dict[str, Any]:
     remove_nulls_from_dictionary(params)
 
     return params
+
+
+def validate_list_playbook_args(args: dict[str, str]) -> dict[str, Any]:
+    """
+    Validate arguments for cofense-playbook-list command, raise ValueError on invalid arguments.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: Parameters to send in request
+    :rtype: ``Dict[str, str]``
+    """
+    params, custom_args = validate_list_command_args(args, "playbooks")
+
+    names = retrieve_fields(args.get("name", ""))
+    if names:
+        custom_args.append("name")
+        params["filter[name]"] = names
+
+    for bool_arg in ("active", "trigger_only", "delete_report"):
+        value = args.get(bool_arg, "")
+        if value:
+            custom_args.append(bool_arg)
+            params[f"filter[{bool_arg}]"] = "true" if argToBoolean(value) else "false"
+
+    report_tags = retrieve_fields(args.get("report_tags", ""))
+    if report_tags:
+        custom_args.append("report_tags")
+        params["filter[report_tags_any]"] = report_tags
+
+    cluster_tags = retrieve_fields(args.get("cluster_tags", ""))
+    if cluster_tags:
+        custom_args.append("cluster_tags")
+        params["filter[cluster_tags_any]"] = cluster_tags
+
+    params.update(validate_filter_by_argument(args, custom_args))
+
+    remove_nulls_from_dictionary(params)
+
+    return params
+
+
+def validate_execute_playbook_args(args: dict[str, str]) -> dict[str, Any]:
+    """
+    Validate arguments for cofense-playbook-execute command, raise ValueError on invalid arguments.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: Data to send in the request body.
+    :rtype: ``Dict[str, Any]``
+    """
+    report_ids = retrieve_fields(args.get("report_ids", ""))
+    if not report_ids:
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("report_ids"))
+
+    if not args.get("playbook_id"):
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("playbook_id"))
+
+    return {
+        "report_ids": [arg_to_number(report_id) for report_id in argToList(report_ids)],
+        "playbook_id": arg_to_number(args["playbook_id"]),
+    }
 
 
 def validate_create_threat_indicator_args(args: dict[str, str]) -> dict[str, Any]:
@@ -1730,6 +1844,100 @@ def cofense_rule_list_command(client, args: dict[str, str]) -> CommandResults:
     )
 
 
+def cofense_playbook_list_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+    Retrieves playbooks based on the filter values provided in the command arguments.
+    Playbooks enable operators to perform a set of actions with a single click instead of
+    having to define those tasks individually.
+
+    :type client: ``Client``
+    :param client: Client object to be used.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: Standard command result.
+    :rtype: ``CommandResults``
+    """
+    playbook_id = args.get("id")
+    url_suffix = f"{URL_SUFFIX['PLAYBOOK']}/{playbook_id}" if playbook_id else URL_SUFFIX["PLAYBOOK"]
+
+    if playbook_id:
+        # Only 'fields_to_retrieve' is meaningful when fetching a single playbook.
+        params = validate_list_playbook_args({"fields_to_retrieve": args.get("fields_to_retrieve", "")})
+    else:
+        params = validate_list_playbook_args(args)
+
+    response = client.http_request(url_suffix, params=params)
+
+    total_records = response.get("data", [])
+
+    if not total_records:
+        return CommandResults(readable_output=MESSAGES["NO_RECORDS_FOUND"].format("playbook(s)"))
+
+    if isinstance(total_records, dict):
+        total_records = [total_records]
+
+    # Creating entry context
+    context = remove_empty_elements(total_records)
+
+    # Creating human-readable
+    readable_hr = prepare_hr_for_playbooks(total_records, args.get("fields_to_retrieve", ""))
+
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["PLAYBOOK"],
+        outputs_key_field="id",
+        outputs=context,
+        readable_output=readable_hr,
+        raw_response=response,
+    )
+
+
+def cofense_playbook_execute_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+    Processes the specified reports through an existing playbook.
+
+    :type client: ``Client``
+    :param client: Client object to be used.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: Standard command result.
+    :rtype: ``CommandResults``
+    """
+    data = validate_execute_playbook_args(args)
+
+    # Capture the time at which the execution is submitted, as the request itself may take time to complete.
+    execution_time = datetime.now(timezone.utc).strftime(DATE_FORMAT)
+
+    # A successful request returns HTTP 204 No Content with no JSON response body.
+    client.http_request(
+        URL_SUFFIX["PLAYBOOK_EXECUTION"],
+        method="POST",
+        headers={"Content-Type": TYPE_HEADER},
+        json_data={"data": data},
+        resp_type="response",
+    )
+
+    report_ids = ", ".join(str(report_id) for report_id in data["report_ids"])
+
+    # The API returns no content, so build a unique key to avoid overwriting the previous executions in the context.
+    # The report IDs are sorted and de-duplicated so that equivalent executions map to a single context entry.
+    unique_report_ids = sorted(set(data["report_ids"]))
+    execution_key = f"{','.join(str(report_id) for report_id in unique_report_ids)}_{data['playbook_id']}_{execution_time}"
+
+    outputs = {**data, "execution_key": execution_key, "execution_time": execution_time}
+
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["PLAYBOOK_EXECUTION"],
+        outputs_key_field="execution_key",
+        outputs=outputs,
+        readable_output=f"Playbook with ID = {data['playbook_id']} is executed successfully "
+        f"on the report(s) with ID = {report_ids}.",
+    )
+
+
 def cofense_url_list_command(client: Client, args: dict[str, str]) -> CommandResults:
     """
     Retrieves URLs based on the filter values provided in the command arguments.
@@ -2199,6 +2407,8 @@ def main() -> None:
         "cofense-report-attachment-payload-list": cofense_report_attachment_payload_list_command,
         "cofense-report-attachment-list": cofense_report_attachment_list_command,
         "cofense-report-attachment-download": cofense_report_attachment_download_command,
+        "cofense-playbook-list": cofense_playbook_list_command,
+        "cofense-playbook-execute": cofense_playbook_execute_command,
     }
     command = demisto.command()
     demisto.debug(f"[CofenseTriagev3] Command being called is {command}")
