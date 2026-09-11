@@ -1,11 +1,10 @@
 {
-    "cliName": "panoraysfindingassetname",
-    "description": "The name of the asset affected by the Panorays finding.",
+    "cliName": "panorayssupplierid",
+    "description": "The Panorays identifier of the supplier the finding belongs to.",
     "group": 0,
-    "id": "incident_panoraysfindingassetname",
-    "name": "Panorays Finding Asset Name",
+    "id": "incident_panorayssupplierid",
+    "name": "Panorays Supplier ID",
     "associatedTypes": [
-        "Panorays Finding",
         "Panorays Supplier Finding"
     ],
     "associatedToAll": false,
