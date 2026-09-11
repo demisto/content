@@ -538,7 +538,7 @@ script:
     name: dataminrpulse-vulnerability-enrich
     hidden: true
     arguments:
-    - description: Raw response of the “vulnerabilities” coming through the “dataminrpulse-alerts-get” command.
+    - description: Raw response of the "vulnerabilities" coming through the "dataminrpulse-alerts-get" command.
       required: true
       name: vulnerability_json_data
     outputs:
@@ -615,7 +615,7 @@ script:
     name: dataminrpulse-malware-enrich
     hidden: true
     arguments:
-    - description: Raw response of the “malware” coming through the “dataminrpulse-alerts-get” command.
+    - description: Raw response of the "malware" coming through the "dataminrpulse-alerts-get" command.
       required: true
       name: malware_json_data
     outputs:
@@ -668,7 +668,7 @@ script:
     name: dataminrpulse-threat-actor-enrich
     hidden: true
     arguments:
-    - description: Raw response of the “threat actor” coming through the “dataminrpulse-alerts-get” command.
+    - description: Raw response of the "threat actor" coming through the "dataminrpulse-alerts-get" command.
       required: true
       name: threat_actor_json_data
     outputs:
@@ -720,12 +720,113 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.
       type: string
+  - description: Enrich the "IP", "URL", and "File" indicators with relevant data.
+    name: dataminrpulse-ioc-enrich
+    hidden: true
+    arguments:
+    - description: Raw response of the "alerts" coming through the "dataminrpulse-alerts-get" command.
+      required: true
+      name: ioc_json_data
+    outputs:
+    - contextPath: DataminrPulse.IOC.type
+      description: The type of the IOC. Can be one of the IP, URL, or File.
+      type: String
+    - contextPath: DataminrPulse.IOC.value
+      description: The value of the IOC.
+      type: String
+    - contextPath: DataminrPulse.IOC.verdict
+      description: The verdict of the IOC. Can be one of the Malicious, Suspicious, Benign, or Unknown.
+      type: String
+    - contextPath: DataminrPulse.IOC.score
+      description: The DBot score of the IOC.
+      type: Number
+    - contextPath: DataminrPulse.IOC.firstSeen
+      description: The time stamp of the earliest alert the IOC was seen in.
+      type: Date
+    - contextPath: DataminrPulse.IOC.lastSeen
+      description: The time stamp of the latest alert the IOC was seen in.
+      type: Date
+    - contextPath: DataminrPulse.IOC.sourceTimeStamp
+      description: The publication time stamp of the Dataminr alert the IOC was extracted from.
+      type: Date
+    - contextPath: DataminrPulse.IOC.feed
+      description: The feed which created the IOC.
+      type: String
+    - contextPath: DataminrPulse.IOC.alertIds
+      description: The IDs of the Dataminr alerts the IOC was extracted from.
+      type: String
+    - contextPath: DataminrPulse.IOC.alertTypes
+      description: The types of the Dataminr alerts the IOC was extracted from.
+      type: String
+    - contextPath: DataminrPulse.IOC.relatedMalware
+      description: The malware reported in the same Dataminr alerts as the IOC.
+      type: String
+    - contextPath: DataminrPulse.IOC.relatedThreatActors
+      description: The threat actors reported in the same Dataminr alerts as the IOC.
+      type: String
+    - contextPath: DataminrPulse.IOC.port
+      description: The port associated with the IP address.
+      type: Number
+    - contextPath: DataminrPulse.IOC.hashType
+      description: The type of the hash. Can be one of the md5, sha1, or sha256.
+      type: String
+    - contextPath: IP.Address
+      description: The IP address.
+      type: String
+    - contextPath: IP.Port
+      description: The port associated with the IP address.
+      type: String
+    - contextPath: IP.FirstSeenBySource
+      description: The time stamp of the earliest alert the IP address was seen in.
+      type: String
+    - contextPath: IP.LastSeenBySource
+      description: The time stamp of the latest alert the IP address was seen in.
+      type: String
+    - contextPath: URL.Data
+      description: The URL.
+      type: String
+    - contextPath: URL.FirstSeenBySource
+      description: The time stamp of the earliest alert the URL was seen in.
+      type: String
+    - contextPath: URL.LastSeenBySource
+      description: The time stamp of the latest alert the URL was seen in.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.FirstSeenBySource
+      description: The time stamp of the earliest alert the file hash was seen in.
+      type: String
+    - contextPath: File.LastSeenBySource
+      description: The time stamp of the latest alert the file hash was seen in.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: string
+    - contextPath: DBotScore.Reliability
+      description: The reliability of the vendor.
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: string
   isfetch: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.14.12343672
 fromversion: 6.10.0
 marketplaces:
 - xsoar

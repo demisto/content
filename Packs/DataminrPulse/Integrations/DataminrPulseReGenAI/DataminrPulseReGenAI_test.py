@@ -1079,3 +1079,214 @@ def test_dataminrpulse_threat_actor_enrich_command_when_no_arg_present(mock_clie
         dataminrpulse_threat_actor_enrich_command(mock_client_with_valid_token, args)
 
     assert str(err.value) == ERRORS["REQUIRED_ARG"].format("threat_actor_json_data")
+
+
+def test_dataminrpulse_ioc_enrich_command_success(mocker, mock_client_with_valid_token):
+    """
+    Test case scenario for successful execution of dataminrpulse_ioc_enrich_command function.
+
+    Given:
+        - command arguments for dataminrpulse_ioc_enrich_command
+    When:
+        - Calling `dataminrpulse_ioc_enrich_command` function
+    Then:
+        - Returns a valid output
+    """
+    from DataminrPulseReGenAI import dataminrpulse_ioc_enrich_command
+
+    mock_ioc_data = util_load_json(
+        os.path.join(os.path.dirname(os.path.realpath(__file__)), "test_data/enrich_ioc_indicator.json")
+    )
+    create_indicators = mocker.patch.object(demisto, "createIndicators")
+
+    args = {
+        "ioc_json_data": json.dumps(mock_ioc_data.get("input")),
+    }
+
+    actual = dataminrpulse_ioc_enrich_command(mock_client_with_valid_token, args)
+
+    assert [result.outputs for result in actual] == mock_ioc_data.get("outputs")
+    assert all(result.outputs_prefix == CUSTOM_OUTPUT_PREFIX.format("IOC") for result in actual)
+    assert all(result.outputs_key_field == ["type", "value"] for result in actual)
+
+    # Only the IP addresses are validated, so the junk IP address present in the alerts is skipped while the loopback
+    # one is kept. The junk hash value is skipped as its hash type can not be resolved, but the junk URL is kept.
+    assert len(actual) == 7
+
+    created_indicators = create_indicators.call_args[0][0]
+    assert [indicator["value"] for indicator in created_indicators] == [ioc.get("value") for ioc in mock_ioc_data.get("outputs")]
+    assert created_indicators[0]["type"] == "IP"
+    assert created_indicators[0]["score"] == 3
+    # The "sourceTimeStamp" key is not part of the "demisto.createIndicators" contract, so the time stamps are only
+    # reported through the fields of the indicator.
+    assert "sourceTimeStamp" not in created_indicators[0]
+    assert created_indicators[0]["rawJSON"]["sourceTimeStamp"] == "2026-05-19T09:10:00Z"
+    assert created_indicators[0]["fields"] == {
+        "firstseenbysource": "2026-05-18T14:22:00Z",
+        "lastseenbysource": "2026-05-19T09:10:00Z",
+        "source": "Dataminr Pulse",
+        "tags": ["Dataminr Pulse"],
+    }
+
+    ip_context = actual[0].indicator.to_context()  # type: ignore
+    assert ip_context[Common.IP.CONTEXT_PATH]["Address"] == "0.0.0.1"
+    assert ip_context[Common.IP.CONTEXT_PATH]["Port"] == 22
+    assert ip_context[Common.DBotScore.CONTEXT_PATH]["Score"] == 3
+
+    url_context = actual[2].indicator.to_context()  # type: ignore
+    assert url_context[Common.URL.CONTEXT_PATH]["Data"] == "http://malicious.example.com/payload"
+
+    file_context = actual[4].indicator.to_context()  # type: ignore
+    assert file_context[Common.File.CONTEXT_PATH]["SHA256"] == mock_ioc_data.get("outputs")[4].get("value")
+
+    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)), "./test_data/enrich_ioc_indicator.md")) as f:
+        hr_output_for_enrich_ioc = f.read()
+
+    assert actual[0].readable_output == hr_output_for_enrich_ioc
+
+    assert ip_context[Common.IP.CONTEXT_PATH]["Relationships"] == [
+        {
+            "Relationship": "indicator-of",
+            "EntityA": "0.0.0.1",
+            "EntityAType": "IP",
+            "EntityB": "Malware: [DUMMY_MALWARE]",
+            "EntityBType": "Dataminr Pulse Malware Indicator",
+        },
+        {
+            "Relationship": "indicator-of",
+            "EntityA": "0.0.0.1",
+            "EntityAType": "IP",
+            "EntityB": "Threat Actor: [DUMMY_ACTOR]",
+            "EntityBType": "Dataminr Pulse Threat Actor Indicator",
+        },
+    ]
+
+
+@pytest.mark.parametrize(
+    "ioc_json_data",
+    [
+        # No alert holds any IOC.
+        json.dumps([{"alertId": "DUMMY_ALERT_ID", "metadata": {"cyber": {}}}]),
+        # The IP addresses are invalid and the hash type of the File IOC can not be resolved.
+        json.dumps(
+            [
+                {
+                    "alertId": "DUMMY_ALERT_ID",
+                    "alertTimestamp": "2026-05-19T09:10:00Z",
+                    "metadata": {
+                        "cyber": {
+                            "addresses": [{"ip": "999.999.999.999"}, {"ip": "NOT_AN_IP"}, {"ip": ""}],
+                            "hashValues": [{"value": "NOT_A_HASH", "type": "md5"}],
+                        }
+                    },
+                }
+            ]
+        ),
+        # The already extracted IOCs hold a type which can not be mapped to an XSOAR indicator type.
+        json.dumps([{"type": "Domain", "value": "malicious.example.com"}, {"type": "", "value": "0.0.0.1"}]),
+        # The already extracted File IOC holds a value whose hash type can not be resolved.
+        json.dumps([{"type": "File", "value": "NOT_A_HASH", "hashType": "md5", "score": 3}]),
+        # No IOC is provided at all.
+        "[]",
+    ],
+)
+def test_dataminrpulse_ioc_enrich_command_when_no_valid_ioc_is_present(mocker, mock_client_with_valid_token, ioc_json_data):
+    """
+    Test case scenario for the execution of dataminrpulse_ioc_enrich_command function when the provided data holds no
+    IOC which can be created in the threat intelligence data store.
+
+    Given:
+        - command arguments holding the alerts or the already extracted IOCs without any valid IOC value
+    When:
+        - Calling `dataminrpulse_ioc_enrich_command` function
+    Then:
+        - The invalid IOCs are skipped and nothing is created in the threat intelligence data store
+    """
+    from DataminrPulseReGenAI import dataminrpulse_ioc_enrich_command
+
+    create_indicators = mocker.patch.object(demisto, "createIndicators")
+
+    actual = dataminrpulse_ioc_enrich_command(mock_client_with_valid_token, {"ioc_json_data": ioc_json_data})
+
+    assert actual.readable_output == "No IOCs found."  # type: ignore
+    create_indicators.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "ioc_json_data, expected_error",
+    [
+        ("", ERRORS["REQUIRED_ARG"].format("ioc_json_data")),
+        ("[", ERRORS["JSON_DECODE"].format("ioc_json_data")),
+        ('"DUMMY_STRING"', ERRORS["JSON_DECODE"].format("ioc_json_data")),
+    ],
+)
+def test_dataminrpulse_ioc_enrich_command_when_the_argument_is_not_valid(
+    mock_client_with_valid_token, ioc_json_data, expected_error
+):
+    """
+    Test case scenario for the execution of dataminrpulse_ioc_enrich_command function when the provided argument is
+    missing or it does not hold a valid JSON.
+
+    Given:
+        - command arguments holding a missing or an invalid "ioc_json_data" value
+    When:
+        - Calling `dataminrpulse_ioc_enrich_command` function
+    Then:
+        - Returns a valid error message
+    """
+    from DataminrPulseReGenAI import dataminrpulse_ioc_enrich_command
+
+    with pytest.raises(ValueError) as err:
+        dataminrpulse_ioc_enrich_command(mock_client_with_valid_token, {"ioc_json_data": ioc_json_data})
+
+    assert str(err.value) == expected_error
+
+
+def test_dataminrpulse_ioc_enrich_command_when_the_same_ioc_is_present_in_multiple_alerts(mocker, mock_client_with_valid_token):
+    """
+    Test case scenario for the execution of dataminrpulse_ioc_enrich_command function when the same IOC is present in
+    multiple alerts which are not in the chronological order and hold the time stamps with and without a time zone.
+
+    Given:
+        - command arguments holding the alerts with the same IOC, in a mixed order and time zone format
+    When:
+        - Calling `dataminrpulse_ioc_enrich_command` function
+    Then:
+        - A single IOC is created holding the earliest first seen time stamp, the latest last seen time stamp and the
+          highest verdict, without an error while comparing the time stamps
+    """
+    from DataminrPulseReGenAI import dataminrpulse_ioc_enrich_command
+
+    mocker.patch.object(demisto, "createIndicators")
+
+    alerts = [
+        {
+            "alertId": "DUMMY_ALERT_ID_1",
+            "alertType": {"name": "Alert"},
+            "alertTimestamp": "2026-05-19T09:10:00Z",
+            "metadata": {"cyber": {"addresses": [{"ip": "0.0.0.1"}]}},
+        },
+        {
+            "alertId": "DUMMY_ALERT_ID_2",
+            "alertType": {"name": "Flash"},
+            "alertTimestamp": "2026-05-18 14:22:00",
+            "metadata": {"cyber": {"addresses": [{"ip": "0.0.0.1", "port": 22}]}},
+        },
+    ]
+
+    actual = dataminrpulse_ioc_enrich_command(mock_client_with_valid_token, {"ioc_json_data": json.dumps(alerts)})
+
+    assert len(actual) == 1
+    assert actual[0].outputs == {  # type: ignore
+        "type": "IP",
+        "value": "0.0.0.1",
+        "verdict": "Malicious",
+        "score": 3,
+        "firstSeen": "2026-05-18 14:22:00",
+        "lastSeen": "2026-05-19T09:10:00Z",
+        "sourceTimeStamp": "2026-05-19T09:10:00Z",
+        "feed": "Dataminr Pulse",
+        "alertIds": ["DUMMY_ALERT_ID_1", "DUMMY_ALERT_ID_2"],
+        "alertTypes": ["Alert", "Flash"],
+        "port": 22,
+    }
