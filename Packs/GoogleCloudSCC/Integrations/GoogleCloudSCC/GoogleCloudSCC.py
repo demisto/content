@@ -1,4 +1,5 @@
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 """ IMPORTS """
 import json
@@ -22,8 +23,11 @@ SERVICE_NAME = "securitycenter"
 PUBSUB_SERVICE_NAME = "pubsub"
 CLOUD_ASSET_SERVICE_NAME = "cloudasset"
 SERVICE_VERSION = "v1"
+SERVICE_VERSION_V2 = "v2"
 PUBSUB_SERVICE_VERSION = "v1"
 CLOUD_ASSET_SERVICE_VERSION = "v1"
+DEFAULT_LOCATION_ID = "global"
+DEFAULT_SOURCE_ID = "-"
 DEFAULT_MAX_FETCH_VALUE = "50"
 MAX_FETCH_VALUE = "200"
 DEFAULT_PAGE_SIZE = 10
@@ -31,11 +35,32 @@ MAX_PAGE_SIZE = 1000
 INCIDENT_NAME_PREFIX = "GoogleCloudSCC"
 STATE_LIST = ["ACTIVE", "INACTIVE"]  # List of state mentioned in API doc
 SEVERITY_LIST = ["LOW", "MEDIUM", "HIGH", "CRITICAL"]  # List of severity mentioned in API doc
+MUTE_CONFIG_TYPE_LIST = ["STATIC", "DYNAMIC"]  # List of mute config types mentioned in API doc
+# muteConfigId must be lowercase letters, numbers and hyphens, start with a letter, end with a letter or a number
+# and be at most 63 characters long.
+MUTE_CONFIG_ID_REGEX = r"^[a-z]([a-z0-9-]{0,61}[a-z0-9])?\Z"  # \Z, since $ also matches before a trailing newline
 ALLOWED_DATE_UNIT = ["minute", "minutes", "hour", "hours", "day", "days", "month", "months", "year", "years"]
 DATE_FORMAT = "%B %d, %Y at %I:%M:%S %p"
 ISO_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 MARKDOWN_LINK = "[{}]({})"
 TIMEOUT_TIME = 60  # in second
+# Matches the optional locations/{location} segment of a v2 resource name.
+LOCATIONS_SEGMENT_REGEX = r"/locations/[^/]+/"
+# Captures the location id of the optional locations/{location} segment of a v2 resource name.
+LOCATION_ID_CAPTURE_REGEX = r"/locations/([^/]+)"
+# Location identifiers supported by the v2 API.
+# (ref: https://cloud.google.com/security-command-center/docs/data-residency-support)
+SUPPORTED_LOCATION_IDS = ["global", "us", "eu", "sa"]
+# Region names accepted as an alias of their location identifier, for backward compatibility.
+LOCATION_ID_ALIASES = {"me-central2": "sa"}
+# Requests for a location other than global must be sent to the regional endpoint of that location; the
+# global endpoint rejects them with a 400 Bad Request.
+# (ref: https://cloud.google.com/security-command-center/docs/regional-endpoints)
+REGIONAL_ENDPOINTS = {
+    "us": "https://securitycenter.us.rep.googleapis.com/",
+    "eu": "https://securitycenter.eu.rep.googleapis.com/",
+    "sa": "https://securitycenter.me-central2.rep.googleapis.com/",
+}
 
 # The maximum number of results to return in a single response.
 # (ref: https://cloud.google.com/security-command-center/docs/reference/rest/v1/organizations.sources.findings/list)
@@ -67,6 +92,7 @@ ERROR_MESSAGES: dict[str, str] = {
     "INVALID_PAGE_SIZE_ERROR": "Page size should be an integer between 1 to 1000.",
     "INVALID_SOURCE_PROPERTIES": "Invalid format provided in sourceProperties. Supported format: key1=value1,key2="
     "value2. if the value contains ',' or '=' character then escape with extra '\\'.",
+    "REQUIRED_ARG": "The '{}' argument is required.",
     "REQUIRED_PROJECT_ID": "Project ID is required for fetch incidents.",
     "REQUIRED_SUBSCRIPTION_ID": "Subscription ID is required for fetch incidents.",
     "INVALID_INCIDENT": "Error while parsing pub/sub message. Reason: {}",
@@ -78,15 +104,23 @@ ERROR_MESSAGES: dict[str, str] = {
     '"projects/[project-number]" or "projects/[first-project-number], '
     'projects/[second-project-number]".',
     "INVALID_MAX_ITERATION_ERROR": f"maxIteration should be an integer between 1 to {MAX_ITERATION}.",
+    "INVALID_MUTE_CONFIG_TYPE_ERROR": "The type value must be STATIC or DYNAMIC.",
+    "EXPIRY_TIME_NOT_ALLOWED_ERROR": "The expiryTime argument is only applicable for DYNAMIC mute rules.",
+    "INVALID_MUTE_CONFIG_ID_ERROR": "muteConfigId must consist of only lowercase letters, numbers, and hyphens, must"
+    " start with a letter, must end with either a letter or a number, and must be 63 characters or less.",
+    "INVALID_LOCATION_ERROR": "Invalid location '{}'. Supported values are: {}.",
 }
 
 OUTPUT_PREFIX: dict[str, Any] = {
     "LIST_ASSET": "GoogleCloudSCC.Asset(val.name && val.name == obj.name)",
     "LIST_FINDING": "GoogleCloudSCC.Finding(val.name && val.name == obj.name)",
+    "LIST_FINDING_V2": "GoogleCloudSCC.FindingV2(val.name && val.name == obj.name)",
     "TOKEN": "GoogleCloudSCC.Token(val.name && val.name == obj.name)",
     "FINDING": "GoogleCloudSCC.Finding",
+    "FINDING_V2": "GoogleCloudSCC.FindingV2",
     "LIST_RESOURCE": "GoogleCloudSCC.CloudAsset.Resource(val.name && val.name == obj.name)",
     "GET_OWNER": "GoogleCloudSCC.CloudAsset.IamPolicy",
+    "MUTE_RULE": "GoogleCloudSCC.MuteRule",
 }
 
 GET_OUTPUT_MESSAGE: dict[str, Any] = {"HEADER_MESSAGE": "Total retrieved {0}: {1}"}
@@ -94,9 +128,17 @@ GET_OUTPUT_MESSAGE: dict[str, Any] = {"HEADER_MESSAGE": "Total retrieved {0}: {1
 COMMON_STRING: dict[str, str] = {
     "RESOURCE_NAME": "Resource Name",
     "SECURITY_MARKS": "Security Marks",
+    "SOURCE_PROPERTIES": "Source Properties",
+    "MUTE_CONFIG": "Mute Config",
     "SET_STATE_HR_STR": "The state of the finding has been updated successfully.",
+    "SET_MUTE_HR_STR": "The finding has been muted successfully.",
+    "SET_UNMUTE_HR_STR": "The finding has been unmuted successfully.",
+    "GET_MUTE_RULE_HR_STR": "Mute rule details.",
+    "CREATE_MUTE_RULE_HR_STR": "The mute rule has been created successfully.",
     "EVENT_TIME": "Event Time (In UTC)",
     "CREATE_TIME": "Create Time (In UTC)",
+    "UPDATE_TIME": "Update Time (In UTC)",
+    "EXPIRY_TIME": "Expiry Time (In UTC)",
 }
 
 AWS_SUBJECT_TOKEN_TYPE = "urn:ietf:params:aws:token-type:aws4_request"
@@ -113,6 +155,7 @@ class GoogleNameParser:
     # Google SCC helpers
     ORGANIZATION_PATH = "organizations/{}"
     SOURCE_PATH = "/sources/{}"
+    LOCATION_PATH = "/locations/{}"
     FINDING_PATH = "/findings/{}"
     SCC_URL = "https://console.cloud.google.com/security/command-center/{}?organizationId={}&resourceId={}"
 
@@ -139,6 +182,16 @@ class GoogleNameParser:
         return GoogleNameParser.ORGANIZATION_PATH.format(GoogleNameParser.get_organization_id())
 
     @staticmethod
+    def get_location_organization_path(location: str) -> str:
+        """
+        Return a fully-qualified organizations string with the location segment (v2 API).
+
+        :param location: location id param.
+        :return: fully-qualified organizations string with the location segment.
+        """
+        return GoogleNameParser.get_organization_path() + GoogleNameParser.LOCATION_PATH.format(location)
+
+    @staticmethod
     def get_source_path(source: str) -> str:
         """
         Return a fully-qualified source string.
@@ -147,6 +200,17 @@ class GoogleNameParser:
         :return: fully-qualified source string.
         """
         return GoogleNameParser.get_organization_path() + GoogleNameParser.SOURCE_PATH.format(source)
+
+    @staticmethod
+    def get_location_source_path(source: str, location: str) -> str:
+        """
+        Return a fully-qualified source string.
+
+        :param source: source id param.
+        :param location: location id param. The location segment is appended (v2 API).
+        :return: fully-qualified source string.
+        """
+        return GoogleNameParser.get_source_path(source) + GoogleNameParser.LOCATION_PATH.format(location)
 
     @staticmethod
     def get_finding_path(source, finding):
@@ -214,6 +278,7 @@ class BaseGoogleClient:
         scopes: list,
         proxy: bool,
         insecure: bool,
+        api_endpoint: str | None = None,
         **kwargs,
     ):
         """
@@ -223,6 +288,7 @@ class BaseGoogleClient:
         :param service_account_json: A string of the generated credentials.json
         :param scopes: The scope needed for the project. (i.e. ['https://www.googleapis.com/auth/cloud-platform'])
         :param proxy: Proxy flag
+        :param api_endpoint: Base URL the API requests are sent to. Defaults to the global endpoint of the service.
         :param kwargs: Potential arguments dict
         """
         service_account_json = safe_load_non_strict_json(service_account_json)  # type: ignore
@@ -234,7 +300,21 @@ class BaseGoogleClient:
             else:
                 credentials = service_account.Credentials.from_service_account_info(info=service_account_json, scopes=scopes)
             http_client = AuthorizedHttp(credentials=credentials, http=self.get_http_client_with_proxy(proxy, insecure))
-            self.service = discovery.build(service_name, service_version, http=http_client, cache_discovery=False)
+            # securitycenter v2 discovery doc is not bundled as a static artifact in google-api-python-client,
+            # so fetch it over the network. v1 keeps the bundled static doc (offline, faster).
+            if service_version == "v2":
+                # The discovery document is always read from the global endpoint (it carries no finding data);
+                # api_endpoint only redirects the API requests built from it to the regional endpoint.
+                self.service = discovery.build(
+                    service_name,
+                    service_version,
+                    http=http_client,
+                    cache_discovery=False,
+                    static_discovery=False,
+                    client_options={"api_endpoint": api_endpoint} if api_endpoint else None,
+                )
+            else:
+                self.service = discovery.build(service_name, service_version, http=http_client, cache_discovery=False)
         except httplib2.ServerNotFoundError as e:
             raise ValueError(ERROR_MESSAGES["TIMEOUT_ERROR"].format(str(e)))
         except (httplib2.socks.HTTPError, IndexError) as e:
@@ -369,6 +449,47 @@ class GoogleSccClient(BaseGoogleClient):
         result = self.execute_request(request)
         return result
 
+    def get_findings_v2(
+        self,
+        parent: str,
+        filter_string: str | None = None,
+        order_by: str | None = None,
+        page_size: str | int | None = DEFAULT_PAGE_SIZE,
+        page_token: str | None = None,
+    ) -> dict[str, Any]:
+        """
+        Get an organization or source's findings using the v2 API.
+
+        Uses the organizations.sources.findings.list method (parent e.g. organizations/{org}/sources/{source}).
+        The v2 list endpoint supports only filter, orderBy, pageSize and pageToken; it does not support
+        the compareDuration, fieldMask and readTime parameters available in v1.
+        (ref: https://docs.cloud.google.com/security-command-center/docs/reference/rest/v2/organizations.sources.findings/list)
+
+        :param parent: Name of the source the findings belong to. May include an optional location segment
+            (e.g. organizations/{org}/sources/{source}/locations/{location}); if omitted, location defaults to global.
+        :param filter_string: Expression that defines the filter to apply across findings.
+        :param order_by: Expression that defines what fields and order to use for sorting.
+        :param page_size: The maximum number of results to return in a single response.
+        :param page_token: The value returned by the last call; indicates that this is a continuation of a prior call.
+
+        :return: list of findings
+        """
+        request = (
+            self.service.organizations()  # pylint: disable=E1101
+            .sources()
+            .locations()
+            .findings()
+            .list(  # pylint: disable=E1101
+                parent=parent,
+                filter=filter_string,
+                orderBy=order_by,
+                pageSize=page_size,
+                pageToken=page_token,
+            )
+        )
+        result = self.execute_request(request)
+        return result
+
     def get_assets(
         self,
         parent: str,
@@ -458,6 +579,73 @@ class GoogleSccClient(BaseGoogleClient):
         result = self.execute_request(request)
         return result
 
+    def get_findings_resource_v2(self, name: str):
+        """
+        Resolve the v2 findings resource to use for a finding resource name.
+
+        A v2 finding resource name may carry an optional locations/{location} segment
+        (e.g. organizations/{org}/sources/{source}/locations/{location}/findings/{finding}). When present the request
+        must go through the organizations.sources.locations.findings resource instead of organizations.sources.findings.
+
+        :param name: The resource name of this finding.
+
+        :return: findings resource matching the given name
+        """
+        sources = self.service.organizations().sources()  # pylint: disable=E1101
+        return sources.locations().findings() if re.search(LOCATIONS_SEGMENT_REGEX, name) else sources.findings()
+
+    def get_mute_configs_resource_v2(self, name: str):
+        """
+        Resolve the v2 muteConfigs resource to use for a mute rule resource name.
+
+        A v2 mute rule resource name may carry an optional locations/{location} segment
+        (e.g. organizations/{org}/locations/{location}/muteConfigs/{config}). When present the request must go
+        through the organizations.locations.muteConfigs resource instead of organizations.muteConfigs.
+
+        :param name: The resource name of the mute rule.
+
+        :return: muteConfigs resource matching the given name
+        """
+        organizations = self.service.organizations()  # pylint: disable=E1101
+        if re.search(LOCATIONS_SEGMENT_REGEX, name):
+            return organizations.locations().muteConfigs()
+        return organizations.muteConfigs()
+
+    def update_finding_v2(
+        self,
+        name: str,
+        event_time: str | None,
+        severity: str | None,
+        external_uri: str | None,
+        source_properties: str | None,
+        update_mask: list,
+    ) -> dict[str, Any]:
+        """
+        Updates a finding using the v2 API. The corresponding source must exist for a finding update to succeed.
+
+        Uses the organizations.sources.findings.patch method. Unlike v1, the v2 resource name may include an
+        optional locations/{location} segment (e.g. organizations/{org}/sources/{source}/locations/{location}/
+        findings/{finding}). The request body, updateMask query parameter and response are otherwise identical to v1.
+        (ref: https://docs.cloud.google.com/security-command-center/docs/reference/rest/v2/organizations.sources.findings/patch)
+
+        :param name: The resource name of this finding.
+        :param event_time: event time of finding
+        :param severity: severity of finding
+        :param external_uri: external_uri of finding
+        :param source_properties: source_properties of finding
+        :param update_mask: which field you want to update
+
+        :return: updated finding response
+        """
+        body = assign_params(
+            eventTime=event_time, severity=severity, externalUri=external_uri, sourceProperties=source_properties
+        )
+        update_mask = get_update_mask_for_update_finding(body, update_mask)  # type: ignore
+        findings = self.get_findings_resource_v2(name)
+        request = findings.patch(name=name, updateMask=update_mask, body=body)  # pylint: disable=E1101
+        result = self.execute_request(request)
+        return result
+
     def update_state(
         self,
         name: str,
@@ -484,6 +672,117 @@ class GoogleSccClient(BaseGoogleClient):
                 name=name, body=body
             )
         )
+        result = self.execute_request(request)
+        return result
+
+    def update_state_v2(
+        self,
+        name: str,
+        state: str,
+    ) -> dict[str, Any]:
+        """
+        Updates the state of a finding using the v2 API.
+
+        Uses the organizations.sources.findings.setState method. Unlike v1, the v2 resource name may include an
+        optional locations/{location} segment (e.g. organizations/{org}/sources/{source}/locations/{location}/
+        findings/{finding}) and the request body only carries the state field (v1's deprecated startTime is dropped).
+        (ref:
+        https://docs.cloud.google.com/security-command-center/docs/reference/rest/v2/organizations.sources.findings/setState)
+
+        :param name: The resource name of this finding.
+        :param state: state of finding
+
+        :return: updated response
+        """
+        body = assign_params(state=state)
+        findings = self.get_findings_resource_v2(name)
+        request = findings.setState(name=name, body=body)  # pylint: disable=E1101
+        result = self.execute_request(request)
+        return result
+
+    def set_mute_v2(
+        self,
+        name: str,
+        mute: str,
+    ) -> dict[str, Any]:
+        """
+        Sets the mute state of a finding using the v2 API.
+
+        Uses the organizations.sources.findings.setMute method. Shared by the mute and unmute flows via the mute
+        argument. The v2 resource name may include an optional locations/{location} segment (e.g. organizations/
+        {org}/sources/{source}/locations/{location}/findings/{finding}); when present the request is routed through
+        the organizations.sources.locations.findings resource.
+        (ref:
+        https://docs.cloud.google.com/security-command-center/docs/reference/rest/v2/organizations.sources.findings/setMute)
+
+        :param name: The resource name of this finding.
+        :param mute: desired mute state of the finding (MUTED or UNMUTED)
+
+        :return: updated finding response
+        """
+        body = assign_params(mute=mute)
+        findings = self.get_findings_resource_v2(name)
+        request = findings.setMute(name=name, body=body)  # pylint: disable=E1101
+        result = self.execute_request(request)
+        return result
+
+    def get_mute_rule_v2(self, name: str) -> dict[str, Any]:
+        """
+        Get a mute rule (mute config) using the v2 API.
+
+        Uses the organizations.muteConfigs.get method. The v2 resource name may include an optional
+        locations/{location} segment (e.g. organizations/{org}/locations/{location}/muteConfigs/{config});
+        when present the request is routed through the organizations.locations.muteConfigs resource. If no
+        location is specified, the mute rule is assumed to be in global.
+        (ref:
+        https://docs.cloud.google.com/security-command-center/docs/reference/rest/v2/organizations.muteConfigs/get)
+
+        :param name: The resource name of the mute rule to retrieve.
+
+        :return: mute rule response
+        """
+        mute_configs = self.get_mute_configs_resource_v2(name)
+        request = mute_configs.get(name=name)  # pylint: disable=E1101
+        result = self.execute_request(request)
+        return result
+
+    def create_mute_rule_v2(
+        self,
+        parent: str,
+        mute_config_id: str,
+        mute_config_type: str,
+        mute_filter: str,
+        description: str | None = None,
+        expiry_time: str | None = None,
+    ) -> dict[str, Any]:
+        """
+        Create a mute rule (mute config) using the v2 API.
+
+        Uses the organizations.muteConfigs.create method. The v2 parent may include an optional
+        locations/{location} segment (e.g. organizations/{org}/locations/{location}); when present the request
+        is routed through the organizations.locations.muteConfigs resource. If no location is specified, the mute
+        rule is created in global.
+        (ref:
+        https://docs.cloud.google.com/security-command-center/docs/reference/rest/v2/organizations.muteConfigs/create)
+
+        :param parent: Resource name of the new mute rule's parent.
+        :param mute_config_id: Unique identifier provided by the client within the parent scope.
+        :param mute_config_type: The type of the mute rule (STATIC or DYNAMIC).
+        :param mute_filter: An expression that defines the filter to apply across create/update events of findings.
+        :param description: A description of the mute rule.
+        :param expiry_time: The expiry of the mute rule. Only applicable for dynamic mute rules.
+
+        :return: mute rule response
+        """
+        body = assign_params(type=mute_config_type, filter=mute_filter, description=description, expiryTime=expiry_time)
+        # v2 parent may carry an optional locations/{location} segment. When present the request must go
+        # through the organizations.locations.muteConfigs resource instead of organizations.muteConfigs.
+        organizations = self.service.organizations()  # pylint: disable=E1101
+        if re.search(r"/locations/[^/]+", parent):
+            mute_configs = organizations.locations().muteConfigs()
+        else:
+            mute_configs = organizations.muteConfigs()
+        request = mute_configs.create(parent=parent, muteConfigId=mute_config_id, body=body)  # pylint: disable=E1101
         result = self.execute_request(request)
         return result
 
@@ -586,6 +885,61 @@ def init_google_scc_client(**kwargs) -> GoogleSccClient:
     :return: SCC Client object
     """
     client = GoogleSccClient(service_name=SERVICE_NAME, service_version=SERVICE_VERSION, scopes=SCOPES, **kwargs)
+    return client
+
+
+def normalize_location_id(location: str | None) -> str:
+    """
+    Normalize a location to the identifier expected in a v2 resource name.
+
+    Region names that have a distinct location identifier (e.g. "me-central2" for the Kingdom of Saudi Arabia,
+    whose identifier is "sa") are translated, and the result is validated against the supported identifiers.
+
+    :param location: location as provided by the user. An empty value defaults to "global".
+    :return: supported location identifier.
+    """
+    location = (location or DEFAULT_LOCATION_ID).strip().lower()
+    location = LOCATION_ID_ALIASES.get(location, location)
+    if location not in SUPPORTED_LOCATION_IDS:
+        raise ValueError(ERROR_MESSAGES["INVALID_LOCATION_ERROR"].format(location, ", ".join(SUPPORTED_LOCATION_IDS)))
+    return location
+
+
+def get_location_from_args(args: dict) -> str:
+    """
+    Resolve the location a v2 command targets.
+
+    The location is either given explicitly through the "location" argument, or carried by the locations/{location}
+    segment of the "name" argument of a v2 resource name (e.g. organizations/{organization}/sources/{source}/
+    locations/{location}/findings/{finding}). When neither is present, the location is "global".
+
+    :param args: command argument(s).
+    :return: supported location identifier.
+    """
+    location = args.get("location")
+    if not location:
+        match = re.search(LOCATION_ID_CAPTURE_REGEX, args.get("name") or "")
+        location = match.group(1) if match else DEFAULT_LOCATION_ID
+    return normalize_location_id(location)
+
+
+def get_regional_endpoint(location: str) -> str | None:
+    """
+    Get the endpoint the requests of a location must be sent to.
+
+    :param location: supported location identifier.
+    :return: the regional endpoint of the location, or None for "global" (which uses the default global endpoint).
+    """
+    return REGIONAL_ENDPOINTS.get(location)
+
+
+def init_google_scc_v2_client(**kwargs) -> GoogleSccClient:
+    """
+    Initializes google scc client
+    :param kwargs: keyword arguments
+    :return: SCC Client object
+    """
+    client = GoogleSccClient(service_name=SERVICE_NAME, service_version=SERVICE_VERSION_V2, scopes=SCOPES, **kwargs)
     return client
 
 
@@ -968,6 +1322,73 @@ def prepare_hr_and_ec_for_list_findings(result: dict[str, Any]) -> tuple[str, di
     return readable_output, remove_empty_elements(ec_dict)
 
 
+def prepare_hr_and_ec_for_list_findings_v2(result: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    """
+    Prepare human readable and entry context output for the v2 list findings command.
+
+    The v2 API response does not contain the readTime and totalSize fields.
+
+    :param result: List findings v2 API response
+    :return: markdown string and context data of list findings
+    """
+    # Preparing list of entry context and human readable
+    hr_finding_list = []
+    ec_finding_list = []
+
+    findings = result.get("listFindingsResults", [])
+    if not len(findings):
+        return ERROR_MESSAGES["NO_RECORDS_FOUND"].format("finding"), {}
+
+    for finding in findings:
+        flatten_keys_to_root(finding, ["finding"], {"stateChange": finding.get("stateChange", None)})
+        ec_finding_list.append(finding)
+        finding_url = GoogleNameParser.get_finding_url(finding.get("name", ""))
+        # A finding can be matched by more than one dynamic mute rule, so collect every matching mute config name.
+        dynamic_mute_records = demisto.get(finding, "muteInfo.dynamicMuteRecords", []) or []
+        mute_configs = ", ".join(record.get("muteConfig", "") for record in dynamic_mute_records if record.get("muteConfig"))
+        hr_finding_list.append(
+            {
+                "Organization ID": GoogleNameParser.get_organization_id(),
+                "Name": get_markdown_link(finding.get("name", ""), finding_url),
+                "Category": finding.get("category", ""),
+                COMMON_STRING["RESOURCE_NAME"]: finding.get("resourceName", ""),
+                "Finding Class": finding.get("findingClass", ""),
+                COMMON_STRING["EVENT_TIME"]: convert_string_to_date_format(finding.get("eventTime", "")),
+                COMMON_STRING["CREATE_TIME"]: convert_string_to_date_format(finding.get("createTime", "")),
+                COMMON_STRING["MUTE_CONFIG"]: mute_configs,
+                COMMON_STRING["SECURITY_MARKS"]: finding.get("securityMarks", {}).get("marks", {}),
+            }
+        )
+
+    headers = [
+        "Organization ID",
+        "Name",
+        "Category",
+        COMMON_STRING["RESOURCE_NAME"],
+        "Finding Class",
+        COMMON_STRING["EVENT_TIME"],
+        COMMON_STRING["CREATE_TIME"],
+        COMMON_STRING["MUTE_CONFIG"],
+        COMMON_STRING["SECURITY_MARKS"],
+    ]
+    readable_output = tableToMarkdown(
+        name=GET_OUTPUT_MESSAGE["HEADER_MESSAGE"].format("finding(s)", len(ec_finding_list)),
+        t=hr_finding_list,
+        headers=headers,
+        removeNull=True,
+    )
+
+    # preparing context
+    ec_dict: dict[str, Any] = {OUTPUT_PREFIX["LIST_FINDING_V2"]: ec_finding_list}
+    next_page_token = result.get("nextPageToken", "")
+    if next_page_token:
+        token_ec = {"name": "google-cloud-scc-v2-finding-list", "nextPageToken": next_page_token}
+        ec_dict[OUTPUT_PREFIX["TOKEN"]] = token_ec
+        readable_output += f"\n\n{NEXT_PAGE_TOKEN_MESSAGE.format(next_page_token)}"
+
+    return readable_output, remove_empty_elements(ec_dict)
+
+
 def get_and_validate_args_finding_update(args: dict[str, Any]) -> tuple:
     """
     Get and validate arguments of finding update command.
@@ -977,6 +1398,8 @@ def get_and_validate_args_finding_update(args: dict[str, Any]) -> tuple:
     """
     # Get command args
     name = args.get("name", None)
+    if not name:
+        raise ValueError(ERROR_MESSAGES["REQUIRED_ARG"].format("name"))
     event_time = args.get("eventTime") or datetime.now().strftime(ISO_DATE_FORMAT)
     severity = args.get("severity", "").upper()
     external_uri = args.get("externalUri", None)
@@ -1016,6 +1439,69 @@ def get_and_validate_args_finding_state_update(args: dict[str, Any]) -> tuple:
     return name, event_time, state
 
 
+def get_and_validate_args_finding_state_update_v2(args: dict[str, Any]) -> tuple:
+    """
+    Get and validate arguments of the v2 finding state update command.
+
+    The v2 setState body only carries the state field; v1's deprecated startTime/eventTime is not sent.
+
+    :param args: arguments of the v2 finding state update command.
+    :return: name, state
+    """
+    # Get command args
+    name = args.get("name", None)
+    if not name:
+        raise ValueError(ERROR_MESSAGES["REQUIRED_ARG"].format("name"))
+    state = args.get("state", "").strip().upper()
+    if not state:
+        raise ValueError(ERROR_MESSAGES["REQUIRED_ARG"].format("state"))
+
+    if state not in STATE_LIST:
+        raise ValueError(ERROR_MESSAGES["INVALID_STATE_ERROR"])
+
+    return name, state
+
+
+def get_and_validate_args_mute_rule_create(args: dict[str, Any]) -> tuple:
+    """
+    Get and validate arguments of the mute rule create command.
+
+    :param args: arguments of the mute rule create command.
+    :return: parent, mute_config_id, mute_config_type, mute_filter, description, expiry_time
+    """
+    # Get command args
+    mute_config_id = args.get("muteConfigId")
+    if not mute_config_id:
+        raise ValueError(ERROR_MESSAGES["REQUIRED_ARG"].format("muteConfigId"))
+    mute_filter = args.get("filter")
+    if not mute_filter:
+        raise ValueError(ERROR_MESSAGES["REQUIRED_ARG"].format("filter"))
+    mute_config_type = (args.get("type") or "").upper()
+    if not mute_config_type:
+        raise ValueError(ERROR_MESSAGES["REQUIRED_ARG"].format("type"))
+
+    # Validate command args
+    validate_with_regex(ERROR_MESSAGES["INVALID_MUTE_CONFIG_ID_ERROR"], MUTE_CONFIG_ID_REGEX, mute_config_id)
+    if mute_config_type not in MUTE_CONFIG_TYPE_LIST:
+        raise ValueError(ERROR_MESSAGES["INVALID_MUTE_CONFIG_TYPE_ERROR"])
+
+    expiry_time = args.get("expiryTime")
+    if expiry_time:
+        if mute_config_type != "DYNAMIC":
+            raise ValueError(ERROR_MESSAGES["EXPIRY_TIME_NOT_ALLOWED_ERROR"])
+        expiry_time = arg_to_datetime(expiry_time, arg_name="expiryTime").strftime(ISO_DATE_FORMAT)  # type: ignore[union-attr]
+
+    # An empty location keeps the parent at organizations/{organization_id}, which the API treats as global.
+    location = args.get("location")
+    parent = (
+        GoogleNameParser.get_location_organization_path(normalize_location_id(location))
+        if location
+        else GoogleNameParser.get_organization_path()
+    )
+
+    return parent, mute_config_id, mute_config_type, mute_filter, args.get("description"), expiry_time
+
+
 def prepare_hr_and_ec_for_update_finding(result: dict[str, Any]) -> tuple[str, dict[str, Any]]:
     """
     Prepare human readable output
@@ -1050,6 +1536,129 @@ def prepare_hr_and_ec_for_update_finding(result: dict[str, Any]) -> tuple[str, d
         COMMON_STRING["RESOURCE_NAME"],
     ]
     readable_output = tableToMarkdown("The finding has been updated successfully.", t=hr_data, headers=headers, removeNull=True)
+
+    return readable_output, remove_empty_elements(result)
+
+
+def prepare_hr_and_ec_for_update_finding_v2(result: dict[str, Any]) -> tuple[str, dict[str, Any]]:
+    """
+    Prepare human readable output and entry context for the v2 update finding command.
+
+    Unlike v1, the source properties of the finding are displayed as well, so that the properties updated by the
+    command are visible in the war room.
+
+    :param result: Update finding v2 API response
+    :return: markdown string and context data of the updated finding
+    """
+    # Preparing entry context and human readable
+    finding_url = GoogleNameParser.get_finding_url(result.get("name", ""))
+
+    hr_data = {
+        "Organization ID": GoogleNameParser.get_organization_id(),
+        "Name": get_markdown_link(result.get("name", ""), finding_url),
+        "State": result.get("state", ""),
+        "Severity": result.get("severity", ""),
+        "Category": result.get("category", ""),
+        COMMON_STRING["EVENT_TIME"]: convert_string_to_date_format(result.get("eventTime", "")),
+        COMMON_STRING["CREATE_TIME"]: convert_string_to_date_format(result.get("createTime", "")),
+        "External Uri": get_markdown_link(result.get("externalUri", ""), result.get("externalUri", "")),
+        COMMON_STRING["RESOURCE_NAME"]: result.get("resourceName", ""),
+        COMMON_STRING["SOURCE_PROPERTIES"]: result.get("sourceProperties", {}),
+    }
+
+    headers = [
+        "Organization ID",
+        "Name",
+        "State",
+        "Severity",
+        "Category",
+        COMMON_STRING["EVENT_TIME"],
+        COMMON_STRING["CREATE_TIME"],
+        "External Uri",
+        COMMON_STRING["RESOURCE_NAME"],
+        COMMON_STRING["SOURCE_PROPERTIES"],
+    ]
+    readable_output = tableToMarkdown("The finding has been updated successfully.", t=hr_data, headers=headers, removeNull=True)
+
+    return readable_output, remove_empty_elements(result)
+
+
+def prepare_hr_and_ec_for_finding_mute_state(result: dict[str, Any], hr_title: str) -> tuple[str, dict[str, Any]]:
+    """
+    Prepare human readable output and entry context for the finding mute/unmute commands.
+
+    :param result: setMute API response
+    :param hr_title: title for the human readable table
+    :return: markdown string and context data of the muted/unmuted finding
+    """
+    # Preparing entry context and human readable
+    finding_url = GoogleNameParser.get_finding_url(result.get("name", ""))
+
+    hr_data = {
+        "Organization ID": GoogleNameParser.get_organization_id(),
+        "Name": get_markdown_link(result.get("name", ""), finding_url),
+        "Mute": result.get("mute", ""),
+        "State": result.get("state", ""),
+        "Severity": result.get("severity", ""),
+        "Category": result.get("category", ""),
+        COMMON_STRING["EVENT_TIME"]: convert_string_to_date_format(result.get("eventTime", "")),
+        COMMON_STRING["CREATE_TIME"]: convert_string_to_date_format(result.get("createTime", "")),
+        "External Uri": get_markdown_link(result.get("externalUri", ""), result.get("externalUri", "")),
+        COMMON_STRING["RESOURCE_NAME"]: result.get("resourceName", ""),
+    }
+
+    headers = [
+        "Organization ID",
+        "Name",
+        "Mute",
+        "State",
+        "Severity",
+        "Category",
+        COMMON_STRING["EVENT_TIME"],
+        COMMON_STRING["CREATE_TIME"],
+        "External Uri",
+        COMMON_STRING["RESOURCE_NAME"],
+    ]
+    readable_output = tableToMarkdown(hr_title, t=hr_data, headers=headers, removeNull=True)
+
+    return readable_output, remove_empty_elements(result)
+
+
+def prepare_hr_and_ec_for_mute_rule(
+    result: dict[str, Any], hr_title: str = COMMON_STRING["GET_MUTE_RULE_HR_STR"]
+) -> tuple[str, dict[str, Any]]:
+    """
+    Prepare human readable output and entry context for the mute rule commands.
+
+    :param result: muteConfigs API response
+    :param hr_title: title of the human readable table
+    :return: markdown string and context data of the mute rule
+    """
+    # Preparing entry context and human readable
+    hr_data = {
+        "Organization ID": GoogleNameParser.get_organization_id(),
+        "Name": result.get("name", ""),
+        "Description": result.get("description", ""),
+        "Filter": result.get("filter", ""),
+        "Type": result.get("type", ""),
+        "Most Recent Editor": result.get("mostRecentEditor", ""),
+        COMMON_STRING["CREATE_TIME"]: convert_string_to_date_format(result.get("createTime", "")),
+        COMMON_STRING["UPDATE_TIME"]: convert_string_to_date_format(result.get("updateTime", "")),
+        COMMON_STRING["EXPIRY_TIME"]: convert_string_to_date_format(result.get("expiryTime", "")),
+    }
+
+    headers = [
+        "Organization ID",
+        "Name",
+        "Description",
+        "Filter",
+        "Type",
+        "Most Recent Editor",
+        COMMON_STRING["CREATE_TIME"],
+        COMMON_STRING["UPDATE_TIME"],
+        COMMON_STRING["EXPIRY_TIME"],
+    ]
+    readable_output = tableToMarkdown(hr_title, t=hr_data, headers=headers, removeNull=True)
 
     return readable_output, remove_empty_elements(result)
 
@@ -1360,6 +1969,9 @@ def finding_list_command(client: GoogleSccClient, args: dict) -> CommandResults:
     """
     Lists an organization or source's findings.
 
+    Deprecated: this command uses the SCC v1 API. Use the "google-cloud-scc-v2-finding-list" command
+    (finding_list_v2_command) instead. Kept for backward compatibility only; no new functionality is added here.
+
     :param client: SccClient Object.
     :param args: Command argument(s).
     :return: CommandResults object with context and human-readable.
@@ -1399,7 +2011,10 @@ def finding_list_command(client: GoogleSccClient, args: dict) -> CommandResults:
 @logger
 def finding_update_command(client: GoogleSccClient, args: dict) -> CommandResults:
     """
-    Lists an organization or source's findings.
+    Update an organization's or source's finding.
+
+    Deprecated: this command uses the SCC v1 API. Use the "google-cloud-scc-v2-finding-update" command
+    (finding_update_v2_command) instead. Kept for backward compatibility only; no new functionality is added here.
 
     :param client: SccClient Object.
     :param args: Command argument(s).
@@ -1427,6 +2042,9 @@ def finding_update_command(client: GoogleSccClient, args: dict) -> CommandResult
 def finding_state_update_command(client: GoogleSccClient, args: dict) -> CommandResults:
     """
     Update the state of organization's or source's finding.
+
+    Deprecated: this command uses the SCC v1 API. Use the "google-cloud-scc-v2-finding-state-update" command
+    (finding_state_update_v2_command) instead. Kept for backward compatibility only; no new functionality is added here.
 
     :param client: SccClient Object.
     :param args: Command argument(s).
@@ -1546,17 +2164,237 @@ def cloud_asset_owner_get_command(client: GoogleCloudAssetClient, args: dict) ->
     )
 
 
+@logger
+def finding_list_v2_command(client: GoogleSccClient, args: dict) -> CommandResults:
+    """
+    Lists an organization or source's findings using the v2 API.
+
+    :param client: SccClient Object (initialized with the v2 API version).
+    :param args: Command argument(s).
+    :return: CommandResults object with context and human-readable.
+    """
+
+    # Get command args
+    severity = argToList(args.get("severity", ""), transform=lambda s: s.strip())
+    category = argToList(args.get("category", ""), transform=lambda s: s.strip())
+    category = ",".join(category)
+    source_type = args.get("sourceTypeId") or DEFAULT_SOURCE_ID
+    page_size = args.get("pageSize") or DEFAULT_PAGE_SIZE
+    state = argToList(args.get("state", ""), transform=lambda s: s.strip())
+    filter_string = args.get("filter", "")
+    order_by = argToList(args.get("orderBy", ""), transform=lambda s: s.strip())
+    order_by = ",".join(order_by)
+    page_token = args.get("pageToken", None)
+    location = normalize_location_id(args.get("location"))
+
+    # Validates command args
+    validate_state_and_severity_list(state, severity)
+    page_size = (
+        validate_get_int(
+            page_size,  # type: ignore
+            ERROR_MESSAGES["INVALID_PAGE_SIZE_ERROR"],
+            MAX_PAGE_SIZE,
+        )
+        or DEFAULT_PAGE_SIZE
+    )
+
+    # Creating filter
+    filter_string = create_filter_list_findings(category, filter_string, severity, state)
+    demisto.debug(f"running command using the following filter: {filter_string}")
+
+    parent = GoogleNameParser.get_location_source_path(source_type, location)
+    raw_response = client.get_findings_v2(parent, filter_string, order_by, page_size, page_token)
+    result = deepcopy(raw_response)  # To preserve original API response
+    readable_output, context = prepare_hr_and_ec_for_list_findings_v2(result)
+
+    return CommandResults(readable_output=readable_output, outputs=context, raw_response=raw_response)
+
+
+@logger
+def finding_update_v2_command(client: GoogleSccClient, args: dict) -> CommandResults:
+    """
+    Update an organization's or source's finding using the v2 API.
+
+    :param client: SccClient Object (initialized with the v2 API version).
+    :param args: Command argument(s).
+    :return: CommandResults object with context and human-readable.
+    """
+
+    # Get validated command args
+    arguments = get_and_validate_args_finding_update(args)
+
+    # Get response
+    result = client.update_finding_v2(*arguments)
+
+    readable_output, context = prepare_hr_and_ec_for_update_finding_v2(result)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_key_field="name",
+        outputs_prefix=OUTPUT_PREFIX["FINDING_V2"],
+        outputs=context,
+        raw_response=result,
+    )
+
+
+@logger
+def finding_state_update_v2_command(client: GoogleSccClient, args: dict) -> CommandResults:
+    """
+    Update the state of an organization's or source's finding using the v2 API.
+
+    :param client: SccClient Object (initialized with the v2 API version).
+    :param args: Command argument(s).
+    :return: CommandResults object with context and human-readable.
+    """
+
+    # Get validated command args
+    arguments = get_and_validate_args_finding_state_update_v2(args)
+
+    # Get response
+    result = client.update_state_v2(*arguments)
+
+    readable_output, context = prepare_hr_and_ec_for_update_finding(result)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_key_field="name",
+        outputs_prefix=OUTPUT_PREFIX["FINDING_V2"],
+        outputs=context,
+        raw_response=result,
+    )
+
+
+def set_finding_mute_state(client: GoogleSccClient, args: dict, mute_state: str, hr_title: str) -> CommandResults:
+    """
+    Set the mute state of an organization's or source's finding using the v2 API.
+
+    :param client: SccClient Object (initialized with the v2 API version).
+    :param args: Command argument(s).
+    :param mute_state: Mute state to set on the finding ("MUTED" or "UNMUTED").
+    :param hr_title: Title for the human readable table.
+    :return: CommandResults object with context and human-readable.
+    """
+    # Validate command args
+    name = args.get("name")
+    if not name:
+        raise ValueError(ERROR_MESSAGES["REQUIRED_ARG"].format("name"))
+
+    # Get response
+    result = client.set_mute_v2(name, mute_state)
+
+    readable_output, context = prepare_hr_and_ec_for_finding_mute_state(result, hr_title)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_key_field="name",
+        outputs_prefix=OUTPUT_PREFIX["FINDING_V2"],
+        outputs=context,
+        raw_response=result,
+    )
+
+
+@logger
+def finding_mute_command(client: GoogleSccClient, args: dict) -> CommandResults:
+    """
+    Mute an organization's or source's finding using the v2 API.
+
+    :param client: SccClient Object (initialized with the v2 API version).
+    :param args: Command argument(s).
+    :return: CommandResults object with context and human-readable.
+    """
+    return set_finding_mute_state(client, args, "MUTED", COMMON_STRING["SET_MUTE_HR_STR"])
+
+
+@logger
+def finding_unmute_command(client: GoogleSccClient, args: dict) -> CommandResults:
+    """
+    Unmute an organization's or source's finding using the v2 API.
+
+    :param client: SccClient Object (initialized with the v2 API version).
+    :param args: Command argument(s).
+    :return: CommandResults object with context and human-readable.
+    """
+    return set_finding_mute_state(client, args, "UNMUTED", COMMON_STRING["SET_UNMUTE_HR_STR"])
+
+
+@logger
+def mute_rule_get_command(client: GoogleSccClient, args: dict) -> CommandResults:
+    """
+    Get a mute rule (mute config) of an organization using the v2 API.
+
+    :param client: SccClient Object (initialized with the v2 API version).
+    :param args: Command argument(s).
+    :return: CommandResults object with context and human-readable.
+    """
+    # Validate command args
+    name = args.get("name")
+    if not name:
+        raise ValueError(ERROR_MESSAGES["REQUIRED_ARG"].format("name"))
+
+    # Get response
+    result = client.get_mute_rule_v2(name)
+
+    readable_output, context = prepare_hr_and_ec_for_mute_rule(result)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_key_field="name",
+        outputs_prefix=OUTPUT_PREFIX["MUTE_RULE"],
+        outputs=context,
+        raw_response=result,
+    )
+
+
+@logger
+def mute_rule_create_command(client: GoogleSccClient, args: dict) -> CommandResults:
+    """
+    Create a mute rule (mute config) for an organization using the v2 API.
+
+    :param client: SccClient Object (initialized with the v2 API version).
+    :param args: Command argument(s).
+    :return: CommandResults object with context and human-readable.
+    """
+    # Get validated command args
+    arguments = get_and_validate_args_mute_rule_create(args)
+
+    # Get response
+    result = client.create_mute_rule_v2(*arguments)
+
+    readable_output, context = prepare_hr_and_ec_for_mute_rule(result, COMMON_STRING["CREATE_MUTE_RULE_HR_STR"])
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_key_field="name",
+        outputs_prefix=OUTPUT_PREFIX["MUTE_RULE"],
+        outputs=context,
+        raw_response=result,
+    )
+
+
 def main() -> None:
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
     # Commands dictionary
+    # The finding commands below are backed by the SCC v1 API and are deprecated in favour of their
+    # "google-cloud-scc-v2-*" counterparts in commands_v2. They keep working for backward compatibility only.
     commands: dict[str, Callable] = {
         "google-cloud-scc-asset-list": asset_list_command,
         "google-cloud-scc-finding-list": finding_list_command,
         "google-cloud-scc-finding-update": finding_update_command,
         "google-cloud-scc-finding-state-update": finding_state_update_command,
     }
+
+    commands_v2: dict[str, Callable] = {
+        "google-cloud-scc-v2-finding-list": finding_list_v2_command,
+        "google-cloud-scc-v2-finding-update": finding_update_v2_command,
+        "google-cloud-scc-v2-finding-state-update": finding_state_update_v2_command,
+        "google-cloud-scc-finding-mute": finding_mute_command,
+        "google-cloud-scc-finding-unmute": finding_unmute_command,
+        "google-cloud-scc-mute-rule-get": mute_rule_get_command,
+        "google-cloud-scc-mute-rule-create": mute_rule_create_command,
+    }
+
     params = demisto.params()
     command = demisto.command()
     demisto.info(f"Command being called is {command}")
@@ -1580,6 +2418,11 @@ def main() -> None:
         elif command in commands:
             client = init_google_scc_client(**params)
             return_results(commands[command](client, args))
+        elif command in commands_v2:
+            # A location other than global is only reachable through its regional endpoint.
+            api_endpoint = get_regional_endpoint(get_location_from_args(args))
+            client = init_google_scc_v2_client(api_endpoint=api_endpoint, **params)
+            return_results(commands_v2[command](client, args))
     # Log exceptions
     except Exception as e:
         return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}")

@@ -1,0 +1,75 @@
+commonfields:
+  id: GoogleCloudSCCMuteFinding
+  version: -1
+name: GoogleCloudSCCMuteFinding
+script: ''
+type: python
+tags:
+- incident-action-button
+comment: |-
+  Mutes a Google Cloud Security Command Center finding by its finding name, using the "google-cloud-scc-finding-mute" command, and sets the mute state of the finding on the "GoogleCloudSCC Finding Mute Status" incident field.
+  The script is designed to be used as an incident layout action button. When the "finding_name" argument is not provided, the finding name is taken from the "GoogleCloudSCC Finding Name" incident field.
+enabled: true
+args:
+- name: finding_name
+  description: |-
+    The relative resource name of the finding to mute.
+    In the v2 API the name may include an optional "locations/{location}" segment. If no location is specified, the finding is assumed to be in "global".
+
+    Format: organizations/{organization_id}/sources/{source_id}/findings/{findingId} or organizations/{organization_id}/sources/{source_id}/locations/{location_id}/findings/{findingId}
+
+    Example: organizations/595779152576/sources/14801394649435054450/locations/global/findings/bc5a86da657611ebb979005056a5924e.
+
+    If not provided, the value of the "GoogleCloudSCC Finding Name" incident field is used.
+outputs:
+- contextPath: GoogleCloudSCC.FindingV2.name
+  description: "'The relative resource name of this finding. Format: organizations/{organization}/sources/{source}/locations/{location}/findings/{finding}.'"
+  type: String
+- contextPath: GoogleCloudSCC.FindingV2.canonicalName
+  description: The canonical name of the finding, always suffixed with the region-agnostic (global) resource path.
+  type: String
+- contextPath: GoogleCloudSCC.FindingV2.parent
+  description: The relative resource name of the source the finding belongs to.
+  type: String
+- contextPath: GoogleCloudSCC.FindingV2.resourceName
+  description: For findings on Google Cloud resources, the full resource name of the Google Cloud resource this finding is for.
+  type: String
+- contextPath: GoogleCloudSCC.FindingV2.state
+  description: The state of the finding (ACTIVE or INACTIVE).
+  type: String
+- contextPath: GoogleCloudSCC.FindingV2.category
+  description: The additional taxonomy group within findings from a given source.
+  type: String
+- contextPath: GoogleCloudSCC.FindingV2.severity
+  description: The severity of the finding (CRITICAL, HIGH, MEDIUM, LOW).
+  type: String
+- contextPath: GoogleCloudSCC.FindingV2.mute
+  description: Indicates the mute state of the finding (MUTED, UNMUTED, UNDEFINED).
+  type: String
+- contextPath: GoogleCloudSCC.FindingV2.muteInitiator
+  description: Records additional information about the mute operation, for example, the mute configuration that muted the finding and the user who muted the finding.
+  type: String
+- contextPath: GoogleCloudSCC.FindingV2.muteUpdateTime
+  description: The time at which the finding was muted or unmuted.
+  type: Date
+- contextPath: GoogleCloudSCC.FindingV2.eventTime
+  description: The time the finding was first detected.
+  type: Date
+- contextPath: GoogleCloudSCC.FindingV2.createTime
+  description: The time at which the finding was created in Security Command Center.
+  type: Date
+- contextPath: GoogleCloudSCC.FindingV2.externalUri
+  description: The URI that, if available, points to a web page outside of Security Command Center where additional information about the finding can be found.
+  type: String
+dependson:
+  must:
+  - GoogleCloudSCC|||google-cloud-scc-finding-mute
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.12.13.11879924
+runas: DBotWeakRole
+engineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

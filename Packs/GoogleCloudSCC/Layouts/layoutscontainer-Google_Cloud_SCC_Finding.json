@@ -338,14 +338,14 @@
                 "sections": [
                     {
                         "displayType": "CARD",
-                        "h": 4,
+                        "h": 5,
                         "hideName": false,
                         "i": "plk0ymivm5-0111ff60-51d6-11eb-8a8f-7d8a1ff77baf",
                         "items": [
                             {
                                 "endCol": 2,
                                 "fieldId": "googlecloudsccoverview",
-                                "height": 53,
+                                "height": 106,
                                 "id": "2aa10690-6c58-11eb-9507-cf76f3d0fbf7",
                                 "index": 0,
                                 "sectionItemType": "field",
@@ -388,12 +388,61 @@
                                 "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "googlecloudsccfindingmutestatus",
+                                "height": 53,
+                                "id": "13ce5150-8c1b-11f1-91ae-616dc329ad18",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "finding_name": {
+                                        "complex": {
+                                            "accessor": "googlecloudsccfindingname",
+                                            "filters": [],
+                                            "root": "incident",
+                                            "transformers": []
+                                        }
+                                    }
+                                },
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 22,
+                                "id": "1f533b30-8c1b-11f1-91ae-616dc329ad18",
+                                "index": 6,
+                                "name": "Mute the Finding",
+                                "scriptId": "GoogleCloudSCCMuteFinding",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "finding_name": {
+                                        "complex": {
+                                            "accessor": "googlecloudsccfindingname",
+                                            "filters": [],
+                                            "root": "incident",
+                                            "transformers": []
+                                        }
+                                    }
+                                },
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 22,
+                                "id": "1f533b30-8c1b-11f1-91ae-616dc329ad12",
+                                "index": 7,
+                                "name": "Unmute the Finding",
+                                "scriptId": "GoogleCloudSCCUnmuteFinding",
+                                "sectionItemType": "button",
+                                "startCol": 0
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Finding Summary",
                         "static": false,
@@ -417,16 +466,14 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Security Marks",
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 4
+                        "y": 5
                     },
                     {
                         "displayType": "CARD",
@@ -445,20 +492,18 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Recommendation",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 4
+                        "y": 5
                     },
                     {
                         "displayType": "CARD",
-                        "h": 4,
+                        "h": 5,
                         "hideName": false,
                         "i": "plk0ymivm5-20c80510-51d7-11eb-8a8f-7d8a1ff77baf",
                         "items": [
@@ -575,10 +620,8 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Additional Information",
                         "static": false,
@@ -588,7 +631,7 @@
                     },
                     {
                         "displayType": "CARD",
-                        "h": 4,
+                        "h": 5,
                         "hideItemTitleOnlyOne": false,
                         "hideName": false,
                         "i": "plk0ymivm5-2b06da60-51d7-11eb-8a8f-7d8a1ff77baf",
@@ -1296,10 +1339,8 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Source Properties",
                         "static": false,
@@ -1323,16 +1364,14 @@
                                 "startCol": 0
                             }
                         ],
-                        "maxH": null,
-                        "maxW": 1,
+                        "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Mfa Details",
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 4
+                        "y": 5
                     }
                 ],
                 "type": "custom"
