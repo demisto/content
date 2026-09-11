@@ -1,0 +1,32 @@
+{
+    "data": {
+        "publishers": [
+            {
+                "apps_count": 1,
+                "assessment": {
+                    "eee_support": true,
+                    "hdd_free": "3978469376Kb",
+                    "hdd_total": "8132173824Kb",
+                    "ip_address": "172.31.46.31",
+                    "latency": 1,
+                    "version": "110.0.0.8301"
+                },
+                "common_name": "f722b4b29620257e",
+                "connected_apps": ["[test server]"],
+                "lbrokerconnect": false,
+                "publisher_id": 15,
+                "publisher_name": "AWS-NPA",
+                "publisher_upgrade_profiles_external_id": 1,
+                "registered": true,
+                "status": "connected",
+                "stitcher_id": 249,
+                "tags": [],
+                "upgrade_failed_reason": null,
+                "upgrade_request": false,
+                "upgrade_status": {"upstat": "disabled"}
+            }
+        ]
+    },
+    "status": "success",
+    "total": 1
+}
