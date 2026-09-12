@@ -4,6 +4,7 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google.oauth2 import service_account as google_service_account
 from google_auth_httplib2 import AuthorizedHttp
+import base64
 import httplib2
 import io
 import urllib.parse
@@ -11,8 +12,101 @@ import urllib3
 from COOCApiModule import *
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaFileUpload, MediaIoBaseDownload
+from cryptography.hazmat.primitives import hashes, serialization
+from cryptography.hazmat.primitives.asymmetric import padding
 
 urllib3.disable_warnings()
+
+# The context of a CryptoKey unifies the raw API response with the identifiers the integration adds,
+# so the table mixes the API's camelCase fields with those PascalCase identifiers.
+KMS_KEY_TABLE = [
+    "Name",
+    "Project",
+    "Location",
+    "KeyRing",
+    "purpose",
+    "createTime",
+    "nextRotationTime",
+    "rotationPeriod",
+    "labels",
+]
+
+# The KMS locations the "all locations" listing commands sweep when `all_locations` is set.
+# Matches the locations documented at
+# https://docs.cloud.google.com/kms/docs/locations.
+KMS_ALL_LOCATIONS = [
+    "global",
+    "nam-eur-asia1",
+    # Americas
+    "ca",
+    "nam3",
+    "nam4",
+    "nam6",
+    "nam7",
+    "nam8",
+    "nam9",
+    "nam10",
+    "nam11",
+    "nam12",
+    "northamerica-northeast1",
+    "northamerica-northeast2",
+    "northamerica-south1",
+    "southamerica-east1",
+    "southamerica-west1",
+    "us",
+    "us-central1",
+    "us-east1",
+    "us-east4",
+    "us-east5",
+    "us-south1",
+    "us-west1",
+    "us-west2",
+    "us-west3",
+    "us-west4",
+    # Asia-Pacific
+    "asia",
+    "asia1",
+    "asia-east1",
+    "asia-east2",
+    "asia-northeast1",
+    "asia-northeast2",
+    "asia-northeast3",
+    "asia-south1",
+    "asia-south2",
+    "asia-southeast1",
+    "asia-southeast2",
+    "australia-southeast1",
+    "australia-southeast2",
+    "au",
+    "in",
+    # Europe, Middle East, and Africa
+    "africa-south1",
+    "eur3",
+    "eur4",
+    "eur5",
+    "eur6",
+    "eur7",
+    "eur8",
+    "europe",
+    "europe-central2",
+    "europe-north1",
+    "europe-north2",
+    "europe-southwest1",
+    "europe-west1",
+    "europe-west2",
+    "europe-west3",
+    "europe-west4",
+    "europe-west6",
+    "europe-west8",
+    "europe-west9",
+    "europe-west10",
+    "europe-west12",
+    "me-west1",
+    "de",
+    "it",
+    "me-central2",
+    "me-west1",
+]
 
 
 def build_http_client(use_proxy: bool, verify_ssl: bool) -> httplib2.Http:
@@ -74,6 +168,7 @@ class GCPServices(Enum):
     CONTAINER = ("container", "v1", "container.googleapis.com")
     RESOURCE_MANAGER = ("cloudresourcemanager", "v3", "cloudresourcemanager.googleapis.com")
     BIGQUERY = ("bigquery", "v2", "bigquery.googleapis.com")
+    KMS = ("cloudkms", "v1", "cloudkms.googleapis.com")
 
     # The following services are currently unsupported:
     # IAM_V1 = ("iam", "v1", "iam.googleapis.com")
@@ -177,6 +272,11 @@ class GCPServices(Enum):
         elif self == GCPServices.BIGQUERY:
             # BigQuery has no project-level testIamPermissions; a lightweight dataset list verifies connectivity.
             client.datasets().list(projectId=project_id, maxResults=1).execute()  # pylint: disable=E1101
+        elif self == GCPServices.KMS:
+            # KMS has no project-level testIamPermissions; a lightweight locations list verifies connectivity.
+            client.projects().locations().list(  # pylint: disable=E1101
+                name=f"projects/{project_id}", pageSize=1
+            ).execute()
         else:
             raise NotImplementedError(f"No connectivity probe defined for service {self.api_name}")
 
@@ -241,6 +341,12 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
             "compute.firewalls.get",
         ],
     ),
+    "gcp-compute-firewall-delete": (
+        GCPServices.COMPUTE,
+        [
+            "compute.firewalls.delete",
+        ],
+    ),
     "gcp-compute-snapshots-list": (
         GCPServices.COMPUTE,
         [
@@ -250,6 +356,19 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-snapshot-get": (
         GCPServices.COMPUTE,
         [
+            "compute.snapshots.get",
+        ],
+    ),
+    "gcp-compute-snapshot-delete": (
+        GCPServices.COMPUTE,
+        [
+            "compute.snapshots.delete",
+        ],
+    ),
+    "gcp-compute-snapshot-labels-set": (
+        GCPServices.COMPUTE,
+        [
+            "compute.snapshots.setLabels",
             "compute.snapshots.get",
         ],
     ),
@@ -284,6 +403,12 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     ),
     "gcp-compute-instance-start": (GCPServices.COMPUTE, ["compute.instances.start"]),
     "gcp-compute-instance-stop": (GCPServices.COMPUTE, ["compute.instances.stop"]),
+    "gcp-compute-instance-insert": (GCPServices.COMPUTE, ["compute.instances.create"]),
+    "gcp-compute-instance-delete": (GCPServices.COMPUTE, ["compute.instances.delete"]),
+    "gcp-compute-instance-reset": (GCPServices.COMPUTE, ["compute.instances.reset"]),
+    "gcp-compute-instance-metadata-set": (GCPServices.COMPUTE, ["compute.instances.setMetadata"]),
+    "gcp-compute-instance-machine-type-set": (GCPServices.COMPUTE, ["compute.instances.setMachineType"]),
+    "gcp-compute-instances-aggregated-list": (GCPServices.COMPUTE, ["compute.instances.list"]),
     "gcp-compute-instances-list": (GCPServices.COMPUTE, ["compute.instances.list"]),
     "gcp-compute-instance-get": (GCPServices.COMPUTE, ["compute.instances.get"]),
     "gcp-compute-instance-labels-set": (GCPServices.COMPUTE, ["compute.instances.setLabels"]),
@@ -361,13 +486,26 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
         GCPServices.STORAGE,
         ["storage.objects.get", "storage.objects.update"],
     ),
+    "gcp-compute-zone-operation-wait": (GCPServices.COMPUTE, ["compute.zoneOperations.get"]),
+    "gcp-compute-region-operation-wait": (GCPServices.COMPUTE, ["compute.regionOperations.get"]),
+    "gcp-compute-global-operation-wait": (GCPServices.COMPUTE, ["compute.globalOperations.get"]),
     "gcp-compute-network-get": (GCPServices.COMPUTE, ["compute.networks.get"]),
     "gcp-compute-image-get": (GCPServices.COMPUTE, ["compute.images.get"]),
+    "gcp-compute-image-get-from-family": (GCPServices.COMPUTE, ["compute.images.get"]),
+    "gcp-compute-images-list": (GCPServices.COMPUTE, ["compute.images.list"]),
+    "gcp-compute-image-delete": (GCPServices.COMPUTE, ["compute.images.delete"]),
+    "gcp-compute-image-labels-set": (GCPServices.COMPUTE, ["compute.images.setLabels"]),
+    "gcp-compute-image-insert": (GCPServices.COMPUTE, ["compute.images.create"]),
     "gcp-compute-instance-group-get": (GCPServices.COMPUTE, ["compute.instanceGroups.get"]),
     "gcp-compute-region-get": (GCPServices.COMPUTE, ["compute.regions.get"]),
+    "gcp-compute-regions-list": (GCPServices.COMPUTE, ["compute.regions.list"]),
     "gcp-compute-zone-get": (GCPServices.COMPUTE, ["compute.zones.get"]),
+    "gcp-compute-zones-list": (GCPServices.COMPUTE, ["compute.zones.list"]),
     "gcp-compute-networks-list": (GCPServices.COMPUTE, ["compute.networks.list"]),
     "gcp-compute-network-insert": (GCPServices.COMPUTE, ["compute.networks.create"]),
+    "gcp-compute-network-peering-add": (GCPServices.COMPUTE, ["compute.networks.addPeering"]),
+    "gcp-compute-network-delete": (GCPServices.COMPUTE, ["compute.networks.delete"]),
+    "gcp-compute-network-peering-remove": (GCPServices.COMPUTE, ["compute.networks.removePeering"]),
     "gcp-container-cluster-security-update": (
         GCPServices.CONTAINER,
         ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
@@ -384,6 +522,22 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
         GCPServices.RESOURCE_MANAGER,
         ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
     ),
+    # KMS commands
+    "gcp-kms-key-rings-list": (GCPServices.KMS, ["cloudkms.keyRings.list"]),
+    "gcp-kms-keys-list": (GCPServices.KMS, ["cloudkms.cryptoKeys.list"]),
+    "gcp-kms-keys-list-all": (GCPServices.KMS, ["cloudkms.keyRings.list", "cloudkms.cryptoKeys.list"]),
+    "gcp-kms-key-get": (GCPServices.KMS, ["cloudkms.cryptoKeys.get"]),
+    "gcp-kms-key-create": (GCPServices.KMS, ["cloudkms.cryptoKeys.create"]),
+    "gcp-kms-key-update": (GCPServices.KMS, ["cloudkms.cryptoKeys.update"]),
+    "gcp-kms-key-version-enable": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.update", "cloudkms.cryptoKeys.get"]),
+    "gcp-kms-key-version-disable": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.update", "cloudkms.cryptoKeys.get"]),
+    "gcp-kms-key-version-destroy": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.destroy", "cloudkms.cryptoKeys.get"]),
+    "gcp-kms-key-version-restore": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.restore", "cloudkms.cryptoKeys.get"]),
+    "gcp-kms-public-key-get": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.viewPublicKey"]),
+    "gcp-kms-symmetric-encrypt": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.useToEncrypt"]),
+    "gcp-kms-symmetric-decrypt": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.useToDecrypt"]),
+    "gcp-kms-asymmetric-encrypt": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.viewPublicKey"]),
+    "gcp-kms-asymmetric-decrypt": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.useToDecrypt"]),
     # The following commands are currently unsupported:
     # "gcp-compute-instance-metadata-add": (
     #     GCPServices.COMPUTE,
@@ -407,6 +561,18 @@ OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "s
 # Safety bounds for API-driven loops, so a misbehaving API cannot cause a command timeout.
 MAX_OBJECT_LIST_PAGES = 100
 MAX_DOWNLOAD_CHUNKS = 10000
+DEFAULT_LIST_LIMIT = 50
+# The operation table of the wait commands, which also serve regional operations.
+OPERATION_WAIT_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "region", "status"]
+OPERATION_DONE_STATUS = "DONE"  # The terminal status of a Compute Engine long-running operation.
+DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval between polling attempts for wait commands.
+DEFAULT_TIMEOUT_POLLING_COMMAND = 600  # Default timeout for polling commands.
+# Polling commands are decorated with @polling_function and therefore take (args, creds) instead of (creds, args).
+POLLING_COMMANDS = {
+    "gcp-compute-zone-operation-wait",
+    "gcp-compute-region-operation-wait",
+    "gcp-compute-global-operation-wait",
+}
 # taken from GoogleCloudCompute
 FIREWALL_RULE_REGEX = re.compile(r"ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)", flags=re.I)
 KEY_VALUE_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
@@ -477,6 +643,28 @@ def extract_zone_name(zone_input: str | None) -> str:
     if "/" in zone_input:
         return zone_input.strip().split("/")[-1]
     return zone_input.strip()
+
+
+def extract_region_name(region_input: str | None) -> str:
+    """
+    Extracts the GCP region name from a full URL or returns it directly if already a region string.
+
+    Args:
+        region_input (str): The region string or full GCP region URL.
+
+    Returns:
+        str: The region name, e.g., "us-central1".
+        https://www.googleapis.com/compute/v1/projects/test/regions/us-central1 -> us-central1
+
+    Raises:
+        DemistoException: If the region input is empty or invalid.
+    """
+    if not region_input or not region_input.strip():
+        raise DemistoException("The region argument cannot be empty")
+
+    if "/" in region_input:
+        return region_input.strip().split("/")[-1]
+    return region_input.strip()
 
 
 def parse_labels(labels_str: str) -> dict:
@@ -668,37 +856,61 @@ def _validate_bucket_policy_for_set(policy: dict[str, Any], add_mode: bool) -> N
                     raise DemistoException("Policy with IAM Conditions requires 'version' to be 3 or greater.")
 
 
-def _merge_bucket_objects(bucket_name: str, new_objects: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _merge_context_items(
+    context_path: str,
+    new_items: list[dict[str, Any]],
+    id_key: str = "name",
+    items_key: str | None = None,
+    parent_id_key: str | None = None,
+    parent_id_value: Any = None,
+) -> list[dict[str, Any]]:
     """
-    Merges newly fetched objects into the objects already stored in the context for the given bucket.
+    Merges newly fetched items into the items already stored in the context under the given path.
 
-    Objects are identified by their name: an object that already exists in the context is replaced in place,
-    while a new object is appended to the end of the list.
+    Items are identified by `id_key`: an item that already exists in the context is replaced in place,
+    while a new item is appended to the end of the list. This is useful for paginated commands, where each
+    call should extend the previously fetched results instead of overwriting them.
+
+    Two layouts are supported:
+        - Flat: `context_path` holds the items themselves (leave `items_key` as None).
+        - Nested: `context_path` holds parent entries, and the items live under the `items_key` key of the
+          parent whose `parent_id_key` equals `parent_id_value` (for example, objects inside a storage bucket).
 
     Args:
-        bucket_name (str): The name of the bucket the objects belong to.
-        new_objects (list[dict[str, Any]]): The objects returned by the current API call.
+        context_path (str): The context path holding the existing data, e.g. "GCP.Storage.Buckets".
+        new_items (list[dict[str, Any]]): The items returned by the current API call.
+        id_key (str): The key uniquely identifying an item. Defaults to "name".
+        items_key (str | None): The key holding the items inside each parent entry, for a nested layout.
+        parent_id_key (str | None): The key uniquely identifying a parent entry, for a nested layout.
+        parent_id_value (Any): The value of `parent_id_key` of the parent entry to merge into.
 
     Returns:
-        list[dict[str, Any]]: The merged list of objects for the bucket.
+        list[dict[str, Any]]: The merged list of items.
     """
-    existing_buckets = demisto.get(demisto.context(), "GCP.Storage.Buckets") or []
-    if isinstance(existing_buckets, dict):
-        existing_buckets = [existing_buckets]
+    existing_entries = demisto.get(demisto.context(), context_path) or []
+    if isinstance(existing_entries, dict):
+        existing_entries = [existing_entries]
 
-    merged_objects: dict[str, dict[str, Any]] = {}
-    for bucket in existing_buckets:
-        if isinstance(bucket, dict) and bucket.get("name") == bucket_name:
-            for obj in bucket.get("Objects") or []:
-                if isinstance(obj, dict) and obj.get("name"):
-                    merged_objects[obj["name"]] = obj
+    merged_items: dict[Any, dict[str, Any]] = {}
+    for entry in existing_entries:
+        if not isinstance(entry, dict):
+            continue
+        if items_key:
+            if parent_id_key and entry.get(parent_id_key) != parent_id_value:
+                continue
+            existing_items = entry.get(items_key) or []
+        else:
+            existing_items = [entry]
+        for item in existing_items:
+            if isinstance(item, dict) and item.get(id_key):
+                merged_items[item[id_key]] = item
 
-    for obj in new_objects:
-        if obj.get("name"):
-            merged_objects[obj["name"]] = obj
+    for item in new_items:
+        if item.get(id_key):
+            merged_items[item[id_key]] = item
 
-    demisto.debug(f"[GCP: storage_bucket_objects_list] Objects in context after merge: {len(merged_objects)}")
-    return list(merged_objects.values())
+    demisto.debug(f"[GCP] Items in context '{context_path}' after merge: {len(merged_items)}")
+    return list(merged_items.values())
 
 
 ##########
@@ -926,7 +1138,13 @@ def storage_bucket_objects_list(creds: Credentials, args: dict[str, Any]) -> Com
     outputs = {
         "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
             "name": bucket_name,
-            "Objects": _merge_bucket_objects(bucket_name, objects),
+            "Objects": _merge_context_items(
+                "GCP.Storage.Buckets",
+                objects,
+                items_key="Objects",
+                parent_id_key="name",
+                parent_id_value=bucket_name,
+            ),
             "ObjectsNextToken": response.get("nextPageToken"),
         }
     }
@@ -1445,6 +1663,45 @@ def compute_firewall_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
     )
 
 
+def compute_firewall_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes a specific Google Cloud firewall rule.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - resource_name (str): The name of the firewall rule to delete.
+
+    Returns:
+        CommandResults: Object containing the delete operation details under `GCP.Compute.Operations`.
+    """
+    project_id = args.get("project_id")
+    resource_name = args["resource_name"]
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.firewalls().delete(project=project_id, firewall=resource_name).execute()  # pylint: disable=E1101
+    demisto.debug(
+        f"Firewall delete operation for {resource_name} in project {project_id}: "
+        f"{response.get('name')=}, {response.get('status')=}"
+    )
+
+    hr = tableToMarkdown(
+        f"GCP Compute Firewall Rule {resource_name} Delete Operation Started Successfully",
+        response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
 def compute_snapshots_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Lists all Compute Engine snapshots in a specified GCP project.
@@ -1539,6 +1796,114 @@ def compute_snapshot_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
         outputs_prefix="GCP.Compute.Snapshots",
         outputs=response,
         outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_snapshot_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes a specific Compute Engine snapshot.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - resource_name (str): The name of the snapshot to delete.
+
+    Returns:
+        CommandResults: Object containing the delete operation details under `GCP.Compute.Operations`.
+    """
+    project_id = args.get("project_id")
+    resource_name = args["resource_name"]
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.snapshots().delete(project=project_id, snapshot=resource_name).execute()  # pylint: disable=E1101
+    demisto.debug(
+        f"Snapshot delete operation for {resource_name} in project {project_id}: "
+        f"{response.get('name')=}, {response.get('status')=}"
+    )
+
+    hr = tableToMarkdown(
+        f"GCP Compute Snapshot {resource_name} Delete Operation Started Successfully",
+        response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_snapshot_labels_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets the labels on a Compute Engine snapshot.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - resource_name (str): The name of the snapshot.
+            - labels (str): Labels to apply, e.g., "key=abc,value=123;key=def,value=456".
+            - label_fingerprint (str, optional): The fingerprint of the previous set of labels, used to detect
+                conflicts. Required when add_labels is false, and ignored when add_labels is true, since the
+                fingerprint of the fetched snapshot is used instead.
+            - add_labels (bool, optional): Whether to add the labels to the existing ones or override them.
+
+    Returns:
+        CommandResults: Object containing the setLabels operation details under `GCP.Compute.Operations`.
+    """
+    project_id = args.get("project_id")
+    resource_name = args["resource_name"]
+    label_fingerprint = args.get("label_fingerprint")
+    add_labels = argToBoolean(args.get("add_labels", False))
+    if not add_labels and not label_fingerprint:
+        raise DemistoException("The 'label_fingerprint' argument is required when 'add_labels' is false.")
+    labels = parse_labels(args["labels"])
+    demisto.debug(f"The parsed {labels=}")
+
+    current_labels = {}
+    if add_labels:
+        snapshot_result = compute_snapshot_get(creds, args)
+        snapshot_info = snapshot_result.outputs
+        if not isinstance(snapshot_info, dict):
+            # The snapshot was not found, so its "not found" readable output is returned as is.
+            return snapshot_result
+        current_labels = snapshot_info.get("labels", {})
+        # The snapshot was just fetched, so its fingerprint is the most up to date one. The supplied
+        # fingerprint may already be stale, which would fail the request with a conflict error.
+        label_fingerprint = snapshot_info.get("labelFingerprint") or label_fingerprint
+        demisto.debug(f"Adding the new labels {labels=} to the current ones {current_labels}")
+
+    body = {"labels": current_labels | labels, "labelFingerprint": label_fingerprint}
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = (
+        compute.snapshots()  # pylint: disable=E1101
+        .setLabels(project=project_id, resource=resource_name, body=body)
+        .execute()
+    )
+    demisto.debug(
+        f"Snapshot setLabels operation for {resource_name} in project {project_id}: "
+        f"{response.get('name')=}, {response.get('status')=}"
+    )
+
+    hr = tableToMarkdown(
+        f"GCP Compute Snapshot {resource_name} Labels Update Operation Started Successfully",
+        response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
         raw_response=response,
     )
 
@@ -2139,7 +2504,13 @@ def storage_bucket_object_upload(creds: Credentials, args: dict[str, Any]) -> Co
     outputs = {
         "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
             "name": bucket_name,
-            "Objects": _merge_bucket_objects(bucket_name, [response]),
+            "Objects": _merge_context_items(
+                "GCP.Storage.Buckets",
+                [response],
+                items_key="Objects",
+                parent_id_key="name",
+                parent_id_value=bucket_name,
+            ),
         }
     }
 
@@ -2233,7 +2604,13 @@ def storage_bucket_object_copy(creds: Credentials, args: dict[str, Any]) -> Comm
     outputs = {
         "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
             "name": destination_bucket_name,
-            "Objects": _merge_bucket_objects(destination_bucket_name, [response]),
+            "Objects": _merge_context_items(
+                "GCP.Storage.Buckets",
+                [response],
+                items_key="Objects",
+                parent_id_key="name",
+                parent_id_value=destination_bucket_name,
+            ),
         }
     }
 
@@ -2605,6 +2982,375 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
 
 
+def compute_instance_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates a Compute Engine VM instance in the specified zone.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', 'name', and 'machine_type'.
+
+    Returns:
+        CommandResults: Result of the VM instance creation operation.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    name = args.get("name")
+    metadata_items = args.get("metadata_items")
+    service_account_email = args.get("service_account_email")
+    service_account_scopes = args.get("service_account_scopes")
+    labels = args.get("labels")
+    machine_type = args.get("machine_type", "")
+
+    # Accept either a bare machine type name (e.g. n1-standard-1) or a full/partial URL
+    # (e.g. zones/zone/machineTypes/n1-standard-1), consistent with gcp-compute-instance-machine-type-set.
+    if "/" not in machine_type:
+        machine_type = f"zones/{zone}/machineTypes/{machine_type}"
+
+    if bool(service_account_email) != bool(service_account_scopes):
+        raise DemistoException(
+            "The arguments service_account_email and service_account_scopes must be provided together. "
+            "Provide both to attach a service account to the instance, or neither to omit it."
+        )
+
+    access_config: dict[str, Any] = {"natIP": args.get("external_nat_ip")}
+    if arg_to_bool_or_none(args.get("external_internet_access")):
+        access_config.update({"type": "ONE_TO_ONE_NAT", "name": "External NAT"})
+
+    # Build the full instance body, then recursively strip empty elements. Note that
+    # remove_empty_elements keeps False/0, so explicit boolean flags are preserved.
+    body = remove_empty_elements(
+        {
+            "name": name.lower() if name else None,
+            "description": args.get("description"),
+            "machineType": machine_type,
+            "canIpForward": arg_to_bool_or_none(args.get("can_ip_forward")),
+            "tags": {
+                "items": argToList(args.get("tags")),
+                "fingerprint": args.get("tags_fingerprint"),
+            },
+            "networkInterfaces": [
+                {
+                    "network": args.get("network"),
+                    "subnetwork": args.get("subnetwork"),
+                    "networkIP": args.get("network_ip"),
+                    "accessConfigs": [access_config],
+                }
+            ],
+            "disks": [
+                {
+                    "source": args.get("disk_source"),
+                    "deviceName": args.get("disk_device_name"),
+                    "boot": arg_to_bool_or_none(args.get("disk_boot")),
+                    "autoDelete": arg_to_bool_or_none(args.get("disk_auto_delete")),
+                    "initializeParams": {
+                        "sourceImage": args.get("source_image"),
+                        "diskSizeGb": arg_to_number(args.get("disk_size_gb")),
+                        "diskType": args.get("disk_type"),
+                    },
+                }
+            ],
+            "metadata": {"items": parse_metadata_items(metadata_items)} if metadata_items else None,
+            "serviceAccounts": [{"email": service_account_email, "scopes": argToList(service_account_scopes)}]
+            if service_account_email
+            else None,
+            "labels": parse_labels(labels) if labels else None,
+            "deletionProtection": arg_to_bool_or_none(args.get("deletion_protection")),
+        }
+    )
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instances().insert(project=project_id, zone=zone, body=body).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        f"VM instance {args.get('name')} is being created in project {project_id}",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_instance_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified Compute Engine VM instance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', and 'resource_name'.
+
+    Returns:
+        CommandResults: Result of the VM instance delete operation.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .delete(project=project_id, zone=zone, instance=resource_name)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        f"VM instance {resource_name} is being deleted in project {project_id}",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_instance_reset(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Performs a hard reset on the specified Compute Engine VM instance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', and 'resource_name'.
+
+    Returns:
+        CommandResults: Result of the VM instance reset operation.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .reset(project=project_id, zone=zone, instance=resource_name)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        f"VM instance {resource_name} is being reset in project {project_id}",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_instance_metadata_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets metadata for the specified Compute Engine VM instance.
+
+    Note that GCP's setMetadata API replaces the instance metadata in full rather than merging,
+    so any key absent from 'metadata_items' is removed from the instance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', 'resource_name', and
+            'metadata_items'.
+
+    Returns:
+        CommandResults: Result of the VM instance set metadata operation.
+    """
+    metadata_items = args.get("metadata_items")
+    if metadata_items is None:
+        raise DemistoException(
+            "The 'metadata_items' argument is required. The GCP setMetadata API replaces the instance "
+            "metadata in full, so omitting it would delete all existing metadata, including keys such as "
+            "ssh-keys and startup-script. Pass an empty value explicitly to clear all metadata."
+        )
+
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+
+    body: dict[str, Any] = {}
+    metadata_fingerprint = args.get("metadata_fingerprint")
+    if not metadata_fingerprint:
+        # GCP's setMetadata API requires the current metadata fingerprint for optimistic
+        # locking. When the caller does not supply one, fetch it from the current instance.
+        instance = (
+            compute.instances()  # pylint: disable=E1101
+            .get(project=project_id, zone=zone, instance=resource_name)
+            .execute()
+        )
+        metadata_fingerprint = instance.get("metadata", {}).get("fingerprint")
+    if metadata_fingerprint:
+        body["fingerprint"] = metadata_fingerprint
+    if metadata_items:
+        body["items"] = parse_metadata_items(metadata_items)
+
+    demisto.debug(f"[GCP: compute_instance_metadata_set] Body for {resource_name}: {body}")
+
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .setMetadata(project=project_id, zone=zone, instance=resource_name, body=body)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        f"VM instance {resource_name} metadata is being updated in project {project_id}",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_instance_machine_type_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Changes the machine type of a stopped Compute Engine VM instance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', 'resource_name', and 'machine_type'.
+
+    Returns:
+        CommandResults: Result of the VM instance set machine type operation.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+    machine_type = args.get("machine_type", "")
+
+    # Accept either a bare machine type name (e.g. n1-standard-1) or a full/partial URL
+    # (e.g. zones/zone/machineTypes/n1-standard-1), consistent with gcp-compute-instance-insert.
+    if "/" not in machine_type:
+        machine_type = f"zones/{zone}/machineTypes/{machine_type}"
+
+    body = {"machineType": machine_type}
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .setMachineType(project=project_id, zone=zone, instance=resource_name, body=body)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        f"VM instance {resource_name} machine type is being updated in project {project_id}",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_instances_aggregated_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves an aggregated list of Compute Engine VM instances across all zones in the project.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id'. Supports 'filter', 'order_by',
+            'limit' (1-500, defaults to 50), and 'next_token'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    project_id = args.get("project_id")
+    # A missing limit - or an explicit 0, which would request zero results - falls back to 50.
+    limit = arg_to_number(args.get("limit")) or 50
+    filter_expression = args.get("filter")
+    order_by = args.get("order_by")
+    next_token = args.get("next_token")
+    validate_limit(limit)
+
+    request_params: dict[str, Any] = {
+        "project": project_id,
+        "filter": filter_expression,
+        "maxResults": limit,
+        "orderBy": order_by,
+        "pageToken": next_token,
+    }
+    remove_nulls_from_dictionary(request_params)
+    demisto.debug(f"[GCP: compute_instances_aggregated_list] Request params: {request_params}")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.instances().aggregatedList(**request_params).execute()  # pylint: disable=E1101
+
+    instances: list[dict[str, Any]] = []
+    for scope_name, scope in response.get("items", {}).items():
+        if "warning" in scope:
+            demisto.debug(f"[GCP: compute_instances_aggregated_list] Skipping scope {scope_name}: {scope['warning']}")
+            continue
+        instances.extend(scope.get("instances") or [])
+
+    demisto.debug(f"[GCP: compute_instances_aggregated_list] Instances returned: {len(instances)}")
+
+    next_page_token = response.get("nextPageToken")
+    metadata = (
+        "Run the following command to retrieve the next batch of instances:\n"
+        f"!gcp-compute-instances-aggregated-list project_id={project_id} next_token={next_page_token}"
+        if next_page_token
+        else None
+    )
+
+    readable_output = (
+        tableToMarkdown(
+            f"GCP Compute Instances in project {project_id}",
+            instances,
+            headers=["id", "name", "status", "machineType", "zone"],
+            headerTransform=pascalToSpace,
+            removeNull=True,
+            metadata=metadata,
+        )
+        if instances
+        else "No instances were found."
+    )
+
+    outputs = {
+        "GCP.Compute.Instances(val.id && val.id == obj.id)": instances,
+        # The token is always emitted, even when None, so that a token from a previous page is
+        # overwritten in the context rather than lingering after the last page was reached.
+        "GCP.Compute(true)": {"AggregatedInstancesNextToken": next_page_token},
+    }
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
 # The command is currently unsupported.
 # def admin_user_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
 #     """
@@ -2917,6 +3663,1056 @@ def bq_dataset_policy_remove_command(creds: Credentials, args: dict[str, Any]) -
     )
 
 
+def _kms_resolve_version_name(kms_client, project_id: str, location: str, key_ring: str, crypto_key: str, version: str) -> str:
+    """Resolves a CryptoKeyVersion resource name, falling back to the key's primary version.
+
+    Mirrors the legacy behavior where the keyword ``default`` (or an omitted version) targets the
+    CryptoKey's primary CryptoKeyVersion.
+
+    Args:
+        kms_client: The built Cloud KMS API client.
+        project_id (str): The GCP project ID.
+        location (str): The KMS location.
+        key_ring (str): The KeyRing ID.
+        crypto_key (str): The CryptoKey ID.
+        version (str): The CryptoKeyVersion ID, or "default" to use the primary version.
+
+    Returns:
+        str: The resolved CryptoKeyVersion resource name.
+
+    Raises:
+        DemistoException: If the primary version is requested but the key has none.
+    """
+    key_name = f"projects/{project_id}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}"
+    if version and version != "default":
+        return f"{key_name}/cryptoKeyVersions/{version}"
+
+    # No explicit version: fall back to the CryptoKey's primary CryptoKeyVersion.
+    key = kms_client.projects().locations().keyRings().cryptoKeys().get(name=key_name).execute()  # pylint: disable=E1101
+    primary_name = key.get("primary", {}).get("name")
+    if not primary_name:
+        raise DemistoException(
+            f"CryptoKey {key_name} has no primary CryptoKeyVersion. "
+            "Provide the 'crypto_key_version' argument explicitly for this key."
+        )
+    return primary_name
+
+
+def _kms_key_ring_to_context(key_ring: dict[str, Any], project_id: str, location: str) -> dict[str, Any]:
+    """Enriches a KeyRing API response with the fields that identify it in the context.
+
+    The API response is kept as-is and only the fields it does not carry are added to it, so the
+    returned object unifies the raw resource with the integration's identifiers.
+
+    Args:
+        key_ring (dict[str, Any]): The KeyRing resource returned by the Cloud KMS API.
+        project_id (str): The GCP project ID.
+        location (str): The KMS location.
+
+    Returns:
+        dict[str, Any]: The enriched KeyRing context entry.
+    """
+    full_name = key_ring.get("name", "")
+    context = key_ring | {
+        "Name": full_name.rsplit("/", 1)[-1] if full_name else "",
+        "ResourceName": full_name,
+        "Project": project_id,
+        "Location": location,
+    }
+
+    return remove_empty_elements(context)  # type: ignore[return-value]
+
+
+def _kms_key_to_context(key: dict[str, Any], project_id: str, location: str, key_ring: str) -> dict[str, Any]:
+    """Enriches a CryptoKey API response with the fields that identify it in the context.
+
+    The API response is kept as-is and only the fields it does not carry are added to it, so the
+    returned object unifies the raw resource with the integration's identifiers.
+
+    Args:
+        key (dict[str, Any]): The CryptoKey resource returned by the Cloud KMS API.
+        project_id (str): The GCP project ID.
+        location (str): The KMS location.
+        key_ring (str): The KeyRing ID.
+
+    Returns:
+        dict[str, Any]: The enriched CryptoKey context entry.
+    """
+    full_name = key.get("name", "")
+    context = key | {
+        "Name": full_name.rsplit("/", 1)[-1] if full_name else "",
+        "ResourceName": full_name,
+        "Project": project_id,
+        "Location": location,
+        "KeyRing": key_ring,
+    }
+
+    return remove_empty_elements(context)  # type: ignore[return-value]
+
+
+def _kms_parse_rotation_time(next_rotation_time: str | None) -> str | None:
+    """Parses the next rotation time argument into the RFC 3339 format the API expects.
+
+    Accepts both absolute timestamps and relative expressions such as "in 30 days".
+
+    Args:
+        next_rotation_time (str | None): The raw argument value.
+
+    Returns:
+        str | None: The parsed timestamp in RFC 3339 format, or None when no value was supplied.
+
+    Raises:
+        ValueError: If the supplied value cannot be parsed into a date.
+    """
+    if not next_rotation_time:
+        return None
+
+    parsed = arg_to_datetime(next_rotation_time, arg_name="next_rotation_time", required=True)
+    if not parsed:
+        raise ValueError(f"Could not parse the next_rotation_time value {next_rotation_time!r}.")
+
+    # Cloud KMS expects an RFC 3339 UTC timestamp, e.g. 2024-01-15T12:34:56Z.
+    return parsed.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _kms_read_entry_file(entry_id: str) -> bytes:
+    """Reads the raw bytes of a war room file entry.
+
+    Args:
+        entry_id (str): The war room entry ID of the file to read.
+
+    Returns:
+        bytes: The raw content of the file.
+
+    Raises:
+        ValueError: If the entry ID cannot be resolved to a readable file.
+    """
+    try:
+        file_info = demisto.getFilePath(entry_id)
+        if not file_info or not file_info.get("path"):
+            raise ValueError("no file path was resolved for the entry")
+        with open(file_info["path"], "rb") as file_handle:
+            return file_handle.read()
+    except Exception as exception:
+        raise ValueError(
+            f"Failed to read the file of entry ID '{entry_id}': {exception}. "
+            "Make sure the 'entry_id' argument points to a readable file uploaded to the War Room."
+        ) from exception
+
+
+def _kms_resolve_plaintext(plaintext: str | None, base64_plaintext: str | None, entry_id: str | None) -> bytes:
+    """Resolves the plaintext to encrypt from the mutually exclusive input values.
+
+    Args:
+        plaintext (str | None): The raw plain text to encrypt.
+        base64_plaintext (str | None): The base64-encoded plain text to encrypt.
+        entry_id (str | None): The war room entry ID of the file to encrypt.
+
+    Returns:
+        bytes: The raw plaintext bytes to send to the API.
+
+    Raises:
+        DemistoException: If more than one plaintext input was provided.
+        ValueError: If none of the supported plaintext inputs were provided.
+    """
+    if len([value for value in (plaintext, base64_plaintext, entry_id) if value]) > 1:
+        raise DemistoException("Provide exactly one of 'plaintext', 'base64_plaintext' or 'entry_id'.")
+
+    if plaintext:
+        return plaintext.encode("utf-8")
+
+    if base64_plaintext:
+        return base64.b64decode(base64_plaintext)
+
+    if entry_id:
+        return _kms_read_entry_file(entry_id)
+
+    raise ValueError("No object to encrypt. Provide one of 'plaintext', 'base64_plaintext' or 'entry_id'.")
+
+
+def _kms_resolve_ciphertext(ciphertext: str | None, entry_id: str | None) -> bytes:
+    """Resolves the ciphertext to decrypt from the mutually exclusive input values.
+
+    Args:
+        ciphertext (str | None): The base64-encoded cipher text to decrypt.
+        entry_id (str | None): The war room entry ID of the file to decrypt. The file is
+            expected to hold the raw encrypted bytes.
+
+    Returns:
+        bytes: The raw ciphertext bytes to send to the API.
+
+    Raises:
+        DemistoException: If more than one ciphertext input was provided.
+        ValueError: If none of the supported ciphertext inputs were provided.
+    """
+    if len([value for value in (ciphertext, entry_id) if value]) > 1:
+        raise DemistoException("Provide exactly one of 'ciphertext' or 'entry_id'.")
+
+    if ciphertext:
+        return base64.b64decode(ciphertext)
+
+    if entry_id:
+        # A ciphertext file holds the raw encrypted bytes (as written by, for example,
+        # `gcloud kms encrypt --ciphertext-file`), so it must not be base64-decoded.
+        return _kms_read_entry_file(entry_id)
+
+    raise ValueError("No object to decrypt. Provide one of 'ciphertext' or 'entry_id'.")
+
+
+def _kms_decode_plaintext(raw_plaintext: bytes) -> str | None:
+    """Decodes decrypted bytes to text, detecting binary payloads.
+
+    Args:
+        raw_plaintext (bytes): The raw decrypted bytes returned by the API.
+
+    Returns:
+        str | None: The decoded text, or None when the payload is binary and therefore
+            cannot be represented as text without corrupting it.
+    """
+    try:
+        return raw_plaintext.decode("utf-8")
+    except UnicodeDecodeError:
+        demisto.debug("[GCP: KMS] Decrypted payload is not valid UTF-8; returning it as a file.")
+        return None
+
+
+def _kms_set_key_version_state(
+    creds: Credentials,
+    project_id: str,
+    location: str,
+    key_ring: str,
+    crypto_key: str,
+    crypto_key_version: str,
+    state: str,
+) -> CommandResults:
+    """Sets the state of a CryptoKeyVersion (used by the enable and disable commands).
+
+    Args:
+        creds (Credentials): GCP credentials.
+        project_id (str): The GCP project ID.
+        location (str): The KMS location.
+        key_ring (str): The KeyRing ID.
+        crypto_key (str): The CryptoKey ID.
+        crypto_key_version (str): The CryptoKeyVersion ID, or "default" to use the primary version.
+        state (str): The target state, either ENABLED or DISABLED.
+
+    Returns:
+        CommandResults: The updated CryptoKeyVersion.
+    """
+    kms_client = GCPServices.KMS.build(creds)
+    version_name = _kms_resolve_version_name(kms_client, project_id, location, key_ring, crypto_key, crypto_key_version)
+    demisto.debug(f"[GCP: _kms_set_key_version_state] Setting {version_name} to {state}")
+
+    response = (
+        kms_client.projects()  # pylint: disable=E1101
+        .locations()
+        .keyRings()
+        .cryptoKeys()
+        .cryptoKeyVersions()
+        .patch(name=version_name, updateMask="state", body={"state": state})
+        .execute()
+    )
+
+    return CommandResults(
+        readable_output=f"CryptoKeyVersion {version_name} state has been set to {response.get('state')}.",
+        outputs_prefix="GCP.KMS.CryptoKeyVersions",
+        outputs_key_field="name",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def kms_key_rings_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """Lists the KeyRings available in a location, or across every location.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including project_id, location, all_locations,
+            limit and page_token.
+
+    Returns:
+        CommandResults: The KeyRings found.
+    """
+    project_id = args.get("project_id", "")
+    page_token = args.get("page_token")
+    limit = arg_to_number(args.get("limit")) or 50
+    validate_limit(limit)
+
+    all_locations = argToBoolean(args.get("all_locations", False))
+    locations = KMS_ALL_LOCATIONS if all_locations else [args.get("location", "global")]
+
+    kms_client = GCPServices.KMS.build(creds)
+    key_rings: list[dict[str, Any]] = []
+    next_page_token = None
+    truncated = False
+
+    for location in locations:
+        request_params = {
+            "parent": f"projects/{project_id}/locations/{location}",
+            "pageSize": limit,
+            # A page token is bound to the location that issued it, so it is only
+            # forwarded for a single-location request.
+            "pageToken": None if all_locations else page_token,
+        }
+        remove_nulls_from_dictionary(request_params)
+        demisto.debug(f"[GCP: kms_key_rings_list] Request params: {request_params}")
+        response = kms_client.projects().locations().keyRings().list(**request_params).execute()  # pylint: disable=E1101
+        key_rings.extend(_kms_key_ring_to_context(key_ring, project_id, location) for key_ring in response.get("keyRings", []))
+        if all_locations:
+            # Each location is capped at `limit` and its page token cannot be forwarded
+            # across the sweep, so record that results were omitted.
+            truncated = truncated or bool(response.get("nextPageToken"))
+        else:
+            next_page_token = response.get("nextPageToken")
+
+    demisto.debug(f"[GCP: kms_key_rings_list] KeyRings returned: {len(key_rings)}, truncated: {truncated}")
+
+    if not key_rings:
+        return CommandResults(readable_output="No KMS key rings found.")
+
+    # In all-locations mode a single page token cannot represent the combined position,
+    # so surface truncation and point the user at the single-location form, which pages properly.
+    metadata = (
+        f"Some results were omitted because at least one location returned more than {limit} key rings. "
+        "Increase 'limit', or run the command with a specific 'location' to page through it."
+        if truncated
+        else ""
+    )
+    hr = tableToMarkdown(
+        "GCP KMS Key Rings",
+        key_rings,
+        headers=["Name", "Location", "createTime"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+        metadata=metadata,
+    )
+
+    outputs = {
+        "GCP.KMS.KeyRings(val.ResourceName && val.ResourceName == obj.ResourceName)": key_rings,
+        "GCP.KMS(true)": {"KeyRingsNextToken": next_page_token},
+    }
+
+    return CommandResults(readable_output=hr, outputs=remove_empty_elements(outputs), raw_response=key_rings)
+
+
+def kms_keys_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """Lists the CryptoKeys of a single KeyRing.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including project_id, location, key_ring and key_state.
+
+    Returns:
+        CommandResults: The CryptoKeys found.
+    """
+    project_id = args.get("project_id", "")
+    location = args.get("location", "global")
+    key_ring = args.get("key_ring", "")
+    limit = arg_to_number(args.get("limit")) or 50
+    validate_limit(limit)
+
+    # The KMS list filter uses dot syntax on the CryptoKey's primary version, so a
+    # key state is filtered as `primary.state=<STATE>`. See
+    # https://docs.cloud.google.com/kms/docs/sorting-and-filtering.
+    key_state = args.get("key_state")
+    request_params = {
+        "parent": f"projects/{project_id}/locations/{location}/keyRings/{key_ring}",
+        "pageSize": limit,
+        "filter": f"primary.state={key_state}" if key_state else None,
+        "pageToken": args.get("page_token"),
+    }
+    remove_nulls_from_dictionary(request_params)
+    demisto.debug(f"[GCP: kms_keys_list] Request params: {request_params}")
+
+    kms_client = GCPServices.KMS.build(creds)
+    response = (
+        kms_client.projects().locations().keyRings().cryptoKeys().list(**request_params).execute()  # pylint: disable=E1101
+    )
+
+    keys = [_kms_key_to_context(key, project_id, location, key_ring) for key in response.get("cryptoKeys", [])]
+    demisto.debug(f"[GCP: kms_keys_list] CryptoKeys returned: {len(keys)}")
+
+    if not keys:
+        return CommandResults(readable_output="No KMS crypto keys found.")
+
+    hr = tableToMarkdown("GCP KMS Crypto Keys", keys, headers=KMS_KEY_TABLE, removeNull=True, headerTransform=pascalToSpace)
+
+    outputs = {
+        "GCP.KMS.CryptoKeys(val.ResourceName && val.ResourceName == obj.ResourceName)": keys,
+        "GCP.KMS(true)": {"CryptoKeysNextToken": response.get("nextPageToken")},
+    }
+
+    return CommandResults(readable_output=hr, outputs=remove_empty_elements(outputs), raw_response=response)
+
+
+def kms_keys_list_all(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """Lists every CryptoKey across all KeyRings in a location, or across every location.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including project_id, location, all_locations,
+            key_state and limit.
+
+    Returns:
+        CommandResults: The CryptoKeys found.
+    """
+    project_id = args.get("project_id", "")
+    key_state = args.get("key_state")
+    limit = arg_to_number(args.get("limit")) or 50
+    validate_limit(limit)
+
+    locations = KMS_ALL_LOCATIONS if argToBoolean(args.get("all_locations", False)) else [args.get("location", "global")]
+
+    kms_client = GCPServices.KMS.build(creds)
+    keys: list[dict[str, Any]] = []
+    truncated = False
+
+    for location in locations:
+        key_rings_response = (
+            kms_client.projects()  # pylint: disable=E1101
+            .locations()
+            .keyRings()
+            .list(parent=f"projects/{project_id}/locations/{location}", pageSize=limit)
+            .execute()
+        )
+        truncated = truncated or bool(key_rings_response.get("nextPageToken"))
+
+        for key_ring in key_rings_response.get("keyRings", []):
+            key_ring_name = key_ring.get("name", "")
+            key_ring_id = key_ring_name.rsplit("/", 1)[-1]
+            request_params = {"parent": key_ring_name, "pageSize": limit, "filter": key_state}
+            remove_nulls_from_dictionary(request_params)
+            keys_response = (
+                kms_client.projects()  # pylint: disable=E1101
+                .locations()
+                .keyRings()
+                .cryptoKeys()
+                .list(**request_params)
+                .execute()
+            )
+            truncated = truncated or bool(keys_response.get("nextPageToken"))
+            keys.extend(
+                _kms_key_to_context(key, project_id, location, key_ring_id) for key in keys_response.get("cryptoKeys", [])
+            )
+
+    demisto.debug(f"[GCP: kms_keys_list_all] CryptoKeys returned: {len(keys)}, truncated: {truncated}")
+
+    if not keys:
+        return CommandResults(readable_output="No KMS crypto keys found.")
+
+    # This command aggregates across key rings (and optionally locations), so a single page
+    # token cannot represent the combined position. Surface truncation instead, and point the
+    # user at gcp-kms-keys-list, which paginates a single key ring properly.
+    metadata = (
+        "Some results were omitted because at least one key ring or location returned more than "
+        f"{limit} results. Increase 'limit', or use gcp-kms-keys-list to page through a single key ring."
+        if truncated
+        else ""
+    )
+    hr = tableToMarkdown(
+        "GCP KMS Crypto Keys",
+        keys,
+        headers=KMS_KEY_TABLE,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+        metadata=metadata,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.KMS.CryptoKeys",
+        outputs_key_field="ResourceName",
+        outputs=keys,
+        raw_response=keys,
+    )
+
+
+def kms_key_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """Retrieves the metadata of a single CryptoKey.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including project_id, location, key_ring and crypto_key.
+
+    Returns:
+        CommandResults: The requested CryptoKey.
+    """
+    project_id = args.get("project_id", "")
+    location = args.get("location", "global")
+    key_ring = args.get("key_ring", "")
+    crypto_key = args.get("crypto_key", "")
+
+    kms_client = GCPServices.KMS.build(creds)
+    key_name = f"projects/{project_id}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}"
+    demisto.debug(f"[GCP: kms_key_get] Fetching {key_name}")
+
+    response = kms_client.projects().locations().keyRings().cryptoKeys().get(name=key_name).execute()  # pylint: disable=E1101
+
+    key_context = _kms_key_to_context(response, project_id, location, key_ring)
+    hr = tableToMarkdown(
+        f"GCP KMS Crypto Key: {crypto_key}", key_context, headers=KMS_KEY_TABLE, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.KMS.CryptoKeys",
+        outputs_key_field="ResourceName",
+        outputs=key_context,
+        raw_response=response,
+    )
+
+
+def kms_key_create(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """Creates a new CryptoKey within a KeyRing.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including project_id, location, key_ring, crypto_key and purpose.
+
+    Returns:
+        CommandResults: The created CryptoKey.
+    """
+    project_id = args.get("project_id", "")
+    location = args.get("location", "global")
+    key_ring = args.get("key_ring", "")
+    crypto_key = args.get("crypto_key", "")
+    purpose = args.get("purpose", "ENCRYPT_DECRYPT")
+
+    body = remove_empty_elements(
+        {
+            "purpose": purpose,
+            "nextRotationTime": _kms_parse_rotation_time(args.get("next_rotation_time")),
+            "rotationPeriod": args.get("rotation_period"),
+            "labels": parse_labels(args.get("labels", "")) or None,
+            "versionTemplate": {
+                "algorithm": args.get("algorithm"),
+                "protectionLevel": args.get("protection_level"),
+            },
+        }
+    )
+
+    request_params = {
+        "parent": f"projects/{project_id}/locations/{location}/keyRings/{key_ring}",
+        "cryptoKeyId": crypto_key,
+        "body": body,
+        "skipInitialVersionCreation": argToBoolean(args.get("skip_initial_version_creation", False)),
+    }
+    demisto.debug(f"[GCP: kms_key_create] Request params: {request_params}")
+
+    kms_client = GCPServices.KMS.build(creds)
+    response = (
+        kms_client.projects().locations().keyRings().cryptoKeys().create(**request_params).execute()  # pylint: disable=E1101
+    )
+
+    key_context = _kms_key_to_context(response, project_id, location, key_ring)
+    hr = tableToMarkdown(
+        f"GCP KMS Crypto Key {crypto_key} created successfully.",
+        key_context,
+        headers=KMS_KEY_TABLE,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.KMS.CryptoKeys",
+        outputs_key_field="ResourceName",
+        outputs=key_context,
+        raw_response=response,
+    )
+
+
+def kms_key_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """Updates the mutable fields of a CryptoKey.
+
+    Only the fields supplied as arguments are sent, and the matching updateMask is derived from them.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including project_id, location, key_ring and crypto_key.
+
+    Returns:
+        CommandResults: The updated CryptoKey.
+
+    Raises:
+        DemistoException: If no updatable field was supplied.
+    """
+    project_id = args.get("project_id", "")
+    location = args.get("location", "global")
+    key_ring = args.get("key_ring", "")
+    crypto_key = args.get("crypto_key", "")
+
+    body: dict[str, Any] = remove_empty_elements(
+        {
+            "labels": parse_labels(args.get("labels", "")) or None,
+            "nextRotationTime": _kms_parse_rotation_time(args.get("next_rotation_time")),
+            "rotationPeriod": args.get("rotation_period"),
+            "versionTemplate": {
+                "algorithm": args.get("algorithm"),
+                "protectionLevel": args.get("protection_level"),
+            },
+        }
+    )
+
+    update_mask: list[str] = []
+    for field, value in body.items():
+        if field == "versionTemplate":
+            update_mask.extend(f"versionTemplate.{sub_field}" for sub_field in value)
+        else:
+            update_mask.append(field)
+
+    if not update_mask:
+        raise DemistoException(
+            "No updatable field was provided. Supply at least one of 'labels', 'next_rotation_time', "
+            "'rotation_period', 'algorithm' or 'protection_level'."
+        )
+
+    key_name = f"projects/{project_id}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}"
+    demisto.debug(f"[GCP: kms_key_update] Updating {key_name} with mask {update_mask}")
+
+    kms_client = GCPServices.KMS.build(creds)
+    response = (
+        kms_client.projects()  # pylint: disable=E1101
+        .locations()
+        .keyRings()
+        .cryptoKeys()
+        .patch(name=key_name, updateMask=",".join(update_mask), body=body)
+        .execute()
+    )
+
+    key_context = _kms_key_to_context(response, project_id, location, key_ring)
+    hr = tableToMarkdown(
+        f"GCP KMS Crypto Key {crypto_key} updated successfully.",
+        key_context,
+        headers=KMS_KEY_TABLE,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.KMS.CryptoKeys",
+        outputs_key_field="ResourceName",
+        outputs=key_context,
+        raw_response=response,
+    )
+
+
+def kms_key_version_enable(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """Enables a CryptoKeyVersion.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including project_id, location, key_ring and crypto_key.
+
+    Returns:
+        CommandResults: The enabled CryptoKeyVersion.
+    """
+    return _kms_set_key_version_state(
+        creds,
+        args.get("project_id", ""),
+        args.get("location", "global"),
+        args.get("key_ring", ""),
+        args.get("crypto_key", ""),
+        args.get("crypto_key_version", "default"),
+        "ENABLED",
+    )
+
+
+def kms_key_version_disable(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """Disables a CryptoKeyVersion.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including project_id, location, key_ring and crypto_key.
+
+    Returns:
+        CommandResults: The disabled CryptoKeyVersion.
+    """
+    return _kms_set_key_version_state(
+        creds,
+        args.get("project_id", ""),
+        args.get("location", "global"),
+        args.get("key_ring", ""),
+        args.get("crypto_key", ""),
+        args.get("crypto_key_version", "default"),
+        "DISABLED",
+    )
+
+
+def kms_key_version_destroy(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """Schedules a CryptoKeyVersion for destruction.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including project_id, location, key_ring and crypto_key.
+
+    Returns:
+        CommandResults: The CryptoKeyVersion scheduled for destruction.
+    """
+    project_id = args.get("project_id", "")
+    location = args.get("location", "global")
+    key_ring = args.get("key_ring", "")
+    crypto_key = args.get("crypto_key", "")
+    crypto_key_version = args.get("crypto_key_version", "default")
+
+    kms_client = GCPServices.KMS.build(creds)
+    version_name = _kms_resolve_version_name(kms_client, project_id, location, key_ring, crypto_key, crypto_key_version)
+    demisto.debug(f"[GCP: kms_key_version_destroy] Destroying {version_name}")
+
+    response = (
+        kms_client.projects()  # pylint: disable=E1101
+        .locations()
+        .keyRings()
+        .cryptoKeys()
+        .cryptoKeyVersions()
+        .destroy(name=version_name, body={})
+        .execute()
+    )
+
+    return CommandResults(
+        readable_output=(
+            f"CryptoKeyVersion {version_name} state has been set to {response.get('state')}, it will be destroyed in 24h."
+        ),
+        outputs_prefix="GCP.KMS.CryptoKeyVersions",
+        outputs_key_field="name",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def kms_key_version_restore(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """Restores a CryptoKeyVersion that is scheduled for destruction.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including project_id, location, key_ring and crypto_key.
+
+    Returns:
+        CommandResults: The restored CryptoKeyVersion.
+    """
+    project_id = args.get("project_id", "")
+    location = args.get("location", "global")
+    key_ring = args.get("key_ring", "")
+    crypto_key = args.get("crypto_key", "")
+    crypto_key_version = args.get("crypto_key_version", "default")
+
+    kms_client = GCPServices.KMS.build(creds)
+    version_name = _kms_resolve_version_name(kms_client, project_id, location, key_ring, crypto_key, crypto_key_version)
+    demisto.debug(f"[GCP: kms_key_version_restore] Restoring {version_name}")
+
+    response = (
+        kms_client.projects()  # pylint: disable=E1101
+        .locations()
+        .keyRings()
+        .cryptoKeys()
+        .cryptoKeyVersions()
+        .restore(name=version_name, body={})
+        .execute()
+    )
+
+    return CommandResults(
+        readable_output=f"CryptoKeyVersion {version_name} state has been set to {response.get('state')}.",
+        outputs_prefix="GCP.KMS.CryptoKeyVersions",
+        outputs_key_field="name",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def kms_public_key_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """Retrieves the public key of an asymmetric CryptoKeyVersion.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including project_id, location, key_ring, crypto_key
+            and crypto_key_version.
+
+    Returns:
+        CommandResults: The public key in PEM format and its algorithm.
+    """
+    project_id = args.get("project_id", "")
+    location = args.get("location", "global")
+    key_ring = args.get("key_ring", "")
+    crypto_key = args.get("crypto_key", "")
+    crypto_key_version = args.get("crypto_key_version", "1")
+
+    version_name = (
+        f"projects/{project_id}/locations/{location}/keyRings/{key_ring}"
+        f"/cryptoKeys/{crypto_key}/cryptoKeyVersions/{crypto_key_version}"
+    )
+    demisto.debug(f"[GCP: kms_public_key_get] Fetching public key of {version_name}")
+
+    kms_client = GCPServices.KMS.build(creds)
+    response = (
+        kms_client.projects()  # pylint: disable=E1101
+        .locations()
+        .keyRings()
+        .cryptoKeys()
+        .cryptoKeyVersions()
+        .getPublicKey(name=version_name)
+        .execute()
+    )
+
+    response["CryptoKey"] = crypto_key
+    response["CryptoKeyVersion"] = version_name
+
+    return CommandResults(
+        readable_output=f"The public key of CryptoKey {crypto_key} is:\n{response.get('pem')}",
+        outputs_prefix="GCP.KMS.PublicKey",
+        outputs_key_field="CryptoKeyVersion",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def kms_symmetric_encrypt(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """Encrypts data using a symmetric CryptoKey.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including project_id, location, key_ring, crypto_key
+            and one of plaintext / base64_plaintext / entry_id.
+
+    Returns:
+        CommandResults: The resulting base64-encoded ciphertext.
+    """
+    project_id = args.get("project_id", "")
+    location = args.get("location", "global")
+    key_ring = args.get("key_ring", "")
+    crypto_key = args.get("crypto_key", "")
+
+    plaintext = _kms_resolve_plaintext(args.get("plaintext"), args.get("base64_plaintext"), args.get("entry_id"))
+    body = remove_empty_elements(
+        {
+            "plaintext": base64.b64encode(plaintext).decode(),
+            "additionalAuthenticatedData": args.get("additional_authenticated_data"),
+        }
+    )
+
+    key_name = f"projects/{project_id}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}"
+    demisto.debug(f"[GCP: kms_symmetric_encrypt] Encrypting with {key_name}")
+
+    kms_client = GCPServices.KMS.build(creds)
+    response = (
+        kms_client.projects()  # pylint: disable=E1101
+        .locations()
+        .keyRings()
+        .cryptoKeys()
+        .encrypt(name=key_name, body=body)
+        .execute()
+    )
+
+    ciphertext = response.get("ciphertext", "")
+    response["CryptoKey"] = crypto_key
+    response["ResourceName"] = key_name
+
+    return CommandResults(
+        readable_output=f"The text has been encrypted.\nCiphertext: {ciphertext}",
+        outputs_prefix="GCP.KMS.SymmetricEncrypt",
+        outputs_key_field="Ciphertext",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def kms_symmetric_decrypt(creds: Credentials, args: dict[str, Any]) -> CommandResults | list:
+    """Decrypts data that was encrypted with a symmetric CryptoKey.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including project_id, location, key_ring, crypto_key
+            and one of ciphertext / entry_id.
+
+    Returns:
+        CommandResults | list: The decrypted plaintext, or the command results together with a
+            file entry when the decrypted payload is binary.
+    """
+    project_id = args.get("project_id", "")
+    location = args.get("location", "global")
+    key_ring = args.get("key_ring", "")
+    crypto_key = args.get("crypto_key", "")
+
+    ciphertext = _kms_resolve_ciphertext(args.get("ciphertext"), args.get("entry_id"))
+    body = remove_empty_elements(
+        {
+            "ciphertext": base64.b64encode(ciphertext).decode(),
+            "additionalAuthenticatedData": args.get("additional_authenticated_data"),
+        }
+    )
+
+    key_name = f"projects/{project_id}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}"
+    demisto.debug(f"[GCP: kms_symmetric_decrypt] Decrypting with {key_name}")
+
+    kms_client = GCPServices.KMS.build(creds)
+    response = (
+        kms_client.projects()  # pylint: disable=E1101
+        .locations()
+        .keyRings()
+        .cryptoKeys()
+        .decrypt(name=key_name, body=body)
+        .execute()
+    )
+
+    raw_plaintext = base64.b64decode(response.get("plaintext", ""))
+    plaintext = _kms_decode_plaintext(raw_plaintext)
+    decrypt_context = {
+        "CryptoKey": crypto_key,
+        "ResourceName": key_name,
+        "Plaintext": plaintext,
+        "FullResponse": response,
+    }
+
+    if plaintext is None:
+        # The payload is binary, so it is returned as a file to keep the bytes intact.
+        file_name = f"{crypto_key}_decrypted.bin"
+        return [
+            CommandResults(
+                readable_output=f"The data has been decrypted and returned as the file {file_name}.",
+                outputs_prefix="GCP.KMS.SymmetricDecrypt",
+                outputs_key_field="ResourceName",
+                outputs=remove_empty_elements(decrypt_context),
+                raw_response=response,
+            ),
+            fileResult(file_name, raw_plaintext),
+        ]
+
+    return CommandResults(
+        readable_output="The text has been decrypted.",
+        outputs_prefix="GCP.KMS.SymmetricDecrypt",
+        outputs_key_field="ResourceName",
+        outputs=decrypt_context,
+        raw_response=response,
+    )
+
+
+def kms_asymmetric_encrypt(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """Encrypts data locally using the public key of an asymmetric CryptoKeyVersion.
+
+    Cloud KMS does not expose a server-side asymmetric encrypt endpoint, so the public key is
+    fetched and the RSA-OAEP encryption is performed locally, matching the legacy behavior.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including project_id, location, key_ring, crypto_key,
+            crypto_key_version and one of plaintext / base64_plaintext / entry_id.
+
+    Returns:
+        CommandResults: The resulting base64-encoded ciphertext.
+
+    Raises:
+        ValueError: If the CryptoKeyVersion is not an asymmetric decrypt key.
+    """
+    project_id = args.get("project_id", "")
+    location = args.get("location", "global")
+    key_ring = args.get("key_ring", "")
+    crypto_key = args.get("crypto_key", "")
+    crypto_key_version = args.get("crypto_key_version", "1")
+
+    plaintext = _kms_resolve_plaintext(args.get("plaintext"), args.get("base64_plaintext"), args.get("entry_id"))
+    version_name = (
+        f"projects/{project_id}/locations/{location}/keyRings/{key_ring}"
+        f"/cryptoKeys/{crypto_key}/cryptoKeyVersions/{crypto_key_version}"
+    )
+
+    kms_client = GCPServices.KMS.build(creds)
+    response = (
+        kms_client.projects()  # pylint: disable=E1101
+        .locations()
+        .keyRings()
+        .cryptoKeys()
+        .cryptoKeyVersions()
+        .getPublicKey(name=version_name)
+        .execute()
+    )
+
+    algorithm = response.get("algorithm", "")
+    if "DECRYPT" not in algorithm:
+        raise ValueError(f"{version_name} is not a valid asymmetric encryption CryptoKeyVersion. Its algorithm is {algorithm}.")
+
+    public_key = serialization.load_pem_public_key(response.get("pem", "").encode("ascii"))
+    hash_algorithm = hashes.SHA256() if "SHA256" in algorithm else hashes.SHA512()
+    pad = padding.OAEP(mgf=padding.MGF1(algorithm=hash_algorithm), algorithm=hash_algorithm, label=None)
+    ciphertext = base64.b64encode(public_key.encrypt(plaintext, pad)).decode()  # type: ignore[union-attr]
+
+    response["CryptoKey"] = crypto_key
+    response["CryptoKeyVersion"] = version_name
+    response["Ciphertext"] = ciphertext
+
+    return CommandResults(
+        readable_output=f"The text has been encrypted.\nCiphertext: {ciphertext}",
+        outputs_prefix="GCP.KMS.AsymmetricEncrypt",
+        outputs_key_field="Ciphertext",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def kms_asymmetric_decrypt(creds: Credentials, args: dict[str, Any]) -> CommandResults | list:
+    """Decrypts data using an asymmetric CryptoKeyVersion.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments including project_id, location, key_ring, crypto_key,
+            crypto_key_version and one of ciphertext / entry_id.
+
+    Returns:
+        CommandResults | list: The decrypted plaintext, or the command results together with a
+            file entry when the decrypted payload is binary.
+    """
+    project_id = args.get("project_id", "")
+    location = args.get("location", "global")
+    key_ring = args.get("key_ring", "")
+    crypto_key = args.get("crypto_key", "")
+    crypto_key_version = args.get("crypto_key_version", "1")
+
+    ciphertext = _kms_resolve_ciphertext(args.get("ciphertext"), args.get("entry_id"))
+    version_name = (
+        f"projects/{project_id}/locations/{location}/keyRings/{key_ring}"
+        f"/cryptoKeys/{crypto_key}/cryptoKeyVersions/{crypto_key_version}"
+    )
+    demisto.debug(f"[GCP: kms_asymmetric_decrypt] Decrypting with {version_name}")
+
+    kms_client = GCPServices.KMS.build(creds)
+    response = (
+        kms_client.projects()  # pylint: disable=E1101
+        .locations()
+        .keyRings()
+        .cryptoKeys()
+        .cryptoKeyVersions()
+        .asymmetricDecrypt(name=version_name, body={"ciphertext": base64.b64encode(ciphertext).decode()})
+        .execute()
+    )
+
+    raw_plaintext = base64.b64decode(response.get("plaintext", ""))
+    plaintext = _kms_decode_plaintext(raw_plaintext)
+    response["CryptoKey"] = crypto_key
+    response["CryptoKeyVersion"] = version_name
+    response["Plaintext"] = plaintext
+
+    if plaintext is None:
+        # The payload is binary, so it is returned as a file to keep the bytes intact.
+        file_name = f"{crypto_key}_decrypted.bin"
+        return [
+            CommandResults(
+                readable_output=f"The data has been decrypted and returned as the file {file_name}.",
+                outputs_prefix="GCP.KMS.AsymmetricDecrypt",
+                outputs_key_field="CryptoKeyVersion",
+                outputs=remove_empty_elements(response),
+                raw_response=response,
+            ),
+            fileResult(file_name, raw_plaintext),
+        ]
+
+    return CommandResults(
+        readable_output="The text has been decrypted.",
+        outputs_prefix="GCP.KMS.AsymmetricDecrypt",
+        outputs_key_field="CryptoKeyVersion",
+        outputs=response,
+        raw_response=response,
+    )
+
+
 def validate_limit(limit):
     """
     Validates that the provided limit argument is within the allowed range.
@@ -3041,6 +4837,7 @@ def test_module(creds: Credentials, params: dict[str, Any]) -> str:
         GCPServices.STORAGE,
         GCPServices.CONTAINER,
         GCPServices.BIGQUERY,
+        GCPServices.KMS,
     ]
 
     for service in services_to_try:
@@ -3211,6 +5008,253 @@ def gcp_compute_image_get(creds: Credentials, args: dict[str, Any]) -> CommandRe
     )
 
 
+def gcp_compute_image_get_from_family(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the latest image that is part of an image family and is not deprecated.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id' and 'family'.
+
+    Returns:
+        CommandResults: Object containing the image details under `GCP.Compute.Images`.
+    """
+    project_id = args.get("project_id")
+    family = args.get("family")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.images().getFromFamily(project=project_id, family=family).execute()  # pylint: disable=E1101
+
+    data_res = {
+        "id": response.get("id"),
+        "name": response.get("name"),
+        "family": response.get("family"),
+        "creationTimestamp": response.get("creationTimestamp"),
+        "description": response.get("description"),
+    }
+    headers = ["id", "name", "family", "creationTimestamp", "description"]
+
+    readable_output = tableToMarkdown(
+        f"GCP image family {family}", data_res, headers=headers, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Images",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_images_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists all Compute Engine images in a specified GCP project.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - limit (int, optional): Maximum number of results to return (1-500).
+            - next_token (str, optional): Token for pagination.
+            - filter (str, optional): Expression for filtering listed images.
+            - order_by (str, optional): Sorts list results by a certain order.
+
+    Returns:
+        CommandResults: Object containing a list of image details under `GCP.Compute.Images`
+        and pagination token under `GCP.Compute.ImagesNextToken`.
+    """
+    project_id = args.get("project_id")
+    limit = arg_to_number(args.get("limit")) or 50
+    next_token = args.get("next_token")
+    flt = args.get("filter")
+    order_by = args.get("order_by")
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "maxResults": limit,
+        "pageToken": next_token,
+        "filter": flt,
+        "orderBy": order_by,
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.images().list(**params).execute()  # pylint: disable=E1101
+    items = response.get("items", [])
+    next_page_token = response.get("nextPageToken")
+    headers = ["name", "id", "family", "status", "creationTimestamp"]
+    readable_output = tableToMarkdown(
+        "GCP Compute Images",
+        items,
+        headers=headers,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    outputs = {
+        "GCP.Compute.Images(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"ImagesNextToken": next_page_token},
+    }
+    return CommandResults(readable_output=readable_output, outputs=outputs, raw_response=response)
+
+
+def gcp_compute_image_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified image.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id' and 'image'.
+
+    Returns:
+        CommandResults: Object containing the human-readable status of the delete operation.
+    """
+    project_id = args.get("project_id")
+    image = args.get("image")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.images().delete(project=project_id, image=image).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Image Delete Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        raw_response=response,
+    )
+
+
+def gcp_compute_image_labels_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets the labels on an image.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id', 'image', 'labels', and 'label_fingerprint'.
+
+    Returns:
+        CommandResults: Object containing the operation details of the setLabels request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    image = args.get("image")
+    labels = parse_labels(args.get("labels", ""))
+    label_fingerprint = args.get("label_fingerprint")
+    demisto.debug(f"The parsed {labels=}")
+
+    body = {"labels": labels, "labelFingerprint": label_fingerprint}
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.images().setLabels(project=project_id, resource=image, body=body).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        f"Google Cloud Compute Image {image} Labels Update Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_image_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates an image in the specified project using the data included in the request.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id', 'name', and the various optional
+            image source and encryption fields.
+
+    Returns:
+        CommandResults: Object containing the operation details of the insert request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    force_create = argToBoolean(args.get("force_create", False))
+    name = args["name"]
+    labels = args.get("labels")
+    guest_os_features = argToList(args.get("guest_os_features"))
+
+    body = remove_empty_elements(
+        {
+            "name": name.lower(),
+            "description": args.get("description"),
+            "sourceDisk": args.get("source_disk"),
+            "sourceImage": args.get("source_image"),
+            "sourceSnapshot": args.get("source_snapshot"),
+            "family": args.get("family"),
+            "archiveSizeBytes": arg_to_number(args.get("archive_size_bytes")),
+            "diskSizeGb": arg_to_number(args.get("disk_size_gb")),
+            "licenses": argToList(args.get("licenses")),
+            "licenseCodes": argToList(args.get("license_codes")),
+            "labels": parse_labels(labels) if labels else None,
+            "labelFingerprint": args.get("label_fingerprint"),
+            "guestOsFeatures": [{"type": feature} for feature in guest_os_features],
+            "rawDisk": {
+                "source": args.get("raw_disk_source"),
+                "sha1Checksum": args.get("raw_disk_sha1_checksum"),
+                "containerType": args.get("raw_disk_container_type"),
+            },
+            "deprecated": {
+                "state": args.get("deprecated_state"),
+                "replacement": args.get("deprecated_replacement"),
+            },
+            "imageEncryptionKey": {
+                "rawKey": args.get("image_encryption_key_raw_key"),
+                "kmsKeyName": args.get("image_encryption_key_kms_key_name"),
+            },
+            "sourceDiskEncryptionKey": {
+                "rawKey": args.get("source_disk_encryption_key_raw_key"),
+                "kmsKeyName": args.get("source_disk_encryption_key_kms_key_name"),
+            },
+            "sourceImageEncryptionKey": {
+                "rawKey": args.get("source_image_encryption_key_raw_key"),
+                "kmsKeyName": args.get("source_image_encryption_key_kms_key_name"),
+            },
+            "sourceSnapshotEncryptionKey": {
+                "rawKey": args.get("source_snapshot_encryption_key_raw_key"),
+                "kmsKeyName": args.get("source_snapshot_encryption_key_kms_key_name"),
+            },
+        }
+    )
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"Image insert body keys for project {project_id}: {list(body.keys()) if isinstance(body, dict) else []}")
+    response = (
+        compute.images()  # pylint: disable=E1101
+        .insert(project=project_id, forceCreate=force_create, body=body)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Image Insert Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
 def gcp_compute_region_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Get a specified region resource.
@@ -3238,6 +5282,66 @@ def gcp_compute_region_get(creds: Credentials, args: dict[str, Any]) -> CommandR
         outputs_prefix="GCP.Compute.Regions",
         outputs_key_field="id",
         outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_regions_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of region resources available to the specified project.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
+            - filter (str, optional): Expression for filtering the listed resources.
+            - order_by (str, optional): Sorts list results by a certain order.
+            - next_token (str, optional): Token to retrieve the next page of results.
+
+    Returns:
+        CommandResults: Object containing the list of regions under `GCP.Compute.Regions`
+        and the pagination token under `GCP.Compute.RegionsNextToken`.
+    """
+    project = args.get("project_id")
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIST_LIMIT
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project,
+        "maxResults": limit,
+        "filter": args.get("filter"),
+        "orderBy": args.get("order_by"),
+        "pageToken": args.get("next_token"),
+    }
+    remove_nulls_from_dictionary(params)
+    demisto.debug(f"[GCP: gcp_compute_regions_list] Request params: {params}")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.regions().list(**params).execute()  # pylint: disable=E1101
+
+    items = response.get("items", [])
+    next_token = response.get("nextPageToken")
+    if not items:
+        return CommandResults(readable_output=f"No regions were found in project '{project}'.")
+
+    headers = ["id", "name", "status", "creationTimestamp"]
+    readable_output = tableToMarkdown(
+        "GCP Compute Regions",
+        items,
+        headers=headers,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    outputs: dict[str, Any] = {
+        "GCP.Compute.Regions(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"RegionsNextToken": next_token} if next_token else None,
+    }
+    outputs = {context_path: value for context_path, value in outputs.items() if value}
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
         raw_response=response,
     )
 
@@ -3313,6 +5417,249 @@ def gcp_compute_zone_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
     )
 
 
+def _validate_polling_args(args: dict[str, Any]) -> None:
+    """
+    Validates the polling arguments of the Compute Engine operation wait commands.
+
+    Args:
+        args (dict[str, Any]): The command arguments, optionally including 'interval_in_seconds' and 'polling_timeout'.
+
+    Raises:
+        DemistoException: If 'interval_in_seconds' or 'polling_timeout' is not a positive number.
+    """
+    interval = arg_to_number(args.get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS
+    timeout = arg_to_number(args.get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND
+
+    if interval <= 0:
+        raise DemistoException(f"The interval_in_seconds argument must be a positive number. Currently the value is {interval}")
+    if timeout <= 0:
+        raise DemistoException(f"The polling_timeout argument must be a positive number. Currently the value is {timeout}")
+
+
+def _compute_operation_poll_result(
+    operations_resource: Any,
+    request_kwargs: dict[str, Any],
+    command_name: str,
+    outputs_prefix: str,
+) -> PollResult:
+    """
+    Retrieves a Compute Engine long-running operation and keeps polling while it is not done.
+
+    As long as the operation has not reached the ``DONE`` status, the returned PollResult instructs the
+    ``polling_function`` decorator to schedule another run of the command.
+
+    Args:
+        operations_resource (Any): The Compute Engine operations resource to query
+            (``zoneOperations()``, ``regionOperations()`` or ``globalOperations()``).
+        request_kwargs (dict[str, Any]): The scope keyword arguments of the ``get`` request,
+            including the ``operation`` name.
+        command_name (str): The command name, used for debug logging.
+        outputs_prefix (str): The context output prefix of the returned operation.
+
+    Returns:
+        PollResult: The completed operation, or an indication to poll again.
+
+    Raises:
+        DemistoException: If the operation completed with an error.
+    """
+    operation_name = request_kwargs["operation"]
+    response = operations_resource.get(**request_kwargs).execute()
+    status = response.get("status")
+    demisto.debug(f"[GCP] {command_name}: operation {operation_name} status is {status}")
+
+    if status != OPERATION_DONE_STATUS:
+        return PollResult(
+            response=None,
+            continue_to_poll=True,
+            partial_result=CommandResults(
+                readable_output=f"Waiting for operation {operation_name} to complete. Current status: {status}."
+            ),
+        )
+
+    if error := response.get("error"):
+        raise DemistoException(f"Operation {operation_name} completed with an error: {error}")
+
+    readable_output = tableToMarkdown(
+        f"Operation {operation_name} completed successfully",
+        response,
+        headers=OPERATION_WAIT_TABLE,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return PollResult(
+        response=CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=outputs_prefix,
+            outputs_key_field="id",
+            outputs=response,
+            raw_response=response,
+        ),
+        continue_to_poll=False,
+    )
+
+
+@polling_function(
+    name="gcp-compute-zone-operation-wait",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def gcp_compute_zone_operation_wait(args: dict[str, Any], creds: Credentials) -> PollResult:
+    """
+    Waits for a zonal Compute Engine operation to reach the DONE status.
+
+    Args:
+        args (dict[str, Any]): Must include 'project_id', 'zone' and 'operation_name', and optionally
+            'interval_in_seconds' and 'polling_timeout'.
+        creds (Credentials): GCP credentials.
+
+    Returns:
+        PollResult: The completed operation, or an indication to poll again.
+    """
+    _validate_polling_args(args)
+
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    operation_name = args.get("operation_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+
+    return _compute_operation_poll_result(
+        operations_resource=compute.zoneOperations(),  # pylint: disable=E1101
+        request_kwargs={"project": project_id, "zone": zone, "operation": operation_name},
+        command_name="gcp-compute-zone-operation-wait",
+        outputs_prefix="GCP.Compute.Operations",
+    )
+
+
+@polling_function(
+    name="gcp-compute-region-operation-wait",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def gcp_compute_region_operation_wait(args: dict[str, Any], creds: Credentials) -> PollResult:
+    """
+    Waits for a regional Compute Engine operation to reach the DONE status.
+
+    Args:
+        args (dict[str, Any]): Must include 'project_id', 'region' and 'operation_name', and optionally
+            'interval_in_seconds' and 'polling_timeout'.
+        creds (Credentials): GCP credentials.
+
+    Returns:
+        PollResult: The completed operation, or an indication to poll again.
+    """
+    _validate_polling_args(args)
+
+    project_id = args.get("project_id")
+    region = extract_region_name(args.get("region"))
+    operation_name = args.get("operation_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+
+    return _compute_operation_poll_result(
+        operations_resource=compute.regionOperations(),  # pylint: disable=E1101
+        request_kwargs={"project": project_id, "region": region, "operation": operation_name},
+        command_name="gcp-compute-region-operation-wait",
+        outputs_prefix="GCP.Compute.Operations",
+    )
+
+
+@polling_function(
+    name="gcp-compute-global-operation-wait",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def gcp_compute_global_operation_wait(args: dict[str, Any], creds: Credentials) -> PollResult:
+    """
+    Waits for a global Compute Engine operation to reach the DONE status.
+
+    Args:
+        args (dict[str, Any]): Must include 'project_id' and 'operation_name', and optionally
+            'interval_in_seconds' and 'polling_timeout'.
+        creds (Credentials): GCP credentials.
+
+    Returns:
+        PollResult: The completed operation, or an indication to poll again.
+    """
+    _validate_polling_args(args)
+
+    project_id = args.get("project_id")
+    operation_name = args.get("operation_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+
+    return _compute_operation_poll_result(
+        operations_resource=compute.globalOperations(),  # pylint: disable=E1101
+        request_kwargs={"project": project_id, "operation": operation_name},
+        command_name="gcp-compute-global-operation-wait",
+        outputs_prefix="GCP.Compute.Operations",
+    )
+
+
+def gcp_compute_zones_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of zone resources available to the specified project.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
+            - filter (str, optional): Expression for filtering the listed resources.
+            - order_by (str, optional): Sorts list results by a certain order.
+            - next_token (str, optional): Token to retrieve the next page of results.
+
+    Returns:
+        CommandResults: Object containing the list of zones under `GCP.Compute.Zones`
+        and the pagination token under `GCP.Compute.ZonesNextToken`.
+    """
+    project = args.get("project_id")
+    limit = arg_to_number(args.get("limit")) or DEFAULT_LIST_LIMIT
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project,
+        "maxResults": limit,
+        "filter": args.get("filter"),
+        "orderBy": args.get("order_by"),
+        "pageToken": args.get("next_token"),
+    }
+    remove_nulls_from_dictionary(params)
+    demisto.debug(f"[GCP: gcp_compute_zones_list] Request params: {params}")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.zones().list(**params).execute()  # pylint: disable=E1101
+
+    items = response.get("items", [])
+    next_token = response.get("nextPageToken")
+    if not items:
+        return CommandResults(readable_output=f"No zones were found in project '{project}'.")
+
+    headers = ["id", "name", "status", "region", "creationTimestamp"]
+    readable_output = tableToMarkdown(
+        "GCP Compute Zones",
+        items,
+        headers=headers,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    outputs: dict[str, Any] = {
+        "GCP.Compute.Zones(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"ZonesNextToken": next_token} if next_token else None,
+    }
+    outputs = {context_path: value for context_path, value in outputs.items() if value}
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
 def gcp_compute_network_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Creates a subnet-mode network in the specified project using the data provided.
@@ -3371,6 +5718,105 @@ def gcp_compute_network_insert(creds: Credentials, args: dict[str, Any]) -> Comm
     headers = ["status", "kind", "id", "progress", "operationType", "name"]
     readable_output = tableToMarkdown(
         "Google Cloud Compute Network Insert", data_res, headers=headers, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_network_peering_add(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Adds a peering to the specified network.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Arguments including 'network' and the peering configuration.
+    Returns:
+        CommandResults: The result of the add peering operation.
+    """
+    project = args.get("project_id")
+    network = args.get("network")
+
+    config = remove_empty_elements(
+        {
+            "networkPeering": {
+                "name": args.get("name"),
+                "network": args.get("peer_network"),
+                "exchangeSubnetRoutes": arg_to_bool_or_none(args.get("exchange_subnet_routes")),
+            }
+        }
+    )
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Add peering config for network {network} in project {project}: {config}")
+    response = compute.networks().addPeering(project=project, network=network, body=config).execute()  # pylint: disable=E1101
+
+    readable_output = tableToMarkdown(
+        "Google Cloud Compute Operations", response, headers=OPERATION_TABLE, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_network_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified network.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Arguments including 'network', the name of the network to delete.
+    Returns:
+        CommandResults: The result of the delete network operation.
+    """
+    project = args.get("project_id")
+    network = args.get("network")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Deleting network {network} in project {project}")
+    response = compute.networks().delete(project=project, network=network).execute()  # pylint: disable=E1101
+
+    readable_output = tableToMarkdown(
+        "Google Cloud Compute Operations", response, headers=OPERATION_TABLE, removeNull=True, headerTransform=pascalToSpace
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_network_peering_remove(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Removes a peering from the specified network.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Arguments including 'network' and 'name', the name of the peering to remove.
+    Returns:
+        CommandResults: The result of the remove peering operation.
+    """
+    project = args.get("project_id")
+    network = args.get("network")
+
+    config: dict[str, Any] = {"name": args.get("name")}
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Remove peering config for network {network} in project {project}: {config}")
+    response = compute.networks().removePeering(project=project, network=network, body=config).execute()  # pylint: disable=E1101
+
+    readable_output = tableToMarkdown(
+        "Google Cloud Compute Operations", response, headers=OPERATION_TABLE, removeNull=True, headerTransform=pascalToSpace
     )
 
     return CommandResults(
@@ -3483,7 +5929,8 @@ def main():  # pragma: no cover
     params = demisto.params()
 
     try:
-        command_map: dict[str, Callable[[Any, dict], Any]] = {
+        # Handlers take (creds, args), except polling handlers (see POLLING_COMMANDS) which take (args, creds).
+        command_map: dict[str, Callable[[Any, Any], Any]] = {
             "test-module": lambda creds, _args: test_module(creds, params),
             # Compute Engine commands
             "gcp-compute-firewall-patch": compute_firewall_patch,
@@ -3491,8 +5938,11 @@ def main():  # pragma: no cover
             "gcp-compute-firewall-list": compute_firewall_list,
             "gcp-compute-firewalls-list": compute_firewall_list,
             "gcp-compute-firewall-get": compute_firewall_get,
+            "gcp-compute-firewall-delete": compute_firewall_delete,
             "gcp-compute-snapshots-list": compute_snapshots_list,
             "gcp-compute-snapshot-get": compute_snapshot_get,
+            "gcp-compute-snapshot-delete": compute_snapshot_delete,
+            "gcp-compute-snapshot-labels-set": compute_snapshot_labels_set,
             "gcp-compute-instances-aggregated-list-by-ip": compute_instances_aggregated_list_by_ip,
             "gcp-compute-network-tag-set": compute_network_tag_set,
             "gcp-compute-subnet-update": compute_subnet_update,
@@ -3500,16 +5950,35 @@ def main():  # pragma: no cover
             "gcp-compute-instance-service-account-remove": compute_instance_service_account_remove,
             "gcp-compute-instance-start": compute_instance_start,
             "gcp-compute-instance-stop": compute_instance_stop,
+            "gcp-compute-instance-insert": compute_instance_insert,
+            "gcp-compute-instance-delete": compute_instance_delete,
+            "gcp-compute-instance-reset": compute_instance_reset,
+            "gcp-compute-instance-metadata-set": compute_instance_metadata_set,
+            "gcp-compute-instance-machine-type-set": compute_instance_machine_type_set,
+            "gcp-compute-instances-aggregated-list": compute_instances_aggregated_list,
             "gcp-compute-instances-list": gcp_compute_instances_list_command,
             "gcp-compute-instance-get": gcp_compute_instance_get_command,
             "gcp-compute-instance-labels-set": gcp_compute_instance_label_set_command,
             "gcp-compute-network-get": gcp_compute_network_get_command,
             "gcp-compute-image-get": gcp_compute_image_get,
+            "gcp-compute-image-get-from-family": gcp_compute_image_get_from_family,
+            "gcp-compute-images-list": gcp_compute_images_list,
+            "gcp-compute-image-delete": gcp_compute_image_delete,
+            "gcp-compute-image-labels-set": gcp_compute_image_labels_set,
+            "gcp-compute-image-insert": gcp_compute_image_insert,
             "gcp-compute-instance-group-get": gcp_compute_instance_group_get,
             "gcp-compute-region-get": gcp_compute_region_get,
+            "gcp-compute-regions-list": gcp_compute_regions_list,
             "gcp-compute-zone-get": gcp_compute_zone_get,
+            "gcp-compute-zones-list": gcp_compute_zones_list,
+            "gcp-compute-zone-operation-wait": gcp_compute_zone_operation_wait,
+            "gcp-compute-region-operation-wait": gcp_compute_region_operation_wait,
+            "gcp-compute-global-operation-wait": gcp_compute_global_operation_wait,
             "gcp-compute-networks-list": gcp_compute_networks_list,
             "gcp-compute-network-insert": gcp_compute_network_insert,
+            "gcp-compute-network-peering-add": gcp_compute_network_peering_add,
+            "gcp-compute-network-delete": gcp_compute_network_delete,
+            "gcp-compute-network-peering-remove": gcp_compute_network_peering_remove,
             # Storage commands
             "gcp-storage-bucket-list": storage_bucket_list,
             "gcp-storage-buckets-list": storage_bucket_list,
@@ -3538,6 +6007,22 @@ def main():  # pragma: no cover
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
             # BigQuery commands
             "gcp-bq-dataset-policy-remove": bq_dataset_policy_remove_command,
+            # KMS commands
+            "gcp-kms-key-rings-list": kms_key_rings_list,
+            "gcp-kms-keys-list": kms_keys_list,
+            "gcp-kms-keys-list-all": kms_keys_list_all,
+            "gcp-kms-key-get": kms_key_get,
+            "gcp-kms-key-create": kms_key_create,
+            "gcp-kms-key-update": kms_key_update,
+            "gcp-kms-key-version-enable": kms_key_version_enable,
+            "gcp-kms-key-version-disable": kms_key_version_disable,
+            "gcp-kms-key-version-destroy": kms_key_version_destroy,
+            "gcp-kms-key-version-restore": kms_key_version_restore,
+            "gcp-kms-public-key-get": kms_public_key_get,
+            "gcp-kms-symmetric-encrypt": kms_symmetric_encrypt,
+            "gcp-kms-symmetric-decrypt": kms_symmetric_decrypt,
+            "gcp-kms-asymmetric-encrypt": kms_asymmetric_encrypt,
+            "gcp-kms-asymmetric-decrypt": kms_asymmetric_decrypt,
             # Quick Actions - Firewall
             "gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action": compute_firewall_patch,
             # Quick Actions - Storage Bucket Policy
@@ -3571,7 +6056,11 @@ def main():  # pragma: no cover
 
         elif command in command_map:
             creds = get_credentials(args, params)
-            return_results(command_map[command](creds, args))
+            if command in POLLING_COMMANDS:
+                demisto.debug(f"[GCP main] The {command=} is a polling command, calling it with args as the first argument.")
+                return_results(command_map[command](args, creds))
+            else:
+                return_results(command_map[command](creds, args))
         else:
             raise NotImplementedError(f"Command not implemented: {command}")
 
