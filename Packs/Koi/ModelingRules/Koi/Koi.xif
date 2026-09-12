@@ -13,21 +13,18 @@ filter source_log_type = "Audit"
     xdm.event.id = id,
     xdm.event.type = source_log_type,
     xdm.event.original_event_type = type,
-    xdm.event.operation_sub_type = action,
+    xdm.event.operation = action,
     xdm.event.description = message,
     xdm.event.outcome_reason = reason,
     xdm.source.host.hostname = coalesce(hostname, endpoint),
     xdm.source.host.os_family = os_family,
-    xdm.observer.name = _collector_name,
-    xdm.observer.type = _collector_type,
     xdm.target.application.name = object_name,
     xdm.target.application.version = item_version,
     xdm.target.application.publisher = marketplace,
     xdm.target.resource.id = object_id,
     xdm.target.resource.name = object_name,
     xdm.target.resource.type = object_type,
-    xdm.target.resource.sub_type = platform,
-    xdm.target.resource.value = item_version;
+    xdm.target.resource.sub_type = platform;
 
 // Alert Logs mapping
 filter source_log_type = "Alerts"
