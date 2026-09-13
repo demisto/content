@@ -29,7 +29,7 @@ This pack contains an integration, whose main purpose is to perform controlled c
 ## Collect Events from Vendor
 
 In order to receive logs, use the [Broker VM](#broker-vm) option. <br>
-For Traffic logs via Fortiweb Cloud, you are required to send the logs with [Amazon S3](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-generic-logs-from-Amazon-S3) services.
+For Traffic logs via Fortiweb Cloud, you are required to send the logs with [Amazon S3](https://cortex-docs.paloaltonetworks.com/cortex-xsiam/configure-cortex-xsiam/cortex-xsiam-data-sources/vendor-specific-data-sources-and-connectors/amazon/amazon-s3/ingest-generic-logs-from-amazon-s3) services.
 <br>
 
 ### Fortiweb Cloud
