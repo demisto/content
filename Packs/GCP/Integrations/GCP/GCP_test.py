@@ -43,6 +43,11 @@ PLATFORM_STANDARD_ARGS = {"project_id", "account_id"}
 # but the entry is built by the platform, so no handler prefix exists to match.
 PLATFORM_STANDARD_OUTPUT_PREFIXES = {"File"}
 
+# Polling arguments consumed by the @polling_function decorator (and the shared
+# polling-args validation helper) rather than by the handler body itself. They are
+# exempt from the per-handler verbatim arg check.
+POLLING_STANDARD_ARGS = {"interval_in_seconds", "polling_timeout", "hide_polling_output"}
+
 
 def test_parse_firewall_rule_valid_input():
     """
@@ -3448,6 +3453,176 @@ def test_storage_bucket_objects_list_merges_with_context(mocker):
         {"name": "o1", "bucket": "b1", "size": "2"},
         {"name": "o2", "bucket": "b1", "size": "3"},
     ]
+
+
+def test_merge_context_items_flat_layout_replaces_and_appends(mocker):
+    """
+    Given:
+        - A context path holding a flat list of items, one of which is returned again by the new page.
+    When:
+        - _merge_context_items is called without items_key (flat layout).
+    Then:
+        - The already-known item is replaced by the fresh version, the unseen item is appended,
+          and the original ordering is preserved.
+    """
+    # Given
+    from GCP import _merge_context_items
+
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={"GCP": {"Compute": {"Firewall": [{"name": "f1", "size": "1"}, {"name": "f2", "size": "2"}]}}},
+    )
+
+    # When
+    merged = _merge_context_items("GCP.Compute.Firewall", [{"name": "f1", "size": "9"}, {"name": "f3", "size": "3"}])
+
+    # Then
+    assert merged == [
+        {"name": "f1", "size": "9"},
+        {"name": "f2", "size": "2"},
+        {"name": "f3", "size": "3"},
+    ]
+
+
+def test_merge_context_items_flat_layout_with_custom_id_key(mocker):
+    """
+    Given:
+        - A context path holding items identified by "id" rather than the default "name".
+    When:
+        - _merge_context_items is called with id_key="id".
+    Then:
+        - Items are de-duplicated by "id", so the existing entry is replaced instead of duplicated.
+    """
+    # Given
+    from GCP import _merge_context_items
+
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={"GCP": {"Compute": {"Snapshots": [{"id": "s1", "name": "old"}]}}},
+    )
+
+    # When
+    merged = _merge_context_items(
+        "GCP.Compute.Snapshots",
+        [{"id": "s1", "name": "new"}, {"id": "s2", "name": "second"}],
+        id_key="id",
+    )
+
+    # Then
+    assert merged == [{"id": "s1", "name": "new"}, {"id": "s2", "name": "second"}]
+
+
+def test_merge_context_items_flat_layout_normalizes_single_dict(mocker):
+    """
+    Given:
+        - A context path holding a single item as a dict rather than a list.
+    When:
+        - _merge_context_items is called.
+    Then:
+        - The single dict is treated as a one-item list and merged rather than being discarded.
+    """
+    # Given
+    from GCP import _merge_context_items
+
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={"GCP": {"Compute": {"Firewall": {"name": "f1", "size": "1"}}}},
+    )
+
+    # When
+    merged = _merge_context_items("GCP.Compute.Firewall", [{"name": "f2", "size": "2"}])
+
+    # Then
+    assert merged == [{"name": "f1", "size": "1"}, {"name": "f2", "size": "2"}]
+
+
+def test_merge_context_items_nested_layout_merges_only_matching_parent(mocker):
+    """
+    Given:
+        - A context path holding parent entries, each nesting its own items list.
+    When:
+        - _merge_context_items is called with items_key, parent_id_key and parent_id_value.
+    Then:
+        - Only the items of the matching parent are merged, and items of other parents are ignored.
+    """
+    # Given
+    from GCP import _merge_context_items
+
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={
+            "GCP": {
+                "Storage": {
+                    "Buckets": [
+                        {"name": "b1", "Objects": [{"name": "o1", "size": "1"}]},
+                        {"name": "b2", "Objects": [{"name": "other", "size": "9"}]},
+                    ]
+                }
+            }
+        },
+    )
+
+    # When
+    merged = _merge_context_items(
+        "GCP.Storage.Buckets",
+        [{"name": "o2", "size": "2"}],
+        items_key="Objects",
+        parent_id_key="name",
+        parent_id_value="b1",
+    )
+
+    # Then
+    assert merged == [{"name": "o1", "size": "1"}, {"name": "o2", "size": "2"}]
+
+
+def test_merge_context_items_when_context_is_empty_returns_new_items_only(mocker):
+    """
+    Given:
+        - An empty context, as on the very first page of a paginated command.
+    When:
+        - _merge_context_items is called.
+    Then:
+        - Only the newly fetched items are returned, with no error raised.
+    """
+    # Given
+    from GCP import _merge_context_items
+
+    mocker.patch.object(demisto, "context", return_value={})
+
+    # When
+    merged = _merge_context_items("GCP.Storage.Buckets", [{"name": "o1"}])
+
+    # Then
+    assert merged == [{"name": "o1"}]
+
+
+def test_merge_context_items_skips_malformed_entries_and_items_without_id(mocker):
+    """
+    Given:
+        - A context containing a non-dict entry, and new items where one is missing the identifying key.
+    When:
+        - _merge_context_items is called.
+    Then:
+        - The malformed context entry and the unidentifiable item are skipped instead of raising.
+    """
+    # Given
+    from GCP import _merge_context_items
+
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={"GCP": {"Compute": {"Firewall": ["not-a-dict", {"name": "f1"}, {"no_name": "x"}]}}},
+    )
+
+    # When
+    merged = _merge_context_items("GCP.Compute.Firewall", [{"name": "f2"}, {"no_name": "y"}])
+
+    # Then
+    assert merged == [{"name": "f1"}, {"name": "f2"}]
 
 
 def test_storage_bucket_policy_list_with_version(mocker):
@@ -7055,6 +7230,413 @@ def test_get_credentials_marketplace_no_project_id_anywhere_raises(mocker):
         get_credentials(args, params)
 
 
+@pytest.mark.parametrize(
+    "region_input, expected_region",
+    [
+        ("us-central1", "us-central1"),
+        ("  us-central1  ", "us-central1"),
+        ("https://www.googleapis.com/compute/v1/projects/test-project/regions/us-central1", "us-central1"),
+    ],
+)
+def test_extract_region_name_valid_input(region_input, expected_region):
+    """
+    Given: A bare region name, a padded region name or a full GCP region URL.
+    When: extract_region_name is called.
+    Then: The bare region name is returned.
+    """
+    from GCP import extract_region_name
+
+    assert extract_region_name(region_input) == expected_region
+
+
+@pytest.mark.parametrize("region_input", [None, "", "   "])
+def test_extract_region_name_empty_input_raises(region_input):
+    """
+    Given: An empty, blank or missing region input.
+    When: extract_region_name is called.
+    Then: A DemistoException is raised.
+    """
+    from GCP import extract_region_name, DemistoException
+
+    with pytest.raises(DemistoException, match="The region argument cannot be empty"):
+        extract_region_name(region_input)
+
+
+@pytest.mark.parametrize(
+    "polling_args",
+    [
+        {},
+        {"interval_in_seconds": "15", "polling_timeout": "120"},
+    ],
+)
+def test_validate_polling_args_valid_input(polling_args):
+    """
+    Given: Missing polling arguments, or positive interval_in_seconds and polling_timeout arguments.
+    When: _validate_polling_args is called.
+    Then: No exception is raised.
+    """
+    from GCP import _validate_polling_args
+
+    _validate_polling_args(polling_args)
+
+
+@pytest.mark.parametrize(
+    "polling_args, expected_error",
+    [
+        ({"interval_in_seconds": "-5"}, "The interval_in_seconds argument must be a positive number"),
+        ({"polling_timeout": "-1"}, "The polling_timeout argument must be a positive number"),
+    ],
+)
+def test_validate_polling_args_non_positive_input_raises(polling_args, expected_error):
+    """
+    Given: A negative interval_in_seconds or polling_timeout argument.
+    When: _validate_polling_args is called.
+    Then: A DemistoException naming the invalid argument is raised.
+    """
+    from GCP import _validate_polling_args, DemistoException
+
+    with pytest.raises(DemistoException, match=expected_error):
+        _validate_polling_args(polling_args)
+
+
+# gcp-compute-zone-operation-wait / gcp-compute-region-operation-wait / gcp-compute-global-operation-wait
+def test_gcp_compute_zone_operation_wait_done(mocker):
+    """
+    Given: A mocked GCP compute client returning a zonal operation with a DONE status.
+    When: gcp_compute_zone_operation_wait is called.
+    Then: The operation is returned under GCP.Compute.Operations without scheduling another poll.
+    """
+    from GCP import gcp_compute_zone_operation_wait
+
+    mock_response = {
+        "id": "op-1",
+        "kind": "compute#operation",
+        "name": "operation-123",
+        "operationType": "insert",
+        "progress": 100,
+        "zone": "https://www.googleapis.com/compute/v1/projects/test-project/zones/us-central1-a",
+        "status": "DONE",
+    }
+
+    mock_compute = mocker.Mock()
+    mock_zone_operations = mocker.Mock()
+    mock_compute.zoneOperations.return_value = mock_zone_operations
+    mock_zone_operations.get.return_value.execute.return_value = mock_response
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "operation_name": "operation-123"}
+    result = gcp_compute_zone_operation_wait(args, mock_creds)
+
+    mock_zone_operations.get.assert_called_once_with(project="test-project", zone="us-central1-a", operation="operation-123")
+    assert result.scheduled_command is None
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
+    assert "operation-123 completed successfully" in result.readable_output
+
+
+def test_gcp_compute_zone_operation_wait_not_done_schedules_poll(mocker):
+    """
+    Given: A mocked GCP compute client returning a zonal operation with a RUNNING status.
+    When: gcp_compute_zone_operation_wait is called.
+    Then: A ScheduledCommand is returned so the command polls again with the same arguments.
+    """
+    from GCP import DEFAULT_INTERVAL_IN_SECONDS, DEFAULT_TIMEOUT_POLLING_COMMAND, gcp_compute_zone_operation_wait
+
+    mock_compute = mocker.Mock()
+    mock_zone_operations = mocker.Mock()
+    mock_compute.zoneOperations.return_value = mock_zone_operations
+    mock_zone_operations.get.return_value.execute.return_value = {"name": "operation-123", "status": "RUNNING"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "operation_name": "operation-123",
+    }
+    result = gcp_compute_zone_operation_wait(args, mock_creds)
+
+    assert result.scheduled_command is not None
+    assert result.scheduled_command._command == "gcp-compute-zone-operation-wait"
+    assert result.scheduled_command._args == args
+    # The polling_function decorator hides the polling message on the following runs.
+    assert args["hide_polling_output"] is True
+    assert result.scheduled_command._next_run == str(DEFAULT_INTERVAL_IN_SECONDS)
+    assert result.scheduled_command._timeout == str(DEFAULT_TIMEOUT_POLLING_COMMAND)
+    assert "Current status: RUNNING" in result.readable_output
+
+
+def test_gcp_compute_zone_operation_wait_done_with_error_raises(mocker):
+    """
+    Given: A mocked GCP compute client returning a DONE zonal operation carrying an error.
+    When: gcp_compute_zone_operation_wait is called.
+    Then: A DemistoException is raised describing the operation failure.
+    """
+    from GCP import gcp_compute_zone_operation_wait, DemistoException
+
+    mock_compute = mocker.Mock()
+    mock_zone_operations = mocker.Mock()
+    mock_compute.zoneOperations.return_value = mock_zone_operations
+    mock_zone_operations.get.return_value.execute.return_value = {
+        "name": "operation-123",
+        "status": "DONE",
+        "error": {"errors": [{"code": "RESOURCE_NOT_FOUND", "message": "The resource was not found."}]},
+    }
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "operation_name": "operation-123"}
+
+    with pytest.raises(DemistoException, match="Operation operation-123 completed with an error"):
+        gcp_compute_zone_operation_wait(args, mock_creds)
+
+
+def test_gcp_compute_zone_operation_wait_extracts_zone_from_url(mocker):
+    """
+    Given: A zone provided as a full GCP URL rather than a bare zone name.
+    When: gcp_compute_zone_operation_wait is called.
+    Then: Only the zone name is sent to the API.
+    """
+    from GCP import gcp_compute_zone_operation_wait
+
+    mock_compute = mocker.Mock()
+    mock_zone_operations = mocker.Mock()
+    mock_compute.zoneOperations.return_value = mock_zone_operations
+    mock_zone_operations.get.return_value.execute.return_value = {"name": "operation-123", "status": "DONE"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "test-project",
+        "zone": "https://www.googleapis.com/compute/v1/projects/test-project/zones/us-central1-a",
+        "operation_name": "operation-123",
+    }
+    gcp_compute_zone_operation_wait(args, mock_creds)
+
+    mock_zone_operations.get.assert_called_once_with(project="test-project", zone="us-central1-a", operation="operation-123")
+
+
+@pytest.mark.parametrize(
+    "polling_args, expected_error",
+    [
+        ({"interval_in_seconds": "-5"}, "The interval_in_seconds argument must be a positive number"),
+        ({"polling_timeout": "-1"}, "The polling_timeout argument must be a positive number"),
+    ],
+)
+def test_gcp_compute_zone_operation_wait_non_positive_polling_args_raise(mocker, polling_args, expected_error):
+    """
+    Given: A negative interval_in_seconds or polling_timeout argument.
+    When: gcp_compute_zone_operation_wait is called.
+    Then: A DemistoException is raised and no API call is made.
+    """
+    from GCP import gcp_compute_zone_operation_wait, DemistoException
+
+    mock_compute = mocker.Mock()
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "operation_name": "operation-123"} | polling_args
+
+    with pytest.raises(DemistoException, match=expected_error):
+        gcp_compute_zone_operation_wait(args, mock_creds)
+    mock_compute.zoneOperations.assert_not_called()
+
+
+def test_gcp_compute_region_operation_wait_done(mocker):
+    """
+    Given: A mocked GCP compute client returning a regional operation with a DONE status.
+    When: gcp_compute_region_operation_wait is called.
+    Then: The operation is returned under GCP.Compute.Operations without scheduling another poll,
+          and the region is included in the readable output.
+    """
+    from GCP import gcp_compute_region_operation_wait
+
+    mock_response = {
+        "id": "op-2",
+        "name": "operation-456",
+        "status": "DONE",
+        "operationType": "delete",
+        "region": "https://www.googleapis.com/compute/v1/projects/test-project/regions/us-central1",
+    }
+
+    mock_compute = mocker.Mock()
+    mock_region_operations = mocker.Mock()
+    mock_compute.regionOperations.return_value = mock_region_operations
+    mock_region_operations.get.return_value.execute.return_value = mock_response
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "region": "us-central1", "operation_name": "operation-456"}
+    result = gcp_compute_region_operation_wait(args, mock_creds)
+
+    mock_region_operations.get.assert_called_once_with(project="test-project", region="us-central1", operation="operation-456")
+    assert result.scheduled_command is None
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+    assert result.outputs == mock_response
+    assert "Region" in result.readable_output
+
+
+def test_gcp_compute_region_operation_wait_extracts_region_from_url(mocker):
+    """
+    Given: A region provided as a full GCP URL rather than a bare region name.
+    When: gcp_compute_region_operation_wait is called.
+    Then: Only the region name is sent to the API.
+    """
+    from GCP import gcp_compute_region_operation_wait
+
+    mock_compute = mocker.Mock()
+    mock_region_operations = mocker.Mock()
+    mock_compute.regionOperations.return_value = mock_region_operations
+    mock_region_operations.get.return_value.execute.return_value = {"name": "operation-456", "status": "DONE"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "test-project",
+        "region": "https://www.googleapis.com/compute/v1/projects/test-project/regions/us-central1",
+        "operation_name": "operation-456",
+    }
+    gcp_compute_region_operation_wait(args, mock_creds)
+
+    mock_region_operations.get.assert_called_once_with(project="test-project", region="us-central1", operation="operation-456")
+
+
+def test_gcp_compute_region_operation_wait_not_done_schedules_poll(mocker):
+    """
+    Given: A mocked GCP compute client returning a regional operation with a PENDING status.
+    When: gcp_compute_region_operation_wait is called without explicit polling arguments.
+    Then: A ScheduledCommand is returned using the default interval and timeout.
+    """
+    from GCP import gcp_compute_region_operation_wait, DEFAULT_INTERVAL_IN_SECONDS, DEFAULT_TIMEOUT_POLLING_COMMAND
+
+    mock_compute = mocker.Mock()
+    mock_region_operations = mocker.Mock()
+    mock_compute.regionOperations.return_value = mock_region_operations
+    mock_region_operations.get.return_value.execute.return_value = {"name": "operation-456", "status": "PENDING"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "region": "us-central1", "operation_name": "operation-456"}
+    result = gcp_compute_region_operation_wait(args, mock_creds)
+
+    assert result.scheduled_command is not None
+    assert result.scheduled_command._command == "gcp-compute-region-operation-wait"
+    assert result.scheduled_command._next_run == str(DEFAULT_INTERVAL_IN_SECONDS)
+    assert result.scheduled_command._timeout == str(DEFAULT_TIMEOUT_POLLING_COMMAND)
+
+
+def test_gcp_compute_region_operation_wait_done_with_error_raises(mocker):
+    """
+    Given: A mocked GCP compute client returning a DONE regional operation carrying an error.
+    When: gcp_compute_region_operation_wait is called.
+    Then: A DemistoException is raised describing the operation failure.
+    """
+    from GCP import gcp_compute_region_operation_wait, DemistoException
+
+    mock_compute = mocker.Mock()
+    mock_region_operations = mocker.Mock()
+    mock_compute.regionOperations.return_value = mock_region_operations
+    mock_region_operations.get.return_value.execute.return_value = {
+        "name": "operation-456",
+        "status": "DONE",
+        "error": {"errors": [{"code": "QUOTA_EXCEEDED", "message": "Quota exceeded."}]},
+    }
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "region": "us-central1", "operation_name": "operation-456"}
+
+    with pytest.raises(DemistoException, match="Operation operation-456 completed with an error"):
+        gcp_compute_region_operation_wait(args, mock_creds)
+
+
+def test_gcp_compute_global_operation_wait_done(mocker):
+    """
+    Given: A mocked GCP compute client returning a global operation with a DONE status.
+    When: gcp_compute_global_operation_wait is called.
+    Then: The operation is returned under GCP.Compute.Operations without scheduling another poll.
+    """
+    from GCP import gcp_compute_global_operation_wait
+
+    mock_response = {"id": "op-3", "name": "operation-789", "status": "DONE", "operationType": "insert"}
+
+    mock_compute = mocker.Mock()
+    mock_global_operations = mocker.Mock()
+    mock_compute.globalOperations.return_value = mock_global_operations
+    mock_global_operations.get.return_value.execute.return_value = mock_response
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "operation_name": "operation-789"}
+    result = gcp_compute_global_operation_wait(args, mock_creds)
+
+    mock_global_operations.get.assert_called_once_with(project="test-project", operation="operation-789")
+    assert result.scheduled_command is None
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+    assert result.outputs == mock_response
+
+
+def test_gcp_compute_global_operation_wait_not_done_schedules_poll(mocker):
+    """
+    Given: A mocked GCP compute client returning a global operation with a RUNNING status.
+    When: gcp_compute_global_operation_wait is called.
+    Then: A ScheduledCommand is returned so the command polls again.
+    """
+    from GCP import gcp_compute_global_operation_wait
+
+    mock_compute = mocker.Mock()
+    mock_global_operations = mocker.Mock()
+    mock_compute.globalOperations.return_value = mock_global_operations
+    mock_global_operations.get.return_value.execute.return_value = {"name": "operation-789", "status": "RUNNING"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "operation_name": "operation-789"}
+    result = gcp_compute_global_operation_wait(args, mock_creds)
+
+    assert result.scheduled_command is not None
+    assert result.scheduled_command._command == "gcp-compute-global-operation-wait"
+    assert "Current status: RUNNING" in result.readable_output
+
+
+def test_gcp_compute_global_operation_wait_done_with_error_raises(mocker):
+    """
+    Given: A mocked GCP compute client returning a DONE global operation carrying an error.
+    When: gcp_compute_global_operation_wait is called.
+    Then: A DemistoException is raised describing the operation failure.
+    """
+    from GCP import gcp_compute_global_operation_wait, DemistoException
+
+    mock_compute = mocker.Mock()
+    mock_global_operations = mocker.Mock()
+    mock_compute.globalOperations.return_value = mock_global_operations
+    mock_global_operations.get.return_value.execute.return_value = {
+        "name": "operation-789",
+        "status": "DONE",
+        "error": {"errors": [{"code": "INTERNAL_ERROR", "message": "Internal error."}]},
+    }
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "operation_name": "operation-789"}
+
+    with pytest.raises(DemistoException, match="Operation operation-789 completed with an error"):
+        gcp_compute_global_operation_wait(args, mock_creds)
+
+
 # ---------------------------------------------------------------------------
 # YML <-> PY wiring assertion tests
 #
@@ -7399,6 +7981,9 @@ def test_yml_args_match_py_handler_verbatim():
         for arg_name in _YML_SPEC[command_name]["args"]:
             if arg_name in PLATFORM_STANDARD_ARGS:
                 # Resolved centrally via credentials, not per-handler args.get(...).
+                continue
+            if arg_name in POLLING_STANDARD_ARGS:
+                # Consumed by the @polling_function decorator, not per-handler args.get(...).
                 continue
             if arg_name not in handler_args:
                 mismatches.append(f'{command_name} (handler {handler}) -> args.get("{arg_name}")')
