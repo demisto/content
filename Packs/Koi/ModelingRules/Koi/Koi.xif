@@ -18,6 +18,10 @@ filter source_log_type = "Audit"
     xdm.event.outcome_reason = reason,
     xdm.source.host.hostname = coalesce(hostname, endpoint),
     xdm.source.host.os_family = os_family,
+    xdm.source.user.upn = if(triggered_by contains "@", triggered_by, null),
+    xdm.source.user.username = triggered_by,
+    xdm.source.identity.upn = if(triggered_by contains "@", triggered_by, null),
+    xdm.source.identity.username = triggered_by,
     xdm.target.application.name = object_name,
     xdm.target.application.version = item_version,
     xdm.target.application.publisher = marketplace,
@@ -29,21 +33,12 @@ filter source_log_type = "Audit"
 // Alert Logs mapping
 filter source_log_type = "Alerts"
 | alter
-    log_level = if(
-        severity_id = 1, XDM_CONST.LOG_LEVEL_INFORMATIONAL,
-        severity_id = 2, XDM_CONST.LOG_LEVEL_INFORMATIONAL,
-        severity_id = 3, XDM_CONST.LOG_LEVEL_WARNING,
-        severity_id = 4, XDM_CONST.LOG_LEVEL_WARNING,
-        severity_id = 5, XDM_CONST.LOG_LEVEL_CRITICAL,
-        severity_id = 6, XDM_CONST.LOG_LEVEL_CRITICAL,
-        null
-    ),
-    outcome = if(
-        status_id = 4, XDM_CONST.OUTCOME_SUCCESS,
-        status_id = 3, XDM_CONST.OUTCOME_SUCCESS,
-        status_id = 2, XDM_CONST.OUTCOME_PARTIAL,
-        status_id = 1, XDM_CONST.OUTCOME_UNKNOWN,
-        XDM_CONST.OUTCOME_UNKNOWN
+    status_enum = if(
+        status_id = 4, XDM_CONST.ALERT_STATUS_DONE,
+        status_id = 3, XDM_CONST.ALERT_STATUS_DONE,
+        status_id = 2, XDM_CONST.ALERT_STATUS_IN_REVIEW,
+        status_id = 1, XDM_CONST.ALERT_STATUS_PENDING,
+        status
     ),
     // finding_info and metadata use -> sugar syntax (JSON string fields)
     finding_title = finding_info -> title,
@@ -51,35 +46,45 @@ filter source_log_type = "Alerts"
     finding_uid = finding_info -> uid,
     product_name = metadata -> product.name,
     product_vendor = metadata -> product.vendor_name,
-    product_version = metadata -> version,
+    product_version = metadata -> product.version,
     // resources is a JSON array string — filter by type to get item and device resources
     item_resource = arrayindex(arrayfilter(json_extract_array(resources, "$"), json_extract_scalar("@element", "$.type") = "item"), 0),
     device_resource = arrayindex(arrayfilter(json_extract_array(resources, "$"), json_extract_scalar("@element", "$.type") = "device"), 0),
     // observables is a JSON array string — find the event.id observable
     event_id_observable = arrayindex(arrayfilter(json_extract_array(observables, "$"), json_extract_scalar("@element", "$.name") = "event.id"), 0)
 | alter
+    os_family = if(
+        lowercase(device_resource -> data.os) = "windows", XDM_CONST.OS_FAMILY_WINDOWS,
+        lowercase(device_resource -> data.os) = "mac", XDM_CONST.OS_FAMILY_MACOS,
+        lowercase(device_resource -> data.os) = "linux", XDM_CONST.OS_FAMILY_LINUX,
+        null
+    )
+| alter
     xdm.event.id = event_id_observable -> value,
     xdm.event.type = source_log_type,
     xdm.event.original_event_type = activity_name,
     xdm.event.operation_sub_type = class_name,
     xdm.event.description = message,
-    xdm.event.log_level = log_level,
-    xdm.event.outcome = outcome,
     xdm.alert.name = finding_title,
     xdm.alert.original_alert_id = finding_uid,
     xdm.alert.severity = severity,
     xdm.alert.description = coalesce(finding_desc, message),
+    xdm.alert.status = status_enum,
     xdm.observer.vendor = product_vendor,
     xdm.observer.product = product_name,
     xdm.observer.version = product_version,
     xdm.source.host.hostname = device_resource -> data.hostname,
     xdm.source.host.os = device_resource -> data.os,
-    xdm.source.host.device_id = device_resource -> data.serial,
+    xdm.source.host.os_family = os_family,
+    xdm.source.host.device_id = device_resource -> data.id,
+    xdm.source.user.upn = if(device_resource -> data.last_logged_on_user contains "@", device_resource -> data.last_logged_on_user, null),
     xdm.source.user.username = device_resource -> data.last_logged_on_user,
+    xdm.source.identity.upn = if(device_resource -> data.last_logged_on_user contains "@", device_resource -> data.last_logged_on_user, null),
+    xdm.source.identity.username = device_resource -> data.last_logged_on_user,
     xdm.target.resource.id = item_resource -> uid,
     xdm.target.resource.name = item_resource -> name,
     xdm.target.resource.type = item_resource -> type,
     xdm.target.resource.value = item_resource -> version,
-    xdm.target.application.name = item_resource -> data.item_display_name,
+    xdm.target.application.name = item_resource -> data.package_name,
     xdm.target.application.version = item_resource -> version,
     xdm.target.application.publisher = item_resource -> data.marketplace;
