@@ -17,6 +17,12 @@ TEST_MODULE_LIMIT = 1  # Minimal page size for the connectivity test
 DEFAULT_GET_EVENTS_LIMIT = 1000  # Fallback cap for the manual get-events command
 DEFAULT_GET_EVENTS_START = "1 minute"  # Fallback lower bound for the manual get-events command
 
+# Rate-limit resilience: the Serving Layer fetch paginates through the window, issuing several
+# back-to-back requests per cycle. On high-volume tenants Orca answers with HTTP 429 (Too Many
+# Requests). Retry those transiently with exponential backoff; the framework honors Retry-After.
+RETRY_STATUS_CODES = [429]
+MAX_RETRIES = 3
+
 """ CLIENT CLASS """
 
 
@@ -97,7 +103,15 @@ class Client(BaseClient):
 
         demisto.debug(f"[Client] get_alerts (Serving Layer API) request payload: {json.dumps(payload)}")
 
-        return self._http_request(method="POST", url_suffix="/serving-layer/query", json_data=payload)
+        # Retry on HTTP 429 with exponential backoff (honors Retry-After) so a rate-limited page
+        # request does not abort the whole fetch cycle.
+        return self._http_request(
+            method="POST",
+            url_suffix="/serving-layer/query",
+            json_data=payload,
+            retries=MAX_RETRIES,
+            status_list_to_retry=RETRY_STATUS_CODES,
+        )
 
 
 """ HELPER FUNCTIONS """
