@@ -1,23 +1,36 @@
 {
     "name": "Infoblox Threat Defense with DDI",
-    "description": "Utilize the Infoblox Threat Defense with DDI integration to manage SOC Insight incident response, indicator enrichment, and block cyber threats.",
+    "description": "Utilize the Infoblox Threat Defense with DDI integration to manage IQ for TD Insight incident response, indicator enrichment, and block cyber threats.",
     "support": "partner",
-    "currentVersion": "2.0.4",
+    "currentVersion": "3.0.0",
     "author": "Infoblox Inc.",
     "url": "https://support.infoblox.com/",
     "email": "support@infoblox.com",
+    "created": "2023-02-28T17:26:00Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Infoblox",
+        "Threat Defense",
+        "DDI",
+        "IQ for TD Insight",
+        "Incident Response",
+        "Indicator Enrichment",
+        "Cyber Threats"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",
         "platform"
     ],
     "defaultDataSource": "InfobloxBloxOneThreatDefense",
+    "itemPrefix": [
+        "Infoblox Cloud"
+    ],
+    "githubUser": [],
     "supportedModules": [
         "agentix",
         "xsiam"

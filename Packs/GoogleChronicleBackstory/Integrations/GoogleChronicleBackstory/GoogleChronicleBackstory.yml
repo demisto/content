@@ -111,6 +111,13 @@ configuration:
   type: 13
   section: Connect
   required: false
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - additionalinfo: |-
     The UTC date or relative timestamp from where to start fetching incidents.
 
@@ -3361,7 +3368,7 @@ script:
         Format accepted is: "Line 1, Line 2, Line 3".
       name: lines
       required: false
-    - description: |- 
+    - description: |-
         Provide a unique file id consisting of lines to add.
 
         Note: Please provide either one of "lines" or "entry_id".
@@ -3375,7 +3382,7 @@ script:
       name: delimiter
     - auto: PREDEFINED
       defaultValue: PLAIN_TEXT
-      description: Select the content type for reference list. 
+      description: Select the content type for reference list.
       name: content_type
       predefined:
       - PLAIN_TEXT
@@ -3480,7 +3487,7 @@ script:
         Note: Use gcb-get-reference-list to retrieve the content and description of the list.
       name: lines
       required: false
-    - description: |- 
+    - description: |-
         Provide a unique file id consisting of lines to update.
 
         Note: Please provide either one of "lines" or "entry_id".
@@ -3532,7 +3539,7 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: PLAIN_TEXT
-      description: Select the content type for reference list. 
+      description: Select the content type for reference list.
       name: content_type
       predefined:
       - PLAIN_TEXT
@@ -6803,8 +6810,8 @@ script:
       defaultValue: 'False'
       auto: PREDEFINED
       predefined:
-        - 'True'
-        - 'False'
+      - 'True'
+      - 'False'
     - description: |-
         Delimiter by which the content of the values list is separated.
         Eg:  " , " , " : ", " ; ".
@@ -6816,8 +6823,8 @@ script:
       defaultValue: 'False'
       auto: PREDEFINED
       predefined:
-        - 'True'
-        - 'False'
+      - 'True'
+      - 'False'
     description: Check if provided values are found in the reference lists in Google Chronicle.
     name: gcb-verify-value-in-reference-list
     outputs:
@@ -6858,7 +6865,7 @@ script:
       required: true
     description: |-
       Get the specific event with the given ID from Chronicle.
-      
+
       Note: This command returns more than 60 different types of events. Any event would have only specific output context set. Refer the UDM documentation to figure out the output properties specific to the event types.
     name: gcb-get-event
     outputs:
@@ -7957,7 +7964,7 @@ script:
       name: lines
       isArray: true
       required: false
-    - description: |- 
+    - description: |-
         Provide a unique file id consisting of lines to append.
 
         Note: Please provide either one of "lines" or "entry_id".
@@ -8014,7 +8021,7 @@ script:
       name: lines
       isArray: true
       required: false
-    - description: |- 
+    - description: |-
         Provide a unique file id consisting of lines to remove.
 
         Note: Please provide either one of "lines" or "entry_id".

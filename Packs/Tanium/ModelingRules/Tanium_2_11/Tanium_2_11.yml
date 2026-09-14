@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: Tanium_ModelingRule
+name: Tanium Modeling Rule
+rules: ''
+schema: ''
+tags:
+supportedModules:
+- xsiam

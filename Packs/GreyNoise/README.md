@@ -22,7 +22,15 @@ This Pack Contains two Integrations: GreyNoise and GreyNoise Community
 
 _For more information, visit our [GreyNoise Documentation](https://docs.greynoise.io)_
 
-_For pricing information, visit our [GreyNoise Pricing](https://greynoise.io/pricing) or contact
+_For pricing information, visit our [GreyNoise Pricing](https://greynoise.io/plans) or contact
 [GreyNoise Sales](mailto:sales@greynoise.io)_
 
 _For GreyNoise support, contact [GreyNoise Support](mailto:support@greynoise.io)_
+
+### Pack Contributors
+
+---
+
+- Brad Chiappetta - GreyNoise
+
+Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).

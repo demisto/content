@@ -29,7 +29,7 @@ If you are upgrading from a Flashpoint Feed integration, please refer to the [Mi
     | Source Tags of an indicator | Filter indicators by their source tags. Must be exact tag matches. Inclusion of the source: prefix is optional.<br/><br/>Example: source:flashpoint_extraction, flashpoint_detection. | False |
     | First fetch time | Backfill indicators by providing date or relative timestamp. Default is '3 days'.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. | False |
     | Fetch indicators | Enable to fetch indicators. | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
+    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation.<br/><br/>Note: Do not set this if you want to set the reputation based on the Ignite score. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
     | Default Indicator Mapping | When selected, all the incoming indicators will map to the Ignite Indicator. | False |

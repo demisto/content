@@ -13,3 +13,6 @@ ignore=RM116
 
 [file:README.md]
 ignore=RM110
+
+[file:DelineaSS_2_11.yml]
+ignore=MR108
