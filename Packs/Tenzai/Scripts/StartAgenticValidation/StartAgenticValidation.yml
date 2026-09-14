@@ -19,7 +19,7 @@ args:
 - name: issue_description
   description: The Cortex issue Description, folded into the Tenzai application guidelines for the scan.
 - name: supporting_data
-  description: Free-text context (inferred CVEs, attack-surface rule, classification) for the assessment objective.
+  description: The free-text context (inferred CVEs, attack-surface rule, classification) for the assessment objective.
 - name: alert_internal_id
   description: The Cortex issue/alert id to correlate the results back to.
 - name: application_type
