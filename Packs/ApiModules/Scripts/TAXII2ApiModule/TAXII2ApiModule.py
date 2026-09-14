@@ -534,9 +534,7 @@ class XSOAR2STIXParser:
         stix_type = XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) or XSOAR_TYPES_TO_STIX_SDO.get(xsoar_type)
         if not stix_type:
             return False
-        if not is_manifest and stix_type == "file" and get_hash_type(xsoar_indicator.get("value")) == "Unknown":
-            return False
-        return True
+        return not (not is_manifest and stix_type == "file" and get_hash_type(xsoar_indicator.get("value")) == "Unknown")
 
     def create_indicators(
         self,
