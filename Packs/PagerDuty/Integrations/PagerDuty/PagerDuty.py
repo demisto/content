@@ -10,8 +10,8 @@ USE_SSL = not demisto.params().get("insecure", False)
 
 USE_PROXY = demisto.params().get("proxy", True)
 API_KEY = demisto.params().get("credentials_api_key", {}).get("password") or demisto.params().get("APIKey")
-SERVICE_KEY = demisto.params()["ServiceKey"]
-FETCH_INTERVAL = demisto.params()["FetchInterval"]
+SERVICE_KEY = demisto.params().get("ServiceKey")  # required: false - only for triggering, acknowledging and resolving events
+FETCH_INTERVAL = demisto.params().get("FetchInterval", "1")
 DEFAULT_REQUESTOR = demisto.params().get("DefaultRequestor", "")
 
 SERVER_URL = "https://api.pagerduty.com/"
