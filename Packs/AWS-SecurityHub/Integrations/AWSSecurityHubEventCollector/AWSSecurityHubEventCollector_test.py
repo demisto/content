@@ -128,16 +128,25 @@ class TestParseAwsTimestamp:
             ("2023-01-01T12:30:45.123Z", dt.datetime(2023, 1, 1, 12, 30, 45, 123000)),
             # Valid timestamp without milliseconds
             ("2023-01-01T12:30:45Z", dt.datetime(2023, 1, 1, 12, 30, 45)),
+            # ISO-8601 with UTC offset (+00:00) - returned verbatim by AWS CreatedAt for some sources
+            ("2026-08-08T19:55:21.905451+00:00", dt.datetime(2026, 8, 8, 19, 55, 21, 905451)),
+            # ISO-8601 with UTC offset, no microseconds
+            ("2026-08-08T19:55:21+00:00", dt.datetime(2026, 8, 8, 19, 55, 21)),
+            # ISO-8601 with a non-zero offset should be normalized to naive UTC
+            ("2026-08-08T21:55:21+02:00", dt.datetime(2026, 8, 8, 19, 55, 21)),
         ],
     )
     def test_parse_timestamp_valid_formats(self, timestamp_str, expected_result):
         """
-        Given: A valid timestamp string from AWS API (with or without milliseconds).
+        Given: A valid timestamp string from AWS API (Z-suffixed or ISO-8601 offset form).
         When: Parsing the timestamp using parse_aws_timestamp.
-        Then: Should return the correct datetime object.
+        Then: Should return the correct naive UTC datetime object.
         """
         result = parse_aws_timestamp(timestamp_str)
         assert result == expected_result
+        # The value feeds strftime() to build the AWS filter, so it must be naive (no tzinfo)
+        # to avoid shifting the fetch window.
+        assert result.tzinfo is None
 
     def test_parse_timestamp_invalid_format(self):
         """
@@ -145,7 +154,7 @@ class TestParseAwsTimestamp:
         When: Parsing the timestamp using parse_aws_timestamp.
         Then: Should raise ValueError.
         """
-        invalid_timestamp = "2023/01/01 12:30:45"
+        invalid_timestamp = "not-a-timestamp"
         with pytest.raises(ValueError):
             parse_aws_timestamp(invalid_timestamp)
 
@@ -662,3 +671,33 @@ def test_fetch_events_api_error_handling(fetch_events_mocks):
     # Verify error logging
     error_calls = [call.args[0] for call in mocks["error"].call_args_list]
     assert any("Error while fetching events" in msg for msg in error_calls)
+
+
+def test_fetch_events_unparseable_last_run_raises(fetch_events_mocks):
+    """
+    Test fetch_events fails loudly when last_run holds a value that parse_aws_timestamp
+    cannot parse, rather than silently resetting the fetch window.
+
+    Given: last_run["last_update_date"] cannot be parsed
+    When: Calling fetch_events
+    Then: The ValueError from parse_aws_timestamp propagates and get_events is never called.
+    """
+    mocks = fetch_events_mocks
+
+    # Simulate parse_aws_timestamp rejecting the stored cursor. That a truly malformed value
+    # actually raises here is covered by TestParseAwsTimestamp; this test isolates propagation.
+    parse_error = ValueError("Invalid isoformat string: 'not-a-parseable-timestamp'")
+    mocks["parse_timestamp"].side_effect = parse_error
+
+    with pytest.raises(ValueError) as exc_info:
+        fetch_events(
+            client=mocks["client"],
+            last_run={"last_update_date": "not-a-parseable-timestamp", "last_update_date_finding_ids": ["old-1"]},
+            first_fetch_time=FIRST_FETCH_TIME,
+            page_size=50,
+            limit=0,
+        )
+
+    assert exc_info.value is parse_error
+    # The fetch fails before any events are requested.
+    mocks["get_events"].assert_not_called()
