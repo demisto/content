@@ -2759,26 +2759,26 @@ script:
       description: 'The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
       defaultValue: '50'
     - name: filter
-      description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, to exclude an instance group named example-group specify name != example-group.
+      description: The expression to filter resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value (string, number, or boolean). For example, to exclude an instance group named example-group, specify name != example-group.
     - name: order_by
-      description: The sort order for the list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc".
+      description: The sort order for the results. By default, results are returned in alphanumerical order by resource name. To sort in descending order by creation timestamp, use order_by=creationTimestamp desc.
     - name: next_token
-      description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results.
+      description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to retrieve the next page of results.
     outputs:
     - contextPath: GCP.Compute.InstanceGroups.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique identifier for the server-defined resource.
       type: string
     - contextPath: GCP.Compute.InstanceGroups.creationTimestamp
-      description: The creation timestamp for this instance group in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The creation timestamp for this instance group in RFC3339 format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.InstanceGroups.name
-      description: The name of the instance group. The name must be 1-63 characters long, and comply with RFC1035.
+      description: The name of the instance group. The name must be 1 to 63 characters long and comply with RFC1035.
       type: string
     - contextPath: GCP.Compute.InstanceGroups.description
       description: The optional description of this resource.
       type: string
     - contextPath: GCP.Compute.InstanceGroups.namedPorts.name
-      description: The name for this named port. The name must be 1-63 characters long, and comply with RFC1035.
+      description: The name of the named port. The name must be 1 to 63 characters long and comply with RFC1035.
       type: string
     - contextPath: GCP.Compute.InstanceGroups.namedPorts.port
       description: The port number, which can be a value between 1 and 65535.
@@ -2793,7 +2793,7 @@ script:
       description: The URL of the zone where the instance group is located (for zonal resources).
       type: string
     - contextPath: GCP.Compute.InstanceGroups.selfLink
-      description: The URL for this instance group. The server generates this URL.
+      description: The server-generated URL for this instance group.
       type: string
     - contextPath: GCP.Compute.InstanceGroups.size
       description: The total number of instances in the instance group.
@@ -2829,26 +2829,26 @@ script:
       description: 'The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
       defaultValue: '50'
     - name: filter
-      description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, to exclude an instance group named example-group specify name != example-group.
+      description: The expression to filter resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value (string, number, or boolean). For example, to exclude an instance group named example-group, specify name != example-group.
     - name: order_by
-      description: The sort order for the list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc".
+      description: The sort order for the results. By default, results are returned in alphanumerical order by resource name. To sort in descending order by creation timestamp, use order_by=creationTimestamp desc.
     - name: next_token
-      description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results.
+      description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to retrieve the next page of results.
     outputs:
     - contextPath: GCP.Compute.InstanceGroups.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique identifier for the server-defined resource.
       type: string
     - contextPath: GCP.Compute.InstanceGroups.creationTimestamp
-      description: The creation timestamp for this instance group in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The creation timestamp for this instance group in RFC3339 format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.InstanceGroups.name
-      description: The name of the instance group. The name must be 1-63 characters long, and comply with RFC1035.
+      description: The name of the instance group. The name must be 1 to 63 characters long and comply with RFC1035.
       type: string
     - contextPath: GCP.Compute.InstanceGroups.description
       description: The optional description of this resource.
       type: string
     - contextPath: GCP.Compute.InstanceGroups.namedPorts.name
-      description: The name for this named port. The name must be 1-63 characters long, and comply with RFC1035.
+      description: The name of the named port. The name must be 1 to 63 characters long and comply with RFC1035.
       type: string
     - contextPath: GCP.Compute.InstanceGroups.namedPorts.port
       description: The port number, which can be a value between 1 and 65535.
@@ -2863,7 +2863,7 @@ script:
       description: The URL of the zone where the instance group is located (for zonal resources).
       type: string
     - contextPath: GCP.Compute.InstanceGroups.selfLink
-      description: The URL for this instance group. The server generates this URL.
+      description: The server-generated URL for this instance group.
       type: string
     - contextPath: GCP.Compute.InstanceGroups.size
       description: The total number of instances in the instance group.
@@ -2911,11 +2911,11 @@ script:
       description: 'The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive.'
       defaultValue: '50'
     - name: filter
-      description: The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, >, or <. For example, to exclude an instance named example-instance specify name != example-instance.
+      description: The expression to filter resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, >, or <), and a value (string, number, or boolean). For example, to exclude an instance group named example-group, specify name != example-group.
     - name: order_by
-      description: The sort order for the list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc".
+      description: The sort order for the results. By default, results are returned in alphanumerical order by resource name. To sort in descending order by creation timestamp, use order_by=creationTimestamp desc.
     - name: next_token
-      description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results.
+      description: The page token to use. Set next_token to the nextPageToken returned by a previous list request to retrieve the next page of results.
     outputs:
     - contextPath: GCP.Compute.InstanceGroups.id
       description: The name of the instance group whose instances were listed.
@@ -2927,7 +2927,7 @@ script:
       description: The status of the instance.
       type: string
     - contextPath: GCP.Compute.InstanceGroups.Instances.namedPorts.name
-      description: The name for this named port. The name must be 1-63 characters long, and comply with RFC1035.
+      description: The name of the named port. The name must be 1 to 63 characters long and comply with RFC1035.
       type: string
     - contextPath: GCP.Compute.InstanceGroups.Instances.namedPorts.port
       description: The port number, which can be a value between 1 and 65535.
@@ -2948,7 +2948,7 @@ script:
       description: The name of the zone where the instance group is created.
       required: true
     - name: name
-      description: The name of the instance group. The name must be 1-63 characters long, and comply with RFC1035.
+      description: The name of the instance group. The name must be 1 to 63 characters long and comply with RFC1035.
       required: true
     - name: description
       description: The optional description of this resource.
@@ -2958,7 +2958,7 @@ script:
       description: The URL of the network to which all instances in the instance group belong.
     outputs:
     - contextPath: GCP.Compute.Operations.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique identifier for the server-defined resource.
       type: string
     - contextPath: GCP.Compute.Operations.name
       description: The name of the resource.
@@ -2988,13 +2988,13 @@ script:
       description: The optional progress indicator that ranges from 0 to 100.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
-      description: The time that this operation was requested. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time that this operation was requested in RFC3339 format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.startTime
-      description: The time that this operation was started by the server. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time that this operation was started by the server, in RFC3339 format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.endTime
-      description: The time that this operation was completed. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time that this operation was completed, in RFC3339 format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.error
       description: The errors generated during processing of the operation, containing an errors array with code, location, and message fields.
@@ -3003,21 +3003,21 @@ script:
       description: The warning messages generated during processing of the operation, containing code, message, and data fields.
       type: Unknown
     - contextPath: GCP.Compute.Operations.httpErrorStatusCode
-      description: The HTTP error status code that was returned if the operation fails.
+      description: The HTTP error status code that is returned if the operation fails.
       type: number
     - contextPath: GCP.Compute.Operations.httpErrorMessage
-      description: The HTTP error message that was returned if the operation fails, such as NOT FOUND.
+      description: The HTTP error message that is returned if the operation fails, such as NOT FOUND.
       type: string
     - contextPath: GCP.Compute.Operations.selfLink
       description: The server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.kind
-      description: The type of the resource. Always compute#operation for Operation resources.
+      description: The type of the resource. The value is always compute#operation for Operation resources.
       type: string
 
 # gcp-compute-instance-group-delete
   - name: gcp-compute-instance-group-delete
-    description: "Deletes the specified instance group. The instances in the group are not deleted. Note that the instance group must not belong to a backend service. Required permission: compute.instanceGroups.delete."
+    description: "Deletes the specified instance group. The instances in the group are not deleted. The instance group must not belong to a back-end service. Required permission: compute.instanceGroups.delete."
     arguments:
     - name: project_id
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -3031,7 +3031,7 @@ script:
       required: true
     outputs:
     - contextPath: GCP.Compute.Operations.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique identifier for the server-defined resource.
       type: string
     - contextPath: GCP.Compute.Operations.name
       description: The name of the resource.
@@ -3061,13 +3061,13 @@ script:
       description: The optional progress indicator that ranges from 0 to 100.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
-      description: The time that this operation was requested. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time that this operation was requested, in RFC3339 format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.startTime
-      description: The time that this operation was started by the server. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time that this operation was started by the server, in RFC3339 format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.endTime
-      description: The time that this operation was completed. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time that this operation was completed, in RFC3339 format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.error
       description: The errors generated during processing of the operation, containing an errors array with code, location, and message fields.
@@ -3076,16 +3076,16 @@ script:
       description: The warning messages generated during processing of the operation, containing code, message, and data fields.
       type: Unknown
     - contextPath: GCP.Compute.Operations.httpErrorStatusCode
-      description: The HTTP error status code that was returned if the operation fails.
+      description: The HTTP error status code that is returned if the operation fails.
       type: number
     - contextPath: GCP.Compute.Operations.httpErrorMessage
-      description: The HTTP error message that was returned if the operation fails, such as NOT FOUND.
+      description: The HTTP error message that is returned if the operation fails, such as NOT FOUND.
       type: string
     - contextPath: GCP.Compute.Operations.selfLink
       description: The server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.kind
-      description: The type of the resource. Always compute#operation for Operation resources.
+      description: The type of the resource. The value is always compute#operation for Operation resources.
       type: string
 
 # gcp-compute-instance-group-instances-add
@@ -3103,12 +3103,12 @@ script:
       description: The name of the instance group where the instances are added.
       required: true
     - name: instances
-      description: The comma-separated list of URLs of the instances to add to the instance group.
+      description: A comma-separated list of URLs of the instances to add to the instance group.
       required: true
       isArray: true
     outputs:
     - contextPath: GCP.Compute.Operations.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique identifier for the server-defined resource.
       type: string
     - contextPath: GCP.Compute.Operations.name
       description: The name of the resource.
@@ -3138,13 +3138,13 @@ script:
       description: The optional progress indicator that ranges from 0 to 100.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
-      description: The time that this operation was requested. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time that this operation was requested, in RFC3339 format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.startTime
-      description: The time that this operation was started by the server. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time that this operation was started by the server, in RFC3339 format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.endTime
-      description: The time that this operation was completed. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time that this operation was completed, in RFC3339 format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.error
       description: The errors generated during processing of the operation, containing an errors array with code, location, and message fields.
@@ -3153,21 +3153,21 @@ script:
       description: The warning messages generated during processing of the operation, containing code, message, and data fields.
       type: Unknown
     - contextPath: GCP.Compute.Operations.httpErrorStatusCode
-      description: The HTTP error status code that was returned if the operation fails.
+      description: The HTTP error status code that is returned if the operation fails.
       type: number
     - contextPath: GCP.Compute.Operations.httpErrorMessage
-      description: The HTTP error message that was returned if the operation fails, such as NOT FOUND.
+      description: The HTTP error message that is returned if the operation fails, such as NOT FOUND.
       type: string
     - contextPath: GCP.Compute.Operations.selfLink
       description: The server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.kind
-      description: The type of the resource. Always compute#operation for Operation resources.
+      description: The type of the resource. The value is always compute#operation for Operation resources.
       type: string
 
 # gcp-compute-instance-group-instances-remove
   - name: gcp-compute-instance-group-instances-remove
-    description: "Removes one or more instances from the specified instance group, but does not delete those instances. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration before the VM instance is removed or deleted. Required permission: compute.instanceGroups.update."
+    description: "Removes one or more instances from the specified instance group, but does not delete those instances. If the group is part of a back-end service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration for the VM instance to be removed or deleted. Required permission: compute.instanceGroups.update."
     arguments:
     - name: project_id
       description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
@@ -3180,12 +3180,12 @@ script:
       description: The name of the instance group from which the instances are removed.
       required: true
     - name: instances
-      description: The comma-separated list of URLs of the instances to remove from the instance group.
+      description: A comma-separated list of URLs of the instances to remove from the instance group.
       required: true
       isArray: true
     outputs:
     - contextPath: GCP.Compute.Operations.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique identifier for the server-defined resource.
       type: string
     - contextPath: GCP.Compute.Operations.name
       description: The name of the resource.
@@ -3215,13 +3215,13 @@ script:
       description: The optional progress indicator that ranges from 0 to 100.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
-      description: The time that this operation was requested. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time that this operation was requested, in RFC3339 format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.startTime
-      description: The time that this operation was started by the server. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time that this operation was started by the server, in RFC3339 format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.endTime
-      description: The time that this operation was completed. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time that this operation was completed, in RFC3339 format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.error
       description: The errors generated during processing of the operation, containing an errors array with code, location, and message fields.
@@ -3230,16 +3230,16 @@ script:
       description: The warning messages generated during processing of the operation, containing code, message, and data fields.
       type: Unknown
     - contextPath: GCP.Compute.Operations.httpErrorStatusCode
-      description: The HTTP error status code that was returned if the operation fails.
+      description: The HTTP error status code that is returned if the operation fails.
       type: number
     - contextPath: GCP.Compute.Operations.httpErrorMessage
-      description: The HTTP error message that was returned if the operation fails, such as NOT FOUND.
+      description: The HTTP error message that is returned if the operation fails, such as NOT FOUND.
       type: string
     - contextPath: GCP.Compute.Operations.selfLink
       description: The server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.kind
-      description: The type of the resource. Always compute#operation for Operation resources.
+      description: The type of the resource. The value is always compute#operation for Operation resources.
       type: string
 
 # gcp-compute-instance-group-named-ports-set
@@ -3263,7 +3263,7 @@ script:
       description: The fingerprint of the named ports information for this instance group. Use this optional argument to prevent conflicts when multiple users change the named ports settings concurrently. Obtain the fingerprint with the gcp-compute-instance-group-get command. A request with an incorrect fingerprint fails with error 412 conditionNotMet.
     outputs:
     - contextPath: GCP.Compute.Operations.id
-      description: The unique identifier for the resource. This identifier is defined by the server.
+      description: The unique identifier for the server-defined resource.
       type: string
     - contextPath: GCP.Compute.Operations.name
       description: The name of the resource.
@@ -3293,13 +3293,13 @@ script:
       description: The optional progress indicator that ranges from 0 to 100.
       type: number
     - contextPath: GCP.Compute.Operations.insertTime
-      description: The time that this operation was requested. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time that this operation was requested, in RFC3339 format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.startTime
-      description: The time that this operation was started by the server. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time that this operation was started by the server, in RFC3339 format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.endTime
-      description: The time that this operation was completed. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z).
+      description: The date and time that this operation was completed, in RFC3339 format (for example, 2024-01-15T12:34:56Z).
       type: string
     - contextPath: GCP.Compute.Operations.error
       description: The errors generated during processing of the operation, containing an errors array with code, location, and message fields.
@@ -3308,16 +3308,16 @@ script:
       description: The warning messages generated during processing of the operation, containing code, message, and data fields.
       type: Unknown
     - contextPath: GCP.Compute.Operations.httpErrorStatusCode
-      description: The HTTP error status code that was returned if the operation fails.
+      description: The HTTP error status code that is returned if the operation fails.
       type: number
     - contextPath: GCP.Compute.Operations.httpErrorMessage
-      description: The HTTP error message that was returned if the operation fails, such as NOT FOUND.
+      description: The HTTP error message that is returned if the operation fails, such as NOT FOUND.
       type: string
     - contextPath: GCP.Compute.Operations.selfLink
       description: The server-defined URL for the resource.
       type: string
     - contextPath: GCP.Compute.Operations.kind
-      description: The type of the resource. Always compute#operation for Operation resources.
+      description: The type of the resource. The value is always compute#operation for Operation resources.
       type: string
 
 # gcp-compute-zone-get

@@ -1694,9 +1694,9 @@ Lists the instances in the specified instance group. Required permission: comput
 | instance_group | The name of the instance group from which to generate the list of included instances. | Required |
 | instance_state | The filter for the state of the instances in the instance group. If not specified, the list includes all instances regardless of their state. Possible values are: ALL, RUNNING. | Optional |
 | limit | The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
-| filter | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, to exclude an instance named example-instance specify name != example-instance. | Optional |
-| order_by | The sort order for the list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". | Optional |
-| next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+| filter | The expression to filter resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value (string, number, or boolean). For example, to exclude an instance group named example-group, specify name != example-group. | Optional |
+| order_by | The sort order for the results. By default, results are returned in alphanumerical order by resource name. To sort in descending order by creation timestamp, use order_by=creationTimestamp desc. | Optional |
+| next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to retrieve the next page of results. | Optional |
 
 #### Context Output
 
@@ -1705,7 +1705,7 @@ Lists the instances in the specified instance group. Required permission: comput
 | GCP.Compute.InstanceGroups.id | string | The name of the instance group whose instances were listed. |
 | GCP.Compute.InstanceGroups.Instances.instance | string | The URL of the instance. |
 | GCP.Compute.InstanceGroups.Instances.status | string | The status of the instance. |
-| GCP.Compute.InstanceGroups.Instances.namedPorts.name | string | The name for this named port. The name must be 1-63 characters long, and comply with RFC1035. |
+| GCP.Compute.InstanceGroups.Instances.namedPorts.name | string | The name of the named port. The name must be 1 to 63 characters long and comply with RFC1035. |
 | GCP.Compute.InstanceGroups.Instances.namedPorts.port | number | The port number, which can be a value between 1 and 65535. |
 | GCP.Compute.InstanceGroups.InstanceGroupsInstancesNextToken | string | The token to use to retrieve the next page of instance group instances results. |
 
@@ -1724,7 +1724,7 @@ Creates an instance group in the specified project and zone. Required permission
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone where the instance group is created. | Required |
-| name | The name of the instance group. The name must be 1-63 characters long, and comply with RFC1035. | Required |
+| name | The name of the instance group. The name must be 1 to 63 characters long and comply with RFC1035. | Required |
 | description | The optional description of this resource. | Optional |
 | named_ports | The named ports to assign to the instance group. For example: name=http,port=80;name=https,port=443. | Optional |
 | network | The URL of the network to which all instances in the instance group belong. | Optional |
@@ -1733,7 +1733,7 @@ Creates an instance group in the specified project and zone. Required permission
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Operations.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Operations.id | string | The unique identifier for the server-defined resource. |
 | GCP.Compute.Operations.name | string | The name of the resource. |
 | GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. |
 | GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
@@ -1743,15 +1743,15 @@ Creates an instance group in the specified project and zone. Required permission
 | GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
 | GCP.Compute.Operations.user | string | The user who requested the operation. |
 | GCP.Compute.Operations.progress | number | The optional progress indicator that ranges from 0 to 100. |
-| GCP.Compute.Operations.insertTime | string | The time that this operation was requested. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z). |
-| GCP.Compute.Operations.startTime | string | The time that this operation was started by the server. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z). |
-| GCP.Compute.Operations.endTime | string | The time that this operation was completed. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z). |
+| GCP.Compute.Operations.insertTime | string | The date and time that this operation was requested in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.startTime | string | The date and time that this operation was started by the server, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.endTime | string | The date and time that this operation was completed, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
 | GCP.Compute.Operations.error | Unknown | The errors generated during processing of the operation, containing an errors array with code, location, and message fields. |
 | GCP.Compute.Operations.warnings | Unknown | The warning messages generated during processing of the operation, containing code, message, and data fields. |
-| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that was returned if the operation fails. |
-| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that was returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that is returned if the operation fails. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that is returned if the operation fails, such as NOT FOUND. |
 | GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
-| GCP.Compute.Operations.kind | string | The type of the resource. Always compute\#operation for Operation resources. |
+| GCP.Compute.Operations.kind | string | The type of the resource. The value is always compute\#operation for Operation resources. |
 
 ### gcp-compute-instance-groups-aggregated-list
 
@@ -1768,24 +1768,24 @@ Retrieves the list of instance groups in the specified project across all zones.
 | --- | --- | --- |
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
-| filter | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, to exclude an instance group named example-group specify name != example-group. | Optional |
-| order_by | The sort order for the list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". | Optional |
-| next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+| filter | The expression to filter resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value (string, number, or boolean). For example, to exclude an instance group named example-group, specify name != example-group. | Optional |
+| order_by | The sort order for the results. By default, results are returned in alphanumerical order by resource name. To sort in descending order by creation timestamp, use order_by=creationTimestamp desc. | Optional |
+| next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to retrieve the next page of results. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.InstanceGroups.id | string | The unique identifier for the resource. This identifier is defined by the server. |
-| GCP.Compute.InstanceGroups.creationTimestamp | string | The creation timestamp for this instance group in RFC3339 text format (e.g., 2024-01-15T12:34:56Z). |
-| GCP.Compute.InstanceGroups.name | string | The name of the instance group. The name must be 1-63 characters long, and comply with RFC1035. |
+| GCP.Compute.InstanceGroups.id | string | The unique identifier for the server-defined resource. |
+| GCP.Compute.InstanceGroups.creationTimestamp | string | The creation timestamp for this instance group in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.InstanceGroups.name | string | The name of the instance group. The name must be 1 to 63 characters long and comply with RFC1035. |
 | GCP.Compute.InstanceGroups.description | string | The optional description of this resource. |
-| GCP.Compute.InstanceGroups.namedPorts.name | string | The name for this named port. The name must be 1-63 characters long, and comply with RFC1035. |
+| GCP.Compute.InstanceGroups.namedPorts.name | string | The name of the named port. The name must be 1 to 63 characters long and comply with RFC1035. |
 | GCP.Compute.InstanceGroups.namedPorts.port | number | The port number, which can be a value between 1 and 65535. |
 | GCP.Compute.InstanceGroups.network | string | The URL of the network to which all instances in the instance group belong. |
 | GCP.Compute.InstanceGroups.fingerprint | string | The fingerprint of the named ports. The system uses this fingerprint to detect conflicts when multiple users change the named ports concurrently. |
 | GCP.Compute.InstanceGroups.zone | string | The URL of the zone where the instance group is located \(for zonal resources\). |
-| GCP.Compute.InstanceGroups.selfLink | string | The URL for this instance group. The server generates this URL. |
+| GCP.Compute.InstanceGroups.selfLink | string | The server-generated URL for this instance group. |
 | GCP.Compute.InstanceGroups.size | number | The total number of instances in the instance group. |
 | GCP.Compute.InstanceGroups.region | string | The URL of the region where the instance group is located \(for regional resources\). |
 | GCP.Compute.InstanceGroups.subnetwork | string | The URL of the subnetwork to which all instances in the instance group belong. |
@@ -1810,24 +1810,24 @@ Retrieves the list of instance groups that are located in the specified project 
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone where the instance groups are located. | Required |
 | limit | The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
-| filter | The filter expression that filters resources listed in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be either =, !=, &gt;, or &lt;. For example, to exclude an instance group named example-group specify name != example-group. | Optional |
-| order_by | The sort order for the list results. By default, results are returned in alphanumerical order based on the resource name. You can also sort results in descending order based on the creation timestamp using order_by="creationTimestamp desc". | Optional |
-| next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to get the next page of results. | Optional |
+| filter | The expression to filter resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value (string, number, or boolean). For example, to exclude an instance group named example-group, specify name != example-group. | Optional |
+| order_by | The sort order for the results. By default, results are returned in alphanumerical order by resource name. To sort in descending order by creation timestamp, use order_by=creationTimestamp desc. | Optional |
+| next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to retrieve the next page of results. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.InstanceGroups.id | string | The unique identifier for the resource. This identifier is defined by the server. |
-| GCP.Compute.InstanceGroups.creationTimestamp | string | The creation timestamp for this instance group in RFC3339 text format (e.g., 2024-01-15T12:34:56Z). |
-| GCP.Compute.InstanceGroups.name | string | The name of the instance group. The name must be 1-63 characters long, and comply with RFC1035. |
+| GCP.Compute.InstanceGroups.id | string | The unique identifier for the server-defined resource. |
+| GCP.Compute.InstanceGroups.creationTimestamp | string | The creation timestamp for this instance group in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.InstanceGroups.name | string | The name of the instance group. The name must be 1 to 63 characters long and comply with RFC1035. |
 | GCP.Compute.InstanceGroups.description | string | The optional description of this resource. |
-| GCP.Compute.InstanceGroups.namedPorts.name | string | The name for this named port. The name must be 1-63 characters long, and comply with RFC1035. |
+| GCP.Compute.InstanceGroups.namedPorts.name | string | The name of the named port. The name must be 1 to 63 characters long and comply with RFC1035. |
 | GCP.Compute.InstanceGroups.namedPorts.port | number | The port number, which can be a value between 1 and 65535. |
 | GCP.Compute.InstanceGroups.network | string | The URL of the network to which all instances in the instance group belong. |
 | GCP.Compute.InstanceGroups.fingerprint | string | The fingerprint of the named ports. The system uses this fingerprint to detect conflicts when multiple users change the named ports concurrently. |
 | GCP.Compute.InstanceGroups.zone | string | The URL of the zone where the instance group is located \(for zonal resources\). |
-| GCP.Compute.InstanceGroups.selfLink | string | The URL for this instance group. The server generates this URL. |
+| GCP.Compute.InstanceGroups.selfLink | string | The server-generated URL for this instance group. |
 | GCP.Compute.InstanceGroups.size | number | The total number of instances in the instance group. |
 | GCP.Compute.InstanceGroups.region | string | The URL of the region where the instance group is located \(for regional resources\). |
 | GCP.Compute.InstanceGroups.subnetwork | string | The URL of the subnetwork to which all instances in the instance group belong. |
@@ -1859,7 +1859,7 @@ Sets the named ports for the specified instance group. Required permission: comp
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Operations.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Operations.id | string | The unique identifier for the server-defined resource. |
 | GCP.Compute.Operations.name | string | The name of the resource. |
 | GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. |
 | GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
@@ -1869,15 +1869,15 @@ Sets the named ports for the specified instance group. Required permission: comp
 | GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
 | GCP.Compute.Operations.user | string | The user who requested the operation. |
 | GCP.Compute.Operations.progress | number | The optional progress indicator that ranges from 0 to 100. |
-| GCP.Compute.Operations.insertTime | string | The time that this operation was requested. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z). |
-| GCP.Compute.Operations.startTime | string | The time that this operation was started by the server. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z). |
-| GCP.Compute.Operations.endTime | string | The time that this operation was completed. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z). |
+| GCP.Compute.Operations.insertTime | string | The date and time that this operation was requested, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.startTime | string | The date and time that this operation was started by the server, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.endTime | string | The date and time that this operation was completed, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
 | GCP.Compute.Operations.error | Unknown | The errors generated during processing of the operation, containing an errors array with code, location, and message fields. |
 | GCP.Compute.Operations.warnings | Unknown | The warning messages generated during processing of the operation, containing code, message, and data fields. |
-| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that was returned if the operation fails. |
-| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that was returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that is returned if the operation fails. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that is returned if the operation fails, such as NOT FOUND. |
 | GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
-| GCP.Compute.Operations.kind | string | The type of the resource. Always compute\#operation for Operation resources. |
+| GCP.Compute.Operations.kind | string | The type of the resource. The value is always compute\#operation for Operation resources. |
 
 ### gcp-compute-instance-group-instances-add
 
@@ -1895,13 +1895,13 @@ Adds a list of instances to the specified instance group. All of the instances i
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone where the instance group is located. | Required |
 | instance_group | The name of the instance group where the instances are added. | Required |
-| instances | The comma-separated list of URLs of the instances to add to the instance group. | Required |
+| instances | A comma-separated list of URLs of the instances to add to the instance group. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Operations.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Operations.id | string | The unique identifier for the server-defined resource. |
 | GCP.Compute.Operations.name | string | The name of the resource. |
 | GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. |
 | GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
@@ -1911,20 +1911,20 @@ Adds a list of instances to the specified instance group. All of the instances i
 | GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
 | GCP.Compute.Operations.user | string | The user who requested the operation. |
 | GCP.Compute.Operations.progress | number | The optional progress indicator that ranges from 0 to 100. |
-| GCP.Compute.Operations.insertTime | string | The time that this operation was requested. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z). |
-| GCP.Compute.Operations.startTime | string | The time that this operation was started by the server. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z). |
-| GCP.Compute.Operations.endTime | string | The time that this operation was completed. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z). |
+| GCP.Compute.Operations.insertTime | string | The date and time that this operation was requested, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.startTime | string | The date and time that this operation was started by the server, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.endTime | string | The date and time that this operation was completed, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
 | GCP.Compute.Operations.error | Unknown | The errors generated during processing of the operation, containing an errors array with code, location, and message fields. |
 | GCP.Compute.Operations.warnings | Unknown | The warning messages generated during processing of the operation, containing code, message, and data fields. |
-| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that was returned if the operation fails. |
-| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that was returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that is returned if the operation fails. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that is returned if the operation fails, such as NOT FOUND. |
 | GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
-| GCP.Compute.Operations.kind | string | The type of the resource. Always compute\#operation for Operation resources. |
+| GCP.Compute.Operations.kind | string | The type of the resource. The value is always compute\#operation for Operation resources. |
 
 ### gcp-compute-instance-group-delete
 
 ***
-Deletes the specified instance group. The instances in the group are not deleted. Note that the instance group must not belong to a backend service. Required permission: compute.instanceGroups.delete.
+Deletes the specified instance group. The instances in the group are not deleted. The instance group must not belong to a back-end service. Required permission: compute.instanceGroups.delete.
 
 #### Base Command
 
@@ -1942,7 +1942,7 @@ Deletes the specified instance group. The instances in the group are not deleted
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Operations.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Operations.id | string | The unique identifier for the server-defined resource. |
 | GCP.Compute.Operations.name | string | The name of the resource. |
 | GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. |
 | GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
@@ -1952,20 +1952,20 @@ Deletes the specified instance group. The instances in the group are not deleted
 | GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
 | GCP.Compute.Operations.user | string | The user who requested the operation. |
 | GCP.Compute.Operations.progress | number | The optional progress indicator that ranges from 0 to 100. |
-| GCP.Compute.Operations.insertTime | string | The time that this operation was requested. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z). |
-| GCP.Compute.Operations.startTime | string | The time that this operation was started by the server. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z). |
-| GCP.Compute.Operations.endTime | string | The time that this operation was completed. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z). |
+| GCP.Compute.Operations.insertTime | string | The date and time that this operation was requested, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.startTime | string | The date and time that this operation was started by the server, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.endTime | string | The date and time that this operation was completed, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
 | GCP.Compute.Operations.error | Unknown | The errors generated during processing of the operation, containing an errors array with code, location, and message fields. |
 | GCP.Compute.Operations.warnings | Unknown | The warning messages generated during processing of the operation, containing code, message, and data fields. |
-| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that was returned if the operation fails. |
-| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that was returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that is returned if the operation fails. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that is returned if the operation fails, such as NOT FOUND. |
 | GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
-| GCP.Compute.Operations.kind | string | The type of the resource. Always compute\#operation for Operation resources. |
+| GCP.Compute.Operations.kind | string | The type of the resource. The value is always compute\#operation for Operation resources. |
 
 ### gcp-compute-instance-group-instances-remove
 
 ***
-Removes one or more instances from the specified instance group, but does not delete those instances. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration before the VM instance is removed or deleted. Required permission: compute.instanceGroups.update.
+Removes one or more instances from the specified instance group, but does not delete those instances. If the group is part of a back-end service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration for the VM instance to be removed or deleted. Required permission: compute.instanceGroups.update.
 
 #### Base Command
 
@@ -1978,13 +1978,13 @@ Removes one or more instances from the specified instance group, but does not de
 | project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | zone | The name of the zone where the instance group is located. | Required |
 | instance_group | The name of the instance group from which the instances are removed. | Required |
-| instances | The comma-separated list of URLs of the instances to remove from the instance group. | Required |
+| instances | A comma-separated list of URLs of the instances to remove from the instance group. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.Compute.Operations.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.Operations.id | string | The unique identifier for the server-defined resource. |
 | GCP.Compute.Operations.name | string | The name of the resource. |
 | GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. |
 | GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
@@ -1994,12 +1994,12 @@ Removes one or more instances from the specified instance group, but does not de
 | GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
 | GCP.Compute.Operations.user | string | The user who requested the operation. |
 | GCP.Compute.Operations.progress | number | The optional progress indicator that ranges from 0 to 100. |
-| GCP.Compute.Operations.insertTime | string | The time that this operation was requested. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z). |
-| GCP.Compute.Operations.startTime | string | The time that this operation was started by the server. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z). |
-| GCP.Compute.Operations.endTime | string | The time that this operation was completed. This value is in RFC3339 text format (e.g., 2024-01-15T12:34:56Z). |
+| GCP.Compute.Operations.insertTime | string | The date and time that this operation was requested, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.startTime | string | The date and time that this operation was started by the server, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.endTime | string | The date and time that this operation was completed, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
 | GCP.Compute.Operations.error | Unknown | The errors generated during processing of the operation, containing an errors array with code, location, and message fields. |
 | GCP.Compute.Operations.warnings | Unknown | The warning messages generated during processing of the operation, containing code, message, and data fields. |
-| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that was returned if the operation fails. |
-| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that was returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that is returned if the operation fails. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that is returned if the operation fails, such as NOT FOUND. |
 | GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
-| GCP.Compute.Operations.kind | string | The type of the resource. Always compute\#operation for Operation resources. |
+| GCP.Compute.Operations.kind | string | The type of the resource. The value is always compute\#operation for Operation resources. |
