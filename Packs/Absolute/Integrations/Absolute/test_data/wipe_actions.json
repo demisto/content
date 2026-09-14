@@ -1,0 +1,13 @@
+[
+    {
+      "actionUid": "7f0741c5-fbe9-4144-8c54-498db6559304",
+      "requestUid": "1",
+      "deviceUid": "2",
+      "deviceName": "string",
+      "esn": "string",
+      "updatedDateTimeUtc": "2019-08-24T14:15:22Z",
+      "createdDateTimeUtc": "2019-08-24T14:15:22Z",
+      "actionStatus": "Pending",
+      "certificateUid": "string"
+    }
+]
