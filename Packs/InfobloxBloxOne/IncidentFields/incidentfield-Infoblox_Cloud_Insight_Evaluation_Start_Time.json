@@ -1,0 +1,32 @@
+{
+    "id": "incident_infobloxcloudinsightevaluationstarttime",
+    "version": -1,
+    "modified": "2026-07-07T00:00:00.000000000+05:30",
+    "name": "Infoblox Cloud Insight Evaluation Start Time",
+    "ownerOnly": false,
+    "description": "The evaluation window start time of the Infoblox Cloud IQ for TD Insight.",
+    "cliName": "infobloxcloudinsightevaluationstarttime",
+    "type": "date",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Infoblox Cloud IQ for TD Insight"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

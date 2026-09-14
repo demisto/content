@@ -8,39 +8,53 @@ display: Bitbucket
 fromversion: 6.5.0
 description: Bitbucket Cloud is a Git-based code and CI/CD tool optimized for teams using Jira.
 configuration:
-- name: workspace
-  display: Workspace
-  required: true
-  defaultvalue:
-  type: 0
-  additionalinfo:
 - name: server_url
   display: Server URL
   required: true
   defaultvalue: https://api.bitbucket.org/2.0
   type: 0
-  additionalinfo:
+  additionalinfo: The base URL of the Bitbucket API.
+  section: Connect
+- name: workspace
+  display: Workspace
+  required: true
+  defaultvalue:
+  type: 0
+  additionalinfo: The Bitbucket workspace slug or UUID to connect to.
+  section: Connect
 - display: User Name
   name: credentials
-  required: true
+  required: false
   type: 9
-  displaypassword: App Password
+  displaypassword: API Token
+  additionalinfo: The User Name is your Atlassian account email address, and the API Token is a scoped API token created at https://id.atlassian.com/manage-profile/security/api-tokens.
+  section: Connect
+- display: Client ID
+  name: client_credentials
+  required: false
+  type: 9
+  displaypassword: Client Secret
+  additionalinfo: The Client ID and Client Secret are the key and secret of an OAuth consumer created in the Bitbucket workspace settings (Apps and features -> OAuth clients).
+  section: Connect
 - name: repository
   display: Repository
   defaultvalue:
   type: 0
-  additionalinfo:
+  additionalinfo: The default Bitbucket repository slug to use for commands.
   required: false
+  section: Connect
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
-  additionalinfo:
+  additionalinfo: Whether to trust any TLS certificate when connecting to the server.
   required: false
+  section: Connect
 - name: proxy
   display: Use system proxy settings
   type: 8
-  additionalinfo:
+  additionalinfo: Whether to use the system proxy settings when connecting to the server.
   required: false
+  section: Connect
 script:
   commands:
   - name: bitbucket-project-list
@@ -587,7 +601,8 @@ script:
       description: The file type.
       type: String
   - name: bitbucket-issue-create
-    description: Creates an issue in Bitbucket. To perform this command, create an issue tracker by clicking on the relevant repo > Repository settings > Issue tracker.
+    deprecated: true
+    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-create-issue*** command in the Atlassian Jira v3 integration instead. Creates an issue in Bitbucket. To perform this command, create an issue tracker by clicking on the relevant repo > Repository settings > Issue tracker.'
     arguments:
     - name: repo
       description: The repository name or slug.
@@ -749,7 +764,8 @@ script:
       description: The watchers of the issue.
       type: Unknown
   - name: bitbucket-issue-list
-    description: If an issue_id is given, returns the information about it. Otherwise, returns a list of all the issues, according to the limit parameter.
+    deprecated: true
+    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-get-issue*** command (for a single issue) or the ***jira-issue-query*** command (to list issues using JQL) in the Atlassian Jira v3 integration instead. If an issue_id is given, returns the information about it. Otherwise, returns a list of all the issues, according to the limit parameter.'
     arguments:
     - name: repo
       description: The repository name or slug.
@@ -876,7 +892,8 @@ script:
       description: The watchers of the issue.
       type: Number
   - name: bitbucket-issue-update
-    description: Updates an issue in Bitbucket. To perform this command, create an issue tracker by clicking on the relevant repo > Repository settings > Issue tracker.
+    deprecated: true
+    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-edit-issue*** command in the Atlassian Jira v3 integration instead. Updates an issue in Bitbucket. To perform this command, create an issue tracker by clicking on the relevant repo > Repository settings > Issue tracker.'
     arguments:
     - name: repo
       description: The repository name or slug.
@@ -1732,7 +1749,8 @@ script:
       description: The description of the pull request in HTML format.
       type: String
   - name: bitbucket-issue-comment-create
-    description: Creates a comment on an issue in Bitbucket.
+    deprecated: true
+    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-issue-add-comment*** command in the Atlassian Jira v3 integration instead. Creates a comment on an issue in Bitbucket.'
     arguments:
     - name: repo
       description: The repository name or slug.
@@ -1823,7 +1841,8 @@ script:
       description: Links to information about the comment.
       type: String
   - name: bitbucket-issue-comment-delete
-    description: Deletes a comment on an issue in Bitbucket.
+    deprecated: true
+    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-issue-delete-comment*** command in the Atlassian Jira v3 integration instead. Deletes a comment on an issue in Bitbucket.'
     arguments:
     - name: repo
       description: The repository name or slug.
@@ -1834,7 +1853,8 @@ script:
       required: true
       description: The ID of the comment to delete. To get the comment_id, use the !bitbucket-issue-comment-list command.
   - name: bitbucket-issue-comment-list
-    description: Returns a list of comments on a specific issue. If a comment_id is given it will return information only about the specific comment.
+    deprecated: true
+    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-get-comments*** command in the Atlassian Jira v3 integration instead. Returns a list of comments on a specific issue. If a comment_id is given it will return information only about the specific comment.'
     arguments:
     - name: repo
       description: The repository name or slug.
@@ -1928,7 +1948,8 @@ script:
       description: Links to information about the comment.
       type: String
   - name: bitbucket-issue-comment-update
-    description: Updates a specific comment on a given issue.
+    deprecated: true
+    description: 'Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-issue-edit-comment*** command in the Atlassian Jira v3 integration instead. Updates a specific comment on a given issue.'
     arguments:
     - name: repo
       description: The repository name or slug.
@@ -2330,6 +2351,8 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.13.11753038
 tests:
-- Test_Bitbucket
+- no tests
+sectionorder:
+- Connect
