@@ -1,4 +1,4 @@
-"""Unit tests for the Prisma AIRs AI Model Security integration."""
+"""Unit tests for the Prisma AIRS AI Model Security integration."""
 
 import json
 from unittest.mock import Mock, patch
@@ -39,7 +39,7 @@ from PrismaAIRsModelSecurity import (
 
 @pytest.fixture
 def mock_client() -> Client:
-    """Create a mock Prisma AIRs client scoped to the Model Security plane."""
+    """Create a mock Prisma AIRS client scoped to the Model Security plane."""
     return Client(
         base_url="https://api.sase.paloaltonetworks.com",
         client_id="test_client_id",
@@ -52,7 +52,7 @@ def mock_client() -> Client:
 
 
 class TestModelSecurity:
-    """Test cases for Prisma AIRs AI Model Security commands."""
+    """Test cases for Prisma AIRS AI Model Security commands."""
 
     @patch.object(Client, "http_request")
     def test_model_security_scans_list_command(self, mock_http: Mock, mock_client: Client) -> None:
