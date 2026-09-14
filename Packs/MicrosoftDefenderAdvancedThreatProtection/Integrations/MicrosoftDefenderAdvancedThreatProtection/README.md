@@ -2151,7 +2151,6 @@ Machine.StopAndQuarantine
 ---
 Deprecated. The Automated investigation and response APIs are deprecated by Microsoft. For more information, see the Microsoft 365 Message Center announcement [MC1411577](https://msmessagecenter.com/MC1411577/).
 
-Retrieves a collection of investigations or retrieves a specific investigation by its ID.
 
 ##### Required Permissions
 
@@ -2243,8 +2242,6 @@ Alert.ReadWrite.All
 
 ---
 Deprecated. The Automated investigation and response APIs are deprecated by Microsoft. For more information, see the Microsoft 365 Message Center announcement [MC1411577](https://msmessagecenter.com/MC1411577/). You can use the microsoft-atp-run-antivirus-scan command instead.
-
-Starts an automated investigation on a machine.
 
 ##### Required Permissions
 
