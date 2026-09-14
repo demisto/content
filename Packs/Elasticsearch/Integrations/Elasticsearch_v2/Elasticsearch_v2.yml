@@ -13,6 +13,13 @@ configuration:
   type: 0
   additionalinfo: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. The default port for Elasticsearch v7 and below is 9200. Use the Server URL for on-premises deployments.
   section: Connect
+- display: Kibana Server URL
+  name: kibana_url
+  required: false
+  type: 0
+  additionalinfo: The Kibana server used by the es-kibana-* commands and by fetching and mirroring security alerts and cases. Required for on-premises (self-managed) deployments, where Kibana is usually hosted separately from Elasticsearch (for example, https://kibana.example.com:5601). If left empty, the Kibana URL is derived from the Server URL, which is supported only for Elastic Cloud deployments whose hostname contains ".es." (the segment is replaced with ".kb.").
+  section: Connect
+  advanced: true
 - display: Authorization type
   defaultvalue: Basic auth
   additionalinfo: |-

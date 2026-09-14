@@ -33,6 +33,12 @@ configuration:
   defaultvalue: "5"
   type: 19
   required: false
+- display: Fetch Events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  defaultvalue: 'true'
 - display: Event Types To Fetch
   section: Collect
   name: event_types_to_fetch
@@ -74,7 +80,12 @@ script:
     - description: The maximum number of alerts to return.
       name: limit
       defaultValue: 10
-    description: Returns events extracted from SaaS traffic and or logs.
+    - description: 'The start of the time window to fetch events for. Accepts a date (e.g. "2026-08-11T00:00:00Z"), a relative time (e.g. "3 days"), or a Unix epoch timestamp (e.g. 1786513755). If omitted, the command uses the instance''s last-run position.'
+      name: start_time
+    - description: 'The end of the time window to fetch events for. Accepts a date (e.g. "2026-08-12T00:00:00Z"), a relative time (e.g. "1 day"), or a Unix epoch timestamp (e.g. 1786600155). Only used when start_time is provided.'
+      name: end_time
+      defaultValue: now
+    description: Returns events extracted from SaaS traffic and or logs. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     name: netskope-get-events
   dockerimage: demisto/auth-utils:1.0.0.10133006
   runonce: false

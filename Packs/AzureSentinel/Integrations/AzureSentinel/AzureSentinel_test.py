@@ -2294,7 +2294,7 @@ def test_max_limit_argument_in_fetch_and_list_incident_commands(mocker):
     assert client.http_request.call_args_list[0][1] == {"params": {"$top": 200, "$orderby": "properties/createdTimeUtc asc"}}
     assert client.http_request.call_args_list[1][1] == {
         "params": {
-            "$top": 20,
+            "$top": 50,
             "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z",
             "$orderby": "properties/createdTimeUtc asc",
         }
@@ -2359,6 +2359,37 @@ def test_lower_then_default_limit_argument_in_fetch_and_list_incident_commands(m
     assert client.http_request.call_args_list[1][1] == {
         "params": {
             "$top": 20,
+            "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z",
+            "$orderby": "properties/createdTimeUtc asc",
+        }
+    }
+
+
+def test_fetch_limit_above_default_within_max(mocker):
+    """
+    Given:
+        - A fetch limit parameter set to a value above the default (20) but within the max (50).
+
+    When:
+        - Executing the fetch-incidents command.
+
+    Then:
+        - Ensure the configured value is honored (not clamped down to the old hard-coded 20).
+    """
+    # prepare
+    mocker.patch("AzureSentinel.demisto.params", return_value={"limit": "50"})
+    last_run = {"last_fetch_time": "2022-03-16T13:01:08Z", "last_fetch_ids": []}
+    client = mock_client()
+    mocker.patch.object(client, "http_request", return_value=MOCKED_INCIDENTS_OUTPUT)
+    mocker.patch("AzureSentinel.process_incidents", return_value=({}, []))
+
+    # execute
+    fetch_incidents(client, last_run, "3 days", "Informational")
+
+    # validate
+    assert client.http_request.call_args_list[0][1] == {
+        "params": {
+            "$top": 50,
             "$filter": "properties/createdTimeUtc ge 2022-03-16T13:01:08Z",
             "$orderby": "properties/createdTimeUtc asc",
         }

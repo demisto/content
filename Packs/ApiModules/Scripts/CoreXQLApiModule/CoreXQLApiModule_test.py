@@ -1152,6 +1152,111 @@ def test_add_playbook_metadata_missing_context(mocker, callingContext):
     demisto.debug.assert_called_once()
 
 
+@pytest.mark.parametrize(
+    "args,expected_playbook_id,expected_playbook_name",
+    [
+        pytest.param(
+            {"source_id": "custom_id", "source_name": "custom_name"},
+            "custom_id",
+            "custom_name",
+            id="both_args_override",
+        ),
+        pytest.param(
+            {"source_id": "custom_id"},
+            "custom_id",
+            "test_output",
+            id="only_source_id_overrides",
+        ),
+        pytest.param(
+            {"source_name": "custom_name"},
+            "ed682ef1-dbbe-44a8-86d5-b0fda02f7afb",
+            "custom_name",
+            id="only_source_name_overrides",
+        ),
+        pytest.param(
+            {},
+            "ed682ef1-dbbe-44a8-86d5-b0fda02f7afb",
+            "test_output",
+            id="no_args_keeps_context_values",
+        ),
+        pytest.param(
+            None,
+            "ed682ef1-dbbe-44a8-86d5-b0fda02f7afb",
+            "test_output",
+            id="args_is_none_keeps_context_values",
+        ),
+        pytest.param(
+            {"source_id": "", "source_name": ""},
+            "ed682ef1-dbbe-44a8-86d5-b0fda02f7afb",
+            "test_output",
+            id="empty_args_keep_context_values",
+        ),
+        pytest.param(
+            {"source_id": "   ", "source_name": "\t"},
+            "ed682ef1-dbbe-44a8-86d5-b0fda02f7afb",
+            "test_output",
+            id="whitespace_only_args_keep_context_values",
+        ),
+    ],
+)
+def test_add_playbook_metadata_source_overrides(mocker, args, expected_playbook_id, expected_playbook_name):
+    """
+    Given:
+    - A complete calling context, and source_id/source_name arguments in various states
+      (both given, one given, absent, None, empty, or whitespace-only).
+
+    When:
+    - Calling add_playbook_metadata function.
+
+    Then:
+    - Ensure a non-empty source_id/source_name masks the context-derived playbook_id/playbook_name,
+      that each field is overridden independently, and that blank values fall back to the context values.
+    """
+    mock_context = util_load_json("test_data/ctx_output.json")
+    mocker.patch.object(demisto, "callingContext", mock_context)
+    mocker.patch.object(demisto, "debug")
+
+    data = {"request_data": {}}
+
+    CoreXQLApiModule.add_playbook_metadata(data, "test-command", args)
+
+    playbook_metadata = data["request_data"]["playbook_metadata"]
+    assert playbook_metadata["playbook_id"] == expected_playbook_id
+    assert playbook_metadata["playbook_name"] == expected_playbook_name
+    # The remaining metadata fields must not be affected by the source overrides.
+    assert playbook_metadata["task_name"] == "query"
+    assert playbook_metadata["task_id"] == "1"
+    assert playbook_metadata["integration_name"] == "XQL Query Engine"
+    assert playbook_metadata["command_name"] == "test-command"
+
+
+def test_start_xql_query_passes_source_overrides(mocker):
+    """
+    Given:
+    - A valid query with source_id and source_name arguments.
+
+    When:
+    - Calling start_xql_query function.
+
+    Then:
+    - Ensure the source values are sent to the API inside the playbook_metadata of the request data.
+    """
+    mock_context = util_load_json("test_data/ctx_output.json")
+    mocker.patch.object(demisto, "callingContext", mock_context)
+    start_xql_query_mock = mocker.patch.object(CLIENT, "start_xql_query", return_value="execution_id")
+
+    args = {
+        "query": "test_query",
+        "source_id": "my_source_id",
+        "source_name": "my_source_name",
+    }
+    CoreXQLApiModule.start_xql_query(CLIENT, args=args)
+
+    playbook_metadata = start_xql_query_mock.call_args[0][0]["request_data"]["playbook_metadata"]
+    assert playbook_metadata["playbook_id"] == "my_source_id"
+    assert playbook_metadata["playbook_name"] == "my_source_name"
+
+
 # =========================================== Bug Fix Tests ===========================================#
 
 
