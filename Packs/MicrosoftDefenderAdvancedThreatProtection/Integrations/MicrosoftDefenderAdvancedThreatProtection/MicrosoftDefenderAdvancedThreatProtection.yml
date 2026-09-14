@@ -383,6 +383,7 @@ script:
       predefined:
       - Full
       - Selective
+      - UnManagedDevice
       required: true
     - deprecated: true
       description: Flag for the rate limit retry.
@@ -1713,7 +1714,8 @@ script:
     - deprecated: true
       description: Flag for the rate limit retry.
       name: ran_once_flag
-    description: Retrieves a collection of investigations or retrieves a specific investigation by its ID.
+    deprecated: true
+    description: Deprecated.
     name: microsoft-atp-list-investigations
     outputs:
     - contextPath: MicrosoftATP.Investigation.ID
@@ -1757,7 +1759,8 @@ script:
     - deprecated: true
       description: Flag for the rate limit retry.
       name: ran_once_flag
-    description: Starts an automated investigation on a machine.
+    deprecated: true
+    description: Deprecated, use the microsoft-atp-run-antivirus-scan command instead.
     name: microsoft-atp-start-investigation
     outputs:
     - contextPath: MicrosoftATP.Investigation.ID
