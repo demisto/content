@@ -94,7 +94,7 @@
         },
         "observables": {
             "type": "string",
-            "is_array": true
+            "is_array": false
         },
         "platform": {
             "type": "string",
@@ -106,7 +106,7 @@
         },
         "resources": {
             "type": "string",
-            "is_array": true
+            "is_array": false
         },
         "risk_level": {
             "type": "string",

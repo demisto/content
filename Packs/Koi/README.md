@@ -5,7 +5,6 @@
 KOI is an endpoint security platform that provides visibility and control over browser extensions, SaaS applications, and web-based threats.
 
 ## This pack includes
-This pack includes an 
 
 * Integration that fetches alerts and audit logs from KOI and ingests them into Cortex XSIAM for centralized security monitoring, correlation, and threat analysis.
 * Integration commands for managing the KOI security posture: query and search the software/extension inventory, manage blocklist and allowlist entries, and control governance policies.
@@ -40,7 +39,7 @@ Configure the integration in Cortex XSIAM using the following parameters.
 | **Parameter**                     | **Description**                                                                                                                                    | **Mandatory** |
 |-----------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
 | Name                              | Name of the integration instance.                                                                                                                  | True          |
-| Server URL                        | The KOI API server URL.                                                                                                                            | Ture          |
+| Server URL                        | The KOI API server URL.                                                                                                                            | True          |
 | API Key                           | The API key for authenticating with the KOI API. See the help section for instructions on creating an API key.                                     | True          |
 | Fetch events                      | Whether to fetch events.                                                                                                                           | False         |
 | Fetch event types                 | Select which event types to fetch: Behavior Analytics alerts, Addressable Alerts, Detect And Protect Alerts. Default is Behavior Analytics alerts. | Conditional   |

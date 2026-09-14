@@ -42,7 +42,7 @@ filter source_log_type = "Alerts"
     ),
     // finding_info and metadata use -> sugar syntax (JSON string fields)
     finding_title = finding_info -> title,
-    finding_desc = finding_info -> desc,
+    finding_desc = json_extract_scalar(finding_info, "$.desc"),
     finding_uid = finding_info -> uid,
     product_name = metadata -> product.name,
     product_vendor = metadata -> product.vendor_name,
