@@ -1,4 +1,4 @@
-description: Test playbook for Prisma AIRs runtime operations - deployment profiles, API key lifecycle, security profile CRUD (with prompt-injection block), and scanning with verdict assertions. Ensures only the API key, customer app, and security profile created by this playbook are modified and deleted.
+description: Test playbook for Prisma AIRS runtime operations - deployment profiles, API key lifecycle, security profile CRUD (with prompt-injection block), and scanning with verdict assertions. Ensures only the API key, customer app, and security profile created by this playbook are modified and deleted.
 id: PaloAltoNetworks_Prisma_AIRs_Runtime_Scan_Test
 inputs:
 - key: ApiKeyName
