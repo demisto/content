@@ -19,24 +19,24 @@ configuration:
   required: true
   section: Connect
   additionalinfo: The Tenzai partner API key, generated in the Tenzai application. Stored encrypted.
-- display: Tenzai App URL (e.g., https://app.tenzai.io)
-  name: frontend_url
-  type: 0
-  required: false
-  section: Connect
-  additionalinfo: The base URL of the Tenzai web app, used to build a deep link (referenceUrl) to the scan results. Leave empty to derive it from the Tenzai Server URL (the API and web-app hosts mirror each other); set it only to override that.
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  required: false
-  section: Connect
-  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
   section: Connect
   advanced: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- display: Tenzai App URL (e.g., https://app.tenzai.io)
+  name: frontend_url
+  type: 0
+  required: false
+  section: Connect
+  additionalinfo: The base URL of the Tenzai web app, used to build a deep link (referenceUrl) to the scan results. Leave empty to derive it from the Tenzai Server URL (the API and web-app hosts mirror each other); set it only to override that.
 - display: HTTP request timeout (seconds)
   name: timeout
   type: 0
@@ -44,23 +44,24 @@ configuration:
   section: Connect
   advanced: true
   defaultvalue: '20'
-  additionalinfo: Per-request timeout for calls to the Tenzai API. Kept low so a stalled or unreachable host fails fast and the validation poll automation can reschedule instead of exceeding its execution timeout.
+  additionalinfo: The per-request timeout for calls to the Tenzai API. Kept low so a stalled or unreachable host fails fast and the validation poll automation can reschedule instead of exceeding its execution timeout.
 description: Validate Cortex ASM-discovered exposures with Tenzai's agentic penetration testing. Create a scan for an exposure, poll it to completion, and fetch the verdict and evidence back into the Cortex issue.
 display: Tenzai
 name: Tenzai
+supportlevelheader: partner
 script:
   commands:
   - name: tenzai-create-scan
-    description: Create a Tenzai agentic scan for an ASM-discovered exposure. Finds or creates a Tenzai application for the target domain, then triggers an EXTERNAL_LEAD scan — a short, targeted confirm/refute of the single externally-reported exposure — scoped to the exposed socket. Returns a scan id used to poll status and fetch results.
+    description: Create a Tenzai agentic scan for a Cortex ASM-discovered exposure. Finds or creates a Tenzai application for the target domain, then triggers an EXTERNAL_LEAD scan — a short, targeted confirm/refute of the single externally-reported exposure — scoped to the exposed socket. Returns a scan id used to poll status and fetch results.
     arguments:
     - name: target
       description: The exposure target — an IP address, FQDN, host:port, or URL.
       required: true
     - name: exposure_name
-      description: A human-readable name for the exposure (e.g. the ASM issue/alert name). Used as the scan name.
+      description: The human-readable name for the exposure (e.g. the ASM issue/alert name). Used as the scan name.
       required: true
     - name: supporting_data
-      description: Free-text context for the scan objective (e.g. inferred CVE(s), attack-surface rule, service classification, detected technology, certificate details).
+      description: The free-text context for the scan objective (e.g. inferred CVE(s), attack-surface rule, service classification, detected technology, certificate details).
     - name: application_type
       description: The Tenzai application type to scan as. Derived from the target/service classification when omitted.
       auto: PREDEFINED
@@ -73,7 +74,7 @@ script:
     - name: protocol
       description: The exposed service protocol (e.g. tcp, udp).
     - name: service_classification
-      description: The ASM service classification (e.g. WebServer, SshServer).
+      description: The Cortex ASM service classification (e.g. WebServer, SshServer).
     - name: asm_service_id
       description: The Cortex ASM ExternalService id (folded into the app guidelines as a correlation note).
     - name: alert_internal_id
@@ -91,11 +92,11 @@ script:
     - name: rule_id
       description: The external source's rule identifier for the exposure (e.g. a Cortex attack-surface rule id).
     - name: severity
-      description: Severity as reported by Cortex (free text), attached to the EXTERNAL_LEAD exposure reference.
+      description: The severity as reported by Cortex (free text), attached to the EXTERNAL_LEAD exposure reference.
     - name: cwe
       description: The CWE identifier for the exposure when Cortex supplies one.
     - name: guidelines
-      description: Optional analyst guidelines for this scan (free text). Appended to the synthesized scan guidelines; the exposure focus and the single-target scope lock are always kept.
+      description: The optional analyst guidelines for this scan (free text). Appended to the synthesized scan guidelines; the exposure focus and the single-target scope lock are always kept.
     outputs:
     - contextPath: Tenzai.Scan.id
       description: The Tenzai scan (test) id.
@@ -167,34 +168,34 @@ script:
       description: The scan status.
       type: String
     - contextPath: Tenzai.Scan.validated
-      description: Tri-state verdict for the matched exposure lead — true when its status is MATERIALIZED, false when INVALIDATED, and null (no verdict) when BLOCKED, unresolved, or no lead correlated to the alert.
+      description: The tri-state verdict for the matched exposure lead — true when its status is MATERIALIZED, false when INVALIDATED, and null (no verdict) when BLOCKED, unresolved, or no lead correlated to the alert.
       type: Boolean
     - contextPath: Tenzai.Scan.correlationState
-      description: 'Tri-state lead correlation for this alert: resolved (a lead matched), unmatched (leads fetched but none correlate — final), or pending (the leads fetch failed or returned none yet — transient). Drives the verdict write-back readiness gate.'
+      description: 'The tri-state lead correlation for this alert: resolved (a lead matched), unmatched (leads fetched but none correlate — final), or pending (the leads fetch failed or returned none yet — transient). Drives the verdict write-back readiness gate.'
       type: String
     - contextPath: Tenzai.Scan.evidence
-      description: Markdown assessment summary — impact-first per confirmed finding.
+      description: The markdown assessment summary — impact-first per confirmed finding.
       type: String
     - contextPath: Tenzai.Scan.reproduction
-      description: Markdown reproduction steps (prerequisites, steps, scripts) across the scan's findings.
+      description: The markdown reproduction steps (prerequisites, steps, scripts) across the scan's findings.
       type: String
     - contextPath: Tenzai.Scan.guidance
-      description: Markdown remediation guidance (fix items and coding-agent prompt) across the scan's findings.
+      description: The markdown remediation guidance (fix items and coding-agent prompt) across the scan's findings.
       type: String
     - contextPath: Tenzai.Scan.creditUsage
-      description: Approximate Tenzai ACU cost of the scan.
+      description: The approximate Tenzai ACU cost of the scan.
       type: Number
     - contextPath: Tenzai.Scan.duration
-      description: Wall-clock duration of the scan, in whole seconds.
+      description: The wall-clock duration of the scan, in whole seconds.
       type: Number
     - contextPath: Tenzai.Scan.referenceUrl
-      description: Deep link to view the scan results in the Tenzai web app.
+      description: The deep link to view the scan results in the Tenzai web app.
       type: String
     - contextPath: Tenzai.Scan.exposureStatus
       description: The exposure lead's terminal status (e.g. MATERIALIZED, INVALIDATED, BLOCKED) — the literal lead status shown in the panel's Status cell.
       type: String
     - contextPath: Tenzai.Scan.startedAt
-      description: When the assessment started, as a full ISO-8601 timestamp (the exposure lead's earliest OPEN status-history entry).
+      description: The date when the assessment started, as a full ISO-8601 timestamp (e.g., 2024-01-15T12:34:56Z) (the exposure lead's earliest OPEN status-history entry).
       type: Date
     - contextPath: Tenzai.Scan.cwe
       description: The exposure lead's CWE classification (e.g. CWE-79).
@@ -203,7 +204,7 @@ script:
       description: The exposure lead's OWASP category (e.g. A03).
       type: String
     - contextPath: Tenzai.Scan.leadRationale
-      description: Markdown Description/Conclusion narrative for a CVE exposure lead.
+      description: The markdown Description/Conclusion narrative for a CVE exposure lead.
       type: String
     - contextPath: Tenzai.Scan.timeline
       description: The exposure lead's status history — one entry per status change (status + time).
@@ -215,16 +216,16 @@ script:
       description: The finding severity (uppercase).
       type: String
     - contextPath: Tenzai.Finding.details
-      description: Markdown assessment details for the finding — impact then description.
+      description: The markdown assessment details for the finding — impact then description.
       type: String
     - contextPath: Tenzai.Finding.reproduction
-      description: Markdown reproduction steps for the finding.
+      description: The markdown reproduction steps for the finding.
       type: String
     - contextPath: Tenzai.Finding.guidance
-      description: Remediation guidance for the finding.
+      description: The remediation guidance for the finding.
       type: String
     - contextPath: Tenzai.Finding.detail
-      description: Combined markdown (details + reproduction + fix guidance) shown in the Tenzai Findings grid's Details cell.
+      description: The combined markdown (details + reproduction + fix guidance) shown in the Tenzai Findings grid's Details cell.
       type: String
     - contextPath: Tenzai.Finding.cve
       description: The finding's CVE id, parsed from its structured field or name (display only).

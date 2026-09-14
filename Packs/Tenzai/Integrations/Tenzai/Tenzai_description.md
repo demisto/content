@@ -1,12 +1,11 @@
 ## Tenzai
 
-Validate Cortex ASM-discovered exposures with Tenzai's agentic penetration testing.
-
 ### Get your Tenzai API key
 
 1. Sign in to the Tenzai application.
-2. Generate a **partner API key** for your tenant.
-3. Copy the key — you will paste it into this integration instance (it is stored encrypted).
+2. Open **Settings**, then select the **API Keys** section.
+3. Click **Generate API key** and choose the **Partner** key type.
+4. Copy the key when it is shown — it is displayed only once. You paste it into the **API Key** field of this integration instance, where it is stored encrypted.
 
 ### Configure the instance
 

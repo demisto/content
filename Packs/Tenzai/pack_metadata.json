@@ -1,11 +1,15 @@
 {
     "name": "Tenzai",
-    "description": "Validate Cortex ASM-discovered exposures with Tenzai's agentic penetration testing. Triggers an agentic validation assessment on an exposure, polls for completion, and feeds the verdict and evidence back onto the Cortex issue. Requires a Tenzai license and API key.",
+    "description": "Validate Cortex ASM-discovered exposures with Tenzai's agentic penetration testing.",
     "support": "partner",
     "currentVersion": "1.0.0",
+    "created": "2026-09-02T00:00:00Z",
     "author": "Tenzai",
     "url": "https://www.tenzai.com",
     "email": "support@tenzai.com",
+    "githubUser": [
+        "akivah-ten"
+    ],
     "categories": [
         "Vulnerability Management"
     ],
@@ -29,7 +33,8 @@
         }
     },
     "marketplaces": [
-        "platform"
+        "platform",
+        "marketplacev2"
     ],
     "itemPrefix": [
         "Tenzai"

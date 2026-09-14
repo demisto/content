@@ -1214,9 +1214,9 @@ def _client_from_params(params: dict[str, Any]) -> Client:
     timeout = arg_to_number(params.get("timeout")) or DEFAULT_HTTP_TIMEOUT
     return Client(
         base_url=(params.get("url") or "").rstrip("/"),
-        verify=not params.get("insecure", False),
+        verify=not argToBoolean(params.get("insecure", False)),
         headers={"Authorization": f"Bearer {api_key}"},
-        proxy=params.get("proxy", False),
+        proxy=argToBoolean(params.get("proxy", False)),
         timeout=timeout,
     )
 
@@ -1225,6 +1225,7 @@ def main() -> None:  # pragma: no cover
     """Parse params and dispatch the command."""
     params = demisto.params()
     command = demisto.command()
+    args = demisto.args()
 
     api_key = (params.get("credentials") or {}).get("password")
     if not api_key:
@@ -1237,16 +1238,16 @@ def main() -> None:  # pragma: no cover
         if command == "test-module":
             return_results(test_module(client))
         elif command == "tenzai-create-scan":
-            return_results(create_scan_command(client, demisto.args()))
+            return_results(create_scan_command(client, args))
         elif command == "tenzai-get-scan":
-            return_results(get_scan_command(demisto.args(), client))
+            return_results(get_scan_command(args, client))
         elif command == "tenzai-get-scan-result":
-            return_results(get_scan_result_command(client, demisto.args()))
+            return_results(get_scan_result_command(client, args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}", error=e)
 
 
 """ ENTRY POINT """

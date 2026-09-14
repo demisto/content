@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 import re
+import traceback
 from datetime import datetime, UTC
 from html import escape
 from typing import Any
@@ -815,7 +816,8 @@ def main():
         html = build_summary_html(fields, name=str(incident.get("name") or ""))
         return_results({"ContentsFormat": EntryFormat.HTML, "Type": EntryType.NOTE, "Contents": html})
     except Exception as ex:
-        return_error(f"Failed to execute TenzaiValidationSummary. Error: {ex!s}")
+        demisto.error(traceback.format_exc())
+        return_error(f"Failed to execute TenzaiValidationSummary. Error: {ex!s}", error=ex)
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

@@ -11,7 +11,7 @@ commonfields:
 name: StartAgenticValidation
 args:
 - name: service_id
-  description: The ASM ExternalService id (asmserviceid). Used to enrich the target when 'target' is not provided.
+  description: The Cortex ASM ExternalService id (asmserviceid). Used to enrich the target when 'target' is not provided.
 - name: target
   description: The exposure target (IP address or FQDN). If omitted, it is derived by enriching the Cortex ASM service.
 - name: exposure_name
@@ -35,7 +35,7 @@ args:
 - name: protocol
   description: The exposed service protocol.
 - name: service_classification
-  description: The ASM service classification.
+  description: The Cortex ASM service classification.
 - name: category
   description: Whether the exposure is a CVE or a misconfiguration. Inferred from the CVE id when omitted.
   auto: PREDEFINED
@@ -43,15 +43,15 @@ args:
   - cve
   - misconfiguration
 - name: cve_id
-  description: The CVE identifier for the exposure. Auto-filled from the ASM service's inferred CVEs when omitted.
+  description: The CVE identifier for the exposure. Auto-filled from the Cortex ASM service's inferred CVEs when omitted.
 - name: rule_id
   description: The external source's rule identifier for the exposure (e.g. a Cortex attack-surface rule id).
 - name: severity
-  description: Severity as reported by Cortex (free text), attached to the exposure reference.
+  description: The severity as reported by Cortex (free text), attached to the exposure reference.
 - name: cwe
   description: The CWE identifier for the exposure when Cortex supplies one.
 - name: guidelines
-  description: Optional analyst guidelines for this assessment (free text). Appended to the synthesized scan guidelines; the exposure focus and the single-target scope lock are always kept.
+  description: The optional analyst guidelines for this assessment (free text). Appended to the synthesized scan guidelines; the exposure focus and the single-target scope lock are always kept.
 - name: scan_id_internal
   description: Internal use only — the scan id carried across scheduled poll re-runs. Not for manual use.
   hidden: true
@@ -91,31 +91,31 @@ outputs:
   description: Whether the exposure was validated as exploitable (set on terminal completion).
   type: Boolean
 - contextPath: Tenzai.Scan.evidence
-  description: Markdown assessment details (set on terminal completion).
+  description: The markdown assessment details (set on terminal completion).
   type: String
 - contextPath: Tenzai.Scan.reproduction
-  description: Markdown reproduction steps (set on terminal completion).
+  description: The markdown reproduction steps (set on terminal completion).
   type: String
 - contextPath: Tenzai.Scan.guidance
-  description: Remediation or mitigation guidance (set on terminal completion).
+  description: The remediation or mitigation guidance (set on terminal completion).
   type: String
 - contextPath: Tenzai.Scan.creditUsage
-  description: Approximate Tenzai credit/ACU cost of the scan (set on terminal completion).
+  description: The approximate Tenzai credit/ACU cost of the scan (set on terminal completion).
   type: Number
 - contextPath: Tenzai.Scan.referenceUrl
-  description: Deep link to the scan results in Tenzai (set on terminal completion).
+  description: The deep link to the scan results in Tenzai (set on terminal completion).
   type: String
 - contextPath: Tenzai.Scan.applicationId
   description: The Tenzai application id the scan ran under (set on terminal completion).
   type: String
 - contextPath: Tenzai.Scan.duration
-  description: Wall-clock duration of the scan, in whole seconds (set on terminal completion).
+  description: The wall-clock duration of the scan, in whole seconds (set on terminal completion).
   type: Number
 - contextPath: Tenzai.Scan.exposureStatus
   description: The exposure lead's terminal status (e.g. MATERIALIZED, INVALIDATED, BLOCKED) — the literal lead status shown in the panel's Status cell (set on terminal completion).
   type: String
 - contextPath: Tenzai.Scan.startedAt
-  description: When the assessment started, as a full ISO-8601 timestamp (the exposure lead's earliest OPEN status-history entry; set on terminal completion).
+  description: The date when the assessment started, as a full ISO-8601 timestamp (e.g., 2024-01-15T12:34:56Z; the exposure lead's earliest OPEN status-history entry; set on terminal completion).
   type: Date
 - contextPath: Tenzai.Scan.cwe
   description: The exposure lead's CWE classification, e.g. CWE-79 (set on terminal completion).
@@ -124,7 +124,7 @@ outputs:
   description: The exposure lead's OWASP category, e.g. A03 (set on terminal completion).
   type: String
 - contextPath: Tenzai.Scan.leadRationale
-  description: Markdown Description/Conclusion narrative for a CVE exposure lead (set on terminal completion).
+  description: The markdown Description/Conclusion narrative for a CVE exposure lead (set on terminal completion).
   type: String
 - contextPath: Tenzai.Scan.timeline
   description: The exposure lead's status history — one entry per status change (status + time; set on terminal completion).
