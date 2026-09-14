@@ -28,6 +28,8 @@
         "xsiam",
         "edr",
         "cloud",
-        "cloud_runtime_security"
+        "cloud_runtime_security",
+        "cloud_posture",
+        "data_security"
     ]
 }
