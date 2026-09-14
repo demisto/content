@@ -90,9 +90,7 @@ def get_file_content(args: dict) -> dict:  # pragma: no cover
     return args
 
 
-def build_context_path(
-    analysis_type: str, connector: WindowsConnector | LinuxConnector | AndroidConnector
-) -> str | None:
+def build_context_path(analysis_type: str, connector: WindowsConnector | LinuxConnector | AndroidConnector) -> str | None:
     if analysis_type == "file":
         if isinstance(connector, WindowsConnector):
             return "ANYRUN_DetonateFileWindows.TaskID"
@@ -151,9 +149,7 @@ def start_analyse(
     )
 
 
-def detonate_entity_windows(
-    params: dict, args: dict, analysis_type: str
-) -> None:  # pragma: no cover
+def detonate_entity_windows(params: dict, args: dict, analysis_type: str) -> None:  # pragma: no cover
     with SandboxConnector.windows(
         get_authentication(params),
         integration=VERSION,
@@ -164,9 +160,7 @@ def detonate_entity_windows(
         start_analyse(params, args, analysis_type, connector)
 
 
-def detonate_entity_linux(
-    params: dict, args: dict, analysis_type: str
-) -> None:  # pragma: no cover
+def detonate_entity_linux(params: dict, args: dict, analysis_type: str) -> None:  # pragma: no cover
     with SandboxConnector.linux(
         get_authentication(params),
         integration=VERSION,
@@ -177,9 +171,7 @@ def detonate_entity_linux(
         start_analyse(params, args, analysis_type, connector)
 
 
-def detonate_entity_android(
-    params: dict, args: dict, analysis_type: str
-) -> None:  # pragma: no cover
+def detonate_entity_android(params: dict, args: dict, analysis_type: str) -> None:  # pragma: no cover
     with SandboxConnector.android(
         get_authentication(params),
         integration=VERSION,
@@ -229,9 +221,7 @@ def delete_task(params: dict, args: dict) -> None:  # pragma: no cover
     return_results(f"Task {task_uuid} successfully deleted")
 
 
-def download_analysis_sample(
-    params: dict, args: dict, download_type: str
-) -> None:  # pragma: no cover
+def download_analysis_sample(params: dict, args: dict, download_type: str) -> None:  # pragma: no cover
     task_uuid = args.get("task_uuid")
 
     with SandboxConnector.windows(
@@ -242,17 +232,9 @@ def download_analysis_sample(
         root_url=params.get("root_url") or DEFAULT_ROOT_URL,
     ) as connector:
         if download_type == "pcap":
-            return_results(
-                fileResult(
-                    f"{task_uuid}_traffic_dump.pcap", connector.download_pcap(task_uuid)
-                )
-            )
+            return_results(fileResult(f"{task_uuid}_traffic_dump.pcap", connector.download_pcap(task_uuid)))
         else:
-            return_results(
-                fileResult(
-                    f"{task_uuid}_sample.zip", connector.download_file_sample(task_uuid)
-                )
-            )
+            return_results(fileResult(f"{task_uuid}_sample.zip", connector.download_file_sample(task_uuid)))
 
 
 def get_analysis_verdict(params: dict, args: dict) -> None:  # pragma: no cover
@@ -333,9 +315,7 @@ def create_indicators(
     ioc_details: list[dict] = []
     ioc_values: list[str] = []
 
-    expiration_date = int(
-        (datetime.now(UTC) + timedelta(days=IOC_EXPIRATION_DAYS)).timestamp() * 1000
-    )
+    expiration_date = int((datetime.now(UTC) + timedelta(days=IOC_EXPIRATION_DAYS)).timestamp() * 1000)
 
     for indicator in report:
         reputation = indicator.get("reputation")
@@ -350,13 +330,7 @@ def create_indicators(
         xdr_reputation = XDR_REPUTATION.get(reputation, "UNKNOWN")
         _xdr_indicator_class = XDR_INDICATOR_CLASS.get(xdr_indicator_type)
 
-        if (
-            reputation is None
-            or not indicator_value
-            or not xsoar_indicator_type
-            or score is None
-            or verdict is None
-        ):
+        if reputation is None or not indicator_value or not xsoar_indicator_type or score is None or verdict is None:
             continue
 
         indicators.append(
@@ -445,13 +419,9 @@ def get_analysis_report(params: dict, args: dict) -> None:  # pragma: no cover
         if report_format == "html":
             return_results(fileResult(f"anyrun_report_{task_uuid}.html", report))
         elif report_format == "json":
-            return_results(
-                fileResult(f"anyrun_report_{task_uuid}.json", json.dumps(report))
-            )
+            return_results(fileResult(f"anyrun_report_{task_uuid}.json", json.dumps(report)))
         elif report_format == "ioc":
-            ioc_details, readable_output, ioc_values = create_indicators(
-                report or [], task_uuid, root_url, create_xdr_iocs
-            )
+            ioc_details, readable_output, ioc_values = create_indicators(report or [], task_uuid, root_url, create_xdr_iocs)
 
             if not ioc_values:
                 return_results(
