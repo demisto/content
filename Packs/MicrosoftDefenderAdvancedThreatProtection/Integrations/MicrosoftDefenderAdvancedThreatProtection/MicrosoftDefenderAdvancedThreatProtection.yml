@@ -1760,7 +1760,7 @@ script:
       description: Flag for the rate limit retry.
       name: ran_once_flag
     deprecated: true
-    description: Deprecated. Starts an automated investigation on a machine.
+    description: Deprecated, use the microsoft-atp-run-antivirus-scan command instead. Starts an automated investigation on a machine.
     name: microsoft-atp-start-investigation
     outputs:
     - contextPath: MicrosoftATP.Investigation.ID
