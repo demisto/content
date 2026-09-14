@@ -157,6 +157,8 @@ configuration:
   section: Collect
   additionalinfo: Whether to fetch Zendesk audit log events. Allowed for Admins on accounts that have audit log access.
   required: false
+  hidden:
+  - xsoar
 - display: The maximum number of audit logs per fetch
   name: max_events_fetch
   type: 0
@@ -164,6 +166,8 @@ configuration:
   defaultvalue: '1000'
   additionalinfo: Maximum number of audit log events to fetch per cycle (default 1000, max 1000 = 100 per page * 10 pages).
   required: false
+  hidden:
+  - xsoar
 - display: Use system proxy settings
   name: proxy
   type: 8

@@ -436,13 +436,11 @@ class ZendeskClient(BaseClient):
                 "sort_order": "asc",
             }
             if created_after:
-                request_params["filter[created_at][]"] = [created_after]
-                if created_before:
-                    request_params["filter[created_at][]"].append(created_before)
+                # The API requires filter[created_at] twice (start AND end); default end to "now".
+                end_time = created_before or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+                request_params["filter[created_at][]"] = [created_after, end_time]
 
-            demisto.debug(
-                f"[Audit Logs] Initial request | From: {created_after} | To: {created_before or 'Now'}"
-            )
+            demisto.debug(f"[Audit Logs] Initial request | From: {created_after} | To: {created_before or 'Now'}")
             response = self._http_request("GET", url_suffix="audit_logs", params=request_params)
 
         audit_logs = response.get("audit_logs", [])
@@ -453,9 +451,7 @@ class ZendeskClient(BaseClient):
         if not has_more:
             next_page_url = None
 
-        demisto.debug(
-            f"[Audit Logs] Page fetched. Count: {len(audit_logs)}. Has more: {has_more}"
-        )
+        demisto.debug(f"[Audit Logs] Page fetched. Count: {len(audit_logs)}. Has more: {has_more}")
 
         return audit_logs, next_page_url
 
@@ -1447,9 +1443,9 @@ def get_audit_logs_with_pagination(
     if len(events) > max_events:
         demisto.debug(f"[Pagination Loop] Slicing {len(events)} events to limit {max_events}")
         events = events[:max_events]
-        # When we slice, we still have more to fetch so keep the next_url
-    elif not remaining_next_url:
-        # No more pages available
+        # We fetched more than we return. Instead of persisting the cursor (which would skip the
+        # extra events), drop the cursor so the next run resumes by time from the last kept event.
+        # Dedup handles the small overlap. This avoids discarding the tail of the last page.
         remaining_next_url = None
 
     demisto.debug(f"[Pagination Result] Returning {len(events)} events. Has next: {bool(remaining_next_url)}")
@@ -1512,14 +1508,11 @@ def fetch_events_command(client: "ZendeskClient") -> None:
     if next_url:
         # Continue from where we left off with pagination
         created_after = None
-        demisto.debug(
-            f"[Fetch Events] Continuing from next_url. Prev ID count: {len(last_fetched_ids)}"
-        )
+        demisto.debug(f"[Fetch Events] Continuing from next_url. Prev ID count: {len(last_fetched_ids)}")
     elif last_fetch_timestamp:
         created_after = last_fetch_timestamp
         demisto.debug(
-            f"[Fetch Events] Continuing from Last Run. Fetching from: {created_after}. "
-            f"Prev ID count: {len(last_fetched_ids)}"
+            f"[Fetch Events] Continuing from Last Run. Fetching from: {created_after}. " f"Prev ID count: {len(last_fetched_ids)}"
         )
     else:
         first_fetch = params.get("first_fetch") or "3 days"
@@ -1538,12 +1531,10 @@ def fetch_events_command(client: "ZendeskClient") -> None:
         demisto.debug("[Fetch Events] No events found.")
         return
 
-    # Deduplicate only when there's no next_url from previous run
-    # (dedup is needed when we re-query from the same timestamp)
-    if not next_url:
-        new_events = deduplicate_events(events, last_fetched_ids)
-    else:
-        new_events = events
+    # Always deduplicate against the IDs already sent on the previous run. This is required both
+    # when re-querying from the same timestamp and when resuming a cursor, since a sliced page can
+    # cause the following run to re-see boundary events.
+    new_events = deduplicate_events(events, last_fetched_ids)
 
     if new_events:
         add_time_to_events(new_events)
@@ -1559,7 +1550,7 @@ def fetch_events_command(client: "ZendeskClient") -> None:
         # Keep the same timestamp and IDs for when we finish pagination
         new_last_run["events_last_fetch"] = last_fetch_timestamp or created_after
         new_last_run["events_last_fetched_ids"] = last_fetched_ids
-        demisto.debug(f"[Fetch Events] State updated with next_url for continuation.")
+        demisto.debug("[Fetch Events] State updated with next_url for continuation.")
     else:
         # No more pages - update the high-water mark
         last_event = events[-1]
@@ -1567,12 +1558,15 @@ def fetch_events_command(client: "ZendeskClient") -> None:
 
         if new_last_run_time:
             # Collect IDs at the last timestamp for deduplication on next run
-            ids_at_last_timestamp = [
-                event.get("id") for event in events
-                if event.get("created_at") == new_last_run_time and event.get("id")
-            ]
+            ids_at_last_timestamp = {
+                event.get("id") for event in events if event.get("created_at") == new_last_run_time and event.get("id")
+            }
+            # If the HWM timestamp hasn't advanced, merge with the previous run's IDs so events
+            # sharing that timestamp across cycles are not re-emitted as duplicates.
+            if new_last_run_time == last_fetch_timestamp:
+                ids_at_last_timestamp |= set(last_fetched_ids)
             new_last_run["events_last_fetch"] = new_last_run_time
-            new_last_run["events_last_fetched_ids"] = ids_at_last_timestamp
+            new_last_run["events_last_fetched_ids"] = list(ids_at_last_timestamp)
             demisto.debug(f"[Fetch Events] State updated. New HWM: {new_last_run_time}")
         else:
             demisto.debug("[Fetch Events] Warning: Last event missing created_at. State not updated.")
