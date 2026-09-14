@@ -55,4 +55,5 @@ alter
     xdm.target.identity.user_type =if(userName = null, null, userName = "root" OR userLogin != userName, XDM_CONST.USER_TYPE_SERVICE_ACCOUNT),
     xdm.source.user.identity_type = if(userLogin = "root" OR userLogin = userName, XDM_CONST.IDENTITY_TYPE_BUILTIN, userName = null OR userLogin != userName, XDM_CONST.IDENTITY_TYPE_USER),
     xdm.source.identity.identity_type = if(userLogin = "root" OR userLogin = userName, XDM_CONST.IDENTITY_TYPE_BUILTIN, userName = null OR userLogin != userName, XDM_CONST.IDENTITY_TYPE_USER),
-    xdm.target.user.identity_type = if(userName = null, null, userName = "root",XDM_CONST.IDENTITY_TYPE_BUILTIN, XDM_CONST.IDENTITY_TYPE_MACHINE),    xdm.target.identity.identity_type = if(userName = null, null, userName = "root",XDM_CONST.IDENTITY_TYPE_BUILTIN, XDM_CONST.IDENTITY_TYPE_MACHINE);
+    xdm.target.user.identity_type = if(userName = null, null, userName = "root",XDM_CONST.IDENTITY_TYPE_BUILTIN, XDM_CONST.IDENTITY_TYPE_MACHINE),
+    xdm.target.identity.identity_type = if(userName = null, null, userName = "root",XDM_CONST.IDENTITY_TYPE_BUILTIN, XDM_CONST.IDENTITY_TYPE_MACHINE);
