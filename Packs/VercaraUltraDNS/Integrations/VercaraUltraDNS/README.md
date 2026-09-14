@@ -1,8 +1,6 @@
 This integration fetches DNS configuration audit logs from Vercara UltraDNS platform.
 This integration was integrated and tested with the 3.18.0 Vercara UltraDNS API.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
-
 ## Configure Vercara UltraDNS in Cortex
 
 | **Parameter** | **Description** | **Required** |

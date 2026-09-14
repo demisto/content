@@ -1,8 +1,6 @@
 This is the Zoom event collector integration for Cortex XSIAM.
 This integration was integrated and tested with version 2.0.0 of Zoom
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
-
 ## Configure Zoom Event Collector in Cortex
 
 | **Parameter** | **Required** |
