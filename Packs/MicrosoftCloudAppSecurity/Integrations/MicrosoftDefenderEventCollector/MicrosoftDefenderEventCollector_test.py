@@ -10,6 +10,7 @@ from CommonServerPython import DemistoException
 from MicrosoftDefenderEventCollector import (
     ALL_EVENT_FILTERS,
     API_PAGE_SIZE,
+    AUTH_ERROR_MSG,
     DEFAULT_LIMIT,
     UI_NAME_TO_EVENT_FILTERS,
     WATERMARK_SAFETY_BUFFER_MS,
@@ -308,6 +309,8 @@ def _make_defender_get_events_with_client(pages: list[dict], mocker) -> Defender
     """
     get_events = DefenderGetEvents.__new__(DefenderGetEvents)
     get_events.base_url = "https://example.test/api/v1/"
+    # _iter_events derives the page size from options.limit; default keeps it at API_PAGE_SIZE.
+    get_events.options = IntegrationOptions.parse_obj({})
 
     client = DefenderClient.__new__(DefenderClient)
     client.after = 1000
@@ -410,6 +413,32 @@ class TestPageSizeParams:
         params = get_events.client.request.params
         assert params["limit"] == API_PAGE_SIZE
         assert params["isScan"] == "true"
+
+    def test_endpoint_filters_dict_is_not_mutated(self, mocker):
+        """_iter_events must not mutate the shared endpoint filters dict (adds 'date' to a copy)."""
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mocker.patch.object(demisto, "debug")
+        payload = {"data": [{"timestamp": 1}], "hasNext": False}
+        get_events = _make_defender_get_events_with_client([payload], mocker)
+        # client.after is truthy in the helper, so a "date" filter is built during the call.
+        endpoint_details = {"type": "alerts", "filters": {}}
+
+        list(get_events._iter_events(get_events.client, "alerts", endpoint_details))
+
+        # The original filters dict stays empty; the "date" was added to a copy, not the shared dict.
+        assert endpoint_details["filters"] == {}
+
+    def test_page_size_is_capped_at_run_limit(self, mocker):
+        """When options.limit is below API_PAGE_SIZE, the per-page limit honors it (e.g. test-module)."""
+        mocker.patch.object(demisto, "getLastRun", return_value={})
+        mocker.patch.object(demisto, "debug")
+        payload = {"data": [{"timestamp": 1}], "hasNext": False}
+        get_events = _make_defender_get_events_with_client([payload], mocker)
+        get_events.options = IntegrationOptions.parse_obj({"limit": 1})
+
+        list(get_events._iter_events(get_events.client, "alerts", {"type": "alerts", "filters": {}}))
+
+        assert get_events.client.request.params["limit"] == 1
 
     def test_isscan_does_not_leak_from_activities_to_alerts(self, mocker):
         """isScan set for an activities call must be removed before a following alerts call."""
@@ -527,13 +556,12 @@ class TestModuleTest:
         get_events.run.assert_not_called()
         get_events._iter_events.assert_called_once()
 
-    def test_forbidden_error_propagates(self, mocker):
-        """A 403/Forbidden must NOT be masked - it propagates so the Test button fails."""
+    def test_forbidden_error_returns_actionable_message(self, mocker):
+        """A 403/Forbidden returns an actionable auth message so the Test button fails clearly."""
         get_events = self._make_get_events(mocker)
         get_events._iter_events.side_effect = DemistoException("403 Forbidden")
 
-        with pytest.raises(DemistoException, match="Forbidden"):
-            module_test(get_events)
+        assert module_test(get_events) == AUTH_ERROR_MSG
 
     def test_non_auth_error_is_raised(self, mocker):
         get_events = self._make_get_events(mocker)

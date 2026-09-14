@@ -52,6 +52,7 @@ ALL_EVENT_FILTERS: list[EventFilter] = [ALERTS_FILTER, ADMIN_ACTIVITIES_FILTER, 
 UI_NAME_TO_EVENT_FILTERS = {event_filter.ui_name: event_filter for event_filter in ALL_EVENT_FILTERS}
 
 """ CONSTANTS """
+AUTH_ERROR_MSG = "Authorization Error: make sure the Client (Application) ID, Client Secret, and Tenant ID are correct."
 VENDOR = "Microsoft"
 PRODUCT = "defender_cloud_apps"
 
@@ -358,14 +359,16 @@ class DefenderGetEvents(IntegrationGetEvents):
         client.request.url = parse_obj_as(HttpUrl, f"{base_url}{endpoint_type}")
 
         # activities returns up to 500 per page only with isScan=true (otherwise 250); alerts must
-        # not send isScan.
-        client.request.params["limit"] = API_PAGE_SIZE
+        # not send isScan. Cap the page size at the run limit so a smaller limit (e.g. the
+        # test-module probe) is honored instead of always requesting the full page.
+        client.request.params["limit"] = min(API_PAGE_SIZE, self.options.limit)
         if endpoint_type == ACTIVITIES_ENDPOINT_TYPE:
             client.request.params["isScan"] = "true"
         else:
             client.request.params.pop("isScan", None)
 
-        filters = endpoint_details["filters"]
+        # Copy so the shared module-level filter dict is never mutated (each thread builds its own).
+        filters = dict(endpoint_details["filters"])
 
         after = demisto.getLastRun().get(event_type_name) or client.after
         if after:
@@ -455,15 +458,23 @@ def module_test(get_events: DefenderGetEvents) -> str:
     """
 
     get_events.client.authenticate()
-    get_events.client.request.params = {"limit": 1}
+    # _iter_events derives the page size from options.limit, so set it here rather than on params
+    # (params["limit"] would be overwritten).
     get_events.options.limit = 1
 
     # Call _iter_events directly on a single event type instead of run(): run() isolates per-type
     # failures (a 403/auth error for one type is logged and swallowed so the fetch cycle survives),
     # which would hide the connectivity/authorization problems that test-module must surface.
     event_type_name, endpoint_details = next(iter(get_events.filter_name_to_attributes.items()))
-    events = get_events._iter_events(get_events.client, event_type_name, endpoint_details)
-    next(events, None)  # trigger the first API call; a 403/auth error propagates and fails the test
+    try:
+        events = get_events._iter_events(get_events.client, event_type_name, endpoint_details)
+        next(events, None)  # trigger the first API call
+    except DemistoException as e:
+        error_msg = str(e)
+        demisto.debug(f"[Test Module] Failed: {error_msg}")
+        if "401" in error_msg or "403" in error_msg or "Forbidden" in error_msg or "Unauthorized" in error_msg:
+            return AUTH_ERROR_MSG
+        raise
     return "ok"
 
 
