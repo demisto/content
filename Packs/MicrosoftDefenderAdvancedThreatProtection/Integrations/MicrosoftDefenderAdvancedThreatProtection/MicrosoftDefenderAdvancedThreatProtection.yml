@@ -389,7 +389,7 @@ script:
       description: Flag for the rate limit retry.
       name: ran_once_flag
     description: Isolates a machine from accessing external networks.
-    name:
+    name: microsoft-atp-isolate-machine
     outputs:
     - contextPath: MicrosoftATP.MachineAction.ID
       description: The machine action ID.
@@ -1760,7 +1760,7 @@ script:
       description: Flag for the rate limit retry.
       name: ran_once_flag
     deprecated: true
-    description: Deprecated. The Automated investigation and response APIs are deprecated by Microsoft (see Microsoft 365 Message Center announcement MC1411577). Starts an automated investigation on a machine.
+    description: Deprecated. Starts an automated investigation on a machine.
     name: microsoft-atp-start-investigation
     outputs:
     - contextPath: MicrosoftATP.Investigation.ID
