@@ -23,7 +23,7 @@ args:
 - name: alert_internal_id
   description: The Cortex issue/alert id to correlate the results back to.
 - name: application_type
-  description: Optional Tenzai application type hint.
+  description: The optional Tenzai application type hint.
   auto: PREDEFINED
   predefined:
   - WEB_APP
