@@ -376,6 +376,7 @@ class DefenderGetEvents(IntegrationGetEvents):
 
         demisto.debug(f"MD: Sending request for {event_type_name=} with filters {filters}")
         client.request.params["filters"] = json.dumps(filters)
+        demisto.debug(f"MD: API call for {event_type_name=} | url={client.request.url} | params={client.request.params}")
         response = client.call(client.request).json()
         events = response.get("data", [])
         demisto.debug(f"MD: Got {len(events)} events for {event_type_name=}")
@@ -391,6 +392,9 @@ class DefenderGetEvents(IntegrationGetEvents):
             demisto.debug(f"MD: Got more events to fetch for {event_type_name=}")
             last = events.pop()
             client.set_request_filter(last["timestamp"])
+            demisto.debug(
+                f"MD: Paginated API call for {event_type_name=} | url={client.request.url} | params={client.request.params}"
+            )
             response = client.call(client.request).json()
             events = response.get("data", [])
             demisto.debug(f"MD: Got {len(events)} events for {event_type_name=}")
