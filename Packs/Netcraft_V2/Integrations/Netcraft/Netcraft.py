@@ -21,10 +21,7 @@ TAKEDOWN_OK_CODE = "TD_OK"
 LOOKBACK_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 # Format used for the XSOAR incident `occurred` field. XSOAR requires RFC 3339
-# (e.g. "2026-08-28T20:05:02Z"); the space-separated LOOKBACK_DATE_FORMAT is
-# rejected by the server with:
-#   Parsing time "2026-08-28 20:05:02" as "2006-01-02T15:04:05Z07:00":
-#   cannot parse " 20:05:02" as "T"
+# (e.g. "2026-08-28T20:05:02Z")
 OCCURRED_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 RES_CODE_TO_MESSAGE = {
@@ -555,14 +552,6 @@ def fetch_incidents_with_lookback(client: Client, look_back: int) -> list[dict[s
     raw_incidents = client.get_takedowns(params) or []
     demisto.debug(f"{prefix}API returned {len(raw_incidents)} incidents")
 
-    # `occurred` must be RFC 3339 (OCCURRED_DATE_FORMAT). Because
-    # update_last_run_object parses each incident's `occurred` with strptime to
-    # compute the next last_run["time"], the `date_format` passed below MUST
-    # match the format actually stored in `occurred`. get_fetch_run_time_range
-    # (above) intentionally keeps LOOKBACK_DATE_FORMAT because it produces the
-    # `date_from` string sent to the Netcraft API. dateparser.parse in
-    # get_fetch_run_time_range handles both formats when reading back
-    # last_run["time"], so persisted state stays backward compatible.
     xsoar_incidents = [to_xsoar_incident(incident, date_format=OCCURRED_DATE_FORMAT) for incident in raw_incidents]
 
     xsoar_incidents = filter_incidents_by_duplicates_and_limit(
