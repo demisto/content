@@ -1,12 +1,60 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+SET_INCIDENT_THRESHOLD = 4
+PLAYBOOK_LENGTH_THRESHOLD = 30
 
-def findTopUsedPLaybooks(accountName):
-    stats = demisto.executeCommand(
+DESCRIPTIONS = [
+    'The playbook: "{}" may be a copy of a built-in playbook, you may consider using out of the box playbooks',
+    'The playbook: "{}" is using a sleep command, you may consider changing it',
+    'The playbook: "{}" is using the setIncident command 4 times or more, which could result with DB version violation',
+    'The playbook: "{}" is using the "EmailAskUser" functionality, you may consider switching it to Data Collection',
+    'The playbook: "{}" is using over 30 tasks, you may want to use sub-playbooks for better organization of playbook tasks',
+]
+
+# Shared resolutions (same for all versions)
+RESOLUTION_COPY = "Consider using out of the box playbooks"
+RESOLUTION_SLEEP = (
+    "Consider changing it to preferred methods such as: https://xsoar.pan.dev/docs/playbooks/generic-polling "
+    "https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000PPOaCAO"
+)
+RESOLUTION_SET_INCIDENT = "Consider joining some of the setIncident tasks"
+
+# Version-specific resolutions
+RESOLUTION_EMAIL_ASK_USER_V6 = (
+    "Communication Tasks: https://cortex-docs.paloaltonetworks.com/playbook-design-guide/"
+    "playbook-design-guide/playbook-task-fields/communication-tasks"
+)
+RESOLUTION_EMAIL_ASK_USER_V8 = (
+    "Communication Tasks: https://cortex-docs.paloaltonetworks.com/cortex-xsoar-8-saas/configure-cortex-xsoar/"
+    "playbooks/develop-your-playbook/task-3.-add-tasks/create-a-communication-task"
+)
+
+RESOLUTION_MULTI_TASKS_V6 = (
+    "Sub-playbook Tutorial: https://cortex-docs.paloaltonetworks.com/playbook-design-guide/"
+    "playbook-design-guide/configure-a-sub-playbook-loop"
+)
+RESOLUTION_MULTI_TASKS_V8 = (
+    "Sub-playbook Tutorial: https://cortex-docs.paloaltonetworks.com/cortex-xsoar-8-saas/configure-cortex-xsoar/"
+    "playbooks/customize-your-playbook/configure-a-sub-playbook"
+)
+
+
+def search_playbooks(uri_prefix, system):
+    """Return built-in or custom playbooks."""
+    query = "system:T" if system else "system:F"
+    result = execute_command("core-api-post", {"uri": f"{uri_prefix}playbook/search", "body": {"query": query}})
+    if isinstance(result, list):
+        result = result[0] if result else {}
+    return (result or {}).get("response", {}).get("playbooks") or []
+
+
+def find_top_used_playbooks(uri_prefix):
+    """Store the three most frequently used playbooks from the last 30 days."""
+    result = execute_command(
         "core-api-post",
         {
-            "uri": f"{accountName}statistics/widgets/query",
+            "uri": f"{uri_prefix}statistics/widgets/query",
             "body": {
                 "size": 3,
                 "dataType": "incidents",
@@ -17,142 +65,75 @@ def findTopUsedPLaybooks(accountName):
             },
         },
     )
-    res = stats[0]["Contents"]["response"]
-    topUsed = []
-    for playbook in res:
-        pb = {}
-        pb["playbookname"] = playbook["name"]
-        topUsed.append(pb)
-
-    # print(topUsed)
-    demisto.executeCommand("setIncident", {"healthchecktopusedplaybooks": topUsed})
+    if isinstance(result, list):
+        result = result[0] if result else {}
+    top_used = [{"playbookname": pb.get("name")} for pb in (result or {}).get("response") or []]
+    execute_command("setIncident", {"healthchecktopusedplaybooks": top_used})
 
 
-args = demisto.args()
+def main():
+    try:
+        if is_demisto_version_ge("8.0.0"):
+            uri_prefix = "xsoar/public/v1/"
+            resolution_email = RESOLUTION_EMAIL_ASK_USER_V8
+            resolution_tasks = RESOLUTION_MULTI_TASKS_V8
+        else:
+            account_name = demisto.incidents()[0].get("account", "")
+            uri_prefix = f"acc_{account_name}/" if account_name else ""
+            resolution_email = RESOLUTION_EMAIL_ASK_USER_V6
+            resolution_tasks = RESOLUTION_MULTI_TASKS_V6
 
-DESCRIPTION = [
-    'The playbook: "{}" may be a copy of a built-in playbook, you may consider using out of the box playbooks',
-    'The playbook: "{}" is using a sleep command, you may consider changing it',
-    'The playbook: "{}" is using the setIncident command 4 times or more, which could result with DB version violation',
-    'The playbook: "{}" is using the "EmailAskUser" functionality, you may consider switching it to Data Collection',
-    'The playbook: "{}" is using over 30 tasks, you may want to use sub-playbooks for better ' + "organization of playbook tasks",
-]
+        custom_playbooks = search_playbooks(uri_prefix, system=False)
+        builtin_names = {pb.get("name") for pb in search_playbooks(uri_prefix, system=True)}
 
-RESOLUTION = [
-    "Consider using out of the box playbooks",
-    "Consider changing it to prefered methods such as: https://xsoar.pan.dev/docs/playbooks/generic-polling "
-    + "https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000PPOaCAO",
-    "Consider joining some of the setIncident tasks",
-    "Communication Tasks: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
-    + "cortex-xsoar-admin/playbooks/playbook-tasks/communication-tasks",
-    "Sub-playbook Tutorial: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
-    + "cortex-xsoar-admin/playbooks/configure-a-sub-playbook-loop/sub-playbook-tutorial",
-]
+        copy_detected = []
+        sleep_detected = []
+        multi_set_incident = []
+        email_ask_user = []
+        multi_tasks = []
 
+        for pb in custom_playbooks:
+            name = pb.get("name", "")
+            if any(builtin in name for builtin in builtin_names):
+                copy_detected.append(name)
+            if "Sleep" in pb.get("scriptIds", []):
+                sleep_detected.append(name)
+            if str(pb).count("Builtin|||setIncident") >= SET_INCIDENT_THRESHOLD:
+                multi_set_incident.append(name)
+            if "EmailAskUser" in pb.get("scriptIds", []):
+                email_ask_user.append(name)
+            if len(pb.get("tasks", [])) > PLAYBOOK_LENGTH_THRESHOLD:
+                multi_tasks.append(name)
 
-Thresholds = {
-    "CustomPlaybookSetIncidentCount": 4,
-    "CustomPlaybookLength": 30,
-}
+        res = []
+        for findings, desc, resolution in [
+            (copy_detected, DESCRIPTIONS[0], RESOLUTION_COPY),
+            (sleep_detected, DESCRIPTIONS[1], RESOLUTION_SLEEP),
+            (multi_set_incident, DESCRIPTIONS[2], RESOLUTION_SET_INCIDENT),
+            (email_ask_user, DESCRIPTIONS[3], resolution_email),
+            (multi_tasks, DESCRIPTIONS[4], resolution_tasks),
+        ]:
+            if findings:
+                res.append(
+                    {
+                        "category": "Playbooks",
+                        "severity": "Low",
+                        "description": desc.format(", ".join(findings)),
+                        "resolution": resolution,
+                    }
+                )
 
-incident = demisto.incidents()[0]
-account_name = incident.get("account")
-account_name = f"acc_{account_name}/" if account_name != "" else ""
-
-thresholds = args.get("Thresholds", Thresholds)
-
-customPlaybooks = demisto.executeCommand(
-    "core-api-post", {"uri": f"{account_name}playbook/search", "body": {"query": "system:F"}}
-)[0]["Contents"]["response"]["playbooks"]
-builtinPlaybooks = demisto.executeCommand(
-    "core-api-post", {"uri": f"{account_name}playbook/search", "body": {"query": "system:T"}}
-)[0]["Contents"]["response"]["playbooks"]
-
-builtinPlaybooksNames = []
-copyDetected = []
-sleepDetected = []
-multiSetIncidentDetected = []
-multiTasksDetected = []
-emailAskUserDetected = []
-
-if customPlaybooks is not None:
-    for builtinPlaybook in builtinPlaybooks:
-        builtinPlaybooksNames.append(builtinPlaybook["name"])
-
-    for customPlaybook in customPlaybooks:
-        for builtinPlaybooksName in builtinPlaybooksNames:
-            if builtinPlaybooksName in customPlaybook["name"]:
-                copyDetected.append(customPlaybook["name"])
-
-        if "Sleep" in customPlaybook["scriptIds"]:
-            sleepDetected.append(customPlaybook["name"])
-
-        if str(customPlaybook).count("Builtin|||setIncident") >= thresholds["CustomPlaybookSetIncidentCount"]:
-            multiSetIncidentDetected.append(customPlaybook["name"])
-
-        if "EmailAskUser" in customPlaybook["scriptIds"]:
-            emailAskUserDetected.append(customPlaybook["name"])
-
-        if len(customPlaybook["tasks"]) > thresholds["CustomPlaybookLength"]:
-            multiTasksDetected.append(customPlaybook["name"])
+        find_top_used_playbooks(uri_prefix)
+        return_results(
+            CommandResults(
+                readable_output="HealthCheckPlaybookAnalysis Done",
+                outputs_prefix="HealthCheck.ActionableItems",
+                outputs=res,
+            )
+        )
+    except Exception as e:
+        return_error(f"Failed to execute HealthCheckPlaybookAnalysis: {e}")
 
 
-res = []
-if copyDetected:
-    res.append(
-        {
-            "category": "Playbooks",
-            "severity": "Low",
-            "description": f"{DESCRIPTION[0]}".format(", ".join(copyDetected)),
-            "resolution": f"{RESOLUTION[0]}",
-        }
-    )
-
-if sleepDetected:
-    res.append(
-        {
-            "category": "Playbooks",
-            "severity": "Low",
-            "description": f"{DESCRIPTION[1]}".format(", ".join(sleepDetected)),
-            "resolution": f"{RESOLUTION[1]}",
-        }
-    )
-
-if multiSetIncidentDetected:
-    res.append(
-        {
-            "category": "Playbooks",
-            "severity": "Low",
-            "description": f"{DESCRIPTION[2]}".format(", ".join(multiSetIncidentDetected)),
-            "resolution": f"{RESOLUTION[2]}",
-        }
-    )
-
-if emailAskUserDetected:
-    res.append(
-        {
-            "category": "Playbooks",
-            "severity": "Low",
-            "description": f"{DESCRIPTION[3]}".format(", ".join(emailAskUserDetected)),
-            "resolution": f"{RESOLUTION[3]}",
-        }
-    )
-
-if multiTasksDetected:
-    res.append(
-        {
-            "category": "Playbooks",
-            "severity": "Low",
-            "description": f"{DESCRIPTION[4]}".format(", ".join(multiTasksDetected)),
-            "resolution": f"{RESOLUTION[4]}",
-        }
-    )
-
-
-findTopUsedPLaybooks(account_name)
-
-results = CommandResults(
-    readable_output="HealthCheckPlaybookAnalysis Done", outputs_prefix="HealthCheck.ActionableItems", outputs=res
-)
-
-return_results(results)
+if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
+    main()

@@ -21,6 +21,7 @@ from Doppel import (
     _get_mirroring_fields,
     _get_remote_updated_incident_data_with_entry,
     _normalize_entity_content_for_grid,
+    _reopen_entry_if_revived,
     _parse_fetch_timeout,
     _parse_max_fetch,
     _incident_alert_id,
@@ -1281,6 +1282,22 @@ def test_client_initialization_proxy_default_none(mocker):
     assert call_kwargs["proxy"] is None
 
 
+def test_client_sends_attribution_headers(requests_mock):
+    """Every Doppel API request carries the x-doppel-client attribution header and User-Agent."""
+    from Doppel import CLIENT_ATTRIBUTION, PACK_VERSION
+
+    client = Client(base_url="https://api.doppel.com/v1", api_key="test-api-key", verify=True)
+    alert_mock = requests_mock.get("https://api.doppel.com/v1/alert", json={"id": "TET-1"})
+
+    client.get_alert(id="TET-1", entity="")
+
+    assert f"xsoar/{PACK_VERSION}" == CLIENT_ATTRIBUTION
+    assert alert_mock.last_request.headers["x-doppel-client"] == CLIENT_ATTRIBUTION
+    assert alert_mock.last_request.headers["User-Agent"] == f"doppel-{CLIENT_ATTRIBUTION}"
+    # Attribution never replaces auth headers.
+    assert alert_mock.last_request.headers["x-api-key"] == "test-api-key"
+
+
 def test_main_function_with_proxy_enabled(mocker):
     """Test main function when proxy is enabled in params."""
     # Mock demisto functions
@@ -1479,3 +1496,47 @@ def test_fetch_incidents_persists_boundary_ids(mocker):
     last_run_data = set_last_run.call_args[0][0]
     assert last_run_data["last_run"] == "2025-01-27T07:55:12Z"
     assert last_run_data["recently_seen_ids"] == ["TET-2"]
+
+
+# ---------------- Revival reopen entries ----------------
+
+
+def test_reopen_entry_emitted_for_fresh_transition_into_active_queue():
+    """A queue move into an active queue after lastUpdate produces a dbotIncidentReopen entry."""
+    last_update = datetime(2025, 3, 1, 12, 0, 0)
+    alert = {"queue_state": "doppel_review"}
+    audit_logs = [
+        {"type": "queue_state_change", "value": "monitoring", "timestamp": "2025-02-01T09:00:00"},
+        {"type": "queue_state_change", "value": "Doppel Review", "timestamp": "2025-03-02T10:00:00"},
+    ]
+
+    entry = _reopen_entry_if_revived(alert, audit_logs, last_update)
+
+    assert entry is not None
+    assert entry["Contents"] == {"dbotIncidentReopen": True}
+
+
+def test_reopen_entry_not_emitted_for_inactive_queue():
+    """Alerts sitting in monitoring or archived never trigger a reopen."""
+    last_update = datetime(2025, 3, 1, 12, 0, 0)
+    audit_logs = [{"type": "queue_state_change", "value": "archived", "timestamp": "2025-03-02T10:00:00"}]
+
+    assert _reopen_entry_if_revived({"queue_state": "archived"}, audit_logs, last_update) is None
+    assert _reopen_entry_if_revived({"queue_state": "monitoring"}, audit_logs, last_update) is None
+
+
+def test_reopen_entry_not_emitted_for_stale_transition():
+    """An active queue state reached before lastUpdate does not reopen on every mirror cycle."""
+    last_update = datetime(2025, 3, 1, 12, 0, 0)
+    alert = {"queue_state": "actioned"}
+    audit_logs = [{"type": "queue_state_change", "value": "actioned", "timestamp": "2025-01-15T10:00:00"}]
+
+    assert _reopen_entry_if_revived(alert, audit_logs, last_update) is None
+
+
+def test_reopen_entry_requires_parseable_last_update():
+    """Without a usable lastUpdate there is no safe transition baseline, so no reopen."""
+    alert = {"queue_state": "actioned"}
+    audit_logs = [{"type": "queue_state_change", "value": "actioned", "timestamp": "2025-03-02T10:00:00"}]
+
+    assert _reopen_entry_if_revived(alert, audit_logs, None) is None

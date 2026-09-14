@@ -1,0 +1,964 @@
+description: Test playbook for Prisma AIRs Runtime security profiles and topics. Tests profile + topic CRUD and topic-apply, ensuring only the profile and topic created by this playbook are modified, applied, and deleted.
+id: PaloAltoNetworks_Prisma_AIRs_Runtime_Profiles_Test
+inputs:
+- key: ProfileName
+  value:
+    simple: test-runtime-profile
+  required: false
+  description: Name of the test security profile to create (unique so only this profile is operated on)
+  playbookInputQuery:
+- key: TopicName
+  value:
+    simple: test-runtime-topic
+  required: false
+  description: Name of the test custom topic to create (unique so only this topic is operated on)
+  playbookInputQuery:
+- key: TopicDescription
+  value:
+    simple: Test topic created by test playbook
+  required: false
+  description: Description of the test custom topic
+  playbookInputQuery:
+- key: TopicExamples
+  value:
+    simple: example prompt one,example prompt two
+  required: false
+  description: Comma-separated examples for the custom topic
+  playbookInputQuery:
+- key: UpdatedTopicDescription
+  value:
+    simple: Updated test topic description
+  required: false
+  description: Updated description for the custom topic
+  playbookInputQuery:
+- key: ApplyAction
+  value:
+    simple: block
+  required: false
+  description: Action to apply for the topic on the profile (block or allow)
+  playbookInputQuery:
+- key: ProfilePolicy
+  value:
+    simple: '{"ai-security-profiles":[{"model-type":"default","model-configuration":{"app-protection":{"default-url-category":{"member":null},"url-detected-action":""},"data-protection":{"data-leak-detection":{"action":"","member":null},"database-security":null},"latency":{"inline-timeout-action":"block","max-inline-latency":5},"mask-data-in-storage":false,"model-protection":[],"agent-protection":[]}}],"dlp-data-profiles":[]}'
+  required: false
+  description: JSON policy for the security profile. The API requires a non-empty default policy. Override with your tenant's policy if needed.
+  playbookInputQuery:
+name: PaloAltoNetworks_Prisma_AIRs_Runtime_Profiles_Test
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a0000000-0000-4000-8000-000000000000
+    type: start
+    task:
+      id: a0000000-0000-4000-8000-000000000000
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a1111111-1111-4111-8111-111111111111
+    type: regular
+    task:
+      id: a1111111-1111-4111-8111-111111111111
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a2222222-2222-4222-8222-222222222222
+    type: title
+    task:
+      id: a2222222-2222-4222-8222-222222222222
+      version: -1
+      name: Runtime Profiles and Topics - CRUD + Apply
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: a3333333-3333-4333-8333-333333333333
+    type: regular
+    task:
+      id: a3333333-3333-4333-8333-333333333333
+      version: -1
+      name: prisma-airs-runtime-profiles-list
+      description: List all runtime security profiles (initial state).
+      script: '|||prisma-airs-runtime-profiles-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 515
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: a4444444-4444-4444-8444-444444444444
+    type: regular
+    task:
+      id: a4444444-4444-4444-8444-444444444444
+      version: -1
+      name: prisma-airs-runtime-profiles-create
+      description: Create a new security profile.
+      script: '|||prisma-airs-runtime-profiles-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      profile_name:
+        complex:
+          root: inputs.ProfileName
+      policy:
+        complex:
+          root: inputs.ProfilePolicy
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a5555555-5555-4555-8555-555555555555
+    type: regular
+    task:
+      id: a5555555-5555-4555-8555-555555555555
+      version: -1
+      name: prisma-airs-runtime-profiles-get
+      description: Get the created profile by its id.
+      script: '|||prisma-airs-runtime-profiles-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      profile_id:
+        complex:
+          root: PrismaAIRs.SecurityProfileCreate
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: a6666666-6666-4666-8666-666666666666
+    type: condition
+    task:
+      id: a6666666-6666-4666-8666-666666666666
+      version: -1
+      name: Validate Profile Created
+      description: Verify the created profile has the expected name.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PrismaAIRs.SecurityProfileGet
+                accessor: name
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.ProfileName
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: a7777777-7777-4777-8777-777777777777
+    type: regular
+    task:
+      id: a7777777-7777-4777-8777-777777777777
+      version: -1
+      name: prisma-airs-runtime-profiles-update
+      description: Update ONLY the created profile (by its created id).
+      script: '|||prisma-airs-runtime-profiles-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      profile_id:
+        complex:
+          root: PrismaAIRs.SecurityProfileCreate
+          accessor: id
+      profile_name:
+        complex:
+          root: inputs.ProfileName
+      active:
+        simple: "true"
+      policy:
+        complex:
+          root: inputs.ProfilePolicy
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a8888888-8888-4888-8888-888888888888
+    type: regular
+    task:
+      id: a8888888-8888-4888-8888-888888888888
+      version: -1
+      name: prisma-airs-runtime-topics-list
+      description: List custom topics.
+      script: '|||prisma-airs-runtime-topics-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: a9999999-9999-4999-8999-999999999999
+    type: regular
+    task:
+      id: a9999999-9999-4999-8999-999999999999
+      version: -1
+      name: prisma-airs-runtime-topics-create
+      description: Create a custom topic.
+      script: '|||prisma-airs-runtime-topics-create'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      topic_name:
+        complex:
+          root: inputs.TopicName
+      description:
+        complex:
+          root: inputs.TopicDescription
+      examples:
+        complex:
+          root: inputs.TopicExamples
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: b0000000-0000-4000-8000-000000000000
+    type: regular
+    task:
+      id: b0000000-0000-4000-8000-000000000000
+      version: -1
+      name: prisma-airs-runtime-topics-get
+      description: Get the created topic by its id.
+      script: '|||prisma-airs-runtime-topics-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      topic_id:
+        complex:
+          root: PrismaAIRs.TopicCreate
+          accessor: topic_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: b1111111-1111-4111-8111-111111111111
+    type: condition
+    task:
+      id: b1111111-1111-4111-8111-111111111111
+      version: -1
+      name: Validate Topic Created
+      description: Verify the created topic has the expected name.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PrismaAIRs.TopicGet
+                accessor: topic_name
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.TopicName
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: b2222222-2222-4222-8222-222222222222
+    type: regular
+    task:
+      id: b2222222-2222-4222-8222-222222222222
+      version: -1
+      name: prisma-airs-runtime-topics-update
+      description: Update ONLY the created topic (by its created id); keep the same name.
+      script: '|||prisma-airs-runtime-topics-update'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      topic_id:
+        complex:
+          root: PrismaAIRs.TopicCreate
+          accessor: topic_id
+      topic_name:
+        complex:
+          root: inputs.TopicName
+      description:
+        complex:
+          root: inputs.UpdatedTopicDescription
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: b3333333-3333-4333-8333-333333333333
+    type: regular
+    task:
+      id: b3333333-3333-4333-8333-333333333333
+      version: -1
+      name: prisma-airs-runtime-topics-apply
+      description: Apply the created topic to the created profile.
+      script: '|||prisma-airs-runtime-topics-apply'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      profile_name:
+        complex:
+          root: inputs.ProfileName
+      topic_name:
+        complex:
+          root: inputs.TopicName
+      action:
+        complex:
+          root: inputs.ApplyAction
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: b4444444-4444-4444-8444-444444444444
+    type: condition
+    task:
+      id: b4444444-4444-4444-8444-444444444444
+      version: -1
+      name: Validate Topic Applied
+      description: Verify the apply succeeded for the created topic.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PrismaAIRs.TopicApplied
+                accessor: topic_id
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: PrismaAIRs.TopicCreate
+                accessor: topic_id
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: b5555555-5555-4555-8555-555555555555
+    type: regular
+    task:
+      id: b5555555-5555-4555-8555-555555555555
+      version: -1
+      name: prisma-airs-runtime-profiles-get
+      description: Re-fetch the profile after applying the topic.
+      script: '|||prisma-airs-runtime-profiles-get'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      profile_id:
+        complex:
+          root: PrismaAIRs.SecurityProfileCreate
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: b6666666-6666-4666-8666-666666666666
+    type: regular
+    task:
+      id: b6666666-6666-4666-8666-666666666666
+      version: -1
+      name: prisma-airs-runtime-profiles-delete
+      description: Delete the apply revision of the profile (releases the applied topic). Profile updates are versioned, so each create/update/apply produces a distinct profile_id under the same name.
+      script: '|||prisma-airs-runtime-profiles-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      profile_id:
+        complex:
+          root: PrismaAIRs.TopicApplied
+          accessor: profile_id
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: b7777777-7777-4777-8777-777777777777
+    type: regular
+    task:
+      id: b7777777-7777-4777-8777-777777777777
+      version: -1
+      name: prisma-airs-runtime-topics-delete
+      description: Delete ONLY the created topic (by its created id).
+      script: '|||prisma-airs-runtime-topics-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      topic_id:
+        complex:
+          root: PrismaAIRs.TopicCreate
+          accessor: topic_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: b8888888-8888-4888-8888-888888888888
+    type: condition
+    task:
+      id: b8888888-8888-4888-8888-888888888888
+      version: -1
+      name: Validate Cleanup
+      description: Verify only the created profile and topic were deleted.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PrismaAIRs.TopicDeleted
+                accessor: deleted
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: PrismaAIRs.TopicDeleted
+                accessor: topic_id
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: PrismaAIRs.TopicCreate
+                accessor: topic_id
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3525
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: b9999999-9999-4999-8999-999999999999
+    type: regular
+    task:
+      id: b9999999-9999-4999-8999-999999999999
+      version: -1
+      name: Test Passed - Close Investigation
+      description: All validations passed successfully.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      id:
+        simple: ${incident.id}
+      closeReason:
+        simple: Test passed - Runtime profile and topic CRUD + apply validated successfully
+      closeNotes:
+        simple: "Test playbook completed successfully:\n- Profile: create, get, update, delete\n- Topic: create, get, update, delete\n- Apply: topic applied to profile\n- Only the created profile and topic were modified/deleted"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 3700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: c0000000-0000-4000-8000-000000000000
+    type: regular
+    task:
+      id: c0000000-0000-4000-8000-000000000000
+      version: -1
+      name: Test Failed - Print Error
+      description: Validation failed - print error to fail CI pipeline.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "TEST FAILED: Runtime profile/topic validation failed. Check context: PrismaAIRs.SecurityProfileCreate, PrismaAIRs.SecurityProfileGet, PrismaAIRs.TopicCreate, PrismaAIRs.TopicGet, PrismaAIRs.TopicApplied, PrismaAIRs.SecurityProfileDeleted, and PrismaAIRs.TopicDeleted. Only the created profile and topic should be modified/deleted."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": 3700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c1111111-1111-4111-8111-111111111111
+    type: regular
+    task:
+      id: c1111111-1111-4111-8111-111111111111
+      version: -1
+      name: prisma-airs-runtime-profiles-delete
+      description: Delete the update revision of the profile (SecurityProfileUpdate.id).
+      script: '|||prisma-airs-runtime-profiles-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      profile_id:
+        complex:
+          root: PrismaAIRs.SecurityProfileUpdate
+          accessor: id
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: c2222222-2222-4222-8222-222222222222
+    type: regular
+    task:
+      id: c2222222-2222-4222-8222-222222222222
+      version: -1
+      name: prisma-airs-runtime-profiles-delete
+      description: Delete the original create revision of the profile (SecurityProfileCreate.id).
+      script: '|||prisma-airs-runtime-profiles-delete'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      profile_id:
+        complex:
+          root: PrismaAIRs.SecurityProfileCreate
+          accessor: id
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 3760,
+        "width": 800,
+        "x": 240,
+        "y": 50
+      }
+    }
+  }
+fromversion: 6.10.0
