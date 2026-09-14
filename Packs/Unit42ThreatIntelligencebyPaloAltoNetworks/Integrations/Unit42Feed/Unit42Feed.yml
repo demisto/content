@@ -71,7 +71,7 @@ configuration:
   advanced: true
   hidden: true
 - display: Indicator Reputation
-  additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  additionalinfo: Indicators from this integration instance will be marked with this reputation. Leave empty to preserve the native verdict returned by Unit 42 for each indicator.
   name: feedReputation
   type: 18
   options:
@@ -79,7 +79,7 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  defaultvalue: None
+  defaultvalue: feedInstanceReputationNotSet
   required: false
   section: Collect
   advanced: true
