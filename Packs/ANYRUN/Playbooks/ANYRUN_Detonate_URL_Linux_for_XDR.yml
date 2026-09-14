@@ -1,5 +1,5 @@
 id: ANYRUN Detonate URL Linux for XDR
-version: 4
+version: -1
 fromversion: 6.0.0
 vcShouldKeepItemLegacyProdMachine: false
 aclrelations: []
@@ -9,7 +9,7 @@ aclowner:
   name: ""
 name: ANYRUN Detonate URL Linux for XDR
 description: This playbook submits a URL from a Cortex XDR issue to the ANY.RUN Cloud
-  Sandbox for dynamic analysis in a Linux environment. It helps to automate malware
+  Sandbox for dynamic analysis in a Linux environment and automates malware
   detonation and behavior observation on Linux OS.
 starttaskid: "0"
 tasks:
@@ -480,7 +480,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 1
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
@@ -546,6 +546,8 @@ tasks:
         simple: ${ANYRUNInstance}
       report_format:
         simple: ioc
+      create_xdr_iocs:
+        simple: "true"
       task_uuid:
         simple: ${ANYRUN_DetonateUrlLinux.TaskID}
     separatecontext: false
@@ -572,9 +574,9 @@ tasks:
       id: 6afed61e-6414-417a-8c49-897f6fe0bc9d
       version: -1
       name: '[XDR] Add ANY.RUN IOCs to XDR IOC rules'
-      description: Upload the IOC rules to XSIAM. When the ioc_object is defined,
+      description: Upload the IOC rules to Cortex XDR. When the ioc_object is defined,
         disregard any other provided arguments, as the ioc_object takes precedence.
-        Validate the indicator parameters when ioc_object is used. If `vendor_name`,
+        Validates the indicator parameters when ioc_object is used. If `vendor_name`,
         `vendor_reputation`, and `vendor_reliability` are used, only a single vendor
         is supported. For multiple vendors, utilize an `ioc_object` in JSON format.
         Adding a rule with the same indicator, but with different parameters, will
@@ -616,7 +618,7 @@ tasks:
     task:
       id: 7d30195f-0c63-433d-846d-cb0496a74660
       version: -1
-      name: Is ANY.RUN IOC object available?
+      name: Are there ANY.RUN IOC details to add to XDR?
       description: Checks whether the ANY.RUN IOC report returned an ioc_object that
         can be uploaded to Cortex XDR IOC rules.
       type: condition
@@ -652,7 +654,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 1
     isoversize: false
     isautoswitchedtoquietmode: false
   "15":
@@ -692,7 +694,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 1
     isoversize: false
     isautoswitchedtoquietmode: false
 outlinetasks: {}
@@ -722,89 +724,85 @@ inputs:
   value:
     simple: ${issue.xdmtargeturl}
   required: false
-  description: 'Target URL to submit to ANY.RUN. By default, this playbook uses the
-    Cortex XDR normalized target URL field xdm.target.url (${issue.xdmtargeturl}).
-    If your issue uses another URL field, such as xdm.network.http.url, override this
-    input accordingly. Size range 5-512. Example: (http/https)://(your-link)'
+  description: 'The target URL to submit to ANY.RUN. By default, this playbook uses the Cortex XDR normalized target URL field xdm.target.url (${issue.xdmtargeturl}). If your issue uses another URL field, such as xdm.network.http.url, override this input accordingly. Size range 5-512. Example: (http/https)://(your-link).'
   playbookInputQuery: null
 - key: env_locale
   value:
     simple: en-US
   required: false
-  description: 'Operation system language. Use locale identifier or country name (Ex:
-    "en-US" or "Brazil"). Case insensitive.'
+  description: 'The operating system language. Use locale identifier or country name (for example, "en-US" or "Brazil"). Case insensitive.'
   playbookInputQuery: null
 - key: env_os
   value:
     simple: ubuntu
   required: false
-  description: Operation system. Possible values - ubuntu, debian
+  description: 'The operating system. Possible values: ubuntu, debian.'
   playbookInputQuery: null
 - key: opt_network_connect
   value:
-    simple: "True"
+    simple: "true"
   required: false
-  description: Network connection state.
+  description: Whether to enable network connection.
   playbookInputQuery: null
 - key: opt_network_fakenet
   value:
-    simple: "False"
+    simple: "false"
   required: false
-  description: FakeNet feature status.
+  description: Whether to enable the FakeNet feature.
   playbookInputQuery: null
 - key: opt_network_tor
   value:
-    simple: "False"
+    simple: "false"
   required: false
-  description: TOR using.
+  description: Whether to use TOR.
   playbookInputQuery: null
 - key: opt_network_geo
   value:
     simple: fastest
   required: false
-  description: 'Tor geo location option. Example: US, AU.'
+  description: 'The TOR geo location option, for example US, AU.'
   playbookInputQuery: null
 - key: opt_network_mitm
   value:
-    simple: "False"
+    simple: "false"
   required: false
-  description: HTTPS MITM proxy option.
+  description: Whether to use the HTTPS MITM proxy.
   playbookInputQuery: null
 - key: opt_network_residential_proxy
   value:
-    simple: "False"
+    simple: "false"
   required: false
-  description: Residential proxy using.
+  description: Whether to use a residential proxy.
   playbookInputQuery: null
 - key: opt_network_residential_proxy_geo
   value:
     simple: fastest
   required: false
-  description: 'Residential proxy geo location option. Example: US, AU.'
+  description: 'The residential proxy geo location option, for example US, AU.'
   playbookInputQuery: null
 - key: opt_privacy_type
   value:
     simple: bylink
   required: false
-  description: 'Privacy settings. Supports: public, bylink, owner, byteam.'
+  description: 'The privacy settings. Supports: public, bylink, owner, byteam.'
   playbookInputQuery: null
 - key: opt_timeout
   value:
     simple: "120"
   required: false
-  description: 'Timeout option. Size range: 10-660.'
+  description: 'The timeout value. Size range: 10-660.'
   playbookInputQuery: null
 - key: obj_ext_browser
   value:
     simple: Google Chrome
   required: false
-  description: 'Browser name. Supports: Google Chrome, Mozilla Firefox'
+  description: 'The browser name. Supports: Google Chrome, Mozilla Firefox.'
   playbookInputQuery: null
 - key: obj_ext_extension
   value:
-    simple: "True"
+    simple: "true"
   required: false
-  description: Change extension to valid
+  description: Whether to change the extension to a valid one.
   playbookInputQuery: null
 inputSections:
 - inputs:
@@ -841,16 +839,16 @@ outputSections:
   description: Generic group for outputs
 outputs:
 - contextPath: ANYRUN_DetonateUrlLinux.TaskID
-  description: ANY.RUN task UUID.
+  description: The ANY.RUN task UUID.
   type: String
 - contextPath: ANYRUN.SandboxAnalysisReportVerdict
-  description: ANY.RUN verdict.
+  description: The ANY.RUN verdict.
   type: String
 - contextPath: ANYRUN.IOCs
-  description: IOCs extracted from ANY.RUN report.
+  description: The IOCs extracted from the ANY.RUN report.
   type: Unknown
 - contextPath: ANYRUN.IOCDetails
-  description: Detailed IOC objects prepared for Cortex XDR indicator rules.
+  description: The detailed IOC objects prepared for Cortex XDR indicator rules.
   type: Unknown
 quiet: true
 dirtyInputs: true

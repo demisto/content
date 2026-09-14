@@ -90,7 +90,7 @@ tasks:
       id: a15b376c-8a9c-4ef3-9809-816ed237f8e2
       version: -1
       name: Set instance to use (from input)
-      description: Set a value in context under the key you entered.
+      description: Sets the selected ANY.RUN integration instance in playbook context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -127,8 +127,7 @@ tasks:
       id: 699f4715-1d13-4e0e-8c67-c6cebcdbe4ce
       version: -1
       name: Get active ANY.RUN Cloud Sandbox instances
-      description: Returns integration instances configured in Cortex XSOAR.
-        You can filter by instance status and/or brand name (vendor).
+      description: Returns active ANY.RUN Cloud Sandbox integration instances.
       scriptName: GetInstances
       type: regular
       iscommand: false
@@ -165,7 +164,7 @@ tasks:
       id: 38f45aa6-533f-4810-81b3-fb595877813f
       version: -1
       name: Set instance to use (first active instance)
-      description: Set a value in context under the key you entered.
+      description: Sets the first active ANY.RUN integration instance in playbook context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -600,6 +599,10 @@ tasks:
           accessor: id
       indicatorsValues:
         simple: ${ANYRUN.IOCs}
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -637,79 +640,78 @@ inputs:
   required: false
   description: |-
     The name of the ANY.RUN Cloud Sandbox integration instance to use for running commands in this playbook.
-    If left empty, and more than one instance is enabled, the playbook automatically selects the first active instance instead of running the commands on every enabled instance.
+    If left empty, and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
   playbookInputQuery:
 - key: file
   value:
     simple: ${File.EntryID}
   required: false
-  description: XSOAR Entry ID
+  description: The existing War Room file EntryID to submit for analysis.
   playbookInputQuery:
 - key: env_locale
   value:
     simple: en-US
   required: false
-  description: 'Operation system language. Use locale identifier or country name (Ex:
-    "en-US" or "Brazil"). Case insensitive.'
+  description: 'The operating system language. Use locale identifier or country name (for example, "en-US" or "Brazil"). Case insensitive.'
   playbookInputQuery:
 - key: opt_network_connect
   value:
-    simple: "True"
+    simple: "true"
   required: false
-  description: Network connection state.
+  description: Whether to enable network connection.
   playbookInputQuery:
 - key: opt_network_fakenet
   value:
-    simple: "False"
+    simple: "false"
   required: false
-  description: FakeNet feature status.
+  description: Whether to enable the FakeNet feature.
   playbookInputQuery:
 - key: opt_network_tor
   value:
-    simple: "False"
+    simple: "false"
   required: false
-  description: TOR using.
+  description: Whether to use TOR.
   playbookInputQuery:
 - key: opt_network_geo
   value:
     simple: fastest
   required: false
-  description: 'Tor geo location option. Example: US, AU.'
+  description: 'The TOR geo location option, for example US, AU.'
   playbookInputQuery:
 - key: opt_network_mitm
   value:
-    simple: "False"
+    simple: "false"
   required: false
-  description: HTTPS MITM proxy option.
+  description: Whether to use the HTTPS MITM proxy.
   playbookInputQuery:
 - key: opt_network_residential_proxy
   value:
-    simple: "False"
+    simple: "false"
   required: false
-  description: Residential proxy using.
+  description: Whether to use a residential proxy.
   playbookInputQuery:
 - key: opt_network_residential_proxy_geo
   value:
     simple: fastest
   required: false
-  description: 'Residential proxy geo location option. Example: US, AU.'
+  description: 'The residential proxy geo location option, for example US, AU.'
   playbookInputQuery:
 - key: opt_privacy_type
   value:
     simple: bylink
   required: false
-  description: 'Privacy settings. Supports: public, bylink, owner, byteam.'
+  description: 'The privacy settings. Supports: public, bylink, owner, byteam.'
   playbookInputQuery:
 - key: opt_timeout
   value:
     simple: "240"
   required: false
-  description: 'Timeout option. Size range: 10-660.'
+  description: 'The timeout value. Size range: 10-660.'
   playbookInputQuery:
 - key: obj_ext_cmd
   value: {}
   required: false
-  description: Optional command line
+  description: The optional command line.
   playbookInputQuery:
 inputSections:
 - inputs:
@@ -741,7 +743,16 @@ outputSections:
 - outputs: []
   name: General (Outputs group)
   description: Generic group for outputs
-outputs: []
+outputs:
+- contextPath: ANYRUN_DetonateFileAndroid.TaskID
+  description: The ANY.RUN task UUID.
+  type: String
+- contextPath: ANYRUN.SandboxAnalysisReportVerdict
+  description: The ANY.RUN verdict.
+  type: String
+- contextPath: ANYRUN.IOCs
+  description: The IOCs extracted from the ANY.RUN report.
+  type: Unknown
 quiet: true
 tests:
 - No tests (auto formatted)

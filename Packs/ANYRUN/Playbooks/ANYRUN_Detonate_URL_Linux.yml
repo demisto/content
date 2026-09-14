@@ -90,7 +90,7 @@ tasks:
       id: d9668c10-48d8-4d6d-bd43-e3864747b492
       version: -1
       name: Set instance to use (from input)
-      description: Set a value in context under the key you entered.
+      description: Sets the selected ANY.RUN integration instance in playbook context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -127,8 +127,7 @@ tasks:
       id: 49f4fd2c-782d-4a82-8e6f-f714d2b7b041
       version: -1
       name: Get active ANY.RUN Cloud Sandbox instances
-      description: Returns integration instances configured in Cortex XSOAR.
-        You can filter by instance status and/or brand name (vendor).
+      description: Returns active ANY.RUN Cloud Sandbox integration instances.
       scriptName: GetInstances
       type: regular
       iscommand: false
@@ -165,7 +164,7 @@ tasks:
       id: 5548601f-4ef6-40f4-944f-3c0ce1f9611f
       version: -1
       name: Set instance to use (first active instance)
-      description: Set a value in context under the key you entered.
+      description: Sets the first active ANY.RUN integration instance in playbook context.
       scriptName: Set
       type: regular
       iscommand: false
@@ -605,6 +604,10 @@ tasks:
           accessor: id
       indicatorsValues:
         simple: ${ANYRUN.IOCs}
+      retry-count:
+        simple: "5"
+      retry-interval:
+        simple: "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -642,92 +645,91 @@ inputs:
   required: false
   description: |-
     The name of the ANY.RUN Cloud Sandbox integration instance to use for running commands in this playbook.
-    If left empty, and more than one instance is enabled, the playbook automatically selects the first active instance instead of running the commands on every enabled instance.
+    If left empty, and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
   playbookInputQuery:
 - key: obj_url
   value:
     simple: ${URL.Data}
   required: false
-  description: 'Target URL. Size range 5-512. Example: (http/https)://(your-link)'
+  description: 'The target URL. Size range 5-512. Example: (http/https)://(your-link).'
   playbookInputQuery: null
 - key: env_locale
   value:
     simple: en-US
   required: false
-  description: 'Operation system language. Use locale identifier or country name (Ex:
-    "en-US" or "Brazil"). Case insensitive.'
+  description: 'The operating system language. Use locale identifier or country name (for example, "en-US" or "Brazil"). Case insensitive.'
   playbookInputQuery: null
 - key: env_os
   value:
     simple: ubuntu
   required: false
-  description: Operation system. Possible values - ubuntu, debian
+  description: 'The operating system. Possible values: ubuntu, debian.'
   playbookInputQuery: null
 - key: opt_network_connect
   value:
-    simple: "True"
+    simple: "true"
   required: false
-  description: Network connection state.
+  description: Whether to enable network connection.
   playbookInputQuery: null
 - key: opt_network_fakenet
   value:
-    simple: "False"
+    simple: "false"
   required: false
-  description: FakeNet feature status.
+  description: Whether to enable the FakeNet feature.
   playbookInputQuery: null
 - key: opt_network_tor
   value:
-    simple: "False"
+    simple: "false"
   required: false
-  description: TOR using.
+  description: Whether to use TOR.
   playbookInputQuery: null
 - key: opt_network_geo
   value:
     simple: fastest
   required: false
-  description: 'Tor geo location option. Example: US, AU.'
+  description: 'The TOR geo location option, for example US, AU.'
   playbookInputQuery: null
 - key: opt_network_mitm
   value:
-    simple: "False"
+    simple: "false"
   required: false
-  description: HTTPS MITM proxy option.
+  description: Whether to use the HTTPS MITM proxy.
   playbookInputQuery: null
 - key: opt_network_residential_proxy
   value:
-    simple: "False"
+    simple: "false"
   required: false
-  description: Residential proxy using.
+  description: Whether to use a residential proxy.
   playbookInputQuery: null
 - key: opt_network_residential_proxy_geo
   value:
     simple: fastest
   required: false
-  description: 'Residential proxy geo location option. Example: US, AU.'
+  description: 'The residential proxy geo location option, for example US, AU.'
   playbookInputQuery: null
 - key: opt_privacy_type
   value:
     simple: bylink
   required: false
-  description: 'Privacy settings. Supports: public, bylink, owner, byteam.'
+  description: 'The privacy settings. Supports: public, bylink, owner, byteam.'
   playbookInputQuery: null
 - key: opt_timeout
   value:
     simple: "120"
   required: false
-  description: 'Timeout option. Size range: 10-660.'
+  description: 'The timeout value. Size range: 10-660.'
   playbookInputQuery: null
 - key: obj_ext_browser
   value:
     simple: Google Chrome
   required: false
-  description: Optional command line
+  description: 'The browser name. Supports: Google Chrome, Mozilla Firefox.'
   playbookInputQuery: null
 - key: obj_ext_extension
   value:
-    simple: "True"
+    simple: "true"
   required: false
-  description: Change extension to valid
+  description: Whether to change the extension to a valid one.
   playbookInputQuery: null
 inputSections:
 - inputs:
@@ -761,7 +763,16 @@ outputSections:
 - outputs: []
   name: General (Outputs group)
   description: Generic group for outputs
-outputs: []
+outputs:
+- contextPath: ANYRUN_DetonateUrlLinux.TaskID
+  description: The ANY.RUN task UUID.
+  type: String
+- contextPath: ANYRUN.SandboxAnalysisReportVerdict
+  description: The ANY.RUN verdict.
+  type: String
+- contextPath: ANYRUN.IOCs
+  description: The IOCs extracted from the ANY.RUN report.
+  type: Unknown
 sourceplaybookid: 52d278a0-2905-4a37-8379-4853a06f65d8
 quiet: true
 marketplaces:

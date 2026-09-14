@@ -1,13 +1,13 @@
 Note: Support for this Pack was moved to Partner on June 17, 2025.
 
-### The Challenge  
+## The Challenge  
 
 Modern SOCs are overwhelmed with incident alerts and lack
 fast, reliable ways to assess and prioritize them effectively.
 This leaves critical infrastructures vulnerable to attacks like
 ransomware and data theft, which might slip through security gaps and cause major damage and downtime.
 
-### ANY.RUN Content Pack for Cortex XSOAR
+## ANY.RUN Content Pack for Cortex XSOAR
 
 The Palo Alto Networks Cortex XSOAR and ANY.RUN integration enables SOCs to automate triage, expand threat
 coverage, and increase the detection rate, including hidden and missed malware.  
@@ -21,7 +21,7 @@ organization can:
 * Query threat details for IoCs, indicators of attack (IoAs), and indicators of behavior (IoBs) to enrich incident investigations.
 * Automate workflows using Cortex XSOAR playbooks to reduce manual workload.
 
-### Palo Alto Networks and ANY.RUN Integrations
+## Palo Alto Networks and ANY.RUN Integrations
 
 Product integrations between Palo Alto Networks and ANY.RUN include:
 
@@ -29,7 +29,7 @@ Product integrations between Palo Alto Networks and ANY.RUN include:
 * [Threat Intelligence Lookup](https://any.run/threat-intelligence-lookup/?utm_source=cortex_marketplace&utm_medium=description&utm_campaign=palo_alto_networks_integration&utm_term=281025&utm_content=linktotilookuplanding)
 * [Threat Intelligence Feeds](https://any.run/threat-intelligence-feeds/?utm_source=cortex_marketplace&utm_medium=description&utm_campaign=palo_alto_networks_integration&utm_term=281025&utm_content=linktotifeedslanding)
 
-### Key Benefits
+## Key Benefits
 
 * Slash incident response time with automated, secure
 malware analysis in Cortex XSOAR®
@@ -39,12 +39,12 @@ malware analysis in Cortex XSOAR®
 * Reduce SOC workload by automating threat triage and response tasks.
 * Help ensure compliance with SOC 2/GDPR via a secure, private analysis mode.
 
-### Support
+## Support
 
 This is an ANY.RUN’s supported connector. You can write to us for help with integration via [techsupport@any.run](mailto:techsupport@any.run).
 Contact us for a quote or demo via [this form](https://app.any.run/contact-us/?utm_source=cortex_marketplace&utm_medium=description&utm_campaign=palo_alto_networks_integration&utm_term=281025&utm_content=linktocontactus)
 
-### Pack Contributors
+## Pack Contributors
 
 ---
 
