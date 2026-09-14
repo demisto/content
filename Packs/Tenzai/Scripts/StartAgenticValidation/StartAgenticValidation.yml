@@ -31,6 +31,7 @@ args:
   - NETWORK_HOST
 - name: port
   description: The exposed service port.
+  type: number
 - name: protocol
   description: The exposed service protocol.
 - name: service_classification
