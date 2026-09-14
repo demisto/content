@@ -43,6 +43,11 @@ PLATFORM_STANDARD_ARGS = {"project_id", "account_id"}
 # but the entry is built by the platform, so no handler prefix exists to match.
 PLATFORM_STANDARD_OUTPUT_PREFIXES = {"File"}
 
+# Polling arguments consumed by the @polling_function decorator (and the shared
+# polling-args validation helper) rather than by the handler body itself. They are
+# exempt from the per-handler verbatim arg check.
+POLLING_STANDARD_ARGS = {"interval_in_seconds", "polling_timeout", "hide_polling_output"}
+
 
 def test_parse_firewall_rule_valid_input():
     """
@@ -3448,6 +3453,176 @@ def test_storage_bucket_objects_list_merges_with_context(mocker):
         {"name": "o1", "bucket": "b1", "size": "2"},
         {"name": "o2", "bucket": "b1", "size": "3"},
     ]
+
+
+def test_merge_context_items_flat_layout_replaces_and_appends(mocker):
+    """
+    Given:
+        - A context path holding a flat list of items, one of which is returned again by the new page.
+    When:
+        - _merge_context_items is called without items_key (flat layout).
+    Then:
+        - The already-known item is replaced by the fresh version, the unseen item is appended,
+          and the original ordering is preserved.
+    """
+    # Given
+    from GCP import _merge_context_items
+
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={"GCP": {"Compute": {"Firewall": [{"name": "f1", "size": "1"}, {"name": "f2", "size": "2"}]}}},
+    )
+
+    # When
+    merged = _merge_context_items("GCP.Compute.Firewall", [{"name": "f1", "size": "9"}, {"name": "f3", "size": "3"}])
+
+    # Then
+    assert merged == [
+        {"name": "f1", "size": "9"},
+        {"name": "f2", "size": "2"},
+        {"name": "f3", "size": "3"},
+    ]
+
+
+def test_merge_context_items_flat_layout_with_custom_id_key(mocker):
+    """
+    Given:
+        - A context path holding items identified by "id" rather than the default "name".
+    When:
+        - _merge_context_items is called with id_key="id".
+    Then:
+        - Items are de-duplicated by "id", so the existing entry is replaced instead of duplicated.
+    """
+    # Given
+    from GCP import _merge_context_items
+
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={"GCP": {"Compute": {"Snapshots": [{"id": "s1", "name": "old"}]}}},
+    )
+
+    # When
+    merged = _merge_context_items(
+        "GCP.Compute.Snapshots",
+        [{"id": "s1", "name": "new"}, {"id": "s2", "name": "second"}],
+        id_key="id",
+    )
+
+    # Then
+    assert merged == [{"id": "s1", "name": "new"}, {"id": "s2", "name": "second"}]
+
+
+def test_merge_context_items_flat_layout_normalizes_single_dict(mocker):
+    """
+    Given:
+        - A context path holding a single item as a dict rather than a list.
+    When:
+        - _merge_context_items is called.
+    Then:
+        - The single dict is treated as a one-item list and merged rather than being discarded.
+    """
+    # Given
+    from GCP import _merge_context_items
+
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={"GCP": {"Compute": {"Firewall": {"name": "f1", "size": "1"}}}},
+    )
+
+    # When
+    merged = _merge_context_items("GCP.Compute.Firewall", [{"name": "f2", "size": "2"}])
+
+    # Then
+    assert merged == [{"name": "f1", "size": "1"}, {"name": "f2", "size": "2"}]
+
+
+def test_merge_context_items_nested_layout_merges_only_matching_parent(mocker):
+    """
+    Given:
+        - A context path holding parent entries, each nesting its own items list.
+    When:
+        - _merge_context_items is called with items_key, parent_id_key and parent_id_value.
+    Then:
+        - Only the items of the matching parent are merged, and items of other parents are ignored.
+    """
+    # Given
+    from GCP import _merge_context_items
+
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={
+            "GCP": {
+                "Storage": {
+                    "Buckets": [
+                        {"name": "b1", "Objects": [{"name": "o1", "size": "1"}]},
+                        {"name": "b2", "Objects": [{"name": "other", "size": "9"}]},
+                    ]
+                }
+            }
+        },
+    )
+
+    # When
+    merged = _merge_context_items(
+        "GCP.Storage.Buckets",
+        [{"name": "o2", "size": "2"}],
+        items_key="Objects",
+        parent_id_key="name",
+        parent_id_value="b1",
+    )
+
+    # Then
+    assert merged == [{"name": "o1", "size": "1"}, {"name": "o2", "size": "2"}]
+
+
+def test_merge_context_items_when_context_is_empty_returns_new_items_only(mocker):
+    """
+    Given:
+        - An empty context, as on the very first page of a paginated command.
+    When:
+        - _merge_context_items is called.
+    Then:
+        - Only the newly fetched items are returned, with no error raised.
+    """
+    # Given
+    from GCP import _merge_context_items
+
+    mocker.patch.object(demisto, "context", return_value={})
+
+    # When
+    merged = _merge_context_items("GCP.Storage.Buckets", [{"name": "o1"}])
+
+    # Then
+    assert merged == [{"name": "o1"}]
+
+
+def test_merge_context_items_skips_malformed_entries_and_items_without_id(mocker):
+    """
+    Given:
+        - A context containing a non-dict entry, and new items where one is missing the identifying key.
+    When:
+        - _merge_context_items is called.
+    Then:
+        - The malformed context entry and the unidentifiable item are skipped instead of raising.
+    """
+    # Given
+    from GCP import _merge_context_items
+
+    mocker.patch.object(
+        demisto,
+        "context",
+        return_value={"GCP": {"Compute": {"Firewall": ["not-a-dict", {"name": "f1"}, {"no_name": "x"}]}}},
+    )
+
+    # When
+    merged = _merge_context_items("GCP.Compute.Firewall", [{"name": "f2"}, {"no_name": "y"}])
+
+    # Then
+    assert merged == [{"name": "f1"}, {"name": "f2"}]
 
 
 def test_storage_bucket_policy_list_with_version(mocker):
@@ -7055,6 +7230,413 @@ def test_get_credentials_marketplace_no_project_id_anywhere_raises(mocker):
         get_credentials(args, params)
 
 
+@pytest.mark.parametrize(
+    "region_input, expected_region",
+    [
+        ("us-central1", "us-central1"),
+        ("  us-central1  ", "us-central1"),
+        ("https://www.googleapis.com/compute/v1/projects/test-project/regions/us-central1", "us-central1"),
+    ],
+)
+def test_extract_region_name_valid_input(region_input, expected_region):
+    """
+    Given: A bare region name, a padded region name or a full GCP region URL.
+    When: extract_region_name is called.
+    Then: The bare region name is returned.
+    """
+    from GCP import extract_region_name
+
+    assert extract_region_name(region_input) == expected_region
+
+
+@pytest.mark.parametrize("region_input", [None, "", "   "])
+def test_extract_region_name_empty_input_raises(region_input):
+    """
+    Given: An empty, blank or missing region input.
+    When: extract_region_name is called.
+    Then: A DemistoException is raised.
+    """
+    from GCP import extract_region_name, DemistoException
+
+    with pytest.raises(DemistoException, match="The region argument cannot be empty"):
+        extract_region_name(region_input)
+
+
+@pytest.mark.parametrize(
+    "polling_args",
+    [
+        {},
+        {"interval_in_seconds": "15", "polling_timeout": "120"},
+    ],
+)
+def test_validate_polling_args_valid_input(polling_args):
+    """
+    Given: Missing polling arguments, or positive interval_in_seconds and polling_timeout arguments.
+    When: _validate_polling_args is called.
+    Then: No exception is raised.
+    """
+    from GCP import _validate_polling_args
+
+    _validate_polling_args(polling_args)
+
+
+@pytest.mark.parametrize(
+    "polling_args, expected_error",
+    [
+        ({"interval_in_seconds": "-5"}, "The interval_in_seconds argument must be a positive number"),
+        ({"polling_timeout": "-1"}, "The polling_timeout argument must be a positive number"),
+    ],
+)
+def test_validate_polling_args_non_positive_input_raises(polling_args, expected_error):
+    """
+    Given: A negative interval_in_seconds or polling_timeout argument.
+    When: _validate_polling_args is called.
+    Then: A DemistoException naming the invalid argument is raised.
+    """
+    from GCP import _validate_polling_args, DemistoException
+
+    with pytest.raises(DemistoException, match=expected_error):
+        _validate_polling_args(polling_args)
+
+
+# gcp-compute-zone-operation-wait / gcp-compute-region-operation-wait / gcp-compute-global-operation-wait
+def test_gcp_compute_zone_operation_wait_done(mocker):
+    """
+    Given: A mocked GCP compute client returning a zonal operation with a DONE status.
+    When: gcp_compute_zone_operation_wait is called.
+    Then: The operation is returned under GCP.Compute.Operations without scheduling another poll.
+    """
+    from GCP import gcp_compute_zone_operation_wait
+
+    mock_response = {
+        "id": "op-1",
+        "kind": "compute#operation",
+        "name": "operation-123",
+        "operationType": "insert",
+        "progress": 100,
+        "zone": "https://www.googleapis.com/compute/v1/projects/test-project/zones/us-central1-a",
+        "status": "DONE",
+    }
+
+    mock_compute = mocker.Mock()
+    mock_zone_operations = mocker.Mock()
+    mock_compute.zoneOperations.return_value = mock_zone_operations
+    mock_zone_operations.get.return_value.execute.return_value = mock_response
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "operation_name": "operation-123"}
+    result = gcp_compute_zone_operation_wait(args, mock_creds)
+
+    mock_zone_operations.get.assert_called_once_with(project="test-project", zone="us-central1-a", operation="operation-123")
+    assert result.scheduled_command is None
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+    assert result.outputs_key_field == "id"
+    assert result.outputs == mock_response
+    assert "operation-123 completed successfully" in result.readable_output
+
+
+def test_gcp_compute_zone_operation_wait_not_done_schedules_poll(mocker):
+    """
+    Given: A mocked GCP compute client returning a zonal operation with a RUNNING status.
+    When: gcp_compute_zone_operation_wait is called.
+    Then: A ScheduledCommand is returned so the command polls again with the same arguments.
+    """
+    from GCP import DEFAULT_INTERVAL_IN_SECONDS, DEFAULT_TIMEOUT_POLLING_COMMAND, gcp_compute_zone_operation_wait
+
+    mock_compute = mocker.Mock()
+    mock_zone_operations = mocker.Mock()
+    mock_compute.zoneOperations.return_value = mock_zone_operations
+    mock_zone_operations.get.return_value.execute.return_value = {"name": "operation-123", "status": "RUNNING"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-a",
+        "operation_name": "operation-123",
+    }
+    result = gcp_compute_zone_operation_wait(args, mock_creds)
+
+    assert result.scheduled_command is not None
+    assert result.scheduled_command._command == "gcp-compute-zone-operation-wait"
+    assert result.scheduled_command._args == args
+    # The polling_function decorator hides the polling message on the following runs.
+    assert args["hide_polling_output"] is True
+    assert result.scheduled_command._next_run == str(DEFAULT_INTERVAL_IN_SECONDS)
+    assert result.scheduled_command._timeout == str(DEFAULT_TIMEOUT_POLLING_COMMAND)
+    assert "Current status: RUNNING" in result.readable_output
+
+
+def test_gcp_compute_zone_operation_wait_done_with_error_raises(mocker):
+    """
+    Given: A mocked GCP compute client returning a DONE zonal operation carrying an error.
+    When: gcp_compute_zone_operation_wait is called.
+    Then: A DemistoException is raised describing the operation failure.
+    """
+    from GCP import gcp_compute_zone_operation_wait, DemistoException
+
+    mock_compute = mocker.Mock()
+    mock_zone_operations = mocker.Mock()
+    mock_compute.zoneOperations.return_value = mock_zone_operations
+    mock_zone_operations.get.return_value.execute.return_value = {
+        "name": "operation-123",
+        "status": "DONE",
+        "error": {"errors": [{"code": "RESOURCE_NOT_FOUND", "message": "The resource was not found."}]},
+    }
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "operation_name": "operation-123"}
+
+    with pytest.raises(DemistoException, match="Operation operation-123 completed with an error"):
+        gcp_compute_zone_operation_wait(args, mock_creds)
+
+
+def test_gcp_compute_zone_operation_wait_extracts_zone_from_url(mocker):
+    """
+    Given: A zone provided as a full GCP URL rather than a bare zone name.
+    When: gcp_compute_zone_operation_wait is called.
+    Then: Only the zone name is sent to the API.
+    """
+    from GCP import gcp_compute_zone_operation_wait
+
+    mock_compute = mocker.Mock()
+    mock_zone_operations = mocker.Mock()
+    mock_compute.zoneOperations.return_value = mock_zone_operations
+    mock_zone_operations.get.return_value.execute.return_value = {"name": "operation-123", "status": "DONE"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "test-project",
+        "zone": "https://www.googleapis.com/compute/v1/projects/test-project/zones/us-central1-a",
+        "operation_name": "operation-123",
+    }
+    gcp_compute_zone_operation_wait(args, mock_creds)
+
+    mock_zone_operations.get.assert_called_once_with(project="test-project", zone="us-central1-a", operation="operation-123")
+
+
+@pytest.mark.parametrize(
+    "polling_args, expected_error",
+    [
+        ({"interval_in_seconds": "-5"}, "The interval_in_seconds argument must be a positive number"),
+        ({"polling_timeout": "-1"}, "The polling_timeout argument must be a positive number"),
+    ],
+)
+def test_gcp_compute_zone_operation_wait_non_positive_polling_args_raise(mocker, polling_args, expected_error):
+    """
+    Given: A negative interval_in_seconds or polling_timeout argument.
+    When: gcp_compute_zone_operation_wait is called.
+    Then: A DemistoException is raised and no API call is made.
+    """
+    from GCP import gcp_compute_zone_operation_wait, DemistoException
+
+    mock_compute = mocker.Mock()
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "zone": "us-central1-a", "operation_name": "operation-123"} | polling_args
+
+    with pytest.raises(DemistoException, match=expected_error):
+        gcp_compute_zone_operation_wait(args, mock_creds)
+    mock_compute.zoneOperations.assert_not_called()
+
+
+def test_gcp_compute_region_operation_wait_done(mocker):
+    """
+    Given: A mocked GCP compute client returning a regional operation with a DONE status.
+    When: gcp_compute_region_operation_wait is called.
+    Then: The operation is returned under GCP.Compute.Operations without scheduling another poll,
+          and the region is included in the readable output.
+    """
+    from GCP import gcp_compute_region_operation_wait
+
+    mock_response = {
+        "id": "op-2",
+        "name": "operation-456",
+        "status": "DONE",
+        "operationType": "delete",
+        "region": "https://www.googleapis.com/compute/v1/projects/test-project/regions/us-central1",
+    }
+
+    mock_compute = mocker.Mock()
+    mock_region_operations = mocker.Mock()
+    mock_compute.regionOperations.return_value = mock_region_operations
+    mock_region_operations.get.return_value.execute.return_value = mock_response
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "region": "us-central1", "operation_name": "operation-456"}
+    result = gcp_compute_region_operation_wait(args, mock_creds)
+
+    mock_region_operations.get.assert_called_once_with(project="test-project", region="us-central1", operation="operation-456")
+    assert result.scheduled_command is None
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+    assert result.outputs == mock_response
+    assert "Region" in result.readable_output
+
+
+def test_gcp_compute_region_operation_wait_extracts_region_from_url(mocker):
+    """
+    Given: A region provided as a full GCP URL rather than a bare region name.
+    When: gcp_compute_region_operation_wait is called.
+    Then: Only the region name is sent to the API.
+    """
+    from GCP import gcp_compute_region_operation_wait
+
+    mock_compute = mocker.Mock()
+    mock_region_operations = mocker.Mock()
+    mock_compute.regionOperations.return_value = mock_region_operations
+    mock_region_operations.get.return_value.execute.return_value = {"name": "operation-456", "status": "DONE"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {
+        "project_id": "test-project",
+        "region": "https://www.googleapis.com/compute/v1/projects/test-project/regions/us-central1",
+        "operation_name": "operation-456",
+    }
+    gcp_compute_region_operation_wait(args, mock_creds)
+
+    mock_region_operations.get.assert_called_once_with(project="test-project", region="us-central1", operation="operation-456")
+
+
+def test_gcp_compute_region_operation_wait_not_done_schedules_poll(mocker):
+    """
+    Given: A mocked GCP compute client returning a regional operation with a PENDING status.
+    When: gcp_compute_region_operation_wait is called without explicit polling arguments.
+    Then: A ScheduledCommand is returned using the default interval and timeout.
+    """
+    from GCP import gcp_compute_region_operation_wait, DEFAULT_INTERVAL_IN_SECONDS, DEFAULT_TIMEOUT_POLLING_COMMAND
+
+    mock_compute = mocker.Mock()
+    mock_region_operations = mocker.Mock()
+    mock_compute.regionOperations.return_value = mock_region_operations
+    mock_region_operations.get.return_value.execute.return_value = {"name": "operation-456", "status": "PENDING"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "region": "us-central1", "operation_name": "operation-456"}
+    result = gcp_compute_region_operation_wait(args, mock_creds)
+
+    assert result.scheduled_command is not None
+    assert result.scheduled_command._command == "gcp-compute-region-operation-wait"
+    assert result.scheduled_command._next_run == str(DEFAULT_INTERVAL_IN_SECONDS)
+    assert result.scheduled_command._timeout == str(DEFAULT_TIMEOUT_POLLING_COMMAND)
+
+
+def test_gcp_compute_region_operation_wait_done_with_error_raises(mocker):
+    """
+    Given: A mocked GCP compute client returning a DONE regional operation carrying an error.
+    When: gcp_compute_region_operation_wait is called.
+    Then: A DemistoException is raised describing the operation failure.
+    """
+    from GCP import gcp_compute_region_operation_wait, DemistoException
+
+    mock_compute = mocker.Mock()
+    mock_region_operations = mocker.Mock()
+    mock_compute.regionOperations.return_value = mock_region_operations
+    mock_region_operations.get.return_value.execute.return_value = {
+        "name": "operation-456",
+        "status": "DONE",
+        "error": {"errors": [{"code": "QUOTA_EXCEEDED", "message": "Quota exceeded."}]},
+    }
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "region": "us-central1", "operation_name": "operation-456"}
+
+    with pytest.raises(DemistoException, match="Operation operation-456 completed with an error"):
+        gcp_compute_region_operation_wait(args, mock_creds)
+
+
+def test_gcp_compute_global_operation_wait_done(mocker):
+    """
+    Given: A mocked GCP compute client returning a global operation with a DONE status.
+    When: gcp_compute_global_operation_wait is called.
+    Then: The operation is returned under GCP.Compute.Operations without scheduling another poll.
+    """
+    from GCP import gcp_compute_global_operation_wait
+
+    mock_response = {"id": "op-3", "name": "operation-789", "status": "DONE", "operationType": "insert"}
+
+    mock_compute = mocker.Mock()
+    mock_global_operations = mocker.Mock()
+    mock_compute.globalOperations.return_value = mock_global_operations
+    mock_global_operations.get.return_value.execute.return_value = mock_response
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "operation_name": "operation-789"}
+    result = gcp_compute_global_operation_wait(args, mock_creds)
+
+    mock_global_operations.get.assert_called_once_with(project="test-project", operation="operation-789")
+    assert result.scheduled_command is None
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+    assert result.outputs == mock_response
+
+
+def test_gcp_compute_global_operation_wait_not_done_schedules_poll(mocker):
+    """
+    Given: A mocked GCP compute client returning a global operation with a RUNNING status.
+    When: gcp_compute_global_operation_wait is called.
+    Then: A ScheduledCommand is returned so the command polls again.
+    """
+    from GCP import gcp_compute_global_operation_wait
+
+    mock_compute = mocker.Mock()
+    mock_global_operations = mocker.Mock()
+    mock_compute.globalOperations.return_value = mock_global_operations
+    mock_global_operations.get.return_value.execute.return_value = {"name": "operation-789", "status": "RUNNING"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "operation_name": "operation-789"}
+    result = gcp_compute_global_operation_wait(args, mock_creds)
+
+    assert result.scheduled_command is not None
+    assert result.scheduled_command._command == "gcp-compute-global-operation-wait"
+    assert "Current status: RUNNING" in result.readable_output
+
+
+def test_gcp_compute_global_operation_wait_done_with_error_raises(mocker):
+    """
+    Given: A mocked GCP compute client returning a DONE global operation carrying an error.
+    When: gcp_compute_global_operation_wait is called.
+    Then: A DemistoException is raised describing the operation failure.
+    """
+    from GCP import gcp_compute_global_operation_wait, DemistoException
+
+    mock_compute = mocker.Mock()
+    mock_global_operations = mocker.Mock()
+    mock_compute.globalOperations.return_value = mock_global_operations
+    mock_global_operations.get.return_value.execute.return_value = {
+        "name": "operation-789",
+        "status": "DONE",
+        "error": {"errors": [{"code": "INTERNAL_ERROR", "message": "Internal error."}]},
+    }
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
+
+    args = {"project_id": "test-project", "operation_name": "operation-789"}
+
+    with pytest.raises(DemistoException, match="Operation operation-789 completed with an error"):
+        gcp_compute_global_operation_wait(args, mock_creds)
+
+
 # ---------------------------------------------------------------------------
 # YML <-> PY wiring assertion tests
 #
@@ -7399,6 +7981,9 @@ def test_yml_args_match_py_handler_verbatim():
         for arg_name in _YML_SPEC[command_name]["args"]:
             if arg_name in PLATFORM_STANDARD_ARGS:
                 # Resolved centrally via credentials, not per-handler args.get(...).
+                continue
+            if arg_name in POLLING_STANDARD_ARGS:
+                # Consumed by the @polling_function decorator, not per-handler args.get(...).
                 continue
             if arg_name not in handler_args:
                 mismatches.append(f'{command_name} (handler {handler}) -> args.get("{arg_name}")')
@@ -11199,3 +11784,603 @@ class TestGCPComputeNetworkPeeringRemove:
 
         with pytest.raises(HttpError):
             gcp_compute_network_peering_remove(mock_creds, args)
+
+
+# ---------------------------------------------------------------------------
+# Compute Addresses commands
+# ---------------------------------------------------------------------------
+
+
+def test_compute_address_get_success(mocker):
+    """
+    Given: A regional address name, region, and project.
+    When: compute_address_get is called.
+    Then: It returns CommandResults with the GCP.Compute.Addresses prefix and calls the API correctly.
+    """
+    from GCP import compute_address_get
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_addresses = mocker.Mock()
+    mock_compute.addresses.return_value = mock_addresses
+    mock_addresses.get.return_value.execute.return_value = {"name": "addr-1", "id": "1", "address": "1.2.3.4"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_address_get(mock_creds, {"project_id": "p1", "region": "us-central1", "address": "addr-1"})
+
+    called_kwargs = mock_addresses.get.call_args[1]
+    assert called_kwargs["project"] == "p1"
+    assert called_kwargs["region"] == "us-central1"
+    assert called_kwargs["address"] == "addr-1"
+    assert res.outputs_prefix == "GCP.Compute.Addresses"
+    assert res.outputs["id"] == "1"
+
+
+def test_compute_address_list_with_pagination_and_filter(mocker):
+    """
+    Given: Pagination and filter arguments for a regional address list.
+    When: compute_address_list is called.
+    Then: The API is called with the mapped kwargs and the next token is returned in outputs.
+    """
+    from GCP import compute_address_list
+
+    args = {
+        "project_id": "p1",
+        "region": "us-central1",
+        "limit": "2",
+        "next_token": "t0",
+        "filter": "name eq addr-*",
+        "order_by": "creationTimestamp desc",
+    }
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_addresses = mocker.Mock()
+    mock_compute.addresses.return_value = mock_addresses
+    mock_addresses.list.return_value.execute.return_value = {
+        "items": [{"name": "addr-1", "id": "1", "address": "1.2.3.4"}],
+        "nextPageToken": "t1",
+    }
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_address_list(mock_creds, args)
+
+    called_kwargs = mock_addresses.list.call_args[1]
+    assert called_kwargs["project"] == "p1"
+    assert called_kwargs["region"] == "us-central1"
+    assert called_kwargs["maxResults"] == 2
+    assert called_kwargs["pageToken"] == "t0"
+    assert called_kwargs["filter"] == "name eq addr-*"
+    assert called_kwargs["orderBy"] == "creationTimestamp desc"
+    assert res.outputs["GCP.Compute(true)"]["AddressesNextToken"] == "t1"
+
+
+def test_compute_address_list_empty_response(mocker):
+    """
+    Given: A regional address list that returns no items and no next token.
+    When: compute_address_list is called.
+    Then: It returns a "No addresses found." message and writes nothing to the context.
+    """
+    from GCP import compute_address_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_addresses = mocker.Mock()
+    mock_compute.addresses.return_value = mock_addresses
+    mock_addresses.list.return_value.execute.return_value = {}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_address_list(mock_creds, {"project_id": "p1", "region": "us-central1"})
+
+    assert res.readable_output == "No addresses found."
+    assert not res.outputs
+
+
+def test_compute_address_list_logs_response_warning(mocker):
+    """
+    Given: A regional address list response containing a top-level 'warning' block.
+    When: compute_address_list is called.
+    Then: The warning is written to the debug log and the returned items are unaffected.
+    """
+    from GCP import compute_address_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_addresses = mocker.Mock()
+    mock_compute.addresses.return_value = mock_addresses
+    mock_addresses.list.return_value.execute.return_value = {
+        "items": [{"name": "addr-1", "id": "1"}],
+        "warning": {"code": "NO_RESULTS_ON_PAGE", "message": "There are no results for scope."},
+    }
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    debug_mock = mocker.patch("GCP.demisto.debug")
+
+    res = compute_address_list(mock_creds, {"project_id": "p1", "region": "us-central1"})
+
+    assert res.outputs["GCP.Compute.Addresses(val.id && val.id == obj.id)"] == [{"name": "addr-1", "id": "1"}]
+    assert any("NO_RESULTS_ON_PAGE" in str(call) for call in debug_mock.call_args_list)
+
+
+def test_compute_global_address_list_logs_response_warning(mocker):
+    """
+    Given: A global address list response containing a top-level 'warning' block.
+    When: compute_global_address_list is called.
+    Then: The warning is written to the debug log and the returned items are unaffected.
+    """
+    from GCP import compute_global_address_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_global_addresses = mocker.Mock()
+    mock_compute.globalAddresses.return_value = mock_global_addresses
+    mock_global_addresses.list.return_value.execute.return_value = {
+        "items": [{"name": "global-addr-1", "id": "1"}],
+        "warning": {"code": "NO_RESULTS_ON_PAGE", "message": "There are no results for scope."},
+    }
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    debug_mock = mocker.patch("GCP.demisto.debug")
+
+    res = compute_global_address_list(mock_creds, {"project_id": "p1"})
+
+    assert res.outputs["GCP.Compute.Addresses(val.id && val.id == obj.id)"] == [{"name": "global-addr-1", "id": "1"}]
+    assert any("NO_RESULTS_ON_PAGE" in str(call) for call in debug_mock.call_args_list)
+
+
+def test_compute_address_aggregated_list_logs_scope_warning(mocker):
+    """
+    Given: An aggregated address response where one scope holds a warning and another holds addresses.
+    When: compute_address_aggregated_list is called.
+    Then: The warning scope is logged and skipped, and only the real addresses are returned.
+    """
+    from GCP import compute_address_aggregated_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_addresses = mocker.Mock()
+    mock_compute.addresses.return_value = mock_addresses
+    mock_addresses.aggregatedList.return_value.execute.return_value = {
+        "items": {
+            "regions/us-central1": {"addresses": [{"name": "addr-1", "id": "1"}]},
+            "regions/us-east1": {"warning": {"code": "NO_RESULTS_ON_PAGE"}},
+        }
+    }
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+    debug_mock = mocker.patch("GCP.demisto.debug")
+
+    res = compute_address_aggregated_list(mock_creds, {"project_id": "p1"})
+
+    assert res.outputs["GCP.Compute.Addresses(val.id && val.id == obj.id)"] == [{"name": "addr-1", "id": "1"}]
+    assert any("regions/us-east1" in str(call) for call in debug_mock.call_args_list)
+
+
+def test_compute_address_list_invalid_limit(mocker):
+    """
+    Given: A limit above the allowed maximum.
+    When: compute_address_list is called.
+    Then: It raises a DemistoException from validate_limit.
+    """
+    from GCP import compute_address_list
+    from CommonServerPython import DemistoException
+
+    mocker.patch("GCP.build", return_value=mocker.Mock())
+
+    with pytest.raises(DemistoException, match="acceptable values of the argument limit"):
+        compute_address_list(mocker.Mock(spec=Credentials), {"project_id": "p1", "region": "us-central1", "limit": "999"})
+
+
+def test_compute_address_aggregated_list_success(mocker):
+    """
+    Given: An aggregated address response spanning multiple regions.
+    When: compute_address_aggregated_list is called.
+    Then: The addresses from all scopes are flattened into the outputs.
+    """
+    from GCP import compute_address_aggregated_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_addresses = mocker.Mock()
+    mock_compute.addresses.return_value = mock_addresses
+    mock_addresses.aggregatedList.return_value.execute.return_value = {
+        "items": {
+            "regions/us-central1": {"addresses": [{"name": "addr-1", "id": "1"}]},
+            "regions/us-east1": {"addresses": [{"name": "addr-2", "id": "2"}]},
+            "regions/empty": {"warning": {"code": "NO_RESULTS_ON_PAGE"}},
+        },
+        "nextPageToken": "t1",
+    }
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_address_aggregated_list(mock_creds, {"project_id": "p1"})
+
+    addresses = res.outputs["GCP.Compute.Addresses(val.id && val.id == obj.id)"]
+    assert {a["id"] for a in addresses} == {"1", "2"}
+    assert res.outputs["GCP.Compute(true)"]["AggregatedAddressesNextToken"] == "t1"
+
+
+def test_compute_address_insert_full_body(mocker):
+    """
+    Given: All supported args for creating a regional address.
+    When: compute_address_insert is called.
+    Then: The request body reflects all conversions and the name is lowercased.
+    """
+    from GCP import compute_address_insert
+
+    args = {
+        "project_id": "p1",
+        "region": "us-central1",
+        "name": "Addr-1",
+        "description": "desc",
+        "address": "10.0.0.5",
+        "prefix_length": "24",
+        "network_tier": "PREMIUM",
+        "address_type": "INTERNAL",
+        "purpose": "GCE_ENDPOINT",
+        "subnetwork": "sub-1",
+        "network": "net-1",
+    }
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_addresses = mocker.Mock()
+    mock_compute.addresses.return_value = mock_addresses
+    mock_addresses.insert.return_value.execute.return_value = {"id": "op-1", "status": "PENDING"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_address_insert(mock_creds, args)
+
+    body = mock_addresses.insert.call_args[1]["body"]
+    assert body["name"] == "addr-1"
+    assert body["prefixLength"] == 24
+    assert body["networkTier"] == "PREMIUM"
+    assert body["addressType"] == "INTERNAL"
+    assert body["subnetwork"] == "sub-1"
+    assert mock_addresses.insert.call_args[1]["region"] == "us-central1"
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+
+
+def test_compute_address_insert_minimal_body(mocker):
+    """
+    Given: Minimal args for creating a regional address.
+    When: compute_address_insert is called.
+    Then: Only the name is included in the request body and optional fields are omitted.
+    """
+    from GCP import compute_address_insert
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_addresses = mocker.Mock()
+    mock_compute.addresses.return_value = mock_addresses
+    mock_addresses.insert.return_value.execute.return_value = {"id": "op-1", "status": "PENDING"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    compute_address_insert(mock_creds, {"project_id": "p1", "region": "us-central1", "name": "addr-1"})
+
+    body = mock_addresses.insert.call_args[1]["body"]
+    assert body == {"name": "addr-1"}
+
+
+def test_compute_address_delete_success(mocker):
+    """
+    Given: A regional address name, region, and project.
+    When: compute_address_delete is called.
+    Then: The delete API is called and an Operations result is returned.
+    """
+    from GCP import compute_address_delete
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_addresses = mocker.Mock()
+    mock_compute.addresses.return_value = mock_addresses
+    mock_addresses.delete.return_value.execute.return_value = {"id": "op-1", "status": "PENDING", "operationType": "delete"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_address_delete(mock_creds, {"project_id": "p1", "region": "us-central1", "address": "addr-1"})
+
+    called_kwargs = mock_addresses.delete.call_args[1]
+    assert called_kwargs["project"] == "p1"
+    assert called_kwargs["region"] == "us-central1"
+    assert called_kwargs["address"] == "addr-1"
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+
+
+# ---------------------------------------------------------------------------
+# Compute Global Addresses commands
+# ---------------------------------------------------------------------------
+
+
+def test_compute_global_address_get_success(mocker):
+    """
+    Given: A global address name and project.
+    When: compute_global_address_get is called.
+    Then: It returns CommandResults with the GCP.Compute.Addresses prefix and calls the global API.
+    """
+    from GCP import compute_global_address_get
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_global = mocker.Mock()
+    mock_compute.globalAddresses.return_value = mock_global
+    mock_global.get.return_value.execute.return_value = {"name": "gaddr-1", "id": "1", "address": "1.2.3.4"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_global_address_get(mock_creds, {"project_id": "p1", "address": "gaddr-1"})
+
+    called_kwargs = mock_global.get.call_args[1]
+    assert called_kwargs["project"] == "p1"
+    assert called_kwargs["address"] == "gaddr-1"
+    assert res.outputs_prefix == "GCP.Compute.Addresses"
+
+
+def test_compute_global_address_list_with_pagination(mocker):
+    """
+    Given: Pagination arguments for a global address list.
+    When: compute_global_address_list is called.
+    Then: The API is called with mapped kwargs and the next token is returned in outputs.
+    """
+    from GCP import compute_global_address_list
+
+    args = {"project_id": "p1", "limit": "5", "next_token": "a", "filter": "name eq gaddr-*"}
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_global = mocker.Mock()
+    mock_compute.globalAddresses.return_value = mock_global
+    mock_global.list.return_value.execute.return_value = {
+        "items": [{"name": "gaddr-1", "id": "1"}],
+        "nextPageToken": "b",
+    }
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_global_address_list(mock_creds, args)
+
+    called_kwargs = mock_global.list.call_args[1]
+    assert "region" not in called_kwargs
+    assert called_kwargs["maxResults"] == 5
+    assert called_kwargs["pageToken"] == "a"
+    assert called_kwargs["filter"] == "name eq gaddr-*"
+    assert res.outputs["GCP.Compute(true)"]["GlobalAddressesNextToken"] == "b"
+
+
+def test_compute_global_address_insert_full_body(mocker):
+    """
+    Given: All supported args for creating a global address, including ip_version.
+    When: compute_global_address_insert is called.
+    Then: The request body reflects the conversions, includes ipVersion, and is sent without a region.
+    """
+    from GCP import compute_global_address_insert
+
+    args = {
+        "project_id": "p1",
+        "name": "GAddr-1",
+        "description": "desc",
+        "address": "10.0.0.5",
+        "prefix_length": "24",
+        "network_tier": "PREMIUM",
+        "ip_version": "IPV6",
+        "address_type": "EXTERNAL",
+        "purpose": "VPC_PEERING",
+        "subnetwork": "sub-1",
+        "network": "net-1",
+    }
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_global = mocker.Mock()
+    mock_compute.globalAddresses.return_value = mock_global
+    mock_global.insert.return_value.execute.return_value = {"id": "op-1", "status": "PENDING"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_global_address_insert(mock_creds, args)
+
+    body = mock_global.insert.call_args[1]["body"]
+    assert body["name"] == "gaddr-1"
+    assert body["prefixLength"] == 24
+    assert body["ipVersion"] == "IPV6"
+    assert body["addressType"] == "EXTERNAL"
+    assert "region" not in mock_global.insert.call_args[1]
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+
+
+def test_compute_global_address_delete_success(mocker):
+    """
+    Given: A global address name and project.
+    When: compute_global_address_delete is called.
+    Then: The delete API is called and an Operations result is returned.
+    """
+    from GCP import compute_global_address_delete
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_global = mocker.Mock()
+    mock_compute.globalAddresses.return_value = mock_global
+    mock_global.delete.return_value.execute.return_value = {"id": "op-1", "status": "PENDING", "operationType": "delete"}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_global_address_delete(mock_creds, {"project_id": "p1", "address": "gaddr-1"})
+
+    called_kwargs = mock_global.delete.call_args[1]
+    assert called_kwargs["project"] == "p1"
+    assert called_kwargs["address"] == "gaddr-1"
+    assert "region" not in called_kwargs
+    assert res.outputs_prefix == "GCP.Compute.Operations"
+
+
+def test_compute_address_aggregated_list_empty_response(mocker):
+    """
+    Given: An aggregated address response where every scope holds no addresses.
+    When: compute_address_aggregated_list is called.
+    Then: It returns a "No addresses found." message and writes nothing to the context.
+    """
+    from GCP import compute_address_aggregated_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_addresses = mocker.Mock()
+    mock_compute.addresses.return_value = mock_addresses
+    mock_addresses.aggregatedList.return_value.execute.return_value = {
+        "items": {"regions/us-central1": {"warning": {"code": "NO_RESULTS_ON_PAGE"}}}
+    }
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_address_aggregated_list(mock_creds, {"project_id": "p1"})
+
+    assert res.readable_output == "No addresses found."
+    assert not res.outputs
+
+
+def test_compute_global_address_list_empty_response(mocker):
+    """
+    Given: A global address list that returns no items.
+    When: compute_global_address_list is called.
+    Then: It returns a "No global addresses found." message and writes nothing to the context.
+    """
+    from GCP import compute_global_address_list
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_global = mocker.Mock()
+    mock_compute.globalAddresses.return_value = mock_global
+    mock_global.list.return_value.execute.return_value = {}
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    res = compute_global_address_list(mock_creds, {"project_id": "p1"})
+
+    assert res.readable_output == "No global addresses found."
+    assert not res.outputs
+
+
+def test_compute_global_address_list_invalid_limit(mocker):
+    """
+    Given: A limit above the allowed maximum.
+    When: compute_global_address_list is called.
+    Then: It raises a DemistoException from validate_limit.
+    """
+    from GCP import compute_global_address_list
+    from CommonServerPython import DemistoException
+
+    mocker.patch("GCP.build", return_value=mocker.Mock())
+
+    with pytest.raises(DemistoException, match="acceptable values of the argument limit"):
+        compute_global_address_list(mocker.Mock(spec=Credentials), {"project_id": "p1", "limit": "999"})
+
+
+def test_compute_address_list_http_error_propagates(mocker):
+    """
+    Given: The Compute API raises an HttpError for the address list request.
+    When: compute_address_list is called.
+    Then: The error propagates so main can route it to handle_permission_error.
+    """
+    from GCP import compute_address_list
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_addresses = mocker.Mock()
+    mock_compute.addresses.return_value = mock_addresses
+    mock_addresses.list.return_value.execute.side_effect = _make_http_error(403, "permission denied")
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    with pytest.raises(HttpError):
+        compute_address_list(mock_creds, {"project_id": "p1", "region": "us-central1"})
+
+
+def test_compute_address_insert_http_error_propagates(mocker):
+    """
+    Given: The Compute API raises an HttpError for the address insert request.
+    When: compute_address_insert is called.
+    Then: The error propagates instead of being swallowed by the command function.
+    """
+    from GCP import compute_address_insert
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_addresses = mocker.Mock()
+    mock_compute.addresses.return_value = mock_addresses
+    mock_addresses.insert.return_value.execute.side_effect = _make_http_error(403, "permission denied")
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    with pytest.raises(HttpError):
+        compute_address_insert(mock_creds, {"project_id": "p1", "region": "us-central1", "name": "addr-1"})
+
+
+def test_compute_global_address_delete_http_error_propagates(mocker):
+    """
+    Given: The Compute API raises an HttpError for the global address delete request.
+    When: compute_global_address_delete is called.
+    Then: The error propagates instead of being swallowed by the command function.
+    """
+    from GCP import compute_global_address_delete
+    from googleapiclient.errors import HttpError
+
+    mock_creds = mocker.Mock(spec=Credentials)
+    mock_compute = mocker.Mock()
+    mock_global = mocker.Mock()
+    mock_compute.globalAddresses.return_value = mock_global
+    mock_global.delete.return_value.execute.side_effect = _make_http_error(404, "not found")
+
+    mocker.patch("GCP.build", return_value=mock_compute)
+
+    with pytest.raises(HttpError):
+        compute_global_address_delete(mock_creds, {"project_id": "p1", "address": "gaddr-1"})
+
+
+@pytest.mark.parametrize(
+    "command_name, permission",
+    [
+        ("gcp-compute-address-list", "compute.addresses.list"),
+        ("gcp-compute-address-insert", "compute.addresses.create"),
+        ("gcp-compute-address-delete", "compute.addresses.delete"),
+        ("gcp-compute-global-address-get", "compute.globalAddresses.get"),
+        ("gcp-compute-global-address-insert", "compute.globalAddresses.create"),
+    ],
+)
+def test_handle_permission_error_for_address_commands(mocker, command_name, permission):
+    """
+    Given: A 403 HttpError naming a permission required by an address command.
+    When: handle_permission_error is called for that command.
+    Then: The missing permission is reported through return_multiple_permissions_error.
+    """
+    from GCP import handle_permission_error
+    from googleapiclient.errors import HttpError
+
+    mock_resp = mocker.MagicMock()
+    mock_resp.status = 403
+    mock_resp.get.return_value = "application/json"
+
+    error_content = {
+        "error": {
+            "errors": [{"reason": "forbidden"}],
+            "message": f"Required '{permission}' permission for 'projects/test-project'",
+        }
+    }
+    http_error = HttpError(mock_resp, json.dumps(error_content).encode())
+
+    mocker.patch("GCP.demisto.debug")
+    mock_return_error = mocker.patch("GCP.return_multiple_permissions_error")
+
+    handle_permission_error(http_error, "test-project", command_name)
+
+    mock_return_error.assert_called_once()
+    error_entries = mock_return_error.call_args[0][0]
+    assert len(error_entries) == 1
+    assert error_entries[0]["account_id"] == "test-project"
+    assert error_entries[0]["name"] == permission

@@ -347,6 +347,15 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
             "compute.firewalls.delete",
         ],
     ),
+    "gcp-compute-address-get": (GCPServices.COMPUTE, ["compute.addresses.get"]),
+    "gcp-compute-address-list": (GCPServices.COMPUTE, ["compute.addresses.list"]),
+    "gcp-compute-address-aggregated-list": (GCPServices.COMPUTE, ["compute.addresses.list"]),
+    "gcp-compute-address-insert": (GCPServices.COMPUTE, ["compute.addresses.create"]),
+    "gcp-compute-address-delete": (GCPServices.COMPUTE, ["compute.addresses.delete"]),
+    "gcp-compute-global-address-get": (GCPServices.COMPUTE, ["compute.globalAddresses.get"]),
+    "gcp-compute-global-address-list": (GCPServices.COMPUTE, ["compute.globalAddresses.list"]),
+    "gcp-compute-global-address-insert": (GCPServices.COMPUTE, ["compute.globalAddresses.create"]),
+    "gcp-compute-global-address-delete": (GCPServices.COMPUTE, ["compute.globalAddresses.delete"]),
     "gcp-compute-snapshots-list": (
         GCPServices.COMPUTE,
         [
@@ -486,6 +495,9 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
         GCPServices.STORAGE,
         ["storage.objects.get", "storage.objects.update"],
     ),
+    "gcp-compute-zone-operation-wait": (GCPServices.COMPUTE, ["compute.zoneOperations.get"]),
+    "gcp-compute-region-operation-wait": (GCPServices.COMPUTE, ["compute.regionOperations.get"]),
+    "gcp-compute-global-operation-wait": (GCPServices.COMPUTE, ["compute.globalOperations.get"]),
     "gcp-compute-network-get": (GCPServices.COMPUTE, ["compute.networks.get"]),
     "gcp-compute-image-get": (GCPServices.COMPUTE, ["compute.images.get"]),
     "gcp-compute-image-get-from-family": (GCPServices.COMPUTE, ["compute.images.get"]),
@@ -559,6 +571,17 @@ OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "s
 MAX_OBJECT_LIST_PAGES = 100
 MAX_DOWNLOAD_CHUNKS = 10000
 DEFAULT_LIST_LIMIT = 50
+# The operation table of the wait commands, which also serve regional operations.
+OPERATION_WAIT_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "region", "status"]
+OPERATION_DONE_STATUS = "DONE"  # The terminal status of a Compute Engine long-running operation.
+DEFAULT_INTERVAL_IN_SECONDS = 30  # Interval between polling attempts for wait commands.
+DEFAULT_TIMEOUT_POLLING_COMMAND = 600  # Default timeout for polling commands.
+# Polling commands are decorated with @polling_function and therefore take (args, creds) instead of (creds, args).
+POLLING_COMMANDS = {
+    "gcp-compute-zone-operation-wait",
+    "gcp-compute-region-operation-wait",
+    "gcp-compute-global-operation-wait",
+}
 # taken from GoogleCloudCompute
 FIREWALL_RULE_REGEX = re.compile(r"ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)", flags=re.I)
 KEY_VALUE_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
@@ -629,6 +652,28 @@ def extract_zone_name(zone_input: str | None) -> str:
     if "/" in zone_input:
         return zone_input.strip().split("/")[-1]
     return zone_input.strip()
+
+
+def extract_region_name(region_input: str | None) -> str:
+    """
+    Extracts the GCP region name from a full URL or returns it directly if already a region string.
+
+    Args:
+        region_input (str): The region string or full GCP region URL.
+
+    Returns:
+        str: The region name, e.g., "us-central1".
+        https://www.googleapis.com/compute/v1/projects/test/regions/us-central1 -> us-central1
+
+    Raises:
+        DemistoException: If the region input is empty or invalid.
+    """
+    if not region_input or not region_input.strip():
+        raise DemistoException("The region argument cannot be empty")
+
+    if "/" in region_input:
+        return region_input.strip().split("/")[-1]
+    return region_input.strip()
 
 
 def parse_labels(labels_str: str) -> dict:
@@ -820,37 +865,61 @@ def _validate_bucket_policy_for_set(policy: dict[str, Any], add_mode: bool) -> N
                     raise DemistoException("Policy with IAM Conditions requires 'version' to be 3 or greater.")
 
 
-def _merge_bucket_objects(bucket_name: str, new_objects: list[dict[str, Any]]) -> list[dict[str, Any]]:
+def _merge_context_items(
+    context_path: str,
+    new_items: list[dict[str, Any]],
+    id_key: str = "name",
+    items_key: str | None = None,
+    parent_id_key: str | None = None,
+    parent_id_value: Any = None,
+) -> list[dict[str, Any]]:
     """
-    Merges newly fetched objects into the objects already stored in the context for the given bucket.
+    Merges newly fetched items into the items already stored in the context under the given path.
 
-    Objects are identified by their name: an object that already exists in the context is replaced in place,
-    while a new object is appended to the end of the list.
+    Items are identified by `id_key`: an item that already exists in the context is replaced in place,
+    while a new item is appended to the end of the list. This is useful for paginated commands, where each
+    call should extend the previously fetched results instead of overwriting them.
+
+    Two layouts are supported:
+        - Flat: `context_path` holds the items themselves (leave `items_key` as None).
+        - Nested: `context_path` holds parent entries, and the items live under the `items_key` key of the
+          parent whose `parent_id_key` equals `parent_id_value` (for example, objects inside a storage bucket).
 
     Args:
-        bucket_name (str): The name of the bucket the objects belong to.
-        new_objects (list[dict[str, Any]]): The objects returned by the current API call.
+        context_path (str): The context path holding the existing data, e.g. "GCP.Storage.Buckets".
+        new_items (list[dict[str, Any]]): The items returned by the current API call.
+        id_key (str): The key uniquely identifying an item. Defaults to "name".
+        items_key (str | None): The key holding the items inside each parent entry, for a nested layout.
+        parent_id_key (str | None): The key uniquely identifying a parent entry, for a nested layout.
+        parent_id_value (Any): The value of `parent_id_key` of the parent entry to merge into.
 
     Returns:
-        list[dict[str, Any]]: The merged list of objects for the bucket.
+        list[dict[str, Any]]: The merged list of items.
     """
-    existing_buckets = demisto.get(demisto.context(), "GCP.Storage.Buckets") or []
-    if isinstance(existing_buckets, dict):
-        existing_buckets = [existing_buckets]
+    existing_entries = demisto.get(demisto.context(), context_path) or []
+    if isinstance(existing_entries, dict):
+        existing_entries = [existing_entries]
 
-    merged_objects: dict[str, dict[str, Any]] = {}
-    for bucket in existing_buckets:
-        if isinstance(bucket, dict) and bucket.get("name") == bucket_name:
-            for obj in bucket.get("Objects") or []:
-                if isinstance(obj, dict) and obj.get("name"):
-                    merged_objects[obj["name"]] = obj
+    merged_items: dict[Any, dict[str, Any]] = {}
+    for entry in existing_entries:
+        if not isinstance(entry, dict):
+            continue
+        if items_key:
+            if parent_id_key and entry.get(parent_id_key) != parent_id_value:
+                continue
+            existing_items = entry.get(items_key) or []
+        else:
+            existing_items = [entry]
+        for item in existing_items:
+            if isinstance(item, dict) and item.get(id_key):
+                merged_items[item[id_key]] = item
 
-    for obj in new_objects:
-        if obj.get("name"):
-            merged_objects[obj["name"]] = obj
+    for item in new_items:
+        if item.get(id_key):
+            merged_items[item[id_key]] = item
 
-    demisto.debug(f"[GCP: storage_bucket_objects_list] Objects in context after merge: {len(merged_objects)}")
-    return list(merged_objects.values())
+    demisto.debug(f"[GCP] Items in context '{context_path}' after merge: {len(merged_items)}")
+    return list(merged_items.values())
 
 
 ##########
@@ -1078,7 +1147,13 @@ def storage_bucket_objects_list(creds: Credentials, args: dict[str, Any]) -> Com
     outputs = {
         "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
             "name": bucket_name,
-            "Objects": _merge_bucket_objects(bucket_name, objects),
+            "Objects": _merge_context_items(
+                "GCP.Storage.Buckets",
+                objects,
+                items_key="Objects",
+                parent_id_key="name",
+                parent_id_value=bucket_name,
+            ),
             "ObjectsNextToken": response.get("nextPageToken"),
         }
     }
@@ -2438,7 +2513,13 @@ def storage_bucket_object_upload(creds: Credentials, args: dict[str, Any]) -> Co
     outputs = {
         "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
             "name": bucket_name,
-            "Objects": _merge_bucket_objects(bucket_name, [response]),
+            "Objects": _merge_context_items(
+                "GCP.Storage.Buckets",
+                [response],
+                items_key="Objects",
+                parent_id_key="name",
+                parent_id_value=bucket_name,
+            ),
         }
     }
 
@@ -2532,7 +2613,13 @@ def storage_bucket_object_copy(creds: Credentials, args: dict[str, Any]) -> Comm
     outputs = {
         "GCP.Storage.Buckets(val.name && val.name == obj.name)": {
             "name": destination_bucket_name,
-            "Objects": _merge_bucket_objects(destination_bucket_name, [response]),
+            "Objects": _merge_context_items(
+                "GCP.Storage.Buckets",
+                [response],
+                items_key="Objects",
+                parent_id_key="name",
+                parent_id_value=destination_bucket_name,
+            ),
         }
     }
 
@@ -5339,6 +5426,189 @@ def gcp_compute_zone_get(creds: Credentials, args: dict[str, Any]) -> CommandRes
     )
 
 
+def _validate_polling_args(args: dict[str, Any]) -> None:
+    """
+    Validates the polling arguments of the Compute Engine operation wait commands.
+
+    Args:
+        args (dict[str, Any]): The command arguments, optionally including 'interval_in_seconds' and 'polling_timeout'.
+
+    Raises:
+        DemistoException: If 'interval_in_seconds' or 'polling_timeout' is not a positive number.
+    """
+    interval = arg_to_number(args.get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS
+    timeout = arg_to_number(args.get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND
+
+    if interval <= 0:
+        raise DemistoException(f"The interval_in_seconds argument must be a positive number. Currently the value is {interval}")
+    if timeout <= 0:
+        raise DemistoException(f"The polling_timeout argument must be a positive number. Currently the value is {timeout}")
+
+
+def _compute_operation_poll_result(
+    operations_resource: Any,
+    request_kwargs: dict[str, Any],
+    command_name: str,
+    outputs_prefix: str,
+) -> PollResult:
+    """
+    Retrieves a Compute Engine long-running operation and keeps polling while it is not done.
+
+    As long as the operation has not reached the ``DONE`` status, the returned PollResult instructs the
+    ``polling_function`` decorator to schedule another run of the command.
+
+    Args:
+        operations_resource (Any): The Compute Engine operations resource to query
+            (``zoneOperations()``, ``regionOperations()`` or ``globalOperations()``).
+        request_kwargs (dict[str, Any]): The scope keyword arguments of the ``get`` request,
+            including the ``operation`` name.
+        command_name (str): The command name, used for debug logging.
+        outputs_prefix (str): The context output prefix of the returned operation.
+
+    Returns:
+        PollResult: The completed operation, or an indication to poll again.
+
+    Raises:
+        DemistoException: If the operation completed with an error.
+    """
+    operation_name = request_kwargs["operation"]
+    response = operations_resource.get(**request_kwargs).execute()
+    status = response.get("status")
+    demisto.debug(f"[GCP] {command_name}: operation {operation_name} status is {status}")
+
+    if status != OPERATION_DONE_STATUS:
+        return PollResult(
+            response=None,
+            continue_to_poll=True,
+            partial_result=CommandResults(
+                readable_output=f"Waiting for operation {operation_name} to complete. Current status: {status}."
+            ),
+        )
+
+    if error := response.get("error"):
+        raise DemistoException(f"Operation {operation_name} completed with an error: {error}")
+
+    readable_output = tableToMarkdown(
+        f"Operation {operation_name} completed successfully",
+        response,
+        headers=OPERATION_WAIT_TABLE,
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return PollResult(
+        response=CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=outputs_prefix,
+            outputs_key_field="id",
+            outputs=response,
+            raw_response=response,
+        ),
+        continue_to_poll=False,
+    )
+
+
+@polling_function(
+    name="gcp-compute-zone-operation-wait",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def gcp_compute_zone_operation_wait(args: dict[str, Any], creds: Credentials) -> PollResult:
+    """
+    Waits for a zonal Compute Engine operation to reach the DONE status.
+
+    Args:
+        args (dict[str, Any]): Must include 'project_id', 'zone' and 'operation_name', and optionally
+            'interval_in_seconds' and 'polling_timeout'.
+        creds (Credentials): GCP credentials.
+
+    Returns:
+        PollResult: The completed operation, or an indication to poll again.
+    """
+    _validate_polling_args(args)
+
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    operation_name = args.get("operation_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+
+    return _compute_operation_poll_result(
+        operations_resource=compute.zoneOperations(),  # pylint: disable=E1101
+        request_kwargs={"project": project_id, "zone": zone, "operation": operation_name},
+        command_name="gcp-compute-zone-operation-wait",
+        outputs_prefix="GCP.Compute.Operations",
+    )
+
+
+@polling_function(
+    name="gcp-compute-region-operation-wait",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def gcp_compute_region_operation_wait(args: dict[str, Any], creds: Credentials) -> PollResult:
+    """
+    Waits for a regional Compute Engine operation to reach the DONE status.
+
+    Args:
+        args (dict[str, Any]): Must include 'project_id', 'region' and 'operation_name', and optionally
+            'interval_in_seconds' and 'polling_timeout'.
+        creds (Credentials): GCP credentials.
+
+    Returns:
+        PollResult: The completed operation, or an indication to poll again.
+    """
+    _validate_polling_args(args)
+
+    project_id = args.get("project_id")
+    region = extract_region_name(args.get("region"))
+    operation_name = args.get("operation_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+
+    return _compute_operation_poll_result(
+        operations_resource=compute.regionOperations(),  # pylint: disable=E1101
+        request_kwargs={"project": project_id, "region": region, "operation": operation_name},
+        command_name="gcp-compute-region-operation-wait",
+        outputs_prefix="GCP.Compute.Operations",
+    )
+
+
+@polling_function(
+    name="gcp-compute-global-operation-wait",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds")) or DEFAULT_INTERVAL_IN_SECONDS,
+    timeout=arg_to_number(demisto.args().get("polling_timeout")) or DEFAULT_TIMEOUT_POLLING_COMMAND,
+    requires_polling_arg=False,
+)
+def gcp_compute_global_operation_wait(args: dict[str, Any], creds: Credentials) -> PollResult:
+    """
+    Waits for a global Compute Engine operation to reach the DONE status.
+
+    Args:
+        args (dict[str, Any]): Must include 'project_id' and 'operation_name', and optionally
+            'interval_in_seconds' and 'polling_timeout'.
+        creds (Credentials): GCP credentials.
+
+    Returns:
+        PollResult: The completed operation, or an indication to poll again.
+    """
+    _validate_polling_args(args)
+
+    project_id = args.get("project_id")
+    operation_name = args.get("operation_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+
+    return _compute_operation_poll_result(
+        operations_resource=compute.globalOperations(),  # pylint: disable=E1101
+        request_kwargs={"project": project_id, "operation": operation_name},
+        command_name="gcp-compute-global-operation-wait",
+        outputs_prefix="GCP.Compute.Operations",
+    )
+
+
 def gcp_compute_zones_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Retrieves the list of zone resources available to the specified project.
@@ -5648,6 +5918,475 @@ def gcp_compute_networks_list(creds: Credentials, args: dict[str, Any]) -> Comma
     )
 
 
+def compute_address_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the specified regional address resource.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - region (str): Name of the region for this request.
+            - address (str): Name of the address resource to return.
+
+    Returns:
+        CommandResults: Object containing the address details under `GCP.Compute.Addresses`.
+    """
+    project_id = args.get("project_id")
+    region = extract_region_name(args.get("region"))
+    address = args.get("address")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_address_get] Request params: {project_id=}, {region=}, {address=}")
+    response = compute.addresses().get(project=project_id, region=region, address=address).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        f"GCP Compute Address: {address}",
+        response,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Addresses",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_address_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of regional address resources in the specified region.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - region (str): Name of the region for this request.
+            - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
+            - next_token (str, optional): Token to retrieve the next page of results.
+            - filter (str, optional): Expression for filtering the listed resources.
+            - order_by (str, optional): Sorts list results by a certain order.
+
+    Returns:
+        CommandResults: Object containing the list of addresses,
+        with `GCP.Compute.Addresses` and `GCP.Compute.AddressesNextToken` context outputs.
+    """
+    project_id = args.get("project_id")
+    region = extract_region_name(args.get("region"))
+    limit = arg_to_number(args.get("limit")) or 50
+    next_token_arg = args.get("next_token")
+    filter_expression = args.get("filter")
+    order_by = args.get("order_by")
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "region": region,
+        "maxResults": limit,
+        "pageToken": next_token_arg,
+        "filter": filter_expression,
+        "orderBy": order_by,
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_address_list] Request params: {params}")
+    response = compute.addresses().list(**params).execute()  # pylint: disable=E1101
+    items = response.get("items", [])
+    next_token = response.get("nextPageToken")
+
+    if warning := response.get("warning"):
+        demisto.debug(f"[GCP: compute_address_list] Warning: {warning}")
+
+    if not items:
+        return CommandResults(readable_output="No addresses found.", raw_response=response)
+
+    headers = ["name", "id", "address", "addressType", "status", "region", "creationTimestamp"]
+    readable_output = tableToMarkdown(
+        "GCP Compute Addresses",
+        items,
+        headers=headers,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    outputs = {
+        "GCP.Compute.Addresses(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"AddressesNextToken": next_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def compute_address_aggregated_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves an aggregated list of regional address resources across all regions.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
+            - next_token (str, optional): Token to retrieve the next page of results.
+            - filter (str, optional): Expression for filtering the listed resources.
+            - order_by (str, optional): Sorts list results by a certain order.
+
+    Returns:
+        CommandResults: Object containing the aggregated list of addresses,
+        with `GCP.Compute.Addresses` and `GCP.Compute.AggregatedAddressesNextToken` context outputs.
+    """
+    project_id = args.get("project_id")
+    limit = arg_to_number(args.get("limit")) or 50
+    next_token_arg = args.get("next_token")
+    filter_expression = args.get("filter")
+    order_by = args.get("order_by")
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "maxResults": limit,
+        "pageToken": next_token_arg,
+        "filter": filter_expression,
+        "orderBy": order_by,
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_address_aggregated_list] Request params: {params}")
+    response = compute.addresses().aggregatedList(**params).execute()  # pylint: disable=E1101
+    next_token = response.get("nextPageToken")
+
+    items: list[dict[str, Any]] = []
+    for scope_name, addresses_scoped_list in response.get("items", {}).items():
+        if warning := addresses_scoped_list.get("warning"):
+            demisto.debug(f"[GCP: compute_address_aggregated_list] Warning for scope {scope_name}: {warning}")
+            continue
+        items.extend(addresses_scoped_list.get("addresses", []) or [])
+
+    if not items:
+        return CommandResults(readable_output="No addresses found.", raw_response=response)
+
+    headers = ["name", "id", "address", "addressType", "status", "region", "creationTimestamp"]
+    readable_output = tableToMarkdown(
+        "GCP Compute Addresses",
+        items,
+        headers=headers,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    outputs = {
+        "GCP.Compute.Addresses(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"AggregatedAddressesNextToken": next_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def compute_address_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates a regional address resource in the specified project using the data included in the request.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - region (str): Name of the region for this request.
+            - name (str): Name of the address resource to create.
+            - description (str, optional): An optional description of this resource.
+            - address (str, optional): The static IP address to reserve.
+            - prefix_length (int, optional): The prefix length if the resource represents an IP range.
+            - network_tier (str, optional): The networking tier used for the address (PREMIUM or STANDARD).
+            - address_type (str, optional): The type of address to reserve (INTERNAL or EXTERNAL).
+            - purpose (str, optional): The purpose of the resource.
+            - subnetwork (str, optional): The URL of the subnetwork in which to reserve the address.
+            - network (str, optional): The URL of the network in which to reserve the address.
+
+    Returns:
+        CommandResults: Object containing the operation details of the address insert request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    region = extract_region_name(args.get("region"))
+    name = args.get("name")
+
+    body: dict[str, Any] = {
+        "name": name.lower() if name else None,
+        "description": args.get("description"),
+        "address": args.get("address"),
+        "prefixLength": arg_to_number(args.get("prefix_length")),
+        "networkTier": args.get("network_tier"),
+        "addressType": args.get("address_type"),
+        "purpose": args.get("purpose"),
+        "subnetwork": args.get("subnetwork"),
+        "network": args.get("network"),
+    }
+    remove_nulls_from_dictionary(body)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"Address insert body for {name} in project {project_id}: {body}")
+    response = compute.addresses().insert(project=project_id, region=region, body=body).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Address Insert Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_address_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified regional address resource.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - region (str): Name of the region for this request.
+            - address (str): Name of the address resource to delete.
+
+    Returns:
+        CommandResults: Object containing the operation details of the address delete request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    region = extract_region_name(args.get("region"))
+    address = args.get("address")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_address_delete] Request params: {project_id=}, {region=}, {address=}")
+    response = compute.addresses().delete(project=project_id, region=region, address=address).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Address Delete Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_global_address_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the specified global address resource.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - address (str): Name of the address resource to return.
+
+    Returns:
+        CommandResults: Object containing the address details under `GCP.Compute.Addresses`.
+    """
+    project_id = args.get("project_id")
+    address = args.get("address")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_global_address_get] Request params: {project_id=}, {address=}")
+    response = compute.globalAddresses().get(project=project_id, address=address).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        f"GCP Compute Global Address: {address}",
+        response,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Addresses",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_global_address_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of global address resources.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
+            - next_token (str, optional): Token to retrieve the next page of results.
+            - filter (str, optional): Expression for filtering the listed resources.
+            - order_by (str, optional): Sorts list results by a certain order.
+
+    Returns:
+        CommandResults: Object containing the list of global addresses,
+        with `GCP.Compute.Addresses` and `GCP.Compute.GlobalAddressesNextToken` context outputs.
+    """
+    project_id = args.get("project_id")
+    limit = arg_to_number(args.get("limit")) or 50
+    next_token_arg = args.get("next_token")
+    filter_expression = args.get("filter")
+    order_by = args.get("order_by")
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "maxResults": limit,
+        "pageToken": next_token_arg,
+        "filter": filter_expression,
+        "orderBy": order_by,
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_global_address_list] Request params: {params}")
+    response = compute.globalAddresses().list(**params).execute()  # pylint: disable=E1101
+    items = response.get("items", [])
+    next_token = response.get("nextPageToken")
+
+    if warning := response.get("warning"):
+        demisto.debug(f"[GCP: compute_global_address_list] Warning: {warning}")
+
+    if not items:
+        return CommandResults(readable_output="No global addresses found.", raw_response=response)
+
+    headers = ["name", "id", "address", "addressType", "status", "creationTimestamp"]
+    readable_output = tableToMarkdown(
+        "GCP Compute Global Addresses",
+        items,
+        headers=headers,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    outputs = {
+        "GCP.Compute.Addresses(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"GlobalAddressesNextToken": next_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def compute_global_address_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates a global address resource in the specified project using the data included in the request.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - name (str): Name of the address resource to create.
+            - description (str, optional): An optional description of this resource.
+            - address (str, optional): The static IP address to reserve.
+            - prefix_length (int, optional): The prefix length if the resource represents an IP range.
+            - network_tier (str, optional): The networking tier used for the address (PREMIUM or STANDARD).
+            - ip_version (str, optional): The IP version that will be used by this address (IPV4 or IPV6).
+            - address_type (str, optional): The type of address to reserve (INTERNAL or EXTERNAL).
+            - purpose (str, optional): The purpose of the resource.
+            - subnetwork (str, optional): The URL of the subnetwork in which to reserve the address.
+            - network (str, optional): The URL of the network in which to reserve the address.
+
+    Returns:
+        CommandResults: Object containing the operation details of the global address insert request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    name = args.get("name")
+
+    body: dict[str, Any] = {
+        "name": name.lower() if name else None,
+        "description": args.get("description"),
+        "address": args.get("address"),
+        "prefixLength": arg_to_number(args.get("prefix_length")),
+        "networkTier": args.get("network_tier"),
+        "ipVersion": args.get("ip_version"),
+        "addressType": args.get("address_type"),
+        "purpose": args.get("purpose"),
+        "subnetwork": args.get("subnetwork"),
+        "network": args.get("network"),
+    }
+    remove_nulls_from_dictionary(body)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"Global address insert body for {name} in project {project_id}: {body}")
+    response = compute.globalAddresses().insert(project=project_id, body=body).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Global Address Insert Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_global_address_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified global address resource.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - address (str): Name of the address resource to delete.
+
+    Returns:
+        CommandResults: Object containing the operation details of the global address delete request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    address = args.get("address")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_global_address_delete] Request params: {project_id=}, {address=}")
+    response = compute.globalAddresses().delete(project=project_id, address=address).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Global Address Delete Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Main function to route commands and execute logic.
@@ -5668,7 +6407,8 @@ def main():  # pragma: no cover
     params = demisto.params()
 
     try:
-        command_map: dict[str, Callable[[Any, dict], Any]] = {
+        # Handlers take (creds, args), except polling handlers (see POLLING_COMMANDS) which take (args, creds).
+        command_map: dict[str, Callable[[Any, Any], Any]] = {
             "test-module": lambda creds, _args: test_module(creds, params),
             # Compute Engine commands
             "gcp-compute-firewall-patch": compute_firewall_patch,
@@ -5677,6 +6417,15 @@ def main():  # pragma: no cover
             "gcp-compute-firewalls-list": compute_firewall_list,
             "gcp-compute-firewall-get": compute_firewall_get,
             "gcp-compute-firewall-delete": compute_firewall_delete,
+            "gcp-compute-address-get": compute_address_get,
+            "gcp-compute-address-list": compute_address_list,
+            "gcp-compute-address-aggregated-list": compute_address_aggregated_list,
+            "gcp-compute-address-insert": compute_address_insert,
+            "gcp-compute-address-delete": compute_address_delete,
+            "gcp-compute-global-address-get": compute_global_address_get,
+            "gcp-compute-global-address-list": compute_global_address_list,
+            "gcp-compute-global-address-insert": compute_global_address_insert,
+            "gcp-compute-global-address-delete": compute_global_address_delete,
             "gcp-compute-snapshots-list": compute_snapshots_list,
             "gcp-compute-snapshot-get": compute_snapshot_get,
             "gcp-compute-snapshot-delete": compute_snapshot_delete,
@@ -5709,6 +6458,9 @@ def main():  # pragma: no cover
             "gcp-compute-regions-list": gcp_compute_regions_list,
             "gcp-compute-zone-get": gcp_compute_zone_get,
             "gcp-compute-zones-list": gcp_compute_zones_list,
+            "gcp-compute-zone-operation-wait": gcp_compute_zone_operation_wait,
+            "gcp-compute-region-operation-wait": gcp_compute_region_operation_wait,
+            "gcp-compute-global-operation-wait": gcp_compute_global_operation_wait,
             "gcp-compute-networks-list": gcp_compute_networks_list,
             "gcp-compute-network-insert": gcp_compute_network_insert,
             "gcp-compute-network-peering-add": gcp_compute_network_peering_add,
@@ -5791,7 +6543,11 @@ def main():  # pragma: no cover
 
         elif command in command_map:
             creds = get_credentials(args, params)
-            return_results(command_map[command](creds, args))
+            if command in POLLING_COMMANDS:
+                demisto.debug(f"[GCP main] The {command=} is a polling command, calling it with args as the first argument.")
+                return_results(command_map[command](args, creds))
+            else:
+                return_results(command_map[command](creds, args))
         else:
             raise NotImplementedError(f"Command not implemented: {command}")
 
