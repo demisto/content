@@ -168,9 +168,7 @@ def test_fetch_incidents_lookback_first_run(mocker):
     # XSUP-76522: server rejects "2026-08-28 20:05:02" — occurred MUST be RFC 3339.
     rfc3339_z = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
     for inc in incidents:
-        assert rfc3339_z.match(inc["occurred"]), (
-            f"occurred={inc['occurred']!r} is not RFC 3339 with Z suffix"
-        )
+        assert rfc3339_z.match(inc["occurred"]), f"occurred={inc['occurred']!r} is not RFC 3339 with Z suffix"
 
     last_run_call = set_last_run_mock.call_args[0][0]
     assert "time" in last_run_call
@@ -266,20 +264,20 @@ def test_fetch_incidents_lookback_backward_compat_old_last_run_time_format(mocke
 
     # date_from sent to Netcraft API stays in the legacy space-separated format.
     api_params = request.call_args[1]["params"]
-    assert re.match(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$", api_params["date_from"]), (
-        f"date_from={api_params['date_from']!r} should stay in LOOKBACK_DATE_FORMAT"
-    )
+    assert re.match(
+        r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$", api_params["date_from"]
+    ), f"date_from={api_params['date_from']!r} should stay in LOOKBACK_DATE_FORMAT"
 
     # occurred on the fetched incident is now RFC 3339 with Z suffix.
-    assert re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$", incidents[0]["occurred"]), (
-        f"occurred={incidents[0]['occurred']!r} is not RFC 3339 with Z suffix"
-    )
+    assert re.match(
+        r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$", incidents[0]["occurred"]
+    ), f"occurred={incidents[0]['occurred']!r} is not RFC 3339 with Z suffix"
 
     # New last_run["time"] is derived from occurred, so it is now RFC 3339.
     new_last_run = set_last_run_mock.call_args[0][0]
-    assert re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$", new_last_run["time"]), (
-        f"new last_run time={new_last_run['time']!r} should be RFC 3339 with Z suffix"
-    )
+    assert re.match(
+        r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$", new_last_run["time"]
+    ), f"new last_run time={new_last_run['time']!r} should be RFC 3339 with Z suffix"
 
 
 def test_fetch_incidents_no_lookback_uses_id_based(mocker):
