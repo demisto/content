@@ -894,12 +894,16 @@ def test_timestamp_format_to_datetime_falls_back_for_mismatched_format():
     assert timestamp_format_to_datetime("2023-05-01T12:00:00Z", "%d/%m/%Y") == datetime(2023, 5, 1, 12, 0, 0)
 
 
-def test_fetch_events_skips_unparsable_timestamp_without_moving_watermark():
+@patch("GenericAPIEventCollector.demisto.error")
+def test_fetch_events_skips_unparsable_timestamp_without_moving_watermark(mock_error):
     """
     Given: a page of events where one event carries an unparsable timestamp.
     When: fetch_events is called.
     Then: the malformed event is skipped and the watermark advances only to the newest VALID
           event, so subsequent fetches do not silently skip events (regression test).
+
+    demisto.error is mocked because the skip is reported through it, and the test runner
+    fails any test that writes to stdout.
     """
 
     class FakeClient:
@@ -926,6 +930,9 @@ def test_fetch_events_skips_unparsable_timestamp_without_moving_watermark():
 
     assert len(events) == 2
     assert next_run["@last_fetched_datetime"] == datetime(2024, 1, 1, 11, 0, 0).isoformat()
+    # The skip must be reported, not silently swallowed.
+    mock_error.assert_called_once()
+    assert "NOT-A-TIMESTAMP" in mock_error.call_args[0][0]
 
 
 def test_derive_authorize_url_swaps_last_path_segment():
@@ -971,7 +978,7 @@ def test_get_oauth2_auth_handler_rejects_partial_authorization_code_config(mock_
 @pytest.mark.parametrize(
     "retry_policy, expected_requests",
     [
-        (RetryPolicy(max_attempts=2, retryable_status_codes=()), 1),  # what main() pins
+        (RetryPolicy(max_attempts=2, retryable_status_codes=()), 1),  # type: ignore[call-arg]  # what main() pins
         (None, 5),  # ContentClient's default, shown for contrast
     ],
 )
@@ -986,6 +993,10 @@ def test_client_retry_attempts(mocker, retry_policy, expected_requests):
     fetch duration and failure semantics for existing instances.
     """
     import httpx
+
+    # ContentClient reports each failed attempt through demisto.error; the test runner fails
+    # any test that writes to stdout, so capture it here instead.
+    mock_error = mocker.patch.object(demisto, "error")
 
     calls = {"count": 0}
 
@@ -1015,6 +1026,8 @@ def test_client_retry_attempts(mocker, retry_policy, expected_requests):
         )
 
     assert calls["count"] == expected_requests
+    # Every attempt is reported, and nothing reached stdout.
+    assert mock_error.call_count == expected_requests
 
 
 def test_authorization_code_handler_prefers_stored_refresh_token(mocker):

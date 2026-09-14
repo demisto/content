@@ -899,7 +899,13 @@ def main() -> None:  # pragma: no cover
             # after a 401 has been resolved by the auth handler (ContentClient implements that
             # re-authentication as another pass of the same loop); a transport-level failure still
             # aborts immediately.
-            retry_policy=RetryPolicy(max_attempts=2, retryable_status_codes=()),
+            # The type: ignore matches how every other ContentClient consumer builds a
+            # RetryPolicy: the pydantic model gives every field a default, but mypy still
+            # treats them as required named arguments.
+            retry_policy=RetryPolicy(  # type: ignore[call-arg]
+                max_attempts=2,
+                retryable_status_codes=(),
+            ),
         )
         vendor: str = params.get("vendor").lower()
         raw_product: str = params.get("product").lower()
