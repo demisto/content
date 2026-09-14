@@ -7,3 +7,6 @@ ignore=MR108
 [file:ApacheWebServerModelingRules.yml]
 ignore=MR108
 
+[file:ApacheWebServerModelingRules_2_11.yml]
+ignore=MR108
+
