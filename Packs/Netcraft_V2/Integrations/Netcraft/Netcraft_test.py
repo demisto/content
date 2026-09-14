@@ -145,8 +145,12 @@ def test_fetch_incidents_lookback_first_run(mocker):
 
     Then:
         - All incidents from the API response should be returned as XSOAR incidents.
+        - Each incident's `occurred` field is formatted as RFC 3339 with a Z
+          suffix (regression guard for XSUP-76522).
         - The last_run should be updated with time, limit, and found_incident_ids.
     """
+    import re
+
     import Netcraft
 
     data = fetch_incidents_lookback_first_run
@@ -160,6 +164,13 @@ def test_fetch_incidents_lookback_first_run(mocker):
     assert len(incidents) == 2
     assert incidents[0]["name"] == "Takedown-100"
     assert incidents[1]["name"] == "Takedown-101"
+
+    # XSUP-76522: server rejects "2026-08-28 20:05:02" — occurred MUST be RFC 3339.
+    rfc3339_z = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$")
+    for inc in incidents:
+        assert rfc3339_z.match(inc["occurred"]), (
+            f"occurred={inc['occurred']!r} is not RFC 3339 with Z suffix"
+        )
 
     last_run_call = set_last_run_mock.call_args[0][0]
     assert "time" in last_run_call
@@ -203,6 +214,72 @@ def test_fetch_incidents_lookback_dedup(mocker):
     assert "found_incident_ids" in last_run_call
     assert "Takedown-102" in last_run_call["found_incident_ids"]
     assert "Takedown-99" in last_run_call["found_incident_ids"]
+
+
+def test_fetch_incidents_lookback_backward_compat_old_last_run_time_format(mocker):
+    """
+    Given:
+        - look_back is configured (10 minutes).
+        - A pre-existing last_run["time"] persisted by an older version of the
+          integration using the LOOKBACK_DATE_FORMAT ("YYYY-MM-DD HH:MM:SS")
+          instead of the new RFC 3339 OCCURRED_DATE_FORMAT.
+
+    When:
+        - Fetching incidents using the lookback mechanism.
+
+    Then:
+        - The fetch runs successfully (no ValueError parsing the old timestamp).
+        - The `date_from` sent to the Netcraft API remains in the legacy
+          "YYYY-MM-DD HH:MM:SS" format that the Netcraft takedown API expects.
+        - The new last_run["time"] is written in the RFC 3339 OCCURRED_DATE_FORMAT
+          because update_last_run_object derives it from the incidents' `occurred`.
+
+    This is the regression guard for XSUP-76522: fixing the `occurred` format
+    must not break upgrades where last_run["time"] was written in the old format.
+    """
+    import re
+
+    import Netcraft
+
+    Netcraft.PARAMS = {
+        "first_fetch": "2022-02-22 00:00:00",
+        "max_fetch": "10",
+        "region": "region",
+        "look_back": "10",
+    }
+    old_format_last_run = {
+        "time": "2022-02-22 00:02:00",  # legacy LOOKBACK_DATE_FORMAT persisted state
+        "limit": 10,
+        "found_incident_ids": {},
+    }
+    mocker.patch.object(demisto, "getLastRun", return_value=old_format_last_run.copy())
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+    request = mocker.patch.object(
+        Client,
+        "_http_request",
+        return_value=[
+            {"id": "200", "date_submitted": "2022-02-22 00:03:00 UTC"},
+        ],
+    )
+
+    incidents = Netcraft.fetch_incidents(MOCK_CLIENT)
+
+    # date_from sent to Netcraft API stays in the legacy space-separated format.
+    api_params = request.call_args[1]["params"]
+    assert re.match(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$", api_params["date_from"]), (
+        f"date_from={api_params['date_from']!r} should stay in LOOKBACK_DATE_FORMAT"
+    )
+
+    # occurred on the fetched incident is now RFC 3339 with Z suffix.
+    assert re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$", incidents[0]["occurred"]), (
+        f"occurred={incidents[0]['occurred']!r} is not RFC 3339 with Z suffix"
+    )
+
+    # New last_run["time"] is derived from occurred, so it is now RFC 3339.
+    new_last_run = set_last_run_mock.call_args[0][0]
+    assert re.match(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$", new_last_run["time"]), (
+        f"new last_run time={new_last_run['time']!r} should be RFC 3339 with Z suffix"
+    )
 
 
 def test_fetch_incidents_no_lookback_uses_id_based(mocker):
