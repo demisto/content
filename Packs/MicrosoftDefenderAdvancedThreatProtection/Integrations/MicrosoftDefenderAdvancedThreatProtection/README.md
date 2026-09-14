@@ -2151,7 +2151,6 @@ Machine.StopAndQuarantine
 ---
 Deprecated. The Automated investigation and response APIs are deprecated by Microsoft. For more information, see the Microsoft 365 Message Center announcement [MC1411577](https://msmessagecenter.com/MC1411577/).
 
-
 ##### Required Permissions
 
 Alert.ReadWrite.All
