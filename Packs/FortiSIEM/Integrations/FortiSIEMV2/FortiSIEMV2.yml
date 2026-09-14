@@ -380,10 +380,10 @@ script:
     - description: The incident ID for which we are retrieving underlying events.
       name: incident_id
       required: true
-    - description: 'This is the ending time range to retrieve raw events for this incident. Note: The max interval from time_to and time_from cannot exceed 24 hours. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".'
+    - description: 'The ending time range to retrieve raw events for this incident. Note: The max interval from time_to and time_from cannot exceed 24 hours. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".'
       name: time_to
       required: true
-    - description: 'This is the start time range to search raw events for the given incident ID. Note: The max interval from time_to and time_from cannot exceed 24 hours. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".'
+    - description: 'The start time range to search raw events for the given incident ID. Note: The max interval from time_to and time_from cannot exceed 24 hours. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".'
       name: time_from
       required: true
     - defaultValue: '50'
@@ -391,16 +391,18 @@ script:
       name: limit
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Use Cortex XSOAR built-in polling to retrieve the result when it's ready.
+      description: Whether to use Cortex XSOAR built-in polling to retrieve the result when it's ready.
       name: polling
       predefined:
       - 'true'
       - 'false'
     - description: The query ID retrieved in the start call response. Intended for use by the polling process; does not need to be provided by the user.
       name: query_id
-    - description: How long to wait between command executions (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 10.
+    - defaultValue: '10'
+      description: The time to wait between command executions (in seconds) when 'polling' argument is true. Minimum value is 10 seconds.
       name: interval_in_seconds
-    - description: The time in seconds until the polling sequence timeouts. Default is 600.
+    - defaultValue: '600'
+      description: The time in seconds until the polling sequence timeouts.
       name: timeout_in_seconds
     description: Query events by the specified incident ID using the polling mechanism (start, progress, result). Available for FortiSIEM version 7.3.3 and later.
     polling: true
@@ -419,7 +421,7 @@ script:
       description: FortiSIEM event type.
       type: String
     - contextPath: FortiSIEM.Event.receiveTime
-      description: The date when the event was received by FortiSIEM.
+      description: The date when the event was received by FortiSIEM in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: FortiSIEM.Event.nid
       description: Event natural ID.
@@ -431,10 +433,10 @@ script:
     - description: The incident ID for which we are retrieving underlying events.
       name: incident_id
       required: true
-    - description: 'This is the ending time range to retrieve raw events for this incident. Note: The max interval from time_to and time_from cannot exceed 24 hours. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".'
+    - description: 'The ending time range to retrieve raw events for this incident. Note: The max interval from time_to and time_from cannot exceed 24 hours. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".'
       name: time_to
       required: true
-    - description: 'This is the start time range to search raw events for the given incident ID. Note: The max interval from time_to and time_from cannot exceed 24 hours. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".'
+    - description: 'The start time range to search raw events for the given incident ID. Note: The max interval from time_to and time_from cannot exceed 24 hours. For example, "3 days ago", "1 month", "2019-10-10T12:22:00", "2019-10-10".'
       name: time_from
       required: true
     - defaultValue: '50'
@@ -483,7 +485,7 @@ script:
       description: FortiSIEM event type.
       type: String
     - contextPath: FortiSIEM.Event.receiveTime
-      description: The date when the event was received by FortiSIEM.
+      description: The date when the event was received by FortiSIEM in ISO 8601 format (e.g., 2024-01-15T12:34:56Z).
       type: Date
     - contextPath: FortiSIEM.Event.nid
       description: Event natural ID.

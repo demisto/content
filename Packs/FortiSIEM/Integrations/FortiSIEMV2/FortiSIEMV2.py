@@ -10,6 +10,7 @@ from CommonServerPython import *  # noqa: F401
 """ CONSTANTS"""
 
 DEFAULT_LIMIT = "50"
+MAX_TRIGGERING_EVENTS_LIMIT = 100
 DEFAULT_PAGE = "1"
 DEFAULT_PAGE_SIZE = DEFAULT_LIMIT
 MAX_FETCH = 200
@@ -916,7 +917,7 @@ def event_list_by_incident_query_start_command(client: FortiSIEMClient, args: di
     incident_id = args["incident_id"]
     time_to = convert_date_to_timestamp(arg_to_datetime(args["time_to"]))  # type: ignore[arg-type]
     time_from = convert_date_to_timestamp(arg_to_datetime(args["time_from"]))  # type: ignore[arg-type]
-    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
+    limit = min(arg_to_number(args.get("limit", DEFAULT_LIMIT)) or int(DEFAULT_LIMIT), MAX_TRIGGERING_EVENTS_LIMIT)
     validate_triggering_events_time_interval(time_from, time_to)  # type: ignore[arg-type]
 
     response = client.triggering_events_query_start_request(incident_id, time_to, time_from, limit)  # type: ignore[arg-type]
@@ -981,6 +982,8 @@ def event_list_by_incident_query_result_command(client: FortiSIEMClient, args: d
     """
     query_id = args["query_id"]
     limit = arg_to_number(args.get("limit"))
+    if limit is not None:
+        limit = min(limit, MAX_TRIGGERING_EVENTS_LIMIT)
     incident_id = args.get("incident_id")
     response = client.triggering_events_query_result_request(query_id, limit)
     events = response.get("data", []) if isinstance(response, dict) else []
@@ -1014,8 +1017,8 @@ def event_list_by_incident_query_with_polling_command(client: FortiSIEMClient, a
         CommandResults: outputs, readable outputs and raw response for XSOAR.
     """
     ScheduledCommand.raise_error_if_not_supported()
-    interval_in_secs = arg_to_number(args.get("interval_in_seconds", "10"))
-    if interval_in_secs < 10:  # type: ignore[operator]
+    interval_in_secs = arg_to_number(args.get("interval_in_seconds", "10")) or 10
+    if interval_in_secs < 10:
         raise ValueError("The minimum time to wait between command execution when 'polling' should be at least 10 seconds.")
     timeout = arg_to_number(args.get("timeout_in_seconds", "600"))
     cmd = "fortisiem-event-list-by-incident-query"
@@ -1024,7 +1027,7 @@ def event_list_by_incident_query_with_polling_command(client: FortiSIEMClient, a
         command_results = event_list_by_incident_query_start_command(client, args)
         start_outputs: dict = command_results.outputs  # type: ignore[assignment]
         query_id = start_outputs.get("QueryID")
-        polling_args = {"query_id": query_id, "interval_in_seconds": interval_in_secs, "polling": True, **args}
+        polling_args = {**args, "query_id": query_id, "interval_in_seconds": interval_in_secs, "polling": True}
         scheduled_command = ScheduledCommand(
             command=cmd,
             next_run_in_seconds=interval_in_secs,  # type: ignore[arg-type]
@@ -1038,7 +1041,7 @@ def event_list_by_incident_query_with_polling_command(client: FortiSIEMClient, a
     progress_outputs: dict = progress_results.outputs  # type: ignore[assignment]
     status = str(progress_outputs.get("Status"))
     if status != "100":
-        polling_args = {"interval_in_seconds": interval_in_secs, "polling": True, **args}
+        polling_args = {**args, "interval_in_seconds": interval_in_secs, "polling": True}
         scheduled_command = ScheduledCommand(
             command=cmd,
             next_run_in_seconds=interval_in_secs,  # type: ignore[arg-type]
