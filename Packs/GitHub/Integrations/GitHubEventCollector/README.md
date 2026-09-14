@@ -3,8 +3,6 @@
 GitHub logs event collector integration for Cortex XSIAM.
 This integration was integrated and tested with GitHub REST API version `2022-11-28`.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
-
 ## Configure GitHub Event Collector in Cortex
 
 | **Parameter** | **Description** | **Required** |

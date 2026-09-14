@@ -2,8 +2,6 @@ Use this integration to fetch BitSight security findings as events in Cortex XSI
 
 When configured as a fetching integration, it will continuously fetch new findings starting from the current day. The manual `bitsight-get-events` command fetches findings from the last 2 days (48 hours).
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
-
 ## Configure BitSight Event Collector in Cortex
 
 | Parameter | Description | Required | Default Value |
