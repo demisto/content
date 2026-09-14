@@ -4879,14 +4879,10 @@ Retrieves the specified zone-specific Operations resource. Required permission: 
 | GCP.Compute.Operations.insertTime | String | The time the operation was requested, in RFC3339 text format. |
 | GCP.Compute.Operations.startTime | String | The time the operation was started by the server, in RFC3339 text format. |
 | GCP.Compute.Operations.endTime | String | The time the operation was completed, in RFC3339 text format. |
-| GCP.Compute.Operations.error.errors.code | String | The error type identifier for the error. |
-| GCP.Compute.Operations.error.errors.location | String | The field in the request that caused the error. |
-| GCP.Compute.Operations.error.errors.message | String | The optional, human-readable error message. |
-| GCP.Compute.Operations.error.errors.errorDetails | Unknown | The optional list of messages containing the error details, including the errorInfo, quotaInfo, help, and localizedMessage fields. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
 | GCP.Compute.Operations.warnings.code | String | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
 | GCP.Compute.Operations.warnings.message | String | The human-readable description of the warning code. |
-| GCP.Compute.Operations.warnings.data.key | String | The key that provides more detail on the warning being returned. |
-| GCP.Compute.Operations.warnings.data.value | String | The warning data value corresponding to the key. |
+| GCP.Compute.Operations.warnings.data | Unknown | The metadata about this warning, in key: value format, where the key provides more detail on the warning being returned and the value is the corresponding warning data value. |
 | GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found. |
 | GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message that was returned if the operation failed, such as NOT FOUND. |
 | GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
@@ -4933,14 +4929,10 @@ Lists the global Operations resources in the specified project. Required permiss
 | GCP.Compute.Operations.insertTime | String | The time the operation was requested, in RFC3339 text format. |
 | GCP.Compute.Operations.startTime | String | The time the operation was started by the server, in RFC3339 text format. |
 | GCP.Compute.Operations.endTime | String | The time the operation was completed, in RFC3339 text format. |
-| GCP.Compute.Operations.error.errors.code | String | The error type identifier for the error. |
-| GCP.Compute.Operations.error.errors.location | String | The field in the request that caused the error. |
-| GCP.Compute.Operations.error.errors.message | String | The optional, human-readable error message. |
-| GCP.Compute.Operations.error.errors.errorDetails | Unknown | The optional list of messages containing the error details, including the errorInfo, quotaInfo, help, and localizedMessage fields. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
 | GCP.Compute.Operations.warnings.code | String | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
 | GCP.Compute.Operations.warnings.message | String | The human-readable description of the warning code. |
-| GCP.Compute.Operations.warnings.data.key | String | The key that provides more detail on the warning being returned. |
-| GCP.Compute.Operations.warnings.data.value | String | The warning data value corresponding to the key. |
+| GCP.Compute.Operations.warnings.data | Unknown | The metadata about this warning, in key: value format, where the key provides more detail on the warning being returned and the value is the corresponding warning data value. |
 | GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found. |
 | GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message that was returned if the operation failed, such as NOT FOUND. |
 | GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
@@ -4990,14 +4982,10 @@ Lists the region-specific Operations resources in the specified project and regi
 | GCP.Compute.Operations.insertTime | String | The time the operation was requested, in RFC3339 text format. |
 | GCP.Compute.Operations.startTime | String | The time the operation was started by the server, in RFC3339 text format. |
 | GCP.Compute.Operations.endTime | String | The time the operation was completed, in RFC3339 text format. |
-| GCP.Compute.Operations.error.errors.code | String | The error type identifier for the error. |
-| GCP.Compute.Operations.error.errors.location | String | The field in the request that caused the error. |
-| GCP.Compute.Operations.error.errors.message | String | The optional, human-readable error message. |
-| GCP.Compute.Operations.error.errors.errorDetails | Unknown | The optional list of messages containing the error details, including the errorInfo, quotaInfo, help, and localizedMessage fields. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
 | GCP.Compute.Operations.warnings.code | String | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
 | GCP.Compute.Operations.warnings.message | String | The human-readable description of the warning code. |
-| GCP.Compute.Operations.warnings.data.key | String | The key that provides more detail on the warning being returned. |
-| GCP.Compute.Operations.warnings.data.value | String | The warning data value corresponding to the key. |
+| GCP.Compute.Operations.warnings.data | Unknown | The metadata about this warning, in key: value format, where the key provides more detail on the warning being returned and the value is the corresponding warning data value. |
 | GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found. |
 | GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message that was returned if the operation failed, such as NOT FOUND. |
 | GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
@@ -5068,14 +5056,10 @@ Lists the zone-specific Operations resources in the specified project and zone. 
 | GCP.Compute.Operations.insertTime | String | The time the operation was requested, in RFC3339 text format. |
 | GCP.Compute.Operations.startTime | String | The time the operation was started by the server, in RFC3339 text format. |
 | GCP.Compute.Operations.endTime | String | The time the operation was completed, in RFC3339 text format. |
-| GCP.Compute.Operations.error.errors.code | String | The error type identifier for the error. |
-| GCP.Compute.Operations.error.errors.location | String | The field in the request that caused the error. |
-| GCP.Compute.Operations.error.errors.message | String | The optional, human-readable error message. |
-| GCP.Compute.Operations.error.errors.errorDetails | Unknown | The optional list of messages containing the error details, including the errorInfo, quotaInfo, help, and localizedMessage fields. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
 | GCP.Compute.Operations.warnings.code | String | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
 | GCP.Compute.Operations.warnings.message | String | The human-readable description of the warning code. |
-| GCP.Compute.Operations.warnings.data.key | String | The key that provides more detail on the warning being returned. |
-| GCP.Compute.Operations.warnings.data.value | String | The warning data value corresponding to the key. |
+| GCP.Compute.Operations.warnings.data | Unknown | The metadata about this warning, in key: value format, where the key provides more detail on the warning being returned and the value is the corresponding warning data value. |
 | GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found. |
 | GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message that was returned if the operation failed, such as NOT FOUND. |
 | GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
@@ -5120,14 +5104,10 @@ Retrieves the specified global Operations resource. Required permission: compute
 | GCP.Compute.Operations.insertTime | String | The time the operation was requested, in RFC3339 text format. |
 | GCP.Compute.Operations.startTime | String | The time the operation was started by the server, in RFC3339 text format. |
 | GCP.Compute.Operations.endTime | String | The time the operation was completed, in RFC3339 text format. |
-| GCP.Compute.Operations.error.errors.code | String | The error type identifier for the error. |
-| GCP.Compute.Operations.error.errors.location | String | The field in the request that caused the error. |
-| GCP.Compute.Operations.error.errors.message | String | The optional, human-readable error message. |
-| GCP.Compute.Operations.error.errors.errorDetails | Unknown | The optional list of messages containing the error details, including the errorInfo, quotaInfo, help, and localizedMessage fields. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
 | GCP.Compute.Operations.warnings.code | String | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
 | GCP.Compute.Operations.warnings.message | String | The human-readable description of the warning code. |
-| GCP.Compute.Operations.warnings.data.key | String | The key that provides more detail on the warning being returned. |
-| GCP.Compute.Operations.warnings.data.value | String | The warning data value corresponding to the key. |
+| GCP.Compute.Operations.warnings.data | Unknown | The metadata about this warning, in key: value format, where the key provides more detail on the warning being returned and the value is the corresponding warning data value. |
 | GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found. |
 | GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message that was returned if the operation failed, such as NOT FOUND. |
 | GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
@@ -5173,14 +5153,10 @@ Retrieves the specified region-specific Operations resource. Required permission
 | GCP.Compute.Operations.insertTime | String | The time the operation was requested, in RFC3339 text format. |
 | GCP.Compute.Operations.startTime | String | The time the operation was started by the server, in RFC3339 text format. |
 | GCP.Compute.Operations.endTime | String | The time the operation was completed, in RFC3339 text format. |
-| GCP.Compute.Operations.error.errors.code | String | The error type identifier for the error. |
-| GCP.Compute.Operations.error.errors.location | String | The field in the request that caused the error. |
-| GCP.Compute.Operations.error.errors.message | String | The optional, human-readable error message. |
-| GCP.Compute.Operations.error.errors.errorDetails | Unknown | The optional list of messages containing the error details, including the errorInfo, quotaInfo, help, and localizedMessage fields. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
 | GCP.Compute.Operations.warnings.code | String | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
 | GCP.Compute.Operations.warnings.message | String | The human-readable description of the warning code. |
-| GCP.Compute.Operations.warnings.data.key | String | The key that provides more detail on the warning being returned. |
-| GCP.Compute.Operations.warnings.data.value | String | The warning data value corresponding to the key. |
+| GCP.Compute.Operations.warnings.data | Unknown | The metadata about this warning, in key: value format, where the key provides more detail on the warning being returned and the value is the corresponding warning data value. |
 | GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found. |
 | GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message that was returned if the operation failed, such as NOT FOUND. |
 | GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
