@@ -10372,7 +10372,6 @@ class TestSendEventsToXSIAMTest:
             return
         import concurrent.futures
         import CommonServerPython as csp
-        from CommonServerPython import BaseClient
         from requests import Response
 
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
@@ -10388,7 +10387,7 @@ class TestSendEventsToXSIAMTest:
         def failing_http_request(*args, **kwargs):
             raise ValueError('worker exploded')
 
-        mocker.patch.object(BaseClient, '_http_request', side_effect=failing_http_request)
+        mocker.patch.object(csp.BaseClient, '_http_request', side_effect=failing_http_request)
 
         events = [{'id': i, 'msg': 'x'} for i in range(6)]
         with pytest.raises(ValueError, match='worker exploded') as exc_info:
@@ -10401,7 +10400,8 @@ class TestSendEventsToXSIAMTest:
             try:
                 future.result()
             except Exception:
-                pass
+                # Intentionally ignore errors from drained futures; the primary failure is asserted above.
+                continue
 
     @pytest.mark.parametrize('chunk_size', [2 ** 20, 50])
     def test_send_data_to_xsiam_streaming_threaded_assets_snapshot_headers(self, mocker, chunk_size):
@@ -10413,7 +10413,6 @@ class TestSendEventsToXSIAMTest:
             return
         import concurrent.futures
         import CommonServerPython as csp
-        from CommonServerPython import BaseClient
         from requests import Response
 
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
@@ -10425,7 +10424,7 @@ class TestSendEventsToXSIAMTest:
         api_response = Response()
         api_response.status_code = 200
         api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
-        http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        http_mock = mocker.patch.object(csp.BaseClient, '_http_request', return_value=api_response)
 
         assets = [{'id': i, 'msg': 'asset {}'.format(i)} for i in range(9)]
         futures = send_data_to_xsiam(data=list(assets), vendor='v', product='p', chunk_size=chunk_size,
@@ -10450,7 +10449,6 @@ class TestSendEventsToXSIAMTest:
             return
         import concurrent.futures
         import CommonServerPython as csp
-        from CommonServerPython import BaseClient
         from requests import Response
 
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
@@ -10462,7 +10460,7 @@ class TestSendEventsToXSIAMTest:
         api_response = Response()
         api_response.status_code = 200
         api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
-        mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
+        mocker.patch.object(csp.BaseClient, '_http_request', return_value=api_response)
 
         events = [{'id': i, 'msg': 'x'} for i in range(6)]
         futures = send_data_to_xsiam(data=list(events), vendor='v', product='p', chunk_size=1,
