@@ -118,9 +118,9 @@ tasks:
           root: Tenzai.Scan
           accessor: id
       interval_in_seconds:
-        simple: "60"
+        simple: ${inputs.PollingInterval}
       timeout_in_seconds:
-        simple: "3600"
+        simple: ${inputs.PollingTimeout}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -232,7 +232,19 @@ view: |-
       }
     }
   }
-inputs: []
+inputs:
+- key: PollingInterval
+  value:
+    simple: "60"
+  required: false
+  description: The interval, in seconds, between Tenzai scan status polls.
+  playbookInputQuery:
+- key: PollingTimeout
+  value:
+    simple: "3600"
+  required: false
+  description: The maximum time, in seconds, to wait for the Tenzai scan to reach a terminal state before giving up.
+  playbookInputQuery:
 outputs: []
 fromversion: 6.10.0
 marketplaces:

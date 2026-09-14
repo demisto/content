@@ -3,7 +3,7 @@
     "version": -1,
     "name": "Tenzai Started At",
     "ownerOnly": false,
-    "description": "When the Tenzai assessment started — the exposure lead's first (OPEN) status-history entry.",
+    "description": "When the Tenzai assessment started, as a full ISO-8601 timestamp (e.g., 2024-01-15T12:34:56Z) — the exposure lead's first (OPEN) status-history entry.",
     "cliName": "tenzaistartedat",
     "type": "date",
     "closeForm": false,
