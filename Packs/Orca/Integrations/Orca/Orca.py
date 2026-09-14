@@ -284,8 +284,8 @@ def parse_last_sync(value: str | None) -> datetime | None:
         return None
     try:
         parsed = dateutil.parser.parse(value)
-    except (ValueError, OverflowError):
-        demisto.info(f"Failed to parse last_sync value: {value}")
+    except (ValueError, OverflowError) as e:
+        demisto.info(f"Failed to parse last_sync value: {value}. Error: {e}")
         return None
     if parsed.tzinfo is None:
         # Naive timestamps from the API are UTC
@@ -307,7 +307,10 @@ def filter_boundary_duplicates(alerts: List[dict[str, Any]], boundary_alert_ids:
     filtered = []
     for alert in alerts:
         alert_id = alert.get("AlertId")
-        if alert_id and boundary_alert_ids.get(alert_id) == get_alert_last_sync(alert):
+        # Recorded boundary values are never None, so an alert missing from the
+        # map (or missing last_sync entirely) never matches and is delivered
+        recorded_sync = boundary_alert_ids.get(alert_id) if alert_id else None
+        if recorded_sync is not None and recorded_sync == get_alert_last_sync(alert):
             demisto.info(f"Skipping boundary alert {alert_id}, already delivered in the previous cycle")
             continue
         filtered.append(alert)

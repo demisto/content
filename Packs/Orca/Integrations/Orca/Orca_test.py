@@ -1034,6 +1034,33 @@ def test_fetch_incidents_boundary_alert_not_duplicated(requests_mock, orca_clien
     assert set(last_run2["boundary_alert_ids"]) == {"orca-1", "orca-2"}
 
 
+def test_fetch_incidents_alert_without_last_sync_not_dropped_by_boundary_filter(requests_mock, orca_client: OrcaClient) -> None:
+    """An alert without last_sync must be delivered even when a boundary set exists.
+
+    Regression: None (missing map entry) == None (missing last_sync) must not
+    count as a boundary match.
+    """
+    watermark = "2025-11-06T09:35:40+00:00"
+    requests_mock.post(
+        f"{DUMMY_ORCA_API_DNS_NAME}{API_QUERY_ALERTS_URL}",
+        json={"status": "success", "total_items": 1, "data": [_make_alert("orca-no-sync", None)]},
+    )
+
+    last_run, incidents = fetch_incidents(
+        orca_client,
+        last_run={"step": STEP_FETCH, "lastRun": watermark, "boundary_alert_ids": {"orca-1": watermark}},
+        max_fetch=20,
+        pull_existing_alerts=True,
+        first_fetch_time=None,
+    )
+
+    assert len(incidents) == 1
+    assert incidents[0]["name"] == "orca-no-sync"
+    # No last_sync seen -> watermark and boundary set stay unchanged
+    assert last_run["lastRun"] == watermark
+    assert last_run["boundary_alert_ids"] == {"orca-1": watermark}
+
+
 def test_fetch_incidents_updated_boundary_alert_is_redelivered(requests_mock, orca_client: OrcaClient) -> None:
     """A boundary alert whose last_sync changed was re-updated and must be delivered again."""
     old_sync = "2025-11-06T09:35:40+00:00"
