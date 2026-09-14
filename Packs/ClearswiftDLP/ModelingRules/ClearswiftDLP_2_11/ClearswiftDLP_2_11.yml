@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: ClearswiftDLP_ModelingRule
-name: ClearswiftDLP Modeling Rule
+id: Clearswift_DLP_ModelingRule
+name: Clearswift DLP Modeling Rules
 rules: ''
 schema: ''
 tags: ''
