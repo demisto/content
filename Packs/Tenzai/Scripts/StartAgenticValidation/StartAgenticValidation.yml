@@ -15,7 +15,7 @@ args:
 - name: target
   description: The exposure target (IP address or FQDN). If omitted, it is derived by enriching the ASM service.
 - name: exposure_name
-  description: A human-readable name for the exposure (typically the issue/alert name).
+  description: The human-readable name for the exposure (typically the issue/alert name).
 - name: issue_description
   description: The Cortex issue Description, folded into the Tenzai application guidelines for the scan.
 - name: supporting_data
