@@ -189,6 +189,7 @@ def is_incident_closing(inc_status: Optional[int], delta: Optional[Dict[str, Any
 
 
 """VARIABLES FOR KIBANA COMMANDS (es-kibana-*)"""
+KIBANA_LOG_PREFIX = "[ES-KIBANA]"
 DEFAULT_SPACE_ID = PARAMS.get("space_id", "")
 KIBANA_XSRF_HEADER = {"kbn-xsrf": "true"}
 # Kibana write operations (POST/PUT/PATCH/DELETE) require the kbn-xsrf header.
@@ -426,27 +427,43 @@ def get_elastic_token():
 
 def get_kibana_base_url() -> str:
     """
-    Derives the Kibana base URL from the configured Elasticsearch Server URL.
+    Resolves the Kibana base URL.
 
-    Elastic Cloud deployments expose Elasticsearch and Kibana on the same domain,
-    differentiated only by the ".es." / ".kb." subdomain prefix, e.g.:
+    The explicitly configured "Kibana Server URL" parameter always wins. It is the only option that
+    works for on-premises (self-managed) deployments, where Kibana is typically hosted separately
+    from Elasticsearch (for example, https://kibana.example.com:5601).
+
+    When that parameter is empty, the URL is derived from the Elasticsearch Server URL. Elastic Cloud
+    deployments expose Elasticsearch and Kibana on the same domain, differentiated only by the
+    ".es." / ".kb." subdomain segment, e.g.:
         https://my-deployment-af38b6.es.us-central1.gcp.cloud.es.io
         https://my-deployment-af38b6.kb.us-central1.gcp.cloud.es.io
 
     Returns:
-        str: The derived Kibana base URL (no trailing slash).
+        str: The Kibana base URL (no trailing slash).
 
     Raises:
-        DemistoException: If the Server URL does not contain the expected ".es." segment,
-            so a Kibana URL cannot be derived from it.
+        DemistoException: If no Kibana Server URL is configured and the Server URL does not contain
+            the ".es." segment, so a Kibana URL cannot be derived from it.
     """
-    if ".es." not in SERVER:
-        raise DemistoException(
-            "Could not derive the Kibana URL from the configured Server URL. "
-            'The Server URL is expected to contain ".es." (e.g. "https://my-deployment.es.us-central1.gcp.cloud.es.io"). '
-            f"Configured Server URL: {SERVER}"
-        )
-    return SERVER.replace(".es.", ".kb.", 1)
+    kibana_server = (PARAMS.get("kibana_url") or "").rstrip("/")
+    if kibana_server:
+        demisto.debug(f"{KIBANA_LOG_PREFIX} Using the configured Kibana Server URL: {kibana_server}")
+        return kibana_server
+
+    if ".es." in SERVER:
+        derived_url = SERVER.replace(".es.", ".kb.", 1)
+        demisto.debug(f"{KIBANA_LOG_PREFIX} Derived the Kibana URL from the Elastic Cloud Server URL: {derived_url}")
+        return derived_url
+
+    raise DemistoException(
+        "Could not determine the Kibana URL. "
+        'Set the "Kibana Server URL" parameter in the integration instance configuration '
+        '(for example, "https://kibana.example.com:5601"). '
+        'It can be omitted only for Elastic Cloud deployments, whose Server URL contains ".es." '
+        '(e.g. "https://my-deployment.es.us-central1.gcp.cloud.es.io") and is therefore used to derive it. '
+        f"Configured Server URL: {SERVER}"
+    )
 
 
 def get_kibana_auth_headers() -> Dict[str, str]:

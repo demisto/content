@@ -1,0 +1,116 @@
+{
+    "druva_druva_raw": {
+        "clientOS": {
+            "type": "string",
+            "is_array": false
+        },
+        "clientVersion": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventDetails": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventID": {
+            "type": "int",
+            "is_array": false
+        },
+        "eventState": {
+            "type": "string",
+            "is_array": false
+        },
+        "eventType": {
+            "type": "string",
+            "is_array": false
+        },
+        "initiator": {
+            "type": "string",
+            "is_array": false
+        },
+        "inSyncDataSourceID": {
+            "type": "int",
+            "is_array": false
+        },
+        "inSyncUserEmail": {
+            "type": "string",
+            "is_array": false
+        },
+        "inSyncUserID": {
+            "type": "int",
+            "is_array": false
+        },
+        "inSyncUserName": {
+            "type": "string",
+            "is_array": false
+        },
+        "ip": {
+            "type": "string",
+            "is_array": false
+        },
+        "profileName": {
+            "type": "string",
+            "is_array": false
+        },
+        "severity": {
+            "type": "int",
+            "is_array": false
+        },
+        "inSyncDataSourceName": {
+            "type": "string",
+            "is_array": false
+        },
+        "category": {
+            "type": "string",
+            "is_array": false
+        },
+        "details": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "int",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "feature": {
+            "type": "string",
+            "is_array": false
+        },
+        "syslogSeverity": {
+            "type": "int",
+            "is_array": false
+        },
+        "source_log_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "timestamp": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "facility": {
+            "type": "int",
+            "is_array": false
+        },
+        "profileID": {
+            "type": "int",
+            "is_array": false
+        },
+        "globalID": {
+            "type": "string",
+            "is_array": false
+        },
+        "productID": {
+            "type": "int",
+            "is_array": false
+        },
+        "syslogFacility": {
+            "type": "int",
+            "is_array": false
+        }
+    }
+}
