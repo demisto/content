@@ -31,8 +31,10 @@ def resolve_ucp_auth_type(default=AuthType.API_TOKEN):
     ``AuthType.OAUTH if use_oauth else AuthType.API_TOKEN`` decision always
     resolved to API_TOKEN -- which drives the ``/users/me`` test endpoint and the
     ``SSWS`` header. But the platform can broker an ``oauth2`` credential (the
-    ``oauth2_private_key_jwt`` / ``oauth2_client_credentials`` profiles), whose
-    app token has no ``me`` user and must use ``Bearer`` + ``/api/v1/users``.
+    ``external_auth.okta_jwt`` plugin normalises its result to a typed OAuth2
+    envelope with ``type: "oauth2"``; ``oauth2_client_credentials`` behaves the
+    same), whose app token has no ``me`` user and must use ``Bearer`` +
+    ``/api/v1/users``.
 
     So when UCP auth is active we inspect the brokered envelope ``type`` and
     return OAUTH for an ``oauth2*`` credential, API_TOKEN for ``api_key`` (SSWS),
