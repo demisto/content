@@ -1,4 +1,4 @@
-"""Unit tests for PrismaAirsApiModule (shared Prisma AIRs transport layer)."""
+"""Unit tests for PrismaAirsApiModule (shared Prisma AIRS transport layer)."""
 
 from typing import Any
 from unittest.mock import Mock, patch
@@ -23,7 +23,7 @@ BASE_URL = "https://api.sase.paloaltonetworks.com"
 
 @pytest.fixture
 def mock_client() -> Client:
-    """Create a fully-configured mock Prisma AIRs client."""
+    """Create a fully-configured mock Prisma AIRS client."""
     return Client(
         base_url=BASE_URL,
         client_id="test_client_id",
