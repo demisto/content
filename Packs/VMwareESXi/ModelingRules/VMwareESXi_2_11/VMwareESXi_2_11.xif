@@ -124,7 +124,6 @@ call esxi_event_classification
     xdm.source.process.name = source_process,
     xdm.source.process.pid = to_integer(source_pid),
     xdm.source.user.username = user_name,
-    xdm.source.identity.username = user_name,
     xdm.target.process.name = target_process_name,
     xdm.target.process.executable.path = target_process_path,
     xdm.target.process.command_line = command_line,
