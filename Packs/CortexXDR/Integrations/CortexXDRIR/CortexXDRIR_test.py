@@ -4256,7 +4256,7 @@ def test_create_issue_command_invalid_json():
     [
         (
             {"issue_id": "100", "status": "new"},
-            {"status_progress": "New"},
+            {"status": "New"},
         ),
         (
             {"issue_id": "200", "severity": "high"},
@@ -4270,14 +4270,14 @@ def test_create_issue_command_invalid_json():
                 "resolve_comment": "Not a real issue",
             },
             {
-                "status_progress": "Resolved",
+                "status": "Resolved",
                 "status_resolution_reason": "resolved - false positive",
                 "status_resolution_comment": "Not a real issue",
             },
         ),
         (
             {"issue_id": "400", "status": "in_progress", "severity": "low"},
-            {"severity": "LOW", "status_progress": "In Progress"},
+            {"severity": "LOW", "status": "In Progress"},
         ),
         (
             {
