@@ -347,6 +347,15 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
             "compute.firewalls.delete",
         ],
     ),
+    "gcp-compute-address-get": (GCPServices.COMPUTE, ["compute.addresses.get"]),
+    "gcp-compute-address-list": (GCPServices.COMPUTE, ["compute.addresses.list"]),
+    "gcp-compute-address-aggregated-list": (GCPServices.COMPUTE, ["compute.addresses.list"]),
+    "gcp-compute-address-insert": (GCPServices.COMPUTE, ["compute.addresses.create"]),
+    "gcp-compute-address-delete": (GCPServices.COMPUTE, ["compute.addresses.delete"]),
+    "gcp-compute-global-address-get": (GCPServices.COMPUTE, ["compute.globalAddresses.get"]),
+    "gcp-compute-global-address-list": (GCPServices.COMPUTE, ["compute.globalAddresses.list"]),
+    "gcp-compute-global-address-insert": (GCPServices.COMPUTE, ["compute.globalAddresses.create"]),
+    "gcp-compute-global-address-delete": (GCPServices.COMPUTE, ["compute.globalAddresses.delete"]),
     "gcp-compute-snapshots-list": (
         GCPServices.COMPUTE,
         [
@@ -401,6 +410,17 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
         GCPServices.COMPUTE,
         ["compute.instances.setServiceAccount", "compute.instances.get"],
     ),
+    "gcp-compute-disks-list": (GCPServices.COMPUTE, ["compute.disks.list"]),
+    "gcp-compute-disks-aggregated-list": (GCPServices.COMPUTE, ["compute.disks.list"]),
+    "gcp-compute-disk-get": (GCPServices.COMPUTE, ["compute.disks.get"]),
+    "gcp-compute-disk-insert": (GCPServices.COMPUTE, ["compute.disks.create"]),
+    "gcp-compute-disk-delete": (GCPServices.COMPUTE, ["compute.disks.delete"]),
+    "gcp-compute-disk-resize": (GCPServices.COMPUTE, ["compute.disks.resize"]),
+    "gcp-compute-disk-labels-set": (GCPServices.COMPUTE, ["compute.disks.setLabels"]),
+    "gcp-compute-disk-snapshot-create": (GCPServices.COMPUTE, ["compute.disks.createSnapshot", "compute.snapshots.create"]),
+    "gcp-compute-disk-types-list": (GCPServices.COMPUTE, ["compute.diskTypes.list"]),
+    "gcp-compute-disk-types-aggregated-list": (GCPServices.COMPUTE, ["compute.diskTypes.list"]),
+    "gcp-compute-disk-type-get": (GCPServices.COMPUTE, ["compute.diskTypes.get"]),
     "gcp-compute-instance-start": (GCPServices.COMPUTE, ["compute.instances.start"]),
     "gcp-compute-instance-stop": (GCPServices.COMPUTE, ["compute.instances.stop"]),
     "gcp-compute-instance-insert": (GCPServices.COMPUTE, ["compute.instances.create"]),
@@ -558,6 +578,8 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
 }
 
 OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
+DISK_TABLE = ["id", "name", "sizeGb", "zone", "status", "type"]
+DISK_TYPE_TABLE = ["id", "name", "validDiskSize", "defaultDiskSizeGb", "zone"]
 # Safety bounds for API-driven loops, so a misbehaving API cannot cause a command timeout.
 MAX_OBJECT_LIST_PAGES = 100
 MAX_DOWNLOAD_CHUNKS = 10000
@@ -911,6 +933,34 @@ def _merge_context_items(
 
     demisto.debug(f"[GCP] Items in context '{context_path}' after merge: {len(merged_items)}")
     return list(merged_items.values())
+
+
+def collect_aggregated_items(response: dict[str, Any], items_key: str) -> list[dict[str, Any]]:
+    """
+    Flattens the scoped lists of an aggregated list response into a single list of resources.
+
+    Scopes that returned a warning instead of resources (for example, NO_RESULTS_ON_PAGE for a zone
+    holding no resources) are excluded from the results and logged.
+
+    Args:
+        response (dict): The aggregated list response returned by the Compute Engine API.
+        items_key (str): The key holding the resources within each scoped list, for example 'disks'.
+
+    Returns:
+        list[dict[str, Any]]: The resources collected from all the scopes that returned results.
+    """
+    items: list[dict[str, Any]] = []
+    excluded_scopes: dict[str, Any] = {}
+    for scope_name, scoped_list in response.get("items", {}).items():
+        if warning := scoped_list.get("warning"):
+            excluded_scopes[scope_name] = warning.get("code")
+            continue
+        items.extend(scoped_list.get(items_key, []) or [])
+    if excluded_scopes:
+        demisto.debug(
+            f"[GCP] {demisto.command()}: excluded {len(excluded_scopes)} scopes that returned a warning: {excluded_scopes}"
+        )
+    return items
 
 
 ##########
@@ -1902,6 +1952,589 @@ def compute_snapshot_labels_set(creds: Credentials, args: dict[str, Any]) -> Com
     return CommandResults(
         readable_output=hr,
         outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_disks_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves a list of persistent disks contained within the specified zone.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id', 'zone', 'limit', 'filter',
+            'order_by' and 'next_token'.
+
+    Returns:
+        CommandResults: Object containing the list of disks under `GCP.Compute.Disks`,
+        the pagination token under `GCP.Compute.DisksNextToken` and, when the API returns
+        one, the informational warning under `GCP.Compute.DisksWarning`.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    limit = arg_to_number(args.get("limit")) or 50
+
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "zone": zone,
+        "maxResults": limit,
+        "filter": args.get("filter"),
+        "orderBy": args.get("order_by"),
+        "pageToken": args.get("next_token"),
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Listing disks with params: {params}")
+    response = compute.disks().list(**params).execute()  # pylint: disable=E1101
+
+    items = response.get("items", [])
+    next_token = response.get("nextPageToken")
+    warning = response.get("warning", {})
+    demisto.debug(
+        f"[GCP] Disks list for project {project_id}, zone {zone}: {len(items)} disks, "
+        f"{bool(next_token)=}, {warning.get('code')=}"
+    )
+    readable_output = tableToMarkdown(
+        "GCP Compute Disks",
+        items,
+        headers=DISK_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    compute_outputs: dict[str, Any] = {"DisksNextToken": next_token}
+    if warning:
+        demisto.debug(f"[GCP] Disks list returned a warning: {warning}")
+        compute_outputs["DisksWarning"] = warning
+
+    outputs = {
+        "GCP.Compute.Disks(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": compute_outputs,
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def compute_disks_aggregated_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves an aggregated list of persistent disks across all zones in the specified project.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id', 'limit', 'filter', 'order_by'
+            and 'next_token'.
+
+    Returns:
+        CommandResults: Object containing the aggregated list of disks under `GCP.Compute.Disks`,
+        the pagination token under `GCP.Compute.AggregatedDisksNextToken` and, when the API returns
+        one, the informational warning under `GCP.Compute.AggregatedDisksWarning`.
+    """
+    project_id = args.get("project_id")
+    limit = arg_to_number(args.get("limit")) or 50
+
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "maxResults": limit,
+        "filter": args.get("filter"),
+        "orderBy": args.get("order_by"),
+        "pageToken": args.get("next_token"),
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Listing aggregated disks with params: {params}")
+    response = compute.disks().aggregatedList(**params).execute()  # pylint: disable=E1101
+
+    items = collect_aggregated_items(response, "disks")
+
+    next_token = response.get("nextPageToken")
+    warning = response.get("warning", {})
+    demisto.debug(
+        f"[GCP] Disks aggregated list for project {project_id}: {len(items)} disks, "
+        f"{bool(next_token)=}, {warning.get('code')=}"
+    )
+    readable_output = tableToMarkdown(
+        "GCP Compute Disks",
+        items,
+        headers=DISK_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    compute_outputs: dict[str, Any] = {"AggregatedDisksNextToken": next_token}
+    if warning:
+        demisto.debug(f"[GCP] Disks aggregated list returned a warning: {warning}")
+        compute_outputs["AggregatedDisksWarning"] = warning
+
+    outputs = {
+        "GCP.Compute.Disks(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": compute_outputs,
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def compute_disk_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves a specified persistent disk.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id', 'zone' and 'resource_name'.
+
+    Returns:
+        CommandResults: Object containing the disk details under `GCP.Compute.Disks`.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Getting disk {resource_name} in project {project_id}, zone {zone}")
+    response = compute.disks().get(project=project_id, zone=zone, disk=resource_name).execute()  # pylint: disable=E1101
+    demisto.debug(f"[GCP] Disk get {resource_name}: {response.get('id')=}, {response.get('status')=}")
+
+    readable_output = tableToMarkdown(
+        f"GCP Compute Disk: {resource_name}",
+        response,
+        headers=DISK_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Disks",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_disk_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates a persistent disk in the specified project and zone.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id', 'zone', 'resource_name',
+            'disk_type', 'size_gb' and the optional source, encryption key and label arguments.
+
+    Returns:
+        CommandResults: Object containing the operation details of the disk insert request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name", "")
+
+    guest_os_features = argToList(args.get("guest_os_features"))
+    body: dict[str, Any] = {
+        "name": resource_name.lower(),
+        "type": args.get("disk_type"),
+        "description": args.get("description"),
+        "sizeGb": arg_to_number(args.get("size_gb")),
+        "sourceSnapshot": args.get("source_snapshot"),
+        "sourceImage": args.get("source_image"),
+        "licenses": argToList(args.get("licenses")),
+        "guestOsFeatures": [{"type": feature} for feature in guest_os_features],
+        "diskEncryptionKey": {
+            "rawKey": args.get("disk_encryption_key_raw_key"),
+            "kmsKeyName": args.get("disk_encryption_key_kms_key_name"),
+        },
+        "sourceImageEncryptionKey": {
+            "rawKey": args.get("source_image_encryption_key_raw_key"),
+            "kmsKeyName": args.get("source_image_encryption_key_kms_key_name"),
+        },
+        "sourceSnapshotEncryptionKey": {
+            "rawKey": args.get("source_snapshot_encryption_key_raw_key"),
+            "kmsKeyName": args.get("source_snapshot_encryption_key_kms_key_name"),
+        },
+        "labels": parse_labels(args.get("labels", "")),
+        "labelFingerprint": args.get("label_fingerprint"),
+        "replicaZones": argToList(args.get("replica_zones")),
+        "licenseCodes": argToList(args.get("license_codes")),
+        "physicalBlockSizeBytes": arg_to_number(args.get("physical_block_size_bytes")),
+    }
+    body = remove_empty_elements(body)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Disk insert {resource_name} in project {project_id}, body keys: {list(body.keys())}")
+    response = compute.disks().insert(project=project_id, zone=zone, body=body).execute()  # pylint: disable=E1101
+
+    readable_output = tableToMarkdown(
+        f"GCP Compute Disk {resource_name} Insert Operation Started Successfully",
+        response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_disk_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified persistent disk.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id', 'zone' and 'resource_name'.
+
+    Returns:
+        CommandResults: Object containing the operation details of the disk delete request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.disks().delete(project=project_id, zone=zone, disk=resource_name).execute()  # pylint: disable=E1101
+
+    readable_output = tableToMarkdown(
+        f"GCP Compute Disk {resource_name} Delete Operation Started Successfully",
+        response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_disk_resize(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Resizes the specified persistent disk. The disk size can only be increased.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id', 'zone', 'resource_name' and 'size_gb'.
+
+    Returns:
+        CommandResults: Object containing the operation details of the disk resize request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+
+    body = {"sizeGb": arg_to_number(args.get("size_gb"))}
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Disk resize {resource_name} in project {project_id}: {body.get('sizeGb')=}")
+    response = (
+        compute.disks()  # pylint: disable=E1101
+        .resize(project=project_id, zone=zone, disk=resource_name, body=body)
+        .execute()
+    )
+
+    readable_output = tableToMarkdown(
+        f"GCP Compute Disk {resource_name} Resize Operation Started Successfully",
+        response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_disk_labels_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets the labels on a persistent disk.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id', 'zone', 'resource_name', 'labels'
+            and the optional 'label_fingerprint'.
+
+    Returns:
+        CommandResults: Object containing the operation details of the set labels request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+
+    body: dict[str, Any] = {
+        "labels": parse_labels(args.get("labels", "")),
+        "labelFingerprint": args.get("label_fingerprint"),
+    }
+    remove_nulls_from_dictionary(body)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Disk set labels {resource_name} in project {project_id}, body keys: {list(body.keys())}")
+    response = (
+        compute.disks()  # pylint: disable=E1101
+        .setLabels(project=project_id, zone=zone, resource=resource_name, body=body)
+        .execute()
+    )
+
+    readable_output = tableToMarkdown(
+        f"GCP Compute Disk {resource_name} Set Labels Operation Started Successfully",
+        response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_disk_snapshot_create(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates a snapshot of a specified persistent disk.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id', 'zone', 'resource_name',
+            'snapshot_name' and the optional description, encryption key and label arguments.
+
+    Returns:
+        CommandResults: Object containing the operation details of the create snapshot request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+    snapshot_name = args.get("snapshot_name", "")
+
+    body: dict[str, Any] = {
+        "name": snapshot_name.lower(),
+        "description": args.get("description"),
+        "snapshotEncryptionKey": {
+            "rawKey": args.get("snapshot_encryption_key_raw_key"),
+            "kmsKeyName": args.get("snapshot_encryption_key_kms_key_name"),
+        },
+        "sourceDiskEncryptionKey": {
+            "rawKey": args.get("source_disk_encryption_key_raw_key"),
+            "kmsKeyName": args.get("source_disk_encryption_key_kms_key_name"),
+        },
+        "labels": parse_labels(args.get("labels", "")),
+        "labelFingerprint": args.get("label_fingerprint"),
+    }
+    body = remove_empty_elements(body)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Disk create snapshot {resource_name} in project {project_id}, body keys: {list(body.keys())}")
+    response = (
+        compute.disks()  # pylint: disable=E1101
+        .createSnapshot(project=project_id, zone=zone, disk=resource_name, body=body)
+        .execute()
+    )
+
+    readable_output = tableToMarkdown(
+        f"GCP Compute Disk {resource_name} Create Snapshot Operation Started Successfully",
+        response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def compute_disk_types_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves a list of disk types available in the specified zone.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id', 'zone', 'limit', 'filter',
+            'order_by' and 'next_token'.
+
+    Returns:
+        CommandResults: Object containing the list of disk types under `GCP.Compute.DiskTypes`,
+        the pagination token under `GCP.Compute.DiskTypesNextToken` and, when the API returns
+        one, the informational warning under `GCP.Compute.DiskTypesWarning`.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    limit = arg_to_number(args.get("limit")) or 50
+
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "zone": zone,
+        "maxResults": limit,
+        "filter": args.get("filter"),
+        "orderBy": args.get("order_by"),
+        "pageToken": args.get("next_token"),
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Listing disk types with params: {params}")
+    response = compute.diskTypes().list(**params).execute()  # pylint: disable=E1101
+
+    items = response.get("items", [])
+    next_token = response.get("nextPageToken")
+    warning = response.get("warning", {})
+    demisto.debug(
+        f"[GCP] Disk types list for project {project_id}, zone {zone}: {len(items)} disk types, "
+        f"{bool(next_token)=}, {warning.get('code')=}"
+    )
+    readable_output = tableToMarkdown(
+        "GCP Compute Disk Types",
+        items,
+        headers=DISK_TYPE_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    compute_outputs: dict[str, Any] = {"DiskTypesNextToken": next_token}
+    if warning:
+        demisto.debug(f"[GCP] Disk types list returned a warning: {warning}")
+        compute_outputs["DiskTypesWarning"] = warning
+
+    outputs = {
+        "GCP.Compute.DiskTypes(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": compute_outputs,
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def compute_disk_types_aggregated_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves an aggregated list of disk types across all zones in the specified project.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id', 'limit', 'filter', 'order_by'
+            and 'next_token'.
+
+    Returns:
+        CommandResults: Object containing the aggregated list of disk types under
+        `GCP.Compute.DiskTypes`, the pagination token under `GCP.Compute.AggregatedDiskTypesNextToken`
+        and, when the API returns one, the informational warning under `GCP.Compute.AggregatedDiskTypesWarning`.
+    """
+    project_id = args.get("project_id")
+    limit = arg_to_number(args.get("limit")) or 50
+
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "maxResults": limit,
+        "filter": args.get("filter"),
+        "orderBy": args.get("order_by"),
+        "pageToken": args.get("next_token"),
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Listing aggregated disk types with params: {params}")
+    response = compute.diskTypes().aggregatedList(**params).execute()  # pylint: disable=E1101
+
+    items = collect_aggregated_items(response, "diskTypes")
+
+    next_token = response.get("nextPageToken")
+    warning = response.get("warning", {})
+    demisto.debug(
+        f"[GCP] Disk types aggregated list for project {project_id}: {len(items)} disk types, "
+        f"{bool(next_token)=}, {warning.get('code')=}"
+    )
+    readable_output = tableToMarkdown(
+        "GCP Compute Disk Types",
+        items,
+        headers=DISK_TYPE_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    compute_outputs: dict[str, Any] = {"AggregatedDiskTypesNextToken": next_token}
+    if warning:
+        demisto.debug(f"[GCP] Disk types aggregated list returned a warning: {warning}")
+        compute_outputs["AggregatedDiskTypesWarning"] = warning
+
+    outputs = {
+        "GCP.Compute.DiskTypes(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": compute_outputs,
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def compute_disk_type_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the specified disk type.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including 'project_id', 'zone' and 'resource_name'.
+
+    Returns:
+        CommandResults: Object containing the disk type details under `GCP.Compute.DiskTypes`.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    resource_name = args.get("resource_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP] Getting disk type {resource_name} in project {project_id}, zone {zone}")
+    response = (
+        compute.diskTypes()  # pylint: disable=E1101
+        .get(project=project_id, zone=zone, diskType=resource_name)
+        .execute()
+    )
+    demisto.debug(f"[GCP] Disk type get {resource_name}: {response.get('id')=}, {response.get('validDiskSize')=}")
+
+    readable_output = tableToMarkdown(
+        f"GCP Compute Disk Type: {resource_name}",
+        response,
+        headers=DISK_TYPE_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.DiskTypes",
         outputs_key_field="id",
         outputs=response,
         raw_response=response,
@@ -5909,6 +6542,475 @@ def gcp_compute_networks_list(creds: Credentials, args: dict[str, Any]) -> Comma
     )
 
 
+def compute_address_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the specified regional address resource.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - region (str): Name of the region for this request.
+            - address (str): Name of the address resource to return.
+
+    Returns:
+        CommandResults: Object containing the address details under `GCP.Compute.Addresses`.
+    """
+    project_id = args.get("project_id")
+    region = extract_region_name(args.get("region"))
+    address = args.get("address")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_address_get] Request params: {project_id=}, {region=}, {address=}")
+    response = compute.addresses().get(project=project_id, region=region, address=address).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        f"GCP Compute Address: {address}",
+        response,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Addresses",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_address_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of regional address resources in the specified region.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - region (str): Name of the region for this request.
+            - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
+            - next_token (str, optional): Token to retrieve the next page of results.
+            - filter (str, optional): Expression for filtering the listed resources.
+            - order_by (str, optional): Sorts list results by a certain order.
+
+    Returns:
+        CommandResults: Object containing the list of addresses,
+        with `GCP.Compute.Addresses` and `GCP.Compute.AddressesNextToken` context outputs.
+    """
+    project_id = args.get("project_id")
+    region = extract_region_name(args.get("region"))
+    limit = arg_to_number(args.get("limit")) or 50
+    next_token_arg = args.get("next_token")
+    filter_expression = args.get("filter")
+    order_by = args.get("order_by")
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "region": region,
+        "maxResults": limit,
+        "pageToken": next_token_arg,
+        "filter": filter_expression,
+        "orderBy": order_by,
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_address_list] Request params: {params}")
+    response = compute.addresses().list(**params).execute()  # pylint: disable=E1101
+    items = response.get("items", [])
+    next_token = response.get("nextPageToken")
+
+    if warning := response.get("warning"):
+        demisto.debug(f"[GCP: compute_address_list] Warning: {warning}")
+
+    if not items:
+        return CommandResults(readable_output="No addresses found.", raw_response=response)
+
+    headers = ["name", "id", "address", "addressType", "status", "region", "creationTimestamp"]
+    readable_output = tableToMarkdown(
+        "GCP Compute Addresses",
+        items,
+        headers=headers,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    outputs = {
+        "GCP.Compute.Addresses(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"AddressesNextToken": next_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def compute_address_aggregated_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves an aggregated list of regional address resources across all regions.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
+            - next_token (str, optional): Token to retrieve the next page of results.
+            - filter (str, optional): Expression for filtering the listed resources.
+            - order_by (str, optional): Sorts list results by a certain order.
+
+    Returns:
+        CommandResults: Object containing the aggregated list of addresses,
+        with `GCP.Compute.Addresses` and `GCP.Compute.AggregatedAddressesNextToken` context outputs.
+    """
+    project_id = args.get("project_id")
+    limit = arg_to_number(args.get("limit")) or 50
+    next_token_arg = args.get("next_token")
+    filter_expression = args.get("filter")
+    order_by = args.get("order_by")
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "maxResults": limit,
+        "pageToken": next_token_arg,
+        "filter": filter_expression,
+        "orderBy": order_by,
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_address_aggregated_list] Request params: {params}")
+    response = compute.addresses().aggregatedList(**params).execute()  # pylint: disable=E1101
+    next_token = response.get("nextPageToken")
+
+    items: list[dict[str, Any]] = []
+    for scope_name, addresses_scoped_list in response.get("items", {}).items():
+        if warning := addresses_scoped_list.get("warning"):
+            demisto.debug(f"[GCP: compute_address_aggregated_list] Warning for scope {scope_name}: {warning}")
+            continue
+        items.extend(addresses_scoped_list.get("addresses", []) or [])
+
+    if not items:
+        return CommandResults(readable_output="No addresses found.", raw_response=response)
+
+    headers = ["name", "id", "address", "addressType", "status", "region", "creationTimestamp"]
+    readable_output = tableToMarkdown(
+        "GCP Compute Addresses",
+        items,
+        headers=headers,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    outputs = {
+        "GCP.Compute.Addresses(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"AggregatedAddressesNextToken": next_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def compute_address_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates a regional address resource in the specified project using the data included in the request.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - region (str): Name of the region for this request.
+            - name (str): Name of the address resource to create.
+            - description (str, optional): An optional description of this resource.
+            - address (str, optional): The static IP address to reserve.
+            - prefix_length (int, optional): The prefix length if the resource represents an IP range.
+            - network_tier (str, optional): The networking tier used for the address (PREMIUM or STANDARD).
+            - address_type (str, optional): The type of address to reserve (INTERNAL or EXTERNAL).
+            - purpose (str, optional): The purpose of the resource.
+            - subnetwork (str, optional): The URL of the subnetwork in which to reserve the address.
+            - network (str, optional): The URL of the network in which to reserve the address.
+
+    Returns:
+        CommandResults: Object containing the operation details of the address insert request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    region = extract_region_name(args.get("region"))
+    name = args.get("name")
+
+    body: dict[str, Any] = {
+        "name": name.lower() if name else None,
+        "description": args.get("description"),
+        "address": args.get("address"),
+        "prefixLength": arg_to_number(args.get("prefix_length")),
+        "networkTier": args.get("network_tier"),
+        "addressType": args.get("address_type"),
+        "purpose": args.get("purpose"),
+        "subnetwork": args.get("subnetwork"),
+        "network": args.get("network"),
+    }
+    remove_nulls_from_dictionary(body)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"Address insert body for {name} in project {project_id}: {body}")
+    response = compute.addresses().insert(project=project_id, region=region, body=body).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Address Insert Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_address_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified regional address resource.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - region (str): Name of the region for this request.
+            - address (str): Name of the address resource to delete.
+
+    Returns:
+        CommandResults: Object containing the operation details of the address delete request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    region = extract_region_name(args.get("region"))
+    address = args.get("address")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_address_delete] Request params: {project_id=}, {region=}, {address=}")
+    response = compute.addresses().delete(project=project_id, region=region, address=address).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Address Delete Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_global_address_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the specified global address resource.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - address (str): Name of the address resource to return.
+
+    Returns:
+        CommandResults: Object containing the address details under `GCP.Compute.Addresses`.
+    """
+    project_id = args.get("project_id")
+    address = args.get("address")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_global_address_get] Request params: {project_id=}, {address=}")
+    response = compute.globalAddresses().get(project=project_id, address=address).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        f"GCP Compute Global Address: {address}",
+        response,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Addresses",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_global_address_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the list of global address resources.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
+            - next_token (str, optional): Token to retrieve the next page of results.
+            - filter (str, optional): Expression for filtering the listed resources.
+            - order_by (str, optional): Sorts list results by a certain order.
+
+    Returns:
+        CommandResults: Object containing the list of global addresses,
+        with `GCP.Compute.Addresses` and `GCP.Compute.GlobalAddressesNextToken` context outputs.
+    """
+    project_id = args.get("project_id")
+    limit = arg_to_number(args.get("limit")) or 50
+    next_token_arg = args.get("next_token")
+    filter_expression = args.get("filter")
+    order_by = args.get("order_by")
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "maxResults": limit,
+        "pageToken": next_token_arg,
+        "filter": filter_expression,
+        "orderBy": order_by,
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_global_address_list] Request params: {params}")
+    response = compute.globalAddresses().list(**params).execute()  # pylint: disable=E1101
+    items = response.get("items", [])
+    next_token = response.get("nextPageToken")
+
+    if warning := response.get("warning"):
+        demisto.debug(f"[GCP: compute_global_address_list] Warning: {warning}")
+
+    if not items:
+        return CommandResults(readable_output="No global addresses found.", raw_response=response)
+
+    headers = ["name", "id", "address", "addressType", "status", "creationTimestamp"]
+    readable_output = tableToMarkdown(
+        "GCP Compute Global Addresses",
+        items,
+        headers=headers,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    outputs = {
+        "GCP.Compute.Addresses(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"GlobalAddressesNextToken": next_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def compute_global_address_insert(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates a global address resource in the specified project using the data included in the request.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - name (str): Name of the address resource to create.
+            - description (str, optional): An optional description of this resource.
+            - address (str, optional): The static IP address to reserve.
+            - prefix_length (int, optional): The prefix length if the resource represents an IP range.
+            - network_tier (str, optional): The networking tier used for the address (PREMIUM or STANDARD).
+            - ip_version (str, optional): The IP version that will be used by this address (IPV4 or IPV6).
+            - address_type (str, optional): The type of address to reserve (INTERNAL or EXTERNAL).
+            - purpose (str, optional): The purpose of the resource.
+            - subnetwork (str, optional): The URL of the subnetwork in which to reserve the address.
+            - network (str, optional): The URL of the network in which to reserve the address.
+
+    Returns:
+        CommandResults: Object containing the operation details of the global address insert request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    name = args.get("name")
+
+    body: dict[str, Any] = {
+        "name": name.lower() if name else None,
+        "description": args.get("description"),
+        "address": args.get("address"),
+        "prefixLength": arg_to_number(args.get("prefix_length")),
+        "networkTier": args.get("network_tier"),
+        "ipVersion": args.get("ip_version"),
+        "addressType": args.get("address_type"),
+        "purpose": args.get("purpose"),
+        "subnetwork": args.get("subnetwork"),
+        "network": args.get("network"),
+    }
+    remove_nulls_from_dictionary(body)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"Global address insert body for {name} in project {project_id}: {body}")
+    response = compute.globalAddresses().insert(project=project_id, body=body).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Global Address Insert Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_global_address_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified global address resource.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - address (str): Name of the address resource to delete.
+
+    Returns:
+        CommandResults: Object containing the operation details of the global address delete request,
+        with `GCP.Compute.Operations` context output.
+    """
+    project_id = args.get("project_id")
+    address = args.get("address")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    demisto.debug(f"[GCP: compute_global_address_delete] Request params: {project_id=}, {address=}")
+    response = compute.globalAddresses().delete(project=project_id, address=address).execute()  # pylint: disable=E1101
+
+    hr = tableToMarkdown(
+        "Google Cloud Compute Global Address Delete Operation Started Successfully",
+        t=response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
 def main():  # pragma: no cover
     """
     Main function to route commands and execute logic.
@@ -5939,10 +7041,30 @@ def main():  # pragma: no cover
             "gcp-compute-firewalls-list": compute_firewall_list,
             "gcp-compute-firewall-get": compute_firewall_get,
             "gcp-compute-firewall-delete": compute_firewall_delete,
+            "gcp-compute-address-get": compute_address_get,
+            "gcp-compute-address-list": compute_address_list,
+            "gcp-compute-address-aggregated-list": compute_address_aggregated_list,
+            "gcp-compute-address-insert": compute_address_insert,
+            "gcp-compute-address-delete": compute_address_delete,
+            "gcp-compute-global-address-get": compute_global_address_get,
+            "gcp-compute-global-address-list": compute_global_address_list,
+            "gcp-compute-global-address-insert": compute_global_address_insert,
+            "gcp-compute-global-address-delete": compute_global_address_delete,
             "gcp-compute-snapshots-list": compute_snapshots_list,
             "gcp-compute-snapshot-get": compute_snapshot_get,
             "gcp-compute-snapshot-delete": compute_snapshot_delete,
             "gcp-compute-snapshot-labels-set": compute_snapshot_labels_set,
+            "gcp-compute-disks-list": compute_disks_list,
+            "gcp-compute-disks-aggregated-list": compute_disks_aggregated_list,
+            "gcp-compute-disk-get": compute_disk_get,
+            "gcp-compute-disk-insert": compute_disk_insert,
+            "gcp-compute-disk-delete": compute_disk_delete,
+            "gcp-compute-disk-resize": compute_disk_resize,
+            "gcp-compute-disk-labels-set": compute_disk_labels_set,
+            "gcp-compute-disk-snapshot-create": compute_disk_snapshot_create,
+            "gcp-compute-disk-types-list": compute_disk_types_list,
+            "gcp-compute-disk-types-aggregated-list": compute_disk_types_aggregated_list,
+            "gcp-compute-disk-type-get": compute_disk_type_get,
             "gcp-compute-instances-aggregated-list-by-ip": compute_instances_aggregated_list_by_ip,
             "gcp-compute-network-tag-set": compute_network_tag_set,
             "gcp-compute-subnet-update": compute_subnet_update,
