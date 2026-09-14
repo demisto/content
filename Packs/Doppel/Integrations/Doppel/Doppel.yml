@@ -14,28 +14,45 @@ configuration:
   required: true
   type: 0
   section: Connect
-- additionalinfo: The API Key to use for connection with Doppel.
+- additionalinfo: 'The Doppel API version to use. V1 authenticates with a static API Key; V2 authenticates with OAuth 2.0 client credentials (Client ID and Client Secret). New Doppel API capabilities are added to V2 only, so V2 is recommended.'
+  defaultvalue: V1 (API Key)
+  display: API Version
+  name: api_version
+  required: true
+  type: 15
+  options:
+  - V1 (API Key)
+  - V2 (OAuth 2.0 Client Credentials)
+  section: Connect
+- additionalinfo: The API Key to use for connection with Doppel. Required when API Version is V1.
   display: ""
-  displaypassword: API Key
+  displaypassword: API Key (V1)
   hiddenusername: true
   name: credentials
-  required: true
+  required: false
   type: 9
   section: Connect
-- additionalinfo: The User API Key (Optional) to use for connection with Doppel.
+- additionalinfo: The User API Key (Optional) to use for connection with Doppel. Applies to API Version V1 only.
   display: ""
-  displaypassword: User API Key
+  displaypassword: User API Key (V1)
   hiddenusername: true
   name: user_credentials
   required: false
   type: 9
   section: Connect
-- display: Organization Code
+- display: Organization Code (V1)
   name: organization_code
   required: false
   type: 0
   section: Connect
-  additionalinfo: The Organization Code to use for connection with Doppel.
+  additionalinfo: The Organization Code to use for connection with Doppel. Applies to API Version V1 only; V2 scopes requests to your organization automatically.
+- additionalinfo: 'The OAuth 2.0 client credentials to use for connection with Doppel. Required when API Version is V2. An organization admin can create these from the Version 2 tab on the API Settings page in Doppel Vision.'
+  display: Client ID (V2)
+  displaypassword: Client Secret (V2)
+  name: client_credentials
+  required: false
+  type: 9
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -110,6 +127,35 @@ configuration:
   type: 8
   section: Connect
   required: false
+triggers:
+- conditions:
+  - name: api_version
+    operator: equal
+    value: V1 (API Key)
+  effects:
+  - name: credentials
+    action:
+      required: true
+  - name: client_credentials
+    action:
+      hidden: true
+- conditions:
+  - name: api_version
+    operator: equal
+    value: V2 (OAuth 2.0 Client Credentials)
+  effects:
+  - name: credentials
+    action:
+      hidden: true
+  - name: user_credentials
+    action:
+      hidden: true
+  - name: organization_code
+    action:
+      hidden: true
+  - name: client_credentials
+    action:
+      required: true
 description: |-
   Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively.
   The Cortex XSOAR pack for Doppel mirrors the alerts created by Doppel as Cortex XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.
