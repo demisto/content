@@ -5498,6 +5498,8 @@ async def fetch_spotlight_assets():
             "info",
         )
 
+        demisto.updateModuleHealth({"assetsPulled": total_vulnerabilities})
+
     except (ContentClientError, Exception) as e:
         log_falcon_assets(f"Error during Spotlight fetch: {e}", "error")
 
