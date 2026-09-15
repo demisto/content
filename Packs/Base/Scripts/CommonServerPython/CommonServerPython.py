@@ -10183,6 +10183,13 @@ if 'requests' in sys.modules:
             """
             cred_type = credentials.get('type')
 
+            if cred_type == 'passthrough':
+                # A passthrough profile is self-managed: the integration applies the
+                # credential itself, or none is required. Leave the request untouched.
+                demisto.debug('[UCP][CommonServerPython.py] _apply_ucp_credentials: passthrough profile; '
+                              'leaving the request untouched (the integration owns this credential).')
+                return
+
             # Bug on UCP side where they return different types for the same credential type. To be fixed in July'26 version
             if cred_type == 'oauth2_client_credentials' or cred_type == 'oauth2_authorization_code' or cred_type == 'oauth2':
                 self._apply_ucp_oauth2(credentials, ctx)
@@ -15327,12 +15334,42 @@ def should_use_ucp_auth():
     return is_ucp_enabled() and not _UCP_AUTH_PARAMS_INJECTED and not _ucp_auth_is_passthrough()
 
 
+def _ucp_profile_capabilities():
+    # type: () -> List[str]
+    """Return the capabilities declared by the connector's connection profiles.
+
+    :return: Capability strings in ``connectionProfiles`` order, empty when UCP
+        metadata is unavailable or carries no profiles.
+    :rtype: ``List[str]``
+    """
+    try:
+        connector_metadata = demisto.unifiedConnectorMetadata() or {}
+        profiles = connector_metadata.get('connectionProfiles') or []
+        return [p.get('capability') for p in profiles if p.get('capability')]
+    except Exception as e:
+        demisto.debug(
+            '[UCP][CommonServerPython.py] _ucp_profile_capabilities: could not read profiles ({}).\n{}'.format(
+                e, traceback.format_exc()))
+        return []
+
+
 def resolve_ucp_capability(command=None):
     # type: (Optional[str]) -> str
     """Resolve the UCP capability for the current (or given) command.
 
-    Uses ``_UCP_COMMAND_CAPABILITIES`` for known commands, falling back to
-    ``_UCP_DEFAULT_CAPABILITY`` (``'automation-and-remediation'``).
+    The command is mapped through ``_UCP_COMMAND_CAPABILITIES``, falling back to
+    ``_UCP_DEFAULT_CAPABILITY`` (``'automation-and-remediation'``). The result is
+    then reconciled against the capabilities the connector actually declares: a
+    capability no connection profile provides cannot select a profile, which
+    would leave capability-scoped lookups (profile selection, passthrough
+    detection) silently empty. When the mapped capability is unavailable, the
+    automation capability is preferred if the connector declares it, otherwise
+    the first profile's capability is used -- matching the first-profile
+    fallback in ``get_ucp_method_unique_id``.
+
+    Reconciliation applies to an explicitly supplied *command* as well, since a
+    command absent from the mapping resolves to the default capability whether
+    or not the caller passed it in.
 
     Integrations can override this function if they need custom mapping logic.
 
@@ -15344,7 +15381,19 @@ def resolve_ucp_capability(command=None):
     """
     if command is None:
         command = demisto.command()
-    return _UCP_COMMAND_CAPABILITIES.get(command, _UCP_DEFAULT_CAPABILITY)
+    resolved = _UCP_COMMAND_CAPABILITIES.get(command, _UCP_DEFAULT_CAPABILITY)
+
+    available = _ucp_profile_capabilities()
+    if not available or resolved in available:
+        return resolved
+
+    demisto.debug(
+        '[UCP][CommonServerPython.py] resolve_ucp_capability: {!r} is not declared by any connection '
+        'profile {}; reconciling.'.format(resolved, available))
+
+    if _UCP_DEFAULT_CAPABILITY in available:
+        return _UCP_DEFAULT_CAPABILITY
+    return available[0]
 
 
 # -- Profile matching building blocks --
