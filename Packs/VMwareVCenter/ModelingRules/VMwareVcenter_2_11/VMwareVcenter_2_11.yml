@@ -1,6 +1,6 @@
 fromversion: 8.15.0
 id: VMwareVCenter_ModelingRule
-name: VMwareVCenter Modeling Rule
+name: VMware VCenter 2.11 Modeling Rule
 rules: ''
 schema: ''
 tags: VMware vCenter
