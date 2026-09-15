@@ -18,63 +18,23 @@ Unit 42 Feed integration provides threat intelligence from Palo Alto Networks Un
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
 
-## How the Maximum Indicators Per Fetch Parameter Works
+## How Fetching Works
 
-The **Maximum Indicators Per Fetch** parameter controls the maximum number of indicators fetched per type during each fetch cycle. The integration enforces a total limit of **100,000 indicators** across all types to ensure optimal performance.
+The integration fetches indicators and threat objects on a single shared budget per fetch. The total number of items fetched in a run is capped at **20,000** (across both threat objects and indicators combined).
 
-### Limit Calculation Algorithm
+Fetch order within a run:
 
-The limit per indicator type is calculated using the following logic:
+1. **Threat Objects** are fetched first, consuming from the shared budget.
+2. **Indicators** (all configured indicator types, queried together) are then fetched with whatever budget remains.
 
-1. **If the limit is not specified or is negative**:
-   - Default limit per type = `100,000 / total_number_of_types`
+### Fetch Cadence
 
-2. **If the limit × total_number_of_types > 100,000**:
-   - Adjusted limit per type = `100,000 / total_number_of_types`
+- **Indicators** are fetched every hour.
+- **Threat Objects** are fetched at most once every 24 hours. If a threat objects fetch is interrupted (more data is available than the budget allows), it resumes on the next run without waiting for the 24-hour window, until it completes.
 
-3. **Otherwise**:
-   - Uses the specified limit per type.
+### Incremental Fetch
 
-### Examples
-
-#### Example 1: No Limit Specified with 4 Types
-
-- **Configuration**: Threat Objects + 3 indicator types (IP, Domain, URL)
-- **Total number of types**: 4
-- **Calculation**: `100,000 / 4 = 25,000` per type
-- **Result**: Fetches up to 25,000 of each type (100,000 total)
-
-#### Example 2: Limit Exceeds Total
-
-- **Configuration**: Limit = 30,000, with 4 types selected
-- **Calculation**: `30,000 × 4 = 120,000 > 100,000` (exceeds total limit)
-- **Adjusted**: `100,000 / 4 = 25,000` per type
-- **Result**: Fetches up to 25,000 of each type (100,000 total)
-
-#### Example 3: Limit within Total
-
-- **Configuration**: Limit = 20,000, with 4 types selected
-- **Calculation**: `20,000 × 4 = 80,000 ≤ 100,000` (within total limit)
-- **Result**: Fetches up to 20,000 of each type (80,000 total)
-
-#### Example 4: Single Type
-
-- **Configuration**: Limit not specified, only IP indicators selected
-- **Total types**: 1
-- **Calculation**: `100,000 / 1 = 100,000` per type
-- **Result**: Fetches up to 100,000 IP indicators
-
-### Fetch Priority Order
-
-When multiple types are configured, the integration fetches in the following priority order:
-
-1. **Threat Objects** (if enabled)
-2. **IP** indicators
-3. **Domain** indicators
-4. **URL** indicators
-5. **File** indicators
-
-If any type returns fewer indicators than its allocated limit, the unused quota is added to the last enabled type in the priority order, allowing it to fetch up to the total limit of 100,000 indicators.
+When the total limit is reached during a run and more data is still available, the integration saves its position and resumes from where it stopped on the next run, instead of restarting the same query. This ensures no data is skipped across runs.
 
 ## Commands
 
