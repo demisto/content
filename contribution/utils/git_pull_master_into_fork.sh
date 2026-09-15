@@ -18,7 +18,8 @@ fi
 git fetch upstream_content &&
 git checkout master &&
 git rebase upstream_content/master &&
-git push -f origin master &&
+# --no-verify: this is the contributor's own fork's master, not demisto/content
+git push -f --no-verify origin master &&
 git checkout $CURRENT &&
 git pull origin master
 
