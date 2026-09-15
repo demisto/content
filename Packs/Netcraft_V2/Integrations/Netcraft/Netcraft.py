@@ -552,7 +552,14 @@ def fetch_incidents_with_lookback(client: Client, look_back: int) -> list[dict[s
     raw_incidents = client.get_takedowns(params) or []
     demisto.debug(f"{prefix}API returned {len(raw_incidents)} incidents")
 
-    xsoar_incidents = [to_xsoar_incident(incident, date_format=OCCURRED_DATE_FORMAT) for incident in raw_incidents]
+    # Build incidents with `occurred` in LOOKBACK_DATE_FORMAT so it stays
+    # consistent with start_fetch_time / end_fetch_time inside
+    # update_last_run_object (both its strptime read of `occurred` and its
+    # `latest_incident_fetched_time == start_fetch_time` string comparison
+    # depend on all three inputs using a single, matching format).
+    # `occurred` is rewritten to RFC 3339 further below, right before the
+    # incidents are handed to XSOAR.
+    xsoar_incidents = [to_xsoar_incident(incident, date_format=LOOKBACK_DATE_FORMAT) for incident in raw_incidents]
 
     xsoar_incidents = filter_incidents_by_duplicates_and_limit(
         incidents_res=xsoar_incidents,
@@ -571,10 +578,21 @@ def fetch_incidents_with_lookback(client: Client, look_back: int) -> list[dict[s
         look_back=look_back,
         created_time_field="occurred",
         id_field="name",
-        date_format=OCCURRED_DATE_FORMAT,
+        date_format=LOOKBACK_DATE_FORMAT,
     )
 
     demisto.setLastRun(last_run)
+
+    # XSOAR rejects `occurred` in LOOKBACK_DATE_FORMAT ("2026-08-28 20:05:02")
+    # with 'cannot parse " 20:05:02" as "T"'. Convert to RFC 3339 with a Z
+    # suffix, which the XSOAR server accepts. This happens after
+    # update_last_run_object so its internal string comparisons and strptime
+    # calls remain consistent with start_fetch_time / end_fetch_time above.
+    for incident in xsoar_incidents:
+        incident["occurred"] = datetime.strptime(  # noqa: DTZ007
+            incident["occurred"], LOOKBACK_DATE_FORMAT
+        ).strftime(OCCURRED_DATE_FORMAT)
+
     return xsoar_incidents
 
 

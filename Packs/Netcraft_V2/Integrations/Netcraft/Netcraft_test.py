@@ -1,4 +1,5 @@
 import demistomock as demisto
+import Netcraft
 import pytest
 from CommonServerPython import DemistoException, ScheduledCommand
 from Netcraft import Client
@@ -229,15 +230,19 @@ def test_fetch_incidents_lookback_backward_compat_old_last_run_time_format(mocke
         - The fetch runs successfully (no ValueError parsing the old timestamp).
         - The `date_from` sent to the Netcraft API remains in the legacy
           "YYYY-MM-DD HH:MM:SS" format that the Netcraft takedown API expects.
-        - The new last_run["time"] is written in the RFC 3339 OCCURRED_DATE_FORMAT
-          because update_last_run_object derives it from the incidents' `occurred`.
+        - The new last_run["time"] also stays in LOOKBACK_DATE_FORMAT so it
+          remains consistent with start_fetch_time / end_fetch_time inside
+          update_last_run_object (both its strptime read of `occurred` and its
+          `latest_incident_fetched_time == start_fetch_time` string comparison
+          require a single matching format across all three inputs).
+        - The `occurred` handed to XSOAR is rewritten to RFC 3339 with a Z
+          suffix, which is what the server accepts.
 
     This is the regression guard for XSUP-76522: fixing the `occurred` format
-    must not break upgrades where last_run["time"] was written in the old format.
+    must not break upgrades where last_run["time"] was written in the old
+    format, and must not break update_last_run_object's internal comparisons.
     """
     import re
-
-    import Netcraft
 
     Netcraft.PARAMS = {
         "first_fetch": "2022-02-22 00:00:00",
@@ -273,11 +278,15 @@ def test_fetch_incidents_lookback_backward_compat_old_last_run_time_format(mocke
         r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$", incidents[0]["occurred"]
     ), f"occurred={incidents[0]['occurred']!r} is not RFC 3339 with Z suffix"
 
-    # New last_run["time"] is derived from occurred, so it is now RFC 3339.
+    # New last_run["time"] stays in LOOKBACK_DATE_FORMAT so it remains
+    # consistent with start_fetch_time / end_fetch_time inside
+    # update_last_run_object. Both its strptime read of `occurred` and its
+    # `latest_incident_fetched_time == start_fetch_time` string comparison
+    # require a single matching format across all three inputs.
     new_last_run = set_last_run_mock.call_args[0][0]
     assert re.match(
-        r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$", new_last_run["time"]
-    ), f"new last_run time={new_last_run['time']!r} should be RFC 3339 with Z suffix"
+        r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$", new_last_run["time"]
+    ), f"new last_run time={new_last_run['time']!r} should stay in LOOKBACK_DATE_FORMAT"
 
 
 def test_fetch_incidents_no_lookback_uses_id_based(mocker):
