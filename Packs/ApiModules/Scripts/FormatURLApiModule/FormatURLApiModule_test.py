@@ -607,6 +607,93 @@ class TestFormatURL:
         assert result_part == expected_part
         assert result_brackets == expected_brackets
 
+    # XSUP-76731: a mailto: link whose query contains percent-encoded CRLF (%0D%0A) must keep that
+    # sequence encoded, otherwise the literal newline splits one indicator into several lines.
+    CRLF_INJECTION = [
+        (
+            "mailto:sender@example.com?subject=Unsubscribe%20A1B2C3D4%2DE5F6%2D7890%2D"
+            "ABCD%2DEF1234567890&body=Please%20don%27t%20change%20the%20email%20content%20and%20send"
+            "%20this%20email%20to%20unsubscribe.%0D%0A%0D%0Arecipient@example.org"
+        ),
+        # The "/" after the host is the formatter's pre-existing normalization, unrelated to this fix.
+        "mailto:sender@example.com/?subject=Unsubscribe%20A1B2C3D4-E5F6-7890-ABCD-EF1234567890"
+        "&body=Please%20don't%20change%20the%20email%20content%20and%20send%20this%20email%20to%20unsubscribe."
+        "%0D%0A%0D%0Arecipient@example.org",
+    ]
+
+    @pytest.mark.parametrize(
+        "url_, expected",
+        [
+            # "%2520" is the correct encoding of the literal text "%20". Decoding more than once
+            # collapsed it to a real space; "%252541" even fabricated an "A" (XSUP-76731).
+            ("https://test.com/?p=%2520", "https://test.com/?p=%20"),
+            ("https://test.com/a%252Fb", "https://test.com/a%2Fb"),
+            ("https://test.com/?p=%252541", "https://test.com/?p=%2541"),
+        ],
+    )
+    def test_percent_encoding_is_decoded_only_once(self, url_: str, expected: str):
+        """
+        Given:
+        - A URL containing a double-encoded sequence, i.e. text that legitimately contains a
+          percent sign which was then encoded.
+
+        When:
+        - The URL is formatted.
+
+        Then:
+        - Ensure the value is decoded exactly once, so escaped data is preserved rather than
+          being decoded repeatedly into characters that were never in the original URL.
+        """
+
+        assert URLFormatter(url_).__str__() == expected
+
+    @pytest.mark.parametrize(
+        "url_",
+        [
+            CRLF_INJECTION[0],
+            "https://test.com/path?a=1%0D%0Ahttps://evil.com",
+            "https://test.com/path?a=1%0d%0avictim@example.com",
+            "https://test.com/path?a=1%0Abreak",
+            "https://test.com/path?a=1%09tab",
+        ],
+    )
+    def test_control_characters_are_not_decoded(self, url_: str):
+        """
+        Given:
+        - A URL whose query contains percent-encoded control characters (CRLF, LF, TAB).
+
+        When:
+        - The URL is formatted.
+
+        Then:
+        - Ensure no literal control character leaks into the formatted output, so a single
+          indicator can never be split into multiple values (XSUP-76731).
+        """
+
+        output = URLFormatter(url_).__str__()
+
+        assert "\r" not in output
+        assert "\n" not in output
+        assert "\t" not in output
+
+    def test_mailto_crlf_is_not_split_into_two_indicators(self):
+        """
+        Given:
+        - The mailto: unsubscribe link taken from the reported .eml, whose body parameter ends
+          with %0D%0A%0D%0A followed by a second email address.
+
+        When:
+        - The URL is formatted by the URL indicator format script.
+
+        Then:
+        - Ensure the encoded CRLF is preserved as-is and the trailing address stays part of the
+          single URL value instead of becoming a separate malformed indicator.
+        """
+
+        url_, expected = self.CRLF_INJECTION
+
+        assert URLFormatter(url_).__str__() == expected
+
     def test_url_class(self):
         url = URLType("https://www.test.com")
 
