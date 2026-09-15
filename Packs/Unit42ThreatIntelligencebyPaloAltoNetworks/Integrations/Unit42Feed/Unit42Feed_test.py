@@ -9,12 +9,8 @@ from Unit42Feed import (
     test_module as unit42_test_module,
     unit42_error_handler,
     main,
-    sort_indicator_types_by_priority,
     fetch_indicator_type,
     fetch_threat_objects_with_limit,
-    build_fetch_units,
-    calculate_limit_per_type,
-    THREAT_OBJECTS_TYPE,
     INDICATOR_TYPE_MAPPING,
     VERDICT_TO_SCORE,
     VALID_REGIONS,
@@ -23,7 +19,6 @@ from Unit42Feed import (
     INTEGRATION_NAME,
     RETRY_COUNT,
     STATUS_CODES_TO_RETRY,
-    TOTAL_INDICATOR_LIMIT,
 )
 from CommonServerPython import *
 
@@ -1243,40 +1238,6 @@ def test_unit42_error_handler_with_request_id(mocker):
     )
 
 
-def test_sort_indicator_types_by_priority():
-    """
-    Given:
-        - Unsorted list of indicator types
-    When:
-        - Calling sort_indicator_types_by_priority function
-    Then:
-        - Returns sorted list with IPs first, Files last (bottom-to-top priority)
-    """
-    # Test with unsorted types
-    unsorted_types = ["File", "IP", "Domain", "URL"]
-    result = sort_indicator_types_by_priority(unsorted_types)
-
-    assert result == ["IP", "Domain", "URL", "File"]
-
-    # Test with partial list
-    partial_types = ["File", "IP"]
-    result = sort_indicator_types_by_priority(partial_types)
-
-    assert result == ["IP", "File"]
-
-    # Test with single type
-    single_type = ["Domain"]
-    result = sort_indicator_types_by_priority(single_type)
-
-    assert result == ["Domain"]
-
-    # Test with empty list
-    empty_list = []
-    result = sort_indicator_types_by_priority(empty_list)
-
-    assert result == []
-
-
 def test_fetch_indicator_type_with_limit(client, mocker):
     """
     Given:
@@ -1306,7 +1267,7 @@ def test_fetch_indicator_type_with_limit(client, mocker):
     # Fetch with limit of 120: first page pushes 100 (total 100 < 120 -> fetch again),
     # second page pushes its full 50 (total 150), overshooting the limit by one page
     result, next_page_token = fetch_indicator_type(
-        client=client, indicator_type="IP", limit=120, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
+        client=client, indicator_types=["IP"], limit=120, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
     )
 
     assert result == 150
@@ -1349,7 +1310,7 @@ def test_fetch_indicator_type_stops_at_limit(client, mocker):
     # Fetch with limit of 50: the full 100-item page is pushed (total 100), then the
     # while-guard sees 100 >= 50 and stops before fetching another page
     result, next_page_token = fetch_indicator_type(
-        client=client, indicator_type="IP", limit=50, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
+        client=client, indicator_types=["IP"], limit=50, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
     )
 
     assert result == 100
@@ -1373,7 +1334,7 @@ def test_fetch_indicator_type_no_data(client, mocker):
     mock_create_indicators = mocker.patch("Unit42Feed.demisto.createIndicators")
 
     result, next_page_token = fetch_indicator_type(
-        client=client, indicator_type="IP", limit=100, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
+        client=client, indicator_types=["IP"], limit=100, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
     )
 
     assert result == 0
@@ -1442,20 +1403,22 @@ def test_fetch_indicators_limit_validation(client, mocker):
 
     current_time = datetime.now()
 
-    # Test with limit exceeding maximum
+    # Test with a very large limit: the empty API response means nothing is fetched and the
+    # cycle completes cleanly, proving the (large) limit is accepted rather than rejected.
     params_high = {
-        "limit": "150000",  # Exceeds TOTAL_INDICATOR_LIMIT
+        "limit": "150000",  # Above TOTAL_INDICATOR_LIMIT, still a valid positive limit
         "feed_types": ["Indicators"],
         "indicator_types": ["IP"],
         "feedTags": [],
         "tlp_color": None,
     }
 
-    fetch_indicators(client, params_high, current_time)
-    # Should cap at TOTAL_INDICATOR_LIMIT (100K)
-    assert True  # Function should complete without error
+    total_high, next_run_high = fetch_indicators(client, params_high, current_time)
+    assert total_high == 0
+    assert next_run_high == {"last_successful_run": current_time.strftime(DATE_FORMAT)}
 
-    # Test with zero limit
+    # Test with zero limit: guarded and replaced by TOTAL_INDICATOR_LIMIT, so the fetch still
+    # runs (does not short-circuit to zero budget) and completes the cycle normally.
     params_zero = {
         "limit": "0",
         "feed_types": ["Indicators"],
@@ -1464,35 +1427,36 @@ def test_fetch_indicators_limit_validation(client, mocker):
         "tlp_color": None,
     }
 
-    fetch_indicators(client, params_zero, current_time)
-    # Should use DEFAULT_LIMIT
-    assert True  # Function should complete without error
+    total_zero, next_run_zero = fetch_indicators(client, params_zero, current_time)
+    assert total_zero == 0
+    assert next_run_zero == {"last_successful_run": current_time.strftime(DATE_FORMAT)}
 
 
-def test_fetch_indicators_priority_order(client, mocker):
+def test_fetch_indicators_threat_objects_first_then_single_combined_indicator_query(client, mocker):
     """
     Given:
-        - Client with all indicator types configured
-        - Small limit to test priority
+        - Client with all indicator types configured and Threat Objects enabled
     When:
         - Calling fetch_indicators
     Then:
-        - Fetches in correct priority order: Threat Objects → IP → Domain → URL → File
-        - Stops when limit is reached
+        - Threat Objects are fetched first (before any indicators)
+        - All configured indicator types are fetched together in ONE combined get_indicators
+          call that carries the full list of types, rather than one call per type
     """
     from Unit42Feed import fetch_indicators
 
     mock_demisto_params(mocker)
 
-    # Track the order of API calls
+    # Track the order of API calls and the types passed to the combined indicator query.
     call_order = []
+    indicator_types_calls = []
 
     def track_get_indicators(*args, **kwargs):
         indicator_types = kwargs.get("indicator_types", [])
-        if indicator_types:
-            call_order.append(indicator_types[0])
+        indicator_types_calls.append(indicator_types)
+        call_order.append("Indicators")
         return {
-            "data": [{"indicator_value": "test", "indicator_type": indicator_types[0].lower(), "verdict": "malicious"}],
+            "data": [{"indicator_value": "test", "indicator_type": "ip", "verdict": "malicious"}],
             "metadata": {"next_page_token": None},
         }
 
@@ -1503,14 +1467,15 @@ def test_fetch_indicators_priority_order(client, mocker):
             "metadata": {"next_page_token": None},
         }
 
-    mocker.patch.object(client, "get_indicators", side_effect=track_get_indicators)
+    mock_get_indicators = mocker.patch.object(client, "get_indicators", side_effect=track_get_indicators)
     mocker.patch.object(client, "get_threat_objects", side_effect=track_get_threat_objects)
     mocker.patch("Unit42Feed.demisto.getLastRun", return_value={})
 
+    configured_types = ["File", "URL", "Domain", "IP"]
     params = {
         "limit": "10",
         "feed_types": ["Indicators", "Threat Objects"],
-        "indicator_types": ["File", "URL", "Domain", "IP"],  # Unsorted
+        "indicator_types": configured_types,
         "feedTags": [],
         "tlp_color": None,
     }
@@ -1518,12 +1483,14 @@ def test_fetch_indicators_priority_order(client, mocker):
     current_time = datetime.now()
     fetch_indicators(client, params, current_time)
 
-    # Verify priority order: Threat Objects first, then IP, Domain, URL, File
+    # Threat objects are fetched before indicators.
     assert call_order[0] == "ThreatObjects"
-    assert call_order[1] == "IP"
-    assert call_order[2] == "Domain"
-    assert call_order[3] == "URL"
-    assert call_order[4] == "File"
+    assert "Indicators" in call_order
+    assert call_order.index("ThreatObjects") < call_order.index("Indicators")
+
+    # Indicators are fetched in ONE combined query carrying the full type list, not per-type.
+    assert mock_get_indicators.call_count == 1
+    assert indicator_types_calls[0] == configured_types
 
 
 def test_fetch_indicator_type_pagination(client, mocker):
@@ -1557,7 +1524,7 @@ def test_fetch_indicator_type_pagination(client, mocker):
     # Fetch with limit of 250: pages push 100 + 100 (total 200 < 250 -> fetch again) then
     # the third page pushes its full 100, reaching 300 and overshooting the limit
     result, next_page_token = fetch_indicator_type(
-        client=client, indicator_type="IP", limit=250, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
+        client=client, indicator_types=["IP"], limit=250, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
     )
 
     assert result == 300
@@ -1596,131 +1563,6 @@ def test_fetch_threat_objects_with_limit_stops_early(client, mocker):
     assert result == 25
     assert next_page_token is None
     assert mock_get_threat_objects.call_count == 1
-
-
-def test_calculate_limit_per_type_with_none():
-    """
-    Given:
-        - limit is None
-        - total_indicator_types is 4
-    When:
-        - Calling calculate_limit_per_type
-    Then:
-        - Returns default limit per type (TOTAL_INDICATOR_LIMIT / total_indicator_types)
-    """
-    result = calculate_limit_per_type(None, 4)
-    expected = TOTAL_INDICATOR_LIMIT // 4  # 100,000 / 4 = 25,000
-    assert result == expected
-    assert result == 25000
-
-
-def test_calculate_limit_per_type_with_negative():
-    """
-    Given:
-        - limit is negative (-100)
-        - total_indicator_types is 5
-    When:
-        - Calling calculate_limit_per_type
-    Then:
-        - Returns default limit per type (TOTAL_INDICATOR_LIMIT / total_indicator_types)
-    """
-    result = calculate_limit_per_type(-100, 5)
-    expected = TOTAL_INDICATOR_LIMIT // 5  # 100,000 / 5 = 20,000
-    assert result == expected
-    assert result == 20000
-
-
-def test_calculate_limit_per_type_exceeds_total():
-    """
-    Given:
-        - limit is 30,000
-        - total_indicator_types is 4
-        - limit * types = 120,000 > TOTAL_INDICATOR_LIMIT (100,000)
-    When:
-        - Calling calculate_limit_per_type
-    Then:
-        - Returns default limit per type (TOTAL_INDICATOR_LIMIT / total_indicator_types)
-    """
-    result = calculate_limit_per_type(30000, 4)
-    expected = TOTAL_INDICATOR_LIMIT // 4  # 100,000 / 4 = 25,000
-    assert result == expected
-    assert result == 25000
-
-
-def test_calculate_limit_per_type_within_total():
-    """
-    Given:
-        - limit is 20,000
-        - total_indicator_types is 4
-        - limit * types = 80,000 <= TOTAL_INDICATOR_LIMIT (100,000)
-    When:
-        - Calling calculate_limit_per_type
-    Then:
-        - Returns the provided limit
-    """
-    result = calculate_limit_per_type(20000, 4)
-    assert result == 20000
-
-
-def test_calculate_limit_per_type_exact_total():
-    """
-    Given:
-        - limit is 25,000
-        - total_indicator_types is 4
-        - limit * types = 100,000 = TOTAL_INDICATOR_LIMIT
-    When:
-        - Calling calculate_limit_per_type
-    Then:
-        - Returns the provided limit (exactly at the limit)
-    """
-    result = calculate_limit_per_type(25000, 4)
-    assert result == 25000
-
-
-def test_calculate_limit_per_type_single_type():
-    """
-    Given:
-        - limit is None
-        - total_indicator_types is 1
-    When:
-        - Calling calculate_limit_per_type
-    Then:
-        - Returns TOTAL_INDICATOR_LIMIT (100,000 / 1 = 100,000)
-    """
-    result = calculate_limit_per_type(None, 1)
-    assert result == TOTAL_INDICATOR_LIMIT
-    assert result == 100000
-
-
-def test_calculate_limit_per_type_many_types():
-    """
-    Given:
-        - limit is None
-        - total_indicator_types is 10
-    When:
-        - Calling calculate_limit_per_type
-    Then:
-        - Returns default limit per type (TOTAL_INDICATOR_LIMIT / 10 = 10,000)
-    """
-    result = calculate_limit_per_type(None, 10)
-    expected = TOTAL_INDICATOR_LIMIT // 10  # 100,000 / 10 = 10,000
-    assert result == expected
-    assert result == 10000
-
-
-def test_calculate_limit_per_type_small_limit():
-    """
-    Given:
-        - limit is 5,000
-        - total_indicator_types is 4
-        - limit * types = 20,000 <= TOTAL_INDICATOR_LIMIT
-    When:
-        - Calling calculate_limit_per_type
-    Then:
-        - Returns the provided limit (5,000)
-    """
-    result = calculate_limit_per_type(5000, 4)
-    assert result == 5000
 
 
 def test_create_vulnerabilities_relationships_unknown_threat_class(mocker):
@@ -1857,7 +1699,7 @@ def test_fetch_indicator_type_resumes_from_page_token(client, mocker):
 
     result, next_page_token = fetch_indicator_type(
         client=client,
-        indicator_type="IP",
+        indicator_types=["IP"],
         limit=100,
         start_time="2023-01-01T00:00:00Z",
         feed_tags=[],
@@ -1944,7 +1786,7 @@ def test_fetch_indicator_type_invalid_response_clears_token(client, mocker):
     mocker.patch("Unit42Feed.demisto.createIndicators")
 
     result, next_page_token = fetch_indicator_type(
-        client=client, indicator_type="IP", limit=100, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
+        client=client, indicator_types=["IP"], limit=100, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
     )
 
     assert result == 1
@@ -1971,74 +1813,23 @@ def test_fetch_indicator_type_empty_page_clears_token(client, mocker):
     mocker.patch("Unit42Feed.demisto.createIndicators")
 
     result, next_page_token = fetch_indicator_type(
-        client=client, indicator_type="IP", limit=100, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
+        client=client, indicator_types=["IP"], limit=100, start_time="2023-01-01T00:00:00Z", feed_tags=[], tlp_color=None
     )
 
     assert result == 1
     assert next_page_token is None
 
 
-def test_build_fetch_units_fresh_run():
+def test_fetch_indicators_stores_pending_when_limit_hit(client, mocker):
     """
     Given:
-        - An empty last run (no pending units)
-    When:
-        - Calling build_fetch_units
-    Then:
-        - Builds a fresh unit list with threat objects first, then indicator types by priority
-        - All page tokens are None
-    """
-    units = build_fetch_units(
-        feed_types=["Indicators", THREAT_OBJECTS_TYPE], indicator_types=["File", "URL", "Domain", "IP"], last_run={}
-    )
-
-    assert [unit["type"] for unit in units] == [THREAT_OBJECTS_TYPE, "IP", "Domain", "URL", "File"]
-    assert all(unit["page_token"] is None for unit in units)
-
-
-def test_build_fetch_units_indicators_only():
-    """
-    Given:
-        - A configuration with only Indicators enabled
-    When:
-        - Calling build_fetch_units
-    Then:
-        - No threat objects unit is included
-    """
-    units = build_fetch_units(feed_types=["Indicators"], indicator_types=["IP", "Domain"], last_run={})
-
-    assert [unit["type"] for unit in units] == ["IP", "Domain"]
-
-
-def test_build_fetch_units_resumes_pending_units():
-    """
-    Given:
-        - A last run holding pending units from an interrupted fetch
-    When:
-        - Calling build_fetch_units
-    Then:
-        - Returns the pending units as-is, ignoring the configured types
-    """
-    pending_units = [{"type": "IP", "page_token": "token123"}]
-
-    units = build_fetch_units(
-        feed_types=["Indicators", THREAT_OBJECTS_TYPE],
-        indicator_types=["IP", "Domain"],
-        last_run={"pending_units": pending_units},
-    )
-
-    assert units == pending_units
-
-
-def test_fetch_indicators_stores_pending_units_when_limit_hit(client, mocker):
-    """
-    Given:
-        - An API with more indicators available than the configured maximum per fetch
+        - An API with more indicators available than the configured total limit
     When:
         - Calling fetch_indicators
     Then:
         - The full first page is pushed without truncation, so the count overshoots the limit
-        - The next run holds the pending unit with its page token and the original start time
+        - The next run holds the indicators page token under the pending dict and the
+          original start time
         - No last_successful_run is stored, so the same time window is resumed
     """
     from Unit42Feed import fetch_indicators
@@ -2062,20 +1853,21 @@ def test_fetch_indicators_stores_pending_units_when_limit_hit(client, mocker):
     assert total_fetched == 100
     assert next_run == {
         "start_time": "2023-06-01T12:00:00Z",
-        "pending_units": [{"type": "IP", "page_token": "page2"}],
         "cycle_start_time": "2023-06-02T12:00:00Z",
+        "pending": {"indicators": "page2"},
     }
     assert "last_successful_run" not in next_run
 
 
-def test_fetch_indicators_resumes_pending_units(client, mocker):
+def test_fetch_indicators_resumes_pending(client, mocker):
     """
     Given:
-        - A last run holding pending units and the start time of the interrupted fetch
+        - A last run holding a pending indicators token and the start time of the interrupted fetch
     When:
         - Calling fetch_indicators
     Then:
-        - Only the pending unit is fetched, resumed from its page token
+        - Only the pending indicators feed is fetched, resumed from its page token
+        - Threat objects (which had no pending token) are skipped
         - The stored start time is reused instead of last_successful_run
     """
     from Unit42Feed import fetch_indicators
@@ -2091,7 +1883,11 @@ def test_fetch_indicators_resumes_pending_units(client, mocker):
     mocker.patch("Unit42Feed.demisto.createIndicators")
     mocker.patch(
         "Unit42Feed.demisto.getLastRun",
-        return_value={"start_time": "2023-06-01T12:00:00Z", "pending_units": [{"type": "IP", "page_token": "page2"}]},
+        return_value={
+            "start_time": "2023-06-01T12:00:00Z",
+            "cycle_start_time": "2023-06-02T12:00:00Z",
+            "pending": {"indicators": "page2"},
+        },
     )
 
     params = {
@@ -2107,7 +1903,7 @@ def test_fetch_indicators_resumes_pending_units(client, mocker):
 
     assert total_fetched == 1
 
-    # Only the pending IP unit was fetched - Domain and threat objects were skipped
+    # Only the pending indicators feed was fetched - threat objects had no pending token.
     assert mock_get_indicators.call_count == 1
     mock_get_threat_objects.assert_not_called()
 
@@ -2115,14 +1911,14 @@ def test_fetch_indicators_resumes_pending_units(client, mocker):
     assert call_kwargs["next_page_token"] == "page2"
     assert call_kwargs["start_time"] == "2023-06-01T12:00:00Z"
 
-    # Everything pending was consumed, so the cycle completes normally
-    assert next_run == {"last_successful_run": current_time.strftime(DATE_FORMAT)}
+    # Everything pending was consumed, so the cycle completes normally.
+    assert next_run == {"last_successful_run": "2023-06-02T12:00:00Z"}
 
 
-def test_fetch_indicators_pending_units_without_start_time(client, mocker):
+def test_fetch_indicators_pending_without_start_time(client, mocker):
     """
     Given:
-        - A last run with pending units but no stored start time
+        - A last run with a pending cycle in progress but no stored start time
     When:
         - Calling fetch_indicators
     Then:
@@ -2134,7 +1930,7 @@ def test_fetch_indicators_pending_units_without_start_time(client, mocker):
 
     mock_response = {"data": [], "metadata": {}}
     mock_get_indicators = mocker.patch.object(client, "get_indicators", return_value=mock_response)
-    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={"pending_units": [{"type": "IP", "page_token": "page2"}]})
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={"pending": {"indicators": "page2"}})
 
     params = {"feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
 
@@ -2152,7 +1948,7 @@ def test_fetch_indicators_stores_pending_threat_objects(client, mocker):
     When:
         - Calling fetch_indicators
     Then:
-        - The threat objects unit is stored as pending using its dedicated type key
+        - The threat objects page token is stored as pending under the "threat_objects" key
     """
     from Unit42Feed import fetch_indicators
 
@@ -2171,7 +1967,65 @@ def test_fetch_indicators_stores_pending_threat_objects(client, mocker):
     current_time = datetime(2023, 6, 2, 12, 0, 0)
     _, next_run = fetch_indicators(client, params, current_time)
 
-    assert next_run["pending_units"] == [{"type": THREAT_OBJECTS_TYPE, "page_token": "page2"}]
+    assert next_run["pending"] == {"threat_objects": "page2"}
+
+
+def test_fetch_indicators_threat_objects_consume_budget_indicators_resumed_next_run(client, mocker):
+    """
+    Given:
+        - Both Threat Objects and Indicators are enabled with a small shared total limit
+        - Threat objects alone return a full page that meets/exceeds the whole budget, with
+          more pages still available
+    When:
+        - Calling fetch_indicators (run 1), then feeding its next run back in (run 2)
+    Then:
+        - Run 1: threat objects consume the entire budget, so indicators are NOT queried this
+          run, and only the threat objects token is stored as pending.
+        - Run 2: threat objects had a pending token (indicators did not), so only threat
+          objects resume from that token; indicators remain skipped because the cycle is in
+          progress and they never had a token.
+    """
+    from Unit42Feed import fetch_indicators
+
+    mock_demisto_params(mocker)
+
+    threat_objects_page = {
+        "data": [{"name": f"APT{i}", "threat_object_class": "actor", "publications": []} for i in range(100)],
+        "metadata": {"next_page_token": "to_page2"},
+    }
+    mock_get_threat_objects = mocker.patch.object(client, "get_threat_objects", return_value=threat_objects_page)
+    mock_get_indicators = mocker.patch.object(client, "get_indicators")
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={})
+
+    params = {
+        "limit": "50",
+        "feed_types": ["Threat Objects", "Indicators"],
+        "indicator_types": ["IP"],
+        "feedTags": [],
+        "tlp_color": None,
+    }
+
+    current_time = datetime(2023, 6, 2, 12, 0, 0)
+
+    # --- Run 1: threat objects consume the whole budget; indicators skipped this run ---
+    total_run1, next_run_1 = fetch_indicators(client, params, current_time)
+
+    assert total_run1 == 100  # full threat objects page pushed, exhausting the budget
+    mock_get_indicators.assert_not_called()  # no budget left for indicators
+    assert next_run_1["pending"] == {"threat_objects": "to_page2"}
+    assert "indicators" not in next_run_1["pending"]
+    assert "last_successful_run" not in next_run_1
+
+    # --- Run 2: only threat objects (which had a token) resume; indicators still skipped ---
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value=next_run_1)
+    total_run2, _ = fetch_indicators(client, params, current_time)
+
+    assert total_run2 == 100
+    # Threat objects resumed from the pending token produced in run 1.
+    assert mock_get_threat_objects.call_args_list[-1][1]["next_page_token"] == "to_page2"
+    # Indicators never had a pending token, so with a cycle in progress they stay skipped.
+    mock_get_indicators.assert_not_called()
 
 
 def test_fetch_indicators_initializes_cycle_start_time_on_first_pending_run(client, mocker):
@@ -2205,7 +2059,7 @@ def test_fetch_indicators_initializes_cycle_start_time_on_first_pending_run(clie
 
     assert next_run["cycle_start_time"] == current_time.strftime(DATE_FORMAT)
     assert next_run["start_time"] == "2023-06-01T12:00:00Z"
-    assert next_run["pending_units"] == [{"type": "IP", "page_token": "page2"}]
+    assert next_run["pending"] == {"indicators": "page2"}
     assert "last_successful_run" not in next_run
 
 
@@ -2248,7 +2102,7 @@ def test_fetch_indicators_carries_cycle_start_time_across_multiple_resumed_runs(
 
         assert next_run["cycle_start_time"] == expected_cycle_start_time
         assert next_run["start_time"] == "2023-06-01T12:00:00Z"
-        assert next_run["pending_units"] == [{"type": "IP", "page_token": "page2"}]
+        assert next_run["pending"] == {"indicators": "page2"}
         assert "last_successful_run" not in next_run
 
 
@@ -2278,8 +2132,8 @@ def test_fetch_indicators_stores_original_cycle_start_time_when_pending_exhauste
         "Unit42Feed.demisto.getLastRun",
         return_value={
             "start_time": "2023-06-01T12:00:00Z",
-            "pending_units": [{"type": "IP", "page_token": "page2"}],
             "cycle_start_time": "2023-06-02T12:00:00Z",
+            "pending": {"indicators": "page2"},
         },
     )
 
@@ -2324,7 +2178,7 @@ def test_fetch_indicators_upgrade_path_last_run_without_cycle_start_time(client,
     assert mock_get_indicators.call_args[1]["start_time"] == "2023-06-01T12:00:00Z"
     assert next_run["start_time"] == "2023-06-01T12:00:00Z"
     assert next_run["cycle_start_time"] == current_time.strftime(DATE_FORMAT)
-    assert next_run["pending_units"] == [{"type": "IP", "page_token": "page2"}]
+    assert next_run["pending"] == {"indicators": "page2"}
 
 
 def test_fetch_indicators_upgrade_path_no_pending_units(client, mocker):
@@ -2368,7 +2222,7 @@ def test_fetch_indicators_normal_run_stores_current_time_as_last_successful_run(
         - Calling fetch_indicators
     Then:
         - The next run holds only the current fetch time as the last successful run
-        - Neither pending_units nor cycle_start_time leak into the next run
+        - Neither pending nor cycle_start_time leak into the next run
     """
     from Unit42Feed import fetch_indicators
 
@@ -2394,7 +2248,7 @@ def test_fetch_indicators_normal_run_stores_current_time_as_last_successful_run(
     _, next_run = fetch_indicators(client, params, current_time)
 
     assert next_run == {"last_successful_run": current_time.strftime(DATE_FORMAT)}
-    assert "pending_units" not in next_run
+    assert "pending" not in next_run
     assert "cycle_start_time" not in next_run
 
 
@@ -2413,7 +2267,7 @@ def test_fetch_indicators_resume_across_runs_skips_no_indicators(client, mocker)
           pending unit resuming from "tokenB".
         - Run 2 resumes from "tokenB", pushes the full page B, and resumes from "tokenC".
         - Run 3 resumes from "tokenC", pushes page C, sees a null token, and completes the
-          cycle (next_run holds last_successful_run, no pending_units).
+          cycle (next_run holds last_successful_run, no pending).
         - The UNION of every indicator value pushed across runs 1+2+3 equals the full set of
           240 unique values, with NO value missing and NO value duplicated.
     """
@@ -2460,7 +2314,7 @@ def test_fetch_indicators_resume_across_runs_skips_no_indicators(client, mocker)
     # The full 100-item page A was pushed (overshoot), not truncated to 50.
     assert total_run1 == 100
     assert len(run1_values) == 100
-    assert next_run_1.get("pending_units") == [{"type": "IP", "page_token": "tokenB"}]
+    assert next_run_1.get("pending") == {"indicators": "tokenB"}
     # Run 1 started the cycle: it queried with no resume token.
     assert mock_get_indicators.call_args_list[0][1]["next_page_token"] is None
 
@@ -2474,7 +2328,7 @@ def test_fetch_indicators_resume_across_runs_skips_no_indicators(client, mocker)
     assert len(run2_values) == 100
     # Run 2 resumed from the token page A returned, and produced the next token.
     assert mock_get_indicators.call_args_list[1][1]["next_page_token"] == "tokenB"
-    assert next_run_2.get("pending_units") == [{"type": "IP", "page_token": "tokenC"}]
+    assert next_run_2.get("pending") == {"indicators": "tokenC"}
 
     # --- Run 3: resume from "tokenC", page C ends the cycle (null token) ---
     mocker.patch("Unit42Feed.demisto.getLastRun", return_value=next_run_2)
@@ -2487,7 +2341,7 @@ def test_fetch_indicators_resume_across_runs_skips_no_indicators(client, mocker)
     # Run 3 resumed from the token page B returned.
     assert mock_get_indicators.call_args_list[2][1]["next_page_token"] == "tokenC"
     # Cycle completed: next run is a last_successful_run shape with nothing left pending.
-    assert "pending_units" not in next_run_3
+    assert "pending" not in next_run_3
     assert next_run_3 == {"last_successful_run": current_time.strftime(DATE_FORMAT)}
 
     # --- The crucial anti-regression property: exact coverage, no gap, no duplicate ---
