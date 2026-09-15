@@ -3,6 +3,7 @@ import os
 
 import pytest
 
+import BlockUrl
 import demistomock as demisto
 import BlockUrl
 from BlockUrl import BlockUrlError, PanOs
@@ -807,7 +808,6 @@ def test_pan_os_commit_status_still_running(mocker):
     Then:
        - Polling continues.
     """
-    import BlockUrl
     from BlockUrl import pan_os_commit_status
 
     mocker.patch.object(demisto, "executeCommand", return_value=RESPONSES["commit_status_pending"])
@@ -827,12 +827,10 @@ def test_pan_os_commit_status_warnings_are_not_failure(mocker):
     Then:
        - Polling stops and the result is reported as a success, not as a failure.
     """
-    import BlockUrl
-    from BlockUrl import pan_os_commit_status
 
     mocker.patch.object(demisto, "executeCommand", return_value=RESPONSES["commit_status_done_with_warnings"])
 
-    result = pan_os_commit_status({"commit_job_id": "56795"}, [])
+    result = BlockUrl.pan_os_commit_status({"commit_job_id": "56795"}, [])
 
     assert BlockUrl.POLLING is False
     assert result.outputs["Status"] == "Success"
@@ -847,13 +845,11 @@ def test_pan_os_push_to_device_starts_polling(mocker):
     Then:
        - Polling starts, the push job ID is stored, and the push is scoped to the device group.
     """
-    import BlockUrl
-    from BlockUrl import pan_os_push_to_device
 
     execute_mock = mocker.patch.object(demisto, "executeCommand", return_value=RESPONSES["push_started"])
     set_context_mock = mocker.patch.object(demisto, "setContext")
 
-    pan_os_push_to_device({"device_group": "Test-Device-Group", "incident_id": "1"}, [])
+    BlockUrl.pan_os_push_to_device({"device_group": "Test-Device-Group", "incident_id": "1"}, [])
 
     assert BlockUrl.POLLING is True
     set_context_mock.assert_any_call("push_job_id", "56957")
@@ -871,15 +867,13 @@ def test_pan_os_push_status_pending_then_completed(mocker):
        - Polling continues while pending and stops once the status is Completed, with the warnings
          treated as a success.
     """
-    import BlockUrl
-    from BlockUrl import pan_os_push_status
 
     mocker.patch.object(demisto, "executeCommand", return_value=RESPONSES["push_status_pending"])
-    pan_os_push_status({"push_job_id": "56957"}, [])
+    BlockUrl.pan_os_push_status({"push_job_id": "56957"}, [])
     assert BlockUrl.POLLING is True
 
     mocker.patch.object(demisto, "executeCommand", return_value=RESPONSES["push_status_completed_with_warnings"])
-    completed_result = pan_os_push_status({"push_job_id": "56957"}, [])
+    completed_result = BlockUrl.pan_os_push_status({"push_job_id": "56957"}, [])
     assert BlockUrl.POLLING is False
     assert completed_result.outputs["Status"] == "Completed"
 
@@ -899,12 +893,11 @@ def test_pan_os_commit_status_failed_job_is_a_failure(mocker):
          the flow so the push is skipped rather than pushing a config that failed validation.
     """
     import BlockUrl
-    from BlockUrl import pan_os_commit_status
 
     BlockUrl.JOB_FAILURE_MESSAGE = ""
     mocker.patch.object(demisto, "executeCommand", return_value=RESPONSES["commit_status_failed"])
 
-    result = pan_os_commit_status({"commit_job_id": "56795"}, [])
+    result = BlockUrl.pan_os_commit_status({"commit_job_id": "56795"}, [])
 
     assert BlockUrl.POLLING is False
     assert result.outputs["Status"] == "Failure"
