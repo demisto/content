@@ -4684,3 +4684,485 @@ Returns the specified disk type. Required permission: compute.diskTypes.get.
 | GCP.Compute.DiskTypes.creationTimestamp | Date | The creation timestamp of the disk type in RFC3339 text format. |
 | GCP.Compute.DiskTypes.selfLink | String | The server-defined URL for the disk type resource. |
 | GCP.Compute.DiskTypes.deprecated | Unknown | The deprecation status associated with this disk type, containing the state, replacement, deprecated, obsolete, and deleted fields. |
+
+### gcp-compute-machine-types-aggregated-list
+
+***
+Retrieves an aggregated list of machine types across all zones of the specified project. Required permission: compute.machineTypes.list.
+
+#### Base Command
+
+`gcp-compute-machine-types-aggregated-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| limit | The maximum number of results per page to return, ranging from 1 to 500. If the number of available results is larger than the limit, a token is returned in the nextPageToken field to retrieve the next page of results in subsequent list requests. Default is 50. | Optional |
+| filter | The filter expression to use for filtering resources listed in the response. Must specify the field name, a comparison operator, and the filtering value. The value can be a string, a number, or a boolean. The comparison operator must be "=", "!=", "&gt;", or "&lt;". For example, to exclude a region named "example-region", specify name != example-region. | Optional |
+| order_by | The order in which to sort the list results. Can be "alphanumerical" (default, based on resource name) or "creationTimestamp desc" (reverse chronological order, latest first). | Optional |
+| next_token | The page token to use. Set next_token to the value of GCP.Compute.AggregatedMachineTypesNextToken returned by a previous list request to get the next page of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.MachineTypes.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.MachineTypes.creationTimestamp | string | The creation timestamp in RFC3339 text format \(e.g., 2024-01-15T12:34:56Z\). |
+| GCP.Compute.MachineTypes.name | string | The name of the resource. |
+| GCP.Compute.MachineTypes.description | string | The optional textual description of the resource. |
+| GCP.Compute.MachineTypes.guestCpus | number | The number of virtual CPUs that are available to the instance. |
+| GCP.Compute.MachineTypes.memoryMb | number | The amount of physical memory available to the instance, defined in MB. |
+| GCP.Compute.MachineTypes.accelerators | Unknown | The list of accelerator configurations assigned to this machine type, containing the guestAcceleratorCount and guestAcceleratorType fields. |
+| GCP.Compute.MachineTypes.scratchDisks | Unknown | The list of extended scratch disks assigned to the instance, containing the diskGb field. |
+| GCP.Compute.MachineTypes.maximumPersistentDisks | number | The maximum persistent disks allowed. |
+| GCP.Compute.MachineTypes.maximumPersistentDisksSizeGb | string | The maximum total persistent disks size \(GB\) allowed. |
+| GCP.Compute.MachineTypes.deprecated | Unknown | The deprecation status associated with this machine type, containing the state, replacement, deprecated, obsolete, and deleted fields. |
+| GCP.Compute.MachineTypes.zone | string | The name of the zone where the machine type resides, such as us-central1-a. |
+| GCP.Compute.MachineTypes.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.MachineTypes.isSharedCpu | boolean | Whether this machine type has a shared CPU. See Shared-core machine types for more information. |
+| GCP.Compute.MachineTypes.kind | string | The type of the resource. Always compute\#machineType for machine types. |
+| GCP.Compute.AggregatedMachineTypesNextToken | string | The token to use when requesting the next set of aggregated machine types. |
+
+### gcp-compute-machine-types-list
+
+***
+Retrieves a list of machine types available in the specified zone. Required permission: compute.machineTypes.list.
+
+#### Base Command
+
+`gcp-compute-machine-types-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone for this request. | Required |
+| limit | The maximum number of results per page to return, ranging from 1 to 500. If the number of available results is larger than the limit, a token is returned in the nextPageToken field to retrieve the next page of results in subsequent list requests. Default is 50. | Optional |
+| filter | The filter expression to use for filtering resources listed in the response. Must specify the field name, a comparison operator, and the filtering value. The value can be a string, a number, or a boolean. The comparison operator must be "=", "!=", "&gt;", or "&lt;". For example, to exclude a region named "example-region", specify name != example-region. | Optional |
+| order_by | The order in which to sort the list results. Can be "alphanumerical" (default, based on resource name) or "creationTimestamp desc" (reverse chronological order, latest first). | Optional |
+| next_token | The page token to use. Set next_token to the value of GCP.Compute.MachineTypesNextToken returned by a previous list request to get the next page of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.MachineTypes.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.MachineTypes.creationTimestamp | string | The creation timestamp in RFC3339 text format \(e.g., 2024-01-15T12:34:56Z\). |
+| GCP.Compute.MachineTypes.name | string | The name of the resource. |
+| GCP.Compute.MachineTypes.description | string | The optional textual description of the resource. |
+| GCP.Compute.MachineTypes.guestCpus | number | The number of virtual CPUs that are available to the instance. |
+| GCP.Compute.MachineTypes.memoryMb | number | The amount of physical memory available to the instance, defined in MB. |
+| GCP.Compute.MachineTypes.accelerators | Unknown | The list of accelerator configurations assigned to this machine type, containing the guestAcceleratorCount and guestAcceleratorType fields. |
+| GCP.Compute.MachineTypes.scratchDisks | Unknown | The list of extended scratch disks assigned to the instance, containing the diskGb field. |
+| GCP.Compute.MachineTypes.maximumPersistentDisks | number | The maximum persistent disks allowed. |
+| GCP.Compute.MachineTypes.maximumPersistentDisksSizeGb | string | The maximum total persistent disks size \(GB\) allowed. |
+| GCP.Compute.MachineTypes.deprecated | Unknown | The deprecation status associated with this machine type, containing the state, replacement, deprecated, obsolete, and deleted fields. |
+| GCP.Compute.MachineTypes.zone | string | The name of the zone where the machine type resides, such as us-central1-a. |
+| GCP.Compute.MachineTypes.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.MachineTypes.isSharedCpu | boolean | Whether this machine type has a shared CPU. See Shared-core machine types for more information. |
+| GCP.Compute.MachineTypes.kind | string | The type of the resource. Always compute\#machineType for machine types. |
+| GCP.Compute.MachineTypesNextToken | string | The token to use when requesting the next set of machine types. |
+
+### gcp-compute-machine-type-get
+
+***
+Returns the specified machine type. Required permission: compute.machineTypes.get.
+
+#### Base Command
+
+`gcp-compute-machine-type-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone for this request. | Required |
+| machine_type | The name of the machine type to return. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.MachineTypes.id | string | The unique identifier for the resource. This identifier is defined by the server. |
+| GCP.Compute.MachineTypes.creationTimestamp | string | The creation timestamp in RFC3339 text format \(e.g., 2024-01-15T12:34:56Z\). |
+| GCP.Compute.MachineTypes.name | string | The name of the resource. |
+| GCP.Compute.MachineTypes.description | string | The optional textual description of the resource. |
+| GCP.Compute.MachineTypes.guestCpus | number | The number of virtual CPUs that are available to the instance. |
+| GCP.Compute.MachineTypes.memoryMb | number | The amount of physical memory available to the instance, defined in MB. |
+| GCP.Compute.MachineTypes.accelerators | Unknown | The list of accelerator configurations assigned to this machine type, containing the guestAcceleratorCount and guestAcceleratorType fields. |
+| GCP.Compute.MachineTypes.scratchDisks | Unknown | The list of extended scratch disks assigned to the instance, containing the diskGb field. |
+| GCP.Compute.MachineTypes.maximumPersistentDisks | number | The maximum persistent disks allowed. |
+| GCP.Compute.MachineTypes.maximumPersistentDisksSizeGb | string | The maximum total persistent disks size \(GB\) allowed. |
+| GCP.Compute.MachineTypes.deprecated | Unknown | The deprecation status associated with this machine type, containing the state, replacement, deprecated, obsolete, and deleted fields. |
+| GCP.Compute.MachineTypes.zone | string | The name of the zone where the machine type resides, such as us-central1-a. |
+| GCP.Compute.MachineTypes.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.MachineTypes.isSharedCpu | boolean | Whether this machine type has a shared CPU. See Shared-core machine types for more information. |
+| GCP.Compute.MachineTypes.kind | string | The type of the resource. Always compute\#machineType for machine types. |
+
+### gcp-compute-region-operation-delete
+
+***
+Deletes the specified region-specific Operations resource. Required permission: compute.regionOperations.delete.
+
+#### Base Command
+
+`gcp-compute-region-operation-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The name of the region for this request. | Required |
+| operation | The name of the Operations resource to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### gcp-compute-global-operation-delete
+
+***
+Deletes the specified global Operations resource. Required permission: compute.globalOperations.delete.
+
+#### Base Command
+
+`gcp-compute-global-operation-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| operation | The name of the Operations resource to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### gcp-compute-zone-operation-get
+
+***
+Retrieves the specified zone-specific Operations resource. Required permission: compute.zoneOperations.get.
+
+#### Base Command
+
+`gcp-compute-zone-operation-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone for this request. | Required |
+| operation | The name of the Operations resource to return. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation. |
+| GCP.Compute.Operations.zone | String | The URL of the zone where the operation resides. Only applicable when performing per-zone operations. |
+| GCP.Compute.Operations.clientOperationId | String | The value of the request ID if one was provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the disk that the snapshot was created from. |
+| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | String | The status of the operation. Possible values are PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | String | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | String | The user who requested the operation, for example, "user@example.com". |
+| GCP.Compute.Operations.progress | Number | The optional progress indicator, ranging from 0 to 100. This number monotonically increases as the operation progresses. |
+| GCP.Compute.Operations.insertTime | String | The time the operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | String | The time the operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | String | The time the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
+| GCP.Compute.Operations.warnings.code | String | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
+| GCP.Compute.Operations.warnings.message | String | The human-readable description of the warning code. |
+| GCP.Compute.Operations.warnings.data | Unknown | The metadata about this warning, in key: value format, where the key provides more detail on the warning being returned and the value is the corresponding warning data value. |
+| GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message that was returned if the operation failed, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
+| GCP.Compute.Operations.description | String | The textual description of the operation, set when the operation is created. |
+| GCP.Compute.Operations.operationGroupId | String | The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request. |
+| GCP.Compute.Operations.setCommonInstanceMetadataOperationMetadata | Unknown | The information on all underlying zonal actions and their state. Populated when the operation is for projects.setCommonInstanceMetadata. |
+| GCP.Compute.Operations.instancesBulkInsertOperationMetadata | Unknown | The per-location status of the operation. Populated when the operation is for a bulk insert of instances. |
+| GCP.Compute.Operations.getVersionOperationMetadata | Unknown | The inline SBOM information for the operation, containing the current and target component versions. |
+| GCP.Compute.Operations.kind | String | The type of the resource. Always compute\#operation for Operation resources. |
+
+### gcp-compute-global-operation-list
+
+***
+Lists the global Operations resources in the specified project. Required permission: compute.globalOperations.list.
+
+#### Base Command
+
+`gcp-compute-global-operation-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| limit | The maximum number of results to return. Possible values are 1 to 500. Default is 50. | Optional |
+| next_token | The token for the next set of results to return, used for pagination. Use the value of GCP.Compute.GlobalOperationsNextToken from the previous response. | Optional |
+| filter | The filter expression that filters resources listed in the response. The expression must specify a field name, a comparison operator, and a value (for example, "status = DONE"). | Optional |
+| order_by | The order to sort list results by. By default, results are returned in alphanumerical order based on the resource name (for example, "creationTimestamp desc"). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation. |
+| GCP.Compute.Operations.clientOperationId | String | The value of the request ID if one was provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the disk that the snapshot was created from. |
+| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | String | The status of the operation. Possible values are PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | String | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | String | The user who requested the operation, for example, "user@example.com". |
+| GCP.Compute.Operations.progress | Number | The optional progress indicator, ranging from 0 to 100. This number monotonically increases as the operation progresses. |
+| GCP.Compute.Operations.insertTime | String | The time the operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | String | The time the operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | String | The time the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
+| GCP.Compute.Operations.warnings.code | String | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
+| GCP.Compute.Operations.warnings.message | String | The human-readable description of the warning code. |
+| GCP.Compute.Operations.warnings.data | Unknown | The metadata about this warning, in key: value format, where the key provides more detail on the warning being returned and the value is the corresponding warning data value. |
+| GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message that was returned if the operation failed, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
+| GCP.Compute.Operations.description | String | The textual description of the operation, set when the operation is created. |
+| GCP.Compute.Operations.operationGroupId | String | The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request. |
+| GCP.Compute.Operations.setCommonInstanceMetadataOperationMetadata | Unknown | The information on all underlying zonal actions and their state. Populated when the operation is for projects.setCommonInstanceMetadata. |
+| GCP.Compute.Operations.instancesBulkInsertOperationMetadata | Unknown | The per-location status of the operation. Populated when the operation is for a bulk insert of instances. |
+| GCP.Compute.Operations.getVersionOperationMetadata | Unknown | The inline SBOM information for the operation, containing the current and target component versions. |
+| GCP.Compute.Operations.kind | String | The type of the resource. Always compute\#operation for Operation resources. |
+| GCP.Compute.GlobalOperationsNextToken | String | The token to use as the next_token argument to retrieve the next page of results. |
+
+### gcp-compute-region-operation-list
+
+***
+Lists the region-specific Operations resources in the specified project and region. Required permission: compute.regionOperations.list.
+
+#### Base Command
+
+`gcp-compute-region-operation-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The name of the region for this request. | Required |
+| limit | The maximum number of results to return. Possible values are 1 to 500. Default is 50. | Optional |
+| next_token | The token for the next set of results to return, used for pagination. Use the value of GCP.Compute.RegionOperationsNextToken from the previous response. | Optional |
+| filter | The filter expression that filters resources listed in the response. The expression must specify a field name, a comparison operator, and a value (for example, "status = DONE"). | Optional |
+| order_by | The order to sort list results by. By default, results are returned in alphanumerical order based on the resource name (for example, "creationTimestamp desc"). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation. |
+| GCP.Compute.Operations.region | String | The URL of the region where the operation resides. Only applicable when performing regional operations. |
+| GCP.Compute.Operations.clientOperationId | String | The value of the request ID if one was provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the disk that the snapshot was created from. |
+| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | String | The status of the operation. Possible values are PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | String | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | String | The user who requested the operation, for example, "user@example.com". |
+| GCP.Compute.Operations.progress | Number | The optional progress indicator, ranging from 0 to 100. This number monotonically increases as the operation progresses. |
+| GCP.Compute.Operations.insertTime | String | The time the operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | String | The time the operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | String | The time the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
+| GCP.Compute.Operations.warnings.code | String | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
+| GCP.Compute.Operations.warnings.message | String | The human-readable description of the warning code. |
+| GCP.Compute.Operations.warnings.data | Unknown | The metadata about this warning, in key: value format, where the key provides more detail on the warning being returned and the value is the corresponding warning data value. |
+| GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message that was returned if the operation failed, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
+| GCP.Compute.Operations.description | String | The textual description of the operation, set when the operation is created. |
+| GCP.Compute.Operations.operationGroupId | String | The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request. |
+| GCP.Compute.Operations.setCommonInstanceMetadataOperationMetadata | Unknown | The information on all underlying zonal actions and their state. Populated when the operation is for projects.setCommonInstanceMetadata. |
+| GCP.Compute.Operations.instancesBulkInsertOperationMetadata | Unknown | The per-location status of the operation. Populated when the operation is for a bulk insert of instances. |
+| GCP.Compute.Operations.getVersionOperationMetadata | Unknown | The inline SBOM information for the operation, containing the current and target component versions. |
+| GCP.Compute.Operations.kind | String | The type of the resource. Always compute\#operation for Operation resources. |
+| GCP.Compute.RegionOperationsNextToken | String | The token to use as the next_token argument to retrieve the next page of results. |
+
+### gcp-compute-zone-operation-delete
+
+***
+Deletes the specified zone-specific Operations resource. Required permission: compute.zoneOperations.delete.
+
+#### Base Command
+
+`gcp-compute-zone-operation-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone for this request. | Required |
+| operation | The name of the Operations resource to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### gcp-compute-zone-operation-list
+
+***
+Lists the zone-specific Operations resources in the specified project and zone. Required permission: compute.zoneOperations.list.
+
+#### Base Command
+
+`gcp-compute-zone-operation-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone for this request. | Required |
+| limit | The maximum number of results to return. Possible values are 1 to 500. Default is 50. | Optional |
+| next_token | The token for the next set of results to return, used for pagination. Use the value of GCP.Compute.ZoneOperationsNextToken from the previous response. | Optional |
+| filter | The filter expression that filters resources listed in the response. The expression must specify a field name, a comparison operator, and a value (for example, "status = DONE"). | Optional |
+| order_by | The order to sort list results by. By default, results are returned in alphanumerical order based on the resource name (for example, "creationTimestamp desc"). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation. |
+| GCP.Compute.Operations.zone | String | The URL of the zone where the operation resides. Only applicable when performing per-zone operations. |
+| GCP.Compute.Operations.clientOperationId | String | The value of the request ID if one was provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the disk that the snapshot was created from. |
+| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | String | The status of the operation. Possible values are PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | String | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | String | The user who requested the operation, for example, "user@example.com". |
+| GCP.Compute.Operations.progress | Number | The optional progress indicator, ranging from 0 to 100. This number monotonically increases as the operation progresses. |
+| GCP.Compute.Operations.insertTime | String | The time the operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | String | The time the operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | String | The time the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
+| GCP.Compute.Operations.warnings.code | String | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
+| GCP.Compute.Operations.warnings.message | String | The human-readable description of the warning code. |
+| GCP.Compute.Operations.warnings.data | Unknown | The metadata about this warning, in key: value format, where the key provides more detail on the warning being returned and the value is the corresponding warning data value. |
+| GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message that was returned if the operation failed, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
+| GCP.Compute.Operations.description | String | The textual description of the operation, set when the operation is created. |
+| GCP.Compute.Operations.operationGroupId | String | The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request. |
+| GCP.Compute.Operations.setCommonInstanceMetadataOperationMetadata | Unknown | The information on all underlying zonal actions and their state. Populated when the operation is for projects.setCommonInstanceMetadata. |
+| GCP.Compute.Operations.instancesBulkInsertOperationMetadata | Unknown | The per-location status of the operation. Populated when the operation is for a bulk insert of instances. |
+| GCP.Compute.Operations.getVersionOperationMetadata | Unknown | The inline SBOM information for the operation, containing the current and target component versions. |
+| GCP.Compute.Operations.kind | String | The type of the resource. Always compute\#operation for Operation resources. |
+| GCP.Compute.ZoneOperationsNextToken | String | The token to use as the next_token argument to retrieve the next page of results. |
+
+### gcp-compute-global-operation-get
+
+***
+Retrieves the specified global Operations resource. Required permission: compute.globalOperations.get.
+
+#### Base Command
+
+`gcp-compute-global-operation-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| operation | The name of the Operations resource to return. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation. |
+| GCP.Compute.Operations.clientOperationId | String | The value of the request ID if one was provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the disk that the snapshot was created from. |
+| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | String | The status of the operation. Possible values are PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | String | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | String | The user who requested the operation, for example, "user@example.com". |
+| GCP.Compute.Operations.progress | Number | The optional progress indicator, ranging from 0 to 100. This number monotonically increases as the operation progresses. |
+| GCP.Compute.Operations.insertTime | String | The time the operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | String | The time the operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | String | The time the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
+| GCP.Compute.Operations.warnings.code | String | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
+| GCP.Compute.Operations.warnings.message | String | The human-readable description of the warning code. |
+| GCP.Compute.Operations.warnings.data | Unknown | The metadata about this warning, in key: value format, where the key provides more detail on the warning being returned and the value is the corresponding warning data value. |
+| GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message that was returned if the operation failed, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
+| GCP.Compute.Operations.description | String | The textual description of the operation, set when the operation is created. |
+| GCP.Compute.Operations.operationGroupId | String | The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request. |
+| GCP.Compute.Operations.setCommonInstanceMetadataOperationMetadata | Unknown | The information on all underlying zonal actions and their state. Populated when the operation is for projects.setCommonInstanceMetadata. |
+| GCP.Compute.Operations.instancesBulkInsertOperationMetadata | Unknown | The per-location status of the operation. Populated when the operation is for a bulk insert of instances. |
+| GCP.Compute.Operations.getVersionOperationMetadata | Unknown | The inline SBOM information for the operation, containing the current and target component versions. |
+| GCP.Compute.Operations.kind | String | The type of the resource. Always compute\#operation for Operation resources. |
+
+### gcp-compute-region-operation-get
+
+***
+Retrieves the specified region-specific Operations resource. Required permission: compute.regionOperations.get.
+
+#### Base Command
+
+`gcp-compute-region-operation-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The name of the region for this request. | Required |
+| operation | The name of the Operations resource to return. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation. |
+| GCP.Compute.Operations.region | String | The URL of the region where the operation resides. Only applicable when performing regional operations. |
+| GCP.Compute.Operations.clientOperationId | String | The value of the request ID if one was provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the disk that the snapshot was created from. |
+| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | String | The status of the operation. Possible values are PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | String | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | String | The user who requested the operation, for example, "user@example.com". |
+| GCP.Compute.Operations.progress | Number | The optional progress indicator, ranging from 0 to 100. This number monotonically increases as the operation progresses. |
+| GCP.Compute.Operations.insertTime | String | The time the operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | String | The time the operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | String | The time the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
+| GCP.Compute.Operations.warnings.code | String | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
+| GCP.Compute.Operations.warnings.message | String | The human-readable description of the warning code. |
+| GCP.Compute.Operations.warnings.data | Unknown | The metadata about this warning, in key: value format, where the key provides more detail on the warning being returned and the value is the corresponding warning data value. |
+| GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message that was returned if the operation failed, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
+| GCP.Compute.Operations.description | String | The textual description of the operation, set when the operation is created. |
+| GCP.Compute.Operations.operationGroupId | String | The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request. |
+| GCP.Compute.Operations.setCommonInstanceMetadataOperationMetadata | Unknown | The information on all underlying zonal actions and their state. Populated when the operation is for projects.setCommonInstanceMetadata. |
+| GCP.Compute.Operations.instancesBulkInsertOperationMetadata | Unknown | The per-location status of the operation. Populated when the operation is for a bulk insert of instances. |
+| GCP.Compute.Operations.getVersionOperationMetadata | Unknown | The inline SBOM information for the operation, containing the current and target component versions. |
+| GCP.Compute.Operations.kind | String | The type of the resource. Always compute\#operation for Operation resources. |
