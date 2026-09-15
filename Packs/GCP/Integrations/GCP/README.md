@@ -5196,8 +5196,7 @@ Lists the instances in the specified instance group. Required permission: comput
 | GCP.Compute.InstanceGroups.id | string | The name of the instance group whose instances were listed. |
 | GCP.Compute.InstanceGroups.Instances.instance | string | The URL of the instance. |
 | GCP.Compute.InstanceGroups.Instances.status | string | The status of the instance. |
-| GCP.Compute.InstanceGroups.Instances.namedPorts.name | string | The name of the named port. The name must be 1 to 63 characters long and comply with RFC1035. |
-| GCP.Compute.InstanceGroups.Instances.namedPorts.port | number | The port number, which can be a value between 1 and 65535. |
+| GCP.Compute.InstanceGroups.Instances.namedPorts | Unknown | The named ports assigned to the instance. Each named port contains: name - the name of the named port, which must be 1 to 63 characters long and comply with RFC1035; port - the port number, which can be a value between 1 and 65535. |
 | GCP.Compute.InstanceGroups.InstanceGroupsInstancesNextToken | string | The token to use to retrieve the next page of instance group instances results. |
 
 ### gcp-compute-instance-group-insert

@@ -6653,12 +6653,9 @@ script:
     - contextPath: GCP.Compute.InstanceGroups.Instances.status
       description: The status of the instance.
       type: string
-    - contextPath: GCP.Compute.InstanceGroups.Instances.namedPorts.name
-      description: The name of the named port. The name must be 1 to 63 characters long and comply with RFC1035.
-      type: string
-    - contextPath: GCP.Compute.InstanceGroups.Instances.namedPorts.port
-      description: The port number, which can be a value between 1 and 65535.
-      type: number
+    - contextPath: GCP.Compute.InstanceGroups.Instances.namedPorts
+      description: 'The named ports assigned to the instance. Each named port contains: name - the name of the named port, which must be 1 to 63 characters long and comply with RFC1035; port - the port number, which can be a value between 1 and 65535.'
+      type: Unknown
     - contextPath: GCP.Compute.InstanceGroups.InstanceGroupsInstancesNextToken
       description: The token to use to retrieve the next page of instance group instances results.
       type: string
