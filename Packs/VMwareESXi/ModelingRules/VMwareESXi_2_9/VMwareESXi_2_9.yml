@@ -1,5 +1,3 @@
-fromversion: 8.13.0
-toversion: 8.14.0
 id: VMware_ESXi_ModelingRule
 name: VMware ESXi Modeling Rule
 rules: ''
@@ -7,3 +5,5 @@ schema: ''
 tags: VMwareESXi
 supportedModules:
 - xsiam
+supportedFeatures:
+- harness_v1
