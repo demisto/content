@@ -2291,11 +2291,12 @@ def test_ip_command_host_enrichment_with_fallback_to_search(client, requests_moc
     assert [result.outputs["HostEnrichmentUsed"] for result in results if result.outputs_prefix == "Censys.IP"] == [True, False]
 
 
-@pytest.mark.parametrize("arg_value, use_argument", [("True", True), ("False", False)])
+@pytest.mark.parametrize("arg_value, use_argument", [("True", True), ("False", False), ("  True  ", True), ("  False  ", False)])
 def test_ip_command_use_enrichment_endpoint_argument(client, requests_mock, arg_value, use_argument):
     """
     Given:
-        - An IP address and the "use_enrichment_endpoint" argument, with the opposite value of the parameter.
+        - An IP address and the "use_enrichment_endpoint" argument, with the opposite value of the parameter,
+          optionally surrounded by whitespace.
     When:
         - Running the ip command.
     Then:

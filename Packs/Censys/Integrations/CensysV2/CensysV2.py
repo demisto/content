@@ -1540,7 +1540,7 @@ def ip_command(client: Client, args: dict, params: dict) -> List[CommandResults]
     """
     ips: list = argToList(args.get("ip"))
     # The command argument takes precedence over the integration parameter when it is provided.
-    use_enrichment_endpoint_arg = args.get("use_enrichment_endpoint")
+    use_enrichment_endpoint_arg = args.get("use_enrichment_endpoint", "").strip()
     use_enrichment_endpoint = (
         argToBoolean(use_enrichment_endpoint_arg)
         if use_enrichment_endpoint_arg
