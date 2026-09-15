@@ -25,7 +25,7 @@ configuration:
   section: Collect
   advanced: true
 - display: Indicator Types
-  additionalinfo: Comma-separated list of indicator types to fetch (File, IP, URL, Domain). If not specified, all indicator types are fetched.
+  additionalinfo: Comma-separated list of indicator types to fetch (File, IP, URL, Domain). If not specified, all indicator types are fetched. Changing the indicator types on an existing instance is not supported; to change them, create a new integration instance.
   name: indicator_types
   type: 16
   options:
