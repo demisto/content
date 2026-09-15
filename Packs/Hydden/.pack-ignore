@@ -1,0 +1,5 @@
+# demisto-sdk pack-ignore
+# IN129: partner pack has pytest unit tests in HyddenControl_test.py.
+# There is no Cortex CI instance of Hydden Control for a Test Playbook.
+[file:HyddenControl.yml]
+ignore=IN129
