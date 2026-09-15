@@ -19,6 +19,7 @@ from Unit42Feed import (
     INTEGRATION_NAME,
     RETRY_COUNT,
     STATUS_CODES_TO_RETRY,
+    THREAT_OBJECTS_TYPE,
 )
 from CommonServerPython import *
 
@@ -863,8 +864,13 @@ def test_fetch_indicators_basic(client, mocker):
     result, next_run = fetch_indicators(client, params, current_time)
 
     assert result >= 2  # At least one indicator and one threat object
-    # Nothing left to resume, so only the last successful run time is stored
-    assert next_run == {"last_successful_run": current_time.strftime(DATE_FORMAT)}
+    # Nothing left to resume, so only the last successful run time is stored. Threat objects were
+    # fetched and completed this run (fresh run, none stored before), so the 24h window is reset:
+    # last_threat_objects_fetch is written as the current fetch time.
+    assert next_run == {
+        "last_successful_run": current_time.strftime(DATE_FORMAT),
+        "last_threat_objects_fetch": current_time.strftime(DATE_FORMAT),
+    }
 
     # Check that both indicators and threat objects were pushed to the server
     pushed_items = [item for call in mock_create_indicators.call_args_list for item in call[0][0]]
@@ -2358,6 +2364,252 @@ def test_fetch_indicators_resume_across_runs_skips_no_indicators(client, mocker)
     # And nothing was pushed twice: 240 unique values from exactly 240 pushes.
     assert len(pushed_values) == 240
     assert len(union_of_pushed) == 240
+
+
+def test_fetch_indicators_threat_objects_skipped_within_24h(client, mocker):
+    """
+    Given:
+        - A fresh run (no pending cycle in progress) with both Threat Objects and Indicators enabled.
+        - getLastRun stores last_threat_objects_fetch = 1 hour before the current fetch time,
+          well within the THREAT_OBJECTS_FETCH_INTERVAL_HOURS (24h) window.
+    When:
+        - Calling fetch_indicators.
+    Then:
+        - Threat objects are NOT fetched (the 24h gate blocks them).
+        - Indicators ARE fetched.
+        - The next run carries the SAME last_threat_objects_fetch value forward unchanged.
+    """
+    from Unit42Feed import fetch_indicators
+
+    mock_demisto_params(mocker)
+
+    mock_indicators_response = {
+        "data": [{"indicator_value": "1.2.3.4", "indicator_type": "ip", "verdict": "malicious"}],
+        "metadata": {"next_page_token": None},
+    }
+    mock_get_indicators = mocker.patch.object(client, "get_indicators", return_value=mock_indicators_response)
+    mock_get_threat_objects = mocker.patch.object(client, "get_threat_objects")
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+
+    current_time = datetime(2023, 6, 2, 12, 0, 0)
+    last_to_fetch = (current_time - timedelta(hours=1)).strftime(DATE_FORMAT)
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={"last_threat_objects_fetch": last_to_fetch})
+
+    params = {
+        "feed_types": [THREAT_OBJECTS_TYPE, "Indicators"],
+        "indicator_types": ["IP"],
+        "feedTags": [],
+        "tlp_color": None,
+    }
+
+    _, next_run = fetch_indicators(client, params, current_time)
+
+    # Threat objects are within the 24h window, so they are skipped entirely.
+    mock_get_threat_objects.assert_not_called()
+    # Indicators are still fetched normally.
+    mock_get_indicators.assert_called_once()
+    # The stored window is carried forward unchanged (not reset to the current time).
+    assert next_run["last_threat_objects_fetch"] == last_to_fetch
+    assert next_run == {
+        "last_successful_run": current_time.strftime(DATE_FORMAT),
+        "last_threat_objects_fetch": last_to_fetch,
+    }
+
+
+def test_fetch_indicators_threat_objects_fetched_after_24h(client, mocker):
+    """
+    Given:
+        - A fresh run with both Threat Objects and Indicators enabled.
+        - getLastRun stores last_threat_objects_fetch = 25 hours before the current fetch time,
+          past the THREAT_OBJECTS_FETCH_INTERVAL_HOURS (24h) window.
+        - The threat objects mock returns a completing page (no next page token).
+    When:
+        - Calling fetch_indicators.
+    Then:
+        - Threat objects ARE fetched (the 24h window has elapsed).
+        - The next run resets last_threat_objects_fetch to the current fetch time.
+    """
+    from Unit42Feed import fetch_indicators
+
+    mock_demisto_params(mocker)
+
+    mock_indicators_response = {
+        "data": [{"indicator_value": "1.2.3.4", "indicator_type": "ip", "verdict": "malicious"}],
+        "metadata": {"next_page_token": None},
+    }
+    mock_threat_objects_response = {
+        "data": [{"name": "APT29", "threat_object_class": "actor", "publications": []}],
+        "metadata": {"next_page_token": None},
+    }
+    mocker.patch.object(client, "get_indicators", return_value=mock_indicators_response)
+    mock_get_threat_objects = mocker.patch.object(client, "get_threat_objects", return_value=mock_threat_objects_response)
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+
+    current_time = datetime(2023, 6, 2, 12, 0, 0)
+    last_to_fetch = (current_time - timedelta(hours=25)).strftime(DATE_FORMAT)
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={"last_threat_objects_fetch": last_to_fetch})
+
+    params = {
+        "feed_types": [THREAT_OBJECTS_TYPE, "Indicators"],
+        "indicator_types": ["IP"],
+        "feedTags": [],
+        "tlp_color": None,
+    }
+
+    _, next_run = fetch_indicators(client, params, current_time)
+
+    # The 24h window has elapsed, so threat objects are fetched.
+    mock_get_threat_objects.assert_called_once()
+    # Threat objects completed this run, so the window resets to the current fetch time.
+    assert next_run["last_threat_objects_fetch"] == current_time.strftime(DATE_FORMAT)
+
+
+def test_fetch_indicators_threat_objects_first_fetch_when_never_fetched(client, mocker):
+    """
+    Given:
+        - A fresh run with both Threat Objects and Indicators enabled.
+        - getLastRun has NO last_threat_objects_fetch (only a last_successful_run is stored).
+        - The threat objects mock returns a completing page (no next page token).
+    When:
+        - Calling fetch_indicators.
+    Then:
+        - Threat objects ARE fetched (they are due when they have never been fetched before).
+        - The next run records last_threat_objects_fetch as the current fetch time.
+    """
+    from Unit42Feed import fetch_indicators
+
+    mock_demisto_params(mocker)
+
+    mock_indicators_response = {
+        "data": [{"indicator_value": "1.2.3.4", "indicator_type": "ip", "verdict": "malicious"}],
+        "metadata": {"next_page_token": None},
+    }
+    mock_threat_objects_response = {
+        "data": [{"name": "APT29", "threat_object_class": "actor", "publications": []}],
+        "metadata": {"next_page_token": None},
+    }
+    mocker.patch.object(client, "get_indicators", return_value=mock_indicators_response)
+    mock_get_threat_objects = mocker.patch.object(client, "get_threat_objects", return_value=mock_threat_objects_response)
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+
+    current_time = datetime(2023, 6, 2, 12, 0, 0)
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={"last_successful_run": "2023-06-01T12:00:00Z"})
+
+    params = {
+        "feed_types": [THREAT_OBJECTS_TYPE, "Indicators"],
+        "indicator_types": ["IP"],
+        "feedTags": [],
+        "tlp_color": None,
+    }
+
+    _, next_run = fetch_indicators(client, params, current_time)
+
+    # Never fetched before -> due now, so threat objects are fetched.
+    mock_get_threat_objects.assert_called_once()
+    # First completion records the window as the current fetch time.
+    assert next_run["last_threat_objects_fetch"] == current_time.strftime(DATE_FORMAT)
+
+
+def test_fetch_indicators_threat_objects_pending_resumes_ignoring_24h_gate(client, mocker):
+    """
+    Given:
+        - A resumed cycle (cycle in progress) whose getLastRun holds a pending threat_objects
+          token ("to2"), plus start_time and cycle_start_time.
+        - last_threat_objects_fetch is RECENT (1 hour before the current fetch time, well within
+          the 24h window that would normally block a fresh threat-objects fetch).
+        - The threat objects mock returns a completing page (no next page token) this run.
+    When:
+        - Calling fetch_indicators.
+    Then:
+        - Threat objects ARE fetched despite being within the 24h window, because an interrupted
+          fetch always resumes immediately - resumed from the pending token "to2".
+        - The cycle completes and next_run records last_threat_objects_fetch as the current time,
+          since the threat objects finished this run.
+    """
+    from Unit42Feed import fetch_indicators
+
+    mock_demisto_params(mocker)
+
+    mock_threat_objects_response = {
+        "data": [{"name": "APT29", "threat_object_class": "actor", "publications": []}],
+        "metadata": {"next_page_token": None},
+    }
+    mock_get_threat_objects = mocker.patch.object(client, "get_threat_objects", return_value=mock_threat_objects_response)
+    mock_get_indicators = mocker.patch.object(client, "get_indicators")
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+
+    current_time = datetime(2023, 6, 2, 12, 0, 0)
+    recent_to_fetch = (current_time - timedelta(hours=1)).strftime(DATE_FORMAT)
+    mocker.patch(
+        "Unit42Feed.demisto.getLastRun",
+        return_value={
+            "start_time": "2023-06-01T12:00:00Z",
+            "cycle_start_time": "2023-06-02T12:00:00Z",
+            "pending": {"threat_objects": "to2"},
+            "last_threat_objects_fetch": recent_to_fetch,
+        },
+    )
+
+    params = {
+        "feed_types": [THREAT_OBJECTS_TYPE, "Indicators"],
+        "indicator_types": ["IP"],
+        "feedTags": [],
+        "tlp_color": None,
+    }
+
+    _, next_run = fetch_indicators(client, params, current_time)
+
+    # The mid-cycle resume ignores the 24h gate: threat objects are fetched from the pending token.
+    mock_get_threat_objects.assert_called_once()
+    assert mock_get_threat_objects.call_args[1]["next_page_token"] == "to2"
+    # Indicators never had a pending token, so with a cycle in progress they stay skipped.
+    mock_get_indicators.assert_not_called()
+    # Threat objects completed this run, so the window resets to the current time and the
+    # cycle completes (no pending left).
+    assert "pending" not in next_run
+    assert next_run["last_threat_objects_fetch"] == current_time.strftime(DATE_FORMAT)
+
+
+def test_fetch_indicators_threat_objects_incomplete_does_not_reset_window(client, mocker):
+    """
+    Given:
+        - A fresh run with Threat Objects due (getLastRun has NO last_threat_objects_fetch).
+        - The threat objects mock returns a page WITH a next page token (an incomplete fetch).
+    When:
+        - Calling fetch_indicators.
+    Then:
+        - The next run stores the threat objects page token under pending.
+        - last_threat_objects_fetch is NOT updated to the current time and is absent entirely,
+          because the window only resets when a threat-objects fetch COMPLETES.
+    """
+    from Unit42Feed import fetch_indicators
+
+    mock_demisto_params(mocker)
+
+    mock_threat_objects_response = {
+        "data": [{"name": f"APT{i}", "threat_object_class": "actor", "publications": []} for i in range(100)],
+        "metadata": {"next_page_token": "to_page2"},
+    }
+    mocker.patch.object(client, "get_threat_objects", return_value=mock_threat_objects_response)
+    mocker.patch("Unit42Feed.demisto.createIndicators")
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={})
+
+    params = {
+        "limit": "50",
+        "feed_types": [THREAT_OBJECTS_TYPE],
+        "indicator_types": [],
+        "feedTags": [],
+        "tlp_color": None,
+    }
+
+    current_time = datetime(2023, 6, 2, 12, 0, 0)
+    _, next_run = fetch_indicators(client, params, current_time)
+
+    # The interrupted fetch stores its resume token.
+    assert next_run["pending"] == {"threat_objects": "to_page2"}
+    # The window does NOT reset on an incomplete fetch, and it was never previously set,
+    # so the key is absent from the next run.
+    assert "last_threat_objects_fetch" not in next_run
 
 
 def test_fetch_threat_objects_counts_api_objects_not_expanded_indicators(client, mocker):

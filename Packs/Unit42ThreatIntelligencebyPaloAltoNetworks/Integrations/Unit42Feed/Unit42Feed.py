@@ -9,6 +9,7 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 INTEGRATION_NAME = "Unit 42 Feed"
 API_LIMIT = 5000
 TOTAL_INDICATOR_LIMIT = 20000
+THREAT_OBJECTS_FETCH_INTERVAL_HOURS = 24
 
 # Feed type option strings, matching the "feed_types" parameter options in the YAML.
 THREAT_OBJECTS_TYPE = "Threat Objects"
@@ -1002,7 +1003,7 @@ def test_module(client: Client) -> str:
         return f"Failed to connect to Unit 42 API. Check your Server URL and License. Error: {str(e)}"
 
 
-def _should_fetch_feed(feed_enabled: bool, cycle_in_progress: bool, feed_token: str | None) -> bool:
+def _should_fetch_indicators(feed_enabled: bool, cycle_in_progress: bool, feed_token: str | None) -> bool:
     if not feed_enabled:
         return False
     if not cycle_in_progress:
@@ -1010,6 +1011,19 @@ def _should_fetch_feed(feed_enabled: bool, cycle_in_progress: bool, feed_token: 
         return True
     # Resumed cycle: the feed has work only if it left a resume token last run.
     return feed_token is not None
+
+
+def _should_fetch_threat_objects(feed_enabled: bool, cycle_in_progress: bool, feed_token: str | None, due: bool) -> bool:
+    if not feed_enabled:
+        return False
+    if feed_token is not None:
+        # Mid-cycle resume: always continue an interrupted fetch, ignoring the 24h window.
+        return True
+    if cycle_in_progress:
+        # Resumed cycle but threat objects already completed earlier in it: do not refetch.
+        return False
+    # Fresh cycle: fetch only when the 24h window has elapsed.
+    return due
 
 
 def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tuple[int, dict]:
@@ -1072,6 +1086,21 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
     to_token = incoming_pending.get("threat_objects")
     ind_token = incoming_pending.get("indicators")
 
+    # Threat Objects are fetched at most once every THREAT_OBJECTS_FETCH_INTERVAL_HOURS hours.
+    # The window is measured from the last COMPLETED threat-objects fetch.
+    last_to_fetch = last_run.get("last_threat_objects_fetch")
+    if last_to_fetch:
+        next_to_fetch_due = datetime.strptime(last_to_fetch, DATE_FORMAT) + timedelta(hours=THREAT_OBJECTS_FETCH_INTERVAL_HOURS)
+        threat_objects_due = current_time >= next_to_fetch_due
+    else:
+        # Never fetched before -> due now.
+        threat_objects_due = True
+
+    demisto.debug(
+        f"UNIT42FEED: Threat objects due={threat_objects_due}, to_token={'set' if to_token else 'none'}, "
+        f"last_threat_objects_fetch={last_to_fetch}"
+    )
+
     if cycle_in_progress:
         resuming_feeds = [feed for feed, token in (("threat_objects", to_token), ("indicators", ind_token)) if token]
         demisto.debug(
@@ -1082,9 +1111,13 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
     # Per-feed page tokens to resume on the next fetch (only feeds with more pages).
     pending: dict = {}
 
+    # Set when a threat-objects fetch completes this run, to reset the 24h window.
+    threat_objects_completed_at: str | None = None
+
     # Threat Objects are fetched first, consuming from the shared budget.
-    # On a fresh cycle fetch from the start; on a resumed run only if TOs still had a token.
-    should_fetch_threat_objects = _should_fetch_feed(THREAT_OBJECTS_TYPE in feed_types, cycle_in_progress, to_token)
+    should_fetch_threat_objects = _should_fetch_threat_objects(
+        THREAT_OBJECTS_TYPE in feed_types, cycle_in_progress, to_token, threat_objects_due
+    )
     if should_fetch_threat_objects:
         demisto.debug(f"UNIT42FEED: Fetching threat objects (limit={total_limit - total_fetched}, page_token={to_token})")
         fetched_count, next_page_token = fetch_threat_objects_with_limit(
@@ -1097,11 +1130,14 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
         total_fetched += fetched_count
         if next_page_token:
             pending["threat_objects"] = next_page_token
+        else:
+            # TOs fully fetched this run -> reset the 24h window from now.
+            threat_objects_completed_at = current_time.strftime(DATE_FORMAT)
         demisto.debug(f"UNIT42FEED: Fetched {fetched_count} threat objects. Total: {total_fetched}")
 
     # Then all configured indicator types together in one combined query, using the
     # remaining budget. On a resumed run only if indicators still had a pending token.
-    should_fetch_indicators = bool(indicator_types) and _should_fetch_feed(
+    should_fetch_indicators = bool(indicator_types) and _should_fetch_indicators(
         INDICATORS_TYPE in feed_types, cycle_in_progress, ind_token
     )
     if should_fetch_indicators and total_fetched < total_limit:
@@ -1130,6 +1166,10 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
         # Store the cycle start time so the next full cycle starts from the original time,
         # ensuring no indicators are missed across resumed runs.
         next_run = {"last_successful_run": cycle_start_time}
+
+    last_threat_objects_fetch = threat_objects_completed_at or last_to_fetch
+    if last_threat_objects_fetch:
+        next_run["last_threat_objects_fetch"] = last_threat_objects_fetch
 
     demisto.info(f"UNIT42FEED: Fetch complete. Total indicators: {total_fetched} (total limit: {total_limit})")
 
