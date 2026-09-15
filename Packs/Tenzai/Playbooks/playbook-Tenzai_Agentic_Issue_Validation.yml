@@ -249,5 +249,6 @@ outputs: []
 fromversion: 6.10.0
 marketplaces:
 - platform
+- marketplacev2
 tests:
 - No tests (auto formatted)

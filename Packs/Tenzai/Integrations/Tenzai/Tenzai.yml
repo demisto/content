@@ -48,6 +48,7 @@ configuration:
 description: Validate Cortex ASM-discovered exposures with Tenzai's agentic penetration testing. Create a scan for an exposure, poll it to completion, and fetch the verdict and evidence back into the Cortex issue.
 display: Tenzai
 name: Tenzai
+provider: Tenzai
 supportlevelheader: partner
 script:
   commands:
