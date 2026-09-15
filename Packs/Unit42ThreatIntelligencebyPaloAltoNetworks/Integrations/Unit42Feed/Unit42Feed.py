@@ -1072,6 +1072,13 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
     to_token = incoming_pending.get("threat_objects")
     ind_token = incoming_pending.get("indicators")
 
+    if cycle_in_progress:
+        resuming_feeds = [feed for feed, token in (("threat_objects", to_token), ("indicators", ind_token)) if token]
+        demisto.debug(
+            f"UNIT42FEED: Resuming an in-progress fetch cycle started at {cycle_start_time}. "
+            f"Feeds with a pending resume token: {resuming_feeds}."
+        )
+
     # Per-feed page tokens to resume on the next fetch (only feeds with more pages).
     pending: dict = {}
 
