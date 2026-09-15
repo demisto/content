@@ -6,11 +6,11 @@
         },
         "log": {
             "type": "string",
-            "is_array": false
+            "is_array": true
         },
         "kind": {
             "type": "string",
-            "is_array": false
+            "is_array": true
         },
         "asset": {
             "type": "string",
