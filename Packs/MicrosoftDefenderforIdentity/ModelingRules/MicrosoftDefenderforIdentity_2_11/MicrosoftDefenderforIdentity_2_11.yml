@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: MicrosoftDefenderforIdentity_ModelingRule
-name: MicrosoftDefenderforIdentity Modeling Rule
+id: Microsoft_Defender_for_Identity_ModelingRule
+name: Microsoft Defender for Identity Modeling Rule
 rules: ''
 schema: ''
 tags: ''

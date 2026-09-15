@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: BrocadeSwitch_ModelingRule
-name: BrocadeSwitch Modeling Rule
+id: Brocade_switch_modeling_rule
+name: Brocade Switch Modeling Rule
 rules: ''
 schema: ''
 tags: Brocade Switch

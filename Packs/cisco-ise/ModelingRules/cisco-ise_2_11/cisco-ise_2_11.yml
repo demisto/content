@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: cisco-ise_ModelingRule
-name: cisco-ise Modeling Rule
+id: Cisco_ISE_ModelingRule
+name: Cisco ISE Modeling Rule
 rules: ''
 schema: ''
 tags: ''

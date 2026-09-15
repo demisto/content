@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: MicrosoftECM_ModelingRule
-name: MicrosoftECM Modeling Rule
+id: Microsoft_ECM_ModelingRule
+name: Microsoft ECM Modeling Rule
 rules: ''
 schema: ''
 tags: Microsoft System Center Configuration Manager sccm
