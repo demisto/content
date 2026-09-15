@@ -2362,29 +2362,25 @@ def test_gcp_compute_instances_list_command_limit_validation_too_high(mocker):
     assert "501" in str(exc_info.value)
 
 
-def test_gcp_compute_instances_list_command_limit_zero_falls_back_to_default(mocker):
+def test_gcp_compute_instances_list_command_limit_validation_too_low(mocker):
     """
-    Given: Arguments with limit set to 0, which is not an accepted value
+    Given: Arguments with limit less than 1
     When: gcp_compute_instances_list_command is called
-    Then: The default limit of 50 is used instead of failing validation
+    Then: The function should raise DemistoException
     """
-    from GCP import gcp_compute_instances_list_command
+    from GCP import gcp_compute_instances_list_command, DemistoException
 
-    # Mock arguments with a zero limit
+    # Mock arguments with invalid limit
     args = {"project_id": "test-project", "zone": "us-central1-a", "limit": "0"}
 
-    # Mock the GCP API calls
-    mock_compute = mocker.Mock()
-    mock_instances = mocker.Mock()
-    mock_compute.instances.return_value = mock_instances
-    mock_instances.list.return_value.execute.return_value = {"items": []}
-
     mock_creds = mocker.Mock(spec=Credentials)
-    mocker.patch("GCP.GCPServices.COMPUTE.build", return_value=mock_compute)
 
-    gcp_compute_instances_list_command(mock_creds, args)
+    # Execute the function and expect exception
+    with pytest.raises(DemistoException) as exc_info:
+        gcp_compute_instances_list_command(mock_creds, args)
 
-    assert mock_instances.list.call_args[1]["maxResults"] == 50
+    assert "The acceptable values of the argument limit are 1 to 500" in str(exc_info.value)
+    assert "0" in str(exc_info.value)
 
 
 def test_gcp_compute_instances_list_command_empty_response(mocker):

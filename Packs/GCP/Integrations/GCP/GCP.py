@@ -1662,7 +1662,7 @@ def compute_firewall_list(creds: Credentials, args: dict[str, Any]) -> CommandRe
         creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
         args (dict): Command arguments including:
             - project_id (str): The GCP project ID.
-            - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
+            - limit (int, optional): Maximum number of results to return (1–500). Defaults to API default.
             - page_token (str, optional): Token to retrieve the next page of results.
             - filter (str, optional): Expression for filtering the listed resources.
 
@@ -1671,7 +1671,7 @@ def compute_firewall_list(creds: Credentials, args: dict[str, Any]) -> CommandRe
         with `GCP.Compute.Firewall` and `GCP.Compute.FirewallNextToken` context outputs.
     """
     project_id = args.get("project_id")
-    limit = (arg_to_number(args.get("limit"))) or 50
+    limit = arg_to_number(args.get("limit"))
     page_token = args.get("page_token")
     flt = args.get("filter")
     validate_limit(limit)
@@ -1804,7 +1804,7 @@ def compute_snapshots_list(creds: Credentials, args: dict[str, Any]) -> CommandR
         creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
         args (dict): Command arguments including:
             - project_id (str): The GCP project ID.
-            - limit (int, optional): Maximum number of results to return (1-500). Defaults to 50.
+            - limit (int, optional): Maximum number of results to return (1–500).
             - page_token (str, optional): Token for pagination.
             - filter (str, optional): Expression for filtering listed snapshots.
 
@@ -1813,7 +1813,7 @@ def compute_snapshots_list(creds: Credentials, args: dict[str, Any]) -> CommandR
         and pagination token under `GCP.Compute.SnapshotNextToken`.
     """
     project_id = args.get("project_id")
-    limit = (arg_to_number(args.get("limit"))) or 50
+    limit = arg_to_number(args.get("limit"))
     page_token = args.get("page_token")
     flt = args.get("filter")
 
@@ -2636,7 +2636,7 @@ def compute_instances_aggregated_list_by_ip(creds: Credentials, args: dict[str, 
             - project_id (str): The GCP project ID.
             - ip_address (str): The IP address to match.
             - match_external (bool, optional): Whether to search external IPs (default is False).
-            - limit (int, optional): Maximum number of results per API call (1-500). Defaults to 50.
+            - limit (int, optional): Maximum number of results per API call.
             - page_token (str, optional): Token for pagination.
 
     Returns:
@@ -2646,7 +2646,7 @@ def compute_instances_aggregated_list_by_ip(creds: Credentials, args: dict[str, 
     project_id = args.get("project_id")
     ip_address = args.get("ip_address", "")
     match_external = argToBoolean(args.get("match_external", "false"))
-    limit = (arg_to_number(args.get("limit"))) or 50
+    limit = arg_to_number(args.get("limit"))
     page_token = args.get("page_token")
     validate_limit(limit)
 
@@ -4118,7 +4118,7 @@ def gcp_compute_instances_list_command(creds: Credentials, args: dict[str, Any])
     """
     project_id = args.get("project_id")
     zone = extract_zone_name(args.get("zone"))
-    limit = (arg_to_number(args.get("limit"))) or 50
+    limit = (arg_to_number(args.get("limit")) or 50) if args.get("limit", "50") != "0" else 0
     filters = args.get("filters")
     order_by = args.get("order_by")
     page_token = args.get("page_token")
@@ -6940,7 +6940,7 @@ def gcp_compute_networks_list(creds: Credentials, args: dict[str, Any]) -> Comma
     Retrieves the list of networks available to the specified project.
     """
     project = args.get("project_id")
-    limit = (arg_to_number(args.get("limit"))) or 50
+    limit = (arg_to_number(args.get("limit")) or 50) if args.get("limit", "50") != "0" else 0
     filters = args.get("filters")
     order_by = args.get("order_by")
     page_token = args.get("page_token")
