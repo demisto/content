@@ -1,0 +1,80 @@
+{
+    "cloudflare_zerotrust_raw": {
+        "SOURCE_LOG_TYPE": {
+            "type": "string",
+            "is_array": false
+        },
+        "action": {
+            "type": "string",
+            "is_array": false
+        },
+        "actor": {
+            "type": "string",
+            "is_array": false
+        },
+        "allowed": {
+            "type": "boolean",
+            "is_array": false
+        },
+        "app_domain": {
+            "type": "string",
+            "is_array": false
+        },
+        "app_uid": {
+            "type": "string",
+            "is_array": false
+        },
+        "connection": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "interface": {
+            "type": "string",
+            "is_array": false
+        },
+        "ip_address": {
+            "type": "string",
+            "is_array": false
+        },
+        "metadata": {
+            "type": "string",
+            "is_array": false
+        },
+        "newValue": {
+            "type": "string",
+            "is_array": false
+        },
+        "newValueJson": {
+            "type": "string",
+            "is_array": false
+        },
+        "oldValue": {
+            "type": "string",
+            "is_array": false
+        },
+        "oldValueJson": {
+            "type": "string",
+            "is_array": false
+        },
+        "owner": {
+            "type": "string",
+            "is_array": false
+        },
+        "ray_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "resource": {
+            "type": "string",
+            "is_array": false
+        },
+        "user_email": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
