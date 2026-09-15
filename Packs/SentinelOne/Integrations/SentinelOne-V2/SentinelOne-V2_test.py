@@ -2654,6 +2654,7 @@ def test_create_unified_exclusion(mocker, requests_mock):
             "scope_level": "account",
             "scope_level_id": "2458673717681591681",
             "reason": "performance_issue",
+            "threat_type": "EDR",
             "description": "TEST",
         },
     )
