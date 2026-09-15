@@ -7598,3 +7598,339 @@ def test_extract_fallback_prefix_returns_empty_for_unknown_handler():
 
     # When / Then: the unknown name yields nothing, and no error is raised
     assert extract_fallback_prefix("no_such_command", symbol_index) == set()
+
+
+""" LOG ANALYTICS TESTS (migrated from the standalone Azure Log Analytics pack) """
+
+LOG_ANALYTICS_ARGS = {
+    "subscription_id": "mock_subscription_id",
+    "resource_group_name": "mock_resource_group",
+    "workspace_name": "mock_workspace",
+}
+
+MOCKED_LA_SAVED_SEARCHES_OUTPUT = {
+    "value": [
+        {
+            "id": "mock_id/mock_saved_search",
+            "etag": "mock_etag",
+            "properties": {"displayName": "mock saved search", "query": "mock_query"},
+        },
+        {"id": "mock_id/another_saved_search", "properties": {"displayName": "another"}},
+    ]
+}
+
+MOCKED_LA_SAVED_SEARCH_OUTPUT = {
+    "id": "mock_id/mock_saved_search",
+    "etag": "mock_etag",
+    "type": "Microsoft.OperationalInsights/savedSearches",
+    "properties": {"category": "mock_category", "displayName": "mock display", "query": "mock_query", "version": 2},
+}
+
+
+def test_log_analytics_saved_searches_list_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_saved_searches_list returns saved searches.
+    When:
+        - log_analytics_saved_searches_list_command is called.
+    Then:
+        - It returns CommandResults with the Azure.LogAnalytics.SavedSearches prefix and the raw API outputs.
+    """
+    from Azure import log_analytics_saved_searches_list_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_saved_searches_list", return_value=MOCKED_LA_SAVED_SEARCHES_OUTPUT)
+
+    result = log_analytics_saved_searches_list_command(client, {}, dict(LOG_ANALYTICS_ARGS))
+
+    assert result.outputs_prefix == "Azure.LogAnalytics.SavedSearches"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["id"] == "mock_id/mock_saved_search"
+    assert result.outputs[0]["properties"]["displayName"] == "mock saved search"
+
+
+def test_log_analytics_saved_search_get_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_saved_search_get returns a saved search.
+    When:
+        - log_analytics_saved_search_get_command is called with saved_search_id.
+    Then:
+        - It returns CommandResults with the raw saved search.
+    """
+    from Azure import log_analytics_saved_search_get_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_saved_search_get", return_value=MOCKED_LA_SAVED_SEARCH_OUTPUT)
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"saved_search_id": "mock_saved_search"}
+    result = log_analytics_saved_search_get_command(client, {}, args)
+
+    assert result.outputs_prefix == "Azure.LogAnalytics.SavedSearches"
+    assert result.outputs["id"] == "mock_id/mock_saved_search"
+    assert result.outputs["properties"]["category"] == "mock_category"
+
+
+def test_log_analytics_saved_search_create_update_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_saved_search_create_update returns a saved search.
+    When:
+        - log_analytics_saved_search_create_update_command is called with all required args.
+    Then:
+        - It returns CommandResults and passes the correct properties body to the client.
+    """
+    from Azure import log_analytics_saved_search_create_update_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_saved_search_create_update", return_value=MOCKED_LA_SAVED_SEARCH_OUTPUT)
+
+    args = dict(LOG_ANALYTICS_ARGS) | {
+        "saved_search_id": "mock_saved_search",
+        "category": "mock_category",
+        "display_name": "mock display",
+        "query": "mock_query",
+    }
+    result = log_analytics_saved_search_create_update_command(client, {}, args)
+
+    assert result.outputs_prefix == "Azure.LogAnalytics.SavedSearches"
+    body = client.log_analytics_saved_search_create_update.call_args[1]["data"]
+    assert body["properties"]["category"] == "mock_category"
+    assert body["properties"]["query"] == "mock_query"
+
+
+def test_log_analytics_saved_search_create_update_command_missing_args(mocker):
+    """
+    Given:
+        - An Azure client and args missing category/query/display_name and etag.
+    When:
+        - log_analytics_saved_search_create_update_command is called.
+    Then:
+        - It raises a DemistoException requiring the create fields.
+    """
+    from Azure import log_analytics_saved_search_create_update_command
+
+    client = mocker.MagicMock()
+    args = dict(LOG_ANALYTICS_ARGS) | {"saved_search_id": "mock_saved_search"}
+    with pytest.raises(DemistoException, match="You must specify category"):
+        log_analytics_saved_search_create_update_command(client, {}, args)
+
+
+def test_log_analytics_saved_search_delete_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_saved_search_delete succeeds.
+    When:
+        - log_analytics_saved_search_delete_command is called with saved_search_id.
+    Then:
+        - It returns a success readable output.
+    """
+    from Azure import log_analytics_saved_search_delete_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_saved_search_delete", return_value=None)
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"saved_search_id": "mock_saved_search"}
+    result = log_analytics_saved_search_delete_command(client, {}, args)
+
+    assert "Successfully deleted the saved search mock_saved_search" in result.readable_output
+
+
+def test_log_analytics_workspaces_list_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_workspaces_list returns workspaces.
+    When:
+        - log_analytics_workspaces_list_command is called.
+    Then:
+        - It returns CommandResults with the Azure.LogAnalytics.Workspaces prefix.
+    """
+    from Azure import log_analytics_workspaces_list_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(
+        client,
+        "log_analytics_workspaces_list",
+        return_value={
+            "value": [{"name": "mock_workspace", "location": "eastus", "properties": {"provisioningState": "Succeeded"}}]
+        },
+    )
+
+    result = log_analytics_workspaces_list_command(client, {}, dict(LOG_ANALYTICS_ARGS))
+
+    assert result.outputs_prefix == "Azure.LogAnalytics.Workspaces"
+    assert result.outputs[0]["name"] == "mock_workspace"
+
+
+def test_log_analytics_table_get_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_table_get returns a table with search results.
+    When:
+        - log_analytics_table_get_command is called with table_name.
+    Then:
+        - It returns CommandResults with the Azure.LogAnalytics.Tables prefix.
+    """
+    from Azure import log_analytics_table_get_command
+
+    client = mocker.MagicMock()
+    mock_response = {
+        "id": "mock_id",
+        "name": "mock_SRCH",
+        "properties": {
+            "createDate": "2024-01-01",
+            "plan": "Analytics",
+            "provisioningState": "Succeeded",
+            "schema": {
+                "name": "mock_SRCH",
+                "searchResults": {
+                    "query": "AuditLogs",
+                    "description": "mock",
+                    "startSearchTime": "2024-01-01",
+                    "endSearchTime": "2024-01-02",
+                },
+            },
+        },
+    }
+    mocker.patch.object(client, "log_analytics_table_get", return_value=mock_response)
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_SRCH"}
+    result = log_analytics_table_get_command(client, {}, args)
+
+    assert result.outputs_prefix == "Azure.LogAnalytics.Tables"
+    assert result.outputs["name"] == "mock_SRCH"
+
+
+def test_log_analytics_table_run_command_first_run(mocker):
+    """
+    Given:
+        - An Azure client and a valid _SRCH table name on the first polling run.
+    When:
+        - log_analytics_table_run_command is called with first_run=True.
+    Then:
+        - It sends the create request and returns a PollResult that continues polling.
+    """
+    from Azure import log_analytics_table_run_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_table_run", return_value=None)
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_SRCH", "query": "AuditLogs", "first_run": "true"}
+    result = log_analytics_table_run_command(args, client, {})
+
+    assert result.scheduled_command._args["first_run"] is False
+    client.log_analytics_table_run.assert_called_once()
+
+
+def test_log_analytics_table_run_command_polling_succeeded(mocker):
+    """
+    Given:
+        - An Azure client returning a Succeeded provisioning state on a subsequent polling run.
+    When:
+        - log_analytics_table_run_command is called with first_run=False.
+    Then:
+        - It stops polling and returns CommandResults with the Azure.LogAnalytics.Tables prefix.
+    """
+    from Azure import log_analytics_table_run_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_table_get", return_value={"properties": {"provisioningState": "Succeeded"}})
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_SRCH", "query": "AuditLogs", "first_run": "false"}
+    result = log_analytics_table_run_command(args, client, {})
+
+    assert result.outputs_prefix == "Azure.LogAnalytics.Tables"
+    assert result.outputs["TableName"] == "mock_SRCH"
+
+
+def test_log_analytics_table_run_command_invalid_table_name(mocker):
+    """
+    Given:
+        - An Azure client and a table_name missing the required _SRCH suffix.
+    When:
+        - log_analytics_table_run_command is called.
+    Then:
+        - It raises a DemistoException about the required suffix.
+    """
+    from Azure import log_analytics_table_run_command
+
+    client = mocker.MagicMock()
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_table", "query": "AuditLogs", "first_run": "true"}
+    with pytest.raises(DemistoException, match="_SRCH"):
+        log_analytics_table_run_command(args, client, {})
+
+
+def test_log_analytics_table_run_command_api_failure(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_table_run raises an error from the API call.
+    When:
+        - log_analytics_table_run_command is called with first_run=True.
+    Then:
+        - The raised exception propagates out of the command (terminal failure).
+    """
+    from Azure import log_analytics_table_run_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_table_run", side_effect=DemistoException("API error"))
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_SRCH", "query": "AuditLogs", "first_run": "true"}
+    with pytest.raises(DemistoException, match="API error"):
+        log_analytics_table_run_command(args, client, {})
+
+
+def test_log_analytics_table_delete_command_success(mocker):
+    """
+    Given:
+        - An Azure client whose log_analytics_table_delete succeeds and a valid _SRCH table name.
+    When:
+        - log_analytics_table_delete_command is called.
+    Then:
+        - It returns a success readable output.
+    """
+    from Azure import log_analytics_table_delete_command
+
+    client = mocker.MagicMock()
+    mocker.patch.object(client, "log_analytics_table_delete", return_value=None)
+
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_SRCH"}
+    result = log_analytics_table_delete_command(client, {}, args)
+
+    assert "Search job mock_SRCH deleted successfully" in result.readable_output
+
+
+def test_log_analytics_table_delete_command_invalid_table_name(mocker):
+    """
+    Given:
+        - An Azure client and a table_name missing the required _SRCH suffix.
+    When:
+        - log_analytics_table_delete_command is called.
+    Then:
+        - It raises a DemistoException about the disallowed suffix.
+    """
+    from Azure import log_analytics_table_delete_command
+
+    client = mocker.MagicMock()
+    args = dict(LOG_ANALYTICS_ARGS) | {"table_name": "mock_table"}
+    with pytest.raises(DemistoException, match="_SRCH"):
+        log_analytics_table_delete_command(client, {}, args)
+
+
+def test_log_analytics_tags_arg_to_request_format():
+    """
+    Given:
+        - A well-formed 'name=value;name=value' tags string and a malformed one.
+    When:
+        - log_analytics_tags_arg_to_request_format is called.
+    Then:
+        - The well-formed string is parsed to the API list format and the malformed one raises.
+    """
+    from Azure import log_analytics_tags_arg_to_request_format
+
+    assert log_analytics_tags_arg_to_request_format("a=1;b=2") == [
+        {"name": "a", "value": "1"},
+        {"name": "b", "value": "2"},
+    ]
+    assert log_analytics_tags_arg_to_request_format(None) is None
+    with pytest.raises(DemistoException, match="malformed"):
+        log_analytics_tags_arg_to_request_format("a=1;bad")
