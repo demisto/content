@@ -10187,7 +10187,7 @@ if 'requests' in sys.modules:
                 # A passthrough profile is self-managed: the integration applies the
                 # credential itself, or none is required. Leave the request untouched.
                 demisto.debug('[UCP][CommonServerPython.py] _apply_ucp_credentials: passthrough profile; '
-                              'leaving the request untouched (the integration owns this credential). We shouldnt have reached here')
+                              'leaving the request untouched (the integration owns this credential).')
                 return
 
             # Bug on UCP side where they return different types for the same credential type. To be fixed in July'26 version
@@ -15335,12 +15335,12 @@ def should_use_ucp_auth():
 
 
 def _ucp_profile_capabilities():
-    # type: () -> list
+    # type: () -> List[str]
     """Return the capabilities declared by the connector's connection profiles.
 
     :return: Capability strings in ``connectionProfiles`` order, empty when UCP
         metadata is unavailable or carries no profiles.
-    :rtype: ``list``
+    :rtype: ``List[str]``
     """
     try:
         connector_metadata = demisto.unifiedConnectorMetadata() or {}
@@ -15348,7 +15348,8 @@ def _ucp_profile_capabilities():
         return [p.get('capability') for p in profiles if p.get('capability')]
     except Exception as e:
         demisto.debug(
-            '[UCP][CommonServerPython.py] _ucp_profile_capabilities: could not read profiles ({}).'.format(e))
+            '[UCP][CommonServerPython.py] _ucp_profile_capabilities: could not read profiles ({}).\n{}'.format(
+                e, traceback.format_exc()))
         return []
 
 
