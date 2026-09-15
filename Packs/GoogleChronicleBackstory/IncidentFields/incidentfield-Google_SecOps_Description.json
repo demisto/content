@@ -1,0 +1,31 @@
+{
+    "id": "incident_googlesecopsdescription",
+    "version": -1,
+    "name": "Google SecOps Description",
+    "ownerOnly": false,
+    "description": "A detailed description of the incident.",
+    "cliName": "googlesecopsdescription",
+    "type": "longText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "associatedTypes": [
+        "Google SecOps Case"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

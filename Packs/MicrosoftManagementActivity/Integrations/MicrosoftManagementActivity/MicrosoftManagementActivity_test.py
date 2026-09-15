@@ -822,3 +822,39 @@ def test_fetch_advance_window_empty_results(mock_content_records):
     assert next_timestamp == end_time
 
     assert next_dedup_ids == []
+
+
+def test_auth_reset(mocker):
+    """
+    Given:
+        - An instance configured with self-deployed auth flow.
+    When:
+        - Calling the ms-management-activity-auth-reset command.
+    Then:
+        - Ensure reset_auth() is called (the integration context is cleared).
+        - Ensure the access token is NOT fetched, since auth is being reset.
+    """
+    import demistomock as demisto
+    import MicrosoftManagementActivity
+    from MicrosoftManagementActivity import Client, main
+
+    mocked_params = {
+        "redirect_uri": "redirect_uri",
+        "auth_type": "Authorization Code",
+        "self_deployed": "True",
+        "refresh_token": "tenant_id",
+        "auth_id": "client_id",
+        "enc_key": "client_secret",
+    }
+    mocker.patch.object(demisto, "params", return_value=mocked_params)
+    mocker.patch.object(demisto, "command", return_value="ms-management-activity-auth-reset")
+    return_results_mock = mocker.patch.object(MicrosoftManagementActivity, "return_results")
+    reset_auth_mock = mocker.patch.object(MicrosoftManagementActivity, "reset_auth")
+    get_access_token_mock = mocker.patch.object(Client, "get_access_token_data")
+
+    main()
+
+    # auth-reset must reset the auth and must not attempt to fetch an access token
+    reset_auth_mock.assert_called_once()
+    get_access_token_mock.assert_not_called()
+    assert return_results_mock.called

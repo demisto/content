@@ -1,0 +1,28 @@
+{
+    "akamai_waf_raw": {
+        "attackData": {
+            "type": "string",
+            "is_array": false
+        },
+        "clientData": {
+            "type": "string",
+            "is_array": false
+        },
+        "geo": {
+            "type": "string",
+            "is_array": false
+        },
+        "httpMessage": {
+            "type": "string",
+            "is_array": false
+        },
+        "userRiskData": {
+            "type": "string",
+            "is_array": false
+        },
+        "type": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
