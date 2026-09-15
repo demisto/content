@@ -3,3 +3,4 @@ ignore=PR101
 
 [file:BarracudaWAFModelingRules_1_3.yml]
 ignore=MR108
+
