@@ -1,5 +1,6 @@
 import ipaddress
 import string
+import unicodedata
 import urllib.parse
 from base64 import urlsafe_b64decode
 from re import Match
@@ -51,6 +52,24 @@ class URLCheck:
     }
 
     no_fetch_extract = tldextract.TLDExtract(suffix_list_urls=(), cache_dir=None)
+
+    @staticmethod
+    def _repercent_control_chars(url: str) -> str:
+        """
+        Re-encodes control characters (C0, DEL and C1) back to their percent-encoded form.
+
+        Decoding sequences such as %0D%0A into literal CRLF splits a single URL into several
+        lines, which downstream turns one indicator into multiple malformed ones (XSUP-76731).
+        Control characters are never legal raw in a URL, so re-encoding them is always safe.
+
+        Args:
+            url: The URL after percent-decoding
+
+        Returns:
+            The URL with every control character percent-encoded again
+        """
+
+        return "".join(f"%{ord(char):02X}" if unicodedata.category(char) == "Cc" else char for char in url)
 
     def __init__(self, original_url: str):
         """
@@ -126,7 +145,8 @@ class URLCheck:
             self.fragment_check()
 
         while "%" in self.output:
-            unquoted = urllib.parse.unquote(self.output)
+            # Control characters must stay encoded, otherwise a single URL is split across lines
+            unquoted = self._repercent_control_chars(urllib.parse.unquote(self.output))
             if unquoted != self.output:
                 self.output = unquoted
             else:
