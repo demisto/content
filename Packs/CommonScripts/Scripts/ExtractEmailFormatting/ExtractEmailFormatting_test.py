@@ -46,6 +46,15 @@ def test_check_tld(address, valid):
         ("user+tag@example.com", "user+tag@example.com"),  # Email with + (valid character)
         ("user=name@example.com", "user=name@example.com"),  # Email with = in local part (valid but rare)
         ("simple@example.com", "simple@example.com"),  # Simple valid email without special chars
+        # XSUP-76731: percent-encoded mailto body text must not be absorbed into the local part.
+        (
+            "and%20send%20this%20email%20to%20unsubscribe.%0d%0a%0d%0arecipient@example.org",
+            "recipient@example.org",
+        ),
+        ("body=Please%20contact%20me.%0d%0auser@example.com", "user@example.com"),
+        ("unsubscribe.%0A%0Auser@example.com", "user@example.com"),
+        # A local part that legitimately contains an encoded percent must survive intact.
+        ("100%25sure.person@example.com", "100%sure.person@example.com"),
     ],
 )  # noqa: E124
 def test_extract_email(input, output):
@@ -60,6 +69,11 @@ def test_extract_email(input, output):
         ("marketing.comunicacion@example.com=ABA=123", "marketing.comunicacion@example.com"),
         ("//example.com?marketing.comunicacion@example.com", "marketing.comunicacion@example.com"),  # disable-secrets-detection
         ("//example.com?marketing.comunicacion@example.com=", "marketing.comunicacion@example.com"),  # disable-secrets-detection
+        # XSUP-76731: encoded body text preceding the address must not be absorbed into it.
+        (
+            "and%20send%20this%20email%20to%20unsubscribe.%0d%0a%0d%0arecipient@example.org",
+            "recipient@example.org",
+        ),
     ],
 )  # noqa: E124
 def test_extract_email_from_url_query(input, output):
