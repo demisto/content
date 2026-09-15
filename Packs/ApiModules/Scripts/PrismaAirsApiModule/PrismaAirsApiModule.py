@@ -1,6 +1,6 @@
-"""Prisma AIRS shared API module.
+"""Prisma AIRs shared API module.
 
-Holds the plane-agnostic transport layer shared by every Prisma AIRS integration
+Holds the plane-agnostic transport layer shared by every Prisma AIRs integration
 (AI Red Teaming, AI Runtime Security, AI Model Security, AI Gateway):
 
 * ``Client`` — OAuth2 (client_credentials) auth against Strata Cloud Manager plus
@@ -19,7 +19,7 @@ from CommonServerUserPython import *  # noqa
 
 from typing import Any
 
-# CONSTANTS (shared across all Prisma AIRS integrations)
+# CONSTANTS (shared across all Prisma AIRs integrations)
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 DEFAULT_LIMIT = 50
 PA_OUTPUT_PREFIX = "PrismaAIRs."
@@ -40,11 +40,11 @@ TOKEN_URL = "https://auth.apps.paloaltonetworks.com/oauth2/access_token"
 
 
 class Client(BaseClient):
-    """Client class to interact with Prisma AIRS API.
+    """Client class to interact with Prisma AIRs API.
 
-    This Client implements the shared transport for the Prisma AIRS platform via Strata
+    This Client implements the shared transport for the Prisma AIRs platform via Strata
     Cloud Manager and does not contain any XSOAR command logic. Handles OAuth2 token
-    retrieval and plane routing for every Prisma AIRS integration.
+    retrieval and plane routing for every Prisma AIRs integration.
 
     All credential/URL fields are optional so an integration that only configures its own
     plane (scoped credentials) constructs cleanly; required fields are validated in each
@@ -232,13 +232,13 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
-    """Test connectivity to Prisma AIRS API.
+    """Test connectivity to Prisma AIRs API.
 
     Plane-agnostic OAuth check shared by every integration. Integrations that need a
     stronger, plane-specific probe may wrap this with an additional read.
 
     Args:
-        client: Prisma AIRS API client.
+        client: Prisma AIRs API client.
 
     Returns:
         str: 'ok' if test passed, error message otherwise.

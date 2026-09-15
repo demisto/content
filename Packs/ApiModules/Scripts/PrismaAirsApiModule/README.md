@@ -1,4 +1,4 @@
-Provides shared Prisma AIRS code (OAuth2 client, plane routing, and scanner transport) that each Prisma AIRS integration reuses.
+Common Prisma AIRs code (OAuth2 client, plane routing, scanner transport) appended into each Prisma AIRs integration when it's deployed.
 
 ## Script Data
 

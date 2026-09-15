@@ -1845,7 +1845,7 @@ tasks:
           - operator: uniq
       hostname:
         complex:
-          root: PaloAltoNetworksXDR.Case.Issues
+          root: PaloAltoNetworksXDR.Incident.alerts
           transformers:
           - operator: append
             args:
@@ -2387,7 +2387,7 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Case.Issues
+                root: PaloAltoNetworksXDR.Incident.alerts
                 accessor: description
                 transformers:
                 - operator: RegexGroups
@@ -2407,7 +2407,7 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Case.Issues
+                root: PaloAltoNetworksXDR.Incident.alerts
                 accessor: description
                 transformers:
                 - operator: RegexGroups
@@ -2427,7 +2427,7 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Case.Issues
+                root: PaloAltoNetworksXDR.Incident.alerts
                 accessor: description
                 transformers:
                 - operator: RegexGroups
@@ -3207,7 +3207,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: PaloAltoNetworksXDR.Case.Issues.host_name
+                        simple: PaloAltoNetworksXDR.Incident.alerts.host_name
                       iscontext: true
                     ignorecase: true
                   - operator: containsGeneral
@@ -3398,17 +3398,17 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Case.Issues
+                root: PaloAltoNetworksXDR.Incident.alerts
                 filters:
                 - - operator: isNotEmpty
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.Case.Issues.host_name
+                        simple: PaloAltoNetworksXDR.Incident.alerts.host_name
                       iscontext: true
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.Case.Issues.name
+                        simple: PaloAltoNetworksXDR.Incident.alerts.name
                       iscontext: true
                     right:
                       value:
@@ -3427,18 +3427,18 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Case.Issues
+                root: PaloAltoNetworksXDR.Incident.alerts
                 filters:
                 - - operator: isNotEmpty
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.Case.Issues.host_name
+                        simple: PaloAltoNetworksXDR.Incident.alerts.host_name
                       iscontext: true
                     ignorecase: true
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.Case.Issues.name
+                        simple: PaloAltoNetworksXDR.Incident.alerts.name
                       iscontext: true
                     right:
                       value:
@@ -3767,7 +3767,7 @@ tasks:
           - operator: uniq
       Hostname:
         complex:
-          root: PaloAltoNetworksXDR.Case.Issues
+          root: PaloAltoNetworksXDR.Incident.alerts
           accessor: host_name
           transformers:
           - operator: append
@@ -4104,12 +4104,12 @@ inputs:
 - key: Alert_ID
   value:
     complex:
-      root: PaloAltoNetworksXDR.Case.Issues
+      root: PaloAltoNetworksXDR.Incident.alerts
       filters:
       - - operator: containsGeneral
           left:
             value:
-              simple: PaloAltoNetworksXDR.Case.Issues.name
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
             iscontext: true
           right:
             value:

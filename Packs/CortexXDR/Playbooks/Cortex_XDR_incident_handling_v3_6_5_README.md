@@ -32,7 +32,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Commands
 
 * closeInvestigation
-* xdr-case-list
+* xdr-get-incident-extra-data
 * linkIncidents
 * xdr-update-incident
 

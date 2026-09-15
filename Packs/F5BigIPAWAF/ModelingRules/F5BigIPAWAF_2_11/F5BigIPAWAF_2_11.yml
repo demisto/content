@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: F5_BIG-IP_Advanced_WAF_ModelingRule
-name: F5 BIG-IP Advanced WAF Modeling Rule
-rules: ''
-schema: ''
-tags: ''
-supportedModules:
-- xsiam
