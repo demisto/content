@@ -2,7 +2,7 @@
     "id": "Gmail-mapper",
     "name": "Gmail - Incoming Mapper",
     "type": "mapping-incoming",
-    "description": "Maps incoming Gmail phishing email message fields.",
+    "description": "Maps incoming Gmail phishing and email message fields.",
     "version": -1,
     "defaultIncidentType": "",
     "mapping": {
