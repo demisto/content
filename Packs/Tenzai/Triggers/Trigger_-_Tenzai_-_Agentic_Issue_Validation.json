@@ -1,0 +1,52 @@
+{
+    "trigger_id": "3468bd4543c0fb9f0883702500781cda",
+    "trigger_name": "Tenzai - Agentic Issue Validation",
+    "playbook_id": "Tenzai Agentic Issue Validation",
+    "suggestion_reason": "Validate exploitability of High/Critical ASM-discovered exposures with Tenzai agentic testing.",
+    "description": "Runs the Tenzai Agentic Issue Validation playbook on High/Critical ASM-discovered vulnerability/configuration exposures that have not yet been validated by Tenzai.",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "OR": [
+                        {
+                            "SEARCH_FIELD": "alert_category",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "VULNERABILITY"
+                        },
+                        {
+                            "SEARCH_FIELD": "alert_category",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "CONFIGURATION"
+                        }
+                    ]
+                },
+                {
+                    "OR": [
+                        {
+                            "SEARCH_FIELD": "severity",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "SEV_050_CRITICAL"
+                        },
+                        {
+                            "SEARCH_FIELD": "severity",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "SEV_040_HIGH"
+                        }
+                    ]
+                },
+                {
+                    "SEARCH_FIELD": "alert_domain",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "DOMAIN_POSTURE"
+                },
+                {
+                    "SEARCH_FIELD": "xdm.finding_sources",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "CORTEX_ATTACK_SURFACE_MANAGEMENT"
+                }
+            ]
+        }
+    },
+    "fromVersion": "6.10.0"
+}
