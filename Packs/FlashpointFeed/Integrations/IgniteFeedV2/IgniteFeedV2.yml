@@ -102,8 +102,7 @@ configuration:
   type: 8
   required: false
   section: Collect
-- additionalinfo: Indicators from this integration instance will be marked with this reputation.
-  defaultvalue: Bad
+- additionalinfo: "Indicators from this integration instance will be marked with this reputation.\n\nNote: Do not set this if you want to set the reputation based on the Ignite score."
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -275,7 +274,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.14.12343672
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
