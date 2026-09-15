@@ -1,8 +1,8 @@
 {
     "name": "Zero Networks Segment",
-    "description": "Integrates with Zero Networks Segment API to fetch and process audit and network events.",
+    "description": "Integrates with the Zero Networks Segment API to fetch audit and network events, and to quarantine or release assets.",
     "support": "xsoar",
-    "currentVersion": "1.0.13",
+    "currentVersion": "1.1.0",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -18,13 +18,16 @@
         "zero",
         "networks",
         "segment",
-        "zeronetworks"
+        "zeronetworks",
+        "quarantine"
     ],
     "marketplaces": [
+        "xsoar",
         "marketplacev2",
         "platform"
     ],
     "supportedModules": [
+        "agentix",
         "xsiam"
     ]
 }
