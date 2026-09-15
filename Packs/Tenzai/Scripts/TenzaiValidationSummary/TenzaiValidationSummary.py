@@ -625,7 +625,7 @@ def _running_panel(reference: str = "") -> str:
     )
     children = [
         pill,
-        f'<span style="color:{DIM};font-size:14px;font-family:{SANS};">' f"Validation in progress - follow the live</span>",
+        f'<span style="color:{DIM};font-size:14px;font-family:{SANS};">Validation in progress - follow the live</span>',
     ]
     if reference:
         children.append(
@@ -636,7 +636,7 @@ def _running_panel(reference: str = "") -> str:
     row = (
         f'<div style="display:flex;align-items:center;flex-wrap:wrap;gap:12px;'
         f'border:1px solid {LINE};border-radius:8px;padding:14px 16px;margin:14px 18px 4px;">'
-        f'{"".join(children)}</div>'
+        f"{''.join(children)}</div>"
     )
     return _panel(f"{_header()}{row}")
 
@@ -726,9 +726,7 @@ def _empty_state(fields: dict, name: str) -> str:
         f'<div style="font-family:{FIGTREE};font-size:28px;line-height:36px;font-weight:500;'
         f'letter-spacing:-.01em;color:inherit;margin:20px 0 0;">Validate exposure using offensive agents</div>'
     )
-    body_html = (
-        f'<div style="font-family:{FIGTREE};font-size:14px;line-height:20px;color:inherit;' f'margin:14px 0 0;">{body}</div>'
-    )
+    body_html = f'<div style="font-family:{FIGTREE};font-size:14px;line-height:20px;color:inherit;margin:14px 0 0;">{body}</div>'
     learn = (
         f'<a href="https://www.tenzai.com/" target="_blank" rel="noopener noreferrer" '
         f'style="display:inline-flex;align-items:center;gap:6px;font-family:{FIGTREE};font-size:14px;'

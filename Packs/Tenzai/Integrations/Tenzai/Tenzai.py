@@ -767,9 +767,7 @@ def create_scan_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
     target_url = _build_target_url(host, app_type, port, (args.get("protocol") or "").lower(), target_scheme)
 
-    app = _find_or_create_app(
-        client, host, app_type, target_url, args, port=port, protocol=(args.get("protocol") or "").lower()
-    )
+    app = _find_or_create_app(client, host, app_type, target_url, args, port=port, protocol=(args.get("protocol") or "").lower())
     app_id = str(app.get("id"))
 
     # NOTE: do not send ``targets`` here — targets are owned by the application
