@@ -851,8 +851,9 @@ def fetch_indicator_type(
         next_page_token: Page token to resume an interrupted fetch from
 
     Returns:
-        Tuple of the number of indicators fetched and pushed (count <= limit), and the
-        page token to resume from on the next fetch (None when the query was exhausted).
+        Tuple of the number of indicators fetched and pushed (may exceed limit by up to one
+        page, since the final page is pushed whole), and the page token to resume from on the
+        next fetch (None when the query was exhausted).
     """
     total_fetched = 0
     types_label = ", ".join(indicator_types) if indicator_types else "indicators"
@@ -925,8 +926,9 @@ def fetch_threat_objects_with_limit(
         next_page_token: Page token to resume an interrupted fetch from
 
     Returns:
-        Tuple of the number of threat objects fetched and pushed (count <= limit), and the
-        page token to resume from on the next fetch (None when there is nothing left to fetch).
+        Tuple of the number of threat objects fetched and pushed (may exceed limit by up to one
+        page, since the final page is pushed whole), and the page token to resume from on the
+        next fetch (None when there is nothing left to fetch).
     """
     total_fetched = 0
 
