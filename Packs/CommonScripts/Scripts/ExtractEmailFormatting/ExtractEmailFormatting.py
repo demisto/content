@@ -1,4 +1,5 @@
 import re
+import urllib.parse
 
 import demistomock as demisto
 from CommonServerPython import *  # lgtm [py/polluting-import]
@@ -27,6 +28,11 @@ COMMON_FILE_EXT = (
 # Regex pattern for extracting email addresses from URL queries
 EMAIL_IN_URL_PATTERN = r"([\w.!#$%&'*+^_`{|}~-]+@[\w.-]+\.[A-Za-z]{2,})"
 
+# Characters that can never appear inside an address and therefore terminate it. Once a value has
+# been percent-decoded, the surrounding text reveals itself through real separators such as
+# whitespace, CR/LF and angle brackets.
+ADDRESS_SEPARATORS = re.compile(r"[\s<>,;\"']+")
+
 
 def extract_email(email_address: str) -> str:
     """
@@ -40,8 +46,10 @@ def extract_email(email_address: str) -> str:
     """
     email_address = email_address.lower()
 
-    if "?" in email_address:
+    if "?" in email_address or "%" in email_address:
         # If we find these chars in a string it means the regex caught it as part of a url query and needs pruning.
+        # Percent signs are checked too: the indicator regex can capture a fragment starting after
+        # the "?", so a query remnant does not necessarily still contain one (XSUP-76731).
         email_address = extract_email_from_url_query(email_address)
 
     email_format = re.compile(
@@ -93,10 +101,18 @@ def extract_email_from_url_query(email_address: str) -> str:
         str: An email address.
     """
 
-    # Try to extract email as a query parameter value, key, or directly from the URL
-    match = re.search(r"([?&])?" + EMAIL_IN_URL_PATTERN, email_address)
-    if match:
-        return match.group(2)
+    # Percent-decode first so the real token boundaries become visible. Encoded body text such as
+    # "...unsubscribe.%0D%0A%0D%0A" hides the separators that delimit the address, which made the
+    # match run backwards across the whole encoded run (XSUP-76731). Decoding is done once only:
+    # decoding repeatedly would corrupt values that legitimately contain a percent sign.
+    decoded = urllib.parse.unquote(email_address)
+
+    # The address is the last separator-delimited token that looks like one, since query text
+    # ("body=Please contact me.") precedes the address it refers to.
+    for token in reversed(ADDRESS_SEPARATORS.split(decoded)):
+        match = re.search(r"([?&])?" + EMAIL_IN_URL_PATTERN, token)
+        if match:
+            return match.group(2)
 
     return ""
 
