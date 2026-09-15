@@ -791,24 +791,25 @@ def create_threat_actors_indicators(alert: dict) -> list:
 
 def to_datetime(timestamp: Any) -> datetime | None:
     """
-    Convert the given time stamp into a datetime object.
+    Convert the given timestamp into a datetime object.
 
-    The returned datetime object is always offset-aware and in the UTC time zone, so the comparison of the time stamps
-    of two different alerts never mixes the offset-naive and the offset-aware datetime objects. The time stamps without
+    The returned datetime object is always offset-aware and in the UTC time zone, so the comparison of the timestamps
+    of two different alerts never mixes the offset-naive and the offset-aware datetime objects. The timestamps without
     a time zone are considered to be in the UTC time zone, as the source reports them in the UTC time zone.
 
     :type timestamp: ``Any``
-    :param timestamp: Time stamp to convert. Either an ISO 8601 date time string or an epoch time stamp.
+    :param timestamp: Timestamp to convert. Either an ISO 8601 date time string or an epoch timestamp.
 
     :rtype: ``Optional[datetime]``
-    :return: Datetime object of the given time stamp, None if it can not be parsed.
+    :return: Datetime object of the given timestamp, None if it can not be parsed.
     """
     if check_empty(timestamp) or isinstance(timestamp, bool) or not isinstance(timestamp, str | int | float):
         return None
     try:
         parsed_timestamp = arg_to_datetime(timestamp)
     except Exception:
-        demisto.debug(f"Failed to parse the '{timestamp}' time stamp.")
+        demisto.debug(f"Failed to parse the '{timestamp}' timestamp.")
+        demisto.debug(traceback.format_exc())
         return None
 
     if not parsed_timestamp:
@@ -884,18 +885,20 @@ def get_related_entity_names(alert: dict, entity_type: str) -> list:
     return names
 
 
-def create_relationships_for_ioc(ioc: dict) -> list:
+def create_relationships_for_ioc(ioc: dict, integration_reliability: str = DEFAULT_RELIABILITY) -> list:
     """
     Create a list of relationships objects between the IOC and the malware and the threat actors of the alert.
 
     :type ioc: ``dict``
     :param ioc: IOC data.
 
+    :type integration_reliability: ``str``
+    :param integration_reliability: Source reliability configured for the integration.
+
     :return: List of EntityRelationship objects containing all the relationships.
     :rtype: ``List``
     """
     relationships: list = []
-    integration_reliability = demisto.params().get("integrationReliability", DEFAULT_RELIABILITY)
     entity_a_type = IOC_TYPE_TO_INDICATOR_TYPE.get(ioc.get("type", ""), "")
 
     if not entity_a_type:
@@ -925,8 +928,8 @@ def add_ioc(iocs: dict, ioc_type: str, value: Any, alert_context: dict, extra_da
     """
     Validate the given IOC value and add it into the dictionary of the IOCs.
 
-    The already existing IOCs are updated instead of duplicating them, which keeps the first seen time stamp of the
-    earliest alert, the last seen time stamp of the latest alert, the highest verdict and the IDs of all the alerts
+    The already existing IOCs are updated instead of duplicating them, which keeps the first seen timestamp of the
+    earliest alert, the last seen timestamp of the latest alert, the highest verdict and the IDs of all the alerts
     the IOC was extracted from.
 
     :type iocs: ``dict``
@@ -939,7 +942,7 @@ def add_ioc(iocs: dict, ioc_type: str, value: Any, alert_context: dict, extra_da
     :param value: Value of the IOC.
 
     :type alert_context: ``dict``
-    :param alert_context: Contains the ID, the type and the time stamp of the alert the IOC was extracted from.
+    :param alert_context: Contains the ID, the type and the timestamp of the alert the IOC was extracted from.
 
     :type extra_data: ``Optional[dict]``
     :param extra_data: Additional data of the IOC, such as the port of an IP address or the type of a hash.
@@ -996,7 +999,7 @@ def add_ioc(iocs: dict, ioc_type: str, value: Any, alert_context: dict, extra_da
     if current and (not first_seen or current < first_seen):
         ioc["firstSeen"] = timestamp
     if current and (not last_seen or current > last_seen):
-        # The last seen and the source time stamp always point to the latest alert the IOC was seen in.
+        # The last seen and the source timestamp always point to the latest alert the IOC was seen in.
         ioc["lastSeen"] = timestamp
         ioc["sourceTimeStamp"] = timestamp
 
@@ -1079,7 +1082,7 @@ def merge_iocs(existing_ioc: dict, new_ioc: dict) -> dict:
     """
     Merge two occurrences of the same IOC into a single one.
 
-    The earliest first seen time stamp, the latest last seen time stamp, the highest verdict and the IDs of all the
+    The earliest first seen timestamp, the latest last seen timestamp, the highest verdict and the IDs of all the
     alerts the IOC was seen in are kept.
 
     :type existing_ioc: ``dict``
@@ -1103,7 +1106,7 @@ def merge_iocs(existing_ioc: dict, new_ioc: dict) -> dict:
 
     last_seen, new_last_seen = to_datetime(merged_ioc.get("lastSeen")), to_datetime(new_ioc.get("lastSeen"))
     if new_last_seen and (not last_seen or new_last_seen > last_seen):
-        # The last seen and the source time stamp always point to the latest alert the IOC was seen in.
+        # The last seen and the source timestamp always point to the latest alert the IOC was seen in.
         merged_ioc["lastSeen"] = new_ioc.get("lastSeen")
         merged_ioc["sourceTimeStamp"] = new_ioc.get("sourceTimeStamp") or new_ioc.get("lastSeen")
 
@@ -1125,7 +1128,7 @@ def merge_iocs(existing_ioc: dict, new_ioc: dict) -> dict:
     return merged_ioc
 
 
-def build_ioc_indicator(ioc: dict, relationships: list | None = None) -> Any:
+def build_ioc_indicator(ioc: dict, relationships: list | None = None, integration_reliability: str = DEFAULT_RELIABILITY) -> Any:
     """
     Build the standard XSOAR indicator object of the given IOC.
 
@@ -1134,6 +1137,9 @@ def build_ioc_indicator(ioc: dict, relationships: list | None = None) -> Any:
 
     :type relationships: ``Optional[list]``
     :param relationships: List of EntityRelationship objects of the IOC.
+
+    :type integration_reliability: ``str``
+    :param integration_reliability: Source reliability configured for the integration.
 
     :rtype: ``Any``
     :return: One of the "Common.IP", "Common.URL" or "Common.File" indicator objects, None for an unsupported IOC.
@@ -1155,7 +1161,7 @@ def build_ioc_indicator(ioc: dict, relationships: list | None = None) -> Any:
         indicator_type=IOC_TYPE_TO_DBOT_SCORE_TYPE.get(ioc_type, DBotScoreType.CUSTOM),
         integration_name=VENDOR_NAME,
         score=ioc.get("score", Common.DBotScore.NONE),
-        reliability=demisto.params().get("integrationReliability", DEFAULT_RELIABILITY),
+        reliability=integration_reliability,
     )
 
     common_arguments = {
@@ -1215,7 +1221,7 @@ def prepare_hr_for_ioc(ioc: dict) -> str:
         "Verdict": ioc.get("verdict", ""),
         "First Seen": ioc.get("firstSeen", ""),
         "Last Seen": ioc.get("lastSeen", ""),
-        "Source Time Stamp": ioc.get("sourceTimeStamp", ""),
+        "Source Timestamp": ioc.get("sourceTimeStamp", ""),
         "Alert IDs": ", ".join(str(alert_id) for alert_id in ioc.get("alertIds") or []),
         "Alert Types": ", ".join(str(alert_type) for alert_type in ioc.get("alertTypes") or []),
         "Feed": ioc.get("feed", ""),
@@ -1228,7 +1234,7 @@ def prepare_hr_for_ioc(ioc: dict) -> str:
         "Verdict",
         "First Seen",
         "Last Seen",
-        "Source Time Stamp",
+        "Source Timestamp",
         "Alert IDs",
         "Alert Types",
         "Feed",
@@ -1811,6 +1817,8 @@ def dataminrpulse_ioc_enrich_command(client: DataminrPulseReGenAIClient, args: D
     :return: Standard command results.
     """
     ioc_json_data: Any = args.get("ioc_json_data")
+    integration_reliability = args.get("integration_reliability", DEFAULT_RELIABILITY)
+    create_relationships = args.get("create_relationships", True)
 
     if not ioc_json_data:
         raise ValueError(ERRORS["REQUIRED_ARG"].format("ioc_json_data"))
@@ -1842,7 +1850,7 @@ def dataminrpulse_ioc_enrich_command(client: DataminrPulseReGenAIClient, args: D
 
     ioc_list = list(iocs.values())
     if not ioc_list:
-        return CommandResults(readable_output="No IOCs found.")  # type: ignore
+        return [CommandResults(readable_output="No IOCs found.")]
 
     results = []
     indicators_to_create = []
@@ -1854,10 +1862,10 @@ def dataminrpulse_ioc_enrich_command(client: DataminrPulseReGenAIClient, args: D
             continue
 
         relationships = []
-        if demisto.params().get("create_relationships", True):
-            relationships = create_relationships_for_ioc(ioc)
+        if create_relationships:
+            relationships = create_relationships_for_ioc(ioc, integration_reliability)
 
-        indicator = build_ioc_indicator(ioc, relationships)
+        indicator = build_ioc_indicator(ioc, relationships, integration_reliability)
         if not indicator:
             # The IOC can not be represented as an XSOAR indicator, so it must not be created in the data store either.
             continue
@@ -1877,7 +1885,7 @@ def dataminrpulse_ioc_enrich_command(client: DataminrPulseReGenAIClient, args: D
         )
 
     if not indicators_to_create:
-        return CommandResults(readable_output="No IOCs found.")  # type: ignore
+        return [CommandResults(readable_output="No IOCs found.")]
 
     demisto.debug(f"Creating {len(indicators_to_create)} IOCs in the threat intelligence data store.")
     demisto.createIndicators(indicators_to_create)
@@ -1902,6 +1910,10 @@ def main():
 
     # Parameters for fetch incident mechanism
     watchlist_names = params.get("watchlist_names")
+
+    # Parameters for the IOC enrichment command.
+    integration_reliability = params.get("integrationReliability", DEFAULT_RELIABILITY)
+    create_relationships = params.get("create_relationships", True)
 
     # Retrieve the name of the command being called.
     command = demisto.command()
@@ -1935,6 +1947,8 @@ def main():
             if command == "dataminrpulse-alerts-get":
                 args.update({"watchlist_names": watchlist_names})
             remove_nulls_from_dictionary(trim_spaces_from_args(args))
+            if command == "dataminrpulse-ioc-enrich":
+                args.update({"integration_reliability": integration_reliability, "create_relationships": create_relationships})
             return_results(demisto_commands[command](client, args))
         else:
             raise NotImplementedError(f"The command {command} is not implemented.")

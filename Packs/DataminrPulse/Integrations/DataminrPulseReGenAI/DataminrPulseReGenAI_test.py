@@ -1117,7 +1117,7 @@ def test_dataminrpulse_ioc_enrich_command_success(mocker, mock_client_with_valid
     assert [indicator["value"] for indicator in created_indicators] == [ioc.get("value") for ioc in mock_ioc_data.get("outputs")]
     assert created_indicators[0]["type"] == "IP"
     assert created_indicators[0]["score"] == 3
-    # The "sourceTimeStamp" key is not part of the "demisto.createIndicators" contract, so the time stamps are only
+    # The "sourceTimeStamp" key is not part of the "demisto.createIndicators" contract, so the timestamps are only
     # reported through the fields of the indicator.
     assert "sourceTimeStamp" not in created_indicators[0]
     assert created_indicators[0]["rawJSON"]["sourceTimeStamp"] == "2026-05-19T09:10:00Z"
@@ -1208,7 +1208,8 @@ def test_dataminrpulse_ioc_enrich_command_when_no_valid_ioc_is_present(mocker, m
 
     actual = dataminrpulse_ioc_enrich_command(mock_client_with_valid_token, {"ioc_json_data": ioc_json_data})
 
-    assert actual.readable_output == "No IOCs found."  # type: ignore
+    assert len(actual) == 1
+    assert actual[0].readable_output == "No IOCs found."
     create_indicators.assert_not_called()
 
 
@@ -1245,15 +1246,15 @@ def test_dataminrpulse_ioc_enrich_command_when_the_argument_is_not_valid(
 def test_dataminrpulse_ioc_enrich_command_when_the_same_ioc_is_present_in_multiple_alerts(mocker, mock_client_with_valid_token):
     """
     Test case scenario for the execution of dataminrpulse_ioc_enrich_command function when the same IOC is present in
-    multiple alerts which are not in the chronological order and hold the time stamps with and without a time zone.
+    multiple alerts which are not in the chronological order and hold the timestamps with and without a time zone.
 
     Given:
         - command arguments holding the alerts with the same IOC, in a mixed order and time zone format
     When:
         - Calling `dataminrpulse_ioc_enrich_command` function
     Then:
-        - A single IOC is created holding the earliest first seen time stamp, the latest last seen time stamp and the
-          highest verdict, without an error while comparing the time stamps
+        - A single IOC is created holding the earliest first seen timestamp, the latest last seen timestamp and the
+          highest verdict, without an error while comparing the timestamps
     """
     from DataminrPulseReGenAI import dataminrpulse_ioc_enrich_command
 

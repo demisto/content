@@ -615,7 +615,7 @@ script:
     name: dataminrpulse-malware-enrich
     hidden: true
     arguments:
-    - description: Raw response of the "malware" coming through the "dataminrpulse-alerts-get" command.
+    - description: The raw response of the "malware" coming through the "dataminrpulse-alerts-get" command.
       required: true
       name: malware_json_data
     outputs:
@@ -668,7 +668,7 @@ script:
     name: dataminrpulse-threat-actor-enrich
     hidden: true
     arguments:
-    - description: Raw response of the "threat actor" coming through the "dataminrpulse-alerts-get" command.
+    - description: The raw response of the "threat actor" coming through the "dataminrpulse-alerts-get" command.
       required: true
       name: threat_actor_json_data
     outputs:
@@ -724,7 +724,7 @@ script:
     name: dataminrpulse-ioc-enrich
     hidden: true
     arguments:
-    - description: Raw response of the "alerts" coming through the "dataminrpulse-alerts-get" command.
+    - description: The raw response of the "alerts" coming through the "dataminrpulse-alerts-get" command.
       required: true
       name: ioc_json_data
     outputs:
@@ -741,13 +741,13 @@ script:
       description: The DBot score of the IOC.
       type: Number
     - contextPath: DataminrPulse.IOC.firstSeen
-      description: The time stamp of the earliest alert the IOC was seen in.
+      description: The timestamp of the earliest alert the IOC was seen in (e.g., 2026-09-01T00:11:22Z).
       type: Date
     - contextPath: DataminrPulse.IOC.lastSeen
-      description: The time stamp of the latest alert the IOC was seen in.
+      description: The timestamp of the latest alert the IOC was seen in (e.g., 2026-09-01T00:11:22Z).
       type: Date
     - contextPath: DataminrPulse.IOC.sourceTimeStamp
-      description: The publication time stamp of the Dataminr alert the IOC was extracted from.
+      description: The publication timestamp of the Dataminr alert the IOC was extracted from (e.g., 2026-09-01T00:11:22Z).
       type: Date
     - contextPath: DataminrPulse.IOC.feed
       description: The feed which created the IOC.
@@ -777,19 +777,19 @@ script:
       description: The port associated with the IP address.
       type: String
     - contextPath: IP.FirstSeenBySource
-      description: The time stamp of the earliest alert the IP address was seen in.
+      description: The timestamp of the earliest alert the IP address was seen in (e.g., 2026-09-01T00:11:22Z).
       type: String
     - contextPath: IP.LastSeenBySource
-      description: The time stamp of the latest alert the IP address was seen in.
+      description: The timestamp of the latest alert the IP address was seen in (e.g., 2026-09-01T00:11:22Z).
       type: String
     - contextPath: URL.Data
       description: The URL.
       type: String
     - contextPath: URL.FirstSeenBySource
-      description: The time stamp of the earliest alert the URL was seen in.
+      description: The timestamp of the earliest alert the URL was seen in (e.g., 2026-09-01T00:11:22Z).
       type: String
     - contextPath: URL.LastSeenBySource
-      description: The time stamp of the latest alert the URL was seen in.
+      description: The timestamp of the latest alert the URL was seen in (e.g., 2026-09-01T00:11:22Z).
       type: String
     - contextPath: File.MD5
       description: The MD5 hash of the file.
@@ -801,10 +801,10 @@ script:
       description: The SHA256 hash of the file.
       type: String
     - contextPath: File.FirstSeenBySource
-      description: The time stamp of the earliest alert the file hash was seen in.
+      description: The timestamp of the earliest alert the file hash was seen in (e.g., 2026-09-01T00:11:22Z).
       type: String
     - contextPath: File.LastSeenBySource
-      description: The time stamp of the latest alert the file hash was seen in.
+      description: The timestamp of the latest alert the file hash was seen in (e.g., 2026-09-01T00:11:22Z).
       type: String
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -826,7 +826,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.14.12343672
+  dockerimage: demisto/python3:3.12.14.13053055
 fromversion: 6.10.0
 marketplaces:
 - xsoar
