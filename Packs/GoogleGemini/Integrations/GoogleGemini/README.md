@@ -49,23 +49,6 @@ The integration supports various Gemini models including:
 - gemini-3.7-flash
 - gemini-3.8-flash
 
-**Preview Models:**
-
-- gemini-2.0-flash-preview-image-generation
-
-**Audio/TTS Models:**
-
-- gemini-2.5-flash-preview-native-audio-dialog
-- gemini-2.5-flash-exp-native-audio-thinking-dialog
-- gemini-2.5-flash-preview-tts
-- gemini-2.5-pro-preview-tts
-
-**Specialized Models:**
-
-- text-embedding-004 (for embeddings)
-- models/embedding-001 (for embeddings)
-- models/aqa (for attributed question-answering)
-
 Note: You can also use the freetext model field to specify newer models not in the dropdown list.
 
 ## Commands
