@@ -20,7 +20,7 @@ The script was specifically developed for use by the `Delete Reported Email` lay
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| delete_type | The type of deletion - soft allows restoring, hard doesn't. Not relevant for O365 and Search &amp;amp; Compliance. |
+| delete_type | The type of deletion - soft allows restoring, hard doesn't. |
 | delete_from_brand | The brand for which to delete this email from. The default value is the incident using the brand. |
 | search_name | Argument used for the generic polling flow within the security and compliance search. |
 | polling | Use the Cortex XSOAR built-in polling to retrieve the result when it's ready. |
@@ -49,3 +49,4 @@ The script was specifically developed for use by the `Delete Reported Email` lay
   * An `EML` file was not attached to the email.
   * The playbook is being used as a sub-playbook, causing the `EML` file to exist only in the parent playbook.
   * The `Process Email - Generic v2` sub-playbook failed, or the `ParseEmailFilesV2` step within it specifically failed.
+* The script is not supporting multiple recipients in the `Reported Email To` field.

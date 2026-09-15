@@ -1,8 +1,8 @@
 IT Service Management
 
-## Configure ServiceDeskPlus on Cortex XSOAR
+## Configure ServiceDeskPlus in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. In Cortex XSOAR, navigate to **Settings** > **Integrations** > **Instances**. In Cortex XSIAM, navigate to **Settings** > **Automation & Feed Integrations**.
 2. Search for ServiceDeskPlus.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -12,10 +12,11 @@ To create an instance of the Service Desk Plus integration, you need to get a Cl
 Follow the next steps to create an instance:
 
 1. Select the data center in which your data resides.
-2. Register your app using [ZOHO App Registration](https://api-console.zoho.com). Make sure you copy the Client ID and Client Secret of the app to the Cortex XSOAR instance and click the **Done** button.
+2. Register the app using [ZOHO App Registration](https://api-console.zoho.com). Copy the **Client ID** and **Client Secret**, then paste them into the integration instance and click **Done**.
 3. In the registered app, select the **Generate Code** tab and define the scopes for the app.
-4. From the Cortex XSOAR CLI run the command `!service-desk-plus-generate-refresh-token` and paste the generated code into the code parameter.
-5. Copy the generated refresh token to the Cortex XSOAR instance and click the **Test** button to validate the instance.
+4. In the War Room or Playground, run the ***!service-desk-plus-generate-refresh-token*** command and paste the generated code into the **Refresh Token** parameter.
+5. Click the **Test** button to validate the instance.
+6. If the test is successful, click **Save** to save the instance.
 
 ## Instance Creation Flow for On-Premise
 
@@ -23,9 +24,10 @@ To create an instance of the Service Desk Plus integration, you need to get a On
 
 Follow the next steps to create an instance:
 
-1. Enter the On-Premise Server URL info.
-2. Enter the Technician Key.
+1. Enter the **On-Premise Server URL**.
+2. Enter the **Technician Key**.
 3. Click the **Test** button to validate the instance.
+4. If the test is successful, click **Save** to save the instance.
 
 **NOTES**
 
@@ -216,6 +218,7 @@ Create new requests
 | subject | Subject of this request | Required |
 | description | Description of this request | Optional |
 | request_type | Type of this request. Choose one of the listed options or provide a dictionary representing a request_type object. | Optional |
+| impact_details | Description about the impact of the request; must not exceed 250 characters. | Optional |
 | impact | Impact of this request. Choose one of the listed options or provide a dictionary representing an impact object. | Optional |
 | status | Indicates the current status of this request. Choose one of the listed options or provide a dictionary representing a status object. | Optional |
 | mode | The mode in which the request is created. Choose one of the listed options or provide a dictionary representing a mode object. | Optional |
@@ -260,7 +263,7 @@ Create new requests
 
 #### Command Example
 
-```!service-desk-plus-request-create subject="Create New Request" requester="{'name':'First Last'}"```
+```!service-desk-plus-request-create subject="Create New Request" requester="{'name':'First Last'}" impact_details="Workflow affected"```
 
 #### Context Example
 
@@ -290,6 +293,7 @@ Create new requests
             "HasProject": false,
             "HasRequestInitiatedChange": false,
             "Id": "123640000000276021",
+            "ImpactDetails": "Workflow affected",
             "IsEscalated": false,
             "IsFcr": false,
             "IsFirstResponseOverdue": false,
@@ -372,7 +376,6 @@ Update the request with the given request id.
 | resources | Holds the resource data mapped to the request | Optional |
 | udf_fields | Holds udf fields' values associated with the request. Input format: A string of the form "key1:value1,key2:value2" or a dictionary of the form "{'key1':'val1','key2':'val2'}" | Optional |
 | update_reason | The reason for updating this request | Optional |
-| status_change_comments | Comments added while changing the request's status | Optional |
 
 #### Context Output
 
@@ -810,3 +813,155 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Successfully closed request 123640000000288001
+>
+### service-desk-plus-request-notes-list
+
+***
+Get a request specific note, or list all of its notes.
+
+#### Base Command
+
+`service-desk-plus-request-notes-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_id | The ID of the request to retrieve its notes. | Required |
+| request_note_id | The ID of the note to retrieve it's data. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ServiceDeskPlus.Request.Note.mark_first_response | Boolean | Mark first response or not. |
+| ServiceDeskPlus.Request.Note.created_time.display_value | Date | Created time display value. |
+| ServiceDeskPlus.Request.Note.created_time.value | Date | Created time value. |
+| ServiceDeskPlus.Request.Note.add_to_linked_requests | Boolean | Add to linked requests or not. |
+| ServiceDeskPlus.Request.Note.request.display_id | String | Request display id. |
+| ServiceDeskPlus.Request.Note.request.subject | String | Request subject. |
+| ServiceDeskPlus.Request.Note.request.id | String | Request id. |
+| ServiceDeskPlus.Request.Note.notify_technician | Boolean | Notify technician or not. |
+| ServiceDeskPlus.Request.Note.show_to_requester | Boolean | Show to requester or not. |
+| ServiceDeskPlus.Request.Note.description | String | Note description. |
+| ServiceDeskPlus.Request.Note.id | Date | Note id. |
+| ServiceDeskPlus.Request.Note.created_by.email_id | String | Email id of the creator. |
+| ServiceDeskPlus.Request.Note.created_by.is_technician | Boolean | Whether the creator is technician or not. |
+| ServiceDeskPlus.Request.Note.created_by.sms_mail | String | Creator sms mail. |
+| ServiceDeskPlus.Request.Note.created_by.phone | String | Creator phone. |
+| ServiceDeskPlus.Request.Note.created_by.name | String | Creator name. |
+| ServiceDeskPlus.Request.Note.created_by.mobile | String | Creator mobile. |
+| ServiceDeskPlus.Request.Note.created_by.id | Date | Creator id. |
+| ServiceDeskPlus.Request.Note.created_by.photo_url | String | Creator photo url. |
+| ServiceDeskPlus.Request.Note.created_by.is_vip_user | Boolean | Whether creator is vip user or not. |
+
+### service-desk-plus-request-notes-add
+
+***
+add a request note.
+
+#### Base Command
+
+`service-desk-plus-request-notes-add`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_id | The ID of the request to retrieve it's notes. | Required |
+| description | The note description. | Optional |
+| mark_first_response | whether to mark first response or not. Possible values are: true, false. Default is false. | Optional |
+| add_to_linked_requests | whether to add to linked requests or not. Possible values are: true, false. Default is false. | Optional |
+| notify_technician | whether to notify technician. Possible values are: true, false. Default is false. | Optional |
+| show_to_requester | whether to show to requester. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ServiceDeskPlus.Request.Note.mark_first_response | Boolean | mark first response or not. |
+| ServiceDeskPlus.Request.Note.created_time.display_value | Date | created time display value. |
+| ServiceDeskPlus.Request.Note.created_time.value | Date | created time value. |
+| ServiceDeskPlus.Request.Note.add_to_linked_requests | Boolean | add to linked requests or not. |
+| ServiceDeskPlus.Request.Note.request.display_id | String | request display id. |
+| ServiceDeskPlus.Request.Note.request.subject | String | request subject. |
+| ServiceDeskPlus.Request.Note.request.id | Date | request id. |
+| ServiceDeskPlus.Request.Note.notify_technician | Boolean | notify technician or not. |
+| ServiceDeskPlus.Request.Note.show_to_requester | Boolean | show to requester or not. |
+| ServiceDeskPlus.Request.Note.description | String | note description. |
+| ServiceDeskPlus.Request.Note.id | Date | note id. |
+| ServiceDeskPlus.Request.Note.created_by.email_id | String | email id of the creator. |
+| ServiceDeskPlus.Request.Note.created_by.is_technician | Boolean | whether the creator is technician or not. |
+| ServiceDeskPlus.Request.Note.created_by.sms_mail | String | creator sms mail. |
+| ServiceDeskPlus.Request.Note.created_by.phone | String | creator phone. |
+| ServiceDeskPlus.Request.Note.created_by.name | String | creator name. |
+| ServiceDeskPlus.Request.Note.created_by.mobile | String | creator mobile. |
+| ServiceDeskPlus.Request.Note.created_by.id | Date | creator id. |
+| ServiceDeskPlus.Request.Note.created_by.photo_url | String | creator photo url. |
+| ServiceDeskPlus.Request.Note.created_by.is_vip_user | Boolean | whether creator is vip user or not. |
+
+### service-desk-plus-request-notes-delete
+
+***
+delete a request note.
+
+#### Base Command
+
+`service-desk-plus-request-notes-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_id | The ID of the request to delete it's notes. | Required |
+| request_note_id | The ID of the note to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### service-desk-plus-request-notes-update
+
+***
+update a request note.
+
+#### Base Command
+
+`service-desk-plus-request-notes-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_note_id | The ID of the note to retrieve it's data. | Required |
+| request_id | The ID of the request to retrieve it's notes. | Required |
+| description | The note description. | Required |
+| mark_first_response | whether to mark first response or not. Possible values are: true, false. Default is false. | Optional |
+| add_to_linked_requests | whether to add to linked requests or not. Possible values are: true, false. Default is false. | Optional |
+| notify_technician | whether to notify technician. Possible values are: true, false. Default is false. | Optional |
+| show_to_requester | whether to show to requester. Possible values are: true, false. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ServiceDeskPlus.Request.Note.mark_first_response | Boolean | mark first response or not. |
+| ServiceDeskPlus.Request.Note.created_time.display_value | Date | created time display value. |
+| ServiceDeskPlus.Request.Note.created_time.value | Date | created time value. |
+| ServiceDeskPlus.Request.Note.add_to_linked_requests | Boolean | add to linked requests or not. |
+| ServiceDeskPlus.Request.Note.request.display_id | String | request display id. |
+| ServiceDeskPlus.Request.Note.request.subject | String | request subject. |
+| ServiceDeskPlus.Request.Note.request.id | Date | request id. |
+| ServiceDeskPlus.Request.Note.notify_technician | Boolean | notify technician or not. |
+| ServiceDeskPlus.Request.Note.show_to_requester | Boolean | show to requester or not. |
+| ServiceDeskPlus.Request.Note.description | String | note description. |
+| ServiceDeskPlus.Request.Note.id | Date | note id. |
+| ServiceDeskPlus.Request.Note.created_by.email_id | String | email id of the creator. |
+| ServiceDeskPlus.Request.Note.created_by.is_technician | Boolean | whether the creator is technician or not. |
+| ServiceDeskPlus.Request.Note.created_by.sms_mail | String | creator sms mail. |
+| ServiceDeskPlus.Request.Note.created_by.phone | String | creator phone. |
+| ServiceDeskPlus.Request.Note.created_by.name | String | creator name. |
+| ServiceDeskPlus.Request.Note.created_by.mobile | String | creator mobile. |
+| ServiceDeskPlus.Request.Note.created_by.id | Date | creator id. |
+| ServiceDeskPlus.Request.Note.created_by.photo_url | String | creator photo url. |
+| ServiceDeskPlus.Request.Note.created_by.is_vip_user | Boolean | whether creator is vip user or not. |

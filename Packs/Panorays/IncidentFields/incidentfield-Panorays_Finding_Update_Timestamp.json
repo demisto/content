@@ -1,0 +1,21 @@
+{
+    "cliName": "panoraysfindingupdatets",
+    "description": "The timestamp when the Panorays finding was last updated.",
+    "group": 0,
+    "id": "incident_panoraysfindingupdatets",
+    "name": "Panorays Finding Update Timestamp",
+    "associatedTypes": [
+        "Panorays Finding"
+    ],
+    "associatedToAll": false,
+    "type": "shortText",
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "content": true,
+    "system": false,
+    "unsearchable": true,
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

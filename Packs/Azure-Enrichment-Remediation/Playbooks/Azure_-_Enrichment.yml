@@ -469,10 +469,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if the Azure Active Directory Identity And Access integration instance is configured.
+      description: Determines if the Entra ID Identity And Access integration instance is configured.
       id: d0f2c3ef-0687-411c-8c1a-044b9f74843b
       iscommand: false
-      name: Is Azure Active Directory Identity And Access enabled?
+      name: Is Entra ID Identity And Access enabled?
       type: condition
       version: -1
     taskid: d0f2c3ef-0687-411c-8c1a-044b9f74843b
@@ -878,7 +878,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determines if the Azure Active Directory Identity And Access integration instance is configured.
+      description: Determines if the Entra ID Identity And Access integration instance is configured.
       id: c5276745-c370-442f-81d2-d0a2b2713dcd
       iscommand: false
       name: Is Azure Resource Graph enabled?

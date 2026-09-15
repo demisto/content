@@ -407,9 +407,9 @@ class Client(BaseClient):
             timestamp (int): The timestamp to filter by.
 
         Returns:
-            dict[str, Any]: The API response.
+            dict[str, Any]: The API response with large integers converted to strings.
         """
-        return self._http_request(
+        response = self._http_request(
             "GET",
             url_suffix="api/v2/events/dataexport/events/incident",
             params={"operation": timestamp},
@@ -417,6 +417,13 @@ class Client(BaseClient):
             status_list_to_retry=[409, 429],
             backoff_factor=DEFAULT_WAIT_TIME,
         )
+
+        # Convert large integers to strings to prevent JavaScript precision loss
+        if incidents := response.get("result"):
+            for incident in incidents:
+                convert_large_integers_to_strings(incident)
+
+        return response
 
     def update_dlp_incident(
         self,
@@ -502,6 +509,7 @@ def list_alert_command(
     for alert in output:
         alert["alert_id"] = alert["_id"]
         alert["timestamp"] = timestamp_to_datestring(alert["timestamp"] * 1000)
+        convert_large_integers_to_strings(alert)
 
     readable_output = tableToMarkdown(
         name="Alert List",
@@ -566,6 +574,7 @@ def list_event_command(
     for event in output:
         event["event_id"] = event["_id"]
         event["timestamp"] = timestamp_to_datestring(event["timestamp"] * 1000)
+        convert_large_integers_to_strings(event)
 
     readable_output = tableToMarkdown(
         name="Event List",
@@ -928,11 +937,11 @@ def fetch_incidents(client: Client, params: dict[str, Any]):
 
     event_types = argToList(params.get("event_types"))
     alert_query = params.get("alerts_query")
-    alert_max_fetch = arg_to_number(params["max_fetch"]) or MAX_LIMIT
+    alert_max_fetch = arg_to_number(params.get("max_fetch") or 50) or MAX_LIMIT
 
     num_event_types = len(event_types) if event_types else 1
     max_fetch_per_event_type = MAX_FETCH_PER_EVENT_TYPE // num_event_types
-    if event_types and (event_max_fetch := arg_to_number(params["max_events_fetch"])) is not None:
+    if event_types and (event_max_fetch := arg_to_number(params.get("max_events_fetch") or 50)) is not None:
         max_fetch_per_event_type = event_max_fetch // (len(event_types))
 
     if params.get("fetch_events") and event_types:
@@ -1151,6 +1160,24 @@ def get_remote_data_command(
 # HELPERS FUNCTIONS #
 
 
+def convert_large_integers_to_strings(data: dict[str, Any]) -> None:
+    """Convert large integers to strings to prevent JavaScript precision loss.
+
+    JavaScript cannot safely represent integers larger than 2^53-1 (Number.MAX_SAFE_INTEGER).
+    This function converts such integers to strings in-place to preserve their exact values.
+
+    Args:
+        data (dict[str, Any]): Dictionary containing potential large integer values.
+
+    Reference:
+        https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
+    """
+    for key, value in list(data.items()):
+        if isinstance(value, int) and value > JS_NUMBER_LIMIT:
+            demisto.debug(f"Converting large integer to string: {key}={value}")
+            data[key] = str(value)
+
+
 def get_hourly_timestamps(start_time: int, end_time: int) -> list[int]:
     """Get a list of timestamps with a one hour gap between the received start and end timestamps.
 
@@ -1212,11 +1239,8 @@ def parse_incident(
     incident["incident_type"] = incident_type
     incident["mirror_direction"] = mirror_direction
     incident["mirror_instance"] = demisto.integrationInstance()
-    for key, value in incident.items():
-        # JavaScript does not work well with large numbers larger than 2^53-1 so need to stringify them.
-        # https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Number/MAX_SAFE_INTEGER
-        if isinstance(value, int) and value > JS_NUMBER_LIMIT:
-            incident[key] = str(value)
+    convert_large_integers_to_strings(incident)
+
     return {
         "name": f"{incident_type} ID: {incident_id}",
         "incident_type": incident_type,
@@ -1328,7 +1352,7 @@ def fetch_dlp_incidents_as_incidents(
         set_demisto_integration_context("dlp_incidents_to_update", [], "override")
 
     end_time_number = date_to_seconds_timestamp(datetime.now())
-    max_fetch = int(params["max_dlp_incidents_fetch"])
+    max_fetch = int(params.get("max_dlp_incidents_fetch") or 50)
 
     hourly_timestamps = get_hourly_timestamps(
         start_time=last_run_timestamp,

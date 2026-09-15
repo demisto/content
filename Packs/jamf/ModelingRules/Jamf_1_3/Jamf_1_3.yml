@@ -1,6 +1,9 @@
 fromversion: 8.4.0
+toversion: 8.14.0
 id: jamf_ModelingRule
 name: jamf Modeling Rule
 rules: ''
 schema: ''
 tags: jamf
+supportedModules:
+- xsiam

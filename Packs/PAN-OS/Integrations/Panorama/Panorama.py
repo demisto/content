@@ -204,7 +204,7 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     "home-and-garden",
     "hunting-and-fishing",
     "insufficient-content",
-    "internet-Communications-and-telephony",
+    "internet-communications-and-telephony",
     "internet-portals",
     "job-search",
     "legal",
@@ -1170,7 +1170,13 @@ def panorama_commit(args):
     partial_command: str = ""
     is_partial = False
     if device_group := args.get("device-group"):
-        command += f'<device-group><entry name="{device_group}"/></device-group>'
+        is_partial = True
+        partial_command += f"<device-group><member>{device_group}</member></device-group>"
+
+    if templates := argToList(args.get("template")):
+        is_partial = True
+        templates_command = "".join(f"<member>{t}</member>" for t in templates)
+        partial_command += f"<template>{templates_command}</template>"
 
     admin_name = args.get("admin_name")
     if admin_name:
@@ -1209,6 +1215,36 @@ def panorama_commit(args):
     return result
 
 
+def _build_commit_scope_and_details(args: dict) -> tuple[str, str]:
+    """Compute Panorama.Commit.Scope ('Partial' / 'Full') and a human-readable Panorama.Commit.Details
+    summary string from the commit args.
+
+    The 'Partial' classification mirrors the same logic used by panorama_commit() when building
+    the <partial> XML element, so the context value always agrees with what was actually sent
+    on the wire.
+    """
+    parts: list[str] = []
+
+    if device_group := args.get("device-group"):
+        parts.append(f"device-group={device_group}")
+
+    if templates := argToList(args.get("template")):
+        parts.append(f"template={', '.join(templates)}")
+
+    if admin_name := args.get("admin_name"):
+        parts.append(f"admin={admin_name}")
+
+    if argToBoolean(args.get("exclude_device_network_configuration") or False):
+        parts.append("exclude_device_network_configuration=true")
+
+    if argToBoolean(args.get("exclude_shared_objects") or False):
+        parts.append("exclude_shared_objects=true")
+
+    if parts:
+        return "Partial", "; ".join(parts)
+    return "Full", "Full commit"
+
+
 @polling_function(
     name=demisto.command(),  # should fit to both pan-os-commit and panorama-commit (deprecated)
     interval=arg_to_number(demisto.args().get("interval_in_seconds", 10)),
@@ -1221,6 +1257,7 @@ def panorama_commit_command(args: dict):
     Supports polling as well.
     """
     commit_description = args.get("description", "")
+    commit_scope, commit_details = _build_commit_scope_and_details(args)
 
     if job_id := args.get("commit_job_id"):
         commit_status = panorama_commit_status({"job_id": job_id}).get("response", {}).get("result", {})
@@ -1229,6 +1266,8 @@ def panorama_commit_command(args: dict):
             "JobID": job_id,
             "Description": commit_description,
             "Status": "Success" if job_result == "OK" else "Failure",
+            "Scope": commit_scope,
+            "Details": commit_details,
         }
         return PollResult(
             response=CommandResults(  # this is what the response will be in case job has finished
@@ -1243,7 +1282,13 @@ def panorama_commit_command(args: dict):
         result = panorama_commit(args)
         job_id = result.get("response", {}).get("result", {}).get("job", "")
         if job_id:
-            context_output = {"JobID": job_id, "Description": commit_description, "Status": "Pending"}
+            context_output = {
+                "JobID": job_id,
+                "Description": commit_description,
+                "Status": "Pending",
+                "Scope": commit_scope,
+                "Details": commit_details,
+            }
             continue_to_poll = True
             commit_output = CommandResults(  # type: ignore[assignment]
                 outputs_prefix="Panorama.Commit",
@@ -1264,6 +1309,11 @@ def panorama_commit_command(args: dict):
                 "polling": argToBoolean(args.get("polling")),
                 "interval_in_seconds": arg_to_number(args.get("interval_in_seconds")),
                 "timeout": arg_to_number(args.get("timeout")),
+                "device-group": args.get("device-group"),
+                "template": args.get("template"),
+                "admin_name": args.get("admin_name"),
+                "exclude_device_network_configuration": args.get("exclude_device_network_configuration"),
+                "exclude_shared_objects": args.get("exclude_shared_objects"),
             },
             partial_result=CommandResults(
                 readable_output=f'Waiting for commit "{commit_description}" with job ID {job_id} to finish...'
@@ -6595,58 +6645,91 @@ def panorama_check_latest_dynamic_update_command(args: dict):
     outdated_item_count = 0
     outputs = {}
 
+    if not VSYS and not target:
+        # When the VSYS param is not set it meams that this is a panorama instance -> user must specify a target FW
+        raise DemistoException(
+            f"When running from a Panorama instance, you must specify the target argument. "
+            f"Set target to the serial number of the Panorama-managed firewall you want to check updates for."
+        )
+
     for update_type in DynamicUpdateType:
         # Call firewall API to check for the latest available update of each type
-        result = panorama_check_latest_dynamic_update_content(update_type, target)
+        try:
+            result = panorama_check_latest_dynamic_update_content(update_type, target)
 
-        if "result" in result["response"] and result["response"]["@status"] == "success":
-            versions = result["response"]["result"]["content-updates"]["entry"]
+            if "result" in result["response"] and result["response"]["@status"] == "success":
+                versions = result.get("response", {}).get("result", {}).get("content-updates", {}).get("entry", [])
+                if not versions:  # firewall probably doesn't have app/threat or Antivirus or WildFire or GP installed
+                    demisto.debug(f"No available updates (Firewall probably doesn't have any {update_type.value} installed).")
 
-            # Ensure versions is a list even if there's only one entry
-            if not isinstance(versions, list):
-                versions = [versions]
+                # Ensure versions is a list even if there's only one entry
+                if not isinstance(versions, list):
+                    versions = [versions]
 
-            latest_version = {}
-            current_version = {}
-            latest_version_parts = (0, 0)
+                latest_version = {}
+                current_version = {}
+                latest_version_parts = (0, 0)
 
-            # Identify the latest available version and what is currently installed
-            for entry in versions:
-                # Find current version
-                if entry.get("current") == "yes" or entry.get("installing") == "yes":
-                    current_version = entry
+                # Identify the latest available version and what is currently installed
+                for entry in versions:
+                    # Find current version
+                    if entry.get("current") == "yes" or entry.get("installing") == "yes":
+                        current_version = entry
 
-                # Parse version parts as integers for proper comparison
-                version_str = entry.get("version", "")
-                if "-" in version_str:
-                    major, minor = version_str.split("-")
-                    version_parts = (int(major), int(minor))
+                    # Parse version parts as integers for proper comparison
+                    version_str = entry.get("version", "")
+                    if "-" in version_str:
+                        major, minor = version_str.split("-")
+                        version_parts = (int(major), int(minor))
 
-                    # Check if this is the latest version
-                    if version_parts > latest_version_parts:
-                        latest_version_parts = version_parts
-                        latest_version = entry
+                        # Check if this is the latest version
+                        if version_parts > latest_version_parts:
+                            latest_version_parts = version_parts
+                            latest_version = entry
 
-            # Check if currently installed is the most recent available
-            is_up_to_date = current_version.get("version") == latest_version.get("version")
+                # Check if currently installed is the most recent available
+                is_up_to_date = False
+                if current_version and latest_version:
+                    is_up_to_date = current_version.get("version") == latest_version.get("version")
 
-            context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
+                context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
 
-            if not is_up_to_date:
-                outdated_item_count += 1
+                if not is_up_to_date:
+                    outdated_item_count += 1
 
-            # Add both latest and current versions to the output
-            outputs[context_prefix] = {
-                "LatestAvailable": latest_version,
-                "CurrentlyInstalled": current_version,
-                "IsUpToDate": is_up_to_date,
-            }
-        else:
-            # Raise error if API call failed
-            raise DemistoException(
-                f"Failed to retrieve dynamic update information for {update_type.value}.\nAPI response:\n"
-                f"{result['response']['msg']}"
-            )
+                # Add both latest and current versions to the output
+                outputs[context_prefix] = {
+                    "LatestAvailable": latest_version,
+                    "CurrentlyInstalled": current_version,
+                    "IsUpToDate": is_up_to_date,
+                }
+            else:
+                # Raise error if API call failed
+                raise DemistoException(
+                    f"Failed to retrieve dynamic update information for {update_type.value}.\nAPI response:\n"
+                    f"{result['response']['msg']}"
+                )
+        except Exception as e:
+            if "There is no Global Protext Gateway license on the box" in str(e):
+                outputs["GP"] = {
+                    "LatestAvailable": {
+                        "version": "An Error received from Panorama API: 'There is no Global Protect Gateway license on the box.'"
+                    },
+                    "CurrentlyInstalled": {},
+                    "IsUpToDate": False,
+                }
+                continue
+            elif "There is not wildfire license on the box" in str(e):
+                outputs["WILDFIRE"] = {
+                    "LatestAvailable": {
+                        "version": "An Error received from Panorama API: 'There is not wildfire license on the box.'"
+                    },
+                    "CurrentlyInstalled": {},
+                    "IsUpToDate": False,
+                }
+                continue
+            else:
+                raise e
 
     outputs["ContentTypesOutOfDate"] = {"Count": outdated_item_count}
 
@@ -6661,8 +6744,8 @@ def panorama_check_latest_dynamic_update_command(args: dict):
             {
                 "Update Type": update_type,
                 "Is Up To Date": "True" if data["IsUpToDate"] else "False",
-                "Latest Available Version": data["LatestAvailable"].get("version", "N/A"),  # type: ignore[union-attr]
-                "Currently Installed Version": data["CurrentlyInstalled"].get("version", "N/A"),  # type: ignore[union-attr]
+                "Latest Available Version": data["LatestAvailable"].get("version", "N/A"),  # type: ignore[attr-defined]
+                "Currently Installed Version": data["CurrentlyInstalled"].get("version", "N/A"),  # type: ignore[attr-defined]
             }
         )
 
@@ -6730,6 +6813,8 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
     job_id = args.get("job_id")
     entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
     polling = argToBoolean(args.get("polling", "true"))
+    timeout_in_seconds = arg_to_number(args.get("timeout_in_seconds")) or 3600
+    interval_in_seconds = arg_to_number(args.get("interval_in_seconds")) or 30
 
     # Map update type to command name
     command_map = {
@@ -6765,9 +6850,9 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
                 args["job_id"] = job_id
                 scheduled_command = ScheduledCommand(
                     command=command_to_run,
-                    next_run_in_seconds=10,
+                    next_run_in_seconds=interval_in_seconds,
                     args=args,
-                    timeout_in_seconds=300,
+                    timeout_in_seconds=timeout_in_seconds,
                 )
 
                 command_results = CommandResults(
@@ -6808,9 +6893,9 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
             args["job_id"] = job_id
             scheduled_command = ScheduledCommand(
                 command=command_to_run,
-                next_run_in_seconds=10,
+                next_run_in_seconds=interval_in_seconds,
                 args=args,
-                timeout_in_seconds=300,
+                timeout_in_seconds=timeout_in_seconds,
             )
 
             command_results = CommandResults(
@@ -6929,6 +7014,8 @@ def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateTyp
     job_id = args.get("job_id")
     entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
     polling = argToBoolean(args.get("polling", "true"))
+    timeout_in_seconds = arg_to_number(args.get("timeout_in_seconds")) or 3600
+    interval_in_seconds = arg_to_number(args.get("interval_in_seconds")) or 30
 
     # Map update type to command name
     command_map = {
@@ -6965,9 +7052,9 @@ def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateTyp
                 args["job_id"] = job_id
                 scheduled_command = ScheduledCommand(
                     command=command_to_run,
-                    next_run_in_seconds=10,
+                    next_run_in_seconds=interval_in_seconds,
                     args=args,
-                    timeout_in_seconds=300,
+                    timeout_in_seconds=timeout_in_seconds,
                 )
 
                 command_results = CommandResults(
@@ -7008,9 +7095,9 @@ def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateTyp
             args["job_id"] = job_id
             scheduled_command = ScheduledCommand(
                 command=command_to_run,
-                next_run_in_seconds=10,
+                next_run_in_seconds=interval_in_seconds,
                 args=args,
-                timeout_in_seconds=300,
+                timeout_in_seconds=timeout_in_seconds,
             )
 
             command_results = CommandResults(
@@ -8995,7 +9082,7 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
         raise DemistoException("Set a port for the instance")
 
     URL = params.get("server", "").rstrip("/:") + ":" + params.get("port", "") + "/api/"
-    API_KEY = str(params.get("key")) or str((params.get("credentials") or {}).get("password", ""))  # type: ignore
+    API_KEY = (params.get("credentials") or {}).get("password") or params.get("key") or ""  # type: ignore
     if not API_KEY:
         raise Exception("API Key must be provided.")
     USE_SSL = not params.get("insecure")
@@ -9060,23 +9147,26 @@ def initialize_instance(args: Dict[str, str], params: Dict[str, str]):
 def panorama_upload_content_update_file_command(args: dict):
     category = args.get("category")
     entry_id = args.get("entryID")
-    file_path = demisto.getFilePath(entry_id)["path"]
-    file_name = demisto.getFilePath(entry_id)["name"]
-    shutil.copy(file_path, file_name)
-    with open(file_name, "rb") as file:
-        params = {"type": "import", "category": category, "key": API_KEY}
-        response = http_request(uri=URL, method="POST", headers={}, body={}, params=params, files={"file": file})
-        human_readble = tableToMarkdown("Results", t=response.get("response"))
-        content_upload_info = {"Message": response["response"]["msg"], "Status": response["response"]["@status"]}
-        results = CommandResults(
-            raw_response=response,
-            readable_output=human_readble,
-            outputs_prefix="Panorama.Content.Upload",
-            outputs_key_field="Status",
-            outputs=content_upload_info,
-        )
-
-    shutil.rmtree(file_name, ignore_errors=True)
+    file_info = demisto.getFilePath(entry_id)
+    file_path = file_info["path"]
+    file_name = os.path.basename(file_info["name"])
+    try:
+        shutil.copy(file_path, file_name)
+        with open(file_name, "rb") as file:
+            params = {"type": "import", "category": category, "key": API_KEY}
+            response = http_request(uri=URL, method="POST", headers={}, body={}, params=params, files={"file": file})
+            human_readble = tableToMarkdown("Results", t=response.get("response"))
+            content_upload_info = {"Message": response["response"]["msg"], "Status": response["response"]["@status"]}
+            results = CommandResults(
+                raw_response=response,
+                readable_output=human_readble,
+                outputs_prefix="Panorama.Content.Upload",
+                outputs_key_field="Status",
+                outputs=content_upload_info,
+            )
+    finally:
+        if os.path.isfile(file_name):
+            os.remove(file_name)
     return results
 
 
@@ -9571,12 +9661,13 @@ class Topology:
         if self.panorama_objects:
             for value in self.panorama_devices():
                 yield value
-
+            demisto.debug("[top_level_devices] Panorama instances returned")
             return
 
         if self.firewall_objects:
             for value in self.firewall_devices():
                 yield value
+            demisto.debug("[top_level_devices] Firewall instances returned")
 
     def active_devices(self, filter_str: Optional[str] = None) -> Iterator[Union[Firewall, Panorama]]:
         """
@@ -9616,13 +9707,14 @@ class Topology:
         :param devices: The list of PanDevice instances to filter by the filter string
         :param filter_str: The filter string to filter the devices on
         """
-        # Exact match based on device serial number
         if not filter_str:
             return devices
 
+        # Exact match based on device serial number
         if filter_str in devices:
             return {filter_str: devices.get(filter_str)}
 
+        # Exact match based on hostname
         for serial, device in devices.items():
             if device.hostname == filter_str:
                 return {serial: device}
@@ -11644,16 +11736,25 @@ class PanoramaCommand:
         """
         result = []
         for device in topology.active_top_level_devices(device_filter_str):
+            demisto.debug(f"[get_device_groups] start running on Panorama instance {device.id=}, {device.hostname=}.")
             if isinstance(device, Panorama):
                 response = run_op_command(device, PanoramaCommand.GET_DEVICEGROUPS_COMMAND)
-                for device_group_xml in response.findall("./result/devicegroups/entry"):
+                device_groups = response.findall("./result/devicegroups/entry")
+                demisto.debug(f"[get_device_groups] total device groups {len(device_groups)}.")
+
+                for device_group_xml in device_groups:
                     dg_name = get_element_attribute(device_group_xml, "name")
-                    for device_xml in device_group_xml.findall("./devices/entry"):
+                    devices_per_group = device_group_xml.findall("./devices/entry")
+                    demisto.debug(f"[get_device_groups] Total devices in group {dg_name}: {len(devices_per_group)}.")
+
+                    for device_xml in devices_per_group:
                         device_group_information: DeviceGroupInformation = dataclass_from_element(
                             device, DeviceGroupInformation, device_xml
                         )
                         device_group_information.name = dg_name
                         result.append(device_group_information)
+            else:
+                demisto.debug("[get_device_groups] Skipping running. The command must run from Panorama instance.")
 
         return result
 
@@ -12100,89 +12201,171 @@ class FirewallCommand:
         return ShowRoutingRouteCommandResult(summary_data=summary_data, result_data=result_data)
 
     @staticmethod
+    def get_vsys_list(firewall: Firewall, debug_prefix: str) -> List[str]:
+        """
+        Runs Vsys.refreshall framework command to get all vsys from specific FW.
+
+        :param firewall: The `Firewall` device to directly connect to.
+        """
+        vsys_to_query = []
+        try:
+            """
+            Query the firewall for its list of active virtual systems
+            - No VSYS: always returns ['vsys1'] (multi-vsys is disabled)
+            - VSYS enabled: returns all active virtual systems (e.g., ['vsys1', 'vsys2'])
+            """
+            vsys_list = Vsys.refreshall(firewall)
+            vsys_to_query = [str(v) for v in vsys_list]
+            demisto.debug(f"{debug_prefix} all active vsys: {vsys_to_query}")
+        except Exception as e:
+            demisto.debug(f"{debug_prefix} Failed to discover VSYS for device {firewall.id}: {str(e)}. Defaulting to vsys1.")
+            vsys_to_query = ["vsys1"]
+        return vsys_to_query
+
+    @staticmethod
+    def get_pushed_shared_policy_rules(firewall, rulebase_type: str, vsys_name: str) -> dict[str, PushedSharedPolicy]:
+        """
+        Retrieve Panorama pushed shared policies (pre-rulebase and post-rulebase)
+        and map them by rule name for fast lookup.
+        """
+        # Map by rule name for quick lookup
+        pushed_rulebase_results: dict[str, PushedSharedPolicy] = {}
+
+        # Returns the complete set of policies that Panorama has "shared" with that specific vsys (Shared Rules and Device Group Rules)
+        pushed_config_cmd = f"<show><config><pushed-shared-policy><vsys>{vsys_name}</vsys></pushed-shared-policy></config></show>"
+        pushed_config_response = run_op_command(firewall, cmd=pushed_config_cmd, cmd_xml=False)
+
+        # Panorama rules can exist in pre-rulebase or post-rulebase
+        for position in ["pre-rulebase", "post-rulebase"]:
+            panorama_xpath = f".//panorama/{position}/{rulebase_type}/rules/entry"
+            pushed_rules = pushed_config_response.findall(panorama_xpath)
+            if not pushed_rules:
+                demisto.debug(
+                    f"[get_pushed_shared_policy_rules] No {position} found for vsys: {vsys_name}, path: {panorama_xpath}"
+                )
+
+            for pushed_rule in pushed_rules:
+                entry: PushedSharedPolicy = dataclass_from_element(firewall, PushedSharedPolicy, pushed_rule)
+                if entry:
+                    entry.policy_type = rulebase_type
+                    entry.position = position.replace("-", "_")
+                    pushed_rulebase_results[entry.name] = entry
+
+        return pushed_rulebase_results
+
+    @staticmethod
+    def build_rule_hit_count_xml(vsys_name: str, rulebase_type: str, rules_arg: str) -> ET.Element:
+        xml_root = ET.Element("show")
+        xml_rhc = ET.SubElement(xml_root, "rule-hit-count")
+        xml_vsys = ET.SubElement(xml_rhc, "vsys")
+        v_name_container = ET.SubElement(xml_vsys, "vsys-name")
+        v_entry = ET.SubElement(v_name_container, "entry", name=vsys_name)
+        rb_elem = ET.SubElement(v_entry, "rule-base")
+        rb_entry = ET.SubElement(rb_elem, "entry", name=rulebase_type)
+        rules_container = ET.SubElement(rb_entry, "rules")
+        if rules_arg == "all":
+            ET.SubElement(rules_container, "all")
+        else:
+            rule_list = ET.SubElement(rules_container, "list")
+            for rule in rules_arg.split(","):
+                ET.SubElement(rule_list, "member").text = rule.strip()
+        return xml_root
+
+    @staticmethod
     def get_hitcounts(
         topology: Topology,
-        cmd: str,
         rulebase_type: str,
+        vsys_arg: str,
+        rules_arg: str,
         no_new_hits_since: datetime | None,
         device_filter_string: Optional[str] = None,
         target: Optional[str] = None,
         unused_only: str = "false",
-    ) -> List[ShowRuleHitCountResult] | None:
+        pre_post: Optional[str] = None,
+    ) -> List[ShowRuleHitCountResult]:
         """
-        Runs the `show rule-hit-count` command.
+        Runs the `show rule-hit-count` command with VSYS support.
+
         :param topology: `Topology` instance.
-        :param cmd: The XML-formatted command to run on the firewalls.
-        :param rulebase_type: The rulebase being examined
-        :param no_new_hits_since: The datetime object used to filter out rules that haven't had any new hits since that time.
-        :param device_filter_str: If provided, filters this command to only the devices specified.
+        :param rulebase_type: The rulebase being examined.
+        :param vsys_arg: The firewall VSYS name to check or "all" for all virtual systems.
+        :param rules_arg: Comma-separated list of rule names to check, or "all" for all rules.
+        :param no_new_hits_since: Date string in format ISO-8601 UTC to filter rules with no hits since that time
+        :param device_filter_string: The string by which to filter the results to only show specific hostnames or serial number.
         :param target: Single serial number to target with this command.
         :param unused_only: Whether only rules with hitcount of 0 should be returned ("true" or "false")
+        :param pre_post: If set ("pre_rulebase" or "post_rulebase"), only return rules pushed from Panorama at that position.
         """
-        # Initialize empty list to store results to return
+        debug_prefix = "[get_hitcounts]"
         result_data = []
-
-        # Get the name of the PANOS integration instance
         instanceName = demisto.callingContext["context"]["IntegrationInstance"]
-
-        # Identify the platform type the PANOS integration instance is connected to
         instanceType = "panorama" if len(topology.panorama_objects) > 0 else "firewall"
+
+        demisto.debug(
+            f"{debug_prefix} {rulebase_type=} {vsys_arg=} {rules_arg=} {no_new_hits_since=} "
+            f"{device_filter_string=} {target=} {unused_only=} {pre_post=}"
+        )
 
         # Run operational command on each firewall using the given XML command to get rule hitcounts
         for firewall in topology.firewalls(filter_string=device_filter_string, target=target):
-            demisto.debug(
-                f"Now running operational command to get rule hitcounts.  Command XML: {cmd}\n"
-                f"Device Filter String: {device_filter_string}\nTarget: {target}"
-            )
-            hitcount_response = run_op_command(firewall, cmd=cmd, cmd_xml=False)
+            demisto.debug(f"{debug_prefix} Start running on device {firewall.id}")
 
-            # Get list of vsys entries in the response
-            vsys_entries = hitcount_response.findall("./result/rule-hit-count/vsys/entry")
+            # Step 1: Determine which vsys to query
+            vsys_to_query = []
+            if vsys_arg != "all":
+                demisto.debug(f"{debug_prefix} Step 1: single vsys argument is set by the user: {vsys_arg}")
+                vsys_to_query = [vsys_arg]
+            else:
+                vsys_to_query = FirewallCommand.get_vsys_list(firewall, f"{debug_prefix} Step 1: ")
 
-            # Run operational command on the firewall to fetch policies pushed from Panorama (if any)
-            # Details from this will be used to enhance the returned results.
-            demisto.debug(f"Now running operational command to get Panorama pushed policies")
-            pushed_config_cmd = "<show><config><pushed-shared-policy/></config></show>"
-            pushed_config_response = run_op_command(firewall, cmd=pushed_config_cmd, cmd_xml=False)
-            pushed_rulebases = {}
-            pushed_rulebases["pre_rulebase"] = pushed_config_response.findall(
-                f"./result/policy/panorama/pre-rulebase/{rulebase_type}/rules/entry"
-            )
-            pushed_rulebases["post_rulebase"] = pushed_config_response.findall(
-                f"./result/policy/panorama/post-rulebase/{rulebase_type}/rules/entry"
-            )
+            for vsys_name in vsys_to_query:
+                """
+                STEP 2: Data enrichment.
+                For each vsys, Pre-fetch Panorama Shared Rules and Device Group Rules. (if any)
+                This is necessary because the hitcount response itself doesn't contain rule metadata.
+                """
+                demisto.debug(f"{debug_prefix} Step 2 Starting: Data enrichment for vsys: {vsys_name}")
+                pushed_rulebase_results: dict[str, PushedSharedPolicy] = {}
+                try:
+                    pushed_rulebase_results = FirewallCommand.get_pushed_shared_policy_rules(firewall, rulebase_type, vsys_name)
+                except Exception as e:
+                    demisto.debug(f"{debug_prefix} Continue without enrichment {firewall.id}:\n{str(e)}")
 
-            # Create data class items from pushed policy data
-            pushed_rulebase_results = {}
-            for position in ["pre_rulebase", "post_rulebase"]:
-                for pushed_rule in pushed_rulebases[position]:
-                    pushed_rulebase_entry: PushedSharedPolicy = dataclass_from_element(firewall, PushedSharedPolicy, pushed_rule)
-                    pushed_rulebase_entry.policy_type = rulebase_type
-                    pushed_rulebase_entry.position = position
-                    pushed_rulebase_results[pushed_rulebase_entry.name] = pushed_rulebase_entry
+                # STEP 3: Iterate through vsys and perform hitcount queries
+                demisto.debug(f"{debug_prefix} Step 3 Starting: Iterate through vsys: {vsys_name}")
+                xml_root = FirewallCommand.build_rule_hit_count_xml(vsys_name, rulebase_type, rules_arg)
+                try:
+                    cmd = ET.tostring(xml_root, encoding="unicode")
 
-            for vsys_entry in vsys_entries:
-                # Get the name of the current vsys entry
-                vsys_name = vsys_entry.get("name", "")
+                    demisto.debug(f"{debug_prefix} Run op command: {firewall.id=}, {vsys_name=}\n{cmd}")
+                    hitcount_response = run_op_command(firewall, cmd=cmd, cmd_xml=False)
+                    rule_entries = hitcount_response.findall(f".//rule-base/entry[@name='{rulebase_type}']//rules/entry")
 
-                for rulebase_entry in vsys_entry.findall("./rule-base/entry"):
-                    # Get the name of the current rulebase entry
-                    rulebase_name = rulebase_entry.get("name", "")
-
-                    for rule_entry in rulebase_entry.findall("./rules/entry"):
+                    for rule_entry in rule_entries:
                         # Iterate through all rules in the list, formatting them as a data class
                         ET.SubElement(rule_entry, "instanceName")
                         result: ShowRuleHitCountResult = dataclass_from_element(firewall, ShowRuleHitCountResult, rule_entry)
 
-                        # Skip rules with hits or no new hits since a given date if those arguments were specified
-                        if (unused_only == "true" and result.hit_count != 0) or (
-                            no_new_hits_since and datetime.strptime(result.last_hit_timestamp, DATE_FORMAT) > no_new_hits_since
-                        ):
-                            continue  # Skip this result if given filter arguments say we should omit it
+                        # Timestamp Handling: API returns Unix epoch as string
+                        try:
+                            last_hit_dt = datetime.strptime(result.last_hit_timestamp, DATE_FORMAT)
+                        except Exception as e:
+                            demisto.debug(
+                                f"{debug_prefix} Error while formating {result.last_hit_timestamp=}, Skipping {result.name}\n{str(e)}"
+                            )
+                            continue
 
-                        # Add vsys and rulebase, and integration instance names identified from earlier stages
+                        # Skip rules based on filter arguments
+                        if unused_only == "true" and result.hit_count != 0:
+                            demisto.debug(f"{debug_prefix} Skipping {result.name} (hit_count =! 0)")
+                            continue
+                        if no_new_hits_since and last_hit_dt and last_hit_dt > no_new_hits_since:
+                            demisto.debug(f"{debug_prefix} Skipping {result.name} (older than {str(no_new_hits_since)})")
+                            continue
+
+                        # Populate result metadata
                         result.vsys = vsys_name
-                        result.rulebase = rulebase_name
+                        result.rulebase = rulebase_type
                         result.instanceName = instanceName
                         result.instanceType = instanceType
 
@@ -12193,8 +12376,16 @@ class FirewallCommand:
                             result.position = pushed_rule_entry.position
                             result.from_dg_name = pushed_rule_entry.loc
 
-                        # Add the result to the list of results
+                        # When pre_post is requested, only keep Panorama-pushed rules at the matching position.
+                        if pre_post and result.position != pre_post:
+                            demisto.debug(f"{debug_prefix} Skipping {result.name} (position={result.position!r} != {pre_post!r})")
+                            continue
+
                         result_data.append(result)
+
+                except Exception as e:
+                    demisto.debug(f"{debug_prefix} Failed to retrieve hitcounts for device {firewall.id} {vsys_name}:\n{str(e)}")
+                    continue
 
         # Return final results
         return result_data
@@ -12358,6 +12549,66 @@ def get_jobs(
     return UniversalCommand.show_jobs(topology, device_filter_string, job_type=job_type, status=status, id=_id, target=target)
 
 
+@polling_function(
+    name="pan-os-platform-get-jobs",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", 3600)),
+    requires_polling_arg=True,
+)
+def get_jobs_command(args: dict):
+    """
+    Wrapper for pan-os-platform-get-jobs that adds native polling support.
+
+    When polling=true and a single id is supplied, keep polling until the
+    job reaches a terminal status (FIN) or the timeout is reached. Without
+    polling (or when no id is supplied), behaves like the original
+    non-polling command.
+
+    Note: while polling a specific job by id, the status/job_type filters are
+    ignored. Otherwise a still-running job (e.g. status=ACT) would be filtered
+    out when a terminal status like FIN is requested, causing polling to stop
+    prematurely.
+
+    Polling requires a single job "id" (polling can only track one job), so an
+    error is raised when polling=true without an id.
+    """
+    topology = get_topology()
+    job_id = args.get("id")
+    polling = argToBoolean(args.get("polling", "false"))
+
+    if polling and not job_id:
+        raise DemistoException("The 'id' argument is required when 'polling' is set to true.")
+
+    ignore_filters = polling and bool(job_id)
+
+    result = get_jobs(
+        topology,
+        device_filter_string=args.get("device_filter_string"),
+        status=None if ignore_filters else args.get("status"),
+        job_type=None if ignore_filters else args.get("job_type"),
+        id=job_id,
+        target=args.get("target"),
+    )
+    command_results = dataclasses_to_command_results(result, empty_result_message="No jobs returned")
+
+    # Polling only if a single job id was supplied. With an id, get_jobs is
+    # guaranteed to return a single ShowJobsAllResultData (or raise
+    # DemistoException if the job is not found on any device)
+    if not job_id or not isinstance(result, ShowJobsAllResultData):
+        return PollResult(response=command_results, continue_to_poll=False)
+
+    is_terminal = (result.status or "").upper() == "FIN"
+
+    return PollResult(
+        response=command_results,
+        continue_to_poll=not is_terminal,
+        args_for_next_run=args,
+        partial_result=CommandResults(
+            readable_output=f"Waiting for job ID {job_id} to reach a terminal state (current status: {result.status})...",
+        ),
+    )
+
+
 def download_software(
     topology: Topology,
     version: str,
@@ -12419,6 +12670,46 @@ def system_status(topology: Topology, target: str) -> CheckSystemStatus:
     return UniversalCommand.check_system_availability(topology, hostid=target)
 
 
+@polling_function(
+    name="pan-os-platform-get-system-status",
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", 30)),
+    timeout=arg_to_number(demisto.args().get("timeout", 1200)),
+    requires_polling_arg=True,
+)
+def system_status_command(args: dict) -> PollResult:
+    """
+    Wraps `system_status` with polling support.
+
+    When `polling=true`, keeps polling until the target device reports operational mode
+    "normal" (i.e. `up=True`), or until the timeout is reached.
+
+    On every poll iteration the current `CheckSystemStatus` is written to context via the
+    `partial_result`. This guarantees that if the timeout is reached before the device
+    comes up, the war-room still shows the last known status (with `PANOS.SystemStatus.up`)
+    instead of only the generic "waiting" message, and no unhandled error is raised.
+    """
+    target = args.get("target")
+    if not target:
+        raise DemistoException("The 'target' argument is required.")
+
+    topology = get_topology()
+    status = system_status(topology, target=target)
+
+    is_up = bool(getattr(status, "up", False))
+
+    # Always include `PANOS.SystemStatus` in CommandResults, even on polling timeout.
+    command_result = dataclasses_to_command_results(status, empty_result_message="No system status.")
+    if not is_up:
+        command_result.readable_output = f"Waiting for device {target} to become available (current status: up={is_up})..."
+
+    return PollResult(
+        response=command_result,
+        continue_to_poll=not is_up,
+        args_for_next_run=args,
+        partial_result=command_result,
+    )
+
+
 def update_ha_state(topology: Topology, target: str, state: str) -> HighAvailabilityStateStatus:
     """
     Checks the status of the given device, checking whether it's up or down and the operational mode normal
@@ -12439,59 +12730,45 @@ def get_rule_hitcounts(
     rules: str = "all",
     unused_only: str = "false",
     no_new_hits_since: Optional[str] = None,
+    pre_post: Optional[str] = None,
 ):
     """
     Retrieves hit counts for policy rules from the specified firewall or device.
-
-    :param topology: `Topology` instance
-    :param device_filter_string: String to filter to only check given device
-    :param target: ID of host (serial or hostname) to target
-    :param rulebase: Type of rulebase to check (default: security)
-    :param vsys: Virtual system to check, or "all" for all virtual systems
-    :param rules: Comma-separated list of rule names to check, or "all" for all rules
-    :param unused_only: Whether to return only unused rules (default: false)
+    :param topology: `Topology` instance.
+    :param device_filter_string: The string by which to filter the results to only show specific hostnames or serial numbers.
+    :param target: Single serial number to target with this command.
+    :param rulebase: The rulebase being examined.
+    :param vsys: The firewall VSYS name to check or "all" for all virtual systems.
+    :param rules: Comma-separated list of rule names to check, or "all" for all rules.
+    :param unused_only: Whether only rules with hitcount of 0 should be returned ("true" or "false")
     :param no_new_hits_since: Date string in format "YYYY/MM/DD HH:MM:SS" to filter rules with no hits since that time
+    :param pre_post: Panorama-only filter. When set to "pre-rulebase" or "post-rulebase", only Panorama-pushed rules at
+        that position are returned. Local firewall rules (not pushed from Panorama) are excluded when this filter is set.
+
     """
-    # Prepare XML ElementTree to add attributes to
-    xml_root = ET.Element("show")
-    xml_rule_hit_count = ET.SubElement(xml_root, "rule-hit-count")
+    no_new_hits_since_dt = None
+    if no_new_hits_since:
+        try:
+            no_new_hits_since_dt = datetime.strptime(no_new_hits_since, "%Y/%m/%d %H:%M:%S")
+        except ValueError:
+            message = f"Failed convert {no_new_hits_since=} argument to YYYY/MM/DD HH:MM:SS format."
+            demisto.debug(f"[get_rule_hitcounts] {message}")
+            raise DemistoException(message)
 
-    # Add vsys selection to ElementTree
-    xml_vsys = ET.SubElement(xml_rule_hit_count, "vsys")
+    pre_post_normalized = pre_post.replace("-", "_") if pre_post else None
 
-    # Function to add rulebase and rule selections to the appropriate parent object
-    def add_rulebase_and_rules(parent):
-        # Add rule-base and rules list to the parent element
-        rulebase_elem = ET.SubElement(parent, "rule-base")
-        rulebase_entry = ET.SubElement(rulebase_elem, "entry", name=rulebase)
-        return ET.SubElement(rulebase_entry, "rules")
-
-    # Add rules argument to ElementTree, adding container attribute for specific rules if needed
-    if vsys == "all":
-        all_vsys = ET.SubElement(xml_vsys, "all")
-        vsys_rules = add_rulebase_and_rules(all_vsys)
-    else:
-        vsys_name = ET.SubElement(xml_vsys, "vsys-name")
-        vsys_name_entry = ET.SubElement(vsys_name, "entry", name=vsys)
-        vsys_rules = add_rulebase_and_rules(vsys_name_entry)
-
-    # Add rules to check to ElementTree
-    if rules == "all":
-        ET.SubElement(vsys_rules, "all")
-    else:
-        # If a list of specific rules was given, split comma-separated list & strip whitespace, then add to ElementTree
-        rule_list = ET.SubElement(vsys_rules, "list")
-        for rule in rules.split(","):
-            ET.SubElement(rule_list, "member").text = f"{rule.strip()}"
-
-    # Format operational command XPATH
-    cmd = ET.tostring(xml_root, encoding="us-ascii")
-
-    # Convert date string from "no_new_hits_since" argument to datetime object
-    no_new_hits_since_dt = datetime.strptime(no_new_hits_since, "%Y/%m/%d %H:%M:%S") if no_new_hits_since else None
-
-    # Execute command and return result
-    return FirewallCommand.get_hitcounts(topology, cmd, rulebase, no_new_hits_since_dt, device_filter_string, target, unused_only)
+    # Execute command, passing raw arguments to allow per-device XML construction.
+    return FirewallCommand.get_hitcounts(
+        topology,
+        rulebase,
+        vsys,
+        rules,
+        no_new_hits_since_dt,
+        device_filter_string,
+        target,
+        unused_only,
+        pre_post_normalized,
+    )
 
 
 """Hygiene Commands"""
@@ -12808,7 +13085,7 @@ def get_topology() -> Topology:
     port = arg_to_number(arg=params.get("port", "443"))
     parsed_url = urlparse(server_url)
     hostname = parsed_url.hostname
-    api_key = str(params.get("key")) or str((params.get("credentials") or {}).get("password", ""))  # type: ignore
+    api_key = (params.get("credentials") or {}).get("password") or params.get("key") or ""  # type: ignore
 
     return Topology.build_from_string(hostname, username="", password="", api_key=api_key, port=port)
 
@@ -15757,7 +16034,7 @@ def add_time_filter_to_query_parameter(query: str, last_fetch: datetime, time_ke
     Returns:
         str: a string representing a query with added time filter parameter
     """
-    return f"{query} and ({time_key} geq '{last_fetch.strftime(QUERY_DATE_FORMAT)}')"
+    return f"({query}) and ({time_key} geq '{last_fetch.strftime(QUERY_DATE_FORMAT)}')"
 
 
 def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[str, str]:
@@ -15782,41 +16059,103 @@ def find_largest_id_per_device(incident_entries: List[Dict[str, Any]]) -> Dict[s
     return new_largest_id
 
 
-def filter_fetched_entries(entries_dict: dict[str, list[dict[str, Any]]], id_dict: LastIDs):
+def filter_fetched_entries(entries_dict: dict[str, list[dict[str, Any]]], id_dict: LastIDs, last_fetch_dict: LastFetchTimes):
     """
-    This function removes entries that have already been fetched in the previous fetch cycle.
+    This function removes entries(logs) that have already been fetched in the previous fetch cycle.
+    The duplication logic implemented per log type - per device.
+
+    Panorama `seqno` is assumed to be monotonically increasing, where higher values indicate newer logs. (per device)
+    In rare cases, this assumption breaks due to Panorama’s internal threading and queue-based log handling.
+    The previous duplication logic compared only the `seqno` field to identify duplicates.
+    As a result, any log with a smaller `seqno` than the largest value seen in the previous fetch, was considered older,
+    treated as a duplicate, and filtered out.
+
+    Before fetching logs, the function add_time_filter_to_query_parameter builds a fetch query by adding
+    time_generated range to the user configured query: <user_query> and <time_key> geq <last_fetch_time>
+    Because geq is used, duplicate logs can be fetched only when time_generated is equal to last_fetch_time.
+
+    Therefore, the current logic:
+    - Accepts all logs with `time_generated > last_fetch_time` without `seqno` comparison.
+    - Applies `seqno` based duplication checks only to logs generated exactly at last_fetch_time
+    Priority: Timestamp is the primary filter. ID is only used for deduplication within the same second.
+    Anomaly Fix: Logs with newer timestamps are *always* accepted, regardless of their ID.
+    Trade-off: To avoid massive duplication, we must drop logs that arrive late with the *exact same timestamp* and a smaller ID. This is a rare edge case.
+
+    Previous version:
+    IF (Log_ID > largest_id):
+        -> KEEP (It's a new)
+    New version:
+    IF (Log_Time > last_time)
+        -> KEEP (It's a new log from a later time)
+    ELSE IF (Log_Time == last_time) AND (Log_ID > largest_id)
+        -> KEEP (It's a new log from the same second, but with a higher ID)
+    ELSE
+        -> DROP (because Log_ID > largest_id)
+
     Args:
         entries_dict (Dict[str, List[Dict[str,Any]]]): a dictionary of log type and its raw entries
         id_dict (LastIDs): a dictionary of devices and their largest id so far
+        last_fetch_dict (LastFetchTimes): last fetch dictionary
     Returns:
         new_entries_dict (Dict[str, List[Dict[str,Any]]]): a dictionary of log type and its raw entries without entries that have already been fetched in the previous fetch cycle
     """
+    debug_prefix = "[filter_fetched_entries] "
     new_entries_dict: dict = {}
     for log_type, logs in entries_dict.items():
-        demisto.debug(f"Filtering {log_type} type enties, recived {len(logs)} to filter.")
+        demisto.debug(f"{debug_prefix}Filtering {log_type} type entries, received {len(logs)} to filter.")
         if log_type == "Correlation":
             # use dict_safe_get because 'Correlation' can have a dict from older versions
             last_log_id = dict_safe_get(id_dict, ["Correlation"], 0, int, False)
-            demisto.debug(f"{last_log_id=}")
+            demisto.debug(f"{debug_prefix}{last_log_id=}")
             first_new_log_index = next(
                 (i for i, log in enumerate(logs) if int(log.get("@logid")) > last_log_id),  # type: ignore
                 len(logs),
             )
-            demisto.debug(f"{first_new_log_index=}")
+            demisto.debug(f"{debug_prefix}{first_new_log_index=}")
             new_entries_dict["Correlation"] = logs[first_new_log_index:]
         else:
             for log in logs:
+                seqno = arg_to_number(log.get("seqno"))
                 device_name = log.get("device_name", "")
-                current_log_id = arg_to_number(log.get("seqno"))
-                # get the latest id for that device, if that device is not in the dict, set the id to 0
-                latest_id_per_device = cast(int, dict_safe_get(id_dict, (log_type, device_name), 0))
-                demisto.debug(f"{latest_id_per_device=} for {log_type=} and {device_name=}")
-                if not current_log_id or not device_name:
-                    demisto.debug(f"Could not parse seqno or device name from log: {log}, skipping.")
+                time_generated = dateparser.parse(
+                    log.get("time_generated", ""),
+                    settings={"TIMEZONE": "UTC"},
+                )
+
+                if seqno is None or not device_name or not time_generated:
+                    demisto.debug(f"{debug_prefix}Could not parse seqno, device_name or time_generated fields.\nSkipping{log=}")
                     continue
-                if current_log_id > arg_to_number(latest_id_per_device):  # type: ignore
+
+                log_info = f"Log info: {seqno=}, {device_name=}, {str(time_generated)=}"
+
+                last_fetch_time = dateparser.parse(
+                    last_fetch_dict.get(log_type, ""),  # type: ignore
+                    settings={"TIMEZONE": "UTC"},
+                )
+
+                # Keep the log, time_generated is after last_fetch_time, no seqno comparison is required.
+                if not last_fetch_time or (time_generated > last_fetch_time):
                     new_entries_dict.setdefault(log_type, []).append(log)
-        demisto.debug(f"Filtered {log_type} type entries, left with {len(new_entries_dict.get(log_type, []))} entries.")
+
+                # time_generated == last_fetch_time, seqno comparison is required.
+                else:
+                    latest_id_per_device = cast(int, dict_safe_get(id_dict, (log_type, device_name), 0))
+
+                    if seqno > arg_to_number(latest_id_per_device):  # type: ignore
+                        demisto.debug(
+                            f"{debug_prefix}{log_info}\nKeeping log because its seqno bigger than {latest_id_per_device=}"
+                        )
+                        new_entries_dict.setdefault(log_type, []).append(log)
+
+                    # This is the only case where an anomaly could cause new logs that aren’t duplicates to be filtered out.
+                    else:
+                        demisto.debug(
+                            f"{debug_prefix}{log_info}\nDropped log because time_generated equal to {str(last_fetch_time)=} and its seqno smaller than {latest_id_per_device=}"
+                        )
+
+        demisto.debug(
+            f"{debug_prefix}Filtered {log_type} type entries, left with {len(new_entries_dict.get(log_type, []))} entries."
+        )
 
     return new_entries_dict
 
@@ -15961,7 +16300,10 @@ def log_types_queries_to_dict(params: dict[str, str]) -> QueryMap:
         QueryMap: queries per log type dictionary
     """
     queries_dict = QueryMap()  # type: ignore[typeddict-item]
-    if log_types := params.get("log_types"):
+    # Code default: if no Log Types were selected (empty/None), treat as "All".
+    # This handles existing/ConnectUs instances that never persisted a log_types value,
+    # where a YML defaultvalue would not apply.
+    if log_types := (argToList(params.get("log_types")) or ["All"]):
         # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
         active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if "All" in log_types else log_types
         queries_dict |= {  # type: ignore[assignment, typeddict-item]
@@ -16078,7 +16420,9 @@ def fetch_incidents(
     update_offset_dict(incident_entries_dict, last_fetch_dict, offset_dict)
 
     # remove duplicated incidents from incident_entries_dict
-    unique_incident_entries_dict = filter_fetched_entries(entries_dict=incident_entries_dict, id_dict=last_id_dict)  # type: ignore[arg-type]
+    unique_incident_entries_dict = filter_fetched_entries(
+        entries_dict=incident_entries_dict, id_dict=last_id_dict, last_fetch_dict=last_fetch_dict
+    )  # type: ignore[arg-type]
 
     parsed_incident_entries_list = get_parsed_incident_entries(unique_incident_entries_dict, last_fetch_dict, last_id_dict)  # type: ignore[arg-type]
 
@@ -16092,7 +16436,10 @@ def fetch_incidents(
 
 
 def test_fetch_incidents_parameters(fetch_params):
-    if log_types := fetch_params.get("log_types"):
+    # Code default: if no Log Types were selected (empty/None), treat as "All".
+    # This keeps existing/ConnectUs instances that never persisted a log_types value
+    # from failing the test module, where a YML defaultvalue would not apply.
+    if log_types := (argToList(fetch_params.get("log_types")) or ["All"]):
         # if 'All' is chosen in Log Type (log_types) parameter then all query parameters are used, else only the chosen query parameters are used.
         active_log_type_queries = FETCH_INCIDENTS_LOG_TYPES if "All" in log_types else log_types
         if "match_time" in fetch_params.get("correlation_query", ""):
@@ -16139,10 +16486,10 @@ def main():  # pragma: no cover
         # Fetch incidents
         elif command == "fetch-incidents":
             last_run: LastRun = demisto.getLastRun()  # type: ignore
-            first_fetch = params["first_fetch"]
-            configured_max_fetch = arg_to_number(params["max_fetch"])
+            first_fetch = params.get("first_fetch") or "24 hours"
+            configured_max_fetch = arg_to_number(params.get("max_fetch") or "100")
             queries = log_types_queries_to_dict(params)
-            fetch_max_attempts = arg_to_number(params["fetch_job_polling_max_num_attempts"])
+            fetch_max_attempts = arg_to_number(params.get("fetch_job_polling_max_num_attempts") or "10")
             max_fetch = cast(MaxFetch, dict.fromkeys(queries, configured_max_fetch))
 
             new_last_run, incident_entries = fetch_incidents(last_run, first_fetch, queries, max_fetch, fetch_max_attempts)  # type: ignore[arg-type]
@@ -16610,7 +16957,15 @@ def main():  # pragma: no cover
             )
         elif command == "pan-os-platform-get-system-info":
             topology = get_topology()
-            return_results(dataclasses_to_command_results(get_system_info(topology, **demisto.args())))
+            return_results(
+                dataclasses_to_command_results(
+                    get_system_info(
+                        topology,
+                        device_filter_string=args.get("device_filter_string"),
+                        target=args.get("target"),
+                    )
+                )
+            )
         elif command == "pan-os-platform-get-device-groups":
             topology = get_topology()
             return_results(
@@ -16654,10 +17009,7 @@ def main():  # pragma: no cover
                 )
             )
         elif command == "pan-os-platform-get-jobs":
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(get_jobs(topology, **demisto.args()), empty_result_message="No jobs returned")
-            )
+            return_results(get_jobs_command(demisto.args()))
         elif command == "pan-os-platform-download-software":
             topology = get_topology()
             return_results(
@@ -16682,12 +17034,7 @@ def main():  # pragma: no cover
                 )
             )
         elif command == "pan-os-platform-get-system-status":
-            topology = get_topology()
-            return_results(
-                dataclasses_to_command_results(
-                    system_status(topology, **demisto.args()), empty_result_message="No system status."
-                )
-            )
+            return_results(system_status_command(args))
         elif command == "pan-os-platform-update-ha-state":
             topology = get_topology()
             return_results(

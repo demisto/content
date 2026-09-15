@@ -11,7 +11,7 @@ batch_size = int(batch_size)
 batch_list = []
 
 for i in range(0, len(list_of_items), batch_size):
-    batch_list.append(list_of_items[i: i + batch_size])
+    batch_list.append(list_of_items[i : i + batch_size])
 
 context = {"BatchedData": {context_path: batch_list}}
 demisto.results({"Type": entryTypes["note"], "Contents": context, "ContentsFormat": formats["json"], "EntryContext": context})

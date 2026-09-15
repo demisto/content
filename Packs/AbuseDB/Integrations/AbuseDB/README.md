@@ -16,6 +16,8 @@
 <li><strong>Max reports age.</strong></li>
 <li><strong>Disable reputation lookups for private IP addresses</strong>: To reduce the number of lookups made to the AbuseIPDB API.</li>
 <li><strong>Disregard quota errors.</strong></li>
+<li><strong>Abuse.ch Hunting API URL</strong>: The base URL for the hunting API (Default: https://hunting-api.abuse.ch/api/v1/).</li>
+<li><strong>Abuse.ch Hunting API Key</strong>: A credential field for the API key.</li>
 </ul>
 </li>
 <li>Click <strong>Test</strong> to validate the API Key, and connection.</li>
@@ -28,6 +30,7 @@
 <li><a href="#h_720330259911545911111279">Report an IP address: abuseipdb-report-ip</a></li>
 <li><a href="#h_5900568011321545911147791">Get a list of the most reported IP addresses: abuseipdb-get-blacklist</a></li>
 <li><a href="#h_7763511091731545911176964">Get a list of report categories: abuseipdb-get-categories</a></li>
+<li><a href="#h_8874622102842650222287075">Get the full list of false positive IP addresses: abuseipdb-get-fplist</a></li>
 </ol>
 <h3 id="h_52262055641545911025223">1. Check if an IP address is in the AbuseIP database</h3>
 <hr>
@@ -471,6 +474,90 @@
 <p> </p>
 <h5>Human Readable Output</h5>
 <p><a href="../../doc_files/50474306-2d9f4580-09c9-11e9-8d74-82b22fedb185.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/50474306-2d9f4580-09c9-11e9-8d74-82b22fedb185.png" alt="image"></a></p>
+<h3 id="h_8874622102842650222287075">6. Get the full list of false positive IP addresses</h3>
+<hr>
+<p>Returns the False Positive List (FPL) from abuse.ch, containing indicators (IPs and domains) that have been removed from their blocklists.</p>
+<h5>Base Command</h5>
+<p><code>abuseipdb-get-fplist</code></p>
+<h5>Input</h5>
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 169px;"><strong>Argument Name</strong></th>
+<th style="width: 481px;"><strong>Description</strong></th>
+<th style="width: 90px;"><strong>Required</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 169px;">format</td>
+<td style="width: 481px;">The format of the output (json, csv). Set to 'csv' to download the response as a file. The 'json' format inserts the response into the incident context.</td>
+<td style="width: 90px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 169px;">limit</td>
+<td style="width: 481px;">The maximum number of results to return. Ignored when all_results is set to true or when format is set to csv.</td>
+<td style="width: 90px;">Optional</td>
+</tr>
+<tr>
+<td style="width: 169px;">all_results</td>
+<td style="width: 481px;">Whether to return all results. Ignored when format is set to csv.</td>
+<td style="width: 90px;">Optional</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>Context Output</h5>
+<table style="width: 749px;">
+<thead>
+<tr>
+<th style="width: 288px;"><strong>Path</strong></th>
+<th style="width: 141px;"><strong>Type</strong></th>
+<th style="width: 311px;"><strong>Description</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="width: 288px;">AbuseIPDB.FPL.id</td>
+<td style="width: 141px;">String</td>
+<td style="width: 311px;">The unique identifier for the False Positive List entry.</td>
+</tr>
+<tr>
+<td style="width: 288px;">AbuseIPDB.FPL.time_stamp</td>
+<td style="width: 141px;">Date</td>
+<td style="width: 311px;">The date and time (UTC) when the entry was added to the False Positive List.</td>
+</tr>
+<tr>
+<td style="width: 288px;">AbuseIPDB.FPL.platform</td>
+<td style="width: 141px;">String</td>
+<td style="width: 311px;">The platform or service associated with the entry.</td>
+</tr>
+<tr>
+<td style="width: 288px;">AbuseIPDB.FPL.entry_type</td>
+<td style="width: 141px;">String</td>
+<td style="width: 311px;">The type of the indicator (e.g., IPv4, domain).</td>
+</tr>
+<tr>
+<td style="width: 288px;">AbuseIPDB.FPL.entry_value</td>
+<td style="width: 141px;">String</td>
+<td style="width: 311px;">The actual indicator value (IP address or domain) that was marked as a false positive.</td>
+</tr>
+<tr>
+<td style="width: 288px;">AbuseIPDB.FPL.removed_by</td>
+<td style="width: 141px;">String</td>
+<td style="width: 311px;">The entity or user who requested the removal of the indicator from the blocklist.</td>
+</tr>
+<tr>
+<td style="width: 288px;">AbuseIPDB.FPL.removal_notes</td>
+<td style="width: 141px;">String</td>
+<td style="width: 311px;">Additional context or justification for why the indicator was removed.</td>
+</tr>
+</tbody>
+</table>
+<p> </p>
+<h5>Command Example</h5>
+<p><code>!abuseipdb-get-fplist format="json" limit=10</code></p>
+<p> </p>
 <h2>Additional Information</h2>
 <ul>
 <li>

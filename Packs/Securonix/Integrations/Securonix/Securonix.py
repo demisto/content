@@ -860,18 +860,21 @@ class Client(BaseClient):
         users = self.http_request("GET", "/list/allUsers", headers={"token": self._token}, response_type="xml")
         return users
 
-    def list_activity_data_request(self, from_: str, to_: str, query: str = None) -> dict:
+    def list_activity_data_request(self, from_: str, to_: str, query: str = None, max_records: int = None) -> dict:
         """List activity data.
 
         Args:
             from_: eventtime start range in format MM/dd/yyyy HH:mm:ss.
             to_: eventtime end range in format MM/dd/yyyy HH:mm:ss.
             query: open query.
+            max_records: maximum number of activity records to retrieve.
 
         Returns:
             Response from API.
         """
         params = {"query": "index=activity", "eventtime_from": from_, "eventtime_to": to_, "prettyJson": True}
+        if max_records is not None:
+            params["max"] = max_records
         remove_nulls_from_dictionary(params)
         if query:
             if re.findall(r"index\s*=\s*\w+", query):
@@ -1666,7 +1669,12 @@ def list_activity_data(client: Client, args) -> tuple[str, dict, dict]:
     from_ = args.get("from", "").strip()
     to_ = args.get("to", "").strip()
     query = escape_spotter_query(args.get("query", "").strip())
-    activity_data = client.list_activity_data_request(from_, to_, query)  # type: ignore
+    max_records = arg_to_number(args.get("max", "1000"), arg_name="max")
+
+    if max_records is not None and (max_records < 1 or max_records > 10000):
+        raise ValueError(MESSAGE["INVALID_MAX_VALUE"])
+
+    activity_data = client.list_activity_data_request(from_, to_, query, max_records)  # type: ignore
 
     if activity_data.get("error"):
         raise Exception(

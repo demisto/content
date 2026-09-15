@@ -39,7 +39,7 @@ def assert_datetime_objects(returned: datetime | None, expected: datetime | None
 case_query_without_time_filter = (
     "(query without time filter)",
     utc_time_twelve,
-    "(query without time filter) and (time_generated geq '2022/01/01 12:00:00')",
+    "((query without time filter)) and (time_generated geq '2022/01/01 12:00:00')",
 )
 test_add_time_filter_to_query_parameter_args = [case_query_without_time_filter]
 

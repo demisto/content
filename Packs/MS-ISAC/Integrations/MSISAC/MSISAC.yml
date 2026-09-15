@@ -1,5 +1,6 @@
 category: Utilities
-sectionOrder:
+provider: CIS
+sectionorder:
 - Connect
 - Collect
 commonfields:

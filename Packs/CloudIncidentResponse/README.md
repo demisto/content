@@ -25,6 +25,8 @@ The playbooks included in this pack help save time and automate repetitive tasks
 
 As part of this pack, you will also get an out-of-the-box layout to facilitate analyst investigation. All of these components are easily customizable to suit the needs of your organization.
 
+You can use this pack to enrich XDR Analytics alerts with the layout provided in this pack.
+
 <~XSIAM>
 The playbooks are also included in the "Playbook Recommendation".
 </~XSIAM>

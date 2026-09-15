@@ -1,0 +1,81 @@
+{
+  "messages": [
+    {
+      "msg_id": "msg_abc123def456",
+      "from_email": "sender@example.com",
+      "subject": "Welcome to Our Service",
+      "to_email": "recipient@example.com",
+      "status": "delivered",
+      "opens_count": 2,
+      "clicks_count": 1,
+      "last_event_time": "2024-01-15T10:30:00Z",
+      "api_key_id": "key_789xyz",
+      "events": [
+        {
+          "event_name": "processed",
+          "processed": "2024-01-15T10:25:00Z"
+        },
+        {
+          "event_name": "delivered",
+          "processed": "2024-01-15T10:25:30Z"
+        },
+        {
+          "event_name": "open",
+          "processed": "2024-01-15T10:30:00Z"
+        }
+      ]
+    },
+    {
+      "msg_id": "msg_xyz789abc123",
+      "from_email": "notifications@example.com",
+      "subject": "Your Order Confirmation",
+      "to_email": "customer@example.com",
+      "status": "delivered",
+      "opens_count": 1,
+      "clicks_count": 3,
+      "last_event_time": "2024-01-15T10:35:00Z",
+      "api_key_id": "key_789xyz",
+      "events": [
+        {
+          "event_name": "processed",
+          "processed": "2024-01-15T10:32:00Z"
+        },
+        {
+          "event_name": "delivered",
+          "processed": "2024-01-15T10:32:45Z"
+        },
+        {
+          "event_name": "open",
+          "processed": "2024-01-15T10:35:00Z"
+        },
+        {
+          "event_name": "click",
+          "processed": "2024-01-15T10:35:15Z"
+        }
+      ]
+    },
+    {
+      "msg_id": "msg_bounce456def",
+      "from_email": "alerts@example.com",
+      "subject": "Security Alert",
+      "to_email": "invalid@nonexistent.com",
+      "status": "bounce",
+      "opens_count": 0,
+      "clicks_count": 0,
+      "last_event_time": "2024-01-15T10:40:00Z",
+      "api_key_id": "key_789xyz",
+      "bounce_classification": "invalid_email",
+      "events": [
+        {
+          "event_name": "processed",
+          "processed": "2024-01-15T10:38:00Z"
+        },
+        {
+          "event_name": "bounce",
+          "processed": "2024-01-15T10:40:00Z",
+          "reason": "550 5.1.1 User unknown"
+        }
+      ]
+    }
+  ]
+}

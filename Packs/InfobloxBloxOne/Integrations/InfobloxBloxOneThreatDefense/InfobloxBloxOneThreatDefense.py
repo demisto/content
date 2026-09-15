@@ -1,18 +1,182 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
 from CommonServerUserPython import *
+
+import hashlib
+import ipaddress
+
+SEVERITY_MAP = {"INFO": 1, "MEDIUM": 2, "HIGH": 3, "CRITICAL": 4}
+IQ_FOR_TD_INSIGHT_SEVERITY_MAP = {"Low": 1, "Medium": 2, "High": 3, "Critical": 4}
+IQ_FOR_TD_INSIGHT_STATUS_OPTIONS = ["Needs Review", "In Progress", "Resolved", "Reopened", "Accepted Risk", "False Positive"]
+THREAT_LEVELS = ["LOW", "MEDIUM", "HIGH"]
+IQ_FOR_TD_INSIGHT_EVENT_THREAT_CONFIDENCE_OPTIONS = ["Low", "Medium", "High"]
+IQ_FOR_TD_INSIGHT_EVENT_THREAT_LEVEL_OPTIONS = ["1", "2", "3"]
+IQ_FOR_TD_INSIGHT_INDICATOR_STATUS_OPTIONS = ["Blocked", "Not Blocked"]
+IQ_FOR_TD_INSIGHT_SEVERITY_OPTIONS = ["Critical", "High", "Medium", "Low"]
+IQ_FOR_TD_INSIGHT_ACTION_OPTIONS = ["block", "mark_risky", "update_policy"]
+INCIDENT_SEVERITY_MAP = {"INFO": "Info", "MEDIUM": "Medium", "HIGH": "High", "CRITICAL": "Critical"}
+INCIDENT_LINK = "https://csp.infoblox.com/#/insights-console/insight/{}/summary"
+INCIDENT_LINK_V2 = "https://csp.infoblox.com/#/ai/threat-defense/{}"
+ERRORS = {
+    "INVALID_MAX_FETCH": "Invalid Max Fetch: {}. Max Fetch must be a positive integer ranging from 1 to 200.",
+}
+MAC_PATTERN = re.compile(
+    r"^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})|([0-9a-fA-F]{4}\.[0-9a-fA-F]{4}\.[0-9a-fA-F]{4})|([0-9A-Fa-f]{12})$"
+)
+VENDOR_NAME = "InfobloxThreatDefense"
+BASE_URL = "https://csp.infoblox.com"
+INTEGRATION_NAME = "ThreatDefense"
+ACCOUNT_URL_SUFFIX = "api/atcfw/v1/account"
+DEFAULT_FIRST_FETCH = "24 hours"
+MARKDOWN_CHARS = r"\*_{}[]()#+-!"
+BACKOFF_FACTOR = 7.5  # Consider its double.
+TOTAL_RETRIES = 4
+TOTAL_RETRIES_ON_ENRICHMENT = 0
+DEFAULT_TIMEOUT = 60
+TIMEOUT_ON_ENRICHMENT = 15
+STATUS_CODE_TO_RETRY = (429, *(status_code for status_code in requests.status_codes._codes if status_code >= 500))  # type: ignore
+VALID_CODES = [
+    status_code
+    for status_code in requests.status_codes._codes  # type: ignore
+    if status_code  # type: ignore[attr-defined]
+    >= 200
+    and status_code < 300
+]
+OK_CODES = (400, 401, 403, 404, 521, *VALID_CODES)  # type: ignore
+
+OUTPUT_PREFIX = {
+    "IP": "InfobloxCloud.IP",
+    "Domain": "InfobloxCloud.Domain",
+    "URL": "InfobloxCloud.URL",
+}
+
+MESSAGES = {
+    "INVALID_JSON_OBJECT": "Failed to parse json object from response: {}.",
+    "STATUS_CODE": "Error in API call [{}] - {}",
+    "INVALID_ARGUMENT_RESPONSE": "Invalid argument value while trying to get information from Infoblox Cloud: ",
+    "INVALID_API_KEY": "Encountered error while trying to get information from Infoblox Cloud: "
+    "Invalid Service API Key configured.",
+    "NO_RECORD_FOUND": "No record found for given argument(s): Not Found.",
+    "TEST_CONNECTIVITY_FAILED": "Test connectivity failed. Please provide valid input parameters.",
+    "REQUIRED_ARGUMENT": "The '{}' is a required argument.",
+    "NO_INFO_FOUND": "No {} information found for {}: {}.",
+    "KEY_NOT_FOUND": "Key {} not found in response.",
+    "INVALID_VALUE": "The value '{}' is invalid for '{}'.",
+    "INVALID_IP_ADDRESS": "The following IP Addresses were found invalid: {}",
+    "INVALID_DNS_EVENT_THREAT_LEVEL": "Invalid threat level configured for parameter 'DNS Event Threat Level' with option: {}",
+}
 
 
 class BloxOneTDClient(BaseClient):
     def __init__(self, api_key, verify=True, proxy=False):
+        integration_reliability = demisto.params().get("integrationReliability")
+        self.integration_reliability = integration_reliability
+        self.last_response = None
+        self._api_key_hash = hashlib.sha256(api_key.encode()).hexdigest()
         super().__init__(
-            headers={"Authorization": f"Token {api_key}"}, base_url="https://csp.infoblox.com", verify=verify, proxy=proxy
+            headers={
+                "Authorization": f"Token {api_key}",
+                "x-Infoblox-client": f"{get_platform_name()}-{INTEGRATION_NAME}",
+            },
+            base_url=BASE_URL,
+            verify=verify,
+            proxy=proxy,
         )
+
+    def attach_customer_tracking_header(self) -> None:
+        """
+        Attach the x-Infoblox-customer tracking header for this client's subsequent requests.
+
+        The customer ID is cached in the integration context, keyed by a hash of the configured
+        Service API Key, and reused across commands so this only triggers the extra API call
+        (GET /api/atcfw/v1/account) once until the Service API Key changes. This is called once
+        from main(), before any command dispatch, rather than from __init__ or http_request, so
+        that constructing a client or making an API call never implicitly triggers this lookup.
+        Failures are logged and swallowed since this header is best-effort tracking metadata.
+        """
+        integration_context = get_integration_context()
+        if integration_context.get("api_key_hash") == self._api_key_hash and integration_context.get("customer_id"):
+            self._headers["x-Infoblox-customer"] = integration_context["customer_id"]
+            return
+
+        try:
+            response = self.http_request("GET", url_suffix=ACCOUNT_URL_SUFFIX)
+            customer_id = (response or {}).get("results", {}).get("customer_id")
+        except Exception as error:
+            demisto.debug(f"Infoblox Cloud: failed to retrieve customer_id for tracking header: {error}")
+            return
+
+        if customer_id:
+            self._headers["x-Infoblox-customer"] = customer_id
+            set_integration_context({"api_key_hash": self._api_key_hash, "customer_id": customer_id})
+
+    def http_request(self, method, url_suffix, params=None, json_data=None):
+        """
+        Get http response based on url and given parameters.
+
+        :param method: Specify http methods
+        :param url_suffix: url encoded url suffix
+        :param params: None
+        :param json_data: None
+        :return: http response on json
+        """
+        demisto.debug(f"Requesting Infoblox Cloud with method: {method}, url_suffix: {url_suffix} and params: {params}")
+        # For reputation commands which run during an enrichment we limit the timeout and the retries
+        retries = TOTAL_RETRIES_ON_ENRICHMENT if is_time_sensitive() else TOTAL_RETRIES
+        timeout = TIMEOUT_ON_ENRICHMENT if is_time_sensitive() else DEFAULT_TIMEOUT
+
+        resp = self._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            params=params,
+            json_data=json_data,
+            retries=retries,
+            status_list_to_retry=STATUS_CODE_TO_RETRY,
+            backoff_factor=BACKOFF_FACTOR,
+            raise_on_redirect=False,
+            raise_on_status=False,
+            resp_type="response",
+            ok_codes=OK_CODES,
+            timeout=timeout,
+        )  # type: ignore
+
+        status_code = resp.status_code
+
+        self.last_response = resp
+
+        if status_code == 204:
+            return None
+
+        if status_code == 401:
+            raise DemistoException(MESSAGES["STATUS_CODE"].format(status_code, MESSAGES["INVALID_API_KEY"]))
+
+        try:
+            resp_json = resp.json()
+        except ValueError as exception:
+            raise DemistoException(
+                MESSAGES["STATUS_CODE"].format(status_code, MESSAGES["INVALID_JSON_OBJECT"].format(resp.text)), exception
+            ) from exception
+
+        if status_code not in VALID_CODES:
+            if status_code == 400:
+                raise DemistoException(
+                    MESSAGES["STATUS_CODE"].format(
+                        status_code,
+                        MESSAGES["INVALID_ARGUMENT_RESPONSE"]
+                        + str(resp_json.get("detail", resp_json.get("message", resp_json.get("error", json.dumps(resp_json))))),
+                    )
+                )
+            if status_code == 404:
+                raise DemistoException(MESSAGES["STATUS_CODE"].format(status_code, MESSAGES["NO_RECORD_FOUND"]))
+            if status_code in (521, 403):
+                raise DemistoException(MESSAGES["STATUS_CODE"].format(status_code, MESSAGES["TEST_CONNECTIVITY_FAILED"]))
+            self.client_error_handler(resp)
+
+        return resp_json
 
     def dossier_source_list(self) -> list[str]:
         url_suffix = "/tide/api/services/intel/lookup/sources"
-        res = self._http_request("GET", url_suffix=url_suffix)
+        res = self.http_request("GET", url_suffix=url_suffix)
         return [source for source, enabled in res.items() if enabled]
 
     def lookalike_domain_list(
@@ -39,7 +203,7 @@ class BloxOneTDClient(BaseClient):
 
         filter_params["_filter"] = _filter
 
-        return self._http_request("GET", url_suffix=url_suffix, params=filter_params)["results"]
+        return self.http_request("GET", url_suffix=url_suffix, params=filter_params)["results"]
 
     def dossier_lookup_get_create(self, indicator_type: str, value: str, sources: Optional[List[str]] = None) -> str:
         url_suffix = f"/tide/api/services/intel/lookup/indicator/{indicator_type}"
@@ -47,21 +211,1267 @@ class BloxOneTDClient(BaseClient):
         if sources:
             params["source"] = sources
 
-        data = self._http_request("GET", url_suffix=url_suffix, params=params)
+        data = self.http_request("GET", url_suffix=url_suffix, params=params)
         return data["job_id"]
 
     def dossier_lookup_get_is_done(self, job_id: str) -> bool:
         url_suffix = f"/tide/api/services/intel/lookup/jobs/{job_id}/pending"
-        data = self._http_request("GET", url_suffix=url_suffix)
+        data = self.http_request("GET", url_suffix=url_suffix)
         if data["state"] == "completed":
             if data["status"] == "success":
                 return True
-            raise DemistoException(f'job {job_id} is completed with status: {data["status"]}\ndetails: {data}')
+            raise DemistoException(f"job {job_id} is completed with status: {data['status']}\ndetails: {data}")
         return False
 
     def dossier_lookup_get_results(self, job_id: str) -> Dict:
         url_suffix = f"/tide/api/services/intel/lookup/jobs/{job_id}/results"
-        return self._http_request("GET", url_suffix=url_suffix)
+        return self.http_request("GET", url_suffix=url_suffix)
+
+    def soc_insights_list(self, params: dict) -> list[dict]:
+        """
+        :param params: Dictionary of parameters.
+        :return: List of SOC insights.
+        """
+        url_suffix = "api/v1/insights"
+        return self.http_request("GET", url_suffix=url_suffix, params=params)
+
+    def soc_insight_indicators_list(self, params: dict, soc_insight_id: str) -> list[dict]:
+        """
+        :param params: Dictionary of parameters.
+        :return: List of SOC insight indicators.
+        """
+        url_suffix = f"api/v1/insights/{soc_insight_id}/indicators"
+        return self.http_request("GET", url_suffix=url_suffix, params=params)
+
+    def soc_insight_events_list(self, params: dict, soc_insight_id: str) -> list[dict]:
+        """
+        :param params: Dictionary of parameters.
+        :return: List of SOC insight events.
+        """
+        url_suffix = f"api/v1/insights/{soc_insight_id}/events"
+        return self.http_request("GET", url_suffix=url_suffix, params=params)
+
+    def soc_insight_assets_list(self, params: dict, soc_insight_id: str) -> list[dict]:
+        """
+        :param params: Dictionary of parameters.
+        :return: List of SOC insight assets.
+        """
+        url_suffix = f"api/v1/insights/{soc_insight_id}/assets"
+        return self.http_request("GET", url_suffix=url_suffix, params=params)
+
+    def soc_insight_comments_list(self, params: dict, soc_insight_id: str) -> list[dict]:
+        """
+        :param params: Dictionary of parameters.
+        :return: List of SOC insight comments.
+        """
+        url_suffix = f"api/v1/insights/{soc_insight_id}/comments"
+        return self.http_request("GET", url_suffix=url_suffix, params=params)
+
+    def get_named_list(self, params: Dict):
+        """
+        :param params: Dictionary of parameters.
+        :return: Named list.
+        """
+        url_suffix = "/api/atcfw/v1/named_lists/0"
+        response = self.http_request("GET", url_suffix=url_suffix, params=params)
+        return response
+
+    def remove_named_list_items(self, named_list_id: str, data: Dict):
+        """
+        :param named_list_id: ID of the named list.
+        :param data: Dictionary of data to remove from the named list.
+        """
+        url_suffix = f"/api/atcfw/v1/named_lists/{named_list_id}/items"
+        self.http_request("DELETE", url_suffix=url_suffix, json_data=data)
+
+    def update_named_list(self, named_list_id: str, data: Dict):
+        """
+        :param named_list_id: ID of the named list.
+        :param data: Dictionary of data to update the named list.
+        :return: Updated named list.
+        """
+        url_suffix = f"/api/atcfw/v1/named_lists/{named_list_id}/items"
+        response = self.http_request("POST", url_suffix=url_suffix, json_data=data)
+        return response
+
+    def get_indicator_threat_info(self, indicator_value: str, indicator_type: str) -> dict[str, Any]:
+        """Gets the indicator threat information using the '/tide/api/data/threats' API endpoint.
+
+        :type indicator_value: ``str``
+        :param indicator_value: Indicator value to get the reputation for.
+
+        :type indicator_type: ``str``
+        :param indicator_type: Indicator type to get the reputation for.
+
+        :return: dict containing the indicator threat information as returned from the API.
+        :rtype: ``Dict[str, Any]``
+        """
+        params = {"type": indicator_type, indicator_type: indicator_value, "rlimit": 1}
+        if indicator_type == "ip" and is_ipv6_valid(indicator_value):
+            params["include_ipv6"] = "true"
+        return self.http_request(method="GET", url_suffix="/tide/api/data/threats", params=params)
+
+    def get_ip_address_info(self, ip: str) -> dict[str, Any]:
+        """Gets IP address information from the address management API.
+
+        :type ip: ``str``
+        :param ip: IP address to get information for.
+
+        :return: dict containing the IP address information.
+        :rtype: ``Dict[str, Any]``
+        """
+        return self.http_request(
+            method="GET", url_suffix="/api/ddi/v1/ipam/address", params={"_filter": f"address=='{ip}'", "_limit": 1}
+        )
+
+    def get_domain_address_info(self, domain: str) -> dict[str, Any]:
+        """Gets domain address information from the address management API.
+
+        :type domain: ``str``
+        :param domain: Domain to get information for.
+
+        :return: dict containing the domain address information.
+        :rtype: ``Dict[str, Any]``
+        """
+        return self.http_request(
+            method="GET", url_suffix="/api/ddi/v1/ipam/host", params={"_filter": f"name=='{domain}'", "_limit": 1}
+        )
+
+    def get_indicator_threat_info_text_search(self, indicator_value: str, indicator_type: str) -> dict[str, Any]:
+        """Gets the indicator threat information using the '/tide/api/data/threats' API endpoint.
+
+        :type indicator_value: ``str``
+        :param indicator_value: Indicator value to get the reputation for.
+
+        :type indicator_type: ``str``
+        :param indicator_type: Indicator type to get the reputation for.
+
+        :return: dict containing the indicator threat information as returned from the API.
+        :rtype: ``Dict[str, Any]``
+        """
+        return self.http_request(
+            method="GET",
+            url_suffix="/tide/api/data/threats",
+            params={"type": indicator_type, "text_search": indicator_value, "rlimit": 1},
+        )
+
+    def mac_enrich(self, mac: str) -> Dict[str, Any]:
+        """Gets DHCP lease information for a specific MAC address.
+
+        :type mac: ``str``
+        :param mac: MAC address to lookup.
+
+        :return: dict containing the DHCP lease information as returned from the API
+        :rtype: ``Dict[str, Any]``
+        """
+        return self.http_request(
+            method="GET", url_suffix="/api/ddi/v1/dhcp/lease", params={"_filter": f"hardware=='{mac}'", "_limit": 1}
+        )
+
+    def list_dns_security_events(self, params: dict) -> list[dict]:
+        """
+        List DNS security events from Infoblox Cloud.
+
+        :param params: Dictionary of parameters for filtering DNS security events.
+        :return: List of DNS security events.
+        """
+        url_suffix = "/api/dnsdata/v2/dns_event"
+        return self.http_request("GET", url_suffix=url_suffix, params=params)
+
+    def iq_for_td_insights_list(self, params: dict) -> dict:
+        """
+        :param params: Dictionary of parameters.
+        :return: List of IQ for TD Insights.
+        """
+        url_suffix = "api/v2/insights"
+        return self.http_request("GET", url_suffix=url_suffix, params=params)
+
+    def iq_for_td_insight_get(self, insight_id: str) -> dict:
+        """
+        :param insight_id: Unique display identifier of the insight to retrieve.
+        :return: IQ for TD Insight detail.
+        """
+        url_suffix = f"api/v2/insights/{insight_id}"
+        return self.http_request("GET", url_suffix=url_suffix)
+
+    def iq_for_td_insight_status_update(self, data: dict) -> dict:
+        """
+        :param data: Dictionary containing insight_id, status, and optional comment.
+        :return: API response for the status update.
+        """
+        url_suffix = "api/v2/insights/status"
+        return self.http_request("PUT", url_suffix=url_suffix, json_data=data)
+
+    def iq_for_td_insight_assets_list(self, params: dict, insight_id: str) -> dict:
+        """
+        :param params: Dictionary of parameters.
+        :param insight_id: Unique display identifier of the insight whose assets to list.
+        :return: List of assets for the given IQ for TD Insight.
+        """
+        url_suffix = f"api/v2/insights/{insight_id}/assets"
+        return self.http_request("GET", url_suffix=url_suffix, params=params)
+
+    def iq_for_td_insight_events_list(self, params: dict, insight_id: str) -> dict:
+        """
+        :param params: Dictionary of parameters.
+        :param insight_id: Unique display identifier of the insight whose events to list.
+        :return: List of events for the given IQ for TD Insight.
+        """
+        url_suffix = f"api/v2/insights/{insight_id}/events"
+        return self.http_request("GET", url_suffix=url_suffix, params=params)
+
+    def iq_for_td_insight_indicators_list(self, params: dict, insight_id: str) -> dict:
+        """
+        :param params: Dictionary of parameters.
+        :param insight_id: Unique display identifier of the insight whose indicators to list.
+        :return: List of indicators for the given IQ for TD Insight.
+        """
+        url_suffix = f"api/v2/insights/{insight_id}/indicators"
+        return self.http_request("GET", url_suffix=url_suffix, params=params)
+
+    def iq_for_td_insight_action_execute(self, data: dict, insight_id: str) -> dict:
+        """
+        :param data: Dictionary containing the recommendation actions to execute.
+        :param insight_id: Unique display identifier of the insight whose recommendations are being actioned.
+        :return: API response containing per-item execution results.
+        """
+        url_suffix = f"api/v2/insights/{insight_id}/actions"
+        return self.http_request("POST", url_suffix=url_suffix, json_data=data)
+
+    def iq_for_td_insight_action_undo(self, audit_entry_id: str) -> dict:
+        """
+        :param audit_entry_id: ID of the audit log entry to undo.
+        :return: API response containing the undo outcome.
+        """
+        url_suffix = f"api/v2/insights/global-activity/{audit_entry_id}/undo"
+        return self.http_request("POST", url_suffix=url_suffix)
+
+
+def get_platform_name() -> str:
+    """
+    Return the platform identifier used in the x-Infoblox-client tracking header.
+
+    :return: 'cortex' when running on XSIAM or the unified platform, 'xsoar' otherwise.
+    """
+    platform = demisto.demistoVersion().get("platform")
+    return "cortex" if platform in ("x2", "unified_platform") else "xsoar"
+
+
+def check_empty(x: Any) -> bool:
+    """
+    Check if input is empty (None, empty dict, empty list, or empty string).
+
+    :param x: Input to check.
+    :type x: Any
+    :return: True if x is empty, False otherwise.
+    :rtype: bool
+    """
+    return x is None or x == {} or x == [] or x == ""
+
+
+def string_escape_markdown(data: Any):
+    """
+    Escape any chars that might break a markdown string.
+    :param data: The data to be modified (required).
+    :return: A modified data.
+    """
+    if isinstance(data, str):
+        data = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in data])
+    elif isinstance(data, list):
+        new_data = []
+        for sub_data in data:
+            if isinstance(sub_data, str):
+                sub_data = "".join(["\\" + str(c) if c in MARKDOWN_CHARS else str(c) for c in sub_data])
+            new_data.append(sub_data)
+        data = new_data
+    return data
+
+
+def trim_args(args: Dict[str, Any]):
+    """
+    Trim the arguments for extra spaces.
+
+    :type args: Dict
+    :param args: it contains arguments of the command
+    """
+    for key, value in args.items():
+        if isinstance(value, str):
+            args[key] = value.strip()
+
+    return args
+
+
+def validate_argument(value: Any, name: str) -> str:
+    """
+    Check if empty value is passed as value for argument and raise appropriate ValueError.
+
+    :type value: Any
+    :param value: value of the argument.
+
+    :type name: str
+    :param name: name of the argument.
+    """
+    if not value:
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format(name))
+    return value
+
+
+def validate_key(response: dict, name: str):
+    """
+    Check if the given key exists in the response and raise appropriate ValueError.
+
+    :type response: dict
+    :param response: response of the command.
+
+    :type name: str
+    :param name: name of the key.
+    """
+    if not response or not response.get(name):
+        raise ValueError(MESSAGES["KEY_NOT_FOUND"].format(name))
+    return response.get(name)
+
+
+def remove_empty_elements_for_hr(d: Any) -> Any:
+    """
+    Recursively remove empty lists, empty dicts, or None elements from a dictionary or list.
+    :param d: Input dictionary or list.
+    :return: Dictionary or list with all empty lists, and empty dictionaries removed.
+    """
+    if not isinstance(d, dict | list):
+        return str(d) if isinstance(d, int | float) else d
+    elif isinstance(d, list):
+        return [v for v in (remove_empty_elements_for_hr(v) for v in d) if not check_empty(v)]
+    return {k: v for k, v in ((k, remove_empty_elements_for_hr(v)) for k, v in d.items()) if not check_empty(v)}
+
+
+def validate_iq_for_td_insight_list_args(args: dict[str, Any]) -> dict[str, Optional[str]]:
+    """
+    Strip and filter the comma-separated list arguments for the IQ for TD Insight list command.
+    :param args: Dictionary of arguments.
+    :return: Dictionary of cleaned comma-separated string arguments.
+    """
+    cleaned_args = {}
+    for arg_name in ("threat_properties", "indicators", "assets", "user"):
+        items = [item.strip() for item in argToList(args.get(arg_name), ",") if item.strip()]
+        cleaned_args[arg_name] = ",".join(items) if items else None
+    return cleaned_args
+
+
+def validate_iq_for_td_insight_status(status: str) -> str:
+    """
+    Check the given status is one of the allowed IQ for TD Insight workflow statuses.
+    :param status: Status value to validate.
+    :return: The validated status.
+    """
+    if status not in IQ_FOR_TD_INSIGHT_STATUS_OPTIONS:
+        raise ValueError(MESSAGES["INVALID_VALUE"].format(status, "status"))
+    return status
+
+
+def validate_iq_for_td_insight_asset_list_args(args: dict[str, Any]) -> dict[str, Optional[str]]:
+    """
+    Strip and filter the comma-separated list arguments for the IQ for TD Insight asset list command.
+    :param args: Dictionary of arguments.
+    :return: Dictionary of cleaned comma-separated string arguments.
+    """
+    cleaned_args = {}
+    for arg_name in ("indicators", "users", "ip_address"):
+        items = [item.strip() for item in argToList(args.get(arg_name), ",") if item.strip()]
+        cleaned_args[arg_name] = ",".join(items) if items else None
+    return cleaned_args
+
+
+def validate_iq_for_td_insight_event_list_args(args: dict[str, Any]) -> dict[str, Optional[str]]:
+    """
+    Strip and filter the comma-separated list arguments for the IQ for TD Insight event list command.
+    :param args: Dictionary of arguments.
+    :return: Dictionary of cleaned comma-separated string arguments.
+    """
+    cleaned_args = {}
+    for arg_name in ("indicators", "users", "device_ips", "mac_addresses"):
+        items = [item.strip() for item in argToList(args.get(arg_name), ",") if item.strip()]
+        cleaned_args[arg_name] = ",".join(items) if items else None
+    return cleaned_args
+
+
+def validate_iq_for_td_insight_indicator_list_args(args: dict[str, Any]) -> dict[str, Optional[str]]:
+    """
+    Strip and filter the comma-separated list arguments for the IQ for TD Insight indicator list command.
+    Duplicate values are removed from the statuses argument before it is sent to the API.
+    :param args: Dictionary of arguments.
+    :return: Dictionary of cleaned comma-separated string arguments.
+    """
+    cleaned_args = {}
+    for arg_name in ("indicators", "users"):
+        items = [item.strip() for item in argToList(args.get(arg_name), ",") if item.strip()]
+        cleaned_args[arg_name] = ",".join(items) if items else None
+    statuses = list(dict.fromkeys(item.strip() for item in argToList(args.get("statuses"), ",") if item.strip()))
+    cleaned_args["statuses"] = ",".join(statuses) if statuses else None
+    return cleaned_args
+
+
+def validate_iq_for_td_insight_indicator_statuses(statuses: str) -> str:
+    """
+    Check each comma-separated status is one of the allowed IQ for TD Insight indicator statuses.
+    :param statuses: Comma-separated status values to validate.
+    :return: The validated comma-separated statuses.
+    """
+    for status in statuses.split(","):
+        if status not in IQ_FOR_TD_INSIGHT_INDICATOR_STATUS_OPTIONS:
+            raise ValueError(MESSAGES["INVALID_VALUE"].format(status, "statuses"))
+    return statuses
+
+
+def validate_iq_for_td_insight_event_threat_confidence(threat_confidence: str) -> str:
+    """
+    Check the given threat confidence is one of the allowed IQ for TD Insight event confidence levels,
+    matching case-insensitively.
+    :param threat_confidence: Threat confidence value to validate.
+    :return: The canonically cased threat confidence value.
+    """
+    for option in IQ_FOR_TD_INSIGHT_EVENT_THREAT_CONFIDENCE_OPTIONS:
+        if threat_confidence.lower() == option.lower():
+            return option
+    raise ValueError(MESSAGES["INVALID_VALUE"].format(threat_confidence, "threat_confidence"))
+
+
+def validate_iq_for_td_insight_threat_level(threat_level: str) -> str:
+    """
+    Check the given threat level is one of the allowed IQ for TD Insight event threat levels.
+    :param threat_level: Threat level value to validate.
+    :return: The validated threat level.
+    """
+    if threat_level not in IQ_FOR_TD_INSIGHT_EVENT_THREAT_LEVEL_OPTIONS:
+        raise ValueError(MESSAGES["INVALID_VALUE"].format(threat_level, "threat_level"))
+    return threat_level
+
+
+def validate_iq_for_td_insight_severity(severity: str) -> str:
+    """
+    Check the given severity is one of the allowed IQ for TD Insight severity levels, matching case-insensitively.
+    :param severity: Severity value to validate.
+    :return: The canonically cased severity value.
+    """
+    for option in IQ_FOR_TD_INSIGHT_SEVERITY_OPTIONS:
+        if severity.lower() == option.lower():
+            return option
+    raise ValueError(MESSAGES["INVALID_VALUE"].format(severity, "severity"))
+
+
+def validate_iq_for_td_insight_action(action: str) -> str:
+    """
+    Check the given action is one of the allowed IQ for TD Insight recommendation actions.
+    :param action: Action value to validate.
+    :return: The validated action.
+    """
+    if action not in IQ_FOR_TD_INSIGHT_ACTION_OPTIONS:
+        raise ValueError(MESSAGES["INVALID_VALUE"].format(action, "action"))
+    return action
+
+
+def header_transformer_for_ip(header: str) -> str:
+    """
+    To transform the header for the markdown table.
+
+    :type header: ``str``
+    :param header: Header name.
+
+    :return: The title cased header.
+    :rtype: ``str``
+    """
+    return header.replace("_", " ").title().replace("Ip", "IP")
+
+
+def header_transformer_for_url(header: str) -> str:
+    """
+    To transform the header for the markdown table.
+
+    :type header: ``str``
+    :param header: Header name.
+
+    :return: The title cased header.
+    :rtype: ``str``
+    """
+    return header.replace("_", " ").title().replace("Url", "URL")
+
+
+def validate_ip_addresses(ips_list: list[str]) -> tuple[list[str], list[str]]:
+    """
+    Given a list of IP addresses, returns the invalid and valid ips.
+
+    :type ips_list: ``List[str]``
+    :param ips_list: List of ip addresses.
+
+    :return: invalid_ip_addresses and valid_ip_addresses.
+    :rtype: ``Tuple[List[str], List[str]]``
+    """
+    invalid_ip_addresses = []
+    valid_ip_addresses = []
+    for ip in ips_list:
+        ip = ip.strip().strip('"')
+        if ip:
+            if is_ip_valid(ip, accept_v6_ips=True):
+                valid_ip_addresses.append(ip)
+            else:
+                invalid_ip_addresses.append(ip)
+    return invalid_ip_addresses, valid_ip_addresses
+
+
+def get_dbot_score_from_threat_level(threat_level: int) -> int:
+    """
+    Return DBot score based on threat level.
+
+    :param threat_level: Threat level score from 0 to 100.
+    :type threat_level: ``int``
+
+    :return: DBot score value.
+    :rtype: ``int``
+    """
+    if threat_level is None:
+        return Common.DBotScore.NONE
+
+    if threat_level >= 80:
+        return Common.DBotScore.BAD
+    if threat_level >= 30:
+        return Common.DBotScore.SUSPICIOUS
+    if threat_level > 0:
+        return Common.DBotScore.GOOD
+
+    return Common.DBotScore.NONE
+
+
+def prepare_hr_for_ip(
+    ip: str, threat_data: dict[str, Any], address_data: dict[str, Any], dbot_score_obj: Common.DBotScore
+) -> str:
+    """
+    Prepare Human Readable output for IP command.
+
+    Args:
+        ip: IP address being queried.
+        threat_data: Threat intelligence data from API.
+        address_data: Address information data from API.
+        dbot_score: DBot score for the IP.
+
+    Returns:
+        Human readable markdown output.
+    """
+    # Main header
+    readable_output = f"## Information for the given {dbot_score_obj.to_readable()} IP: {ip}\n\n"
+
+    # Threat Intelligence Section
+    if threat_data:
+        # Clean threat data for display
+        clean_threat_data = remove_empty_elements_for_hr(threat_data)
+
+        readable_output += (
+            tableToMarkdown(
+                "Threat Intelligence Summary",
+                clean_threat_data,
+                headerTransform=header_transformer_for_ip,
+                removeNull=True,
+                is_auto_json_transform=True,
+            )
+            + "\n"
+        )
+    # Address Information Section
+    if address_data:
+        # Clean address data for display
+        clean_address_data = remove_empty_elements_for_hr(address_data)
+
+        readable_output += tableToMarkdown(
+            "Address Information",
+            clean_address_data,
+            headerTransform=header_transformer_for_ip,
+            removeNull=True,
+            is_auto_json_transform=True,
+        )
+
+    return readable_output
+
+
+def prepare_hr_for_named_list(json_data: Dict[str, Any], table_name: str = "Named List Details") -> str:
+    """
+    Prepare human-readable for ip block, ip unblock, domain block, domain unblock command.
+
+    :type json_data: Dict[str, Any]
+    :param json_data: Response of the command
+
+    :type table_name: str
+    :param table_name: Name of the table to display
+
+    :rtype: str
+    :return: Human readable string for the command
+    """
+    tags = json_data.get("tags")
+    if tags:
+        tags = [f"{k}: {v}" for k, v in tags.items()]
+        tags = string_escape_markdown(tags)
+    hr_output = {
+        "ID": json_data.get("id"),
+        "Name": json_data.get("name"),
+        "Type": json_data.get("type"),
+        "Description": json_data.get("description"),
+        "Items": string_escape_markdown(json_data.get("items")),
+        "Confidence Level": json_data.get("confidence_level"),
+        "Threat Level": json_data.get("threat_level"),
+        "Tags": tags,
+        "Created Time": json_data.get("created_time"),
+        "Updated Time": json_data.get("updated_time"),
+    }
+
+    headers = [
+        "ID",
+        "Name",
+        "Type",
+        "Description",
+        "Items",
+        "Confidence Level",
+        "Threat Level",
+        "Tags",
+        "Created Time",
+        "Updated Time",
+    ]
+
+    return tableToMarkdown(table_name, hr_output, headers=headers, removeNull=True)
+
+
+def prepare_hr_for_soc_insights(insights: list[dict[str, Any]]) -> str:
+    """
+    Prepare human-readable for SOC insights command.
+
+    :type insights: list[dict[str, Any]]
+    :param insights: List of insights.
+
+    :rtype: str
+    :return: Human readable string for the command.
+    """
+    table_name = "SOC Insights"
+    hr_output = []
+    for insight in insights:
+        hr_output.append(
+            {
+                "ID": insight.get("insightId"),
+                "Priority": insight.get("priorityText"),
+                "Class": insight.get("tClass"),
+                "Threat Type": insight.get("threatType"),
+                "Status": insight.get("status"),
+                "Threat Family": insight.get("tFamily"),
+                "Feed Source": insight.get("feedSource"),
+                "Most Recent At": insight.get("mostRecentAt"),
+            }
+        )
+    headers = [
+        "ID",
+        "Priority",
+        "Class",
+        "Threat Type",
+        "Status",
+        "Threat Family",
+        "Feed Source",
+        "Most Recent At",
+    ]
+    return tableToMarkdown(table_name, hr_output, headers=headers, removeNull=True)
+
+
+def prepare_hr_for_soc_insight_indicators(indicators: list[dict[str, Any]], soc_insight_id: str) -> str:
+    """
+    Prepare human-readable for SOC insight indicators command.
+
+    :type indicators: list[dict[str, Any]]
+    :param indicators: List of indicators.
+
+    :type soc_insight_id: str
+    :param soc_insight_id: ID of the insight.
+
+    :rtype: str
+    :return: Human readable string for the command.
+    """
+    table_name = f"Indicators for the given SOC Insight: {soc_insight_id}"
+    hr_output = []
+    for indicator in indicators:
+        hr_output.append(
+            {
+                "Action": indicator.get("action"),
+                "Confidence": indicator.get("confidence"),
+                "Max Threat Level": indicator.get("threatLevelMax"),
+                "Indicator": indicator.get("indicator"),
+                "Count": indicator.get("count"),
+                "Max Time": indicator.get("timeMax"),
+                "Min Time": indicator.get("timeMin"),
+            }
+        )
+    headers = [
+        "Action",
+        "Confidence",
+        "Max Threat Level",
+        "Indicator",
+        "Count",
+        "Max Time",
+        "Min Time",
+    ]
+    return tableToMarkdown(table_name, hr_output, headers=headers, removeNull=True)
+
+
+def prepare_hr_for_soc_insight_events(events: list[dict[str, Any]], soc_insight_id: str) -> str:
+    """
+    Prepare human-readable for SOC insight events command.
+
+    :type events: list[dict[str, Any]]
+    :param events: List of events.
+
+    :type soc_insight_id: str
+    :param soc_insight_id: ID of the SOC insight.
+
+    :rtype: str
+    :return: Human readable string for the command.
+    """
+    table_name = f"Events for the given SOC Insight: {soc_insight_id}"
+    hr_output = []
+    for event in events:
+        hr_output.append(
+            {
+                "Confidence Level": event.get("confidenceLevel"),
+                "Threat Level": event.get("threatLevel"),
+                "Threat Family": event.get("threatFamily"),
+                "Action": event.get("action"),
+                "Class": event.get("class"),
+                "Detected": event.get("detected"),
+            }
+        )
+    headers = [
+        "Confidence Level",
+        "Threat Level",
+        "Threat Family",
+        "Action",
+        "Class",
+        "Detected",
+    ]
+    return tableToMarkdown(table_name, hr_output, headers=headers, removeNull=True)
+
+
+def prepare_hr_for_soc_insight_assets(assets: list[dict[str, Any]], soc_insight_id: str) -> str:
+    """
+    Prepare human-readable for SOC insight assets command.
+
+    :type assets: list[dict[str, Any]]
+    :param assets: List of assets.
+
+    :type soc_insight_id: str
+    :param soc_insight_id: ID of the insight.
+
+    :rtype: str
+    :return: Human readable string for the command.
+    """
+    table_name = f"Assets for the given SOC Insight: {soc_insight_id}"
+    hr_output = []
+    for asset in assets:
+        hr_output.append(
+            {
+                "Count": asset.get("count"),
+                "QIP": asset.get("qip"),
+                "Max Threat Level": asset.get("threatLevelMax"),
+                "Location": asset.get("location"),
+                "Threat Indicator Distinct Count": asset.get("threatIndicatorDistinctCount"),
+                "Time Max": asset.get("timeMax"),
+                "Time Min": asset.get("timeMin"),
+                "Most Recent Action": asset.get("mostRecentAction"),
+            }
+        )
+    headers = [
+        "Count",
+        "QIP",
+        "Max Threat Level",
+        "Location",
+        "Threat Indicator Distinct Count",
+        "Time Max",
+        "Time Min",
+        "Most Recent Action",
+    ]
+    return tableToMarkdown(table_name, hr_output, headers=headers, removeNull=True)
+
+
+def prepare_hr_for_soc_insight_comments(comments: list[dict[str, Any]], soc_insight_id: str) -> str:
+    """
+    Prepare human-readable for SOC insight comments command.
+
+    :type comments: list[dict[str, Any]]
+    :param comments: List of comments.
+
+    :type soc_insight_id: str
+    :param soc_insight_id: ID of the insight.
+
+    :rtype: str
+    :return: Human readable string for the command.
+    """
+    table_name = f"Comments for the given SOC Insight: {soc_insight_id}"
+    hr_output = []
+    for comment in comments:
+        hr_output.append(
+            {
+                "Comment Changer": comment.get("commentsChanger"),
+                "Date Changed": comment.get("dateChanged"),
+                "Status": comment.get("status"),
+                "Comment": string_escape_markdown(comment.get("newComment")),
+            }
+        )
+    headers = [
+        "Comment Changer",
+        "Date Changed",
+        "Status",
+        "Comment",
+    ]
+    return tableToMarkdown(table_name, hr_output, headers=headers, removeNull=True)
+
+
+def prepare_hr_for_domain(
+    domain: str, threat_data: dict[str, Any], address_data: dict[str, Any], dbot_score_obj: Common.DBotScore
+) -> str:
+    """
+    Prepare Human Readable output for Domain command.
+
+    :param domain: Domain being queried.
+    :type domain: ``str``
+
+    :param threat_data: Threat intelligence data from API.
+    :type threat_data: ``Dict[str, Any]``
+
+    :param address_data: Address information data from API.
+    :type address_data: ``Dict[str, Any]``
+
+    :param dbot_score: DBot score for the URL.
+    :type dbot_score: ``Common.DBotScore``
+
+    :return: Human readable markdown output.
+    :rtype: ``str``
+    """
+    # Main header
+    readable_output = f"## Information for the given {dbot_score_obj.to_readable()} Domain: {domain}\n\n"
+
+    # Threat Intelligence Section
+    if threat_data:
+        # Clean threat data for display
+        clean_threat_data = remove_empty_elements_for_hr(threat_data)
+
+        readable_output += (
+            tableToMarkdown(
+                "Threat Intelligence Summary",
+                clean_threat_data,
+                headerTransform=string_to_table_header,
+                removeNull=True,
+                is_auto_json_transform=True,
+            )
+            + "\n"
+        )
+
+    # Address Information Section
+    if address_data:
+        # Clean address data for display
+        clean_address_data = remove_empty_elements_for_hr(address_data)
+
+        readable_output += tableToMarkdown(
+            "Address Information",
+            clean_address_data,
+            headerTransform=string_to_table_header,
+            removeNull=True,
+            is_auto_json_transform=True,
+        )
+    return readable_output
+
+
+def prepare_hr_for_url(url: str, threat_data: Dict[str, Any], dbot_score_obj: Common.DBotScore) -> str:
+    """
+    Prepare Human Readable output for URL command.
+
+    :param url: URL being queried.
+    :type url: ``str``
+
+    :param threat_data: Threat intelligence data from API.
+    :type threat_data: ``Dict[str, Any]``
+
+    :param dbot_score: DBot score for the URL.
+    :type dbot_score: ``Common.DBotScore``
+
+    :return: Human readable markdown output.
+    :rtype: ``str``
+    """
+    # Main header
+    readable_output = f"## Information for the given {dbot_score_obj.to_readable()} URL: {url}\n\n"
+
+    # Clean threat data for display
+    clean_threat_data = remove_empty_elements_for_hr(threat_data)
+
+    readable_output += (
+        tableToMarkdown(
+            "Threat Intelligence Summary",
+            clean_threat_data,
+            headerTransform=header_transformer_for_url,
+            removeNull=True,
+            is_auto_json_transform=True,
+        )
+        + "\n"
+    )
+    return readable_output
+
+
+def prepare_hr_for_iq_for_td_insight(insights: list[dict[str, Any]]) -> str:
+    """
+    Prepare human-readable for IQ for TD Insight list command.
+
+    :type insights: list[dict[str, Any]]
+    :param insights: List of insights.
+
+    :rtype: str
+    :return: Human readable string for the command.
+    """
+    headers = [
+        "insight_id",
+        "name",
+        "description",
+        "severity",
+        "status",
+        "date_created",
+        "evaluation_start_date",
+        "evaluation_end_date",
+        "total_events",
+        "total_indicators",
+        "total_assets",
+        "total_users",
+        "expiring_in_days",
+        "threat_properties",
+        "time_saved_seconds",
+    ]
+    hr_rows = [remove_empty_elements_for_hr(insight) for insight in insights]
+    return tableToMarkdown(
+        "IQ for TD Insights",
+        hr_rows,
+        headers=headers,
+        headerTransform=lambda f: " ".join("ID" if w == "Id" else w for w in string_to_table_header(f).split()),
+        removeNull=True,
+        sort_headers=False,
+    )
+
+
+def prepare_hr_for_iq_for_td_insight_get(insight: dict[str, Any]) -> str:
+    """
+    Prepare human-readable for IQ for TD Insight get command.
+
+    :type insight: dict[str, Any]
+    :param insight: Insight detail.
+
+    :rtype: str
+    :return: Human readable string for the command.
+    """
+    headers = [
+        "insight_id",
+        "name",
+        "description",
+        "severity",
+        "status",
+        "date_created",
+        "evaluation_start_date",
+        "evaluation_end_date",
+        "total_events",
+        "total_indicators",
+        "total_assets",
+        "total_verified_assets",
+        "total_unverified_assets",
+        "total_users",
+        "expiring_in_days",
+        "threat_properties",
+        "time_saved_seconds",
+    ]
+    summary = remove_empty_elements_for_hr({key: insight.get(key) for key in headers})
+    readable_output = tableToMarkdown(
+        "IQ for TD Insight Details",
+        summary,
+        headers=headers,
+        headerTransform=lambda f: " ".join("ID" if w == "Id" else w for w in string_to_table_header(f).split()),
+        removeNull=True,
+        sort_headers=False,
+    )
+
+    overview = insight.get("overview")
+    if overview:
+        readable_output += "\n" + tableToMarkdown("Overview", [{"Observation": item} for item in overview], removeNull=True)
+
+    top_indicators = insight.get("top_indicators")
+    if top_indicators:
+        indicator_rows = [
+            {
+                "Indicator": indicator.get("indicator"),
+                "Description": indicator.get("description"),
+                "Threat Actors": ", ".join(
+                    f"{actor.get('name', '')} ({actor.get('id', '')})" for actor in indicator.get("threat_actors", [])
+                ),
+            }
+            for indicator in top_indicators
+        ]
+        readable_output += "\n" + tableToMarkdown("Top Indicators", indicator_rows, removeNull=True)
+
+    top_assets = insight.get("top_assets")
+    if top_assets:
+        asset_rows = [{"Asset": asset.get("asset"), "Description": asset.get("description")} for asset in top_assets]
+        readable_output += "\n" + tableToMarkdown("Top Assets", asset_rows, removeNull=True)
+
+    threat_actors = insight.get("threat_actors")
+    if threat_actors:
+        actor_rows = [
+            {"Actor Name": actor.get("actor_name"), "Actor Description": actor.get("actor_description")}
+            for actor in threat_actors
+        ]
+        readable_output += "\n" + tableToMarkdown("Threat Actors", actor_rows, removeNull=True)
+
+    key_recommendations = insight.get("key_recommendations")
+    if key_recommendations:
+        recommendation_rows = [
+            {
+                "ID": recommendation.get("id"),
+                "Recommendation": recommendation.get("recommendation"),
+                "Type": recommendation.get("type"),
+                "Action Taken": recommendation.get("action_taken"),
+            }
+            for recommendation in key_recommendations
+        ]
+        readable_output += "\n" + tableToMarkdown("Key Recommendations", recommendation_rows, removeNull=True)
+
+    return readable_output
+
+
+def prepare_hr_for_iq_for_td_insight_assets(assets: list[dict[str, Any]], insight_id: str) -> str:
+    """
+    Prepare human-readable for IQ for TD Insight asset list command.
+
+    :type assets: list[dict[str, Any]]
+    :param assets: List of assets.
+
+    :type insight_id: str
+    :param insight_id: Unique display identifier of the insight.
+
+    :rtype: str
+    :return: Human readable string for the command.
+    """
+    headers = [
+        "device_name",
+        "ip_address",
+        "mac_address",
+        "is_verified",
+        "is_risky",
+        "total_events",
+        "indicators",
+        "users",
+        "locations",
+        "first_detected",
+        "last_detected",
+        "description",
+    ]
+    hr_rows = [remove_empty_elements_for_hr(asset) for asset in assets]
+    return tableToMarkdown(
+        f"Assets for the given IQ for TD Insight: {insight_id}",
+        hr_rows,
+        headers=headers,
+        headerTransform=header_transformer_for_ip,
+        removeNull=True,
+        sort_headers=False,
+    )
+
+
+IQ_FOR_TD_INSIGHT_EVENT_FIELDS = [
+    "threat_level",
+    "threat_confidence",
+    "detected_at",
+    "query",
+    "tclass",
+    "actor_name",
+    "query_type",
+    "user",
+    "device_name",
+    "device_ip",
+    "tfamily",
+    "tproperty",
+    "policy",
+    "action",
+    "source",
+    "indicator",
+    "response",
+    "dns_view",
+    "feed",
+    "mac_address",
+    "os_version",
+    "dhcp_fingerprint",
+    "response_region",
+    "response_country",
+    "device_region",
+    "device_country",
+]
+
+
+def add_event_count_to_events(events: list[dict[str, Any]], insight_id: str) -> list[dict[str, Any]]:
+    """
+    Deduplicate events by IQ_FOR_TD_INSIGHT_EVENT_FIELDS values and attach event_count and event_key.
+
+    event_key is a composite of all key field values (not a cryptographic hash, to avoid XSOAR
+    auto-extracting it as a hash indicator) and is used as the sole outputs_key_field. A single
+    composite field is required because the server's key-field merge is an AND of "field is truthy
+    and matches" per field (CommonServerPython Command Results outputs_key_field) - using all
+    ~26 event fields directly as outputs_key_field means any single empty/falsy field (e.g. an
+    empty mac_address) breaks the match and causes duplicate context rows instead of merging.
+
+    :type events: list[dict[str, Any]]
+    :param events: List of events, possibly containing duplicates.
+
+    :type insight_id: str
+    :param insight_id: Unique display identifier of the insight, folded into the composite key.
+
+    :rtype: list[dict[str, Any]]
+    :return: Deduplicated list of events, each with added "event_count" and "event_key" fields.
+    """
+    grouped: dict[tuple, dict[str, Any]] = {}
+    counts: dict[tuple, int] = {}
+    order: list[tuple] = []
+    for event in events:
+        key = tuple(event.get(field) for field in IQ_FOR_TD_INSIGHT_EVENT_FIELDS)
+        if key not in grouped:
+            grouped[key] = event
+            order.append(key)
+        counts[key] = counts.get(key, 0) + 1
+
+    deduped_events = []
+    for key in order:
+        event = dict(grouped[key])
+        event["event_count"] = counts[key]
+        event["event_key"] = "|".join("" if value is None else str(value) for value in (*key, insight_id))
+        deduped_events.append(event)
+    return deduped_events
+
+
+def prepare_hr_for_iq_for_td_insight_events(events: list[dict[str, Any]], insight_id: str) -> str:
+    """
+    Prepare human-readable for IQ for TD Insight event list command.
+
+    :type events: list[dict[str, Any]]
+    :param events: List of events.
+
+    :type insight_id: str
+    :param insight_id: Unique display identifier of the insight.
+
+    :rtype: str
+    :return: Human readable string for the command.
+    """
+    hr_rows = [remove_empty_elements_for_hr(event) for event in events]
+    return tableToMarkdown(
+        f"Events for the given IQ for TD Insight: {insight_id}",
+        hr_rows,
+        headers=["event_count", *IQ_FOR_TD_INSIGHT_EVENT_FIELDS],
+        headerTransform=header_transformer_for_ip,
+        removeNull=True,
+        sort_headers=False,
+    )
+
+
+IQ_FOR_TD_INSIGHT_INDICATOR_FIELDS = [
+    "threat_indicator",
+    "threat_level",
+    "confidence_level",
+    "status",
+    "total_events",
+    "verified_assets",
+    "unverified_assets",
+    "users",
+    "threat_actors",
+    "first_detected",
+    "last_detected",
+    "detected_at",
+    "description",
+]
+
+
+def prepare_hr_for_iq_for_td_insight_indicators(indicators: list[dict[str, Any]], insight_id: str) -> str:
+    """
+    Prepare human-readable for IQ for TD Insight indicator list command.
+
+    :type indicators: list[dict[str, Any]]
+    :param indicators: List of indicators.
+
+    :type insight_id: str
+    :param insight_id: Unique display identifier of the insight.
+
+    :rtype: str
+    :return: Human readable string for the command.
+    """
+    hr_rows = [remove_empty_elements_for_hr(indicator) for indicator in indicators]
+    return tableToMarkdown(
+        f"Indicators for the given IQ for TD Insight: {insight_id}",
+        hr_rows,
+        headers=IQ_FOR_TD_INSIGHT_INDICATOR_FIELDS,
+        headerTransform=header_transformer_for_ip,
+        removeNull=True,
+        sort_headers=False,
+    )
+
+
+IQ_FOR_TD_INSIGHT_ACTION_FIELDS = [
+    "recommendation_id",
+    "action",
+    "status",
+    "audit_entry_id",
+    "reason",
+    "message",
+]
+
+
+def prepare_hr_for_iq_for_td_insight_action_execute(results: list[dict[str, Any]], insight_id: str) -> str:
+    """
+    Prepare human-readable for IQ for TD Insight action execute command.
+
+    :type results: list[dict[str, Any]]
+    :param results: List of action execution result.
+
+    :type insight_id: str
+    :param insight_id: Unique display identifier of the insight.
+
+    :rtype: str
+    :return: Human readable string for the command.
+    """
+    hr_rows = [remove_empty_elements_for_hr(result) for result in results]
+    return tableToMarkdown(
+        f"Action execution result for the given IQ for TD Insight: {insight_id}",
+        hr_rows,
+        headers=IQ_FOR_TD_INSIGHT_ACTION_FIELDS,
+        headerTransform=header_transformer_for_ip,
+        removeNull=True,
+        sort_headers=False,
+    )
+
+
+IQ_FOR_TD_INSIGHT_ACTION_UNDO_FIELDS = [
+    "audit_entry_id",
+    "action",
+    "status",
+]
+
+
+def prepare_hr_for_iq_for_td_insight_action_undo(result: dict[str, Any], audit_entry_id: str) -> str:
+    """
+    Prepare human-readable for IQ for TD Insight action undo command.
+
+    :type result: dict[str, Any]
+    :param result: Action undo result.
+
+    :type audit_entry_id: str
+    :param audit_entry_id: ID of the audit log entry that was undone.
+
+    :rtype: str
+    :return: Human readable string for the command.
+    """
+    hr_rows = [remove_empty_elements_for_hr(result)]
+    return tableToMarkdown(
+        f"Action undo result for the given audit entry: {audit_entry_id}",
+        hr_rows,
+        headers=IQ_FOR_TD_INSIGHT_ACTION_UNDO_FIELDS,
+        headerTransform=header_transformer_for_ip,
+        removeNull=True,
+        sort_headers=False,
+    )
 
 
 def dossier_lookup_task_output(task: Dict) -> Dict:
@@ -150,9 +1560,1536 @@ def dossier_lookup_get_command(client: BloxOneTDClient, args: Dict) -> CommandRe
     return dossier_lookup_get_schedule_polling_result(args, first_time)
 
 
+def ip_command(client: BloxOneTDClient, args: Dict[str, Any]) -> List[CommandResults]:
+    """
+    Get IP reputation from Infoblox BloxOne Threat Defense.
+
+    Args:
+        client: BloxOne Threat Defense client.
+        args: Command arguments
+
+    Returns:
+        CommandResults object with IP reputation data.
+    """
+    ips = argToList(args.get("ip"))
+    invalid_ips, valid_ips = validate_ip_addresses(ips)
+    total_ips = len(valid_ips + invalid_ips)
+    if invalid_ips:
+        return_warning(MESSAGES["INVALID_IP_ADDRESS"].format(", ".join(invalid_ips)), exit=len(invalid_ips) == total_ips)
+    validate_argument(valid_ips, "ip")
+    valid_ips = list(set(valid_ips))
+
+    command_results: List[CommandResults] = []
+
+    for ip in valid_ips:
+        # Get threat intelligence and address data
+        threat_result = client.get_indicator_threat_info(ip, "ip")
+        address_result = client.get_ip_address_info(ip)
+
+        # Extract threat data
+        threat_data = None
+        if threat_result and threat_result.get("threat"):
+            threat_data = threat_result["threat"][0]
+
+        # Extract address data
+        address_data = None
+        if address_result and address_result.get("results") and len(address_result["results"]) > 0:
+            address_data = address_result["results"][0]
+
+        if not threat_data and not address_data:
+            return_warning(MESSAGES["NO_INFO_FOUND"].format("threat and address", "IP", ip))
+            continue
+
+        # Calculate DBot score based on threat data
+        dbot_score = Common.DBotScore.NONE
+        if threat_data:
+            threat_level = threat_data.get("threat_level")
+            confidence = threat_data.get("confidence", 0)
+            dbot_score = get_dbot_score_from_threat_level(threat_level)
+
+        # Create DBot score object
+        dbot_score_obj = Common.DBotScore(
+            indicator=ip,
+            indicator_type=DBotScoreType.IP,
+            integration_name=VENDOR_NAME,
+            score=dbot_score,
+            reliability=client.integration_reliability,
+        )
+
+        dbot_score_obj.integration_name = VENDOR_NAME
+
+        # Create IP indicator object
+        ip_indicator = Common.IP(ip=ip, dbot_score=dbot_score_obj)
+        ip_indicator.tags = []
+
+        # Map threat intelligence fields to IP indicator
+        if threat_data:
+            # Add basic threat intelligence details
+            received = threat_data.get("received")
+            if received:
+                ip_indicator.detection_engines = 1
+
+            class_ = threat_data.get("class")
+            if class_:
+                ip_indicator.malware_family = class_
+
+            type_ = threat_data.get("type")
+            if type_:
+                ip_indicator.threat_types = [
+                    Common.ThreatTypes(threat_category=type_, threat_category_confidence=str(confidence or ""))
+                ]
+
+            # Add extended threat information if available
+            extended = threat_data.get("extended", {})
+            if extended and isinstance(extended, dict):
+                ip_indicator.tags.extend(
+                    [f"{key}: {value}" for key, value in extended.items() if value and isinstance(value, str)]
+                )
+
+                notes = extended.get("notes")
+                if notes:
+                    ip_indicator.description = notes
+                    dbot_score_obj.malicious_description = notes
+
+        # Map address information fields
+        if address_data:
+            # Extract hostname from names if available
+            names = address_data.get("names")
+            if names and isinstance(names, list):
+                for name_entry in names:
+                    if isinstance(name_entry, dict) and name_entry.get("name") and not ip_indicator.hostname:
+                        ip_indicator.hostname = name_entry["name"]
+                        break
+
+            # Determine if IP is internal based on usage field
+            usage = address_data.get("usage")
+            if usage and isinstance(usage, list):
+                usage_list = usage
+                internal_indicators = ["internal", "private", "corporate", "DHCP LEASED"]
+                is_internal = any(
+                    any(indicator.lower() in str(usage).lower() for indicator in internal_indicators)
+                    for usage in usage_list
+                    if usage
+                )
+                ip_indicator.internal = is_internal
+
+            # Add protocol information if available
+            protocol = address_data.get("protocol")
+            if protocol:
+                ip_indicator.tags.append(f"Protocol: {protocol}")
+
+            # Add state information if available
+            state = address_data.get("state")
+            if state:
+                ip_indicator.tags.append(f"State: {state}")
+
+            address_data_tags = address_data.get("tags")
+            if address_data_tags and isinstance(address_data_tags, dict):
+                ip_indicator.tags.extend(
+                    [f"{key}: {value}" for key, value in address_data_tags.items() if value and isinstance(value, str)]
+                )
+
+        # Prepare outputs for context
+        outputs = {
+            "ip": ip,
+            "Threat": threat_data,
+            "Address": address_data,
+        }
+
+        # Create comprehensive readable output
+        readable_output = prepare_hr_for_ip(ip, threat_data, address_data, dbot_score_obj)  # type: ignore
+
+        # Create indicator timeline
+        timeline = None
+        if threat_data and threat_data.get("received"):
+            timeline = IndicatorsTimeline(
+                indicators=[ip],
+                category="Threat Intelligence Update",
+                message=f"IP was identified with threat level: {threat_level or 'Unknown'}, "
+                f"confidence: {confidence or 'Unknown'}%",
+            )
+
+        command_result = CommandResults(
+            outputs_prefix=OUTPUT_PREFIX["IP"],
+            outputs_key_field="ip",
+            outputs=remove_empty_elements(outputs),
+            readable_output=readable_output,
+            raw_response={"threat_data": threat_result, "address_data": address_result},
+            indicator=ip_indicator,
+            indicators_timeline=timeline,
+        )
+        command_results.append(command_result)
+
+    return command_results
+
+
+def domain_command(client: BloxOneTDClient, args: Dict[str, Any]) -> List[CommandResults]:
+    """
+    Get domain/host reputation from Infoblox BloxOne Threat Defense.
+
+    :param client: BloxOneTDClient instance.
+    :type client: ``BloxOneTDClient``
+
+    :param args: Command arguments.
+    :type args: ``Dict[str, Any]``
+
+    :return: CommandResults object with URL reputation data.
+    :rtype: ``List[CommandResults]``
+    """
+    domains = argToList(args.get("domain"))
+    valid_domains = [domain.strip() for domain in domains if domain.strip()]
+    validate_argument(valid_domains, "domain")
+    valid_domains = list(set(valid_domains))
+    command_results = []
+    for domain in valid_domains:
+        threat_result = client.get_indicator_threat_info(domain, "host")
+        address_result = client.get_domain_address_info(domain)
+
+        # Extract threat data
+        threat_data = None
+        if threat_result and threat_result.get("threat"):
+            threat_data = threat_result["threat"][0]
+
+        # Extract address data
+        address_data = None
+        if address_result and address_result.get("results") and len(address_result["results"]) > 0:
+            address_data = address_result["results"][0]
+
+        if not threat_data and not address_data:
+            return_warning(MESSAGES["NO_INFO_FOUND"].format("threat and address", "Domain", domain))
+            continue
+
+        # Calculate DBot score based on threat data
+        dbot_score = Common.DBotScore.NONE
+        if threat_data:
+            threat_level = threat_data.get("threat_level")
+            confidence = threat_data.get("confidence", 0)
+            dbot_score = get_dbot_score_from_threat_level(threat_level)
+
+        # Create DBot score object
+        dbot_score_obj = Common.DBotScore(
+            indicator=domain,
+            indicator_type=DBotScoreType.DOMAIN,
+            integration_name=VENDOR_NAME,
+            score=dbot_score,
+            reliability=client.integration_reliability,
+        )
+
+        dbot_score_obj.integration_name = VENDOR_NAME
+
+        domain_indicator = Common.Domain(domain=domain, dbot_score=dbot_score_obj)
+        domain_indicator.tags = []
+
+        # Map threat intelligence fields to domain indicator
+        if threat_data:
+            # Add basic threat intelligence details
+            received = threat_data.get("received")
+            if received:
+                domain_indicator.detection_engines = 1
+
+            class_ = threat_data.get("class")
+            if class_:
+                domain_indicator.malware_family = class_
+
+            type_ = threat_data.get("type")
+            if type_:
+                domain_indicator.threat_types = [
+                    Common.ThreatTypes(threat_category=type_, threat_category_confidence=str(confidence or ""))
+                ]
+
+            # Add extended threat information if available
+            extended = threat_data.get("extended", {})
+            if extended and isinstance(extended, dict):
+                domain_indicator.tags.extend(
+                    [f"{key}: {value}" for key, value in extended.items() if value and isinstance(value, str)]
+                )
+
+                notes = extended.get("notes")
+                if notes:
+                    domain_indicator.description = notes
+                    dbot_score_obj.malicious_description = notes
+
+        # Map address information fields
+        relationships = []
+        create_relationships = demisto.params().get("create_relationships")
+        if address_data:
+            # Add extended address information if available
+            addresses = address_data.get("addresses")
+            if addresses and isinstance(addresses, list) and create_relationships:
+                for address in addresses:
+                    address_value = address.get("address")
+                    if is_ip_valid(address_value, accept_v6_ips=True):
+                        relationship = EntityRelationship(
+                            name=EntityRelationship.Relationships.RESOLVES_TO,
+                            entity_a=domain,
+                            entity_a_type=FeedIndicatorType.Domain,
+                            entity_b=address_value,
+                            entity_b_type=FeedIndicatorType.IP,
+                            source_reliability=client.integration_reliability,
+                            brand=VENDOR_NAME,
+                        )
+                        relationships.append(relationship)
+
+            address_data_tags = address_data.get("tags")
+            if address_data_tags and isinstance(address_data_tags, dict):
+                domain_indicator.tags.extend(
+                    [f"{key}: {value}" for key, value in address_data_tags.items() if value and isinstance(value, str)]
+                )
+
+        domain_indicator.relationships = relationships
+
+        # Prepare outputs for context
+        outputs = {
+            "domain": domain,
+            "Threat": threat_data,
+            "Address": address_data,
+        }
+
+        # Create comprehensive readable output
+        readable_output = prepare_hr_for_domain(domain, threat_data, address_data, dbot_score_obj)  # type: ignore
+
+        # Create indicator timeline
+        timeline = None
+        if threat_data and threat_data.get("received"):
+            timeline = IndicatorsTimeline(
+                indicators=[domain],
+                category="Threat Intelligence Update",
+                message=f"Domain was identified with threat level: {threat_level or 'Unknown'}, "
+                f"confidence: {confidence or 'Unknown'}%",
+            )
+
+        command_result = CommandResults(
+            outputs_prefix=OUTPUT_PREFIX["Domain"],
+            outputs_key_field="domain",
+            outputs=remove_empty_elements(outputs),
+            readable_output=readable_output,
+            raw_response={"threat_data": threat_result, "address_data": address_result},
+            indicator=domain_indicator,
+            indicators_timeline=timeline,
+            relationships=relationships,
+        )
+        command_results.append(command_result)
+
+    return command_results
+
+
+def url_command(client: BloxOneTDClient, args: Dict[str, Any]) -> List[CommandResults]:
+    """
+    Get URL reputation from Infoblox BloxOne Threat Defense.
+
+    :param client: BloxOneTDClient instance.
+    :type client: ``BloxOneTDClient``
+
+    :param args: Command arguments.
+    :type args: ``Dict[str, Any]``
+
+    :return: CommandResults object with URL reputation data.
+    :rtype: ``List[CommandResults]``
+    """
+    urls = argToList(args.get("url"))
+    valid_urls = [url.strip() for url in urls if url.strip()]
+    validate_argument(valid_urls, "url")
+
+    valid_urls = list(set(valid_urls))
+    command_results = []
+    for url in valid_urls:
+        threat_result = client.get_indicator_threat_info_text_search(url, "url")
+        # Extract threat data
+        threat_data = None
+        if threat_result and threat_result.get("threat"):
+            threat_data = threat_result["threat"][0]
+
+        if not threat_data:
+            return_warning(MESSAGES["NO_INFO_FOUND"].format("threat", "URL", url))
+            continue
+
+        threat_level = threat_data.get("threat_level")
+        confidence = threat_data.get("confidence", 0)
+
+        dbot_score = get_dbot_score_from_threat_level(threat_level)
+
+        # Create DBot score object
+        dbot_score_obj = Common.DBotScore(
+            indicator=url,
+            indicator_type=DBotScoreType.URL,
+            integration_name=VENDOR_NAME,
+            score=dbot_score,
+            reliability=client.integration_reliability,
+        )
+
+        dbot_score_obj.integration_name = VENDOR_NAME
+
+        url_indicator = Common.URL(url=url, dbot_score=dbot_score_obj)
+        url_indicator.tags = []
+
+        # Map threat intelligence fields to URL indicator
+        # Add basic threat intelligence details
+        received = threat_data.get("received")
+        if received:
+            url_indicator.detection_engines = 1
+
+        class_ = threat_data.get("class")
+        if class_:
+            url_indicator.malware_family = class_
+
+        type_ = threat_data.get("type")
+        if type_:
+            url_indicator.threat_types = [
+                Common.ThreatTypes(threat_category=type_, threat_category_confidence=str(confidence or ""))
+            ]
+
+        # Add extended threat information if available
+        extended = threat_data.get("extended", {})
+        if extended and isinstance(extended, dict):
+            url_indicator.tags.extend([f"{key}: {value}" for key, value in extended.items() if value and isinstance(value, str)])
+
+            notes = extended.get("notes")
+            if notes:
+                url_indicator.description = notes
+                dbot_score_obj.malicious_description = notes
+
+        outputs = {
+            "url": url,
+            "Threat": threat_data,
+        }
+
+        # Create comprehensive readable output
+        readable_output = prepare_hr_for_url(url, threat_data, dbot_score_obj)
+
+        # Create indicator timeline
+        timeline = None
+        if threat_data.get("received"):
+            timeline = IndicatorsTimeline(
+                indicators=[url],
+                category="Threat Intelligence Update",
+                message=f"URL was identified with threat level: {threat_level or 'Unknown'}, "
+                f"confidence: {confidence or 'Unknown'}%",
+            )
+
+        command_result = CommandResults(
+            outputs_prefix=OUTPUT_PREFIX["URL"],
+            outputs_key_field="url",
+            outputs=remove_empty_elements(outputs),
+            readable_output=readable_output,
+            raw_response={"threat_data": threat_result},
+            indicator=url_indicator,
+            indicators_timeline=timeline,
+        )
+        command_results.append(command_result)
+
+    return command_results
+
+
+def mac_enrich_command(client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Enriches a MAC address with DHCP lease information.
+
+    Args:
+        client: The Infoblox client.
+        args: Command arguments from Demisto.
+
+    Returns:
+        CommandResults object with MAC address enrichment data
+    """
+    mac = args.get("mac")
+    if not mac:
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("mac"))
+    if not bool(MAC_PATTERN.match(mac)):
+        raise ValueError(MESSAGES["INVALID_VALUE"].format(mac, "mac"))
+
+    response = client.mac_enrich(mac)
+
+    if not response or not response.get("results") or len(response.get("results", [])) == 0:
+        return CommandResults(readable_output=MESSAGES["NO_INFO_FOUND"].format("DHCP lease", "MAC", mac))
+
+    lease_data = response.get("results")[0]
+
+    clean_lease_data = remove_empty_elements_for_hr(lease_data)
+    if "options" in clean_lease_data:
+        lease_options = None
+        try:
+            lease_options_str = clean_lease_data["options"]
+            lease_options = json.loads(lease_options_str)
+            if lease_options and "Options" in lease_options:
+                lease_options = lease_options["Options"]
+            clean_lease_data["options"] = lease_options if lease_options else lease_options_str
+        except Exception:
+            pass
+    readable_output = tableToMarkdown(
+        f"DHCP Lease Information for MAC: {mac}",
+        clean_lease_data,
+        headerTransform=header_transformer_for_ip,
+        removeNull=True,
+        is_auto_json_transform=True,
+    )
+
+    # Return results
+    return CommandResults(
+        outputs_key_field="hardware",
+        readable_output=readable_output,
+        outputs_prefix="InfobloxCloud.DHCPLease",
+        outputs=remove_empty_elements(lease_data),
+        raw_response=response,
+    )
+
+
 def command_test_module(client: BloxOneTDClient) -> str:
-    client.dossier_source_list()
+    params = demisto.params()
+    is_fetch = params.get("isFetch", False)
+    if is_fetch:
+        fetch_incidents(client, params, is_test=True)
+    else:
+        client.dossier_source_list()
     return "ok"
+
+
+def fetch_incidents(client: BloxOneTDClient, params: dict, is_test: bool = False):
+    """
+    Fetches IQ for TD insights, SOC insights and DNS security events and creates incidents for them.
+    :param client: BloxOneTDClient instance.
+    :param params: Dictionary of parameters.
+    :param is_test: Whether this is a test run.
+    :return: None
+    """
+    max_fetch = arg_to_number(params.get("max_fetch"))
+    if not max_fetch and max_fetch != 0:
+        max_fetch = 50
+    if max_fetch > 200:  # type: ignore
+        if is_test:
+            raise ValueError(ERRORS["INVALID_MAX_FETCH"].format(max_fetch))
+        max_fetch = 200
+        demisto.debug(
+            f"The max fetch value is {max_fetch}, which is greater than the maximum allowed value of 200. Setting it to 200."
+        )
+    elif max_fetch < 1:  # type: ignore
+        raise ValueError(ERRORS["INVALID_MAX_FETCH"].format(max_fetch))
+
+    incidents = []
+    last_run = demisto.getLastRun() or {}
+
+    # Determine what to fetch based on parameters
+    ingestion_type = params.get("ingestion_type") or "IQ for TD Insight"
+
+    # Fetch SOC insights if enabled
+    if ingestion_type == "SOC Insight":
+        insights_incidents, last_run = fetch_soc_insights(client, params, last_run, max_fetch, is_test)
+        incidents.extend(insights_incidents)
+
+    # Fetch DNS security events if enabled
+    if ingestion_type == "DNS Security Event":
+        dns_incidents, last_run = fetch_dns_security_events(client, params, last_run, max_fetch, is_test)
+        incidents.extend(dns_incidents)
+
+    # Fetch IQ for TD insights if enabled
+    if ingestion_type == "IQ for TD Insight":
+        insights_v2_incidents, last_run = fetch_iq_for_td_insights(client, params, last_run, max_fetch, is_test)
+        incidents.extend(insights_v2_incidents)
+
+    if is_test:
+        return
+
+    if not incidents:
+        demisto.debug("[Infoblox] No incidents found.")
+    else:
+        demisto.debug(f"[Infoblox] Total {len(incidents)} incidents fetched for {ingestion_type}.")
+
+    # Create incidents
+    demisto.incidents(incidents)
+
+    # Save the updated last run data
+    demisto.setLastRun(last_run)
+
+
+def fetch_dns_security_events(
+    client: BloxOneTDClient, params: dict, last_run: dict, max_fetch: int, is_test: bool = False
+) -> tuple[list, dict]:
+    """
+    Fetches DNS security events and creates incidents for them.
+    :param client: BloxOneTDClient instance.
+    :param params: Dictionary of parameters.
+    :param last_run: Last run data.
+    :param max_fetch: Maximum number of events to fetch.
+    :param is_test: Whether this is a test run.
+    :return: Tuple of incidents list and next run data.
+    """
+    incidents = []
+
+    # Get the last fetch time for DNS events
+    last_fetch_time = last_run.get("dns_events_last_fetch")
+
+    # If no last fetch time, use first_fetch parameter
+    if last_fetch_time:
+        last_fetch_time = arg_to_datetime(last_fetch_time).timestamp()  # type: ignore
+    else:
+        last_fetch_time = arg_to_datetime(  # type: ignore
+            params.get("first_fetch", DEFAULT_FIRST_FETCH), "first_fetch"
+        ).timestamp()
+
+    # Build API parameters
+    api_params: dict[str, Any] = {
+        "_limit": max_fetch,
+        "t0": int(last_fetch_time),
+        "t1": int(arg_to_datetime("now").timestamp()),  # type: ignore
+    }
+
+    # Add optional filters
+    if params.get("dns_events_queried_name"):
+        api_params["qname"] = ",".join(  # Note: API expects 'qname' not 'queried_name'
+            item.strip() for item in argToList(params.get("dns_events_queried_name", [])) if item.strip()
+        )
+    if params.get("dns_events_policy_name"):
+        api_params["policy_name"] = ",".join(
+            item.strip() for item in argToList(params.get("dns_events_policy_name", [])) if item.strip()
+        )
+    if params.get("dns_events_threat_level"):
+        threat_levels = [item.strip() for item in argToList(params.get("dns_events_threat_level", [])) if item.strip()]
+        threat_levels_upper = [item.upper() for item in threat_levels]
+        for level, upper_level in zip(threat_levels, threat_levels_upper):
+            if upper_level not in THREAT_LEVELS:
+                raise ValueError(MESSAGES["INVALID_DNS_EVENT_THREAT_LEVEL"].format(level))
+        api_params["threat_level"] = ",".join(threat_levels_upper)
+    if params.get("dns_events_threat_class"):
+        api_params["threat_class"] = ",".join(
+            item.strip() for item in argToList(params.get("dns_events_threat_class", [])) if item.strip()
+        )
+    if params.get("dns_events_threat_family"):
+        api_params["threat_family"] = ",".join(
+            item.strip() for item in argToList(params.get("dns_events_threat_family", [])) if item.strip()
+        )
+    if params.get("dns_events_threat_indicator"):
+        api_params["threat_indicator"] = ",".join(
+            item.strip() for item in argToList(params.get("dns_events_threat_indicator", [])) if item.strip()
+        )
+    if params.get("dns_events_policy_action"):
+        api_params["policy_action"] = ",".join(
+            item.strip() for item in argToList(params.get("dns_events_policy_action", [])) if item.strip()
+        )
+    if params.get("dns_events_feed_name"):
+        api_params["feed_name"] = ",".join(
+            item.strip() for item in argToList(params.get("dns_events_feed_name", [])) if item.strip()
+        )
+    if params.get("dns_events_network"):
+        api_params["network"] = ",".join(item.strip() for item in argToList(params.get("dns_events_network", [])) if item.strip())
+
+    # Fetch DNS security events
+    response = client.list_dns_security_events(api_params)
+    events = response.get("result", []) if isinstance(response, dict) else response  # type: ignore
+
+    demisto.debug(f"[Infoblox DNS Security Events] Fetched {len(events)} events from API.")
+
+    if is_test:
+        return [], {}
+
+    if not events:
+        demisto.debug("[Infoblox DNS Security Events] No events found.")
+        return [], last_run
+
+    latest_event_time = events[0].get("event_time")
+    events = events[::-1]
+    last_run_ids = last_run.get("dns_events_ids", [])
+    new_event_ids = []
+    duplicate_event_ids = []
+
+    for event in events:
+        event_time = event.get("event_time")
+        qname_truncated = event.get("qname", "")[:20]
+        event["incident_type"] = "Infoblox Cloud DNS Security Event"
+        # Create a composite key with fields separated by '|'
+        key_parts = [
+            event_time,
+            qname_truncated,
+            event.get("device", ""),
+            event.get("feed_name", ""),
+        ]
+        composite_key = "|".join([str(part) for part in key_parts if part])
+        if composite_key in last_run_ids:
+            duplicate_event_ids.append(composite_key)
+            continue
+        last_run_ids.append(composite_key)
+        new_event_ids.append(composite_key)
+
+        # Create incident for each DNS security event
+        incident_name = f"Infoblox DNS Security Event - {event.get('tclass', 'Unknown')} : {qname_truncated}"
+
+        incident = {
+            "name": incident_name,
+            "details": json.dumps(event),
+            "rawJSON": json.dumps(event),
+            "severity": SEVERITY_MAP.get(event.get("severity", "INFO"), 1),
+            "occurred": event_time,
+        }
+        incidents.append(incident)
+
+    # Update next run data
+    demisto.debug(f"[Infoblox DNS Security Events] Setting last_fetch_time to {latest_event_time} and index to 1.")
+    last_run["dns_events_last_fetch"] = latest_event_time
+    demisto.debug(f"[Infoblox DNS Security Events] Found {len(new_event_ids)} new events with IDs: {', '.join(new_event_ids)}.")
+    last_run["dns_events_ids"] = last_run_ids
+
+    if duplicate_event_ids:
+        demisto.debug(
+            f"[Infoblox DNS Security Events] {len(duplicate_event_ids)} duplicate events were skipped with"
+            f"IDs: {', '.join(duplicate_event_ids)}."
+        )
+
+    return incidents, last_run
+
+
+def fetch_soc_insights(
+    client: BloxOneTDClient, params: dict, last_run: dict, max_fetch: int, is_test: bool = False
+) -> tuple[list, dict]:
+    """
+    Fetches new SOC insights and creates incidents for them.
+    :param client: BloxOneTDClient instance.
+    :param params: Dictionary of parameters.
+    :param last_run: Last run data.
+    :param max_fetch: Maximum number of insights to fetch.
+    :param is_test: Whether this is a test run.
+    :return: Tuple of incidents list and next run data.
+    """
+    incidents = []
+    last_run_ids = last_run.get("soc_insight_ids", [])
+
+    params = {
+        "status": params.get("soc_insight_status"),
+        "priority": params.get("soc_insight_priority_level"),
+        "threat_type": params.get("soc_insight_threat_type"),
+    }
+
+    results = client.soc_insights_list(params)
+    insights = results.get("insightList", [])  # type: ignore
+    soc_insight_ids = []
+    new_insights = []
+    new_insight_ids = []
+    duplicate_insight_ids = []
+
+    for insight in insights:
+        soc_insight_id = insight.get("insightId")
+        if not soc_insight_id or soc_insight_id in last_run_ids:
+            duplicate_insight_ids.append(soc_insight_id) if soc_insight_id else None
+            continue
+        insight["incident_link"] = INCIDENT_LINK.format(soc_insight_id)
+        new_insights.append(insight)
+        last_run_ids.append(soc_insight_id)
+        new_insight_ids.append(soc_insight_id)
+        soc_insight_ids.append(insight.get("insightId"))
+        if len(new_insights) >= max_fetch:  # type: ignore
+            break
+
+    if is_test:
+        return [], {}
+
+    for insight in new_insights:
+        threat_type = insight.get("threatType")
+        threat_family = insight.get("tFamily")
+        insight["incident_type"] = "Infoblox Cloud SOC Insight"
+        incident = {
+            "name": f"Infoblox SOC Insight - {threat_type} : {threat_family}",  # noqa: E203
+            "details": json.dumps(insight),
+            "rawJSON": json.dumps(insight),
+            "severity": SEVERITY_MAP.get(insight["priorityText"], 1),
+        }
+        incidents.append(incident)
+
+    if not insights:
+        demisto.debug("[Infoblox SOC Insight] No SOC Insights found.")
+        return [], last_run
+
+    # Update next run data
+    last_run["soc_insight_ids"] = last_run_ids
+    demisto.debug(f"[Infoblox SOC Insight] Found {len(new_insight_ids)} new SOC Insights with IDs: {', '.join(new_insight_ids)}.")
+
+    demisto.debug(
+        f"[Infoblox SOC Insight] {len(duplicate_insight_ids)} duplicate SOC Insights were skipped with"
+        f"IDs: {', '.join(duplicate_insight_ids)}."
+    )
+
+    return incidents, last_run
+
+
+def fetch_iq_for_td_insights(
+    client: BloxOneTDClient, params: dict, last_run: dict, max_fetch: int, is_test: bool = False
+) -> tuple[list, dict]:
+    """
+    Fetches new IQ for TD Insights and creates incidents for them.
+    :param client: BloxOneTDClient instance.
+    :param params: Dictionary of parameters.
+    :param last_run: Last run data.
+    :param max_fetch: Maximum number of insights to fetch.
+    :param is_test: Whether this is a test run.
+    :return: Tuple of incidents list and next run data.
+    """
+    incidents = []
+    last_run_ids = last_run.get("iq_for_td_insight_ids", [])
+
+    last_fetch_time = last_run.get("iq_for_td_insight_last_fetch")
+    if last_fetch_time:
+        date_created = arg_to_datetime(last_fetch_time)
+    else:
+        # The API has no pagination, so the floor timestamp is fixed on the first cycle and
+        # never advanced afterwards; deduplication across cycles relies solely on iq_for_td_insight_ids.
+        date_created = arg_to_datetime(params.get("first_fetch") or DEFAULT_FIRST_FETCH, "first_fetch")
+        last_fetch_time = date_created.strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
+        # The floor timestamp is set once (first cycle) and kept intact on every subsequent cycle.
+        last_run["iq_for_td_insight_last_fetch"] = last_fetch_time
+    if date_created.tzinfo is None:  # type: ignore
+        date_created = date_created.replace(tzinfo=timezone.utc)  # type: ignore
+
+    api_params: dict[str, Any] = {}
+    if params.get("iq_for_td_insight_status"):
+        api_params["status"] = params.get("iq_for_td_insight_status")
+    if params.get("iq_for_td_insight_severity"):
+        api_params["severity"] = params.get("iq_for_td_insight_severity")
+    if params.get("iq_for_td_insight_threat_properties"):
+        api_params["threat_properties"] = ",".join(
+            item.strip() for item in argToList(params.get("iq_for_td_insight_threat_properties", [])) if item.strip()
+        )
+
+    results = client.iq_for_td_insights_list(api_params)
+    insights = results.get("insight_list", []) if isinstance(results, dict) else results  # type: ignore
+
+    if is_test:
+        return [], {}
+
+    if not insights:
+        demisto.debug("[Infoblox IQ for TD Insight] No IQ for TD Insights found.")
+        return [], last_run
+
+    new_insights = []
+    new_insight_ids = []
+    duplicate_insight_ids = []
+    stale_insight_ids = []
+
+    for insight in sorted(insights, key=lambda item: item.get("date_created", "")):
+        insight_id = insight.get("insight_id")
+        insight_date_created = arg_to_datetime(insight.get("date_created"))
+        if insight_date_created and insight_date_created.tzinfo is None:
+            insight_date_created = insight_date_created.replace(tzinfo=timezone.utc)
+        # The API's date_created query param matches exactly rather than "on or after", so it can't be
+        # used server-side as a since-filter; the floor timestamp is applied here instead.
+        if not insight_date_created or insight_date_created < date_created:  # type: ignore
+            stale_insight_ids.append(insight_id) if insight_id else None
+            continue
+        if not insight_id or insight_id in last_run_ids:
+            duplicate_insight_ids.append(insight_id) if insight_id else None
+            continue
+        insight["incident_link"] = INCIDENT_LINK_V2.format(insight_id)
+        new_insights.append(insight)
+        last_run_ids.append(insight_id)
+        new_insight_ids.append(insight_id)
+        if len(new_insights) >= max_fetch:  # type: ignore
+            break
+
+    for insight in new_insights:
+        insight["incident_type"] = "Infoblox Cloud IQ for TD Insight"
+        incident = {
+            "name": f"Infoblox IQ for TD Insight - {insight.get('name', 'Unknown')}",
+            "details": json.dumps(insight),
+            "rawJSON": json.dumps(insight),
+            "severity": IQ_FOR_TD_INSIGHT_SEVERITY_MAP.get(insight.get("severity"), 1),
+            "occurred": insight.get("date_created"),
+        }
+        incidents.append(incident)
+
+    last_run["iq_for_td_insight_ids"] = last_run_ids
+    demisto.debug(
+        f"[Infoblox IQ for TD Insight] Found {len(new_insight_ids)} new IQ for TD Insights with IDs: "
+        f"{', '.join(new_insight_ids)}."
+    )
+
+    if duplicate_insight_ids:
+        demisto.debug(
+            f"[Infoblox IQ for TD Insight] {len(duplicate_insight_ids)} duplicate IQ for TD Insights were skipped with"
+            f"IDs: {', '.join(duplicate_insight_ids)}."
+        )
+
+    if stale_insight_ids:
+        demisto.debug(
+            f"[Infoblox IQ for TD Insight] {len(stale_insight_ids)} IQ for TD Insights older than the first fetch "
+            f"{last_fetch_time} were skipped with IDs: {', '.join(stale_insight_ids)}."
+        )
+
+    return incidents, last_run
+
+
+def remove_duplicate_entries(indicator_list: list[str]) -> list[str]:
+    """
+    Remove duplicate entries in a list.
+    :param indicator_list: List of indicators.
+    :return: List of indicators without duplicates.
+    """
+    result = []
+    for item in indicator_list:
+        if item.strip() and item.strip() not in result:
+            result.append(item.strip())
+    return result
+
+
+def generic_named_list_method(
+    client: BloxOneTDClient, args: dict[str, Any], data: dict[str, Any], is_remove: bool = False
+) -> CommandResults:
+    """
+    Generic method for named list operations.
+    :param client: BloxOneTDClient instance.
+    :param args: Dictionary of arguments.
+    :param data: Dictionary of data to update the named list.
+    :return: CommandResults instance.
+    """
+    params = {
+        "name": validate_argument(args.get("custom_list_name"), "custom_list_name"),  # type: ignore
+        "type": validate_argument(args.get("custom_list_type"), "custom_list_type"),  # type: ignore
+    }
+    try:
+        named_list = client.get_named_list(params)
+    except DemistoException as error:
+        if client.last_response.text:  # type: ignore
+            text = client.last_response.text  # type: ignore
+            raise ValueError(f"{error}\n{text}")
+        raise ValueError(f"Failed to get named list: {error}")
+    named_list_id = validate_key(named_list.get("results"), "id")
+    items = data.get("items")
+    items = remove_duplicate_entries(items)  # type: ignore
+    data["items"] = items
+    indicators = ", ".join(items)
+    if is_remove:
+        try:
+            client.remove_named_list_items(named_list_id, data)
+            title = f"'{indicators}' indicators removed from the '{args.get('custom_list_name')}' list"
+        except Exception as error:
+            match = re.search(r"(\d+)\s+Items", str(error))
+            if match:
+                number = int(match.group(1))
+                raise ValueError(f"{number} indicators were not present in the list.")
+            raise ValueError(f"Failed to remove indicators from named list: {error}")
+    else:
+        try:
+            client.update_named_list(named_list_id, data)
+            title = f"'{indicators}' indicators added to the '{args.get('custom_list_name')}' list"
+        except Exception as error:
+            raise ValueError(f"Failed to add indicators to named list: {error}")
+    data = client.get_named_list(params)
+    named_list = validate_key(data, "results")
+    return CommandResults(
+        readable_output=prepare_hr_for_named_list(named_list, title),
+        outputs_prefix="InfobloxCloud.CustomList",
+        outputs_key_field="id",
+        outputs=remove_empty_elements(named_list),
+        raw_response=data,
+    )
+
+
+def validate_ip(ip: str):
+    """
+    Validate an IP address or CIDR.
+    :param ip: IP address or CIDR.
+    :return: Validated IP address or CIDR.
+    """
+    ip = validate_argument(ip, "ip")
+    for fn in [ipaddress.ip_address, lambda v: ipaddress.ip_network(v, strict=False)]:
+        try:
+            fn(ip)
+            return ip
+        except ValueError:
+            continue
+    raise ValueError(f"Invalid IP or CIDR: {ip}")
+
+
+def validate_ip_list(ip_list: str) -> list[str]:
+    """
+    Validate a list of IP addresses or CIDRs.
+    :param ip_list: List of IP addresses or CIDRs.
+    :return: Validated list of IP addresses or CIDRs.
+    """
+    ip_list = argToList(ip_list, ",")
+    ip_list = [ip.strip() for ip in ip_list if ip.strip()]
+    for ip in ip_list:
+        validate_ip(ip)
+    ip_list = validate_argument(ip_list, "ip")  # type: ignore
+    return ip_list  # type: ignore
+
+
+def validate_domain(domain: str):
+    """
+    Validate a domain.
+    :param domain: Domain.
+    :return: Validated domains.
+    """
+    domains = argToList(domain, ",")
+    domains = [domain.strip() for domain in domains if domain.strip()]
+    domains = validate_argument(domains, "domain")  # type: ignore
+    return domains
+
+
+def validate_datetime(time_string: str, name: str) -> str | None:
+    """
+    Validate a datetime.
+    :param time_string: Time string.
+    :param name: Name of the time string.
+    :return: Validated datetime.
+    """
+    time_obj = arg_to_datetime(time_string, name)
+    if time_obj:
+        return time_obj.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3]  # type: ignore
+    return None
+
+
+def block_ip_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+    """
+    Block an IP in a custom list.
+    :param client: BloxOneTDClient instance.
+    :param args: Dictionary of arguments.
+    :return: CommandResults instance.
+    """
+    ip_list = validate_ip_list(args.get("ip"))  # type: ignore
+    data = {"items": ip_list}
+    return generic_named_list_method(client, args, data)
+
+
+def unblock_ip_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+    """
+    Unblock an IP from a custom list.
+    :param client: BloxOneTDClient instance.
+    :param args: Dictionary of arguments.
+    :return: CommandResults instance.
+    """
+    ip_list = validate_ip_list(args.get("ip"))  # type: ignore
+    data = {"items": ip_list}
+    return generic_named_list_method(client, args, data)
+
+
+def block_domain_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+    """
+    Block an domain in a custom list.
+    :param client: BloxOneTDClient instance.
+    :param args: Dictionary of arguments.
+    :return: CommandResults instance.
+    """
+    domain = validate_domain(args.get("domain"))  # type: ignore
+    data = {"items": domain}
+    return generic_named_list_method(client, args, data)
+
+
+def unblock_domain_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+    """
+    Unblock an domain from a custom list.
+    :param client: BloxOneTDClient instance.
+    :param args: Dictionary of arguments.
+    :return: CommandResults instance.
+    """
+    domain = validate_domain(args.get("domain"))  # type: ignore
+    data = {"items": domain}
+    return generic_named_list_method(client, args, data)
+
+
+def infobloxcloud_customlist_indicator_remove(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+    """
+    Unblock an IP from a custom list.
+    :param client: BloxOneTDClient instance.
+    :param args: Dictionary of arguments.
+    :return: CommandResults instance.
+    """
+    indicators = argToList(args.get("indicators"), ",")
+    indicators = remove_duplicate_entries(indicators)
+    indicators = validate_argument(indicators, "indicators")
+    data = {"items": indicators}
+    return generic_named_list_method(client, args, data, is_remove=True)
+
+
+def list_soc_insights_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+    """
+    List SOC insights.
+    :param client: BloxOneTDClient instance.
+    :param args: Dictionary of arguments.
+    :return: CommandResults instance.
+    """
+    params = {
+        "status": args.get("status"),
+        "priority": args.get("priority"),
+        "threat_type": args.get("threat_type"),
+    }
+    insights = client.soc_insights_list(params)
+    insights = insights.get("insightList", [])  # type: ignore
+    if not insights:
+        return CommandResults(
+            readable_output="No SOC Insights found.",
+            raw_response=insights,
+        )
+    return CommandResults(
+        readable_output=prepare_hr_for_soc_insights(insights),
+        outputs_prefix="InfobloxCloud.SOCInsight",
+        outputs_key_field="insightId",
+        outputs=remove_empty_elements(insights),
+        raw_response=insights,
+    )
+
+
+def list_soc_insight_indicators_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+    """
+    List SOC insight indicators.
+    :param client: BloxOneTDClient instance.
+    :param args: Dictionary of arguments.
+    :return: CommandResults instance.
+    """
+    soc_insight_id = validate_argument(args.get("soc_insight_id"), "soc_insight_id")
+    params = {
+        "confidence": args.get("confidence"),
+        "indicator": args.get("indicator"),
+        "action": args.get("action"),
+        "actor": args.get("actor"),
+        "limit": arg_to_number(args.get("limit", 50)),
+        "from": validate_datetime(args.get("start_time"), "start_time"),  # type: ignore
+        "to": validate_datetime(args.get("end_time"), "end_time"),  # type: ignore
+    }
+    params = remove_empty_elements(params)
+    indicators = client.soc_insight_indicators_list(params, soc_insight_id)
+    indicators = indicators.get("indicators", [])  # type: ignore
+    if not indicators:
+        return CommandResults(
+            readable_output="No indicators found.",
+            raw_response=indicators,
+        )
+    return CommandResults(
+        readable_output=prepare_hr_for_soc_insight_indicators(indicators, soc_insight_id),
+        outputs_prefix="InfobloxCloud.Indicator",
+        outputs_key_field="indicatorId",
+        outputs=remove_empty_elements(indicators),
+        raw_response=indicators,
+    )
+
+
+def list_soc_insight_events_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+    """
+    List SOC insight events.
+    :param client: BloxOneTDClient instance.
+    :param args: Dictionary of arguments.
+    :return: CommandResults instance.
+    """
+    soc_insight_id = validate_argument(args.get("soc_insight_id"), "soc_insight_id")
+    device_ip = args.get("device_ip")
+    if device_ip and not is_ip_valid(device_ip, accept_v6_ips=True):
+        raise ValueError(MESSAGES["INVALID_VALUE"].format(device_ip, "device_ip"))
+    params = {
+        "threat_level": args.get("threat_level"),
+        "confidence_level": args.get("confidence_level"),
+        "query": args.get("query"),
+        "query_type": args.get("query_type"),
+        "limit": arg_to_number(args.get("limit", 50)),
+        "from": validate_datetime(args.get("start_time"), "start_time"),  # type: ignore
+        "to": validate_datetime(args.get("end_time"), "end_time"),  # type: ignore
+        "source": args.get("source"),
+        "device_ip": device_ip,
+        "indicator": args.get("indicator"),
+    }
+    params = remove_empty_elements(params)
+    events = client.soc_insight_events_list(params, soc_insight_id)
+    events = events.get("events", [])  # type: ignore
+    if not events:
+        return CommandResults(
+            readable_output="No events found.",
+            raw_response=events,
+        )
+    return CommandResults(
+        readable_output=prepare_hr_for_soc_insight_events(events, soc_insight_id),
+        outputs_prefix="InfobloxCloud.Event",
+        outputs_key_field="eventId",
+        outputs=remove_empty_elements(events),
+        raw_response=events,
+    )
+
+
+def list_soc_insight_assets_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+    """
+    List SOC insight assets.
+    :param client: BloxOneTDClient instance.
+    :param args: Dictionary of arguments.
+    :return: CommandResults instance.
+    """
+    qip = args.get("qip")
+    cmac = args.get("cmac")
+    if qip and not is_ip_valid(qip, accept_v6_ips=True):
+        raise ValueError(MESSAGES["INVALID_VALUE"].format(qip, "qip"))
+    if cmac and not bool(MAC_PATTERN.match(cmac)):
+        raise ValueError(MESSAGES["INVALID_VALUE"].format(cmac, "cmac"))
+    soc_insight_id = validate_argument(args.get("soc_insight_id"), "soc_insight_id")
+    params = {
+        "qip": qip,
+        "cmac": cmac,
+        "os_version": args.get("os_version"),
+        "user": args.get("user"),
+        "limit": arg_to_number(args.get("limit", 50)),
+        "from": validate_datetime(args.get("start_time"), "start_time"),  # type: ignore
+        "to": validate_datetime(args.get("end_time"), "end_time"),  # type: ignore
+    }
+    params = remove_empty_elements(params)
+    assets = client.soc_insight_assets_list(params, soc_insight_id)
+    assets = assets.get("assets", [])  # type: ignore
+    if not assets:
+        return CommandResults(
+            readable_output="No assets found.",
+            raw_response=assets,
+        )
+    return CommandResults(
+        readable_output=prepare_hr_for_soc_insight_assets(assets, soc_insight_id),
+        outputs_prefix="InfobloxCloud.Asset",
+        outputs_key_field="assetId",
+        outputs=remove_empty_elements(assets),
+        raw_response=assets,
+    )
+
+
+def list_soc_insight_comments_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+    """
+    List SOC insight comments.
+    :param client: BloxOneTDClient instance.
+    :param args: Dictionary of arguments.
+    :return: CommandResults instance.
+    """
+    soc_insight_id = validate_argument(args.get("soc_insight_id"), "soc_insight_id")
+    limit = arg_to_number(args.get("limit", 50))
+    if limit < 0:  # type: ignore
+        raise ValueError("Limit should not be less than 0.")
+    params = {
+        "from": validate_datetime(args.get("start_time"), "start_time"),  # type: ignore
+        "to": validate_datetime(args.get("end_time"), "end_time"),  # type: ignore
+    }
+    params = remove_empty_elements(params)
+    comments = client.soc_insight_comments_list(params, soc_insight_id)
+    comments = comments.get("comments", [])  # type: ignore
+    if not comments:
+        return CommandResults(
+            readable_output="No comments found.",
+            raw_response=comments,
+        )
+    if limit != 0:
+        comments = comments[:limit]
+    return CommandResults(
+        readable_output=prepare_hr_for_soc_insight_comments(comments, soc_insight_id),
+        outputs_prefix="InfobloxCloud.Comment",
+        outputs_key_field="commentId",
+        outputs=remove_empty_elements(comments),
+        raw_response=comments,
+    )
+
+
+def list_iq_for_td_insight_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+    """
+    List IQ for TD Insights.
+    :param client: BloxOneTDClient instance.
+    :param args: Dictionary of arguments.
+    :return: CommandResults instance.
+    """
+    # The API's date_created query param matches exactly rather than "on or after", so it can't be
+    # used server-side as a since-filter; the floor timestamp is applied client-side instead.
+    date_created_floor = arg_to_datetime(args.get("date_created"), "date_created") if args.get("date_created") else None
+    if date_created_floor and date_created_floor.tzinfo is None:
+        date_created_floor = date_created_floor.replace(tzinfo=timezone.utc)
+
+    status = args.get("status")
+    if status:
+        validate_iq_for_td_insight_status(status)
+    severity = args.get("severity")
+    if severity:
+        severity = validate_iq_for_td_insight_severity(severity)
+
+    cleaned_args = validate_iq_for_td_insight_list_args(args)
+    params = {
+        "status": status,
+        "name": args.get("name"),
+        "severity": severity,
+        "threat_properties": cleaned_args.get("threat_properties"),
+        "indicators": cleaned_args.get("indicators"),
+        "assets": cleaned_args.get("assets"),
+        "user": cleaned_args.get("user"),
+    }
+    params = remove_empty_elements(params)
+    result = client.iq_for_td_insights_list(params)
+    insights = result.get("insight_list", []) if isinstance(result, dict) else result  # type: ignore
+
+    if date_created_floor and insights:
+        filtered_insights = []
+        for insight in insights:
+            insight_date_created = arg_to_datetime(insight.get("date_created"))
+            if insight_date_created and insight_date_created.tzinfo is None:
+                insight_date_created = insight_date_created.replace(tzinfo=timezone.utc)
+            if insight_date_created and insight_date_created >= date_created_floor:
+                filtered_insights.append(insight)
+        insights = filtered_insights
+
+    if not insights:
+        return CommandResults(
+            readable_output="No IQ for TD Insights found.",
+            raw_response=insights,
+        )
+    return CommandResults(
+        readable_output=prepare_hr_for_iq_for_td_insight(insights),
+        outputs_prefix="InfobloxCloud.IQForTDInsight",
+        outputs_key_field="insight_id",
+        outputs=remove_empty_elements(insights),
+        raw_response=insights,
+    )
+
+
+def get_iq_for_td_insight_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+    """
+    Get IQ for TD Insight detail by insight ID.
+    :param client: BloxOneTDClient instance.
+    :param args: Dictionary of arguments.
+    :return: CommandResults instance.
+    """
+    insight_id = validate_argument(args.get("insight_id"), "insight_id")
+    insight = client.iq_for_td_insight_get(insight_id)
+
+    if not insight:
+        return CommandResults(
+            readable_output="No IQ for TD Insight found.",
+            raw_response=insight,
+        )
+    return CommandResults(
+        readable_output=prepare_hr_for_iq_for_td_insight_get(insight),
+        outputs_prefix="InfobloxCloud.IQForTDInsight",
+        outputs_key_field="insight_id",
+        outputs=remove_empty_elements(insight),
+        raw_response=insight,
+    )
+
+
+def update_iq_for_td_insight_status_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+    """
+    Update the workflow status of a IQ for TD Insight, with an optional analyst comment.
+    :param client: BloxOneTDClient instance.
+    :param args: Dictionary of arguments.
+    :return: CommandResults instance.
+    """
+    insight_id = validate_argument(args.get("insight_id"), "insight_id")
+    status = validate_iq_for_td_insight_status(validate_argument(args.get("status"), "status"))
+    comment = args.get("comment")
+
+    data = remove_empty_elements({"insight_id": insight_id, "status": status, "comment": comment})
+    response = client.iq_for_td_insight_status_update(data)
+
+    outputs = data
+    return CommandResults(
+        readable_output=f"Successfully updated the status of IQ for TD Insight '{insight_id}' to '{status}'.",
+        outputs_prefix="InfobloxCloud.IQForTDInsight",
+        outputs_key_field="insight_id",
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def list_iq_for_td_insight_assets_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+    """
+    List assets for a specific IQ for TD Insight.
+    :param client: BloxOneTDClient instance.
+    :param args: Dictionary of arguments.
+    :return: CommandResults instance.
+    """
+    insight_id = validate_argument(args.get("insight_id"), "insight_id")
+    cleaned_args = validate_iq_for_td_insight_asset_list_args(args)
+    is_verified = args.get("is_verified")
+    limit = arg_to_number(args.get("limit", 50))
+    if limit is not None and limit <= 0:
+        raise ValueError(MESSAGES["INVALID_VALUE"].format(args.get("limit"), "limit"))
+    params = {
+        "device_name": args.get("device_name"),
+        "indicators": cleaned_args.get("indicators"),
+        "users": cleaned_args.get("users"),
+        "ip_address": cleaned_args.get("ip_address"),
+        "is_verified": argToBoolean(is_verified) if is_verified is not None else None,
+        "limit": limit,
+    }
+    params = remove_empty_elements(params)
+    result = client.iq_for_td_insight_assets_list(params, insight_id)
+    assets = result.get("assets", []) if isinstance(result, dict) else result  # type: ignore
+
+    if not assets:
+        return CommandResults(
+            readable_output="No assets found for the given IQ for TD Insight.",
+            raw_response=assets,
+        )
+    outputs = [
+        dict(asset, insight_id=insight_id, asset_key=f"{insight_id}|{asset.get('device_name')}")
+        for asset in remove_empty_elements(assets)
+    ]
+    return CommandResults(
+        readable_output=prepare_hr_for_iq_for_td_insight_assets(assets, insight_id),
+        outputs_prefix="InfobloxCloud.IQForTDInsightAsset",
+        outputs_key_field=["asset_key"],
+        outputs=outputs,
+        raw_response=assets,
+    )
+
+
+def list_iq_for_td_insight_events_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+    """
+    List events for a specific IQ for TD Insight.
+    :param client: BloxOneTDClient instance.
+    :param args: Dictionary of arguments.
+    :return: CommandResults instance.
+    """
+    insight_id = validate_argument(args.get("insight_id"), "insight_id")
+    cleaned_args = validate_iq_for_td_insight_event_list_args(args)
+    limit = arg_to_number(args.get("limit", 50))
+    if limit is not None and limit <= 0:
+        raise ValueError(MESSAGES["INVALID_VALUE"].format(args.get("limit"), "limit"))
+    threat_level = args.get("threat_level")
+    if threat_level:
+        validate_iq_for_td_insight_threat_level(threat_level)
+    threat_confidence = args.get("threat_confidence")
+    if threat_confidence:
+        threat_confidence = validate_iq_for_td_insight_event_threat_confidence(threat_confidence)
+    params = {
+        "threat_level": threat_level,
+        "threat_confidence": threat_confidence,
+        "indicator": cleaned_args.get("indicators"),
+        "detected_from": validate_datetime(args.get("detected_from"), "detected_from"),  # type: ignore
+        "detected_to": validate_datetime(args.get("detected_to"), "detected_to"),  # type: ignore
+        "tclass": args.get("tclass"),
+        "query": args.get("query"),
+        "query_type": args.get("query_type"),
+        "user": cleaned_args.get("users"),
+        "device_ip": cleaned_args.get("device_ips"),
+        "device_name": args.get("device_name"),
+        "policy": args.get("policy"),
+        "source": args.get("source"),
+        "response": args.get("response"),
+        "dns_view": args.get("dns_view"),
+        "feed": args.get("feed"),
+        "mac_address": cleaned_args.get("mac_addresses"),
+        "os_version": args.get("os_version"),
+        "dhcp_fingerprint": args.get("dhcp_fingerprint"),
+        "response_region": args.get("response_region"),
+        "response_country": args.get("response_country"),
+        "device_region": args.get("device_region"),
+        "device_country": args.get("device_country"),
+        "limit": limit,
+    }
+    params = remove_empty_elements(params)
+    result = client.iq_for_td_insight_events_list(params, insight_id)
+    events = result.get("events", []) if isinstance(result, dict) else result  # type: ignore
+
+    if not events:
+        return CommandResults(
+            readable_output="No events found for the given IQ for TD Insight.",
+            raw_response=events,
+        )
+    deduped_events = add_event_count_to_events(events, insight_id)
+    outputs = [dict(event, insight_id=insight_id) for event in remove_empty_elements(deduped_events)]
+    return CommandResults(
+        readable_output=prepare_hr_for_iq_for_td_insight_events(deduped_events, insight_id),
+        outputs_prefix="InfobloxCloud.IQForTDInsightEvent",
+        outputs_key_field=["event_key"],
+        outputs=outputs,
+        raw_response=events,
+    )
+
+
+def list_iq_for_td_insight_indicators_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+    """
+    List indicators for a specific IQ for TD Insight.
+    :param client: BloxOneTDClient instance.
+    :param args: Dictionary of arguments.
+    :return: CommandResults instance.
+    """
+    insight_id = validate_argument(args.get("insight_id"), "insight_id")
+    cleaned_args = validate_iq_for_td_insight_indicator_list_args(args)
+    limit = arg_to_number(args.get("limit", 50))
+    if limit is not None and limit <= 0:
+        raise ValueError(MESSAGES["INVALID_VALUE"].format(args.get("limit"), "limit"))
+    threat_level = args.get("threat_level")
+    if threat_level:
+        validate_iq_for_td_insight_threat_level(threat_level)
+    statuses = cleaned_args.get("statuses")
+    if statuses:
+        validate_iq_for_td_insight_indicator_statuses(statuses)
+    params = {
+        "indicators": cleaned_args.get("indicators"),
+        "threat_level": threat_level,
+        "status": statuses,
+        "users": cleaned_args.get("users"),
+        "detected_at": validate_datetime(args.get("detected_at"), "detected_at"),  # type: ignore
+        "limit": limit,
+    }
+    params = remove_empty_elements(params)
+    result = client.iq_for_td_insight_indicators_list(params, insight_id)
+    indicators = result.get("indicators", []) if isinstance(result, dict) else result  # type: ignore
+
+    if not indicators:
+        return CommandResults(
+            readable_output="No indicators found for the given IQ for TD Insight.",
+            raw_response=indicators,
+        )
+    outputs = [
+        dict(indicator, insight_id=insight_id, indicator_key=f"{insight_id}|{indicator.get('threat_indicator')}")
+        for indicator in remove_empty_elements(indicators)
+    ]
+    return CommandResults(
+        readable_output=prepare_hr_for_iq_for_td_insight_indicators(indicators, insight_id),
+        outputs_prefix="InfobloxCloud.IQForTDInsightIndicator",
+        outputs_key_field=["indicator_key"],
+        outputs=outputs,
+        raw_response=indicators,
+    )
+
+
+def execute_iq_for_td_insight_action_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+    """
+    Execute a recommendation action on a specific IQ for TD Insight.
+    :param client: BloxOneTDClient instance.
+    :param args: Dictionary of arguments.
+    :return: CommandResults instance.
+    """
+    insight_id = validate_argument(args.get("insight_id"), "insight_id")
+    recommendation_id = validate_argument(args.get("recommendation_id"), "recommendation_id")
+    action = args.get("action")
+    if action:
+        validate_iq_for_td_insight_action(action)
+
+    data = {"items": [remove_empty_elements({"recommendation_id": recommendation_id, "action": action})]}
+    response = client.iq_for_td_insight_action_execute(data, insight_id)
+    results = response.get("results", []) if isinstance(response, dict) else response  # type: ignore
+    result = results[0] if results else None
+
+    if not result:
+        return CommandResults(
+            readable_output="No action execution result returned for the given IQ for TD Insight.",
+            raw_response=result,
+        )
+    output = dict(result, insight_id=insight_id, recommendation_id=recommendation_id)
+    return CommandResults(
+        readable_output=prepare_hr_for_iq_for_td_insight_action_execute([output], insight_id),
+        outputs_prefix="InfobloxCloud.IQForTDInsightAction",
+        outputs_key_field="audit_entry_id",
+        outputs=remove_empty_elements(output),
+        raw_response=result,
+    )
+
+
+def undo_iq_for_td_insight_action_command(client: BloxOneTDClient, args: dict[str, Any]) -> CommandResults:
+    """
+    Undo a previously executed recommendation action on a specific IQ for TD Insight.
+    :param client: BloxOneTDClient instance.
+    :param args: Dictionary of arguments.
+    :return: CommandResults instance.
+    """
+    audit_entry_id = validate_argument(args.get("audit_entry_id"), "audit_entry_id")
+
+    response = client.iq_for_td_insight_action_undo(audit_entry_id)
+    result = response.get("result") if isinstance(response, dict) else None
+
+    if not result:
+        return CommandResults(
+            readable_output="No action undo result returned for the given audit entry.",
+            raw_response=result,
+        )
+    output = dict(result, audit_entry_id=audit_entry_id)
+    return CommandResults(
+        readable_output=prepare_hr_for_iq_for_td_insight_action_undo(output, audit_entry_id),
+        outputs_prefix="InfobloxCloud.IQForTDInsightAction",
+        outputs_key_field="audit_entry_id",
+        outputs=remove_empty_elements(output),
+        raw_response=result,
+    )
 
 
 def main():
@@ -172,15 +3109,51 @@ def main():
         "bloxone-td-dossier-source-list": dossier_source_list_command,
     }
 
+    new_commands_with_args = {
+        "infobloxcloud-block-ip": block_ip_command,
+        "infobloxcloud-unblock-ip": unblock_ip_command,
+        "infobloxcloud-block-domain": block_domain_command,
+        "infobloxcloud-unblock-domain": unblock_domain_command,
+        "infobloxcloud-customlist-indicator-remove": infobloxcloud_customlist_indicator_remove,
+        "ip": ip_command,
+        "domain": domain_command,
+        "url": url_command,
+        "infobloxcloud-mac-enrich": mac_enrich_command,
+        "infobloxcloud-soc-insight-list": list_soc_insights_command,
+        "infobloxcloud-soc-insight-indicator-list": list_soc_insight_indicators_command,
+        "infobloxcloud-soc-insight-event-list": list_soc_insight_events_command,
+        "infobloxcloud-soc-insight-asset-list": list_soc_insight_assets_command,
+        "infobloxcloud-soc-insight-comment-list": list_soc_insight_comments_command,
+        "infobloxcloud-iq-for-td-insight-list": list_iq_for_td_insight_command,
+        "infobloxcloud-iq-for-td-insight-get": get_iq_for_td_insight_command,
+        "infobloxcloud-iq-for-td-insight-status-update": update_iq_for_td_insight_status_command,
+        "infobloxcloud-iq-for-td-insight-asset-list": list_iq_for_td_insight_assets_command,
+        "infobloxcloud-iq-for-td-insight-event-list": list_iq_for_td_insight_events_command,
+        "infobloxcloud-iq-for-td-insight-indicator-list": list_iq_for_td_insight_indicators_command,
+        "infobloxcloud-iq-for-td-insight-action-execute": execute_iq_for_td_insight_action_command,
+        "infobloxcloud-iq-for-td-insight-action-undo": undo_iq_for_td_insight_action_command,
+    }
+
     command = demisto.command()
+    demisto.debug(f"Command being called is {command}")
     try:
+        client.attach_customer_tracking_header()
         if command in commands_without_args:
             results = commands_without_args[command](client)
+            return_results(results)
         elif command in commands_with_args:
-            results = commands_with_args[command](client, demisto.args())
+            args = demisto.args()
+            results = commands_with_args[command](client, args)
+            return_results(results)
+        elif command in new_commands_with_args:
+            command_args = trim_args(demisto.args())
+            remove_nulls_from_dictionary(command_args)
+            results = new_commands_with_args[command](client, command_args)
+            return_results(results)
+        elif command == "fetch-incidents":
+            fetch_incidents(client, params)
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
-        return_results(results)
     except Exception as e:
         auth_error = isinstance(e, DemistoException) and e.res is not None and e.res.status_code == 401  # pylint: disable=E1101
         if auth_error:

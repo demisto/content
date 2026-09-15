@@ -110,6 +110,116 @@ def test_alert_search_command_with_next_token(mocker, prisma_cloud_v2_client):
     )
 
 
+def test_alert_search_request_limit_is_capped(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - A limit that is higher than the maximum the Prisma Cloud alert search API accepts
+    When:
+        - Calling alert_search_request
+    Then:
+        - The limit sent to the API is capped to ALERT_SEARCH_MAX_LIMIT, so the API does not fail with
+          400 - Bad Request [{"i18nKey":"invalid_alert_search_limit"}]
+    """
+    from PrismaCloudV2 import ALERT_SEARCH_MAX_LIMIT
+
+    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request")
+    time_range = {"type": "relative", "value": {"amount": 3, "unit": "week"}}
+    prisma_cloud_v2_client.alert_search_request(time_range=time_range, filters=[], limit=ALERT_SEARCH_MAX_LIMIT + 1)
+
+    assert http_request.call_args.kwargs["json_data"]["limit"] == ALERT_SEARCH_MAX_LIMIT
+
+
+def test_alert_search_request_limit_under_max_is_not_changed(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - A limit that is lower than the maximum the Prisma Cloud alert search API accepts
+    When:
+        - Calling alert_search_request
+    Then:
+        - The limit sent to the API is unchanged
+    """
+    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request")
+    time_range = {"type": "relative", "value": {"amount": 3, "unit": "week"}}
+    prisma_cloud_v2_client.alert_search_request(time_range=time_range, filters=[], limit=50)
+
+    assert http_request.call_args.kwargs["json_data"]["limit"] == 50
+
+
+def test_alert_search_command_paginates_above_api_max_limit(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - A "limit" argument that is higher than the maximum a single alert search API request accepts
+    When:
+        - prisma-cloud-alert-search command is executed
+    Then:
+        - The command paginates using the "nextPageToken" and returns the full amount of alerts requested,
+          while no single request exceeds ALERT_SEARCH_MAX_LIMIT
+    """
+    from PrismaCloudV2 import ALERT_SEARCH_MAX_LIMIT, alert_search_command
+
+    limit = ALERT_SEARCH_MAX_LIMIT + 500
+    first_page = {
+        "items": [{"id": f"alert-{index}"} for index in range(ALERT_SEARCH_MAX_LIMIT)],
+        "nextPageToken": "TOKEN",
+        "totalRows": limit,
+    }
+    second_page = {
+        "items": [{"id": f"alert-{ALERT_SEARCH_MAX_LIMIT + index}"} for index in range(500)],
+        "nextPageToken": "TOKEN2",
+        "totalRows": limit,
+    }
+    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request", side_effect=[first_page, second_page])
+
+    command_results = alert_search_command(prisma_cloud_v2_client, {"limit": str(limit)})
+
+    assert http_request.call_count == 2
+    assert [call.kwargs["json_data"]["limit"] for call in http_request.call_args_list] == [ALERT_SEARCH_MAX_LIMIT, 500]
+    assert http_request.call_args_list[1].kwargs["json_data"]["pageToken"] == "TOKEN"
+    assert len(command_results.raw_response) == limit
+    assert command_results.outputs["PrismaCloud.AlertPageToken(val.nextPageToken)"] == {"nextPageToken": "TOKEN2"}
+
+
+def test_alert_search_command_stops_when_no_more_results(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - A "limit" argument higher than the number of alerts that actually exist
+    When:
+        - prisma-cloud-alert-search command is executed
+    Then:
+        - The command stops paginating once a page returns no items, and returns only the existing alerts
+    """
+    from PrismaCloudV2 import ALERT_SEARCH_MAX_LIMIT, alert_search_command
+
+    first_page = {"items": [{"id": f"alert-{index}"} for index in range(ALERT_SEARCH_MAX_LIMIT)], "nextPageToken": "TOKEN"}
+    # there is a 'nextPageToken' value even if we already got all the results
+    second_page = {"items": [], "nextPageToken": "TOKEN2"}
+    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request", side_effect=[first_page, second_page])
+
+    command_results = alert_search_command(prisma_cloud_v2_client, {"limit": str(ALERT_SEARCH_MAX_LIMIT * 3)})
+
+    assert http_request.call_count == 2
+    assert len(command_results.raw_response) == ALERT_SEARCH_MAX_LIMIT
+
+
+def test_alert_search_command_does_not_paginate_under_api_max_limit(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - A "limit" argument lower than the maximum a single alert search API request accepts
+    When:
+        - prisma-cloud-alert-search command is executed
+    Then:
+        - Only a single API request is made
+    """
+    from PrismaCloudV2 import alert_search_command
+
+    response = {"items": [{"id": "alert-1"}], "nextPageToken": "TOKEN", "totalRows": 1}
+    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request", return_value=response)
+
+    alert_search_command(prisma_cloud_v2_client, {"limit": "1"})
+
+    assert http_request.call_count == 1
+
+
 def test_alert_get_details_command(mocker, prisma_cloud_v2_client):
     """
     Given:
@@ -308,8 +418,11 @@ def test_config_search_command(mocker, prisma_cloud_v2_client):
     """
     from PrismaCloudV2 import config_search_command
 
-    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request")
+    mock_response = {"totalRows": 0, "items": [], "heuristicSearch": True, "preview": False}
+    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request", return_value=mock_response)
+
     args = {"query": "config from cloud.resource where cloud.region = 'AWS Ohio' ", "limit": "1"}
+
     config_search_command(prisma_cloud_v2_client, args)
     http_request.assert_called_with(
         "POST",
@@ -323,6 +436,209 @@ def test_config_search_command(mocker, prisma_cloud_v2_client):
             "heuristicSearch": "true",
         },
     )
+
+
+def test_config_search_command_pagination_heuristic_search_true_empty_result(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - A search query with heuristic_search set to "true" and a limit that requires multiple pages.
+        - last page return 0 items.
+    When:
+        - prisma-cloud-config-search command is executed.
+    Then:
+        - The http_request method is called multiple times to fetch all pages.
+        - The final result contains items from all pages up to the specified limit.
+    """
+    from PrismaCloudV2 import config_search_command
+
+    # Mock responses for multiple pages
+    mock_response_page1 = {
+        "data": {"items": [{"id": "item1"}, {"id": "item2"}], "nextPageToken": "token123"},
+        "totalRows": 2,
+        "heuristicSearch": True,
+        "preview": False,
+    }
+    mock_response_page2 = {
+        "items": [],
+        "totalRows": 0,
+    }
+    http_request = mocker.patch.object(
+        prisma_cloud_v2_client,
+        "_http_request",
+        side_effect=[mock_response_page1, mock_response_page2],
+    )
+
+    args = {"query": "config from cloud.resource", "limit": "5", "heuristic_search": "true"}
+    command_results = config_search_command(prisma_cloud_v2_client, args)
+
+    # Assert that _http_request was called three times
+    assert http_request.call_count == 2
+
+    # Assert calls for initial request and subsequent pages
+    http_request.call_args_list[0].assert_called_with(
+        "POST",
+        "search/config",
+        json_data={
+            "limit": 5,
+            "query": "config from cloud.resource",
+            "sort": [{"direction": "desc", "field": "insertTs"}],
+            "timeRange": {"type": "to_now", "value": "epoch"},
+            "withResourceJson": "true",
+            "heuristicSearch": "true",
+        },
+    )
+    http_request.call_args_list[1].assert_called_with(
+        "POST",
+        "search/config/page",
+        json_data={
+            "limit": 3,  # 5 (total limit) - 2 (items from page 1)
+            "query": "config from cloud.resource",
+            "sort": [{"direction": "desc", "field": "insertTs"}],
+            "timeRange": {"type": "to_now", "value": "epoch"},
+            "withResourceJson": "true",
+            "heuristicSearch": "true",
+            "pageToken": "token123",
+        },
+    )
+
+    # Assert the final output contains all items
+    expected_outputs = [{"id": "item1"}, {"id": "item2"}]
+    assert command_results.outputs == expected_outputs
+    assert len(command_results.outputs) == 2  # type: ignore
+
+
+def test_config_search_command_no_pagination_heuristic_search_false(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - A search query with heuristic_search set to "false".
+    When:
+        - prisma-cloud-config-search command is executed.
+    Then:
+        - The http_request method is called only once.
+        - The final result contains only the items from the first page.
+    """
+    from PrismaCloudV2 import config_search_command
+
+    mock_response_single_page = {
+        "data": {
+            "items": [{"id": "item1"}, {"id": "item2"}, {"id": "item3"}, {"id": "item4"}, {"id": "item5"}],
+            "nextPageToken": "token123",
+        },
+        "totalRows": 5,
+        "heuristicSearch": False,
+        "preview": False,
+    }
+
+    http_request = mocker.patch.object(prisma_cloud_v2_client, "_http_request", return_value=mock_response_single_page)
+
+    args = {"query": "config from cloud.resource", "limit": "5", "heuristic_search": "false"}
+    command_results = config_search_command(prisma_cloud_v2_client, args)
+
+    # Assert that _http_request was called only once
+    assert http_request.call_count == 1
+
+    # Assert the call for the initial request
+    http_request.assert_called_with(
+        "POST",
+        "search/config",
+        json_data={
+            "limit": 5,
+            "query": "config from cloud.resource",
+            "sort": [{"direction": "desc", "field": "insertTs"}],
+            "timeRange": {"type": "to_now", "value": "epoch"},
+            "withResourceJson": "true",
+            "heuristicSearch": "false",
+        },
+    )
+
+    # Assert the final output contains only items from the first page
+    expected_outputs = [{"id": "item1"}, {"id": "item2"}, {"id": "item3"}, {"id": "item4"}, {"id": "item5"}]
+    assert command_results.outputs == expected_outputs
+    assert len(command_results.outputs) == 5  # type: ignore
+
+
+def test_config_search_command_pagination_heuristic_search_true(mocker, prisma_cloud_v2_client):
+    """
+    Given:
+        - A search query with heuristic_search set to "true" and a limit that requires multiple pages.
+    When:
+        - prisma-cloud-config-search command is executed.
+    Then:
+        - The http_request method is called multiple times to fetch all pages.
+        - The final result contains items from all pages up to the specified limit.
+    """
+    from PrismaCloudV2 import config_search_command
+
+    # Mock responses for multiple pages
+    mock_response_page1 = {
+        "data": {"items": [{"id": "item1"}, {"id": "item2"}], "nextPageToken": "token123"},
+        "totalRows": 2,
+        "heuristicSearch": True,
+        "preview": False,
+    }
+    mock_response_page2 = {
+        "items": [{"id": "item3"}, {"id": "item4"}],
+        "totalRows": 2,
+        "nextPageToken": "token456",
+    }
+    mock_response_page3 = {"items": [{"id": "item5"}], "totalRows": 1, "nextPageToken": "token789"}
+
+    http_request = mocker.patch.object(
+        prisma_cloud_v2_client,
+        "_http_request",
+        side_effect=[mock_response_page1, mock_response_page2, mock_response_page3],
+    )
+
+    args = {"query": "config from cloud.resource", "limit": "5", "heuristic_search": "true"}
+    command_results = config_search_command(prisma_cloud_v2_client, args)
+
+    # Assert that _http_request was called three times
+    assert http_request.call_count == 3
+
+    # Assert calls for initial request and subsequent pages
+    http_request.call_args_list[0].assert_called_with(
+        "POST",
+        "search/config",
+        json_data={
+            "limit": 5,
+            "query": "config from cloud.resource",
+            "sort": [{"direction": "desc", "field": "insertTs"}],
+            "timeRange": {"type": "to_now", "value": "epoch"},
+            "withResourceJson": "true",
+            "heuristicSearch": "true",
+        },
+    )
+    http_request.call_args_list[1].assert_called_with(
+        "POST",
+        "search/config/page",
+        json_data={
+            "limit": 3,  # 5 (total limit) - 2 (items from page 1)
+            "query": "config from cloud.resource",
+            "sort": [{"direction": "desc", "field": "insertTs"}],
+            "timeRange": {"type": "to_now", "value": "epoch"},
+            "withResourceJson": "true",
+            "heuristicSearch": "true",
+            "pageToken": "token123",
+        },
+    )
+    http_request.call_args_list[2].assert_called_with(
+        "POST",
+        "search/config/page",
+        json_data={
+            "limit": 1,  # 3 (remaining limit) - 2 (items from page 2)
+            "query": "config from cloud.resource",
+            "sort": [{"direction": "desc", "field": "insertTs"}],
+            "timeRange": {"type": "to_now", "value": "epoch"},
+            "withResourceJson": "true",
+            "heuristicSearch": "true",
+            "pageToken": "token456",
+        },
+    )
+
+    # Assert the final output contains all items
+    expected_outputs = [{"id": "item1"}, {"id": "item2"}, {"id": "item3"}, {"id": "item4"}, {"id": "item5"}]
+    assert command_results.outputs == expected_outputs
+    assert len(command_results.outputs) == 5  # type: ignore
 
 
 def test_event_search_command(mocker, prisma_cloud_v2_client):
@@ -2280,37 +2596,29 @@ def test_remove_additional_resource_fields(prisma_cloud_v2_client):
     """
     from PrismaCloudV2 import remove_additional_resource_fields
 
-    input = {
-        "data": {
-            "items": [
-                {
-                    "data": {
-                        "disks": [{"mode": "READ_WRITE", "shieldedInstanceInitialState": "s_val"}],
-                        "metadata": {
-                            "items": [
-                                {"key": "configure-sh", "value": "configure_sh_val"},
-                                {"key": "not-removed-value", "value": "not_removed_value_val"},
-                            ]
-                        },
-                    }
-                }
-            ]
+    input = [
+        {
+            "data": {
+                "disks": [{"mode": "READ_WRITE", "shieldedInstanceInitialState": "s_val"}],
+                "metadata": {
+                    "items": [
+                        {"key": "configure-sh", "value": "configure_sh_val"},
+                        {"key": "not-removed-value", "value": "not_removed_value_val"},
+                    ]
+                },
+            }
         }
-    }
-    expected = {
-        "data": {
-            "items": [
-                {
-                    "data": {
-                        "disks": [{"mode": "READ_WRITE"}],
-                        "metadata": {"items": [{"key": "not-removed-value", "value": "not_removed_value_val"}]},
-                    }
-                }
-            ]
-        }
-    }
+    ]
 
-    remove_additional_resource_fields(input_dict=input)
+    expected = [
+        {
+            "data": {
+                "disks": [{"mode": "READ_WRITE"}],
+                "metadata": {"items": [{"key": "not-removed-value", "value": "not_removed_value_val"}]},
+            }
+        }
+    ]
+    remove_additional_resource_fields(items=input)
 
     assert input == expected
 

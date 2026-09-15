@@ -1,0 +1,24 @@
+{
+    "result": {
+        "currentPage": 1,
+        "nextPage": null,
+        "totalRecords": 1,
+        "incidents": [
+            {
+                "incidentID": "win1-001",
+                "createdOn": "1700000100",
+                "detectionDate": "1700000050",
+                "incidentType": "Phishing",
+                "subIncidentType": null,
+                "url": "https://example.com/window1",
+                "status": "Open",
+                "statusCode": 15,
+                "brand": "TestBrand",
+                "threatType": "High Threat"
+            }
+        ]
+    },
+    "success": true,
+    "message": "",
+    "errorCode": ""
+}

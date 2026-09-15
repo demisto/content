@@ -142,13 +142,13 @@ def test_extract_server_address():
 
 
 def test_parse_email_header():
-    header_value = 'Taylor Evans <example_from@dc.edu>'
+    header_value = 'Taylor Testman <example_from@dc.edu>'
     email_headers = [{'headername': 'From', 'headervalue': header_value}]
     res = parse_email_header(email_headers, header_name='From')
     assert res['address'] == 'example_from@dc.edu'
     assert res['domain'] == 'dc'
 
-    header_value = '"Taylor Evans" <example_from@dc.edu>'
+    header_value = '"Taylor Testman" <example_from@dc.edu>'
     email_headers = [{'headername': 'From', 'headervalue': header_value}]
     res = parse_email_header(email_headers, header_name='From')
     assert res['address'] == 'example_from@dc.edu'

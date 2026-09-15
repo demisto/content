@@ -783,6 +783,12 @@ class Client(BaseClient):
             for param in [("simulationId", simulation_id)]:
                 parameters.update({} if not param[1] else {param[0]: param[1]})
         test_summaries = self.get_response(url=url, method=method, request_params=parameters)
+
+        # When scenario_id is provided, API returns a single dict instead of a list
+        # Wrap it in a list for consistent processing
+
+        if scenario_id and isinstance(test_summaries, dict):
+            test_summaries = [test_summaries]
         return test_summaries
 
     def flatten_test_summaries(self, test_summaries):
@@ -1445,12 +1451,16 @@ class Client(BaseClient):
             This function calls GET of active tests being run endpoint
 
         Returns:
-            Dict: Returns test data as a dictionary per test which is array as value for "data" key
+            Dict: Returns a dictionary containing:
+                - data.queue: List of queued test objects
+                - data.isPause: Boolean indicating if queue is paused
+                - data.slotState: List of slot state information
+                - data.testRunState: Dictionary of running test objects keyed by planRunId
         """
         account_id = self.account_id
 
         method = "GET"
-        url = f"/orch/v2/accounts/{account_id}/queue"
+        url = f"/orch/v3/accounts/{account_id}/queue"
         tests = self.get_response(url=url, method=method)
         return tests
 
@@ -3565,7 +3575,24 @@ def get_all_running_tests_summary(client: Client):
     running_tests = client.get_active_tests()
     demisto.debug(f"Get all running tests summary result is: {running_tests}")
 
-    flattened_running_tests_for_table = client.flatten_tests_data(running_tests.get("data", {}))
+    if isinstance(running_tests, str):
+        return_error(f"API returned error: {running_tests}")
+    elif not isinstance(running_tests, dict):
+        return_error(f"Unexpected API response type: {type(running_tests)}")
+
+    data = running_tests.get("data", {})
+    if not isinstance(data, dict):
+        return_error(f"Invalid 'data' field in response: {type(data)}")
+
+    # API returns: {"data": {"queue": [], "testRunState": {"planRunId1": {...}, "planRunId2": {...}}}}
+    test_run_state = data.get("testRunState", {})
+    tests_list = list(test_run_state.values()) if isinstance(test_run_state, dict) else []
+
+    queued_tests = data.get("queue", [])
+    if isinstance(queued_tests, list):
+        tests_list.extend(queued_tests)
+
+    flattened_running_tests_for_table = client.flatten_tests_data(tests_list)
     if flattened_running_tests_for_table:
         human_readable = tableToMarkdown(
             name="Running Tests",

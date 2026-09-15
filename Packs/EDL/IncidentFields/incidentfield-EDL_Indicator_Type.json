@@ -37,5 +37,9 @@
     "caseInsensitive": false,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.6.0"
+    "fromVersion": "6.6.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

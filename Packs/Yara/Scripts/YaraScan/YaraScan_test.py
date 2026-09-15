@@ -7,7 +7,7 @@ def test_main(mocker):
     rule = """rule PE_file_identifier
 {
     meta:
-        author = "Adam Burt"
+        author = "Adam Testburt"
         description = "Detects PE files"
         date = "12/08/2016"
 

@@ -1,0 +1,29 @@
+[MODEL: dataset=manage_engine_raw]
+alter
+    user_ipv4 = if(userIP ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",userIP ,null),
+    user_ipv6 = if(userIP ~= "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$",userIP ,null),
+    viewer_ipv4 = if(viewerIP ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",viewerIP ,null),
+    viewer_ipv6 = if(viewerIP ~= "^((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})$",viewerIP ,null),
+    check_domain_name_null = if(domainName = "--", null, domainName),
+    check_hostname_null = if(hostName = "--", null, hostName),
+    check_event_id_null = if(eventId = "--", null, eventId),
+    check_module_null = if(module = "--", null, module),
+    check_username_null = if(userName = "--", null, userName),
+    check_priority_null = if(priority = "--", null, priority),
+    check_application_null = if(application = "--", null, application),
+    check_computername_null = if(computerName = "--", null, computerName),
+    check_remarks_null = if(remarks = "--", null, remarks)
+| alter
+    xdm.source.host.hostname = check_hostname_null,
+    xdm.event.id = check_event_id_null,
+    xdm.observer.type = check_module_null,
+    xdm.source.user.username = check_username_null,
+    xdm.alert.severity = check_priority_null,
+    xdm.source.application.name = check_application_null,
+    xdm.target.host.hostname = check_computername_null,
+    xdm.target.domain = check_domain_name_null,
+    xdm.intermediate.ipv4 = viewer_ipv4,
+    xdm.intermediate.ipv6 = viewer_ipv6,
+    xdm.source.ipv4 = user_ipv4,
+    xdm.source.ipv6 = user_ipv6,
+    xdm.event.outcome = check_remarks_null;

@@ -1,4 +1,5 @@
 category: Forensics & Malware Analysis
+provider: Joe Security LLC
 commonfields:
   id: Joe Security
   version: -1
@@ -638,7 +639,7 @@ script:
   script: '-'
   type: python
   subtype: python2
-  dockerimage: demisto/python:2.7.18.27799
+  dockerimage: demisto/python:2.7.18.6174823
 tests:
 - No tests (deprecated)
 fromversion: 5.0.0

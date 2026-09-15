@@ -14,6 +14,10 @@ urllib3_disable_warnings(InsecureRequestWarning)
 
 """ CONSTANTS """
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+POLLER_PRODUCT_TYPE = "SOAR"
+POLLER_PRODUCT_NAME = "CortexSOAR"
+POLLER_INTEGRATION_NAME = "Group-IB Threat Intelligence"
+POLLER_INTEGRATION_VERSION = "3.0.0"
 
 
 COMMON_MAPPING = {
@@ -50,6 +54,7 @@ COMMON_MAPPING = {
             "country_name": "events.client.ipv4.countryName",
             "region": "events.client.ipv4.region",
             "service_url": "service.url",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "compromised/bank_card_group": {
@@ -80,6 +85,38 @@ COMMON_MAPPING = {
             "cnc_ipv4_asn": "events.cnc.ipv4.asn",
             "cnc_ipv4_country_name": "events.cnc.ipv4.countryName",
             "cnc_ipv4_region": "events.cnc.ipv4.region",
+            "evaluation_tlp": "evaluation.tlp",
+        },
+    },
+    "compromised/masked_card": {
+        "types": {
+            "cnc_url": "URL",
+            "cnc_domain": "Domain",
+            "cnc_ipv4_ip": "IP",
+        },
+        "add_fields_types": {
+            "cnc_url": {
+                "id": "gibid",
+            },
+            "cnc_domain": {
+                "id": "gibid",
+            },
+            "cnc_ipv4_ip": {
+                "id": "gibid",
+                "cnc_ipv4_asn": "asn",
+                "cnc_ipv4_country_name": "geocountry",
+                "cnc_ipv4_region": "geolocation",
+            },
+        },
+        "parser_mapping": {
+            "id": "id",
+            "cnc_url": "cnc.url",
+            "cnc_domain": "cnc.domain",
+            "cnc_ipv4_ip": "cnc.ipv4.ip",
+            "cnc_ipv4_asn": "cnc.ipv4.asn",
+            "cnc_ipv4_country_name": "cnc.ipv4.countryName",
+            "cnc_ipv4_region": "cnc.ipv4.region",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "compromised/mule": {
@@ -153,6 +190,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
             "cnc_url": "cnc.url",
             "cnc_domain": "cnc.domain",
             "cnc_ipv4_ip": "cnc.ipv4.ip",
@@ -250,6 +288,7 @@ COMMON_MAPPING = {
             "target_ipv4_asn": "target.ipv4.asn",
             "target_ipv4_country_name": "target.ipv4.countryName",
             "target_ipv4_region": "target.ipv4.region",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "attacks/deface": {
@@ -304,6 +343,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "attacks/phishing_kit": {
@@ -330,6 +370,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "attacks/phishing_group": {
@@ -348,12 +389,13 @@ COMMON_MAPPING = {
             },
             "ipv4_ip": {
                 "id": "gibid",
-                "ipv4_country_name": "geocountry",
+                "ipv4_country_mame": "geocountry",
             },
         },
         "parser_mapping": {
             "id": "id",
             "url": "phishing.url",
+            "phishing_domain_domain": "domain",
             "phishing_domain_registrar": "domainInfo.registrar",
             "ipv4_ip": "phishing.ip.ip",
             "ipv4_country_mame": "phishing.ip.countryName",
@@ -361,6 +403,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "apt/threat": {
@@ -448,6 +491,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
             "malware_list_names": "malwareList.name",
         },
     },
@@ -532,6 +576,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
             "indicators_params_name": "indicators.params.name",
             "indicators_params_hashes_sha1": "indicators.params.hashes.sha1",
             "indicators_params_hashes_sha256": "indicators.params.hashes.sha256",
@@ -607,6 +652,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "suspicious_ip/socks_proxy": {
@@ -639,6 +685,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "suspicious_ip/vpn": {
@@ -671,6 +718,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "suspicious_ip/scanner": {
@@ -681,7 +729,7 @@ COMMON_MAPPING = {
             "ipv4_ip": {
                 "id": "gibid",
                 "ipv4_asn": "asn",
-                "ipv4_countr_mame": "geocountry",
+                "ipv4_country_mame": "geocountry",
                 "ipv4_region": "geolocation",
             },
         },
@@ -689,8 +737,9 @@ COMMON_MAPPING = {
             "id": "id",
             "ipv4_ip": "ipv4.ip",
             "ipv4_asn": "ipv4.asn",
-            "ipv4_country_name": "ipv4.countryName",
+            "ipv4_country_mame": "ipv4.countryName",
             "ipv4_region": "ipv4.region",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "malware/cnc": {
@@ -787,6 +836,7 @@ COMMON_MAPPING = {
             "evaluation_credibility": "evaluation.credibility",
             "evaluation_admiralty_code": "evaluation.admiraltyCode",
             "evaluation_severity": "evaluation.severity",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "osi/git_repository": {
@@ -806,6 +856,7 @@ COMMON_MAPPING = {
             "id": "id",
             "hash": "files.revisions.hash",
             "contributors_emails": "contributors.authorEmail",
+            "evaluation_tlp": "evaluation.tlp",
         },
     },
     "ioc/common": {
@@ -864,13 +915,20 @@ class Client(BaseClient):
             api_key=self._auth[1],
             api_url=base_url,
         )
+        self._available_collections: frozenset[str] | None = None
         self.poller.set_product(
-            product_type="SOAR",
-            product_name="CortexSOAR",
-            product_version="unknown",
-            integration_name="Group-IB Threat Intelligence",
-            integration_version="2.1.0",
+            product_type=POLLER_PRODUCT_TYPE,
+            product_name=POLLER_PRODUCT_NAME,
+            product_version=demisto.demistoVersion().get("version", "unknown"),
+            integration_name=POLLER_INTEGRATION_NAME,
+            integration_version=POLLER_INTEGRATION_VERSION,
         )
+        demisto.info(f"[Client.__init__] TI Feed client initialized: url={base_url}, verify={verify}, proxy={proxy}")
+
+    def get_available_collections_cached(self) -> frozenset[str]:
+        if self._available_collections is None:
+            self._available_collections = frozenset(self.poller.get_available_collections())
+        return self._available_collections
 
     def create_update_generator_proxy_functions(
         self,
@@ -880,16 +938,56 @@ class Client(BaseClient):
         apply_hunting_rules: int | str | None = None,
         limit: int | str | None = None,
     ):
+        sequpdate_for_generator = sequpdate
+        date_from_for_generator = date_from
+        if not sequpdate_for_generator and date_from_for_generator:
+            try:
+                demisto.debug(
+                    "[Client.create_update_generator_proxy_functions] Resolving initial seqUpdate via sequence_list: "
+                    f"collection={collection_name}, date_from={date_from_for_generator}, "
+                    f"apply_hunting_rules={apply_hunting_rules}",
+                )
+                seq_map = self.poller.get_seq_update_dict(
+                    date=date_from_for_generator,
+                    collection_name=collection_name,
+                    apply_hunting_rules=apply_hunting_rules,
+                )
+                resolved_seq = seq_map.get(collection_name)
+                if resolved_seq:
+                    sequpdate_for_generator = resolved_seq
+                    date_from_for_generator = None
+                    demisto.debug(
+                        f"[Client.create_update_generator_proxy_functions] "
+                        f"Using resolved seqUpdate={resolved_seq}; dropping date_from",
+                    )
+                else:
+                    demisto.debug(
+                        "[Client.create_update_generator_proxy_functions] "
+                        "sequence_list returned empty for collection; fallback to date_from",
+                    )
+            except Exception as e:
+                demisto.debug(
+                    f"[Client.create_update_generator_proxy_functions] "
+                    f"sequence_list resolution failed: {e}; fallback to date_from",
+                )
+
+        demisto.debug(
+            "[Client.create_update_generator_proxy_functions] Creating update generator: "
+            f"collection={collection_name}, date_from={date_from_for_generator}, sequpdate={sequpdate_for_generator}, "
+            f"apply_hunting_rules={apply_hunting_rules}, limit={limit}"
+        )
         return self.poller.create_update_generator(
             collection_name=collection_name,
-            date_from=date_from,
-            sequpdate=sequpdate,
+            date_from=date_from_for_generator,
+            sequpdate=sequpdate_for_generator,
             apply_hunting_rules=apply_hunting_rules,
             limit=limit,
         )
 
     def get_available_collections_proxy_function(self) -> list:
-        return self.poller.get_available_collections()
+        collections = list(self.get_available_collections_cached())
+        demisto.debug(f"[Client.get_available_collections_proxy_function] Available collections: {collections}")
+        return collections
 
 
 def test_module(client: Client) -> str:
@@ -899,13 +997,24 @@ def test_module(client: Client) -> str:
     :param client: GIB_TI&A_Feed client
     :return: 'ok' if test passed, anything else will fail the test.
     """
-    test = client.get_available_collections_proxy_function()
-    if len(test) == 0:
+    if not client.get_available_collections_cached():
         return "There are no collections available"
     return "ok"
 
 
 """ Support functions """
+
+VALID_TLP_VALUES = ("RED", "AMBER", "GREEN", "WHITE")
+IOC_COMMON_COLLECTION = "ioc/common"
+DEFAULT_TLP_IOC_COMMON = "AMBER"
+
+
+def normalize_tlp(value: str | None) -> str | None:
+    """Normalize TLP from API (e.g. 'amber') to XSOAR format (e.g. 'AMBER')."""
+    if not value or not isinstance(value, str):
+        return None
+    normalized = value.strip().upper()
+    return normalized if normalized in VALID_TLP_VALUES else None
 
 
 class IndicatorBuilding:
@@ -932,6 +1041,28 @@ class IndicatorBuilding:
         self.limit = limit
         self.collection_mapping = collection_mapping
         self.build_for_comand = build_for_comand
+
+    def get_tlp_for_indicator(self, feed: dict) -> str | None:
+        """
+        Resolve TLP for a single indicator. When use_tlp_from_source is enabled, use
+        evaluation.tlp from the feed item; for ioc/common use AMBER when missing; otherwise
+        use integration-level TLP as fallback. When disabled, use integration-level TLP for all.
+        """
+        use_tlp_from_source = self.common_fields.get("use_tlp_from_source") is True
+        fallback_tlp = self.common_fields.get("trafficlightprotocol")
+
+        if not use_tlp_from_source:
+            return fallback_tlp
+
+        raw_tlp = feed.get("evaluation_tlp")
+        raw_tlp = self.extract_single_value(raw_tlp) if raw_tlp is not None else None
+        tlp = normalize_tlp(raw_tlp)
+
+        if tlp:
+            return tlp
+        if self.collection_name == IOC_COMMON_COLLECTION:
+            return DEFAULT_TLP_IOC_COMMON
+        return fallback_tlp
 
     @staticmethod
     def clean_data(data):
@@ -1107,7 +1238,7 @@ class IndicatorBuilding:
 
                     add_fields.update(
                         {
-                            "trafficlightprotocol": self.common_fields.get("trafficlightprotocol"),
+                            "trafficlightprotocol": self.get_tlp_for_indicator(feed),
                             "gibcollection": self.collection_name,
                         }
                     )
@@ -1169,6 +1300,10 @@ class DateHelper:
     @staticmethod
     def handle_first_time_fetch(last_run, collection_name, first_fetch_time):
         last_fetch = last_run.get("last_fetch", {}).get(collection_name)
+        demisto.debug(
+            f"[DateHelper.handle_first_time_fetch] collection={collection_name}, "
+            f"last_fetch_present={bool(last_fetch)}, first_fetch_time={first_fetch_time}"
+        )
 
         # Handle first time fetch
         date_from = None
@@ -1178,36 +1313,55 @@ class DateHelper:
             if date_from_for_mypy is None:
                 raise DemistoException(
                     "Inappropriate indicators_first_fetch format, "
-                    "please use something like this: 2020-01-01 or January 1 2020 or 3 days."
-                    f"It's now been received: {date_from}"
+                    "please use something like this: 2020-01-01 or January 1 2020 or 3 days. "
+                    f"Received: {first_fetch_time}"
                 )
             date_from = date_from_for_mypy.strftime("%Y-%m-%d")
         else:
             seq_update = last_fetch
-
+        demisto.debug(f"[DateHelper.handle_first_time_fetch] Result: date_from={date_from}, seq_update={seq_update}")
         return date_from, seq_update
 
 
 def validate_launch_get_indicators_command(limit, collection_name):
+    demisto.debug(f"[validate_launch_get_indicators_command] Raw inputs: limit={limit}, collection={collection_name}")
     try:
-        if limit > 50:
-            raise Exception("A limit should be lower than 50.")
-    except ValueError:
-        raise Exception("A limit should be a number, not a string.")
+        limit_int = int(limit)
+    except (TypeError, ValueError):
+        raise DemistoException("Limit should be a number.")
+
+    if limit_int <= 0:
+        raise DemistoException("Limit should be greater than 0.")
+    if limit_int > 50:
+        raise DemistoException("Limit should be lower than or equal to 50.")
 
     if collection_name not in COMMON_MAPPING:
-        raise Exception("Incorrect collection name. Please, choose one of the displayed options.")
+        raise DemistoException("Incorrect collection name. Please, choose one of the displayed options.")
+
+    demisto.debug(f"[validate_launch_get_indicators_command] Validation passed: limit={limit_int}, collection={collection_name}")
 
 
 """ Commands """
 
 
-def collection_availability_check(client: Client, collection_name: str) -> None:
-    if collection_name not in client.get_available_collections_proxy_function():
-        raise Exception(
-            f"Collection {collection_name} is not available from you, "
-            "please disable collection on it or contact Group-IB to grant access"
-            f"{client.get_available_collections_proxy_function()}"
+def _validate_indicator_collections(client: Client, indicator_collections: list[str]) -> None:
+    """Validate that requested collections are well-formed and granted to the API user.
+
+    Skips the network round-trip to ``/user/granted_collections`` when the
+    caller passes an empty list: nothing to validate, and dialing out would
+    only add a side-effect (and noise in tests that legitimately pass an
+    empty selection).
+    """
+    if not indicator_collections:
+        return
+
+    available = client.get_available_collections_cached()
+    unknown = [c for c in indicator_collections if c not in available]
+    if unknown:
+        raise DemistoException(
+            f"The following collections are not available for the current credentials: {', '.join(unknown)}. "
+            f"Available collections: {sorted(available)}. "
+            "Either remove unknown collections from instance settings or request access from Group-IB."
         )
 
 
@@ -1218,6 +1372,7 @@ def fetch_indicators_command(
     indicator_collections: list,
     requests_count: int,
     common_fields: dict,
+    limit: int | None = None,
 ) -> tuple[dict, list]:
     """
     This function will execute each interval (default is 1 minute).
@@ -1231,17 +1386,26 @@ def fetch_indicators_command(
 
     :return: next_run will be last_run in the next fetch-indicators; indicators will be created in Demisto.
     """
+    demisto.debug(
+        "[fetch-indicators] Starting fetch with params: "
+        f"collections={indicator_collections}, requests_count={requests_count}, first_fetch_time={first_fetch_time}, "
+        f"common_fields={common_fields}"
+    )
     indicators = []
     next_run: dict[str, dict[str, int | Any]] = {"last_fetch": {}}
+    _validate_indicator_collections(client=client, indicator_collections=indicator_collections)
 
     for collection_name in indicator_collections:
-        collection_availability_check(client=client, collection_name=collection_name)
+        demisto.debug(f"[fetch-indicators] Processing collection={collection_name}")
         mapping: dict = COMMON_MAPPING.get(collection_name, {})
         requests_sent = 0
         date_from, seq_update = DateHelper.handle_first_time_fetch(
             last_run=last_run,
             collection_name=collection_name,
             first_fetch_time=first_fetch_time,
+        )
+        demisto.debug(
+            f"[fetch-indicators] Collection={collection_name} start params: date_from={date_from}, seq_update={seq_update}"
         )
 
         if collection_name in COLLECTIONS_THAT_ARE_REQUIRED_HUNTING_RULES:
@@ -1254,10 +1418,15 @@ def fetch_indicators_command(
             date_from=date_from,
             sequpdate=seq_update,
             apply_hunting_rules=hunting_rules,
+            limit=limit,
         )
-        # print('portions', portions)
+        demisto.debug(f"[fetch-indicators] Generator created for collection={collection_name}: {portions}")
         for portion in portions:
             seq_update = portion.sequpdate
+            demisto.debug(
+                f"[fetch-indicators] Portion received: collection={collection_name}, seqUpdate={seq_update}, "
+                f"portion_size={portion.portion_size}, count={portion.count}"
+            )
             parsed_json: list[dict] = portion.parse_portion(keys=mapping.get("parser_mapping"))  # type: ignore
             builded_indicators = IndicatorBuilding(
                 parsed_json=parsed_json,
@@ -1267,11 +1436,18 @@ def fetch_indicators_command(
             ).get_indicators()
 
             indicators.extend(builded_indicators)
+            demisto.debug(
+                f"[fetch-indicators] Added indicators from portion: added={len(builded_indicators)}, total={len(indicators)}"
+            )
             requests_sent += 1
             if requests_sent >= requests_count:
+                demisto.debug(
+                    f"[fetch-indicators] requests_count limit reached for collection={collection_name}: {requests_sent}"
+                )
                 break
 
         next_run["last_fetch"][collection_name] = seq_update
+        demisto.debug(f"[fetch-indicators] Updated next_run for collection={collection_name}: last_fetch={seq_update}")
 
     return next_run, indicators
 
@@ -1290,6 +1466,7 @@ def get_indicators_command(client: Client, args: dict[str, str]):
         int(args.get("limit", "50")),
     )
 
+    demisto.debug(f"[get_indicators_command] Called with args: id={id_}, collection={collection_name}, limit={limit}")
     validate_launch_get_indicators_command(limit, collection_name)
     mapping: dict = COMMON_MAPPING.get(collection_name, {})
 
@@ -1300,6 +1477,10 @@ def get_indicators_command(client: Client, args: dict[str, str]):
             apply_hunting_rules = 1
         else:
             apply_hunting_rules = None
+        demisto.debug(
+            f"[get_indicators_command] Creating generator: collection={collection_name}, limit={limit}, "
+            f"apply_hunting_rules={apply_hunting_rules}"
+        )
         portions = client.create_update_generator_proxy_functions(
             collection_name=collection_name,
             limit=limit,
@@ -1316,10 +1497,12 @@ def get_indicators_command(client: Client, args: dict[str, str]):
                 build_for_comand=True,
             ).get_indicators()
             indicators.extend(builded_indicators)
+            demisto.debug(f"[get_indicators_command] Portion processed: added={len(builded_indicators)}, total={len(indicators)}")
 
             if len(indicators) >= limit:
                 break
     else:
+        demisto.debug(f"[get_indicators_command] Fetch by id: collection={collection_name}, id={id_}")
         portions = client.poller.search_feed_by_id(collection_name=collection_name, feed_id=id_)
         portions.get_iocs()
         parsed_json = portions.parse_portion(keys=mapping.get("parser_mapping"))
@@ -1332,6 +1515,9 @@ def get_indicators_command(client: Client, args: dict[str, str]):
             build_for_comand=True,
         ).get_indicators()
         indicators.extend(builded_indicators)
+        demisto.debug(
+            f"[get_indicators_command] Built indicators by id: added={len(builded_indicators)}, total={len(indicators)}"
+        )
 
     return indicators
 
@@ -1353,11 +1539,24 @@ def main():  # pragma: no cover
         indicator_collections = params.get("indicator_collections", [])
         indicators_first_fetch = params.get("indicators_first_fetch", "3 days").strip()
         requests_count = int(params.get("requests_count", 2))
+        # New: limit (portion size)
+        limit_param = params.get("limit", 100)
+        limit = int(limit_param)
 
         args = demisto.args()
-        command = demisto.command()
-        LOG(f"Command being called is {command}")
-        demisto.debug(f"Command being called is {command}")
+        raw_command = demisto.command()
+        command_aliases = {
+            "gibtia-get-indicators": "gibti-get-indicators",
+        }
+        command = command_aliases.get(raw_command, raw_command)
+        LOG(f"Command being called is {raw_command}, mapped to {command}")
+        demisto.debug(f"Command being called is {raw_command}, mapped to {command}")
+        demisto.debug(
+            "[main] Parsed params: "
+            f"url={base_url}, proxy={proxy}, verify={verify_certificate}, "
+            f"indicator_collections={indicator_collections}, first_fetch={indicators_first_fetch}, "
+            f"requests_count={requests_count}, limit={limit}"
+        )
 
         client = Client(
             base_url=base_url,
@@ -1366,8 +1565,13 @@ def main():  # pragma: no cover
             proxy=proxy,
             headers={"Accept": "*/*"},
         )
+        demisto.info("[main] TI Feed client created successfully")
 
-        commands = {"gibtia-get-indicators": get_indicators_command}
+        commands = {
+            "gibti-get-indicators": get_indicators_command,
+            # alias kept for backward compatibility
+            "gibtia-get-indicators": get_indicators_command,
+        }
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
@@ -1378,10 +1582,16 @@ def main():  # pragma: no cover
             # Set and define the fetch incidents command to run after activated via integration settings.
             tlp_color = params.get("tlp_color")
             tags = argToList(params.get("feedTags"))
+            use_tlp_from_source = params.get("use_tlp_from_source") is True
             common_fields = {
                 "trafficlightprotocol": tlp_color,
                 "tags": tags,
+                "use_tlp_from_source": use_tlp_from_source,
             }
+            demisto.debug(
+                "[main] Launching fetch-indicators with: "
+                f"collections={indicator_collections}, first_fetch={indicators_first_fetch}, requests_count={requests_count}"
+            )
             next_run, indicators = fetch_indicators_command(
                 client=client,
                 last_run=get_integration_context(),
@@ -1389,12 +1599,15 @@ def main():  # pragma: no cover
                 indicator_collections=indicator_collections,
                 requests_count=requests_count,
                 common_fields=common_fields,
+                limit=limit,
             )
-            demisto.debug(f"fetch-indicators lenght indicators: {len(indicators)}")
+            demisto.debug(f"[fetch-indicators] Indicators created this run: count={len(indicators)}")
 
             set_integration_context(next_run)
+            demisto.debug(f"[main] Updated integration context: {next_run}")
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)  # type: ignore
+            demisto.info("[main] Indicators created successfully")
 
         else:
             return_results(commands[command](client, args))

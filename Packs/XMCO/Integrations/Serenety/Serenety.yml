@@ -1,6 +1,7 @@
 fromversion: 6.10.0
 category: Vulnerability Management
-sectionOrder:
+provider: XM Cyber
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -52,6 +53,14 @@ configuration:
   name: incidentType
   defaultvalue: 'XMCO Serenety Alert'
   type: 13
+  section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 description: 'Fetch Serenety alert from XMCO.'
 display: Serenety
 name: Serenety
@@ -59,7 +68,7 @@ script:
   commands:
   - name: fetch-incidents
     description: Fetch Serenety alert from XMCO LePortail.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.13.10116658
   feed: false
   isfetch: true
   longRunning: false

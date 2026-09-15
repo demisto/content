@@ -1,3 +1,4 @@
+import traceback
 from datetime import datetime
 
 import demistomock as demisto  # noqa: F401
@@ -40,11 +41,16 @@ class Client(BaseClient):
         Returns:
             dict: The API response containing the usage data events.
         """
+        demisto.debug(f"[HTTP Call] Making request: {start_date=}, {end_date=}, pageSize={ITEMS_PER_PAGE}")
         results = self._http_request(
             method="GET",
             url_suffix=f"/api/v2/reporting/usage-data?key={self.api_key}&pageSize={ITEMS_PER_PAGE}"
             f"&from={start_date}&to={end_date}",
             retries=3,
+        )
+        demisto.debug(
+            "[HTTP Call] Request completed. Response keys: ",
+            f"{list(results.keys()) if isinstance(results, dict) else type(results)}",
         )
         return results
 
@@ -117,7 +123,7 @@ def remove_duplicate_events(start_date, ids: set, events: list) -> None:
             break
         hashed_id = hash_user_name_and_url(event)
         if hashed_id in ids:
-            demisto.debug(f"Removing duplicated event with hash_id {hashed_id}")
+            demisto.debug(f"[Dedup] Removing duplicated event with hash_id {hashed_id}")
             events.remove(event)
 
 
@@ -134,10 +140,12 @@ def get_and_reorganize_events(client: Client, start: str, end: str, ids: set) ->
     Returns:
         list: A list of sorted and deduplicated events.
     """
+    demisto.debug(f"[API Fetch] Fetching events: {start=}, {end=}, existing_ids_count={len(ids)}")
     events: list = client.get_events(start, end).get("data", [])
-    demisto.debug(f"Raw events from Proofpoint Isolation api: {events}")
+    demisto.debug(f"[API Fetch] Got {len(events)} raw events from API.")
     events = sort_events_by_date(events)
     remove_duplicate_events(start, ids, events)
+    demisto.debug(f"[Dedup] {len(events)} events remain after dedup.")
     return events
 
 
@@ -158,7 +166,9 @@ def test_module(client: Client) -> str:
         current_time = get_current_time()
         start_date = (current_time - timedelta(minutes=1)).strftime(DATE_FORMAT)
         end_date = current_time.strftime(DATE_FORMAT)
+        demisto.debug(f"[Test Module] Testing connection: {start_date=}, {end_date=}")
         fetch_events(client, 1, {"start_date": start_date, "end_date": end_date})
+        demisto.debug("[Test Module] Success")
         message = "ok"
     except DemistoException as e:
         raise e
@@ -172,8 +182,10 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         event_date = get_events_args.get("start_date", "")
         end = get_events_args.get("end_date", "")
         ids: set = set()
+        demisto.debug(f"[Fetch] get-events mode: {event_date=}, {end=}")
     else:  # handle fetch_events case
         last_run = demisto.getLastRun() or {}
+        demisto.debug(f"[Fetch] fetch-events mode: {last_run=}")
         event_date = last_run.get("start_date", "")
         if not event_date:
             event_date = get_current_time().strftime(DATE_FORMAT)
@@ -181,14 +193,21 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
         ids = set(last_run.get("ids", []))
 
     current_start_date = event_date
-    demisto.debug(f"Fetching events from {current_start_date=} to {end=}")
-    while True:
+    demisto.debug(f"[Fetch] Starting fetch loop: {current_start_date=}, {end=}, {fetch_limit=}")
+    has_more_events = True
+    iteration = 0
+    while has_more_events and len(output) < fetch_limit:
+        iteration += 1
+        demisto.debug(f"[Fetch Pagination Loop] Loop iteration {iteration}: {event_date=}")
         events = get_and_reorganize_events(client, event_date, end, ids)
         if not events:
-            demisto.debug(f"No more events found, breaking with {len(output)} events in total.")
-            break
+            demisto.debug(f"[Fetch] No more events found. Total: {len(output)}")
+            event_date = end
+            ids = set()
+            has_more_events = False
+            continue
 
-        demisto.debug(f"Iterates over {len(events)=} events.")
+        demisto.debug(f"[Fetch] Processing {len(events)} events.")
         for event in events:
             event["_TIME"] = event.get("date")
             output.append(event)
@@ -201,11 +220,11 @@ def fetch_events(client: Client, fetch_limit: int, get_events_args: dict = None)
             ids.add(hashed_id)
 
             if len(output) >= fetch_limit:
-                demisto.debug(f"Reached fetch limit, sending {len(output)} events in total.")
-                new_last_run = {"start_date": event_date, "ids": list(ids)}
-                return output, new_last_run
+                demisto.debug(f"[Fetch] Reached fetch limit. Total: {len(output)}")
+                break
 
     new_last_run = {"start_date": event_date, "ids": list(ids)}
+    demisto.debug(f"[Fetch] Fetch complete. Total: {len(output)}")
     return output, new_last_run
 
 
@@ -223,8 +242,10 @@ def get_events(client: Client, args: dict) -> tuple[list, CommandResults]:
     start_date = args.get("start_date")
     end_date = args.get("end_date")
     limit: int = arg_to_number(args.get("limit")) or DEFAULT_FETCH_LIMIT
+    demisto.debug(f"[Get Events Command]: {start_date=}, {end_date=}, {limit=}")
 
     output, _ = fetch_events(client, limit, {"start_date": start_date, "end_date": end_date})
+    demisto.debug(f"[Get Events Command] fetched {len(output)} events.")
 
     filtered_events = []
     for event in output:
@@ -254,7 +275,7 @@ def main() -> None:  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
 
-    demisto.debug(f"Command being called is {demisto.command()}")
+    demisto.debug(f"[Main] Command being called is {command}")
     try:
         base_url = params.get("base_url")
         verify = not params.get("insecure", False)
@@ -267,12 +288,16 @@ def main() -> None:  # pragma: no cover
             result = test_module(client)
             return_results(result)
         elif command == "fetch-events":
+            demisto.debug(f"[Fetch] Starting with last_run={demisto.getLastRun()}")
             events, new_last_run_dict = fetch_events(client, fetch_limit)
             if events:
-                demisto.debug(f"Sending {len(events)} events.")
+                demisto.debug(f"[Fetch] Sending {len(events)} events to XSIAM.")
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+                demisto.debug(f"[Fetch] Successfully sent {len(events)} events to XSIAM.")
+            else:
+                demisto.debug("[Fetch] No events fetched in this cycle.")
             demisto.setLastRun(new_last_run_dict)
-            demisto.debug(f"Successfully saved last_run= {demisto.getLastRun()}")
+            demisto.debug(f"[Fetch] Last run updated: {new_last_run_dict}")
         elif command == "proofpoint-isolation-get-events":
             events, command_results = get_events(client, args)
             if events and argToBoolean(args.get("should_push_events")):
@@ -280,7 +305,7 @@ def main() -> None:  # pragma: no cover
             return_results(command_results)
 
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}\nTraceback:\n{traceback.format_exc()}")
 
 
 """ ENTRY POINT """

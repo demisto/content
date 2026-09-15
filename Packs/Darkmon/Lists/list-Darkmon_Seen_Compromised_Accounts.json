@@ -1,0 +1,22 @@
+{
+    "id": "Darkmon - Seen Compromised Accounts",
+    "version": -1,
+    "name": "Darkmon - Seen Compromised Accounts",
+    "description": "State store: account IDs already opened as incidents. The Compromised Credentials Sweep appends to this list and uses it to suppress duplicates.",
+    "type": "plain_text",
+    "fromVersion": "6.8.0",
+    "itemVersion": "",
+    "locked": false,
+    "nameLocked": false,
+    "packID": "Darkmon",
+    "system": false,
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam",
+        "agentix"
+    ]
+}

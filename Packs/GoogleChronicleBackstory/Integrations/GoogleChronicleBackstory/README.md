@@ -1,3 +1,20 @@
+## Deprecation Notice
+
+---
+
+The "Chronicle" integration currently relies on the Backstory API, which is being deprecated in favor of the more modern and supported Google SecOps v1alpha API.
+
+We have built a new "Google SecOps" (v1alpha API) integration for Cortex XSOAR, and it will be part of the existing pack.
+
+What this means for you:
+
+- The current "Chronicle" (Backstory API) integration will remain functional but will no longer actively maintained or supported.
+- The new "Google SecOps" (v1alpha API) integration will offer similar functionality and command structure, with additional backend improvements.
+
+We recommend migrating to the new "Google SecOps" integration to ensure continued support, compatibility, and access to the latest updates.
+
+If you have any questions or need assistance, please reach out via [XSOAR Support Contact](https://go.chronicle.security/contact).
+
 ## Overview
 
 ---
@@ -1946,11 +1963,11 @@ List the latest versions of all Rules.
                 "category": "process_creation",
                 "product": "windows",
                 "mitre": "t1086, execution",
-                "author": "Markus Neis",
+                "author": "Marcus Testman",
                 "description": "Detects EmpireMonkey APT reported Activity  License: https://github.com/Neo23x0/sigma/blob/master/LICENSE.Detection.Rules.md.",
                 "reference": "https://tdm.socprime.com/tdm/info/jFbYfF51ECXh"
              },
-             "ruleText": "rule empire_monkey {\n\tmeta:\n\t\tauthor = \"Markus Neis\"\n\t\tdescription = \"Detects EmpireMonkey APT reported Activity  License: https://github.com/Neo23x0/sigma/blob/master/LICENSE.Detection.Rules.md.\"\n\t\treference = \"https://tdm.socprime.com/tdm/info/jFbYfF51ECXh\"\n\t\tversion = \"0.01\"\n\t\tcreated = \"2019/04/02\"\n\t\tcategory = \"process_creation\"\n\t\tproduct = \"windows\"\n\t\tmitre = \"t1086, execution\"\n\n\tevents:\n(re.regex($selection_cutil.target.process.command_line, `.*/i:%APPDATA%\\\\logs\\.txt scrobj\\.dll`) and (re.regex($selection_cutil.target.process.file.full_path, `.*\\\\cutil\\.exe`) or $selection_cutil.metadata.description = \"Microsoft(C) Registerserver\"))\n\n\tcondition:\n\t\t$selection_cutil\n}\n",
+             "ruleText": "rule empire_monkey {\n\tmeta:\n\t\tauthor = \"Marcus Testman\"\n\t\tdescription = \"Detects EmpireMonkey APT reported Activity  License: https://github.com/Neo23x0/sigma/blob/master/LICENSE.Detection.Rules.md.\"\n\t\treference = \"https://tdm.socprime.com/tdm/info/jFbYfF51ECXh\"\n\t\tversion = \"0.01\"\n\t\tcreated = \"2019/04/02\"\n\t\tcategory = \"process_creation\"\n\t\tproduct = \"windows\"\n\t\tmitre = \"t1086, execution\"\n\n\tevents:\n(re.regex($selection_cutil.target.process.command_line, `.*/i:%APPDATA%\\\\logs\\.txt scrobj\\.dll`) and (re.regex($selection_cutil.target.process.file.full_path, `.*\\\\cutil\\.exe`) or $selection_cutil.metadata.description = \"Microsoft(C) Registerserver\"))\n\n\tcondition:\n\t\t$selection_cutil\n}\n",
              "versionCreateTime": "2021-02-26T20:04:14.162095Z",
              "compilationState": "SUCCEEDED"
           }
@@ -4378,7 +4395,7 @@ Return the detections for the specified curated rule identifier.
 
 ***
 Lists the events for the specified UDM Search query.
-Note: The underlying API has the rate limit of 120 queries per hour.
+Note: The underlying API has the rate limit of 360 queries per hour.
 
 #### Base Command
 

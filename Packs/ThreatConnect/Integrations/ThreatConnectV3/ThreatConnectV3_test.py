@@ -678,3 +678,333 @@ def test_tc_add_file_indicator_with_hash_type_command(mocker):
     # Verifying if the client.make_request method was called with the expected arguments
     call_args = json.loads(res.call_args[1]["payload"])
     assert call_args["sha256"] == "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+
+
+@pytest.mark.parametrize(
+    "args, expected_owner_in_url",
+    [
+        # No owners arg and no defaultOrg — should query all owners (no ownerName filter in TQL)
+        ({}, False),
+        # Explicit owners arg — should filter by that owner
+        ({"owners": "MyOrg"}, True),
+    ],
+)
+def test_get_indicator_reputation_owner_filter(mocker, args, expected_owner_in_url):
+    """
+    Given:
+        - get_indicator_reputation is called with or without an explicit 'owners' argument
+        - The defaultOrg integration parameter is set to 'DefaultOrg'
+    When:
+        - Running a reputation command (e.g. !ip)
+    Then:
+        - When no 'owners' arg is provided, the TQL query must NOT contain an ownerName filter
+          (all accessible owners are queried, consistent with tc-get-indicator behavior)
+        - When an explicit 'owners' arg is provided, the TQL query must contain that ownerName filter
+    """
+    import urllib.parse
+
+    mocker.patch.object(demisto, "params", return_value={"defaultOrg": "DefaultOrg", "rating": "3", "confidence": "3"})
+    mock_request = mocker.patch.object(Client, "make_request", return_value={"data": []})
+    mocker.patch("ThreatConnectV3.return_results")
+
+    args = {**args, "ip": "1.2.3.4"}
+    get_indicator_reputation(client, "ip", "Address", args)
+
+    called_url = mock_request.call_args[0][1]
+    tql_encoded = called_url.split("tql=")[1].split("&")[0]
+    tql_decoded = urllib.parse.unquote(tql_encoded)
+
+    if expected_owner_in_url:
+        assert "ownerName" in tql_decoded
+        assert "MyOrg" in tql_decoded
+    else:
+        assert "ownerName" not in tql_decoded
+        assert "DefaultOrg" not in tql_decoded
+
+
+@pytest.mark.parametrize(
+    "args_type, type_name, indicator_value, expected_header_fragment",
+    [
+        ("ip", "Address", "1.2.3.4", "ThreatConnect Address Reputation for: 1.2.3.4"),
+        ("url", "URL", "http://example.com", "ThreatConnect URL Reputation for: http://example.com"),
+        ("domain", "Host", "example.com", "ThreatConnect Host Reputation for: example.com"),
+        (
+            "file",
+            "File",
+            "d41d8cd98f00b204e9800998ecf8427e",
+            "ThreatConnect File Reputation for: d41d8cd98f00b204e9800998ecf8427e",
+        ),
+    ],
+)
+def test_get_indicator_reputation_header(mocker, args_type, type_name, indicator_value, expected_header_fragment):
+    """
+    Given:
+        - get_indicator_reputation is called for different indicator types
+    When:
+        - Running !ip, !url, !domain, or !file reputation commands
+    Then:
+        - The human-readable table title must reflect the actual indicator type, not a hardcoded 'URL Reputation'
+    """
+    mocker.patch.object(demisto, "params", return_value={"defaultOrg": "DefaultOrg", "rating": "3", "confidence": "3"})
+    mocker.patch.object(Client, "make_request", return_value={"data": []})
+    return_results_mock = mocker.patch("ThreatConnectV3.return_results")
+
+    args = {args_type: indicator_value}
+    get_indicator_reputation(client, args_type, type_name, args)
+
+    returned_entry = return_results_mock.call_args[0][0]
+    assert expected_header_fragment in returned_entry["HumanReadable"]
+
+
+def test_tc_get_indicator_command_not_found(mocker):
+    """
+    Given:
+        - An indicator value that does not exist in ThreatConnect
+    When:
+        - Running tc_get_indicator_command
+    Then:
+        - A 'Could not find indicator' note entry is returned
+    """
+    import ThreatConnectV3
+
+    mocker.patch.object(ThreatConnectV3, "tc_get_indicators", return_value=[])
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=({}, []))
+    return_results_mock = mocker.patch("ThreatConnectV3.return_results")
+
+    tc_get_indicator_command(client, {"indicator": "1.2.3.4"})
+
+    returned_entry = return_results_mock.call_args[0][0]
+    assert returned_entry["ContentsFormat"] == formats["text"]
+    assert "Could not find indicator: 1.2.3.4" in returned_entry["Contents"]
+
+
+def test_tc_get_indicator_command_found(mocker):
+    """
+    Given:
+        - An indicator value that exists in ThreatConnect (by summary)
+    When:
+        - Running tc_get_indicator_command
+    Then:
+        - All results are aggregated into a single list passed to return_results
+        - The main entry contains the indicator table in HumanReadable
+    """
+    import ThreatConnectV3
+
+    indicator_response = [
+        {
+            "id": 12345,
+            "ownerName": "MyOrg",
+            "dateAdded": "2023-01-01T00:00:00Z",
+            "webLink": "https://app.threatconnect.com/auth/indicators/details/address.xhtml?address=1.2.3.4",
+            "type": "Address",
+            "lastModified": "2023-06-01T00:00:00Z",
+            "rating": 4.0,
+            "confidence": 75,
+            "summary": "1.2.3.4",
+            "tags": {"data": [{"name": "malicious"}]},
+            "attributes": {"data": [{"type": "Description", "value": "Bad IP"}]},
+            "associatedGroups": {"data": [{"id": 99, "name": "Threat Group"}]},
+            "associatedIndicators": {"data": [{"id": 88, "summary": "evil.com"}]},
+            "observations": [{"count": 5, "dateObserved": "2023-05-01T00:00:00Z"}],
+        }
+    ]
+    ec = {
+        "TC.Indicator(val.ID && val.ID === obj.ID)": [
+            {
+                "ID": 12345,
+                "Name": "1.2.3.4",
+                "Type": "Address",
+                "Owner": "MyOrg",
+                "Rating": 4,
+                "Confidence": 75,
+            }
+        ]
+    }
+    human_readable = [{"ID": 12345, "Name": "1.2.3.4", "Type": "Address"}]
+
+    mocker.patch.object(ThreatConnectV3, "tc_get_indicators", return_value=indicator_response)
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=(ec, human_readable))
+    return_results_mock = mocker.patch("ThreatConnectV3.return_results")
+
+    tc_get_indicator_command(client, {"indicator": "1.2.3.4"})
+
+    # return_results should be called once with a list of all results
+    return_results_mock.assert_called_once()
+    results = return_results_mock.call_args[0][0]
+    assert isinstance(results, list)
+
+    # First entry is the main indicator table
+    main_entry = results[0]
+    assert "ThreatConnect indicator for: 1.2.3.4" in main_entry["HumanReadable"]
+    assert main_entry["EntryContext"] == ec
+
+    # Remaining entries are CommandResults for associated data
+    readable_outputs = [r.readable_output for r in results[1:]]
+    assert any("Associated Groups" in ro for ro in readable_outputs)
+    assert any("Associated Indicators" in ro for ro in readable_outputs)
+    assert any("Tags" in ro for ro in readable_outputs)
+    assert any("Attributes" in ro for ro in readable_outputs)
+    assert any("Observations" in ro for ro in readable_outputs)
+
+
+def test_tc_get_indicator_command_by_id(mocker):
+    """
+    Given:
+        - A numeric indicator ID
+    When:
+        - Running tc_get_indicator_command
+    Then:
+        - tc_get_indicators is called with indicator_id set (not summary)
+    """
+    import ThreatConnectV3
+
+    indicator_response = [
+        {
+            "id": 99999,
+            "ownerName": "MyOrg",
+            "dateAdded": "2023-01-01T00:00:00Z",
+            "type": "Address",
+            "summary": "5.6.7.8",
+        }
+    ]
+    ec = {"TC.Indicator(val.ID && val.ID === obj.ID)": [{"ID": 99999, "Name": "5.6.7.8"}]}
+    human_readable = [{"ID": 99999, "Name": "5.6.7.8"}]
+
+    get_indicators_mock = mocker.patch.object(ThreatConnectV3, "tc_get_indicators", return_value=indicator_response)
+    mocker.patch.object(ThreatConnectV3, "create_context", return_value=(ec, human_readable))
+    mocker.patch("ThreatConnectV3.return_results")
+
+    tc_get_indicator_command(client, {"indicator": "99999"})
+
+    call_kwargs = get_indicators_mock.call_args[1]
+    assert call_kwargs.get("indicator_id") == "99999"
+    assert call_kwargs.get("summary") == ""
+
+
+class TestSanitizeLargeInts:
+    """Tests for the sanitize_large_ints helper function.
+
+    ThreatConnect object IDs can exceed 2^53 - 1 (9,007,199,254,740,991),
+    causing IEEE 754 precision loss when parsed as floats in XSOAR Core.
+    The helper converts such integers to strings while leaving smaller
+    integers and non-integer values untouched.
+    """
+
+    def test_small_int_unchanged(self):
+        """
+        Given: An integer at or below the max safe integer.
+        When:  sanitize_large_ints is called.
+        Then:  The value is returned unchanged as an int.
+        """
+        assert sanitize_large_ints(0) == 0
+        assert sanitize_large_ints(1) == 1
+        assert sanitize_large_ints(MAX_SAFE_INT) == MAX_SAFE_INT
+        assert isinstance(sanitize_large_ints(MAX_SAFE_INT), int)
+
+    def test_large_int_stringified(self):
+        """
+        Given: An integer greater than the max safe integer.
+        When:  sanitize_large_ints is called.
+        Then:  The value is converted to a string preserving all digits.
+        """
+        large_id = 13510798884070691
+        result = sanitize_large_ints(large_id)
+        assert result == "13510798884070691"
+        assert isinstance(result, str)
+
+    def test_bool_preserved(self):
+        """
+        Given: Boolean values (which subclass int in Python).
+        When:  sanitize_large_ints is called.
+        Then:  Booleans are returned unchanged, not converted to int/str.
+        """
+        assert sanitize_large_ints(True) is True
+        assert sanitize_large_ints(False) is False
+
+    def test_non_int_types_unchanged(self):
+        """
+        Given: Non-integer values (str, float, None).
+        When:  sanitize_large_ints is called.
+        Then:  Values are returned unchanged.
+        """
+        assert sanitize_large_ints("abc") == "abc"
+        assert sanitize_large_ints(1.5) == 1.5
+        assert sanitize_large_ints(None) is None
+
+    def test_nested_dict(self):
+        """
+        Given: A nested dict containing large integer IDs.
+        When:  sanitize_large_ints is called.
+        Then:  All large ints are stringified recursively while other
+               values remain unchanged.
+        """
+        payload = {
+            "data": {
+                "id": 13510798884070691,
+                "name": "test-group",
+                "confidence": 75,
+                "nested": {"indicatorId": 13510798884679648},
+            }
+        }
+        result = sanitize_large_ints(payload)
+        assert result["data"]["id"] == "13510798884070691"
+        assert result["data"]["name"] == "test-group"
+        assert result["data"]["confidence"] == 75
+        assert result["data"]["nested"]["indicatorId"] == "13510798884679648"
+
+    def test_list_of_objects(self):
+        """
+        Given: A list containing dicts with large integer IDs.
+        When:  sanitize_large_ints is called.
+        Then:  All large ints inside list elements are stringified.
+        """
+        payload = [
+            {"id": 13510798884679647, "rating": 3},
+            {"id": 13510798884679645, "rating": 4},
+            {"id": 12345, "rating": 5},
+        ]
+        result = sanitize_large_ints(payload)
+        assert result[0]["id"] == "13510798884679647"
+        assert result[1]["id"] == "13510798884679645"
+        assert result[2]["id"] == 12345
+        assert result[0]["rating"] == 3
+
+    def test_list_of_mixed_types(self):
+        """
+        Given: A list containing mixed types (large int, small int, str, float,
+               bool, None, nested dict, nested list).
+        When:  sanitize_large_ints is called.
+        Then:  Only ints exceeding MAX_SAFE_INT are stringified; all other
+               types are returned unchanged, and nested containers are
+               processed recursively.
+        """
+        payload = [
+            13510798884679647,
+            12345,
+            "abc",
+            1.5,
+            True,
+            False,
+            None,
+            {"id": 13510798884679648, "name": "nested"},
+            [13510798884679649, 10],
+        ]
+        result = sanitize_large_ints(payload)
+        assert result[0] == "13510798884679647"
+        assert result[1] == 12345
+        assert result[2] == "abc"
+        assert result[3] == 1.5
+        assert result[4] is True
+        assert result[5] is False
+        assert result[6] is None
+        assert result[7] == {"id": "13510798884679648", "name": "nested"}
+        assert result[8] == ["13510798884679649", 10]
+
+    def test_empty_containers(self):
+        """
+        Given: Empty dict and list inputs.
+        When:  sanitize_large_ints is called.
+        Then:  Empty containers are returned unchanged.
+        """
+        assert sanitize_large_ints({}) == {}
+        assert sanitize_large_ints([]) == []

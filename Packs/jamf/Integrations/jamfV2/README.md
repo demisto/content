@@ -1,6 +1,10 @@
 Enterprise Mobility Management (EMM) for Apple devices (Mac, iPhone, Apple TV, iPad). Can be used to control various configurations via different policies, install and uninstall applications, lock devices, smart groups searches, and more.
 This integration was integrated and tested with version 10.28.0 of jamf v2
 JAMF classic API: https://www.jamf.com/developers/apis/classic/reference/#/
+JAMF Pro API: https://developer.jamf.com/jamf-pro/reference/jamf-pro-api/
+
+Some changes have been made that might affect your existing content.
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-jamf-v2).
 
 ## Configure jamf v2 on Cortex XSOAR
 
@@ -53,7 +57,7 @@ In order to run JAMF V2 commands, the user should have a set of minimum permissi
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### jamf-get-computers
@@ -98,22 +102,98 @@ Jamf Pro Server Objects → Computers → Read
     "JAMF": {
         "Computer": [
             {
-                "id": 1,
-                "name": "Computer 95"
+                "applications": null,
+                "attachments": null,
+                "certificates": null,
+                "configurationProfiles": null,
+                "contentCaching": null,
+                "diskEncryption": null,
+                "extensionAttributes": null,
+                "general": {
+                    "assetTag": null,
+                    "barcode1": null,
+                    "barcode2": null,
+                    "declarativeDeviceManagementEnabled": false,
+                    "distributionPoint": null,
+                    "enrolledViaAutomatedDeviceEnrollment": false,
+                    "enrollmentMethod": null,
+                    "extensionAttributes": [
+                        {
+                            "dataType": "STRING",
+                            "definitionId": "1",
+                            "description": "Number of charge cycles logged on the current battery",
+                            "enabled": true,
+                            "inputType": "TEXT",
+                            "multiValue": false,
+                            "name": "Local Password",
+                            "options": [],
+                            "values": []
+                        }
+                    ],
+                    "initialEntryDate": "2021-03-29",
+                    "itunesStoreAccountActive": false,
+                    "jamfBinaryVersion": null,
+                    "lastCloudBackupDate": null,
+                    "lastContactTime": null,
+                    "lastEnrolledDate": null,
+                    "lastIpAddress": null,
+                    "lastLoggedInUsernameBinary": null,
+                    "lastLoggedInUsernameBinaryTimestamp": null,
+                    "lastLoggedInUsernameSelfService": null,
+                    "lastLoggedInUsernameSelfServiceTimestamp": null,
+                    "lastReportedIp": null,
+                    "lastReportedIpV4": null,
+                    "lastReportedIpV6": null,
+                    "managementId": "38b8002d-5033-4cf9-8645-060bfbebf61c",
+                    "mdmCapable": {
+                        "capable": false,
+                        "capableUsers": [],
+                        "userManagementInfo": []
+                    },
+                    "mdmProfileExpiration": null,
+                    "name": null,
+                    "platform": "Mac",
+                    "remoteManagement": {
+                        "managed": false,
+                        "managementUsername": null
+                    },
+                    "reportDate": "2021-03-29T12:44:46.84Z",
+                    "site": {
+                        "id": "-1",
+                        "name": "None"
+                    },
+                    "supervised": false,
+                    "userApprovedMdm": false
+                },
+                "groupMemberships": null,
+                "hardware": null,
+                "ibeacons": null,
+                "id": "54",
+                "licensedSoftware": null,
+                "localUserAccounts": null,
+                "name": null,
+                "operatingSystem": null,
+                "packageReceipts": null,
+                "printers": null,
+                "purchasing": null,
+                "security": null,
+                "services": null,
+                "softwareUpdates": null,
+                "storage": null,
+                "udid": null,
+                "userAndLocation": null
             },
             {
-                "id": 2,
-                "name": "Computer 104"
+                ...
             },
             {
-                "id": 3,
-                "name": "Computer 124"
+                ...
             },
             {
                 "Paging": {
                     "current_page": 0,
                     "page_size": 3,
-                    "total_results": 137
+                    "total_results": 138
                 }
             }
         ]
@@ -127,16 +207,16 @@ Jamf Pro Server Objects → Computers → Read
 >
 >|Current Page|Page Size|Total Results|
 >|---|---|---|
->| 0 | 3 | 137 |
+>| 0 | 3 | 138 |
 
->### Jamf get computers result
+>### Jamf get computers results
 >
->|ID|Name|
+>|Computer ID|Computer Name|
 >|---|---|
->| 1 | Computer 95 |
->| 2 | Computer 104 |
->| 3 | Computer 124 |
->
+>| 54 |  |
+>| 70 | Computer 10 |
+>| 64 | Computer 100 |
+
 ### jamf-get-computers-basic-subset
 
 ***
@@ -166,13 +246,9 @@ Jamf Pro Server Objects → Computers → Read
 | JAMF.Computer.managed | Boolean | Whether the computer is managed. |
 | JAMF.Computer.username | String | The computer username. |
 | JAMF.Computer.model | String | The computer model. |
-| JAMF.Computer.department | String | The computer department. |
-| JAMF.Computer.building | String | The computer building. |
 | JAMF.Computer.mac_address | String | The computer MAC address. |
 | JAMF.Computer.udid | String | The computer UDID. |
 | JAMF.Computer.serial_number | String | The computer serial number. |
-| JAMF.Computer.report_date_utc | Date | The computer report date in UTC format. |
-| JAMF.Computer.report_date_epoch | Number | The computer report date in epoch format. |
 
 #### Command Example
 
@@ -185,52 +261,144 @@ Jamf Pro Server Objects → Computers → Read
     "JAMF": {
         "Computer": [
             {
-                "building": "",
-                "department": "",
-                "id": 1,
-                "mac_address": "18:5B:35:CA:12:56",
+                "applications": null,
+                "attachments": null,
+                "building": null,
+                "certificates": null,
+                "configurationProfiles": null,
+                "contentCaching": null,
+                "department": null,
+                "diskEncryption": null,
+                "extensionAttributes": null,
+                "general": {
+                    "assetTag": null,
+                    "barcode1": null,
+                    "barcode2": null,
+                    "declarativeDeviceManagementEnabled": false,
+                    "distributionPoint": null,
+                    "enrolledViaAutomatedDeviceEnrollment": false,
+                    "enrollmentMethod": null,
+                    "extensionAttributes": [
+                        {
+                            "dataType": "STRING",
+                            "definitionId": "1",
+                            "description": "Number of charge cycles logged on the current battery",
+                            "enabled": true,
+                            "inputType": "TEXT",
+                            "multiValue": false,
+                            "name": "Local Password",
+                            "options": [],
+                            "values": []
+                        }
+                    ],
+                    "initialEntryDate": "2021-03-29",
+                    "itunesStoreAccountActive": false,
+                    "jamfBinaryVersion": null,
+                    "lastCloudBackupDate": null,
+                    "lastContactTime": null,
+                    "lastEnrolledDate": null,
+                    "lastIpAddress": null,
+                    "lastLoggedInUsernameBinary": null,
+                    "lastLoggedInUsernameBinaryTimestamp": null,
+                    "lastLoggedInUsernameSelfService": null,
+                    "lastLoggedInUsernameSelfServiceTimestamp": null,
+                    "lastReportedIp": null,
+                    "lastReportedIpV4": null,
+                    "lastReportedIpV6": null,
+                    "managementId": "38b8002d-5033-4cf9-8645-060bfbebf61c",
+                    "mdmCapable": {
+                        "capable": false,
+                        "capableUsers": [],
+                        "userManagementInfo": []
+                    },
+                    "mdmProfileExpiration": null,
+                    "name": null,
+                    "platform": "Mac",
+                    "remoteManagement": {
+                        "managed": false,
+                        "managementUsername": null
+                    },
+                    "reportDate": "2021-03-29T12:44:46.84Z",
+                    "site": {
+                        "id": "-1",
+                        "name": "None"
+                    },
+                    "supervised": false,
+                    "userApprovedMdm": false
+                },
+                "groupMemberships": null,
+                "hardware": {
+                    "altMacAddress": null,
+                    "altNetworkAdapterType": null,
+                    "appleSilicon": false,
+                    "batteryCapacityPercent": 0,
+                    "batteryHealth": "UNKNOWN",
+                    "bleCapable": false,
+                    "bootRom": null,
+                    "busSpeedMhz": -1,
+                    "cacheSizeKilobytes": 0,
+                    "coreCount": -1,
+                    "extensionAttributes": [],
+                    "macAddress": null,
+                    "make": null,
+                    "model": null,
+                    "modelIdentifier": null,
+                    "networkAdapterType": null,
+                    "nicSpeed": null,
+                    "openRamSlots": 0,
+                    "opticalDrive": null,
+                    "processorArchitecture": null,
+                    "processorCount": -1,
+                    "processorSpeedMhz": -1,
+                    "processorType": null,
+                    "provisioningUdid": null,
+                    "serialNumber": null,
+                    "smcVersion": null,
+                    "supportsIosAppInstalls": false,
+                    "totalRamMegabytes": -1
+                },
+                "ibeacons": null,
+                "id": "54",
+                "licensedSoftware": null,
+                "localUserAccounts": null,
+                "mac_address": null,
                 "managed": false,
-                "model": "MacBookPro9,2",
-                "name": "Computer 95",
-                "report_date_epoch": 1617021852595,
-                "report_date_utc": "2021-03-29T12:44:12.595+0000",
-                "serial_number": "BA40F81C60A2",
-                "udid": "BA40F812-60A3-11E4-90B8-12DF261F2C7E",
-                "username": "user91"
+                "model": null,
+                "name": null,
+                "operatingSystem": null,
+                "packageReceipts": null,
+                "printers": null,
+                "purchasing": null,
+                "security": null,
+                "serial_number": null,
+                "services": null,
+                "softwareUpdates": null,
+                "storage": null,
+                "udid": null,
+                "userAndLocation": {
+                    "buildingId": null,
+                    "departmentId": null,
+                    "email": null,
+                    "extensionAttributes": [],
+                    "phone": null,
+                    "position": null,
+                    "realname": null,
+                    "room": null,
+                    "username": null
+                },
+                "username": null
             },
             {
-                "building": "",
-                "department": "",
-                "id": 2,
-                "mac_address": "",
-                "managed": false,
-                "model": "",
-                "name": "Computer 104",
-                "report_date_epoch": 1617021852853,
-                "report_date_utc": "2021-03-29T12:44:12.853+0000",
-                "serial_number": "",
-                "udid": "18F1FDEE-1730-4840-BA15-42744EA7A1EF",
-                "username": ""
+                ...
             },
             {
-                "building": "",
-                "department": "",
-                "id": 3,
-                "mac_address": "",
-                "managed": false,
-                "model": "",
-                "name": "Computer 124",
-                "report_date_epoch": 1617021853383,
-                "report_date_utc": "2021-03-29T12:44:13.383+0000",
-                "serial_number": "",
-                "udid": "10BA9E1B-8992-4664-A34F-423154CB9B0E",
-                "username": ""
+                ...
             },
             {
                 "Paging": {
                     "current_page": 0,
                     "page_size": 3,
-                    "total_results": 137
+                    "total_results": 138
                 }
             }
         ]
@@ -240,19 +408,19 @@ Jamf Pro Server Objects → Computers → Read
 
 #### Human Readable Output
 
->### Paging for get computers
+>### Paging for get computers basic subset
 >
 >|Current Page|Page Size|Total Results|
 >|---|---|---|
->| 0 | 3 | 137 |
+>| 0 | 3 | 138 |
 
->### Jamf get computers result
+>### Jamf get computers basic subset results
 >
 >|ID|Mac Address|Name|Serial Number|UDID|Username|
 >|---|---|---|---|---|---|
->| 1 | 18:5B:35:CA:12:56 | Computer 95 | BA40F81C60A2 | CA40F812-60A3-11E4-90B8-12DF261F2C7E | user91 |
->| 2 |  | Computer 104 |  | 18F1FDEE-1730-4840-BA15-42744EA7A1EF |  |
->| 3 |  | Computer 124 |  | 10BA9E1B-8992-4664-A34F-423154CB9B0E |  |
+>| 54 |  |  |  |  |  |
+>| 70 | 3C:15:C2:DC:7D:1C | Computer 10 | CA40FA3860A3 | CA40FA2E-60A3-11E4-90B8-12DF261F2C7E | user50 |
+>| 64 |  | Computer 100 | C02Q8KHTGFWF |  |  |
 
 ### jamf-get-computer-by-id
 
@@ -297,24 +465,7 @@ Jamf Pro Server Objects → Computers → Read
 | JAMF.Computer.supervised | Boolean | Whether the computer is supervised. |
 | JAMF.Computer.mdm_capable | Boolean | Whether the computer is enabled for mobile device management \(MDM\). |
 | JAMF.Computer.mdm_capable_users | Boolean | The computer has MDM capable users. |
-| JAMF.Computer.report_date | Date | The computer report date. |
-| JAMF.Computer.report_date_epoch | Date | The computer report date in epoch format. |
-| JAMF.Computer.report_date_utc | Date | The computer report date in UTC format. |
-| JAMF.Computer.last_contact_time | Date | The computer last contact time. |
-| JAMF.Computer.last_contact_time_epoch | Date | The computer last contact time in epoch format. |
-| JAMF.Computer.last_contact_time_utc | Date | The computer last contact time in UTC format. |
-| JAMF.Computer.initial_entry_date | Date | The computer initial entry date. |
-| JAMF.Computer.initial_entry_date_epoch | Date | The computer initial entry date in epoch format. |
-| JAMF.Computer.initial_entry_date_utc | Date | The computer initial entry date in UTC format. |
-| JAMF.Computer.last_cloud_backup_date_epoch | Number | The computer last cloud backup date in epoch format. |
-| JAMF.Computer.last_cloud_backup_date_utc | String | The computer last cloud backup date in UTC format. |
-| JAMF.Computer.last_enrolled_date_epoch | Date | The computer last enrolled date in epoch format. |
-| JAMF.Computer.last_enrolled_date_utc | Date | The computer last enrolled date in UTC format. |
-| JAMF.Computer.mdm_profile_expiration_epoch | Number | The computer MDM profile expiration in epoch format. |
-| JAMF.Computer.mdm_profile_expiration_utc | String | The computer MDM profile expiration in UTC format. |
 | JAMF.Computer.distribution_point | String | The computer distribution point. |
-| JAMF.Computer.sus | String | The computer software updated service \(SUS\). |
-| JAMF.Computer.netboot_server | String | The computer netbbot server. |
 | JAMF.Computer.site.id | Number | The computer site ID. |
 | JAMF.Computer.site.name | String | The computer site name. |
 | JAMF.Computer.itunes_store_account_is_active | Boolean | The computer iTunes store account. |
@@ -330,51 +481,256 @@ Jamf Pro Server Objects → Computers → Read
     "JAMF": {
         "Computer": {
             "alt_mac_address": "B0:34:95:EC:97:C4",
-            "alt_network_adapter_type": "",
-            "asset_tag": "",
-            "barcode_1": "",
-            "barcode_2": "",
-            "distribution_point": "",
-            "id": 1,
-            "initial_entry_date": "2021-03-29",
-            "initial_entry_date_epoch": 1617021852322,
-            "initial_entry_date_utc": "2021-03-29T12:44:12.322+0000",
-            "ip_address": "123.243.192.21",
+            "alt_network_adapter_type": null,
+            "applications": [
+                {
+                    "bundleId": null,
+                    "cfBundleShortVersionString": null,
+                    "cfBundleVersion": null,
+                    "externalVersionId": "0",
+                    "macAppStore": false,
+                    "name": "Stickies.app",
+                    "path": "/Applications/Stickies.app",
+                    "sizeMegabytes": 0,
+                    "updateAvailable": false,
+                    "version": "10.0"
+                }
+            ],
+            "asset_tag": null,
+            "attachments": [],
+            "barcode_1": null,
+            "barcode_2": null,
+            "certificates": [],
+            "configurationProfiles": [],
+            "contentCaching": null,
+            "diskEncryption": {
+                "bootPartitionEncryptionDetails": {
+                    "partitionFileVault2Percent": 100,
+                    "partitionFileVault2State": "ENCRYPTED",
+                    "partitionName": "Macintosh HD (Boot Partition)"
+                },
+                "diskEncryptionConfigurationName": null,
+                "fileVault2EligibilityMessage": null,
+                "fileVault2Enabled": false,
+                "fileVault2EnabledUserNames": [],
+                "individualRecoveryKeyValidityStatus": "UNKNOWN",
+                "institutionalRecoveryKeyPresent": false
+            },
+            "distribution_point": null,
+            "extensionAttributes": [
+                {
+                    "dataType": "STRING",
+                    "definitionId": "6",
+                    "description": "This is a test by tomer",
+                    "enabled": true,
+                    "inputType": "TEXT",
+                    "multiValue": false,
+                    "name": "Tomer test",
+                    "options": [],
+                    "values": []
+                }
+            ],
+            "general": {
+                "assetTag": null,
+                "barcode1": null,
+                "barcode2": null,
+                "declarativeDeviceManagementEnabled": false,
+                "distributionPoint": null,
+                "enrolledViaAutomatedDeviceEnrollment": false,
+                "enrollmentMethod": null,
+                "extensionAttributes": [
+                    {
+                        "dataType": "STRING",
+                        "definitionId": "1",
+                        "description": "Number of charge cycles logged on the current battery",
+                        "enabled": true,
+                        "inputType": "TEXT",
+                        "multiValue": false,
+                        "name": "Local Password",
+                        "options": [],
+                        "values": []
+                    }
+                ],
+                "initialEntryDate": "2021-03-29",
+                "itunesStoreAccountActive": false,
+                "jamfBinaryVersion": "9.6.29507.c",
+                "lastCloudBackupDate": null,
+                "lastContactTime": "2014-10-24T10:26:55.335Z",
+                "lastEnrolledDate": "2014-10-24T10:25:39.607Z",
+                "lastIpAddress": "123.123.123.123",
+                "lastLoggedInUsernameBinary": null,
+                "lastLoggedInUsernameBinaryTimestamp": null,
+                "lastLoggedInUsernameSelfService": null,
+                "lastLoggedInUsernameSelfServiceTimestamp": null,
+                "lastReportedIp": "123.123.123.123",
+                "lastReportedIpV4": "123.123.123.123",
+                "lastReportedIpV6": null,
+                "managementId": "45145f18-0762-4994-b7d8-467f02f5ee5a",
+                "mdmCapable": {
+                    "capable": false,
+                    "capableUsers": [],
+                    "userManagementInfo": []
+                },
+                "mdmProfileExpiration": null,
+                "name": "Computer 95",
+                "platform": "Mac",
+                "remoteManagement": {
+                    "managed": false,
+                    "managementUsername": null
+                },
+                "reportDate": "2021-03-29T12:44:12.595Z",
+                "site": {
+                    "id": "-1",
+                    "name": "None"
+                },
+                "supervised": false,
+                "userApprovedMdm": false
+            },
+            "groupMemberships": [],
+            "hardware": {
+                "altMacAddress": "B0:34:95:EC:97:C4",
+                "altNetworkAdapterType": null,
+                "appleSilicon": false,
+                "batteryCapacityPercent": 90,
+                "batteryHealth": "UNKNOWN",
+                "bleCapable": true,
+                "bootRom": "MBP91.00D3.B09",
+                "busSpeedMhz": 0,
+                "cacheSizeKilobytes": 3072,
+                "coreCount": -1,
+                "extensionAttributes": [],
+                "macAddress": "68:5B:35:CA:12:56",
+                "make": "Apple",
+                "model": "13-inch MacBook Pro (Mid 2012)",
+                "modelIdentifier": "MacBookPro9,2",
+                "networkAdapterType": null,
+                "nicSpeed": "n/a",
+                "openRamSlots": 0,
+                "opticalDrive": "MATSHITA DVD-R   UJ-8A8",
+                "processorArchitecture": "i386",
+                "processorCount": 2,
+                "processorSpeedMhz": 2500,
+                "processorType": "Intel Core i5",
+                "provisioningUdid": null,
+                "serialNumber": "CA40F81C60A3",
+                "smcVersion": "2.2f44",
+                "supportsIosAppInstalls": false,
+                "totalRamMegabytes": 4096
+            },
+            "ibeacons": [],
+            "id": "1",
+            "ip_address": "123.123.123.123",
             "itunes_store_account_is_active": false,
             "jamf_version": "9.6.29507.c",
-            "last_cloud_backup_date_epoch": 0,
-            "last_cloud_backup_date_utc": "",
-            "last_contact_time": "2014-10-24 10:26:55",
-            "last_contact_time_epoch": 1414146415335,
-            "last_contact_time_utc": "2014-10-24T10:26:55.335+0000",
-            "last_enrolled_date_epoch": 1414146339607,
-            "last_enrolled_date_utc": "2014-10-24T10:25:39.607+0000",
-            "last_reported_ip": "192.168.1.15",
-            "mac_address": "18:5B:35:CA:12:56",
+            "last_reported_ip": "123.123.123.123",
+            "licensedSoftware": [],
+            "localUserAccounts": [],
+            "mac_address": "68:5B:35:CA:12:56",
             "mdm_capable": false,
-            "mdm_capable_users": {},
-            "mdm_profile_expiration_epoch": 0,
-            "mdm_profile_expiration_utc": "",
+            "mdm_capable_users": [],
             "name": "Computer 95",
-            "netboot_server": "",
-            "network_adapter_type": "",
+            "network_adapter_type": null,
+            "operatingSystem": {
+                "activeDirectoryStatus": "Not Bound",
+                "build": "14A389",
+                "extensionAttributes": [],
+                "fileVault2Status": "ALL_ENCRYPTED",
+                "name": "Mac OS X",
+                "rapidSecurityResponse": null,
+                "softwareUpdateDeviceId": null,
+                "supplementalBuildVersion": null,
+                "version": "10.10.0"
+            },
+            "packageReceipts": {
+                "cached": [],
+                "installedByInstallerSwu": [],
+                "installedByJamfPro": []
+            },
             "platform": "Mac",
+            "printers": [],
+            "purchasing": {
+                "appleCareId": null,
+                "extensionAttributes": [],
+                "leaseDate": null,
+                "leased": false,
+                "lifeExpectancy": 0,
+                "poDate": null,
+                "poNumber": null,
+                "purchasePrice": null,
+                "purchased": true,
+                "purchasingAccount": null,
+                "purchasingContact": null,
+                "vendor": null,
+                "warrantyDate": null
+            },
             "remote_management": {
                 "managed": false,
-                "management_password_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b812",
-                "management_username": ""
+                "management_username": null
             },
-            "report_date": "2021-03-29 12:44:12",
-            "report_date_epoch": 1617021852595,
-            "report_date_utc": "2021-03-29T12:44:12.595+0000",
-            "serial_number": "BA40F81C60A2",
+            "security": {
+                "activationLockEnabled": null,
+                "attestationStatus": "PENDING",
+                "autoLoginDisabled": true,
+                "bootstrapTokenAllowed": null,
+                "bootstrapTokenEscrowedStatus": "NOT_SUPPORTED",
+                "externalBootLevel": null,
+                "firewallEnabled": false,
+                "gatekeeperStatus": "NOT_COLLECTED",
+                "lastAttestationAttempt": null,
+                "lastSuccessfulAttestation": null,
+                "recoveryLockEnabled": false,
+                "remoteDesktopEnabled": null,
+                "secureBootLevel": null,
+                "sipStatus": "NOT_COLLECTED",
+                "xprotectVersion": null
+            },
+            "serial_number": "CA40F81C60A3",
+            "services": [],
             "site": {
-                "id": -1,
+                "id": "-1",
                 "name": "None"
             },
+            "softwareUpdates": [],
+            "storage": {
+                "bootDriveAvailableSpaceMegabytes": 1,
+                "disks": [
+                    {
+                        "device": "disk0",
+                        "id": "2",
+                        "model": "APPLE HDD HTS545050A7E362",
+                        "partitions": [
+                            {
+                                "availableMegabytes": 1,
+                                "fileVault2ProgressPercent": 100,
+                                "fileVault2State": "ENCRYPTED",
+                                "lvmManaged": false,
+                                "name": "Macintosh HD (Boot Partition)",
+                                "partitionType": "BOOT",
+                                "percentUsed": 5,
+                                "sizeMegabytes": 237851
+                            }
+                        ],
+                        "revision": "GG2AB990",
+                        "serialNumber": "TNS5193T0BTYVH",
+                        "sizeMegabytes": 512113,
+                        "smartStatus": "Verified",
+                        "type": "NO"
+                    }
+                ]
+            },
             "supervised": false,
-            "sus": "",
-            "udid": "CA40F812-60A3-11E4-90B8-12DF261F2C7E"
+            "udid": "CA40F812-60A3-11E4-90B8-12DF261F2C7E",
+            "userAndLocation": {
+                "buildingId": null,
+                "departmentId": null,
+                "email": "User91@email.com",
+                "extensionAttributes": [],
+                "phone": "612-605-6625",
+                "position": null,
+                "realname": "User 91",
+                "room": "100 Walker Street\t \r\nLevel 14, Suite 3",
+                "username": "user91"
+            }
         }
     }
 }
@@ -384,14 +740,14 @@ Jamf Pro Server Objects → Computers → Read
 
 >### Jamf get computers result for computer ID: 1
 >
->|ID|IP Address|Jamf Version|MAC Address|Name|Platform|Serial Number|UDID|
->|---|---|---|---|---|---|---|---|
->| 1 | 123.243.192.21 | 9.6.29507.c | 18:5B:35:CA:12:56 | Computer 95 | Mac | BA40F81C60A2 | CA40F812-60A3-11E4-90B8-12DF261F2C7E |
+>|Jamf Version|Last IP Address|MAC Address|Name|Platform|Serial Number|
+>|---|---|---|---|---|---|
+>| 9.6.29507.c | 123.123.123.123 | 68:5B:35:CA:12:56 | Computer 95 | Mac | CA40F81C60A3 |
 
 ### jamf-get-computer-by-match
 
 ***
-Matches computers by specific characteristics and returns general data on each of the computers.
+Matches computers by specific characteristics using a filter query and returns general data on each of the computers.
 
 #### Base Command
 
@@ -407,7 +763,7 @@ Jamf Pro Server Objects → Computers → Read
 | --- | --- | --- |
 | limit | The maximum number of results to be returned on each page. The maximum size is 200. Default is 50. | Optional |
 | page | The number of the requested page. Default is 0. | Optional |
-| match | Match computers by specific characteristics (supports wildcards) such as: name, UDID, serial_number, mac_address, username, realname, email. e.g.: “match=john*”, “match=C52F72FACB9T”. | Required |
+| filter | Filter query for the Pro API (supports RSQL). e.g.: general.name=="Computer 1*", userAndLocation.email=="user@email.com". | Required |
 
 #### Context Output
 
@@ -420,25 +776,21 @@ Jamf Pro Server Objects → Computers → Read
 | JAMF.Computer.mac_address | String | The computer MAC address. |
 | JAMF.Computer.alt_mac_address | String | The computer alt MAC address. |
 | JAMF.Computer.asset_tag | String | The computer asset tag. |
-| JAMF.Computer.bar_code_1 | String | The computer barcode 1. |
-| JAMF.Computer.bar_code_2 | String | The computer barcode 2. |
+| JAMF.Computer.barcode_1 | String | The computer barcode 1. |
+| JAMF.Computer.barcode_2 | String | The computer barcode 2. |
 | JAMF.Computer.username | String | The computer username. |
 | JAMF.Computer.realname | String | The computer real name. |
 | JAMF.Computer.email | String | The computer email address. |
 | JAMF.Computer.email_address | String | The computer email address. |
 | JAMF.Computer.room | String | The computer room. |
 | JAMF.Computer.position | String | The computer position. |
-| JAMF.Computer.building | String | The computer building. |
-| JAMF.Computer.building_name | String | The computer building name. |
-| JAMF.Computer.department | String | The computer department. |
-| JAMF.Computer.department_name | String | The computer department name. |
 | JAMF.Computer.Paging.total_results | Number | The number of computers returned in this specific search. |
 | JAMF.Computer.Paging.page_size | Number | The number of computers to be returned on each page. |
 | JAMF.Computer.Paging.current_page | Number | The number of the requested page. |
 
 #### Command Example
 
-```!jamf-get-computer-by-match match="Computer 9*" limit=3```
+```!jamf-get-computer-by-match filter="general.name==\"Computer 9*\"" limit=3```
 
 #### Context Example
 
@@ -447,67 +799,143 @@ Jamf Pro Server Objects → Computers → Read
     "JAMF": {
         "Computer": [
             {
-                "alt_mac_address": "B0:34:95:EC:97:C4",
-                "asset_tag": "",
-                "bar_code_1": "",
-                "bar_code_2": "",
-                "building": "",
-                "building_name": "",
-                "department": "",
-                "department_name": "",
-                "email": "User91@email.com",
-                "email_address": "User91@email.com",
-                "id": 1,
-                "mac_address": "18:5B:35:CA:12:56",
-                "name": "Computer 95",
-                "position": "",
-                "realname": "User 91",
-                "room": "100 Walker Street\t \r\nLevel 14, Suite 3",
-                "serial_number": "BA40F81C60A2",
-                "udid": "CA40F812-60A3-11E4-90B8-12DF261F2C7E",
-                "username": "user91"
-            },
-            {
-                "alt_mac_address": "72:00:04:22:5F:10",
+                "alt_mac_address": null,
+                "applications": null,
                 "asset_tag": "JS002221",
-                "bar_code_1": "",
-                "bar_code_2": "",
-                "building": "",
-                "building_name": "",
-                "department": "",
-                "department_name": "",
+                "attachments": null,
+                "barcode_1": null,
+                "barcode_2": null,
+                "certificates": null,
+                "configurationProfiles": null,
+                "contentCaching": null,
+                "diskEncryption": null,
                 "email": "User81@email.com",
                 "email_address": "User81@email.com",
-                "id": 49,
-                "mac_address": "3C:15:C2:DC:7D:22",
+                "extensionAttributes": null,
+                "general": {
+                    "assetTag": "JS002221",
+                    "barcode1": null,
+                    "barcode2": null,
+                    "declarativeDeviceManagementEnabled": false,
+                    "distributionPoint": null,
+                    "enrolledViaAutomatedDeviceEnrollment": false,
+                    "enrollmentMethod": null,
+                    "extensionAttributes": [
+                        {
+                            "dataType": "STRING",
+                            "definitionId": "1",
+                            "description": "Number of charge cycles logged on the current battery",
+                            "enabled": true,
+                            "inputType": "TEXT",
+                            "multiValue": false,
+                            "name": "Local Password",
+                            "options": [],
+                            "values": []
+                        }
+                    ],
+                    "initialEntryDate": "2021-03-29",
+                    "itunesStoreAccountActive": true,
+                    "jamfBinaryVersion": "9.6.29507.c",
+                    "lastCloudBackupDate": null,
+                    "lastContactTime": "2014-10-30T03:54:44.22Z",
+                    "lastEnrolledDate": "2014-08-19T20:20:45.206Z",
+                    "lastIpAddress": "123.123.123.123",
+                    "lastLoggedInUsernameBinary": null,
+                    "lastLoggedInUsernameBinaryTimestamp": null,
+                    "lastLoggedInUsernameSelfService": null,
+                    "lastLoggedInUsernameSelfServiceTimestamp": null,
+                    "lastReportedIp": "123.123.123.123",
+                    "lastReportedIpV4": "123.123.123.123",
+                    "lastReportedIpV6": null,
+                    "managementId": "5c9435d2-6774-4bca-9d0f-2d6c3b58fbc6",
+                    "mdmCapable": {
+                        "capable": false,
+                        "capableUsers": [],
+                        "userManagementInfo": []
+                    },
+                    "mdmProfileExpiration": null,
+                    "name": "Computer 9",
+                    "platform": "Mac",
+                    "remoteManagement": {
+                        "managed": false,
+                        "managementUsername": null
+                    },
+                    "reportDate": "2021-03-29T12:44:45.288Z",
+                    "site": {
+                        "id": "-1",
+                        "name": "None"
+                    },
+                    "supervised": false,
+                    "userApprovedMdm": false
+                },
+                "groupMemberships": null,
+                "hardware": {
+                    "altMacAddress": "72:00:04:22:5F:10",
+                    "altNetworkAdapterType": null,
+                    "appleSilicon": false,
+                    "batteryCapacityPercent": 97,
+                    "batteryHealth": "UNKNOWN",
+                    "bleCapable": true,
+                    "bootRom": "MBP111.0138.B07",
+                    "busSpeedMhz": 0,
+                    "cacheSizeKilobytes": 3072,
+                    "coreCount": -1,
+                    "extensionAttributes": [],
+                    "macAddress": "3C:15:C2:DC:7D:22",
+                    "make": "Apple",
+                    "model": "13-inch Retina MacBook Pro (Late 2013)",
+                    "modelIdentifier": "MacBookPro11,1",
+                    "networkAdapterType": null,
+                    "nicSpeed": "n/a",
+                    "openRamSlots": 0,
+                    "opticalDrive": null,
+                    "processorArchitecture": "i386",
+                    "processorCount": 2,
+                    "processorSpeedMhz": 2600,
+                    "processorType": "Intel Core i5",
+                    "provisioningUdid": null,
+                    "serialNumber": "CA41077660A3",
+                    "smcVersion": "2.16f63",
+                    "supportsIosAppInstalls": false,
+                    "totalRamMegabytes": 16384
+                },
+                "ibeacons": null,
+                "id": "49",
+                "licensedSoftware": null,
+                "localUserAccounts": null,
+                "mac_address": null,
                 "name": "Computer 9",
-                "position": "",
+                "operatingSystem": null,
+                "packageReceipts": null,
+                "position": null,
+                "printers": null,
+                "purchasing": null,
                 "realname": "User 81",
                 "room": "1011 Washington Avenue S\r\nSuite 350",
-                "serial_number": "CA41077660A3",
+                "security": null,
+                "serial_number": null,
+                "services": null,
+                "softwareUpdates": null,
+                "storage": null,
                 "udid": "CA41076C-60A3-11E4-90B8-12DF261F2C7E",
+                "userAndLocation": {
+                    "buildingId": null,
+                    "departmentId": null,
+                    "email": "User81@email.com",
+                    "extensionAttributes": [],
+                    "phone": "612-605-6625",
+                    "position": null,
+                    "realname": "User 81",
+                    "room": "1011 Washington Avenue S\r\nSuite 350",
+                    "username": "user81"
+                },
                 "username": "user81"
             },
             {
-                "alt_mac_address": "B8:8D:12:40:ED:6A",
-                "asset_tag": "JS000531",
-                "bar_code_1": "",
-                "bar_code_2": "",
-                "building": "",
-                "building_name": "",
-                "department": "",
-                "department_name": "",
-                "email": "User72@email.com",
-                "email_address": "User72@email.com",
-                "id": 56,
-                "mac_address": "3C:07:54:58:A4:E2",
-                "name": "Computer 92",
-                "position": "",
-                "realname": "User 72",
-                "room": "81 Freedom Hills Dr",
-                "serial_number": "CA40F73660A3",
-                "udid": "CA40F72C-60A3-11E4-90B8-12DF261F2C7E",
-                "username": "user72"
+                ...
+            },
+            {
+                ...
             },
             {
                 "Paging": {
@@ -523,19 +951,19 @@ Jamf Pro Server Objects → Computers → Read
 
 #### Human Readable Output
 
->### Paging for get computers
+>### Paging for get computer by match
 >
 >|Current Page|Page Size|Total Results|
 >|---|---|---|
 >| 0 | 3 | 10 |
 
->### Jamf get computers result
+>### Jamf get computer by match results
 >
->|ID|Mac Address|Name|Serial Number|UDID|Username|
+>|ID|MAC Address|Name|Serial Number|UDID|Username|
 >|---|---|---|---|---|---|
->| 1 | 18:5B:35:CA:12:56 | Computer 95 | BA40F81C60A2 | CA40F812-60A3-11E4-90B8-12DF261F2C7E | user91 |
 >| 49 | 3C:15:C2:DC:7D:22 | Computer 9 | CA41077660A3 | CA41076C-60A3-11E4-90B8-12DF261F2C7E | user81 |
->| 56 | 3C:07:54:58:A4:E2 | Computer 92 | CA40F73660A3 | CA40F72C-60A3-11E4-90B8-12DF261F2C7E | user72 |
+>| 99 | 48:D7:05:B3:B9:7B | Computer 90 | CA41043860A3 | CA41042E-60A3-11E4-90B8-12DF261F2C7E | user30 |
+>| 127 | 80:E6:50:09:B8:B6 | Computer 91 | CA40F6C860A3 | CA40F6B4-60A3-11E4-90B8-12DF261F2C7E | user56 |
 
 ### jamf-get-computer-general-subset
 
@@ -561,50 +989,31 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerSubset.general.id | Number | The computer ID. |
-| JAMF.ComputerSubset.general.name | String | The computer name. |
-| JAMF.ComputerSubset.general.network_adapter_type | String | The computer network adapter type. |
-| JAMF.ComputerSubset.general.mac_address | Date | The computer MAC address. |
-| JAMF.ComputerSubset.general.alt_network_adapter_type | String | The computer alt network adapter type. |
-| JAMF.ComputerSubset.general.alt_mac_address | String | The computer alt MAC address. |
-| JAMF.ComputerSubset.general.ip_address | String | The computer IP address. |
-| JAMF.ComputerSubset.general.last_reported_ip | String | The computer last reported IP address. |
-| JAMF.ComputerSubset.general.serial_number | String | The computer serial number. |
-| JAMF.ComputerSubset.general.udid | String | The computer UDID. |
-| JAMF.ComputerSubset.general.jamf_version | String | The computer Jamf version. |
-| JAMF.ComputerSubset.general.platform | String | The computer platform. |
-| JAMF.ComputerSubset.general.barcode_1 | String | The computer barcode 1. |
-| JAMF.ComputerSubset.general.barcode_2 | String | The computer barcode 2. |
-| JAMF.ComputerSubset.general.asset_tag | String | The computer asset tag. |
-| JAMF.ComputerSubset.general.remote_management.managed | Boolean | Whether the computer is remotely managed. |
-| JAMF.ComputerSubset.general.remote_management.management_username | String | The computer managment username. |
-| JAMF.ComputerSubset.general.supervised | Boolean | Whether the computer is supervised. |
-| JAMF.ComputerSubset.general.mdm_capable | Boolean | Whether the computer is MDM capable. |
-| JAMF.Computer.general.mdm_capable_users | Boolean | Whether the computer has MDM capable users. |
-| JAMF.Computer.general.management_status.enrolled_via_dep | Boolean | Whether the computer was enrolled via DEP. |
-| JAMF.Computer.general.management_status.user_approved_enrollment | Boolean | Whether the enrollment is user-approved. |
-| JAMF.Computer.general.management_status.user_approved_mdm | Boolean | Whether the MDM is user-approved. |
-| JAMF.ComputerSubset.general.report_date | Date | The computer report date. |
-| JAMF.ComputerSubset.general.report_date_epoch | Date | The computer report date in epoch format. |
-| JAMF.ComputerSubset.general.report_date_utc | Date | The computer report date in UTC format. |
-| JAMF.ComputerSubset.general.last_contact_time | Date | The computer last contact time. |
-| JAMF.ComputerSubset.general.last_contact_time_epoch | Date | The computer last contact time in epoch format. |
-| JAMF.ComputerSubset.general.last_contact_time_utc | Date | The computer last contact time in UTC format. |
-| JAMF.ComputerSubset.general.initial_entry_date | Date | The computer initial entry date. |
-| JAMF.ComputerSubset.general.initial_entry_date_epoch | Date | The computer initial entry date in epoch format. |
-| JAMF.ComputerSubset.general.initial_entry_date_utc | Date | The computer initial entry date in UTC format. |
-| JAMF.ComputerSubset.general.last_cloud_backup_date_epoch | Number | The computer last cloud backup date in epoch format. |
-| JAMF.ComputerSubset.general.last_cloud_backup_date_utc | String | The computer last cloud backup date in UTC format. |
-| JAMF.ComputerSubset.general.last_enrolled_date_epoch | Date | The computer last enrolled date in epoch format. |
-| JAMF.ComputerSubset.general.last_enrolled_date_utc | Date | The computer last enrolled date in UTC format. |
-| JAMF.ComputerSubset.general.mdm_profile_expiration_epoch | Number | The computer MDM profile expiration in epoch format. |
-| JAMF.ComputerSubset.general.mdm_profile_expiration_utc | String | The computer MDM profile expiration in UTC format. |
-| JAMF.ComputerSubset.general.distribution_point | String | The computer distribution point format. |
-| JAMF.ComputerSubset.general.sus | String | The computer SUS. |
-| JAMF.ComputerSubset.general.netboot_server | String | The computer netbbot server. |
-| JAMF.ComputerSubset.general.site.id | Number | The computer site ID. |
-| JAMF.ComputerSubset.general.site.name | String | The computer site name. |
-| JAMF.ComputerSubset.general.itunes_store_account_is_active | Boolean | The computer iTunes store account. |
+| JAMF.ComputerSubset.Computer.general.id | Number | The computer ID. |
+| JAMF.ComputerSubset.Computer.general.name | String | The computer name. |
+| JAMF.ComputerSubset.Computer.general.network_adapter_type | String | The computer network adapter type. |
+| JAMF.ComputerSubset.Computer.general.mac_address | Date | The computer MAC address. |
+| JAMF.ComputerSubset.Computer.general.alt_network_adapter_type | String | The computer alt network adapter type. |
+| JAMF.ComputerSubset.Computer.general.alt_mac_address | String | The computer alt MAC address. |
+| JAMF.ComputerSubset.Computer.general.ip_address | String | The computer IP address. |
+| JAMF.ComputerSubset.Computer.general.last_reported_ip | String | The computer last reported IP address. |
+| JAMF.ComputerSubset.Computer.general.serial_number | String | The computer serial number. |
+| JAMF.ComputerSubset.Computer.general.udid | String | The computer UDID. |
+| JAMF.ComputerSubset.Computer.general.jamf_version | String | The computer Jamf version. |
+| JAMF.ComputerSubset.Computer.general.platform | String | The computer platform. |
+| JAMF.ComputerSubset.Computer.general.barcode_1 | String | The computer barcode 1. |
+| JAMF.ComputerSubset.Computer.general.barcode_2 | String | The computer barcode 2. |
+| JAMF.ComputerSubset.Computer.general.asset_tag | String | The computer asset tag. |
+| JAMF.ComputerSubset.Computer.general.remote_management.managed | Boolean | Whether the computer is remotely managed. |
+| JAMF.ComputerSubset.Computer.general.remote_management.management_username | String | The computer managment username. |
+| JAMF.ComputerSubset.Computer.general.supervised | Boolean | Whether the computer is supervised. |
+| JAMF.ComputerSubset.Computer.general.mdm_capable | Boolean | Whether the computer is MDM capable. |
+| JAMF.ComputerSubset.Computer.general.mdm_capable_users | Boolean | Whether the computer has MDM capable users. |
+| JAMF.ComputerSubset.Computer.general.management_status.user_approved_mdm | Boolean | Whether the MDM is user-approved. |
+| JAMF.ComputerSubset.Computer.general.distribution_point | String | The computer distribution point format. |
+| JAMF.ComputerSubset.Computer.general.site.id | Number | The computer site ID. |
+| JAMF.ComputerSubset.Computer.general.site.name | String | The computer site name. |
+| JAMF.ComputerSubset.Computer.general.itunes_store_account_is_active | Boolean | The computer iTunes store account. |
 
 #### Command Example
 
@@ -617,55 +1026,138 @@ Jamf Pro Server Objects → Computers → Read
     "JAMF": {
         "ComputerSubset": {
             "computer": {
+                "applications": null,
+                "attachments": null,
+                "certificates": null,
+                "configurationProfiles": null,
+                "contentCaching": null,
+                "diskEncryption": null,
+                "extensionAttributes": null,
                 "general": {
                     "alt_mac_address": "B0:34:95:EC:97:C4",
-                    "alt_network_adapter_type": "",
-                    "asset_tag": "",
-                    "barcode_1": "",
-                    "barcode_2": "",
-                    "distribution_point": "",
-                    "id": 1,
-                    "initial_entry_date": "2021-03-29",
-                    "initial_entry_date_epoch": 1617021852322,
-                    "initial_entry_date_utc": "2021-03-29T12:44:12.322+0000",
-                    "ip_address": "123.243.192.21",
+                    "alt_network_adapter_type": null,
+                    "assetTag": null,
+                    "asset_tag": null,
+                    "barcode1": null,
+                    "barcode2": null,
+                    "barcode_1": null,
+                    "barcode_2": null,
+                    "declarativeDeviceManagementEnabled": false,
+                    "distributionPoint": null,
+                    "distribution_point": null,
+                    "enrolledViaAutomatedDeviceEnrollment": false,
+                    "enrollmentMethod": null,
+                    "extensionAttributes": [
+                        {
+                            "dataType": "STRING",
+                            "definitionId": "1",
+                            "description": "Number of charge cycles logged on the current battery",
+                            "enabled": true,
+                            "inputType": "TEXT",
+                            "multiValue": false,
+                            "name": "Local Password",
+                            "options": [],
+                            "values": []
+                        }
+                    ],
+                    "id": "1",
+                    "initialEntryDate": "2021-03-29",
+                    "ip_address": "123.123.123.123",
+                    "itunesStoreAccountActive": false,
                     "itunes_store_account_is_active": false,
+                    "jamfBinaryVersion": "9.6.29507.c",
                     "jamf_version": "9.6.29507.c",
-                    "last_cloud_backup_date_epoch": 0,
-                    "last_cloud_backup_date_utc": "",
-                    "last_contact_time": "2014-10-24 10:26:55",
-                    "last_contact_time_epoch": 1414146415335,
-                    "last_contact_time_utc": "2014-10-24T10:26:55.335+0000",
-                    "last_enrolled_date_epoch": 1414146339607,
-                    "last_enrolled_date_utc": "2014-10-24T10:25:39.607+0000",
-                    "last_reported_ip": "192.168.1.15",
-                    "mac_address": "18:5B:35:CA:12:56",
+                    "lastCloudBackupDate": null,
+                    "lastContactTime": "2014-10-24T10:26:55.335Z",
+                    "lastEnrolledDate": "2014-10-24T10:25:39.607Z",
+                    "lastIpAddress": "123.123.123.123",
+                    "lastLoggedInUsernameBinary": null,
+                    "lastLoggedInUsernameBinaryTimestamp": null,
+                    "lastLoggedInUsernameSelfService": null,
+                    "lastLoggedInUsernameSelfServiceTimestamp": null,
+                    "lastReportedIp": "123.123.123.123",
+                    "lastReportedIpV4": "123.123.123.123",
+                    "lastReportedIpV6": null,
+                    "last_reported_ip": "123.123.123.123",
+                    "mac_address": "68:5B:35:CA:12:56",
+                    "managementId": "45145f18-0762-4994-b7d8-467f02f5ee5a",
+                    "management_status": {
+                        "user_approved_mdm": false
+                    },
+                    "mdmCapable": {
+                        "capable": false,
+                        "capableUsers": [],
+                        "userManagementInfo": []
+                    },
+                    "mdmProfileExpiration": null,
                     "mdm_capable": false,
-                    "mdm_capable_users": {},
-                    "mdm_profile_expiration_epoch": 0,
-                    "mdm_profile_expiration_utc": "",
+                    "mdm_capable_users": [],
                     "name": "Computer 95",
-                    "netboot_server": "",
-                    "network_adapter_type": "",
+                    "network_adapter_type": null,
                     "platform": "Mac",
+                    "remoteManagement": {
+                        "managed": false,
+                        "managementUsername": null
+                    },
                     "remote_management": {
                         "managed": false,
-                        "management_password_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b812",
-                        "management_username": ""
+                        "management_username": null
                     },
-                    "report_date": "2021-03-29 12:44:12",
-                    "report_date_epoch": 1617021852595,
-                    "report_date_utc": "2021-03-29T12:44:12.595+0000",
-                    "serial_number": "BA40F81C60A2",
+                    "reportDate": "2021-03-29T12:44:12.595Z",
+                    "serial_number": "CA40F81C60A3",
                     "site": {
-                        "id": -1,
+                        "id": "-1",
                         "name": "None"
                     },
                     "supervised": false,
-                    "sus": "",
-                    "udid": "CA40F812-60A3-11E4-90B8-12DF261F2C7E"
+                    "udid": "CA40F812-60A3-11E4-90B8-12DF261F2C7E",
+                    "userApprovedMdm": false
                 },
-                "id": 1
+                "groupMemberships": null,
+                "hardware": {
+                    "altMacAddress": "B0:34:95:EC:97:C4",
+                    "altNetworkAdapterType": null,
+                    "appleSilicon": false,
+                    "batteryCapacityPercent": 90,
+                    "batteryHealth": "UNKNOWN",
+                    "bleCapable": true,
+                    "bootRom": "MBP91.00D3.B09",
+                    "busSpeedMhz": 0,
+                    "cacheSizeKilobytes": 3072,
+                    "coreCount": -1,
+                    "extensionAttributes": [],
+                    "macAddress": "68:5B:35:CA:12:56",
+                    "make": "Apple",
+                    "model": "13-inch MacBook Pro (Mid 2012)",
+                    "modelIdentifier": "MacBookPro9,2",
+                    "networkAdapterType": null,
+                    "nicSpeed": "n/a",
+                    "openRamSlots": 0,
+                    "opticalDrive": "MATSHITA DVD-R   UJ-8A8",
+                    "processorArchitecture": "i386",
+                    "processorCount": 2,
+                    "processorSpeedMhz": 2500,
+                    "processorType": "Intel Core i5",
+                    "provisioningUdid": null,
+                    "serialNumber": "CA40F81C60A3",
+                    "smcVersion": "2.2f44",
+                    "supportsIosAppInstalls": false,
+                    "totalRamMegabytes": 4096
+                },
+                "ibeacons": null,
+                "id": "1",
+                "licensedSoftware": null,
+                "localUserAccounts": null,
+                "operatingSystem": null,
+                "packageReceipts": null,
+                "printers": null,
+                "purchasing": null,
+                "security": null,
+                "services": null,
+                "softwareUpdates": null,
+                "storage": null,
+                "udid": "CA40F812-60A3-11E4-90B8-12DF261F2C7E",
+                "userAndLocation": null
             }
         }
     }
@@ -676,9 +1168,9 @@ Jamf Pro Server Objects → Computers → Read
 
 >### Jamf computer General subset result
 >
->|Alternate MAC address|ID|IP address|MAC address|Managed|Name|Platform|Serial Number|UDID|
->|---|---|---|---|---|---|---|---|---|
->| B0:34:95:EC:97:C4 | 1 | 123.243.192.21 | 18:5B:35:CA:12:56 | false | Computer 95 | Mac | BA40F81C60A2 | CA40F812-60A3-11E4-90B8-12DF261F2C7E |
+>|ID|Last IP Address|Managed|Name|Platform|UDID|
+>|---|---|---|---|---|---|
+>| 1 | 123.123.123.123 | false | Computer 95 | Mac | CA40F812-60A3-11E4-90B8-12DF261F2C7E |
 
 ### jamf-get-computer-location-subset
 
@@ -704,17 +1196,15 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerSubset.location.username | String | The computer username. |
-| JAMF.ComputerSubset.location.realname | String | The computer real name. |
-| JAMF.ComputerSubset.location.real_name | String | The computer real name. |
-| JAMF.ComputerSubset.location.email_address | String | The computer email address. |
-| JAMF.ComputerSubset.location.position | String | The computer position. |
-| JAMF.ComputerSubset.location.phone | String | The computer phone number. |
-| JAMF.ComputerSubset.location.phone_number | String | The computer phone number. |
-| JAMF.ComputerSubset.location.department | String | The computer department. |
-| JAMF.ComputerSubset.location.building | String | The computer building. |
-| JAMF.ComputerSubset.location.room | String | The computer room. |
-| JAMF.ComputerSubset.id | Number | The computer ID. |
+| JAMF.ComputerSubset.Computer.location.username | String | The computer username. |
+| JAMF.ComputerSubset.Computer.location.realname | String | The computer real name. |
+| JAMF.ComputerSubset.Computer.location.real_name | String | The computer real name. |
+| JAMF.ComputerSubset.Computer.location.email_address | String | The computer email address. |
+| JAMF.ComputerSubset.Computer.location.position | String | The computer position. |
+| JAMF.ComputerSubset.Computer.location.phone | String | The computer phone number. |
+| JAMF.ComputerSubset.Computer.location.phone_number | String | The computer phone number. |
+| JAMF.ComputerSubset.Computer.location.room | String | The computer room. |
+| JAMF.ComputerSubset.Computer.id | Number | The computer ID. |
 
 #### Command Example
 
@@ -727,15 +1217,46 @@ Jamf Pro Server Objects → Computers → Read
     "JAMF": {
         "ComputerSubset": {
             "computer": {
-                "id": 1,
+                "applications": null,
+                "attachments": null,
+                "certificates": null,
+                "configurationProfiles": null,
+                "contentCaching": null,
+                "diskEncryption": null,
+                "extensionAttributes": null,
+                "general": null,
+                "groupMemberships": null,
+                "hardware": null,
+                "ibeacons": null,
+                "id": "1",
+                "licensedSoftware": null,
+                "localUserAccounts": null,
                 "location": {
-                    "building": "",
-                    "department": "",
                     "email_address": "User91@email.com",
                     "phone": "612-605-6625",
                     "phone_number": "612-605-6625",
-                    "position": "",
+                    "position": null,
                     "real_name": "User 91",
+                    "realname": "User 91",
+                    "room": "100 Walker Street\t \r\nLevel 14, Suite 3",
+                    "username": "user91"
+                },
+                "operatingSystem": null,
+                "packageReceipts": null,
+                "printers": null,
+                "purchasing": null,
+                "security": null,
+                "services": null,
+                "softwareUpdates": null,
+                "storage": null,
+                "udid": "CA40F812-60A3-11E4-90B8-12DF261F2C7E",
+                "userAndLocation": {
+                    "buildingId": null,
+                    "departmentId": null,
+                    "email": "User91@email.com",
+                    "extensionAttributes": [],
+                    "phone": "612-605-6625",
+                    "position": null,
                     "realname": "User 91",
                     "room": "100 Walker Street\t \r\nLevel 14, Suite 3",
                     "username": "user91"
@@ -752,7 +1273,7 @@ Jamf Pro Server Objects → Computers → Read
 >
 >|Email Address|Phone|Real Name|Room|Username|
 >|---|---|---|---|---|
->| User91@email.com | 612-605-6625 | User 91 | 100 Walker Street  <br/>Level 14, Suite 3 | user91 |
+>| User91@email.com | 612-605-6625 | User 91 | 100 Walker Street  <br>Level 14, Suite 3 | user91 |
 
 ### jamf-get-computer-purchasing-subset
 
@@ -778,31 +1299,18 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerSubset.purchasing.is_purchased | Boolean | If the computer is purchased. |
-| JAMF.ComputerSubset.purchasing.is_leased | Boolean | If the computer is leased. |
-| JAMF.ComputerSubset.purchasing.po_number | String | The computer PO number. |
-| JAMF.ComputerSubset.purchasing.vendor | String | The computer vendor. |
-| JAMF.ComputerSubset.purchasing.applecare_id | String | The computer AppleCare ID. |
-| JAMF.ComputerSubset.purchasing.purchase_price | String | The computer purchase price. |
-| JAMF.ComputerSubset.purchasing.purchasing_account | String | The computer purchase account. |
-| JAMF.ComputerSubset.purchasing.po_date | String | The computer PO date. |
-| JAMF.ComputerSubset.purchasing.po_date_epoch | Number | The computer PO date in epoch format. |
-| JAMF.ComputerSubset.purchasing.po_date_utc | String | The computer PO date in UTC format. |
-| JAMF.ComputerSubset.purchasing.warranty_expires | String | The computer warranty expiration date. |
-| JAMF.ComputerSubset.purchasing.warranty_expires_epoch | Number | The computer warranty expiration date in epoch format. |
-| JAMF.ComputerSubset.purchasing.warranty_expires_utc | String | The computer warranty expiration date in UTC format. |
-| JAMF.ComputerSubset.purchasing.lease_expires | String | The computer warranty lease expiration date. |
-| JAMF.ComputerSubset.purchasing.lease_expires_epoch | Number | The computer warranty lease expiration date in epoch time. |
-| JAMF.ComputerSubset.purchasing.lease_expires_utc | String | The computer warranty lease expiration date in UTC format. |
-| JAMF.ComputerSubset.purchasing.life_expectancy | Number | The computer life expectancy. |
-| JAMF.ComputerSubset.purchasing.purchasing_contact | String | The computer purchasing contact. |
-| JAMF.ComputerSubset.purchasing.os_applecare_id | String | The computer operating system AppleCare ID. |
-| JAMF.ComputerSubset.purchasing.os_maintenance_expires | String | The computer operating system maintenance expiration date. |
-| JAMF.ComputerSubset.id | Number | The computer ID. |
+| JAMF.ComputerSubset.Computer.purchasing.is_purchased | Boolean | If the computer is purchased. |
+| JAMF.ComputerSubset.Computer.purchasing.is_leased | Boolean | If the computer is leased. |
+| JAMF.ComputerSubset.Computer.purchasing.po_number | String | The computer PO number. |
+| JAMF.ComputerSubset.Computer.purchasing.vendor | String | The computer vendor. |
+| JAMF.ComputerSubset.Computer.purchasing.applecare_id | String | The computer AppleCare ID. |
+| JAMF.ComputerSubset.Computer.purchasing.purchase_price | String | The computer purchase price. |
+| JAMF.ComputerSubset.Computer.purchasing.purchasing_account | String | The computer purchase account. |
+| JAMF.ComputerSubset.Computer.purchasing.life_expectancy | Number | The computer life expectancy. |
+| JAMF.ComputerSubset.Computer.purchasing.purchasing_contact | String | The computer purchasing contact. |
+| JAMF.ComputerSubset.Computer.id | Number | The computer ID. |
 
 #### Command Example
-
-```!jamf-get-computer-purchasing-subset identifier=name identifier_value="Computer 95"```
 
 #### Context Example
 
@@ -811,30 +1319,52 @@ Jamf Pro Server Objects → Computers → Read
     "JAMF": {
         "ComputerSubset": {
             "computer": {
-                "id": 1,
+                "applications": null,
+                "attachments": null,
+                "certificates": null,
+                "configurationProfiles": null,
+                "contentCaching": null,
+                "diskEncryption": null,
+                "extensionAttributes": null,
+                "general": null,
+                "groupMemberships": null,
+                "hardware": null,
+                "ibeacons": null,
+                "id": "1",
+                "licensedSoftware": null,
+                "localUserAccounts": null,
+                "operatingSystem": null,
+                "packageReceipts": null,
+                "printers": null,
                 "purchasing": {
-                    "applecare_id": "",
-                    "attachments": [],
+                    "appleCareId": null,
+                    "applecare_id": null,
+                    "extensionAttributes": [],
                     "is_leased": false,
                     "is_purchased": true,
-                    "lease_expires": "",
-                    "lease_expires_epoch": 0,
-                    "lease_expires_utc": "",
+                    "leaseDate": null,
+                    "leased": false,
+                    "lifeExpectancy": 0,
                     "life_expectancy": 0,
-                    "os_applecare_id": "",
-                    "os_maintenance_expires": "",
-                    "po_date": "",
-                    "po_date_epoch": 0,
-                    "po_date_utc": "",
-                    "po_number": "",
-                    "purchase_price": "",
-                    "purchasing_account": "",
-                    "purchasing_contact": "",
-                    "vendor": "",
-                    "warranty_expires": "",
-                    "warranty_expires_epoch": 0,
-                    "warranty_expires_utc": ""
-                }
+                    "poDate": null,
+                    "poNumber": null,
+                    "po_number": null,
+                    "purchasePrice": null,
+                    "purchase_price": null,
+                    "purchased": true,
+                    "purchasingAccount": null,
+                    "purchasingContact": null,
+                    "purchasing_account": null,
+                    "purchasing_contact": null,
+                    "vendor": null,
+                    "warrantyDate": null
+                },
+                "security": null,
+                "services": null,
+                "softwareUpdates": null,
+                "storage": null,
+                "udid": "CA40F812-60A3-11E4-90B8-12DF261F2C7E",
+                "userAndLocation": null
             }
         }
     }
@@ -850,6 +1380,8 @@ Jamf Pro Server Objects → Computers → Read
 >| false | true |
 
 ### jamf-get-computer-peripherals-subset
+
+*This command is **deprecated** and has no replacement.*
 
 ***
 Returns the peripherals subset for a specific computer according to the given arguments.
@@ -873,8 +1405,8 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerSubset.peripherals | Number | The computer peripherals. |
-| JAMF.ComputerSubset.id | Number | The computer ID. |
+| JAMF.ComputerSubset.Computer.peripherals | Number | The computer peripherals. |
+| JAMF.ComputerSubset.Computer.id | Number | The computer ID. |
 
 #### Command Example
 
@@ -925,63 +1457,38 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerSubset.hardware.make | String | The computer maker. |
-| JAMF.ComputerSubset.hardware.model | String | The computer model. |
-| JAMF.ComputerSubset.hardware.model_identifier | String | The computer model ID. |
-| JAMF.ComputerSubset.hardware.os_name | String | The computer operating system name. |
-| JAMF.ComputerSubset.hardware.os_version | String | The computer operating system version. |
-| JAMF.ComputerSubset.hardware.os_build | String | The computer operating system build. |
-| JAMF.ComputerSubset.hardware.master_password_set | Boolean | Whether the master password is set for the computer. |
-| JAMF.ComputerSubset.hardware.active_directory_status | String | The computer active directory status. |
-| JAMF.ComputerSubset.hardware.service_pack | String | The computer service pack. |
-| JAMF.ComputerSubset.hardware.processor_type | String | The computer processor type. |
-| JAMF.ComputerSubset.hardware.processor_architecture | String | The computer processor architecture. |
-| JAMF.ComputerSubset.hardware.processor_speed | Number | The computer processor speed. |
-| JAMF.ComputerSubset.hardware.processor_speed_mhz | Number | The computer processor speed in MHz. |
-| JAMF.ComputerSubset.hardware.number_processors | Number | The number of processors in the computer. |
-| JAMF.ComputerSubset.hardware.number_cores | Number | The number of cores in the computer. |
-| JAMF.ComputerSubset.hardware.total_ram | Number | The amount of RAM in the computer. |
-| JAMF.ComputerSubset.hardware.total_ram_mb | Number | The amount of RAM in the computer in MB. |
-| JAMF.ComputerSubset.hardware.boot_rom | String | The computer boot ROM. |
-| JAMF.ComputerSubset.hardware.bus_speed | Number | The computer bus speed. |
-| JAMF.ComputerSubset.hardware.bus_speed_mhz | Number | The computer bus speed in MHz. |
-| JAMF.ComputerSubset.hardware.battery_capacity | Number | The computer battery capacity. |
-| JAMF.ComputerSubset.hardware.cache_size | Number | The computer cache size. |
-| JAMF.ComputerSubset.hardware.cache_size_kb | Number | The computer cache size in KB. |
-| JAMF.ComputerSubset.hardware.available_ram_slots | Number | The number of available RAM slots. |
-| JAMF.ComputerSubset.hardware.optical_drive | String | The computer optical drive. |
-| JAMF.ComputerSubset.hardware.nic_speed | String | The computer NIC speed. |
-| JAMF.ComputerSubset.hardware.smc_version | String | The compute SMC version. |
-| JAMF.ComputerSubset.hardware.ble_capable | Boolean | Whether the computer is BLE capable. |
-| JAMF.ComputerSubset.hardware.supports_ios_app_installs | Boolean | If the computer supports iOS app installations. |
-| JAMF.ComputerSubset.hardware.sip_status | String | The computer SIP status. |
-| JAMF.ComputerSubset.hardware.gatekeeper_status | String | The computer gatekeeper status. |
-| JAMF.ComputerSubset.hardware.xprotect_version | String | The computer xprotect version. |
-| JAMF.ComputerSubset.hardware.institutional_recovery_key | String | The computer institutional recovery key. |
-| JAMF.ComputerSubset.hardware.disk_encryption_configuration | String | The computer disk encryption configuration. |
-| JAMF.ComputerSubset.hardware.storage.disk | String | The computer disk storage. |
-| JAMF.ComputerSubset.hardware.storage.model | String | The computer model storage. |
-| JAMF.ComputerSubset.hardware.storage.revision | String | The computer revision storage. |
-| JAMF.ComputerSubset.hardware.storage.serial_number | String | The computer storage serial number. |
-| JAMF.ComputerSubset.hardware.storage.size | Number | The computer storage size. |
-| JAMF.ComputerSubset.hardware.storage.drive_capacity_mb | Number | The computer storage drive capacity in MB. |
-| JAMF.ComputerSubset.hardware.storage.connection_type | String | The computer storage connection type. |
-| JAMF.ComputerSubset.hardware.storage.smart_status | String | The computer storage smart status. |
-| JAMF.ComputerSubset.hardware.storage.partitions.name | String | The computer storage partition name. |
-| JAMF.ComputerSubset.hardware.storage.partitions.size | Number | The computer storage partition size. |
-| JAMF.ComputerSubset.hardware.storage.partitions.type | String | The computer storage partition type. |
-| JAMF.ComputerSubset.hardware.storage.partitions.partition_capacity_mb | Number | The computer storage partition capacity in MB. |
-| JAMF.ComputerSubset.hardware.storage.partitions.percentage_full | Number | The percentage of the storage partition that is full. |
-| JAMF.ComputerSubset.hardware.storage.partitions.available_mb | Number | The amount of computer storage partition available in MB. |
-| JAMF.ComputerSubset.hardware.storage.partitions.filevault_status | String | The computer storage partition filevault status. |
-| JAMF.ComputerSubset.hardware.storage.partitions.filevault_percent | Number | The computer storage partition filevault percent. |
-| JAMF.ComputerSubset.hardware.storage.partitions.filevault2_status | String | The computer storage partition second filevault status. |
-| JAMF.ComputerSubset.hardware.storage.partitions.filevault2_percent | Number | The computer storage partition second filevault percent. |
-| JAMF.ComputerSubset.hardware.storage.partitions.boot_drive_available_mb | Number | The available space on the computer storage partition boot drive in MB. |
-| JAMF.ComputerSubset.hardware.storage.partitions.lvgUUID | String | The computer storage partition logical volume group \(lvg\) UUID. |
-| JAMF.ComputerSubset.hardware.storage.partitions.lvUUID | String | The computer storage partition logical volume \(lv\) UUID. |
-| JAMF.ComputerSubset.hardware.storage.partitions.pvUUID | String | The computer storage partition physical volume \(pv\) UUID. |
-| JAMF.ComputerSubset.id | Number | The computer ID. |
+| JAMF.ComputerSubset.Computer.hardware.make | String | The computer maker. |
+| JAMF.ComputerSubset.Computer.hardware.model | String | The computer model. |
+| JAMF.ComputerSubset.Computer.hardware.model_identifier | String | The computer model ID. |
+| JAMF.ComputerSubset.Computer.hardware.os_name | String | The computer operating system name. |
+| JAMF.ComputerSubset.Computer.hardware.os_version | String | The computer operating system version. |
+| JAMF.ComputerSubset.Computer.hardware.os_build | String | The computer operating system build. |
+| JAMF.ComputerSubset.Computer.hardware.active_directory_status | String | The computer active directory status. |
+| JAMF.ComputerSubset.Computer.hardware.processor_type | String | The computer processor type. |
+| JAMF.ComputerSubset.Computer.hardware.processor_architecture | String | The computer processor architecture. |
+| JAMF.ComputerSubset.Computer.hardware.processor_speed | Number | The computer processor speed. |
+| JAMF.ComputerSubset.Computer.hardware.processor_speed_mhz | Number | The computer processor speed in MHz. |
+| JAMF.ComputerSubset.Computer.hardware.number_processors | Number | The number of processors in the computer. |
+| JAMF.ComputerSubset.Computer.hardware.number_cores | Number | The number of cores in the computer. |
+| JAMF.ComputerSubset.Computer.hardware.total_ram | Number | The amount of RAM in the computer. |
+| JAMF.ComputerSubset.Computer.hardware.total_ram_mb | Number | The amount of RAM in the computer in MB. |
+| JAMF.ComputerSubset.Computer.hardware.boot_rom | String | The computer boot ROM. |
+| JAMF.ComputerSubset.Computer.hardware.bus_speed | Number | The computer bus speed. |
+| JAMF.ComputerSubset.Computer.hardware.bus_speed_mhz | Number | The computer bus speed in MHz. |
+| JAMF.ComputerSubset.Computer.hardware.battery_capacity | Number | The computer battery capacity. |
+| JAMF.ComputerSubset.Computer.hardware.cache_size | Number | The computer cache size. |
+| JAMF.ComputerSubset.Computer.hardware.cache_size_kb | Number | The computer cache size in KB. |
+| JAMF.ComputerSubset.Computer.hardware.available_ram_slots | Number | The number of available RAM slots. |
+| JAMF.ComputerSubset.Computer.hardware.optical_drive | String | The computer optical drive. |
+| JAMF.ComputerSubset.Computer.hardware.nic_speed | String | The computer NIC speed. |
+| JAMF.ComputerSubset.Computer.hardware.smc_version | String | The compute SMC version. |
+| JAMF.ComputerSubset.Computer.hardware.ble_capable | Boolean | Whether the computer is BLE capable. |
+| JAMF.ComputerSubset.Computer.hardware.supports_ios_app_installs | Boolean | If the computer supports iOS app installations. |
+| JAMF.ComputerSubset.Computer.hardware.sip_status | String | The computer SIP status. |
+| JAMF.ComputerSubset.Computer.hardware.gatekeeper_status | String | The computer gatekeeper status. |
+| JAMF.ComputerSubset.Computer.hardware.xprotect_version | String | The computer xprotect version. |
+| JAMF.ComputerSubset.Computer.hardware.disk_encryption_configuration | String | The computer disk encryption configuration. |
+| JAMF.ComputerSubset.Computer.id | Number | The computer ID. |
 
 #### Command Example
 
@@ -994,138 +1501,183 @@ Jamf Pro Server Objects → Computers → Read
     "JAMF": {
         "ComputerSubset": {
             "computer": {
+                "applications": null,
+                "attachments": null,
+                "certificates": null,
+                "configurationProfiles": null,
+                "contentCaching": null,
+                "diskEncryption": {
+                    "bootPartitionEncryptionDetails": {
+                        "partitionFileVault2Percent": 0,
+                        "partitionFileVault2State": "UNENCRYPTED",
+                        "partitionName": "HD (Boot Partition)"
+                    },
+                    "diskEncryptionConfigurationName": null,
+                    "fileVault2EligibilityMessage": "Eligible",
+                    "fileVault2Enabled": false,
+                    "fileVault2EnabledUserNames": [
+                        "itadmin",
+                        "test",
+                        "user"
+                    ],
+                    "individualRecoveryKeyValidityStatus": "UNKNOWN",
+                    "institutionalRecoveryKeyPresent": false
+                },
+                "extensionAttributes": null,
+                "general": null,
+                "groupMemberships": null,
                 "hardware": {
                     "active_directory_status": "Not Bound",
+                    "altMacAddress": "82:9C:53:E4:20:01",
+                    "altNetworkAdapterType": "Ethernet",
+                    "appleSilicon": false,
                     "available_ram_slots": 0,
+                    "batteryCapacityPercent": 83,
+                    "batteryHealth": "UNKNOWN",
                     "battery_capacity": 83,
+                    "bleCapable": true,
                     "ble_capable": true,
+                    "bootRom": "1554.80.3.0.0 (iBridge: 18.16.14347.0.0,0)",
                     "boot_rom": "1554.80.3.0.0 (iBridge: 18.16.14347.0.0,0)",
+                    "busSpeedMhz": 0,
                     "bus_speed": 0,
                     "bus_speed_mhz": 0,
+                    "cacheSizeKilobytes": 8192,
                     "cache_size": 8192,
                     "cache_size_kb": 8192,
-                    "disk_encryption_configuration": "",
-                    "filevault2_users": [
-                        "itadmin",
-                        "user",
-                        "test"
-                    ],
-                    "gatekeeper_status": "App Store and identified developers",
-                    "institutional_recovery_key": "Not Present",
+                    "coreCount": 4,
+                    "disk_encryption_configuration": null,
+                    "extensionAttributes": [],
+                    "gatekeeper_status": "APP_STORE_AND_IDENTIFIED_DEVELOPERS",
+                    "macAddress": "F0:18:98:3F:DB:8E",
                     "make": "Apple",
-                    "mapped_printers": [],
                     "model": "MacBook Pro (13-inch, 2018)",
+                    "modelIdentifier": "MacBookPro15,2",
                     "model_identifier": "MacBookPro15,2",
+                    "networkAdapterType": "IEEE80211",
+                    "nicSpeed": "10/100",
                     "nic_speed": "10/100",
                     "number_cores": 4,
                     "number_processors": 1,
-                    "optical_drive": "",
+                    "openRamSlots": 0,
+                    "opticalDrive": null,
+                    "optical_drive": null,
                     "os_build": "20D91",
                     "os_name": "macOS",
                     "os_version": "11.2.3",
+                    "processorArchitecture": "x86_64",
+                    "processorCount": 1,
+                    "processorSpeedMhz": 2700,
+                    "processorType": "Quad-Core Intel Core i7",
                     "processor_architecture": "x86_64",
                     "processor_speed": 2700,
                     "processor_speed_mhz": 2700,
                     "processor_type": "Quad-Core Intel Core i7",
-                    "service_pack": "",
-                    "sip_status": "Enabled",
-                    "smc_version": "",
-                    "storage": [
-                        {
-                            "connection_type": "NO",
-                            "disk": "disk0",
-                            "drive_capacity_mb": 500277,
-                            "model": "APPLE SSD AP0512M",
-                            "partitions": [
-                                {
-                                    "available_mb": 480067,
-                                    "boot_drive_available_mb": 480067,
-                                    "filevault2_percent": 0,
-                                    "filevault2_status": "Not Encrypted",
-                                    "filevault_percent": 0,
-                                    "filevault_status": "Not Encrypted",
-                                    "lvUUID": "",
-                                    "lvgUUID": "",
-                                    "name": "HD (Boot Partition)",
-                                    "partition_capacity_mb": 499963,
-                                    "percentage_full": 4,
-                                    "pvUUID": "",
-                                    "size": 499963,
-                                    "type": "boot"
-                                },
-                                {
-                                    "available_mb": 480067,
-                                    "filevault2_percent": 0,
-                                    "filevault2_status": "Not Encrypted",
-                                    "filevault_percent": 0,
-                                    "filevault_status": "Not Encrypted",
-                                    "name": "VM",
-                                    "partition_capacity_mb": 499963,
-                                    "percentage_full": 1,
-                                    "size": 499963,
-                                    "type": "other"
-                                },
-                                {
-                                    "available_mb": 480067,
-                                    "filevault2_percent": 0,
-                                    "filevault2_status": "Not Encrypted",
-                                    "filevault_percent": 0,
-                                    "filevault_status": "Not Encrypted",
-                                    "name": "Preboot",
-                                    "partition_capacity_mb": 499963,
-                                    "percentage_full": 1,
-                                    "size": 499963,
-                                    "type": "other"
-                                },
-                                {
-                                    "available_mb": 480067,
-                                    "filevault2_percent": 0,
-                                    "filevault2_status": "Not Encrypted",
-                                    "filevault_percent": 0,
-                                    "filevault_status": "Not Encrypted",
-                                    "name": "Update",
-                                    "partition_capacity_mb": 499963,
-                                    "percentage_full": 1,
-                                    "size": 499963,
-                                    "type": "other"
-                                },
-                                {
-                                    "available_mb": 480067,
-                                    "filevault2_percent": 0,
-                                    "filevault2_status": "Not Encrypted",
-                                    "filevault_percent": 0,
-                                    "filevault_status": "Not Encrypted",
-                                    "name": "Data",
-                                    "partition_capacity_mb": 499963,
-                                    "percentage_full": 1,
-                                    "size": 499963,
-                                    "type": "other"
-                                },
-                                {
-                                    "available_mb": 480067,
-                                    "filevault2_percent": 0,
-                                    "filevault2_status": "Not Encrypted",
-                                    "filevault_percent": 0,
-                                    "filevault_status": "Not Encrypted",
-                                    "name": "HD - Data",
-                                    "partition_capacity_mb": 499963,
-                                    "percentage_full": 1,
-                                    "size": 499963,
-                                    "type": "other"
-                                }
-                            ],
-                            "revision": "1161.80.",
-                            "serial_number": "C02834600HKJN1N15",
-                            "size": 500277,
-                            "smart_status": "Verified"
-                        }
-                    ],
+                    "provisioningUdid": null,
+                    "serialNumber": "C02X94LZJHD3",
+                    "sip_status": "ENABLED",
+                    "smcVersion": null,
+                    "smc_version": null,
+                    "storage": {
+                        "bootDriveAvailableSpaceMegabytes": 480067,
+                        "disks": [
+                            {
+                                "device": "disk0",
+                                "id": "395",
+                                "model": "APPLE SSD AP0512M",
+                                "partitions": [
+                                    {
+                                        "availableMegabytes": 480067,
+                                        "fileVault2ProgressPercent": 0,
+                                        "fileVault2State": "UNENCRYPTED",
+                                        "lvmManaged": false,
+                                        "name": "VM",
+                                        "partitionType": "OTHER",
+                                        "percentUsed": 1,
+                                        "sizeMegabytes": 499963
+                                    }
+                                ],
+                                "revision": "1161.80.",
+                                "serialNumber": "C02834600HKJN1N15",
+                                "sizeMegabytes": 500277,
+                                "smartStatus": "Verified",
+                                "type": "NO"
+                            }
+                        ]
+                    },
+                    "supportsIosAppInstalls": false,
                     "supports_ios_app_installs": false,
+                    "totalRamMegabytes": 16384,
                     "total_ram": 16384,
                     "total_ram_mb": 16384,
                     "xprotect_version": "2144"
                 },
-                "id": 138
+                "ibeacons": null,
+                "id": "138",
+                "licensedSoftware": null,
+                "localUserAccounts": null,
+                "operatingSystem": {
+                    "activeDirectoryStatus": "Not Bound",
+                    "build": "20D91",
+                    "extensionAttributes": [],
+                    "fileVault2Status": "NOT_ENCRYPTED",
+                    "name": "macOS",
+                    "rapidSecurityResponse": null,
+                    "softwareUpdateDeviceId": null,
+                    "supplementalBuildVersion": null,
+                    "version": "11.2.3"
+                },
+                "packageReceipts": null,
+                "printers": null,
+                "purchasing": null,
+                "security": {
+                    "activationLockEnabled": false,
+                    "attestationStatus": "PENDING",
+                    "autoLoginDisabled": true,
+                    "bootstrapTokenAllowed": true,
+                    "bootstrapTokenEscrowedStatus": "ESCROWED",
+                    "externalBootLevel": "DISALLOW_BOOTING_FROM_EXTERNAL_MEDIA",
+                    "firewallEnabled": false,
+                    "gatekeeperStatus": "APP_STORE_AND_IDENTIFIED_DEVELOPERS",
+                    "lastAttestationAttempt": null,
+                    "lastSuccessfulAttestation": null,
+                    "recoveryLockEnabled": false,
+                    "remoteDesktopEnabled": false,
+                    "secureBootLevel": "FULL_SECURITY",
+                    "sipStatus": "ENABLED",
+                    "xprotectVersion": "2144"
+                },
+                "services": null,
+                "softwareUpdates": null,
+                "storage": {
+                    "bootDriveAvailableSpaceMegabytes": 480067,
+                    "disks": [
+                        {
+                            "device": "disk0",
+                            "id": "395",
+                            "model": "APPLE SSD AP0512M",
+                            "partitions": [
+                                {
+                                    "availableMegabytes": 480067,
+                                    "fileVault2ProgressPercent": 0,
+                                    "fileVault2State": "UNENCRYPTED",
+                                    "lvmManaged": false,
+                                    "name": "VM",
+                                    "partitionType": "OTHER",
+                                    "percentUsed": 1,
+                                    "sizeMegabytes": 499963
+                                }
+                            ],
+                            "revision": "1161.80.",
+                            "serialNumber": "C02834600HKJN1N15",
+                            "sizeMegabytes": 500277,
+                            "smartStatus": "Verified",
+                            "type": "NO"
+                        }
+                    ]
+                },
+                "udid": "67EAC1E5-43E7-57BE-BAD7-06922C177BDC",
+                "userAndLocation": null
             }
         }
     }
@@ -1136,9 +1688,9 @@ Jamf Pro Server Objects → Computers → Read
 
 >### Jamf computer Hardware subset result
 >
->|storage|
->|---|
->| {'disk0': 500277} |
+>|Core Count|Hardware Make|Hardware Model|Model Identifier|Processor Architecture|Processor Count|Processor Speed Mhz|Processor Type|Serial Number|Storage|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 4 | Apple | MacBook Pro (13-inch, 2018) | MacBookPro15,2 | x86_64 | 1 | 2700 | Quad-Core Intel Core i7 | C02X94LZJHD3 | bootDriveAvailableSpaceMegabytes: 480067<br/>disks: {'id': '395', 'device': 'disk0', 'model': 'APPLE SSD AP0512M', 'revision': '1161.80.', 'serialNumber': 'C02834600HKJN1N15', 'sizeMegabytes': 500277, 'smartStatus': 'Verified', 'type': 'NO', 'partitions': [{'name': 'VM', 'sizeMegabytes': 499963, 'availableMegabytes': 480067, 'partitionType': 'OTHER', 'percentUsed': 1, 'fileVault2State': 'UNENCRYPTED', 'fileVault2ProgressPercent': 0, 'lvmManaged': False}, {'name': 'Data', 'sizeMegabytes': 499963, 'availableMegabytes': 480067, 'partitionType': 'OTHER', 'percentUsed': 1, 'fileVault2State': 'UNENCRYPTED', 'fileVault2ProgressPercent': 0, 'lvmManaged': False}, {'name': 'Preboot', 'sizeMegabytes': 499963, 'availableMegabytes': 480067, 'partitionType': 'OTHER', 'percentUsed': 1, 'fileVault2State': 'UNENCRYPTED', 'fileVault2ProgressPercent': 0, 'lvmManaged': False}, {'name': 'HD - Data', 'sizeMegabytes': 499963, 'availableMegabytes': 480067, 'partitionType': 'OTHER', 'percentUsed': 1, 'fileVault2State': 'UNENCRYPTED', 'fileVault2ProgressPercent': 0, 'lvmManaged': False}, {'name': 'HD (Boot Partition)', 'sizeMegabytes': 499963, 'availableMegabytes': 480067, 'partitionType': 'BOOT', 'percentUsed': 4, 'fileVault2State': 'UNENCRYPTED', 'fileVault2ProgressPercent': 0, 'lvmManaged': False}, {'name': 'Update', 'sizeMegabytes': 499963, 'availableMegabytes': 480067, 'partitionType': 'OTHER', 'percentUsed': 1, 'fileVault2State': 'UNENCRYPTED', 'fileVault2ProgressPercent': 0, 'lvmManaged': False}]} |
 
 ### jamf-get-computer-certificates-subset
 
@@ -1164,12 +1716,11 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerSubset.certificates.common_name | String | The certificat common name. |
-| JAMF.ComputerSubset.certificates.identity | Boolean | The certificat identity. |
-| JAMF.ComputerSubset.certificates.expires_utc | Date | The certificat expiration date in UTC format. |
-| JAMF.ComputerSubset.certificates.expires_epoch | Number | The certificat expiration date in epoch format. |
-| JAMF.ComputerSubset.certificates.name | String | The certificat name. |
-| JAMF.ComputerSubset.id | Number | The computer ID. |
+| JAMF.ComputerSubset.Computer.certificates.common_name | String | The certificat common name. |
+| JAMF.ComputerSubset.Computer.certificates.identity | Boolean | The certificat identity. |
+| JAMF.ComputerSubset.Computer.certificates.expires_utc | Date | The certificat expiration date in UTC format. |
+| JAMF.ComputerSubset.Computer.certificates.expires_epoch | Number | The certificat expiration date in epoch format. |
+| JAMF.ComputerSubset.Computer.id | Number | The computer ID. |
 
 #### Command Example
 
@@ -1182,37 +1733,46 @@ Jamf Pro Server Objects → Computers → Read
     "JAMF": {
         "ComputerSubset": {
             "computer": {
+                "applications": null,
+                "attachments": null,
                 "certificates": [
                     {
+                        "certificateStatus": "ISSUED",
+                        "commonName": "com.apple.systemdefault",
                         "common_name": "com.apple.systemdefault",
+                        "expirationDate": "2041-04-16T12:33:10Z",
                         "expires_epoch": 2249728390000,
-                        "expires_utc": "2041-04-16T12:33:10.000+0000",
+                        "expires_utc": "2041-04-16T12:33:10Z",
                         "identity": true,
-                        "name": ""
-                    },
-                    {
-                        "common_name": "Palo Alto Networks JSS Built-in Certificate Authority",
-                        "expires_epoch": 1930290855000,
-                        "expires_utc": "2031-03-03T07:54:15.000+0000",
-                        "identity": false,
-                        "name": ""
-                    },
-                    {
-                        "common_name": "com.apple.kerberos.kdc",
-                        "expires_epoch": 2249728390000,
-                        "expires_utc": "2041-04-16T12:33:10.000+0000",
-                        "identity": true,
-                        "name": ""
-                    },
-                    {
-                        "common_name": "221D61D2-B794-4128-8FFF-8C4A618A9056",
-                        "expires_epoch": 1682082455000,
-                        "expires_utc": "2023-04-21T13:07:35.000+0000",
-                        "identity": true,
-                        "name": ""
+                        "issuedDate": "2021-04-21T12:33:10Z",
+                        "lifecycleStatus": "ACTIVE",
+                        "serialNumber": "1501331370",
+                        "sha1Fingerprint": "c1683116fb9606928c3da1ad12efc925896bac07",
+                        "subjectName": "CN=com.apple.systemdefault,O=System Identity",
+                        "username": null
                     }
                 ],
-                "id": 138
+                "configurationProfiles": null,
+                "contentCaching": null,
+                "diskEncryption": null,
+                "extensionAttributes": null,
+                "general": null,
+                "groupMemberships": null,
+                "hardware": null,
+                "ibeacons": null,
+                "id": "138",
+                "licensedSoftware": null,
+                "localUserAccounts": null,
+                "operatingSystem": null,
+                "packageReceipts": null,
+                "printers": null,
+                "purchasing": null,
+                "security": null,
+                "services": null,
+                "softwareUpdates": null,
+                "storage": null,
+                "udid": "67EAC1E5-43E7-57BE-BAD7-06922C177BDC",
+                "userAndLocation": null
             }
         }
     }
@@ -1223,12 +1783,9 @@ Jamf Pro Server Objects → Computers → Read
 
 >### Jamf computer Certificates subset result
 >
->|Common Name|Expires Epoch|Expires UTC|Identity|
->|---|---|---|---|
->| com.apple.systemdefault | 2249728390000 | 2041-04-16T12:33:10.000+0000 | true |
->| Palo Alto Networks JSS Built-in Certificate Authority | 1930290855000 | 2031-03-03T07:54:15.000+0000 | false |
->| com.apple.kerberos.kdc | 2249728390000 | 2041-04-16T12:33:10.000+0000 | true |
->| 221D61D2-B794-4128-8FFF-8C4A618A9056 | 1682082455000 | 2023-04-21T13:07:35.000+0000 | true |
+>|Certificates|ID|UDID|
+>|---|---|---|
+>| {'commonName': 'com.apple.systemdefault', 'identity': True, 'expirationDate': '2041-04-16T12:33:10Z', 'username': None, 'lifecycleStatus': 'ACTIVE', 'certificateStatus': 'ISSUED', 'subjectName': 'CN=com.apple.systemdefault,O=System Identity', 'serialNumber': '1501331370', 'sha1Fingerprint': 'c1683116fb9606928c3da1ad12efc925896bac07', 'issuedDate': '2021-04-21T12:33:10Z'} | 138 | 67EAC1E5-43E7-57BE-BAD7-06922C177BDC |
 
 ### jamf-get-computer-security-subset
 
@@ -1254,10 +1811,10 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerSubset.security.activation_lock | Boolean | The computer activation lock. |
-| JAMF.ComputerSubset.security.secure_boot_level | String | The computer secure boot level. |
-| JAMF.ComputerSubset.security.external_boot_level | String | The computer external boot level. |
-| JAMF.ComputerSubset.id | Number | The computer ID. |
+| JAMF.ComputerSubset.Computer.security.activation_lock | Boolean | The computer activation lock. |
+| JAMF.ComputerSubset.Computer.security.secure_boot_level | String | The computer secure boot level. |
+| JAMF.ComputerSubset.Computer.security.external_boot_level | String | The computer external boot level. |
+| JAMF.ComputerSubset.Computer.id | Number | The computer ID. |
 
 #### Command Example
 
@@ -1270,12 +1827,49 @@ Jamf Pro Server Objects → Computers → Read
     "JAMF": {
         "ComputerSubset": {
             "computer": {
-                "id": 1,
+                "applications": null,
+                "attachments": null,
+                "certificates": null,
+                "configurationProfiles": null,
+                "contentCaching": null,
+                "diskEncryption": null,
+                "extensionAttributes": null,
+                "general": null,
+                "groupMemberships": null,
+                "hardware": null,
+                "ibeacons": null,
+                "id": "1",
+                "licensedSoftware": null,
+                "localUserAccounts": null,
+                "operatingSystem": null,
+                "packageReceipts": null,
+                "printers": null,
+                "purchasing": null,
                 "security": {
-                    "activation_lock": false,
-                    "external_boot_level": "unknown",
-                    "secure_boot_level": "unknown"
-                }
+                    "activationLockEnabled": null,
+                    "activation_lock": null,
+                    "attestationStatus": "PENDING",
+                    "autoLoginDisabled": true,
+                    "bootstrapTokenAllowed": null,
+                    "bootstrapTokenEscrowedStatus": "NOT_SUPPORTED",
+                    "externalBootLevel": null,
+                    "external_boot_level": null,
+                    "firewallEnabled": false,
+                    "gatekeeperStatus": "NOT_COLLECTED",
+                    "lastAttestationAttempt": null,
+                    "lastSuccessfulAttestation": null,
+                    "recoveryLockEnabled": false,
+                    "remoteDesktopEnabled": null,
+                    "secureBootLevel": null,
+                    "secure_boot_level": null,
+                    "sipStatus": "NOT_COLLECTED",
+                    "xprotectVersion": null
+                },
+                "services": null,
+                "softwareUpdates": null,
+                "storage": null,
+                "udid": "CA40F812-60A3-11E4-90B8-12DF261F2C7E",
+                "userAndLocation": null
             }
         }
     }
@@ -1286,9 +1880,9 @@ Jamf Pro Server Objects → Computers → Read
 
 >### Jamf computer Security subset result
 >
->|Common Name|Expires UTC|Identity|
->|---|---|---|
->| false | unknown | unknown |
+>|Auto Login Disabled|Bootstrap Token Escrowed Status|Firewall Enabled|ID|Recovery Lock Enabled|UDID|
+>|---|---|---|---|---|---|
+>| true | NOT_SUPPORTED | false | 1 | false | CA40F812-60A3-11E4-90B8-12DF261F2C7E |
 
 ### jamf-get-computer-software-subset
 
@@ -1314,27 +1908,16 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerSubset.software.unix_executables | String | The computer software's Unix executables. |
-| JAMF.ComputerSubset.software.licensed_software.name | String | The computer software's licensed software name. |
-| JAMF.ComputerSubset.software.installed_by_casper.package | String | The computer software that was installed by Jamf PRO. |
-| JAMF.ComputerSubset.software.installed_by_installer_swu.package | String | The computer software that was installed either by an installer, an app or a software update. |
-| JAMF.ComputerSubset.software.cached_by_casper.package | String | The computer software that was cached by Jamf PRO. |
-| JAMF.ComputerSubset.software.available_software_updates.name | String | The name of the available software updates. |
-| JAMF.ComputerSubset.software.available_updates.name | String | The name of the available updates. |
-| JAMF.ComputerSubset.software.available_updates.package_name | String | The name of the available update package. |
-| JAMF.ComputerSubset.software.available_updates.version | String | The version of the available update. |
-| JAMF.ComputerSubset.software.running_services.name | String | The computer running service name. |
-| JAMF.ComputerSubset.software.applications.name | String | The computer application name. |
-| JAMF.ComputerSubset.software.applications.path | String | The computer application path. |
-| JAMF.ComputerSubset.software.applications.version | String | The computer application version. |
-| JAMF.ComputerSubset.software.applications.bundle_id | String | The computer application bundle ID. |
-| JAMF.ComputerSubset.software.fonts.name | String | The computer font name. |
-| JAMF.ComputerSubset.software.fonts.path | String | The computer font path. |
-| JAMF.ComputerSubset.software.fonts.version | String | The computer font version. |
-| JAMF.ComputerSubset.software.plugins.name | String | The computer plugin name. |
-| JAMF.ComputerSubset.software.plugins.path | String | The computer plugin path. |
-| JAMF.ComputerSubset.software.plugins.version | String | The computer plugin version. |
-| JAMF.ComputerSubset.id | Number | The computer ID. |
+| JAMF.ComputerSubset.Computer.software.licensed_software.name | String | The computer software's licensed software name. |
+| JAMF.ComputerSubset.Computer.software.installed_by_installer_swu | String | The computer software that was installed either by an installer, an app or a software update. |
+| JAMF.ComputerSubset.Computer.software.available_updates.name | String | The name of the available updates. |
+| JAMF.ComputerSubset.Computer.software.available_updates.version | String | The version of the available update. |
+| JAMF.ComputerSubset.Computer.software.running_services.name | String | The computer running service name. |
+| JAMF.ComputerSubset.Computer.software.applications.name | String | The computer application name. |
+| JAMF.ComputerSubset.Computer.software.applications.path | String | The computer application path. |
+| JAMF.ComputerSubset.Computer.software.applications.version | String | The computer application version. |
+| JAMF.ComputerSubset.Computer.software.applications.bundleId | String | The computer application bundle ID. |
+| JAMF.ComputerSubset.Computer.id | Number | The computer ID. |
 
 #### Command Example
 
@@ -1347,225 +1930,67 @@ Jamf Pro Server Objects → Computers → Read
     "JAMF": {
         "ComputerSubset": {
             "computer": {
-                "id": 1,
+                "applications": [
+                    {
+                        "bundleId": null,
+                        "cfBundleShortVersionString": null,
+                        "cfBundleVersion": null,
+                        "externalVersionId": "0",
+                        "macAppStore": false,
+                        "name": "Script Editor.app",
+                        "path": "/Applications/Utilities/Script Editor.app",
+                        "sizeMegabytes": 0,
+                        "updateAvailable": false,
+                        "version": "2.7"
+                    }
+                ],
+                "attachments": null,
+                "certificates": null,
+                "configurationProfiles": null,
+                "contentCaching": null,
+                "diskEncryption": null,
+                "extensionAttributes": null,
+                "general": null,
+                "groupMemberships": null,
+                "hardware": null,
+                "ibeacons": null,
+                "id": "1",
+                "licensedSoftware": [],
+                "localUserAccounts": null,
+                "operatingSystem": null,
+                "packageReceipts": {
+                    "cached": [],
+                    "installedByInstallerSwu": [],
+                    "installedByJamfPro": []
+                },
+                "printers": null,
+                "purchasing": null,
+                "security": null,
+                "services": [],
                 "software": {
                     "applications": [
                         {
-                            "bundle_id": "",
-                            "name": "Activity Monitor.app",
-                            "path": "/Applications/Utilities/Activity Monitor.app",
-                            "version": "10.10.0"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "AirPort Utility.app",
-                            "path": "/Applications/Utilities/AirPort Utility.app",
-                            "version": "6.3.4"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "App Store.app",
-                            "path": "/Applications/App Store.app",
-                            "version": "2.0"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Audio MIDI Setup.app",
-                            "path": "/Applications/Utilities/Audio MIDI Setup.app",
-                            "version": "3.0.6"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Automator.app",
-                            "path": "/Applications/Automator.app",
-                            "version": "2.5"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Bluetooth File Exchange.app",
-                            "path": "/Applications/Utilities/Bluetooth File Exchange.app",
-                            "version": "4.3.0"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Boot Camp Assistant.app",
-                            "path": "/Applications/Utilities/Boot Camp Assistant.app",
-                            "version": "5.1.2"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Calculator.app",
-                            "path": "/Applications/Calculator.app",
-                            "version": "10.8"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Calendar.app",
-                            "path": "/Applications/Calendar.app",
-                            "version": "8.0"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Chess.app",
-                            "path": "/Applications/Chess.app",
-                            "version": "3.10"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "ColorSync Utility.app",
-                            "path": "/Applications/Utilities/ColorSync Utility.app",
-                            "version": "4.10.0"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Console.app",
-                            "path": "/Applications/Utilities/Console.app",
-                            "version": "10.10"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Contacts.app",
-                            "path": "/Applications/Contacts.app",
-                            "version": "9.0"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Dashboard.app",
-                            "path": "/Applications/Dashboard.app",
-                            "version": "1.8"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Dictionary.app",
-                            "path": "/Applications/Dictionary.app",
-                            "version": "2.2.1"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Digital Color Meter.app",
-                            "path": "/Applications/Utilities/Digital Color Meter.app",
-                            "version": "5.10"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Disk Utility.app",
-                            "path": "/Applications/Utilities/Disk Utility.app",
-                            "version": "13"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "DVD Player.app",
-                            "path": "/Applications/DVD Player.app",
-                            "version": "5.7"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "FaceTime.app",
-                            "path": "/Applications/FaceTime.app",
-                            "version": "3.0"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Font Book.app",
-                            "path": "/Applications/Font Book.app",
-                            "version": "5.0"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Game Center.app",
-                            "path": "/Applications/Game Center.app",
-                            "version": "2.0"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Grab.app",
-                            "path": "/Applications/Utilities/Grab.app",
-                            "version": "1.8"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Grapher.app",
-                            "path": "/Applications/Utilities/Grapher.app",
-                            "version": "2.5"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "iBooks.app",
-                            "path": "/Applications/iBooks.app",
-                            "version": "1.1"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Image Capture.app",
-                            "path": "/Applications/Image Capture.app",
-                            "version": "6.6"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "iTunes.app",
-                            "path": "/Applications/iTunes.app",
-                            "version": "12.0"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Keychain Access.app",
-                            "path": "/Applications/Utilities/Keychain Access.app",
-                            "version": "9.0"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Launchpad.app",
-                            "path": "/Applications/Launchpad.app",
-                            "version": "1.0"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Mail.app",
-                            "path": "/Applications/Mail.app",
-                            "version": "8.0"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Maps.app",
-                            "path": "/Applications/Maps.app",
-                            "version": "2.0"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Messages.app",
-                            "path": "/Applications/Messages.app",
-                            "version": "8.0"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Migration Assistant.app",
-                            "path": "/Applications/Utilities/Migration Assistant.app",
-                            "version": "5"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Mission Control.app",
-                            "path": "/Applications/Mission Control.app",
-                            "version": "1.2"
-                        },
-                        {
-                            "bundle_id": "",
-                            "name": "Notes.app",
-                            "path": "/Applications/Notes.app",
-                            "version": "3.0"
+                            "bundleId": null,
+                            "cfBundleShortVersionString": null,
+                            "cfBundleVersion": null,
+                            "externalVersionId": "0",
+                            "macAppStore": false,
+                            "name": "Script Editor.app",
+                            "path": "/Applications/Utilities/Script Editor.app",
+                            "sizeMegabytes": 0,
+                            "updateAvailable": false,
+                            "version": "2.7"
                         }
                     ],
-                    "available_software_updates": [],
-                    "available_updates": {},
-                    "cached_by_casper": [],
-                    "fonts": [],
-                    "installed_by_casper": [],
+                    "available_updates": [],
                     "installed_by_installer_swu": [],
                     "licensed_software": [],
-                    "plugins": [],
-                    "running_services": [],
-                    "unix_executables": []
-                }
+                    "running_services": []
+                },
+                "softwareUpdates": [],
+                "storage": null,
+                "udid": "CA40F812-60A3-11E4-90B8-12DF261F2C7E",
+                "userAndLocation": null
             }
         }
     }
@@ -1576,7 +2001,7 @@ Jamf Pro Server Objects → Computers → Read
 
 >### Jamf computer Software subset result
 >
->|Number of installed applications|Number of running services |
+>|Applications|Services|
 >|---|---|
 >| 48 | 0 |
 
@@ -1604,12 +2029,11 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerSubset.extension_attributes.id | Number | The computer extension attributes ID. |
-| JAMF.ComputerSubset.extension_attributes.name | String | The computer extension attributes name. |
-| JAMF.ComputerSubset.extension_attributes.type | String | The computer extension attributes type. |
-| JAMF.ComputerSubset.extension_attributes.multi_value | Boolean | The computer extension attributes multi value. |
-| JAMF.ComputerSubset.extension_attributes.value | String | The computer extension attributes value. |
-| JAMF.ComputerSubset.id | Number | The computer ID. |
+| JAMF.ComputerSubset.Computer.extension_attributes.id | Number | The computer extension attributes ID. |
+| JAMF.ComputerSubset.Computer.extension_attributes.name | String | The computer extension attributes name. |
+| JAMF.ComputerSubset.Computer.extension_attributes.multi_value | Boolean | The computer extension attributes multi value. |
+| JAMF.ComputerSubset.Computer.extension_attributes.value | String | The computer extension attributes value. |
+| JAMF.ComputerSubset.Computer.id | Number | The computer ID. |
 
 #### Command Example
 
@@ -1622,58 +2046,58 @@ Jamf Pro Server Objects → Computers → Read
     "JAMF": {
         "ComputerSubset": {
             "computer": {
-                "extension_attributes": [
+                "applications": null,
+                "attachments": null,
+                "certificates": null,
+                "configurationProfiles": null,
+                "contentCaching": null,
+                "diskEncryption": null,
+                "extensionAttributes": [
                     {
-                        "id": 5,
-                        "multi_value": false,
-                        "name": "Battery Cycle Count",
-                        "type": "String",
-                        "value": ""
-                    },
-                    {
-                        "id": 4,
-                        "multi_value": false,
-                        "name": "JNUC-2019-LabUser",
-                        "type": "String",
-                        "value": ""
-                    },
-                    {
-                        "id": 1,
-                        "multi_value": false,
-                        "name": "Local Password",
-                        "type": "String",
-                        "value": ""
-                    },
-                    {
-                        "id": 2,
-                        "multi_value": false,
-                        "name": "Test",
-                        "type": "String",
-                        "value": ""
-                    },
-                    {
-                        "id": 6,
-                        "multi_value": false,
+                        "dataType": "STRING",
+                        "definitionId": "6",
+                        "description": "This is a test by tomer",
+                        "enabled": true,
+                        "inputType": "TEXT",
+                        "multiValue": false,
                         "name": "Tomer test",
-                        "type": "String",
-                        "value": ""
-                    },
-                    {
-                        "id": 7,
-                        "multi_value": false,
-                        "name": "tomer test 2",
-                        "type": "Number",
-                        "value": ""
-                    },
-                    {
-                        "id": 3,
-                        "multi_value": false,
-                        "name": "Usage Policy Violation",
-                        "type": "String",
-                        "value": ""
+                        "options": [],
+                        "values": []
                     }
                 ],
-                "id": 1
+                "extension_attributes": [
+                    {
+                        "dataType": "STRING",
+                        "definitionId": "6",
+                        "description": "This is a test by tomer",
+                        "enabled": true,
+                        "id": "6",
+                        "inputType": "TEXT",
+                        "multiValue": false,
+                        "multi_value": false,
+                        "name": "Tomer test",
+                        "options": [],
+                        "value": [],
+                        "values": []
+                    }
+                ],
+                "general": null,
+                "groupMemberships": null,
+                "hardware": null,
+                "ibeacons": null,
+                "id": "1",
+                "licensedSoftware": null,
+                "localUserAccounts": null,
+                "operatingSystem": null,
+                "packageReceipts": null,
+                "printers": null,
+                "purchasing": null,
+                "security": null,
+                "services": null,
+                "softwareUpdates": null,
+                "storage": null,
+                "udid": "CA40F812-60A3-11E4-90B8-12DF261F2C7E",
+                "userAndLocation": null
             }
         }
     }
@@ -1684,15 +2108,9 @@ Jamf Pro Server Objects → Computers → Read
 
 >### Jamf computer ExtensionAttributes subset result
 >
->|ID|Name|Type|Value|
->|---|---|---|---|
->| 5 | Battery Cycle Count | String | false |
->| 4 | JNUC-2019-LabUser | String | false |
->| 1 | Local Password | String | false |
->| 2 | Test | String | false |
->| 6 | Tomer test | String | false |
->| 7 | tomer test 2 | Number | false |
->| 3 | Usage Policy Violation | String | false |
+>|Extension Attributes|ID|UDID|
+>|---|---|---|
+>| {'definitionId': '6', 'name': 'Tomer test', 'description': 'This is a test by tomer', 'values': [], 'dataType': 'STRING', 'options': [], 'inputType': 'TEXT', 'enabled': True, 'multiValue': False} | 1 | CA40F812-60A3-11E4-90B8-12DF261F2C7E |
 
 ### jamf-get-computer-groups-accounts-subset
 
@@ -1718,23 +2136,11 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerSubset.groups_accounts.computer_group_memberships | String | The computer group memberships. |
-| JAMF.ComputerSubset.groups_accounts.local_accounts.name | String | The computer local account name. |
-| JAMF.ComputerSubset.groups_accounts.local_accounts.realname | String | The computer local account real name. |
-| JAMF.ComputerSubset.groups_accounts.local_accounts.uid | String | The computer local account UID. |
-| JAMF.ComputerSubset.groups_accounts.local_accounts.home | String | The computer local account home. |
-| JAMF.ComputerSubset.groups_accounts.local_accounts.home_size | String | The computer local account name size. |
-| JAMF.ComputerSubset.groups_accounts.local_accounts.home_size_mb | Number | The computer local account size in MB. |
-| JAMF.ComputerSubset.groups_accounts.local_accounts.administrator | Boolean | Whether the computer is the local account administrator. |
-| JAMF.ComputerSubset.groups_accounts.local_accounts.filevault_enabled | Boolean | Whether the computer filevault is enabled. |
-| JAMF.ComputerSubset.groups_accounts.user_inventories.disable_automatic_login | Boolean | Whether automatic login is disabled. |
-| JAMF.ComputerSubset.groups_accounts.user_inventories.user.username | String | The computer user inventories user's username. |
-| JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_history_depth | String | Number of unique passcodes before reuse. |
-| JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_min_length | String | Smallest number of passcode characters allowed. |
-| JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_max_age | String | Number of days until the passcode must be changed. |
-| JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_min_complex_characters | String | Smallest number of non-alphanumeric characters allowed. |
-| JAMF.ComputerSubset.groups_accounts.user_inventories.user.password_require_alphanumeric | String | Passcode rule \(must contain at least one letter and one number\). |
-| JAMF.ComputerSubset.id | Number | The computer ID. |
+| JAMF.ComputerSubset.Computer.groups_accounts.computer_group_memberships | String | The computer group memberships. |
+| JAMF.ComputerSubset.Computer.groups_accounts.local_accounts.uid | String | The computer local account UID. |
+| JAMF.ComputerSubset.Computer.groups_accounts.local_accounts.homeDirectory | String | The computer local account home. |
+| JAMF.ComputerSubset.Computer.groups_accounts.local_accounts.admin | Boolean | Whether the computer is the local account administrator. |
+| JAMF.ComputerSubset.Computer.id | Number | The computer ID. |
 
 #### Command Example
 
@@ -1747,87 +2153,109 @@ Jamf Pro Server Objects → Computers → Read
     "JAMF": {
         "ComputerSubset": {
             "computer": {
+                "applications": null,
+                "attachments": null,
+                "certificates": null,
+                "configurationProfiles": null,
+                "contentCaching": null,
+                "diskEncryption": null,
+                "extensionAttributes": null,
+                "general": null,
+                "groupMemberships": [
+                    {
+                        "groupDescription": "",
+                        "groupId": "1",
+                        "groupName": "All Managed Clients",
+                        "smartGroup": true
+                    }
+                ],
                 "groups_accounts": {
                     "computer_group_memberships": [
-                        "All Managed Clients",
-                        "Security: POODLE, All Clients at Risk",
-                        "All Clients: OS X 10.10",
-                        "Compliance: No Inventory Report for 14 Days",
-                        "All Clients: Last Enrollment More Than 5 Days Ago",
-                        "All Clients: Invalid Apple Software Update Catalog URL",
-                        "All Clients: FDERecovery Agent is Present/Running and has Valid Individual Key",
-                        "FileVault 2: Invalid Individual Key, Mgmt Account is NOT FV2 User",
-                        "App: IntelliJ IDEA 13",
-                        "Printers: Does not have Riverfront Building",
-                        "FileVault 2: Invalid Individual Key, Mgmt Account is FV2 User",
-                        "All Clients: Mavericks, Not Running 10.9.5",
-                        "Printers: Does not have Minneapolis Office",
-                        "FileVault 2: Invalid Individual Key, Mgmt Account is FV2 User, Has JAMF Institutional Key",
-                        "Group Name",
-                        "App: Genymotion Installed",
-                        "Security: POODLE, Firefox Update Required (2014-10-15)",
-                        "App: Microsoft Outlook 2011",
-                        "Compliance: All Clients Not in Compliance",
-                        "All Clients: Mountain Lion, Not Running 10.8.5",
-                        "FileVault 2: Valid Individual Key, Needs Mgmt Account as FV2 User",
-                        "Security: POODLE, Safari Updates Required (2014-10-15)",
-                        "Security: POODLE, OS Updates Required",
-                        "App: VMware Fusion Installed",
-                        "Security: Shellshock, Patch Ineligible",
-                        "Staff: Online Services",
-                        "All Clients: No Assigned User (Not in Inventory)",
-                        "FileVault 2: Valid Individual Key, Mgmt Account is FV2 User, has JAMF Institutional Key",
-                        "Security: POODLE, Chrome Update Required (2014-10-15)",
-                        "Security: Shellshock, Patch Required",
-                        "FileVault 2: Has JAMF Institutional Key",
-                        "App: TextExpander Installed",
-                        "FileVault 2: Valid Individual Key, Needs JAMF Institutional Key",
-                        "Security: Shellshock, Patch Applied",
-                        "FileVault 2: Currently Encrypting",
-                        "FileVault 2: Invalid Individual Key, Mgmt Account is FV2 User, Needs JAMF Institutional Key",
-                        "App: Parallels Desktop Installed",
-                        "FileVault 2: Invalid Individual Key, Mgmt Account is NOT FV2 User, Needs JAMF Institutional Key",
-                        "App: RubyMine 6",
-                        "Test Test",
-                        "Compliance: FileVault 2 Not Enabled",
-                        "Test Smart Group",
-                        "Tomer2"
+                        {
+                            "groupDescription": "",
+                            "groupId": "1",
+                            "groupName": "All Managed Clients",
+                            "smartGroup": true
+                        }
                     ],
                     "local_accounts": [
                         {
-                            "administrator": true,
-                            "filevault_enabled": true,
-                            "home": "/Users/test",
-                            "home_size": "-1MB",
-                            "home_size_mb": -1,
-                            "name": "test",
-                            "realname": "test",
-                            "uid": "504"
-                        },
-                        {
-                            "administrator": true,
-                            "filevault_enabled": true,
-                            "home": "/Users/user",
-                            "home_size": "-1MB",
-                            "home_size_mb": -1,
-                            "name": "user",
-                            "realname": "user",
-                            "uid": "502"
-                        }
-                    ],
-                    "user_inventories": {
-                        "disable_automatic_login": true,
-                        "user": {
-                            "password_history_depth": "",
-                            "password_max_age": "",
-                            "password_min_complex_characters": "",
-                            "password_min_length": "4",
-                            "password_require_alphanumeric": "false",
+                            "admin": true,
+                            "azureActiveDirectoryId": null,
+                            "computerAzureActiveDirectoryId": null,
+                            "fileVault2Enabled": true,
+                            "fullName": "test",
+                            "homeDirectory": "/Users/test",
+                            "homeDirectorySizeMb": -1,
+                            "passwordHistoryDepth": null,
+                            "passwordMaxAge": null,
+                            "passwordMinComplexCharacters": null,
+                            "passwordMinLength": 4,
+                            "passwordRequireAlphanumeric": false,
+                            "uid": "504",
+                            "userAccountType": "UNKNOWN",
+                            "userAzureActiveDirectoryId": null,
+                            "userGuid": null,
                             "username": "test"
                         }
-                    }
+                    ],
+                    "user_inventories": [
+                        {
+                            "admin": true,
+                            "azureActiveDirectoryId": null,
+                            "computerAzureActiveDirectoryId": null,
+                            "fileVault2Enabled": true,
+                            "fullName": "test",
+                            "homeDirectory": "/Users/test",
+                            "homeDirectorySizeMb": -1,
+                            "passwordHistoryDepth": null,
+                            "passwordMaxAge": null,
+                            "passwordMinComplexCharacters": null,
+                            "passwordMinLength": 4,
+                            "passwordRequireAlphanumeric": false,
+                            "uid": "504",
+                            "userAccountType": "UNKNOWN",
+                            "userAzureActiveDirectoryId": null,
+                            "userGuid": null,
+                            "username": "test"
+                        }
+                    ]
                 },
-                "id": 138
+                "hardware": null,
+                "ibeacons": null,
+                "id": "138",
+                "licensedSoftware": null,
+                "localUserAccounts": [
+                    {
+                        "admin": true,
+                        "azureActiveDirectoryId": null,
+                        "computerAzureActiveDirectoryId": null,
+                        "fileVault2Enabled": true,
+                        "fullName": "test",
+                        "homeDirectory": "/Users/test",
+                        "homeDirectorySizeMb": -1,
+                        "passwordHistoryDepth": null,
+                        "passwordMaxAge": null,
+                        "passwordMinComplexCharacters": null,
+                        "passwordMinLength": 4,
+                        "passwordRequireAlphanumeric": false,
+                        "uid": "504",
+                        "userAccountType": "UNKNOWN",
+                        "userAzureActiveDirectoryId": null,
+                        "userGuid": null,
+                        "username": "test"
+                    }
+                ],
+                "operatingSystem": null,
+                "packageReceipts": null,
+                "printers": null,
+                "purchasing": null,
+                "security": null,
+                "services": null,
+                "softwareUpdates": null,
+                "storage": null,
+                "udid": "67EAC1E5-43E7-57BE-BAD7-06922C177BDC",
+                "userAndLocation": null
             }
         }
     }
@@ -1838,11 +2266,13 @@ Jamf Pro Server Objects → Computers → Read
 
 >### Jamf computer GroupsAccounts subset result
 >
->|Number of groups|Number of local accounts|
->|---|---|
->| 43 | 4 |
+>|Group Memberships|ID|UDID|
+>|---|---|---|
+>| {'groupId': '1', 'groupName': 'All Managed Clients', 'groupDescription': '', 'smartGroup': True} | 138 | 67EAC1E5-43E7-57BE-BAD7-06922C177BDC |
 
 ### jamf-get-computer-iphones-subset
+
+*This command is **deprecated** and has no replacement.*
 
 ***
 Returns the iPhones subset for a specific computer according to the given arguments.
@@ -1866,8 +2296,8 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerSubset.iphones | String | The commputer related iPhones. |
-| JAMF.ComputerSubset.id | Number | The computer ID. |
+| JAMF.ComputerSubset.Computer.iphones | String | The commputer related iPhones. |
+| JAMF.ComputerSubset.Computer.id | Number | The computer ID. |
 
 #### Command Example
 
@@ -1918,11 +2348,9 @@ Jamf Pro Server Objects → Computers → Read
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| JAMF.ComputerSubset.configuration_profiles.id | Number | The configuration profile ID. |
-| JAMF.ComputerSubset.configuration_profiles.name | String | The configuration profile name. |
-| JAMF.ComputerSubset.configuration_profiles.uuid | String | The configuration profile UUID. |
-| JAMF.ComputerSubset.configuration_profiles.is_removable | Boolean | If the configuration profile is removable. |
-| JAMF.ComputerSubset.id | Number | The computer ID. |
+| JAMF.ComputerSubset.Computer.configuration_profiles.id | Number | The configuration profile ID. |
+| JAMF.ComputerSubset.Computer.configuration_profiles.removable | Boolean | If the configuration profile is removable. |
+| JAMF.ComputerSubset.Computer.id | Number | The computer ID. |
 
 #### Command Example
 
@@ -1935,27 +2363,49 @@ Jamf Pro Server Objects → Computers → Read
     "JAMF": {
         "ComputerSubset": {
             "computer": {
-                "configuration_profiles": [
+                "applications": null,
+                "attachments": null,
+                "certificates": null,
+                "configurationProfiles": [
                     {
-                        "id": -1,
-                        "is_removable": false,
-                        "name": "",
-                        "uuid": ""
-                    },
-                    {
-                        "id": -1,
-                        "is_removable": false,
-                        "name": "",
-                        "uuid": ""
-                    },
-                    {
-                        "id": -2,
-                        "is_removable": false,
-                        "name": "",
-                        "uuid": ""
+                        "displayName": "Jamf Notifications",
+                        "id": null,
+                        "lastInstalled": "2021-04-21T14:19:43.735Z",
+                        "profileIdentifier": "com.jamf.notifications.settings",
+                        "removable": false,
+                        "username": null
                     }
                 ],
-                "id": 138
+                "configuration_profiles": [
+                    {
+                        "displayName": "Jamf Notifications",
+                        "id": null,
+                        "lastInstalled": "2021-04-21T14:19:43.735Z",
+                        "profileIdentifier": "com.jamf.notifications.settings",
+                        "removable": false,
+                        "username": null
+                    }
+                ],
+                "contentCaching": null,
+                "diskEncryption": null,
+                "extensionAttributes": null,
+                "general": null,
+                "groupMemberships": null,
+                "hardware": null,
+                "ibeacons": null,
+                "id": "138",
+                "licensedSoftware": null,
+                "localUserAccounts": null,
+                "operatingSystem": null,
+                "packageReceipts": null,
+                "printers": null,
+                "purchasing": null,
+                "security": null,
+                "services": null,
+                "softwareUpdates": null,
+                "storage": null,
+                "udid": "67EAC1E5-43E7-57BE-BAD7-06922C177BDC",
+                "userAndLocation": null
             }
         }
     }
@@ -1966,11 +2416,148 @@ Jamf Pro Server Objects → Computers → Read
 
 >### Jamf computer ConfigurationProfiles subset result
 >
->|Configuration profile ID|Is Removable|
+>|Configuration Profiles|ID|UDID|
+>|---|---|---|
+>| {'id': None, 'username': None, 'lastInstalled': '2021-04-21T14:19:43.735Z', 'removable': False, 'displayName': 'Jamf Notifications', 'profileIdentifier': 'com.jamf.notifications.settings'} | 138 | 67EAC1E5-43E7-57BE-BAD7-06922C177BDC |
+
+### jamf-get-computer-subset
+
+***
+Returns the requested section for a specific computer according to the given arguments.
+
+#### Base Command
+
+`jamf-get-computer-subset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identifier | The identifier used to determine which computer is requested. Possible values: "id", "name", "udid", "serialnumber", and "macaddress". Possible values are: id, name, udid, serialnumber, macaddress. | Required |
+| identifier_value | The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer's MAC address should be passed, etc. | Required |
+| section | The section of the computer to retrieve. Possible values are: GENERAL, HARDWARE, OPERATING_SYSTEM, USER_AND_LOCATION, PURCHASING, DISK_ENCRYPTION, SECURITY, SOFTWARE_UPDATES, APPLICATIONS, STORAGE, CONFIGURATION_PROFILES, PRINTERS, SERVICES, LOCAL_USER_ACCOUNTS, CERTIFICATES, ATTACHMENTS, PACKAGE_RECEIPTS, LICENSED_SOFTWARE, IBEACONS, EXTENSION_ATTRIBUTES, CONTENT_CACHING, GROUP_MEMBERSHIPS. Default is GENERAL. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| JAMF.Computer.id | Number | The computer's ID. |
+| JAMF.Computer.udid | String | The computer's UDID. |
+
+#### Command Example
+
+```!jamf-get-computer-subset identifier=id identifier_value="138" section=GENERAL```
+
+#### Context Example
+
+```json
+{
+    "JAMF": {
+        "Computer": {
+            "GENERAL": {
+                "applications": null,
+                "attachments": null,
+                "certificates": null,
+                "configurationProfiles": null,
+                "contentCaching": null,
+                "diskEncryption": null,
+                "extensionAttributes": null,
+                "general": {
+                    "assetTag": null,
+                    "barcode1": null,
+                    "barcode2": null,
+                    "declarativeDeviceManagementEnabled": false,
+                    "distributionPoint": null,
+                    "enrolledViaAutomatedDeviceEnrollment": false,
+                    "enrollmentMethod": {
+                        "id": "4",
+                        "objectName": null,
+                        "objectType": "User-initiated - no invitation"
+                    },
+                    "extensionAttributes": [
+                        {
+                            "dataType": "STRING",
+                            "definitionId": "1",
+                            "description": "Number of charge cycles logged on the current battery",
+                            "enabled": true,
+                            "inputType": "TEXT",
+                            "multiValue": false,
+                            "name": "Local Password",
+                            "options": [],
+                            "values": []
+                        }
+                    ],
+                    "initialEntryDate": "2021-04-21",
+                    "itunesStoreAccountActive": false,
+                    "jamfBinaryVersion": "10.28.0-t1615386406",
+                    "lastCloudBackupDate": null,
+                    "lastContactTime": "2021-04-21T14:19:13.137Z",
+                    "lastEnrolledDate": "2021-04-21T13:08:15.88Z",
+                    "lastIpAddress": "123.123.123.123",
+                    "lastLoggedInUsernameBinary": null,
+                    "lastLoggedInUsernameBinaryTimestamp": null,
+                    "lastLoggedInUsernameSelfService": null,
+                    "lastLoggedInUsernameSelfServiceTimestamp": null,
+                    "lastReportedIp": "123.123.123.123",
+                    "lastReportedIpV4": "123.123.123.123",
+                    "lastReportedIpV6": null,
+                    "managementId": "6bc9fc18-d06b-4b2a-8d34-bc3351aefa52",
+                    "mdmCapable": {
+                        "capable": true,
+                        "capableUsers": [
+                            "user"
+                        ],
+                        "userManagementInfo": [
+                            {
+                                "capableUser": "user",
+                                "managementId": "d4c74272-b0ce-4b6d-af8d-14aba63f5f5b"
+                            }
+                        ]
+                    },
+                    "mdmProfileExpiration": "2023-04-21T13:07:35Z",
+                    "name": "itadmin’s MacBook Pro",
+                    "platform": "Mac",
+                    "remoteManagement": {
+                        "managed": true,
+                        "managementUsername": null
+                    },
+                    "reportDate": "2021-04-21T14:19:41.431Z",
+                    "site": {
+                        "id": "-1",
+                        "name": "None"
+                    },
+                    "supervised": true,
+                    "userApprovedMdm": true
+                },
+                "groupMemberships": null,
+                "hardware": null,
+                "ibeacons": null,
+                "id": "138",
+                "licensedSoftware": null,
+                "localUserAccounts": null,
+                "operatingSystem": null,
+                "packageReceipts": null,
+                "printers": null,
+                "purchasing": null,
+                "security": null,
+                "services": null,
+                "softwareUpdates": null,
+                "storage": null,
+                "udid": "67EAC1E5-43E7-57BE-BAD7-06922C177BDC",
+                "userAndLocation": null
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Jamf computer GENERAL section result
+>
+>|ID|UDID|
 >|---|---|
->| -1 | false |
->| -1 | false |
->| -2 | false |
+>| 138 | 67EAC1E5-43E7-57BE-BAD7-06922C177BDC |
 
 ### jamf-computer-lock
 

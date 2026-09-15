@@ -1,0 +1,8 @@
+{
+    "DBotScore": {
+        "Indicator": "test.com",
+        "Type": "domain",
+        "Vendor": "Google SecOps",
+        "Score": 0
+    }
+}

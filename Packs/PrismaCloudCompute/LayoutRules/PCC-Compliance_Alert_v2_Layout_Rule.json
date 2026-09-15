@@ -1,4 +1,6 @@
 {
+  "id": "Prisma_Cloud_Compute_Compliance_Alert_v2_Layout_Rule",
+  "name": "Prisma Cloud Compute - Compliance Alert v2 Layout Rule",
   "rule_id": "Prisma_Cloud_Compute_Compliance_Alert_v2_Layout_Rule",
   "layout_id": "Prisma Cloud Compute Compliance Incident v2",
   "description": "Layout for Prisma Cloud Compute - Compliance Alert v2 incidents.",
@@ -7,9 +9,9 @@
     "filter": {
       "AND": [
         {
-            "SEARCH_FIELD": "alert_type",
-            "SEARCH_TYPE": "EQ",
-            "SEARCH_VALUE": "Prisma Cloud Compute Compliance v2"
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Prisma Cloud Compute Compliance v2"
         }
       ]
     }

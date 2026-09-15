@@ -1,5 +1,6 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+provider: GreyNoise
+sectionorder:
 - Connect
 commonfields:
   id: GreyNoise
@@ -1239,7 +1240,7 @@ script:
     - contextPath: GreyNoise.Timeline.ip_address
       description: Timeline IP address.
       type: string
-  dockerimage: demisto/greynoise:1.0.0.3876899
+  dockerimage: demisto/greynoise:1.0.0.10926121
   runonce: false
   script: '-'
   subtype: python3

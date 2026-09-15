@@ -4,6 +4,7 @@ commonfields:
 name: Netcraft
 display: Netcraft (Deprecated)
 category: Network Security
+provider: Netcraft
 description: 'Deprecated. Use Netcraft_V2 (Display name: Netcraft) instead.'
 configuration:
 - display: Credentials

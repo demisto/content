@@ -4,7 +4,7 @@
       "user": {
         "id": "PT23IWX",
         "type": "user_reference",
-        "summary": "Tim Wright",
+        "summary": "Tim Testwright",
         "self": "https://api.pagerduty.com/users/PT23IWX",
         "html_url": "https://subdomain.pagerduty.com/users/PT23IWX"
       },
@@ -30,7 +30,7 @@
       "user": {
         "id": "PT23IUI",
         "type": "user_reference",
-        "summary": "Tina Wright",
+        "summary": "Tina Testman",
         "self": "https://api.pagerduty.com/users/PT23IUI",
         "html_url": "https://subdomain.pagerduty.com/users/PT23IUI"
       },

@@ -1,0 +1,20 @@
+[
+  {
+    "earliest": "-1h",
+    "latest": "now",
+    "query": "cribl dataset=\"cribl_internal_logs\" source=*searches.log message=\"search finished\" | summarize count(), elapsedMS=sum(stats.elapsedMs), eventsFound=sum(stats.eventsFound) by user=coalesce(stats.userDisplayName, stats.user)",
+    "name": "cribl_search_finished_1h",
+    "description": "Searches finished in the last 1h",
+    "lib": "cribl",
+    "id": "cribl_search_finished_1h"
+  },
+  {
+    "earliest": "-1h",
+    "latest": "now",
+    "query": "cribl dataset=\"cribl_internal_logs\" source=*searches.log message=\"search started\" | summarize count() by user=coalesce(stats.userDisplayName, stats.user)",
+    "name": "cribl_search_started_1h",
+    "description": "Searches started in the last 1h",
+    "lib": "cribl",
+    "id": "cribl_search_started_1h"
+  }
+]

@@ -1,0 +1,69 @@
+{
+  "pages": [
+    {
+      "iocs": [
+        {
+          "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "score": 3,
+          "manuallyEditedFields": { "Score": true },
+          "modifiedTime": "2025-09-01T00:00:00Z",
+          "CustomFields": {
+            "md5": "11111111111111111111111111111111",
+            "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "detectionengines": 70,
+            "positivedetections": 37
+          },
+          "insightCache": {
+            "scores": {
+              "WildFire-v2": {
+                "score": 2,
+                "reliability": "High",
+                "context": {
+                  "File": [
+                    {
+                      "MD5": "11111111111111111111111111111111",
+                      "SHA256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                      "Score": 2,
+                      "Brand": "WildFire-v2",
+                      "Size": 1234
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        {
+          "value": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "score": 1,
+          "modifiedTime": "2025-08-20T00:00:00Z",
+          "CustomFields": {
+            "md5": "22222222222222222222222222222222",
+            "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "detectionengines": 10,
+            "positivedetections": 1
+          },
+          "insightCache": {
+            "scores": {
+              "WildFire-v2": {
+                "score": 1,
+                "reliability": "Low",
+                "context": {
+                  "File": [
+                    {
+                      "MD5": "22222222222222222222222222222222",
+                      "SHA256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                      "Score": 1,
+                      "Brand": "WildFire-v2",
+                      "Size": 5678
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

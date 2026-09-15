@@ -1,0 +1,6 @@
+fromversion: 8.4.0 # Will be updated with XSIAM version updates
+name: AppSentinels AppSentinels Modeling Rule
+id: appsentinels_appsentinels_ModelingRule
+rules: ''
+schema: ''
+tags: ''

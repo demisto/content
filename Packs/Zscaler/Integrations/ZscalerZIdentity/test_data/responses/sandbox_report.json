@@ -1,0 +1,17 @@
+{
+    "Summary": {
+        "Classification": {
+            "Type": "MALICIOUS",
+            "Category": "MALWARE_BOTNET",
+            "Score": 90,
+            "DetectedMalware": "Trojan.GenericKD.12345"
+        },
+        "File Properties": {
+            "File Type": "EXE",
+            "File Size": 204800,
+            "MD5": "abc123def456abc123def456abc123de",
+            "SHA1": "aabbccddeeff00112233445566778899aabbccdd",
+            "SHA256": "aabbccddeeff00112233445566778899aabbccddeeff00112233445566778899"
+        }
+    }
+}

@@ -15,7 +15,9 @@
         "CrowdStrike Falcon IDP Detection",
         "Stamus Networks DoC",
         "Exabeam Notable User",
-        "CrowdStrike Falcon NGSIEM Detection"
+        "CrowdStrike Falcon NGSIEM Detection",
+        "CrowdStrike Falcon NGSIEM Incident",
+        "CrowdStrike Falcon NGSIEM Case"
     ],
     "breachScript": "",
     "caseInsensitive": true,
@@ -56,5 +58,9 @@
     "useAsKpi": false,
     "validationRegex": "",
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

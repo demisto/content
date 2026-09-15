@@ -1,87 +1,193 @@
-//replace all occurences of textToReplace with replaceWith string
-String.prototype.replaceAll = function(textToReplace,replaceWith) {
-    return this.split(textToReplace).join(replaceWith);
+/**
+ * Creates an HTML email body by replacing placeholders with actual values
+ * Supports different Cortex marketplaces: XSOAR, XSIAM, and unified platform
+ */
+
+// Constants
+const MARKETPLACES = {
+    XSOAR: 'xsoar',
+    XSIAM: 'x2',
+    PLATFORM: 'unified_platform'
 };
 
-// get a specific label from incident labels
-var getLabel = function(incident,path) {
-    label = path.split('.')[2];
-    for (var i=0; i<incident.labels.length; i++) {
-        if (incident.labels[i].type == label) {
-            return incident.labels[i].value;
+const ENTITY_TYPES = {
+    INCIDENT: 'incident',
+    ALERT: 'alert',
+    ISSUE: 'issue',
+    OBJECT: 'object'
+};
+
+/**
+ * Safe string replacement utility
+ * @param {string} text - Original text
+ * @param {string} search - Text to search for
+ * @param {string} replacement - Replacement text
+ * @returns {string} Text with all occurrences replaced
+ */
+function replaceAll(text, search, replacement) {
+    if (!text || typeof text !== 'string') return text;
+    return text.split(search).join(replacement || '');
+}
+
+/**
+ * Get a specific label from incident/alert/issue labels
+ * @param {Object} entity - The incident, alert, or issue object
+ * @param {string} path - The label path (e.g., 'incident.labels.labelName')
+ * @returns {string|null} Label value or null if not found
+ */
+function getLabel(entity, path) {
+    try {
+        const pathParts = path.split('.');
+        const labelName = pathParts[2];
+
+        for (let i = 0; i < entity.labels.length; i++) {
+            if (entity.labels[i] && entity.labels[i].type === labelName) {
+                return entity.labels[i].value || null;
+            }
         }
+    } catch (error) {
+        logDebug("Error getting label: " + error.message);
     }
     return null;
-};
-
-var res = executeCommand("getList", {"listName": args.listTemplate});
-var platform = getDemistoVersion().platform // Could be 'xsoar' (for XSOAR) or 'x2' (for XSIAM).
-var XSIAM = 'x2'
-
-if (res[0].Type == entryTypes.error) {
-    return res;
 }
 
-// Finding all placeholders and creating a map with values
-var html = res[0].Contents;
-var reg = /\${(.+?)}/g;
-var map = {};
-
-while (found = reg.exec(html)) {
-    var path = found[1];
-
-    if (path.indexOf('incident.labels.') === 0 && platform !== XSIAM) {
-        logDebug("Field " + path + " is handled as label.")
-        map[path] = getLabel(incidents[0], path);
-
-    } else if (path.indexOf('incident.') === 0 && platform !== XSIAM) {
-        map[path] = dq({'incident': incidents[0]}, path);
-        // check if this path is actually in custom fields (not found directly under incident)
-        if (map[path] === null) {
-            logDebug("Field " + path + " is either custom or null. Handling as custom.")
-            var customFieldPath = path.replace('incident.', 'incident.CustomFields.');
-            map[path] = dq({'incident': incidents[0]}, customFieldPath);
-        }
-    } else if (path.indexOf('alert.labels.') === 0 && platform === XSIAM) {
-        logDebug("Field " + path + " is handled as label.")
-        map[path] = getLabel(incidents[0], path);
-
-    } else if (path.indexOf('alert.') === 0 && platform === XSIAM) {
-        map[path] = dq({'alert': incidents[0]}, path);
-        // check if this path is actually in custom fields (not found directly under incident)
-        if (map[path] === null) {
-            logDebug("Field " + path + " is either custom or null. Handling as custom.")
-            var customFieldPath = path.replace('alert.', 'alert.CustomFields.');
-            map[path] = dq({'alert': incidents[0]}, customFieldPath);
-        }
-    } else if (path.indexOf('object.') === 0) {
-        logDebug("Field " + path + " is part of object.")
-
-        var obj = (typeof args.object === 'string') ? JSON.parse(args.object) : args.object;
-        map[path] = dq({'object': obj}, path);
-    } else {
-        map[path] = dq(invContext, path);
-    }
-}
-logDebug("Field value fetched: " + map[path])
-
-// replacing all placeholders with values
-for (var path in map) {
-    // if value is found - replace. Otherwise will leave placeholder.
-    if (map[path] !== null) {
-        logDebug("Replacing value in " + path + " to " + map[path])
-        html = html.replaceAll('${' + path + '}', map[path]);
-    } else if (args.removeNotFound === 'yes') {
-        html = html.replaceAll('${' + path + '}', '');
+/**
+ * Get the appropriate entity type based on marketplace
+ * @param {string} marketplace - Current marketplace
+ * @returns {string} Entity type name
+ */
+function getEntityType(marketplace) {
+    switch (marketplace) {
+        case MARKETPLACES.XSIAM:
+            return ENTITY_TYPES.ALERT;
+        case MARKETPLACES.PLATFORM:
+            return ENTITY_TYPES.ISSUE;
+        default:
+            return ENTITY_TYPES.INCIDENT;
     }
 }
 
-// setting to contesxt so it override an oder entry if there is (using EntryContext in the returned object only append)
-setContext(args.key,html);
+/**
+ * Process field path and extract value
+ * @param {string} path - Field path
+ * @param {string} marketplace - Current marketplace
+ * @param {Object} entity - Current entity (incident/alert/issue)
+ * @param {Object} objectArg - Optional object argument
+ * @returns {*} Field value or null
+ */
+function processFieldPath(path, marketplace, entity, objectArg) {
+    try {
+        const entityType = getEntityType(marketplace);
+        
+        // Handle labels
+        if (path.indexOf(entityType + '.labels.') === 0) {
+            logDebug("Field " + path + " is handled as label.");
+            return getLabel(entity, path);
+        }
+        
+        // Handle entity fields
+        if (path.indexOf(entityType + '.') === 0) {
+            const entityWrapper = {};
+            entityWrapper[entityType] = entity;
+            let value = dq(entityWrapper, path);
+            
+            // Try custom fields if direct field lookup fails
+            if (value === null) {
+                logDebug("Field " + path + " not found directly. Trying custom fields.");
+                const customFieldPath = path.replace(entityType + '.', entityType + '.CustomFields.');
+                value = dq(entityWrapper, customFieldPath);
+            }
+            return value;
+        }
+        
+        // Handle object fields
+        if (path.indexOf('object.') === 0) {
+            logDebug("Field " + path + " is part of object.");
+            if (!objectArg) {
+                logDebug("No object provided for object field");
+                return null;
+            }
+            
+            const obj = (typeof objectArg === 'string') ? JSON.parse(objectArg) : objectArg;
+            return dq({'object': obj}, path);
+        }
+        
+        // Handle investigation context
+        return dq(invContext, path);
+        
+    } catch (error) {
+        logDebug("Error processing field path " + path + ": " + error.message);
+        return null;
+    }
+}
 
-return {
-    ContentsFormat: formats.json,
-    Type: entryTypes.note,
-    Contents: {htmlBody: html},
-    HumanReadable: 'htmlBody set to context key ' + args.key
-};
+// Main execution
+try {    
+    // Get template content
+    const res = executeCommand("getList", {"listName": args.listTemplate});
+    
+    if (!res || !res[0]) {
+        return {
+            Type: entryTypes.error,
+            Contents: "Failed to retrieve template list"
+        };
+    }
+    
+    if (res[0].Type === entryTypes.error) {
+        return res;
+    }
+    
+    // Get marketplace information
+    const cortexMarketplacesDetail = getDemistoVersion().platform;
+    logDebug("Marketplace: " + cortexMarketplacesDetail);
+    
+    // Find and process placeholders
+    let html = res[0].Contents || '';
+    const placeholderRegex = /\${(.+?)}/g;
+    let fieldMap = {};
+    let match;
+    
+    // Reset regex lastIndex to ensure we catch all matches
+    placeholderRegex.lastIndex = 0;
+    
+    while ((match = placeholderRegex.exec(html)) !== null) {
+        const path = match[1];
+        if (!fieldMap.hasOwnProperty(path)) { // Avoid processing the same path multiple times
+            fieldMap[path] = processFieldPath(path, cortexMarketplacesDetail, incidents[0], args.object);
+            logDebug("Field value fetched for " + path + ": " + fieldMap[path]);
+        }
+    }
+    
+    // Replace placeholders with actual values
+    for (const path in fieldMap) {
+        const value = fieldMap[path];
+        const placeholder = '${' + path + '}';
+        
+        if (value !== null && value !== undefined) {
+            logDebug("Replacing placeholder " + placeholder + " with: " + value);
+            html = replaceAll(html, placeholder, String(value));
+        } else if (args.removeNotFound === 'yes') {
+            logDebug("Removing unfound placeholder: " + placeholder);
+            html = replaceAll(html, placeholder, '');
+        } else {
+            logDebug("Leaving placeholder unchanged: " + placeholder);
+        }
+    }
+    
+    // Set context and return result
+    setContext(args.key, html);
+    
+    return {
+        ContentsFormat: formats.json,
+        Type: entryTypes.note,
+        Contents: {htmlBody: html},
+        HumanReadable: 'HTML body set to context key "' + args.key + '"'
+    };
+    
+} catch (error) {
+    logDebug("Script execution error: " + error.message);
+    return {
+        Type: entryTypes.error,
+        Contents: "Script execution failed: " + error.message
+    };
+}

@@ -1125,508 +1125,140 @@ class TestFetchIncidents:
             ]
 
 
-# ========================================
-# Tests: Event Collector - Audit Logs
-# ========================================
-
-MOCK_AUDIT_LOGS = [
-    {
-        "id": 1001,
-        "action": "update",
-        "actor_id": 123,
-        "actor_name": "Admin User",
-        "source_type": "user",
-        "source_id": 456,
-        "source_label": "Test User",
-        "change_description": "Role changed from agent to admin",
-        "ip_address": "192.168.1.1",
-        "url": "https://test.zendesk.com/api/v2/audit_logs/1001.json",
-        "created_at": "2024-01-01T10:00:00Z",
-    },
-    {
-        "id": 1002,
-        "action": "create",
-        "actor_id": 123,
-        "actor_name": "Admin User",
-        "source_type": "rule",
-        "source_id": 789,
-        "source_label": "Auto-close rule",
-        "change_description": "Rule created",
-        "ip_address": "192.168.1.1",
-        "url": "https://test.zendesk.com/api/v2/audit_logs/1002.json",
-        "created_at": "2024-01-01T11:00:00Z",
-    },
-    {
-        "id": 1003,
-        "action": "destroy",
-        "actor_id": 124,
-        "actor_name": "Another Admin",
-        "source_type": "user",
-        "source_id": 999,
-        "source_label": "Deleted User",
-        "change_description": "User deleted",
-        "ip_address": "10.0.0.1",
-        "url": "https://test.zendesk.com/api/v2/audit_logs/1003.json",
-        "created_at": "2024-01-01T12:00:00Z",
-    },
-]
-
-
-class TestAddTimeToEvents:
-    def test_adds_time_field(self):
-        events = [
-            {"id": 1, "created_at": "2024-01-01T10:00:00Z"},
-            {"id": 2, "created_at": "2024-01-01T11:00:00Z"},
-        ]
-        Zendeskv2.add_time_to_events(events)
-        assert events[0]["_time"] == "2024-01-01T10:00:00Z"
-        assert events[1]["_time"] == "2024-01-01T11:00:00Z"
-
-    def test_missing_created_at(self):
-        events = [{"id": 1}]
-        Zendeskv2.add_time_to_events(events)
-        assert "_time" not in events[0]
-
-
-class TestDeduplicateEvents:
-    def test_no_duplicates(self):
-        events = [{"id": 1}, {"id": 2}, {"id": 3}]
-        result = Zendeskv2.deduplicate_events(events, [4, 5])
-        assert len(result) == 3
-
-    def test_with_duplicates(self):
-        events = [{"id": 1}, {"id": 2}, {"id": 3}]
-        result = Zendeskv2.deduplicate_events(events, [1, 2])
-        assert len(result) == 1
-        assert result[0]["id"] == 3
-
-    def test_all_duplicates(self):
-        events = [{"id": 1}, {"id": 2}]
-        result = Zendeskv2.deduplicate_events(events, [1, 2])
-        assert len(result) == 0
-
-    def test_empty_events(self):
-        result = Zendeskv2.deduplicate_events([], [1, 2])
-        assert result == []
-
-    def test_no_previous_ids(self):
-        events = [{"id": 1}, {"id": 2}]
-        result = Zendeskv2.deduplicate_events(events, [])
-        assert len(result) == 2
-
-
-class TestGetAuditLogs:
-    def test_get_audit_logs_initial_request(self, zendesk_client, requests_mock):
-        """Tests initial audit log request with time filters."""
-        mock_response = {
-            "audit_logs": MOCK_AUDIT_LOGS[:2],
-            "links": {"next": "https://test.zendesk.com/api/v2/audit_logs?page[after]=cursor123"},
-            "meta": {"has_more": True},
-        }
-        requests_mock.get(
-            full_url("audit_logs"),
-            json=mock_response,
-        )
-
-        events, next_url = zendesk_client.get_audit_logs(
-            created_after="2024-01-01T00:00:00Z",
-            created_before="2024-01-02T00:00:00Z",
-        )
-
-        assert len(events) == 2
-        assert events[0]["id"] == 1001
-        assert next_url == "https://test.zendesk.com/api/v2/audit_logs?page[after]=cursor123"
-
-    def test_get_audit_logs_no_more_pages(self, zendesk_client, requests_mock):
-        """Tests audit log request when there are no more pages."""
-        mock_response = {
-            "audit_logs": MOCK_AUDIT_LOGS[:1],
-            "links": {},
-            "meta": {"has_more": False},
-        }
-        adapter = requests_mock.get(
-            full_url("audit_logs"),
-            json=mock_response,
-        )
-
-        events, next_url = zendesk_client.get_audit_logs(created_after="2024-01-01T00:00:00Z")
-
-        assert len(events) == 1
-        assert next_url is None
-        # The API requires filter[created_at] twice; with only created_after, the end defaults to "now".
-        from urllib.parse import parse_qs, unquote
-
-        # requests_mock lowercases the query; parse it into a multi-value dict.
-        parsed = parse_qs(unquote(adapter.last_request.query))
-        created_at_values = parsed.get("filter[created_at][]", [])
-        assert len(created_at_values) == 2
-        assert created_at_values[0] == "2024-01-01t00:00:00z"
-
-    def test_get_audit_logs_with_next_url(self, zendesk_client, requests_mock):
-        """Tests audit log request using next_url for pagination."""
-        next_page_url = "https://test.zendesk.com/api/v2/audit_logs?page[after]=cursor123"
-        mock_response = {
-            "audit_logs": MOCK_AUDIT_LOGS[1:],
-            "links": {},
-            "meta": {"has_more": False},
-        }
-        requests_mock.get(next_page_url, json=mock_response)
-
-        events, next_url = zendesk_client.get_audit_logs(next_url=next_page_url)
-
-        assert len(events) == 2
-        assert next_url is None
-
-    def test_get_audit_logs_empty_response(self, zendesk_client, requests_mock):
-        """Tests audit log request with empty response."""
-        mock_response = {
-            "audit_logs": [],
-            "links": {},
-            "meta": {"has_more": False},
-        }
-        requests_mock.get(full_url("audit_logs"), json=mock_response)
-
-        events, next_url = zendesk_client.get_audit_logs(created_after="2024-01-01T00:00:00Z")
-
-        assert len(events) == 0
-        assert next_url is None
-
-
-class TestGetAuditLogsWithPagination:
-    def test_single_page(self, zendesk_client, mocker):
-        """Tests fetching audit logs that fit in a single page."""
-        mocker.patch.object(
-            zendesk_client,
-            "get_audit_logs",
-            return_value=(MOCK_AUDIT_LOGS, None),
-        )
-
-        events, next_url = Zendeskv2.get_audit_logs_with_pagination(
-            zendesk_client, created_after="2024-01-01T00:00:00Z", max_events=10
-        )
-
-        assert len(events) == 3
-        assert next_url is None
-
-    def test_multiple_pages(self, zendesk_client, mocker):
-        """Tests fetching audit logs across multiple pages."""
-        mocker.patch.object(
-            zendesk_client,
-            "get_audit_logs",
-            side_effect=[
-                (MOCK_AUDIT_LOGS[:2], "https://test.zendesk.com/api/v2/audit_logs?page[after]=cursor1"),
-                (MOCK_AUDIT_LOGS[2:], None),
-            ],
-        )
-
-        events, next_url = Zendeskv2.get_audit_logs_with_pagination(
-            zendesk_client, created_after="2024-01-01T00:00:00Z", max_events=10
-        )
-
-        assert len(events) == 3
-        assert next_url is None
-
-    def test_respects_max_events(self, zendesk_client, mocker):
-        """Tests that pagination stops when max_events is reached."""
-        mocker.patch.object(
-            zendesk_client,
-            "get_audit_logs",
-            return_value=(MOCK_AUDIT_LOGS, "https://test.zendesk.com/api/v2/audit_logs?page[after]=cursor1"),
-        )
-
-        events, next_url = Zendeskv2.get_audit_logs_with_pagination(
-            zendesk_client, created_after="2024-01-01T00:00:00Z", max_events=2
-        )
-
-        assert len(events) == 2
-        # When we slice to the limit, the cursor is dropped so the next run resumes by time
-        # (from the last kept event) instead of skipping the sliced-off events.
-        assert next_url is None
-
-    def test_events_sorted_by_created_at(self, zendesk_client, mocker):
-        """Tests that events are sorted by created_at."""
-        unsorted_events = [
-            {"id": 2, "created_at": "2024-01-01T12:00:00Z"},
-            {"id": 1, "created_at": "2024-01-01T10:00:00Z"},
-            {"id": 3, "created_at": "2024-01-01T11:00:00Z"},
-        ]
-        mocker.patch.object(
-            zendesk_client,
-            "get_audit_logs",
-            return_value=(unsorted_events, None),
-        )
-
-        events, _ = Zendeskv2.get_audit_logs_with_pagination(zendesk_client, created_after="2024-01-01T00:00:00Z", max_events=10)
-
-        assert events[0]["id"] == 1
-        assert events[1]["id"] == 3
-        assert events[2]["id"] == 2
-
-    def test_empty_response(self, zendesk_client, mocker):
-        """Tests pagination with empty response."""
-        mocker.patch.object(
-            zendesk_client,
-            "get_audit_logs",
-            return_value=([], None),
-        )
-
-        events, next_url = Zendeskv2.get_audit_logs_with_pagination(
-            zendesk_client, created_after="2024-01-01T00:00:00Z", max_events=10
-        )
-
-        assert len(events) == 0
-        assert next_url is None
-
-
-class TestGetAuditLogsCommand:
-    def test_returns_command_results(self, zendesk_client, mocker):
-        """Tests that get_audit_logs_command returns CommandResults."""
-        mocker.patch.object(
-            Zendeskv2,
-            "get_audit_logs_with_pagination",
-            return_value=(MOCK_AUDIT_LOGS, None),
-        )
-
-        result = Zendeskv2.get_audit_logs_command(zendesk_client, {"limit": "10", "created_after": "2024-01-01T00:00:00Z"})
-
-        assert isinstance(result, CommandResults)
-        assert result.outputs_prefix == "Zendesk.AuditLog"
-        assert len(result.outputs) == 3
-
-    def test_push_events(self, zendesk_client, mocker):
-        """Tests pushing events to XSIAM."""
-        mocker.patch.object(
-            Zendeskv2,
-            "get_audit_logs_with_pagination",
-            return_value=(MOCK_AUDIT_LOGS, None),
-        )
-        mock_send = mocker.patch("Zendeskv2.send_events_to_xsiam")
-
-        result = Zendeskv2.get_audit_logs_command(
-            zendesk_client,
-            {"limit": "10", "should_push_events": "true", "created_after": "2024-01-01T00:00:00Z"},
-        )
-
-        assert isinstance(result, str)
-        assert "3" in result
-        mock_send.assert_called_once()
-
-    def test_no_events(self, zendesk_client, mocker):
-        """Tests command with no events returned."""
-        mocker.patch.object(
-            Zendeskv2,
-            "get_audit_logs_with_pagination",
-            return_value=([], None),
-        )
-
-        result = Zendeskv2.get_audit_logs_command(zendesk_client, {"limit": "10"})
-
-        assert isinstance(result, CommandResults)
-        assert result.outputs == []
-
-
-class TestFetchEventsCommand:
-    def test_first_run(self, zendesk_client, mocker):
-        """Tests fetch_events_command on first run."""
-        mocker.patch.object(demisto, "params", return_value={"first_fetch": "3 days", "max_events_fetch": "1000"})
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-        mock_send = mocker.patch("Zendeskv2.send_events_to_xsiam")
-        mocker.patch.object(
-            Zendeskv2,
-            "get_audit_logs_with_pagination",
-            return_value=(MOCK_AUDIT_LOGS, None),
-        )
-
-        Zendeskv2.fetch_events_command(zendesk_client)
-
-        mock_send.assert_called_once()
-        sent_events = mock_send.call_args[1]["events"]
-        assert len(sent_events) == 3
-        # Verify _time was added
-        assert all("_time" in e for e in sent_events)
-
-        # Verify last run was updated
-        mock_set_last_run.assert_called_once()
-        last_run = mock_set_last_run.call_args[0][0]
-        assert last_run["events_last_fetch"] == "2024-01-01T12:00:00Z"
-        assert last_run["events_last_fetched_ids"] == [1003]
-
-    def test_subsequent_run_with_dedup(self, zendesk_client, mocker):
-        """Tests fetch_events_command with deduplication on subsequent run."""
-        mocker.patch.object(demisto, "params", return_value={"max_events_fetch": "1000"})
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value={
-                "events_last_fetch": "2024-01-01T10:00:00Z",
-                "events_last_fetched_ids": [1001],
-            },
-        )
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-        mock_send = mocker.patch("Zendeskv2.send_events_to_xsiam")
-        mocker.patch.object(
-            Zendeskv2,
-            "get_audit_logs_with_pagination",
-            return_value=(MOCK_AUDIT_LOGS, None),
-        )
-
-        Zendeskv2.fetch_events_command(zendesk_client)
-
-        mock_send.assert_called_once()
-        sent_events = mock_send.call_args[1]["events"]
-        # Event 1001 should be deduplicated
-        assert len(sent_events) == 2
-        assert all(e["id"] != 1001 for e in sent_events)
-
-    def test_with_next_url_continuation(self, zendesk_client, mocker):
-        """Tests fetch_events_command continuing from a next_url."""
-        mocker.patch.object(demisto, "params", return_value={"max_events_fetch": "1000"})
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value={
-                "events_last_fetch": "2024-01-01T00:00:00Z",
-                "events_last_fetched_ids": [],
-                "events_next_url": "https://test.zendesk.com/api/v2/audit_logs?page[after]=cursor1",
-            },
-        )
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-        mock_send = mocker.patch("Zendeskv2.send_events_to_xsiam")
-        mocker.patch.object(
-            Zendeskv2,
-            "get_audit_logs_with_pagination",
-            return_value=(MOCK_AUDIT_LOGS, None),
-        )
-
-        Zendeskv2.fetch_events_command(zendesk_client)
-
-        mock_send.assert_called_once()
-        sent_events = mock_send.call_args[1]["events"]
-        # No previous IDs to dedup against here, so all 3 events are sent.
-        assert len(sent_events) == 3
-
-        # Verify next_url is cleared and HWM is updated
-        last_run = mock_set_last_run.call_args[0][0]
-        assert "events_next_url" not in last_run
-        assert last_run["events_last_fetch"] == "2024-01-01T12:00:00Z"
-
-    def test_dedup_applied_on_next_url_continuation(self, zendesk_client, mocker):
-        """Dedup must still run when resuming a cursor, to drop boundary events already sent."""
-        mocker.patch.object(demisto, "params", return_value={"max_events_fetch": "1000"})
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value={
-                "events_last_fetch": "2024-01-01T00:00:00Z",
-                "events_last_fetched_ids": [1001],
-                "events_next_url": "https://test.zendesk.com/api/v2/audit_logs?page[after]=cursor1",
-            },
-        )
-        mocker.patch.object(demisto, "setLastRun")
-        mock_send = mocker.patch("Zendeskv2.send_events_to_xsiam")
-        mocker.patch.object(
-            Zendeskv2,
-            "get_audit_logs_with_pagination",
-            return_value=(MOCK_AUDIT_LOGS, None),
-        )
-
-        Zendeskv2.fetch_events_command(zendesk_client)
-
-        mock_send.assert_called_once()
-        sent_events = mock_send.call_args[1]["events"]
-        # Event 1001 was already sent last run and must be deduplicated even on cursor continuation.
-        assert len(sent_events) == 2
-        assert all(e["id"] != 1001 for e in sent_events)
-
-    def test_saves_next_url_when_more_pages(self, zendesk_client, mocker):
-        """Tests that next_url is saved when there are more pages."""
-        mocker.patch.object(demisto, "params", return_value={"first_fetch": "3 days", "max_events_fetch": "1000"})
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-        mock_send = mocker.patch("Zendeskv2.send_events_to_xsiam")
-        next_url = "https://test.zendesk.com/api/v2/audit_logs?page[after]=cursor2"
-        mocker.patch.object(
-            Zendeskv2,
-            "get_audit_logs_with_pagination",
-            return_value=(MOCK_AUDIT_LOGS, next_url),
-        )
-
-        Zendeskv2.fetch_events_command(zendesk_client)
-
-        last_run = mock_set_last_run.call_args[0][0]
-        assert last_run["events_next_url"] == next_url
-
-    def test_merges_boundary_ids_when_hwm_unchanged(self, zendesk_client, mocker):
-        """When the HWM timestamp is unchanged, previous IDs at that time are merged, not overwritten."""
-        mocker.patch.object(demisto, "params", return_value={"max_events_fetch": "1000"})
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value={
-                "events_last_fetch": "2024-01-01T12:00:00Z",
-                "events_last_fetched_ids": [1003],
-            },
-        )
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-        mocker.patch("Zendeskv2.send_events_to_xsiam")
-        # 1003 was already sent (same timestamp); 1004 is new at the same timestamp.
-        events = [
-            {"id": 1003, "created_at": "2024-01-01T12:00:00Z"},
-            {"id": 1004, "created_at": "2024-01-01T12:00:00Z"},
-        ]
-        mocker.patch.object(Zendeskv2, "get_audit_logs_with_pagination", return_value=(events, None))
-
-        Zendeskv2.fetch_events_command(zendesk_client)
-
-        last_run = mock_set_last_run.call_args[0][0]
-        assert last_run["events_last_fetch"] == "2024-01-01T12:00:00Z"
-        # Both the previously-seen and the newly-seen IDs at the boundary timestamp are kept.
-        assert set(last_run["events_last_fetched_ids"]) == {1003, 1004}
-
-    def test_no_events_found(self, zendesk_client, mocker):
-        """Tests fetch_events_command when no events are found."""
-        mocker.patch.object(demisto, "params", return_value={"first_fetch": "3 days", "max_events_fetch": "1000"})
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-        mock_send = mocker.patch("Zendeskv2.send_events_to_xsiam")
-        mocker.patch.object(
-            Zendeskv2,
-            "get_audit_logs_with_pagination",
-            return_value=([], None),
-        )
-
-        Zendeskv2.fetch_events_command(zendesk_client)
-
-        mock_send.assert_not_called()
-        mock_set_last_run.assert_not_called()
-
-    def test_preserves_incident_fetch_state(self, zendesk_client, mocker):
-        """Tests that fetch_events_command preserves existing incident fetch state."""
-        mocker.patch.object(demisto, "params", return_value={"max_events_fetch": "1000"})
-        mocker.patch.object(
-            demisto,
-            "getLastRun",
-            return_value={
-                "events_last_fetch": "2024-01-01T00:00:00Z",
-                "events_last_fetched_ids": [],
-                "fetched_tickets": [10, 20],
-                "fetch_time": "2024-01-01T00:00:00Z",
-            },
-        )
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-        mocker.patch("Zendeskv2.send_events_to_xsiam")
-        mocker.patch.object(
-            Zendeskv2,
-            "get_audit_logs_with_pagination",
-            return_value=(MOCK_AUDIT_LOGS, None),
-        )
-
-        Zendeskv2.fetch_events_command(zendesk_client)
-
-        last_run = mock_set_last_run.call_args[0][0]
-        # Incident fetch state should be preserved
-        assert last_run["fetched_tickets"] == [10, 20]
-        assert last_run["fetch_time"] == "2024-01-01T00:00:00Z"
-        # Event fetch state should be updated
-        assert last_run["events_last_fetch"] == "2024-01-01T12:00:00Z"
+class TestCommandArgumentHandling:
+    """Verifies that command methods which accept ``**kwargs`` tolerate the
+    canonical, redundant and unexpected keyword arguments that ``demisto.args()``
+    may forward when a command is invoked from the platform.
+    """
+
+    EXTRA_REDUNDANT_ARGS = {"verbose": "true", "using": "default"}
+    EXTRA_UNEXPECTED_ARGS = {"nonexistent_param": "value", "another_unknown": 42}
+
+    @pytest.mark.parametrize(
+        "func_name, required_args",
+        [
+            pytest.param(
+                "zendesk_user_delete",
+                {"user_id": "1"},
+                id="zendesk-user-delete",
+            ),
+            pytest.param(
+                "zendesk_ticket_delete",
+                {"ticket_id": "10"},
+                id="zendesk-ticket-delete",
+            ),
+            pytest.param(
+                "zendesk_attachment_get_command",
+                {"attachment_id": 123},
+                id="zendesk-attachment-get",
+            ),
+            pytest.param(
+                "zendesk_search",
+                {"query": "type:ticket"},
+                id="zendesk-search",
+            ),
+        ],
+    )
+    class TestSimpleClientCommands:
+        """Commands invoked on the ZendeskClient instance with all I/O mocked."""
+
+        @staticmethod
+        @pytest.fixture
+        def stub_http(mocker, zendesk_client):
+            """Mock ``_http_request`` and the search-results helper so command
+            methods can be invoked without any real network I/O."""
+            mocker.patch.object(zendesk_client, "_http_request", return_value={})
+            mocker.patch.object(
+                zendesk_client,
+                "_ZendeskClient__zendesk_search_results",
+                return_value=[],
+            )
+            mocker.patch.object(
+                zendesk_client,
+                "zendesk_attachment_get",
+                return_value=[],
+            )
+            mocker.patch.object(zendesk_client, "get_file_entries", return_value=[])
+
+        def test_with_required_args_only(self, zendesk_client, stub_http, func_name, required_args):
+            """Calling the command with only the canonical/required args must succeed."""
+            func = getattr(zendesk_client, func_name)
+            func(**required_args)
+
+        def test_with_redundant_args(self, zendesk_client, stub_http, func_name, required_args):
+            """Extra args that are not declared parameters but are commonly passed by
+            ``demisto.args()`` (e.g. ``verbose``, ``using``) must be tolerated via
+            ``**kwargs`` and not raise ``TypeError``."""
+            func = getattr(zendesk_client, func_name)
+            args = {**required_args, **TestCommandArgumentHandling.EXTRA_REDUNDANT_ARGS}
+            func(**args)
+
+        def test_with_unexpected_args(self, zendesk_client, stub_http, func_name, required_args):
+            """Completely unknown keyword arguments must be swallowed by ``**kwargs``
+            and not raise ``TypeError``."""
+            func = getattr(zendesk_client, func_name)
+            args = {**required_args, **TestCommandArgumentHandling.EXTRA_UNEXPECTED_ARGS}
+            func(**args)
+
+    class TestZendeskTicketAttachmentAdd:
+        @staticmethod
+        @pytest.fixture
+        def stub_attachment_add(mocker, zendesk_client, tmp_path):
+            file_on_disk = tmp_path / "uploaded.txt"
+            file_on_disk.write_bytes(b"payload")
+            mocker.patch.object(
+                demisto,
+                "getFilePath",
+                return_value={"path": str(file_on_disk), "name": "uploaded.txt"},
+            )
+            mocker.patch.object(
+                zendesk_client,
+                "_http_request",
+                return_value={"upload": {"token": "tok"}},
+            )
+
+        REQUIRED_ARGS = {"file_id": "fid", "ticket_id": 10, "comment": "hi"}
+
+        def test_with_required_args_only(self, zendesk_client, stub_attachment_add):
+            zendesk_client.zendesk_ticket_attachment_add(**self.REQUIRED_ARGS)
+
+        def test_with_filename_arg(self, zendesk_client, stub_attachment_add):
+            """The renamed ``filename`` param (was ``file_name`` on master) must be
+            accepted as a keyword arg."""
+            zendesk_client.zendesk_ticket_attachment_add(filename="custom.txt", **self.REQUIRED_ARGS)
+
+        def test_with_redundant_args(self, zendesk_client, stub_attachment_add):
+            zendesk_client.zendesk_ticket_attachment_add(**self.REQUIRED_ARGS, **TestCommandArgumentHandling.EXTRA_REDUNDANT_ARGS)
+
+        def test_with_unexpected_args(self, zendesk_client, stub_attachment_add):
+            zendesk_client.zendesk_ticket_attachment_add(
+                **self.REQUIRED_ARGS, **TestCommandArgumentHandling.EXTRA_UNEXPECTED_ARGS
+            )
+
+    class TestGetModifiedRemoteData:
+        @staticmethod
+        @pytest.fixture
+        def stub_modified_remote(mocker, zendesk_client):
+            mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+            mocker.patch.object(demisto, "setIntegrationContext")
+            mocker.patch.object(
+                Zendeskv2,
+                "UpdatedTickets",
+                return_value=mocker.Mock(tickets=list, next_run=dict),
+            )
+            mocker.patch.object(Zendeskv2, "get_last_mirror_run", return_value={})
+            mocker.patch.object(Zendeskv2, "set_last_mirror_run")
+            mocker.patch.object(Zendeskv2, "return_results")
+
+        def test_with_required_args_only(self, zendesk_client, stub_modified_remote):
+            zendesk_client.get_modified_remote_data(lastUpdate="2024-01-01T00:00:00Z")
+
+        def test_with_redundant_args(self, zendesk_client, stub_modified_remote):
+            zendesk_client.get_modified_remote_data(
+                lastUpdate="2024-01-01T00:00:00Z", **TestCommandArgumentHandling.EXTRA_REDUNDANT_ARGS
+            )
+
+        def test_with_unexpected_args(self, zendesk_client, stub_modified_remote):
+            zendesk_client.get_modified_remote_data(
+                lastUpdate="2024-01-01T00:00:00Z", **TestCommandArgumentHandling.EXTRA_UNEXPECTED_ARGS
+            )

@@ -1,6 +1,9 @@
 fromversion: 6.10.0
+toversion: 8.14.0
 id: alibaba_ModelingRule
 name: Alibaba Modeling Rule
 rules: ''
 schema: ''
 tags: alibaba
+supportedModules:
+- xsiam

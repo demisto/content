@@ -30,105 +30,127 @@ TIMEOUT_120 = 120
 class Client(BaseClient):
     """Client class to interact with the service API"""
 
-    def _call(self, **kwargs: Any) -> dict | list[CommandResults]:
-        try:
-            response: dict = self._http_request(**kwargs)
-            if not isinstance(response, dict):
-                return_error(f"Bad Response, response was not a dict: {str(response)}")
-                return []  # return_error will exit(0), but to make linter happy.
-
-            if response.get("return_error"):
-                # This will raise the Exception or call "demisto.results()" for the error and sys.exit(0).
-                return_error(**response["return_error"])
-                return []  # return_error will exit(0), but to make linter happy.
-
-            result_actions = response.get("result_actions")
-            if isinstance(result_actions, list):
-                return [
-                    # Take all CommandResults params verbatim from the response, except the `outputs` param,
-                    # which is taken from `raw_response.outputs` to minimize payload size
-                    CommandResults(outputs=result_action.get("raw_response", {}).get("outputs", None), **result_action)
-                    for result_action in result_actions
-                    if isinstance(result_action, dict)
-                ]
-            elif result_actions:
-                return_error(f"Bad Response, result_actions was present but not a list: {str(response)}")
-                return []  # return_error will exit(0), but to make linter happy.
-            else:
-                # We called an endpoint that didn't try to return command results (e.g. fetch-incidents),
-                # should just pass response object directly to XSOAR
-                return response
-
-        except DemistoException as err:
-            if "404" in str(err):
-                return [
-                    CommandResults(
-                        outputs_prefix="",
-                        outputs={},
-                        raw_response={},
-                        readable_output="No results found.",
-                        outputs_key_field="",
-                    )
-                ]
-            raise err
-
-    def _get(
+    def _request_raw(
         self,
-        url_suffix: str,
         *,
+        method: str,
+        url_suffix: str,
         params: dict | None = None,
+        json_data: dict | None = None,
         timeout: int = 90,
         retries: int = 3,
-    ) -> dict | list[CommandResults]:
-        return self._call(
-            method="GET",
+    ) -> dict:
+        response: Any = self._http_request(
+            method=method,
             url_suffix=url_suffix,
             params=params,
-            timeout=timeout,
-            retries=retries,
-            status_list_to_retry=STATUS_TO_RETRY,
-        )
-
-    def _post(
-        self,
-        url_suffix: str,
-        json_data: dict,
-        timeout: int = 90,
-        retries: int = 3,
-    ) -> dict | list[CommandResults]:
-        return self._call(
-            method="POST",
-            url_suffix=url_suffix,
             json_data=json_data,
             timeout=timeout,
             retries=retries,
             status_list_to_retry=STATUS_TO_RETRY,
         )
+        if not isinstance(response, dict):
+            raise DemistoException(f"Bad Response, response was not a dict: {str(response)}")
+        if response.get("return_error"):
+            return_error(**response["return_error"])
+            raise DemistoException("return_error returned unexpectedly")
+        return response
 
-    def whoami(self) -> dict | list[CommandResults]:
-        return self._get(
+    @staticmethod
+    def _no_results_found() -> list[CommandResults]:
+        return [
+            CommandResults(
+                outputs_prefix="",
+                outputs={},
+                raw_response={},
+                readable_output="No results found.",
+                outputs_key_field="",
+            )
+        ]
+
+    @classmethod
+    def _response_to_command_results(cls, response: dict) -> list[CommandResults]:
+        result_actions = response.get("result_actions")
+        if not isinstance(result_actions, list):
+            raise DemistoException(f"Bad Response, result_actions was present but not a list: {str(response)}")
+
+        command_results: list[CommandResults] = []
+        for result_action in result_actions:
+            if not isinstance(result_action, dict):
+                continue
+
+            raw_response = result_action.get("raw_response")
+            outputs = raw_response.get("outputs") if isinstance(raw_response, dict) else None
+            command_results.append(
+                CommandResults(
+                    outputs=outputs,
+                    **result_action,
+                )
+            )
+
+        return command_results
+
+    def _request_results(
+        self,
+        *,
+        method: str,
+        url_suffix: str,
+        params: dict | None = None,
+        json_data: dict | None = None,
+        timeout: int = 90,
+        retries: int = 3,
+    ) -> list[CommandResults]:
+        try:
+            response = self._request_raw(
+                method=method,
+                url_suffix=url_suffix,
+                params=params,
+                json_data=json_data,
+                timeout=timeout,
+                retries=retries,
+            )
+        except DemistoException as err:
+            if "404" in str(err):
+                return self._no_results_found()
+            raise
+
+        return self._response_to_command_results(response)
+
+    def whoami(self) -> dict:
+        return self._request_raw(
+            method="GET",
             url_suffix="/info/whoami",
             timeout=60,
         )
 
-    def alert_update(self) -> dict | list[CommandResults]:
+    def alert_update(self) -> list[CommandResults]:
         """Update alert"""
-        return self._post(
+        return self._request_results(
+            method="POST",
             url_suffix="/v3/alert/update",
             json_data=demisto.args(),
             timeout=90,
         )
 
-    def alert_search(self) -> dict | list[CommandResults]:
+    def alert_search(self) -> list[CommandResults]:
         """Search alerts"""
-        return self._get(url_suffix="/v3/alert/search", params=demisto.args())
+        return self._request_results(
+            method="GET",
+            url_suffix="/v3/alert/search",
+            params=demisto.args(),
+        )
 
-    def alert_rule_search(self) -> dict | list[CommandResults]:
+    def alert_rule_search(self) -> list[CommandResults]:
         """Search alert rules."""
-        return self._get(url_suffix="/v3/alert/rules", params=demisto.args())
+        return self._request_results(
+            method="GET",
+            url_suffix="/v3/alert/rules",
+            params=demisto.args(),
+        )
 
-    def alert_lookup(self, alert_id: str) -> dict | list[CommandResults]:
-        return self._get(
+    def alert_lookup(self, alert_id: str) -> list[CommandResults]:
+        return self._request_results(
+            method="GET",
             url_suffix="/v3/alert/lookup",
             params={"alert_id": alert_id},
             timeout=90,
@@ -159,11 +181,12 @@ class Client(BaseClient):
         )
         return response_content
 
-    def fetch_incidents(self) -> dict | list[CommandResults]:
+    def fetch_incidents(self) -> dict:
         """Fetch incidents."""
         classic_query_params = demisto.getLastRun().get("next_query_classic", {})
         playbook_query_params = demisto.getLastRun().get("next_query_playbook", {})
-        return self._post(
+        return self._request_raw(
+            method="POST",
             url_suffix="/v3/alert/fetch",
             json_data={
                 "integration_config": demisto.params(),
@@ -226,11 +249,14 @@ class Actions:
             raise DemistoException(f"Failed due to - {message}")
 
     def fetch_incidents(self) -> None:
-        response: dict | list[CommandResults] = self.client.fetch_incidents()
-        if isinstance(response, list):
-            # 404.
-            return_error("404 in fetch incidents")
-            return
+        try:
+            response = self.client.fetch_incidents()
+        except DemistoException as err:
+            if "404" in str(err):
+                return_error("404 in fetch incidents")
+                return
+            raise
+
         alerts = response.get("alerts", [])
         next_query_classic = response.get("next_query_classic", {})
         next_query_playbook = response.get("next_query_playbook", {})
@@ -252,16 +278,20 @@ class Actions:
         demisto.incidents(incidents)
         demisto.setLastRun(next_query)
 
-    def alert_search_command(self) -> dict | list[CommandResults]:
+    def alert_search_command(self) -> list[CommandResults]:
         return self.client.alert_search()
 
     def alert_rule_search_command(
         self,
-    ) -> dict | list[CommandResults]:
+    ) -> list[CommandResults]:
         return self.client.alert_rule_search()
 
-    def alert_update_command(self) -> dict | list[CommandResults]:
+    def alert_update_command(self) -> list[CommandResults]:
         return self.client.alert_update()
+
+    def alert_lookup_command(self) -> list[CommandResults]:
+        alert_id = demisto.args().get("alert_id", "")
+        return self.client.alert_lookup(alert_id)
 
     @staticmethod
     def _get_file_name_from_image_id(image_id: str) -> str:
@@ -301,9 +331,18 @@ class Actions:
 
     def get_alert_images_command(self) -> list[CommandResults]:
         incident = demisto.incident()
-        alert_id = incident.get("CustomFields", {}).get("alertid")
+        if not isinstance(incident, dict) or incident.get("isPlayground") is True:
+            return_error("This command can only run from an incident War Room context.")
+            return []  # return_error will exit(0), but to make linter happy.
+
+        custom_fields = incident.get("CustomFields")
+        if not isinstance(custom_fields, dict):
+            custom_fields = {}
+
+        alert_id = custom_fields.get("alertid")
         if not alert_id:
-            return_error("Failed to get alert id from incident.")
+            return_error("Failed to get alert id from the incident.")
+            return []  # return_error will exit(0), but to make linter happy.
 
         lookup_result = self.client.alert_lookup(alert_id)
 
@@ -321,7 +360,7 @@ class Actions:
         if not image_ids:
             return [CommandResults(readable_output="No screenshots found in alert details.")]
 
-        context = demisto.context()
+        context = demisto.context() or {}
 
         files = demisto.get(context, "File")
         if not files:
@@ -329,7 +368,7 @@ class Actions:
         if not isinstance(files, list):
             files = [files]
 
-        existing_file_names = {f.get("Name") for f in files}
+        existing_file_names = {f.get("Name") for f in files if isinstance(f, dict)}
 
         # Determine missing image IDs.
         missing_image_ids: set = set()
@@ -419,6 +458,8 @@ def main():
             return_results(actions.alert_search_command())
         elif command == "rf-alert-update":
             return_results(actions.alert_update_command())
+        elif command == "rf-alert-lookup":
+            return_results(actions.alert_lookup_command())
         elif command == "rf-alert-images":
             return_results(actions.get_alert_images_command())
 

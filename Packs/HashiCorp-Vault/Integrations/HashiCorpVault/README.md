@@ -26,6 +26,7 @@ You are required to fill in only the *Username / Role ID* parameter with the rol
 | Use AppRole Auth Method | Set as true if you are using the [AppRole](https://developer.hashicorp.com/vault/docs/auth/approle) method for authentication. | False |
 | Username / Role ID | The username for the Hashicorp vault.                                                                                            | False |
 | Password / Secret ID | The password for the Hashicorp vault.                                                                                             | False |
+| Cache the authentication token | enables caching of the authentication token. | False |
 | Authentication token | A token for authentication for the Hashicorp vault. (Use instead of password and username.)                                            | False |
 | Vault enterprise namespace | The [namespace](https://developer.hashicorp.com/vault/tutorials/enterprise/namespaces) used for the vault by the user.  | False |
 | Trust any certificate (not secure) | Mark as true to make unverified HTTP requests.                                                                                    | False |
@@ -513,6 +514,38 @@ Retrieves the AppRole ID for a specified role.
 |Id|Name|
 |---|---|
 |role_id|role_name|
+
+### hashicorp-create-update-secret-metadata
+
+***
+Creates or replaces the metadata of a secret at the specified location in a KV V2 engine. Fields that are not supplied are reset to their server defaults.
+
+#### Base Command
+
+`hashicorp-create-update-secret-metadata`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| engine | The KV V2 engine path, e.g., "secret/" or "kv/". | Required |
+| secret_path | The secret path, for example "my-secret" or "folder/my-secret". | Required |
+| max_versions | The number of versions to keep per key. | Optional |
+| cas_required | Whether the key will require the cas parameter to be set on all write requests. If false, the backend's configuration will be used. Possible values are: true, false. | Optional |
+| delete_version_after | The duration to specify the deletion_time for all new versions written to this key, e.g., "3h25m19s". | Optional |
+| custom_metadata | The mapping of arbitrary string key-value pairs representing user-provided metadata to describe the secret. For example, {"foo": "abc", "bar": "123"}. | Optional |
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!hashicorp-create-update-secret-metadata engine="secret" secret_path="demo-secret" custom_metadata={"some_key": "some_value"}```
+
+#### Human Readable Output
+
+>Secret "demo-secret" was successfully written to engine "secret"
 
 ## Additional Information
 

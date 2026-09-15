@@ -2,6 +2,8 @@
 !pingone-deactivate-user username=emma.sharp
 !pingone-activate-user username=emma.sharp
 !pingone-set-password username=emma.sharp password=OnePing123!
+!pingone-password-force-change username=emma.sharp
+!pingone-read-password-state username=emma.sharp
 !pingone-get-groups username=emma.sharp
 !pingone-get-user username=emma.sharp
 !pingone-create-user username=richard.smith populationId=4cd45bdb-0eb2-42fe-8475-4bcd908269f1

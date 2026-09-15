@@ -1,0 +1,33 @@
+{
+  "uid": "sg-1234",
+  "name": "updated-service-group",
+  "type": "service-group",
+  "members": [
+    {
+      "uid": "m-001",
+      "name": "http",
+      "type": "service-tcp",
+      "domain": {
+        "uid": "d-001",
+        "name": "SMC User",
+        "domain-type": "domain"
+      }
+    }
+  ],
+  "groups": [],
+  "comments": "Updated group",
+  "color": "green",
+  "tags": [],
+  "domain": {
+    "uid": "d-001",
+    "name": "SMC User",
+    "domain-type": "domain"
+  },
+  "meta-info": {
+    "lock": "unlocked",
+    "validation-state": "ok",
+    "last-modifier": "admin",
+    "creator": "admin"
+  },
+  "read-only": false
+}

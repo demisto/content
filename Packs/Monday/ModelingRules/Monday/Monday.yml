@@ -1,0 +1,9 @@
+fromversion: 8.4.0
+toversion: 8.14.0
+id: Monday_Monday_ModelingRule
+name: Monday Monday Modeling Rule
+rules: ''
+schema: ''
+tags: ''
+supportedModules:
+- xsiam

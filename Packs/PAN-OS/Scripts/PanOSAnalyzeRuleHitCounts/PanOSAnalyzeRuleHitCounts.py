@@ -207,6 +207,11 @@ def main():
         else:
             system_info = system_info.get("Result", [])
 
+        # Ensure data lists are properly formatted
+        rule_hitcount_data = rule_hitcount_data if isinstance(rule_hitcount_data, list) else [rule_hitcount_data]
+        ha_state_data = ha_state_data if isinstance(ha_state_data, list) else [ha_state_data]
+        system_info = system_info if isinstance(system_info, list) else [system_info]
+
         # Check that all necessary data is present
         missing_data = [
             data

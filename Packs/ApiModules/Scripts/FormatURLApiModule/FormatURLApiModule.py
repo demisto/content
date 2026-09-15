@@ -94,15 +94,12 @@ class URLCheck:
             # The URL seems to have a scheme indicated by presence of "//", "%3A" or "%2F"
             self.scheme_check()
 
-        host_end_position = -1
         special_chars = ("/", "?", "#")  # Any one of these states the end of the host / authority part in a URL
-
-        for char in special_chars:
-            try:
-                host_end_position = self.modified_url[self.base :].index(char)
-                break  # index for the end of the part found, breaking loop
-            except ValueError:
-                continue  # no reserved char found, URL has no path, query or fragment parts.
+        # Find the earliest occurrence of any special character
+        host_end_position = min(
+            (self.modified_url[self.base :].index(char) for char in special_chars if char in self.modified_url[self.base :]),
+            default=-1,
+        )
 
         try:
             if "@" in self.modified_url[:host_end_position]:
@@ -134,6 +131,8 @@ class URLCheck:
                 self.output = unquoted
             else:
                 break
+
+        self.output = self.output.replace(" ", "%20")
 
     def __str__(self):
         return f"{self.output}"
@@ -339,6 +338,7 @@ class URLCheck:
             self.url.hostname = ip.exploded
             self.output = self.output.replace(host, ip.exploded)
         self.url.hostname = str(parsed_ip)
+
         self.check_done(index)
 
     def port_check(self):
@@ -359,6 +359,7 @@ class URLCheck:
                 raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
 
         self.url.port = port
+
         self.check_done(index)
 
     def path_check(self):
@@ -374,7 +375,7 @@ class URLCheck:
             path += char
 
         if self.check_done(index):
-            path, self.inside_brackets = remove_trailing_bracket_and_comma_from_part(path, self.inside_brackets)
+            path, self.inside_brackets = remove_trailing_bracket_and_redundant_characters_from_part(path, self.inside_brackets)
             self.url.path = path
             self.output += path
             return
@@ -386,6 +387,11 @@ class URLCheck:
             self.fragment = True
 
         self.output += path
+
+        # Add forward slash before query or fragment if path is empty and output doesn't end with /
+        if not path and not self.output.endswith("/") and self.modified_url[index] in ("?", "#"):
+            self.output += "/"
+
         self.output += self.modified_url[index]
         index += 1
         self.base = index
@@ -402,7 +408,7 @@ class URLCheck:
             index, char = self.check_valid_character(index)
             query += char
 
-        query, self.inside_brackets = remove_trailing_bracket_and_comma_from_part(query, self.inside_brackets)
+        query, self.inside_brackets = remove_trailing_bracket_and_redundant_characters_from_part(query, self.inside_brackets)
 
         self.url.query = query
         self.output += query
@@ -428,7 +434,9 @@ class URLCheck:
             index, char = self.check_valid_character(index)
             fragment += char
 
-        fragment, self.inside_brackets = remove_trailing_bracket_and_comma_from_part(fragment, self.inside_brackets)
+        fragment, self.inside_brackets = remove_trailing_bracket_and_redundant_characters_from_part(
+            fragment, self.inside_brackets
+        )
 
         self.url.fragment = fragment
         self.output += fragment
@@ -483,6 +491,11 @@ class URLCheck:
         elif char == "\\":
             # Edge case of the url ending with an escape char
             return len(self.modified_url), part
+
+        elif char == " ":
+            # A space is not a valid URL character, encode it to %20 instead of failing
+            part += "%20"
+            index += 1
 
         elif not char.isalnum() and not self.check_codepoint_validity(char):
             raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
@@ -812,6 +825,7 @@ class URLFormatter:
         url = url.replace("[.]", ".")
         url = url.replace("[:]", ":")
         url = url.replace("%2F", "/").replace("%2f", "/")
+
         lower_url = url.lower()
         if lower_url.startswith(("hxxp", "meow")):
             url = re.sub(schemas, "http", url, count=1)
@@ -931,12 +945,18 @@ def parse_mixed_ip(ip_str: str) -> int:
     return numerical_ip
 
 
-def remove_trailing_bracket_and_comma_from_part(part: str, inside_brackets: int) -> tuple[str, int]:
+def remove_trailing_bracket_and_redundant_characters_from_part(part: str, inside_brackets: int) -> tuple[str, int]:
     """
-    Removes trailing bracket and commas from a part of a URL.
+    Removes trailing bracket and redundant characters from a part of a URL.
     """
     if part.endswith(",") and inside_brackets:
         # This Fixes the edge case of catching a separator comma in a part when extracting from a list.
         part = part[:-2]  # We remove the last 2 chars which are a comma and a quote or a bracket.
         inside_brackets -= 1
+
+    elif part.endswith(("'", '"')) and inside_brackets:
+        # This Fixes the edge case of catching a redundant single or double quote in a part when extracting from a list.
+        part = part[:-1]  # We remove the last char, which is a quote.
+        inside_brackets -= 1
+
     return part, inside_brackets

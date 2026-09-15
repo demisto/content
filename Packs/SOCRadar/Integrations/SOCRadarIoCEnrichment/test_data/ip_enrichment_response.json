@@ -1,0 +1,58 @@
+{
+  "details": {
+    "score": [85.0],
+    "name": "test-host.example.com",
+    "country_name": "United States",
+    "is_whitelisted": false,
+    "ioc_signal_strength": "Strong",
+    "cross_source_confidence": "High",
+    "first_seen_date": "2024-01-01",
+    "last_seen_date": "2024-06-01",
+    "cidr": "192.168.1.0/24",
+    "asn_code": 12345
+  },
+  "summary": {
+    "country": "United States",
+    "asn_name": "TestASN Inc",
+    "asn_code": 12345
+  },
+  "categorization": {
+    "cdn": false,
+    "cloud": false,
+    "cryptocurrency": false,
+    "honeypot": false,
+    "hosting": false,
+    "malware": true,
+    "proxy": false,
+    "scanner": false,
+    "threat_actor": false,
+    "tor": false,
+    "vpn": false
+  },
+  "top_classifications": {
+    "campaign": null,
+    "country": "United States",
+    "industries": [],
+    "malwares": ["TestMalware"],
+    "region": null,
+    "target_country_list": [],
+    "threat_actors": []
+  },
+  "history": {
+    "indicator_history": [
+      {
+        "event": "first_seen",
+        "feed_source": "TestFeed",
+        "insert_date": "2024-01-01"
+      }
+    ]
+  },
+  "activity_label_dict": {
+    "last_1_day": "Active",
+    "last_7_days": "Active",
+    "last_30_days": "Active",
+    "last_90_days": "Active"
+  },
+  "premium_feeds": [],
+  "relations": []
+}

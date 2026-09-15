@@ -1,5 +1,6 @@
 category: Email
-sectionOrder:
+provider: Google
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -39,6 +40,9 @@ configuration:
   type: 8
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -56,6 +60,19 @@ configuration:
   type: 13
   section: Connect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 1 days
   display: First fetch timestamp, in days.
   name: fetch_time
@@ -451,8 +468,14 @@ script:
       description: The content of the email.
       type: string
     - contextPath: Gmail.Attachments
-      description: Attachment details. Attachments IDs are separated by commas.
-      type: unknown
+      description: The attachments of the email. Includes ID and Name fields.
+      type: Unknown
+    - contextPath: Gmail.Attachments.ID
+      description: The email attachment ID (as appear in gmail).
+      type: Unknown
+    - contextPath: Gmail.Attachments.Name
+      description: The email attachment name.
+      type: Unknown
     - contextPath: Gmail.Headers
       description: All headers of a specific email (list).
       type: unknown
@@ -491,6 +514,9 @@ script:
       type: Unknown
     - contextPath: Email.Date
       description: The date the email was received.
+      type: String
+    - contextPath: GmailEmails.NextPageToken
+      description: Token to retrieve the next page of results.
       type: String
   - arguments:
     - description: 'Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en".'
@@ -1735,7 +1761,7 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.4418335
+  dockerimage: demisto/google-api-py3:1.0.0.10182333
   isfetch: true
   runonce: false
   script: '-'

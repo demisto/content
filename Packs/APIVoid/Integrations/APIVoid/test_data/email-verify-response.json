@@ -1,0 +1,14 @@
+{
+    "email": "test@example.com",
+    "valid_format": true,
+    "username": "test",
+    "domain": "example.com",
+    "role_address": false,
+    "disposable": false,
+    "has_mx_records": true,
+    "free_email": false,
+    "suspicious_username": false,
+    "suspicious_domain": false,
+    "should_block": false,
+    "score": 0
+}

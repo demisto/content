@@ -50,7 +50,7 @@
             "kill_chain_short_id": "KCXKNfnJuuuu",
             "number_of_total_comments": 1,
             "first_seen_at": "2019-11-21T13:32:39.839600Z",
-            "last_seen_at": null,
+            "last_seen_at": "2019-11-26T13:32:39.839600Z",
             "assets": [],
             "time_to_detect": null,
             "time_to_acknowledge": 113615345,
@@ -107,7 +107,7 @@
             "kill_chain_short_id": null,
             "number_of_total_comments": 1,
             "first_seen_at": "2019-11-21T13:32:41.902000Z",
-            "last_seen_at": null,
+            "last_seen_at": "2019-11-26T13:32:41.902000Z",
             "assets": [
                 "c50cc586-f3d9-4198"
             ],

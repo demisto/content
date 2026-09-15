@@ -51,6 +51,35 @@ MAP_ASSET_TYPE_TO_REQUEST_KEY = {
 }
 
 
+# IEEE 754 max safe integer (2^53 - 1). Integers larger than this lose
+# numerical precision when parsed as floats during JSON unmarshaling in XSOAR Core.
+MAX_SAFE_INT = 9007199254740991
+
+
+def sanitize_large_ints(obj: Any) -> Any:
+    """
+    Recursively finds integers larger than the JS/Go max safe integer (2^53 - 1)
+    and converts them to strings to prevent IEEE 754 precision loss in XSOAR Core.
+
+    ThreatConnect object IDs can exceed the IEEE 754 safe integer limit
+    (9,007,199,254,740,991), which causes rounding drift when parsed as floats
+    during JSON unmarshaling in XSOAR Core. Casting such integers to strings
+    preserves numerical fidelity so downstream commands can reference the
+    correct ThreatConnect object IDs.
+    """
+    if isinstance(obj, bool):
+        # bool is a subclass of int in Python, preserve as-is
+        return obj
+    if isinstance(obj, int):
+        return str(obj) if obj > MAX_SAFE_INT else obj
+    if isinstance(obj, dict):
+        return {k: sanitize_large_ints(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [sanitize_large_ints(i) for i in obj]
+
+    return obj
+
+
 class Client(BaseClient):
     def __init__(self, api_id: str, api_secret: str, base_url: str, verify: bool = True, proxy: bool = False):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
@@ -75,6 +104,10 @@ class Client(BaseClient):
         response = self._http_request(
             method=method.value, url_suffix=url_suffix, data=payload, resp_type=responseType, params=params, headers=headers
         )
+
+        if responseType == "json":
+            return sanitize_large_ints(response)
+
         return response
 
     def create_header(self, url_suffix: str, method: Method) -> dict:
@@ -229,8 +262,8 @@ def detection_to_incident(threatconnect_data: dict, threatconnect_date: str) -> 
     return incident
 
 
-def get_indicator_reputation(client: Client, args_type: str, type_name: str, args: dict) -> None:  # pragma: no cover
-    owners_query = create_or_query(args.get("owners", demisto.params().get("defaultOrg")), "ownerName")
+def get_indicator_reputation(client: Client, args_type: str, type_name: str, args: dict) -> None:
+    owners_query = create_or_query(args.get("owners", ""), "ownerName")
     query = create_or_query(args.get(args_type), "summary")  # type: ignore
     rating_threshold = args.get("ratingThreshold", "")
     confidence_threshold = args.get("confidenceThreshold", "")
@@ -257,7 +290,7 @@ def get_indicator_reputation(client: Client, args_type: str, type_name: str, arg
             "Contents": indicators,
             "ReadableContentsFormat": formats["markdown"],
             "HumanReadable": tableToMarkdown(
-                f"ThreatConnect URL Reputation for: {args.get(args_type)}",
+                f"ThreatConnect {type_name} Reputation for: {args.get(args_type)}",
                 human_readable,
                 headerTransform=pascalToSpace,
                 removeNull=True,
@@ -316,12 +349,14 @@ def tc_delete_group_command(client: Client, args: dict) -> Any:  # pragma: no co
 def tc_get_indicators(
     client: Client,
     tag: str = "",
+    tag_operator: str = "LIKE",
     page: str = "0",
     limit: str = "500",
     owners: str = "",
     indicator_id: str = "",
     summary: str = "",
     fields_to_return: list = None,
+    tql_filter: str = "",
 ) -> Any:  # pragma: no cover
     tql_prefix = ""
     if summary:
@@ -329,7 +364,10 @@ def tc_get_indicators(
         tql_prefix = "?tql="
 
     if tag:
-        tag = f' AND tag LIKE "%{tag}%"'
+        if tag_operator == "LIKE":
+            tag = f' AND tag LIKE "%{tag}%"'
+        else:
+            tag = f' AND tag {tag_operator} "{tag}"'
         tql_prefix = "?tql="
 
     if owners:
@@ -338,9 +376,12 @@ def tc_get_indicators(
     if indicator_id:
         indicator_id = " AND " + create_or_query(indicator_id, "id").replace('"', "")
         tql_prefix = "?tql="
+    if tql_filter:
+        tql_filter = f" AND {tql_filter}"
+        tql_prefix = "?tql="
     fields = set_fields(fields_to_return)
 
-    tql = f"{indicator_id}{summary}{owners}{tag}".replace(" AND ", "", 1)
+    tql = f"{indicator_id}{summary}{owners}{tag}{tql_filter}".replace(" AND ", "", 1)
     tql = urllib.parse.quote(tql.encode("utf8"))
     url = f"/api/v3/indicators{tql_prefix}{tql}{fields}&resultStart={page}&resultLimit={limit}"
     if not tql_prefix:
@@ -376,7 +417,8 @@ def tc_get_indicators_command(client: Client, args: dict):
     limit = args.get("limit", "500")
     page = args.get("page", "0")
     fields_to_return = argToList(args.get("fields_to_return") or [])
-    indicators = tc_get_indicators(client=client, owners=owners, limit=limit, page=page)
+    tql_filter = args.get("filter", "")
+    indicators = tc_get_indicators(client=client, owners=owners, limit=limit, page=page, tql_filter=tql_filter)
     ec, human_readable = create_context(indicators, include_dbot_score=True, fields_to_return=fields_to_return)
     return_results(
         {
@@ -481,6 +523,7 @@ def fetch_incidents(client: Client, *args) -> str:
     fields = set_fields(argToList(params.get("fields")))
     max_fetch = params.get("max_fetch", "200")
     group_type = params.get("group_type", ["Incident"])
+    tql_filter = params.get("tql_filter", "")
 
     last_run = demisto.getLastRun()
     demisto.debug(f"[ThreatConnect] last run: {last_run}")
@@ -503,6 +546,7 @@ def fetch_incidents(client: Client, *args) -> str:
         from_date=last_fetch_time,
         limit=max_fetch,
         sort="&sorting=dateAdded%20ASC",
+        tql_filter=tql_filter,
     )
     incidents: list = []
     for incident in response:
@@ -845,6 +889,7 @@ def list_groups(
         "AssociatedIndicators",
         "AssociatedGroups",
         "securityLabels",
+        "Web Link",
     ]
 
     for group in response.get("data"):
@@ -860,6 +905,7 @@ def list_groups(
                 "AssociatedIndicators": group.get("associatedIndicators"),
                 "AssociatedGroups": group.get("associatedGroups"),
                 "securityLabels": group.get("securityLabels"),
+                "Web Link": group.get("webLink", ""),
             }
         )
     context = {"TC.Groups(val.ID && val.ID === obj.ID)": content}
@@ -941,8 +987,11 @@ def tc_get_indicators_by_tag_command(client: Client, args: dict) -> None:  # pra
     limit: str = args.get("limit", "500")
     page: str = args.get("page", "0")
     tag: str = args.get("tag") or ""
-    fields_to_return = argToList(args.get("fields_to_return") or []).append(["tags"])
-    indicators = tc_get_indicators(client, owners=owners, limit=limit, page=page, tag=tag, fields_to_return=fields_to_return)
+    tag_operator: str = args.get("operator", "LIKE")
+    fields_to_return = argToList(args.get("fields_to_return") or []) + ["tags"]
+    indicators = tc_get_indicators(
+        client, owners=owners, limit=limit, page=page, tag=tag, tag_operator=tag_operator, fields_to_return=fields_to_return
+    )
     ec, human_readable = create_context(indicators, include_dbot_score=True)
 
     return_results(
@@ -962,7 +1011,7 @@ def tc_get_indicators_by_tag_command(client: Client, args: dict) -> None:  # pra
     )
 
 
-def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no cover
+def tc_get_indicator_command(client: Client, args: dict) -> None:
     indicator = args.get("indicator", "")
     fields_to_return = argToList(args.get("fields_to_return") or [])
     indicator_id = ""
@@ -993,7 +1042,7 @@ def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no 
         associated_indicators = response[0].get("associatedIndicators")
         associated_groups = response[0].get("associatedGroups")
 
-        return_results(
+        results: list = [
             {
                 "Type": entryTypes["note"],
                 "ContentsFormat": formats["json"],
@@ -1007,77 +1056,69 @@ def tc_get_indicator_command(client: Client, args: dict) -> None:  # pragma: no 
                 ),
                 "EntryContext": ec,
             }
-        )
+        ]
 
         if associated_groups:
-            return_results(
-                {
-                    "Type": entryTypes["note"],
-                    "ContentsFormat": formats["json"],
-                    "ReadableContentsFormat": formats["markdown"],
-                    "HumanReadable": tableToMarkdown(
+            results.append(
+                CommandResults(
+                    readable_output=tableToMarkdown(
                         "ThreatConnect Associated Groups for indicator: {}".format(args.get("indicator", "")),
                         associated_groups.get("data", []),
                         headerTransform=pascalToSpace,
                     ),
-                }
+                    raw_response=associated_groups.get("data", []),
+                )
             )
 
         if associated_indicators:
-            return_results(
-                {
-                    "Type": entryTypes["note"],
-                    "ContentsFormat": formats["json"],
-                    "ReadableContentsFormat": formats["markdown"],
-                    "HumanReadable": tableToMarkdown(
+            results.append(
+                CommandResults(
+                    readable_output=tableToMarkdown(
                         "ThreatConnect Associated Indicators for indicator: {}".format(args.get("indicator", "")),
                         associated_indicators.get("data", []),
                         headerTransform=pascalToSpace,
                     ),
-                }
+                    raw_response=associated_indicators.get("data", []),
+                )
             )
 
         if include_tags:
-            return_results(
-                {
-                    "Type": entryTypes["note"],
-                    "ContentsFormat": formats["json"],
-                    "ReadableContentsFormat": formats["markdown"],
-                    "HumanReadable": tableToMarkdown(
+            results.append(
+                CommandResults(
+                    readable_output=tableToMarkdown(
                         "ThreatConnect Tags for indicator: {}".format(args.get("indicator", "")),
                         include_tags.get("data", []),
                         headerTransform=pascalToSpace,
                     ),
-                }
+                    raw_response=include_tags.get("data", []),
+                )
             )
 
         if include_attributes:
-            return_results(
-                {
-                    "Type": entryTypes["note"],
-                    "ContentsFormat": formats["json"],
-                    "ReadableContentsFormat": formats["markdown"],
-                    "HumanReadable": tableToMarkdown(
+            results.append(
+                CommandResults(
+                    readable_output=tableToMarkdown(
                         "ThreatConnect Attributes for indicator: {}".format(args.get("indicator", "")),
                         include_attributes.get("data", []),
                         headerTransform=pascalToSpace,
                     ),
-                }
+                    raw_response=include_attributes.get("data", []),
+                )
             )
 
         if include_observations:
-            return_results(
-                {
-                    "Type": entryTypes["note"],
-                    "ContentsFormat": formats["json"],
-                    "ReadableContentsFormat": formats["markdown"],
-                    "HumanReadable": tableToMarkdown(
-                        "ThreatConnect Observations for indicator: {}".format(args.get("id", "")),
+            results.append(
+                CommandResults(
+                    readable_output=tableToMarkdown(
+                        "ThreatConnect Observations for indicator: {}".format(args.get("indicator", "")),
                         include_observations,
                         headerTransform=pascalToSpace,
                     ),
-                }
+                    raw_response=include_observations,
+                )
             )
+
+        return_results(results)
 
 
 def tc_delete_indicator_command(client: Client, args: dict) -> None:  # pragma: no cover
@@ -1371,7 +1412,7 @@ def tc_update_indicator_command(
     response = client.make_request(Method.PUT, url, payload=json.dumps(payload))
 
     if return_raw:
-        return (response.get("data"),)
+        return response.get("data")
     ec, human_readable = create_context([response.get("data")])
 
     return_results(

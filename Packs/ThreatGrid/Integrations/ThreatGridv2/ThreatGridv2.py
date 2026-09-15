@@ -1588,7 +1588,7 @@ def main() -> None:
     params: dict[str, Any] = demisto.params()
     args: dict[str, Any] = demisto.args()
 
-    base_url = params["base_url"]
+    base_url = params.get("base_url") or "https://panacea.threatgrid.com"
     api_token = params.get("credentials", {}).get("password")
 
     verify_certificate: bool = not params.get("insecure", False)

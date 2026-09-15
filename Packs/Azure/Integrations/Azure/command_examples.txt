@@ -1,6 +1,8 @@
 !azure-nsg-security-rule-update security_group_name="my-nsg" security_rule_name="allow-https" direction="Inbound" action="Allow" protocol="TCP" source="Internet" destination="1.1" destination_ports="443" priority="100" description="Allow HTTPS traffic"
 !azure-storage-account-update account_name="mystorageaccount" sku="Standard_LRS" kind="StorageV2" location="eastus" supports_https_traffic_only="true" network_ruleset_default_action="Deny" allow_blob_public_access="false" minimum_tls_version="TLS1_2"
 !azure-storage-blob-service-properties-set account_name="mystorageaccount" delete_rentention_policy_enabled="true" delete_rentention_policy_days="30"
+!azure-storage-blob-service-properties-get subscription_id="sub1" resource_group_name="res1" account_name="account"
+!azure-storage-blob-containers-update subscription_id="sub1" resource_group_name="res1" account_name="acc1" container_name=test
 !azure-policy-assignment-create name="require-https-policy" policy_definition_id="12345" display_name="Require HTTPS for storage accounts" description="This policy ensures that storage accounts only accept HTTPS traffic" scope_level="subscription"
 !azure-postgres-config-set server_name="my-postgres-server" configuration_name="log_checkpoints" source="user-override" value="on"
 !azure-webapp-config-set name="my-webapp" http20_enabled="true" remote_debugging_enabled="false" min_tls_version="1.2"
@@ -15,3 +17,16 @@
 !azure-sql-db-threat-policy-update server_name="my-sql-server" db_name="my-database" email_account_admins_enabled="true"
 !azure-sql-db-transparent-data-encryption-set server_name="my-sql-server" db_name="my-database" state="Enabled"
 !azure-cosmos-db-update account_name="my-cosmosdb-account" disable_key_based_metadata_write_access="true"
+!azure-nsg-resource-group-list subscription_id="my-subscription-id"
+!azure-nsg-security-groups-list subscription_id="my-subscription-id" resource_group_name="my_resource_group_name"
+!azure-nsg-network-interfaces-list subscription_id="my-subscription-id" resource_group_name="my_resource_group_name"
+!azure-nsg-public-ip-addresses-list subscription_id="my-subscription-id" resource_group_name="my_resource_group_name"
+!azure-nsg-security-rule-create subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" security_group_name="my-security-group-name" security_rule_name="my-security-rule" direction=Inbound
+!azure-nsg-security-rule-get subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" security_group_name="my-security-group-name" security_rule_name="my-security-rule"
+!azure-nsg-security-rule-delete subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" security_group_name="my-security-group-name" security_rule_name="my-security-rule"
+!azure-vm-get-public-ip-details subscription_id="my-subscription-id" resource_group="my_resource_group_name" address_name=11111111-1111-1111-1111-111111111111-address-name-v
+!azure-vm-get-nic-details subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" nic_name="network_interface"
+!azure-vm-get-instance-details subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" virtual_machine_name="my_vm"
+!azure-vm-start-instance subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" virtual_machine_name="my_vm"
+!azure-vm-power-off-instance subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" virtual_machine_name="my_vm"
+

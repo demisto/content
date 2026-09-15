@@ -13,6 +13,9 @@ from collections.abc import Generator, Iterable
 from pathlib import Path
 from demisto_sdk.commands.common.tools import get_pack_metadata
 import git
+from github import Github
+from github.PullRequest import PullRequest
+from blessings import Terminal
 
 # Constants
 BRANCH_NAME = "BRANCH_NAME"
@@ -21,6 +24,7 @@ DOC_REVIEWER_KEY = "DOC_REVIEWER"
 CONTRIBUTION_REVIEWERS_KEY = "CONTRIBUTION_REVIEWERS"
 CONTRIBUTION_SECURITY_REVIEWER_KEY = "CONTRIBUTION_SECURITY_REVIEWER"
 TIM_REVIEWER_KEY = "TIM_REVIEWER"
+MAPPING_REVIEWER_KEY = "MAPPING_REVIEWER"
 
 CONTENT_ROLES_FILENAME = "content_roles.json"
 GITHUB_HIDDEN_DIR = ".github"
@@ -267,6 +271,21 @@ def get_doc_reviewer(content_roles: dict[str, Any]) -> str:
     return reviewer
 
 
+def get_mapping_reviewer(content_roles: dict[str, Any]) -> list[str]:
+    """
+    Retrieve the mapping reviewer from content roles JSON/`dict`.
+
+    Args:
+        - `content_roles` (``dict[str, Any]``): The current content team roles and members.
+
+    Return:
+        - `list[str]` of mapping reviewer GitHub usernames.
+    """
+    if not (reviewer := content_roles.get(MAPPING_REVIEWER_KEY, [])):
+        raise ValueError("Cannot get mapping reviewer")
+    return reviewer
+
+
 def get_content_roles_from_blob() -> dict[str, Any] | None:
     """
     Helper method to retrieve the 'content_roles.json` from
@@ -393,3 +412,50 @@ def get_logger(file_name: str) -> Logger:
     logger.addHandler(stream_handler)
 
     return logger
+
+
+def is_organization_member(gh: Github, username: str, org_name: str = ORGANIZATION_NAME) -> bool:
+    """
+    Check if a user is a member of the organization.
+
+    Args:
+        gh (Github): The GitHub client instance.
+        username (str): The GitHub username to check.
+        org_name (str): The organization name (default: 'demisto').
+
+    Returns:
+        bool: True if the user is an organization member, False otherwise.
+    """
+    try:
+        org = gh.get_organization(org_name)
+        return org.has_in_members(gh.get_user(username))
+    except Exception as e:
+        print(f"Error checking organization membership for {username}: {e}")  # noqa: T201
+        return False
+
+
+def post_ai_review_introduction(pr: PullRequest, reviewers: list[str] | None = None, t: Terminal | None = None) -> None:
+    """
+    Posts the AI reviewer introduction comment.
+
+    Args:
+        pr (PullRequest): The PullRequest object.
+        reviewers (list[str] | None): List of assigned reviewers. If None or empty, uses generic greeting.
+        t (Terminal | None): The terminal object for printing.
+    """
+    if reviewers:
+        reviewer_mentions = ", ".join([f"@{r}" for r in reviewers])
+        greeting = f"Hi {reviewer_mentions}, you"
+    else:
+        greeting = "You"
+
+    ai_reviewer_introduction_msg = (
+        "## 🤖 AI-Powered Code Review Available\n\n"
+        f"{greeting} can leverage AI-powered code review to assist with this PR!\n\n"
+        "**Available Commands:**\n"
+        "- `@marketplace-ai-reviewer start review` - Initiate a full AI code review\n"
+        "- `@marketplace-ai-reviewer re-review` - Incremental review for new commits\n"
+    )
+    pr.create_issue_comment(ai_reviewer_introduction_msg)
+    if t:
+        print(f"{t.cyan}Posted AI reviewer introduction comment{t.normal}")  # noqa: T201

@@ -1,0 +1,12 @@
+[
+    {
+        "name": "IOC Domain Match: 0.0.0.0",
+        "details": "{\"Artifact\": \"0.0.0.0\", \"IocIngestTime\": \"2022-09-16T04:22:03.276821Z\", \"FirstAccessedTime\": \"2023-01-19T05:48:21Z\", \"LastAccessedTime\": \"2025-07-10T14:13:30Z\", \"Sources\": [{\"Category\": \"Unwanted\", \"IntRawConfidenceScore\": 0, \"NormalizedConfidenceScore\": \"Medium\", \"RawSeverity\": \"Medium\", \"Source\": \"3rd Party\"}], \"IncidentType\": \"IocDomainMatches\"}",
+        "rawJSON": "{\"Artifact\": \"0.0.0.0\", \"IocIngestTime\": \"2022-09-16T04:22:03.276821Z\", \"FirstAccessedTime\": \"2023-01-19T05:48:21Z\", \"LastAccessedTime\": \"2025-07-10T14:13:30Z\", \"Sources\": [{\"Category\": \"Unwanted\", \"IntRawConfidenceScore\": 0, \"NormalizedConfidenceScore\": \"Medium\", \"RawSeverity\": \"Medium\", \"Source\": \"3rd Party\"}], \"IncidentType\": \"IocDomainMatches\"}"
+    },
+    {
+        "name": "IOC Domain Match: 0.0.0.1",
+        "details": "{\"Artifact\": \"0.0.0.1\", \"IocIngestTime\": \"2022-09-16T04:22:03.276821Z\", \"FirstAccessedTime\": \"2023-01-19T05:48:21Z\", \"LastAccessedTime\": \"2025-07-10T14:13:30Z\", \"Sources\": [{\"Category\": \"Unwanted\", \"IntRawConfidenceScore\": 0, \"NormalizedConfidenceScore\": \"Medium\", \"RawSeverity\": \"Medium\", \"Source\": \"3rd Party\"}], \"IncidentType\": \"IocDomainMatches\"}",
+        "rawJSON": "{\"Artifact\": \"0.0.0.1\", \"IocIngestTime\": \"2022-09-16T04:22:03.276821Z\", \"FirstAccessedTime\": \"2023-01-19T05:48:21Z\", \"LastAccessedTime\": \"2025-07-10T14:13:30Z\", \"Sources\": [{\"Category\": \"Unwanted\", \"IntRawConfidenceScore\": 0, \"NormalizedConfidenceScore\": \"Medium\", \"RawSeverity\": \"Medium\", \"Source\": \"3rd Party\"}], \"IncidentType\": \"IocDomainMatches\"}"
+    }
+]

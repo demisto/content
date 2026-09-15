@@ -4,3 +4,5 @@ name: Okta Access Gateway
 rules: ''
 schema: ''
 tags: Okta Access Gateway
+supportedModules:
+- xsiam

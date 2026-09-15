@@ -3,3 +3,5 @@ id: Semperis_DSP_ModelingRule
 name: Semperis DSP Modeling Rule
 rules: ''
 schema: ''
+supportedModules:
+- xsiam

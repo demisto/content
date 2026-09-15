@@ -3,20 +3,23 @@ For more information, refer to the [Identity Lifecycle Management article](https
 
 ## Configure Salesforce Fusion IAM in Cortex
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Base URL | True |
-| Username | True |
-| Password | True |
-| Trust any certificate (not secure) | False |
-| Use system proxy settings | False |
-| Allow creating users | False |
-| Allow updating users | False |
-| Allow enabling users | False |
-| Allow disabling users | False |
-| Automatically create user if not found in update command | False |
-| Incoming Mapper | True |
-| Outgoing Mapper | True |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Base URL |  | True |
+| User name |  | True |
+| Password |  | True |
+| Client ID |  | False |
+| Client secret |  | False |
+| Secret token |  | False |
+| Allow creating users |  | False |
+| Allow updating users |  | False |
+| Allow enabling users |  | False |
+| Allow disabling users |  | False |
+| Automatically create user if not found in update command |  | False |
+| Incoming Mapper |  | True |
+| Outgoing Mapper | Cortex XSOAR only parameter. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
 ## Commands
 

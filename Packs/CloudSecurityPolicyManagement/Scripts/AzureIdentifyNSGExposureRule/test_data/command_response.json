@@ -1,0 +1,130 @@
+[
+    {
+        "Type": 4, 
+        "Metadata": {
+            "instance": "azure-incorrect-instance", 
+            "type": 4, 
+            "brand": "Azure"
+        }, 
+        "Contents": "Fake error traceback."
+    }, 
+    {
+        "Type": 1, 
+        "Metadata": {
+            "instance": "azure-correct-instance", 
+            "type": 1, 
+            "brand": "Azure"
+        }, 
+        "Contents": [
+            {
+                "properties": {
+                    "sourceAddressPrefixes": [], 
+                    "priority": 103, 
+                    "direction": "Inbound", 
+                    "protocol": "TCP", 
+                    "destinationPortRanges": [], 
+                    "access": "Allow", 
+                    "destinationAddressPrefixes": [
+                        "1.2.3.4", 
+                        "1.2.3.5"
+                    ], 
+                    "destinationPortRange": "3389", 
+                    "sourcePortRange": "*", 
+                    "sourcePortRanges": [], 
+                    "sourceAddressPrefix": "*", 
+                    "provisioningState": "Succeeded"
+                }, 
+                "etag": "W/\"fake-etag\"", 
+                "type": "Microsoft.Network/networkSecurityGroups/securityRules", 
+                "id": "/subscriptions/fake-subscription-id/resourceGroups/fake-resource-group/providers/Microsoft.Network/networkSecurityGroups/test-nsg/securityRules/AllowRDPtoJumpBoxes", 
+                "name": "AllowRDPtoJumpBoxes"
+            },
+            {
+                "properties": {
+                    "sourceAddressPrefixes": [], 
+                    "priority": 102, 
+                    "direction": "Inbound", 
+                    "protocol": "TCP", 
+                    "destinationPortRanges": [], 
+                    "access": "Allow", 
+                    "destinationAddressPrefixes": [], 
+                    "destinationPortRange": "22", 
+                    "sourcePortRange": "*", 
+                    "sourcePortRanges": [], 
+                    "destinationAddressPrefix": "*", 
+                    "sourceAddressPrefix": "*", 
+                    "provisioningState": "Succeeded"
+                }, 
+                "etag": "W/\"fake-etag\"", 
+                "type": "Microsoft.Network/networkSecurityGroups/securityRules", 
+                "id": "/subscriptions/fake-subscription-id/resourceGroups/fake-resource-group/providers/Microsoft.Network/networkSecurityGroups/test-nsg/securityRules/AllowSshToAll", 
+                "name": "AllowSshToAll"
+            },  
+            {
+                "properties": {
+                    "sourceAddressPrefixes": [], 
+                    "priority": 105, 
+                    "direction": "Inbound", 
+                    "protocol": "TCP", 
+                    "destinationPortRanges": [
+                        "80", 
+                        "443"
+                    ], 
+                    "access": "Allow", 
+                    "destinationAddressPrefixes": [], 
+                    "sourcePortRange": "*", 
+                    "sourcePortRanges": [], 
+                    "destinationAddressPrefix": "1.2.3.0/24", 
+                    "sourceAddressPrefix": "*", 
+                    "provisioningState": "Succeeded"
+                }, 
+                "etag": "W/\"fake-etag\"", 
+                "type": "Microsoft.Network/networkSecurityGroups/securityRules", 
+                "id": "/subscriptions/fake-subscription-id/resourceGroups/fake-resource-group/providers/Microsoft.Network/networkSecurityGroups/test-nsg/securityRules/AllowHTTPServices", 
+                "name": "AllowHTTPServices"
+            }, 
+            {
+                "properties": {
+                    "sourceAddressPrefixes": [], 
+                    "priority": 107, 
+                    "direction": "Inbound", 
+                    "protocol": "TCP", 
+                    "destinationPortRanges": [], 
+                    "access": "Allow", 
+                    "destinationAddressPrefixes": [], 
+                    "destinationPortRange": "465", 
+                    "sourcePortRange": "*", 
+                    "sourcePortRanges": [], 
+                    "destinationAddressPrefix": "1.2.3.10", 
+                    "sourceAddressPrefix": "*", 
+                    "provisioningState": "Succeeded"
+                }, 
+                "etag": "W/\"fake-etag\"", 
+                "type": "Microsoft.Network/networkSecurityGroups/securityRules", 
+                "id": "/subscriptions/fake-subscription-id/resourceGroups/fake-resource-group/providers/Microsoft.Network/networkSecurityGroups/test-nsg/securityRules/AllowSMTPStoMailServer", 
+                "name": "AllowSMTPStoMailServer"
+            }, 
+            {
+                "properties": {
+                    "sourceAddressPrefixes": [], 
+                    "priority": 117, 
+                    "direction": "Inbound", 
+                    "protocol": "TCP", 
+                    "destinationPortRanges": [], 
+                    "access": "Allow", 
+                    "destinationAddressPrefixes": [], 
+                    "destinationPortRange": "20-21", 
+                    "sourcePortRange": "*", 
+                    "sourcePortRanges": [], 
+                    "destinationAddressPrefix": "*", 
+                    "sourceAddressPrefix": "*", 
+                    "provisioningState": "Succeeded"
+                }, 
+                "etag": "W/\"fake-etag\"", 
+                "type": "Microsoft.Network/networkSecurityGroups/securityRules", 
+                "id": "/subscriptions/fake-subscription-id/resourceGroups/fake-resource-group/providers/Microsoft.Network/networkSecurityGroups/test-nsg/securityRules/AllowFTPToAll", 
+                "name": "AllowFTPToAll"
+            }
+        ]
+    }
+]

@@ -60,6 +60,9 @@ INCIDENT_OUTGOING_MIRROR_DISMISSAL_NOTE = "Closed by XSOAR"
 PAGE_NUMBER_DEFAULT_VALUE = 1
 PAGE_SIZE_DEFAULT_VALUE = 50
 PAGE_SIZE_MAX_VALUE = 10000
+# The maximum number of alerts the alert search API accepts in a single request.
+# Higher limits are handled by paginating over the API's "nextPageToken".
+ALERT_SEARCH_MAX_LIMIT = 10000
 
 DEFAULT_LIMIT = "50"
 
@@ -763,6 +766,11 @@ class Client(BaseClient):
         sort_by: Optional[List[str]] = None,
     ):
         params = assign_params(detailed=detailed)
+        if limit is not None and limit > ALERT_SEARCH_MAX_LIMIT:
+            demisto.debug(
+                f"Requested alert search limit {limit} exceeds the API maximum, using {ALERT_SEARCH_MAX_LIMIT} instead."
+            )
+            limit = ALERT_SEARCH_MAX_LIMIT
         data = remove_empty_values(
             {
                 "limit": limit,
@@ -868,7 +876,10 @@ class Client(BaseClient):
         sort_direction: Optional[str] = None,
         sort_field: Optional[str] = None,
         include_resource_json: Optional[str] = "true",
+        heuristic_search: Optional[str] = "true",
     ):
+        total_items = []
+        page_count = 1
         data = remove_empty_values(
             {
                 "id": search_id,
@@ -877,11 +888,34 @@ class Client(BaseClient):
                 "sort": [{"direction": sort_direction, "field": sort_field}],
                 "timeRange": time_range,
                 "withResourceJson": include_resource_json,
-                "heuristicSearch": "true",
+                "heuristicSearch": heuristic_search,
             }
         )
 
-        return self._http_request("POST", "search/config", json_data=data)
+        first_page_response = self._http_request("POST", "search/config", json_data=data)
+        first_page_data = first_page_response.get("data", {})
+
+        items = first_page_data.get("items", [])
+        total_items.extend(items)
+        demisto.debug(f"POST search/config - {len(items)} items were fetched from page {page_count}")
+
+        page_limit = limit - len(items) if limit is not None else 0
+        next_page_token = first_page_data.get("nextPageToken")
+
+        while next_page_token and page_limit:
+            data["pageToken"] = next_page_token
+            data["limit"] = page_limit
+            page_count += 1
+
+            response = self._http_request("POST", "search/config/page", json_data=data)
+            items = response.get("items", [])
+            demisto.debug(f"POST search/config/page - {len(items)} items were fetched from page {page_count}")
+            page_limit -= len(items)
+            total_items.extend(items)
+
+            next_page_token = response.get("nextPageToken", "")
+
+        return total_items
 
     def event_search_request(
         self, time_range: Dict[str, Any], query: str, limit: Optional[int] = None, sort_by: Optional[List[Dict[str, str]]] = None
@@ -1259,8 +1293,7 @@ def extract_namespace(response_items: List[Dict[str, Any]]):
                 break
 
 
-def remove_additional_resource_fields(input_dict):
-    items = demisto.get(input_dict, "data.items")
+def remove_additional_resource_fields(items):
     if items:
         for current_item in list(items):
             data = current_item.get("data", {})
@@ -1958,6 +1991,49 @@ def alert_filter_list_command(client: Client) -> CommandResults:
     return command_results
 
 
+def alert_search_paginated_request(
+    client: Client,
+    time_range: Dict[str, Any],
+    filters: List[str],
+    limit: Optional[int] = None,
+    detailed: Optional[str] = None,
+    page_token: Optional[str] = None,
+    sort_by: Optional[List[str]] = None,
+) -> tuple[List[Dict[str, Any]], Optional[str], Any]:
+    """
+    Searches alerts, automatically paginating until the requested limit is reached.
+
+    A single alert search API request can not return more than ALERT_SEARCH_MAX_LIMIT results, so higher limits are
+    fulfilled by following the "nextPageToken" returned by the API instead of dropping the extra results.
+
+    Returns:
+        A tuple of the alerts found, the token of the next page, and the total number of alerts matching the search.
+    """
+    alerts: List[Dict[str, Any]] = []
+    total_rows: Any = 0
+    next_page_token = page_token
+    is_first_page = True
+    has_more_pages = True
+
+    while has_more_pages:
+        page_limit = min(limit - len(alerts), ALERT_SEARCH_MAX_LIMIT) if limit is not None else None
+        response = client.alert_search_request(time_range, filters, page_limit, detailed, next_page_token, sort_by)
+
+        alerts_before_page = len(alerts)
+        alerts.extend(response.get("items") or [])
+        next_page_token = response.get("nextPageToken")
+        if is_first_page:
+            total_rows = response.get("totalRows", 0)
+            is_first_page = False
+        demisto.debug(f"Finished alert search request, got {len(alerts) - alerts_before_page} items, {len(alerts)} in total.")
+
+        # there is a 'nextPageToken' value even if we already got all the results, so we also require the page to add
+        # new alerts, both to detect the end of the results and to make sure the loop always progresses
+        has_more_pages = bool(limit is not None and len(alerts) < limit and len(alerts) > alerts_before_page and next_page_token)
+
+    return alerts[:limit] if limit is not None else alerts, next_page_token, total_rows
+
+
 def alert_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     filters = argToList(args.get("filters"))
     detailed = args.get("detailed", "true")
@@ -1972,9 +2048,9 @@ def alert_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
     )
     sort_by = [f'{sort_field}:{args.get("sort_direction")}'] if (sort_field := args.get("sort_field")) else None
 
-    response = client.alert_search_request(time_filter, filters, limit, detailed, next_token, sort_by)
-    response_items = response.get("items", [])
-    next_page_token = response.get("nextPageToken")
+    response_items, next_page_token, total_rows = alert_search_paginated_request(
+        client, time_filter, filters, limit, detailed, next_token, sort_by
+    )
     for response_item in response_items:
         change_timestamp_to_datestring_in_dict(response_item)
 
@@ -2009,7 +2085,7 @@ def alert_search_command(client: Client, args: Dict[str, Any]) -> CommandResults
         "PrismaCloud.Alert(val.id && val.id == obj.id)": response_items,  # values are appended to list based on id
     }
     command_results = CommandResults(
-        readable_output=f'Showing {len(readable_responses)} of {response.get("totalRows", 0)} results:\n'
+        readable_output=f"Showing {len(readable_responses)} of {total_rows} results:\n"
         + tableToMarkdown("Alerts Details:", readable_responses, headers=headers, removeNull=True, headerTransform=pascalToSpace)
         + f"### Next Page Token:\n{next_page_token}",
         outputs=output,
@@ -2219,6 +2295,7 @@ def alert_remediate_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     query = args.get("query")
+    heuristic_search = args.get("heuristic_search", "true")
     limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
     time_filter = handle_time_filter(
         base_case=TIME_FILTER_BASE_CASE,
@@ -2239,21 +2316,14 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
 
     demisto.debug(
         f"Searching for config with the following params: {query=}, {limit=}, {time_filter=}, {include_resource_json=},"
-        f" {include_additional_resource_fields=}"
+        f" {include_additional_resource_fields=}, {heuristic_search=}"
     )
-    response = client.config_search_request(
-        time_filter,
-        str(query),
-        limit,
-        search_id,
-        sort_direction,
-        sort_field,
-        include_resource_json,
+    response_items = client.config_search_request(
+        time_filter, str(query), limit, search_id, sort_direction, sort_field, include_resource_json, heuristic_search
     )
     if not include_additional_resource_fields:
-        remove_additional_resource_fields(response)
+        remove_additional_resource_fields(response_items)
 
-    response_items = response.get("data", {}).get("items", [])
     for response_item in response_items:
         change_timestamp_to_datestring_in_dict(response_item)
 
@@ -2276,7 +2346,7 @@ def config_search_command(client: Client, args: Dict[str, Any]) -> CommandResult
     command_results = CommandResults(
         outputs_prefix="PrismaCloud.Config",
         outputs_key_field="assetId",
-        readable_output=f'Showing {len(response_items)} of {response.get("data", {}).get("totalRows", 0)} results:\n'
+        readable_output=f"Showing {len(response_items)} results:\n"
         + tableToMarkdown(
             "Configuration Details:", response_items, headers=headers, removeNull=True, headerTransform=pascalToSpace
         ),

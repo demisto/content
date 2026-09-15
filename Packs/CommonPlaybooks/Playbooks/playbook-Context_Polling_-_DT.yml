@@ -1,0 +1,289 @@
+id: Context Polling - DT
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Context Polling - DT
+description: This playbook polls a context value until a specific condition, defined by a DT expression, is met.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 22e2029d-1615-4fd2-8b9a-97b6cdca8180
+    type: start
+    task:
+      id: 22e2029d-1615-4fd2-8b9a-97b6cdca8180
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 180a4266-789f-4315-ab4d-3bc7a552770a
+    type: playbook
+    task:
+      id: 180a4266-789f-4315-ab4d-3bc7a552770a
+      version: -1
+      name: GenericPolling
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+
+        NOTE: This playbook should be run only when the playbook's context is using the "Private to sub-playbook" option.
+      playbookName: GenericPolling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: dt_encoding,value_dt,eval_dt,playbook_id
+      AdditionalPollingCommandArgValues:
+        simple: url,${inputs.value_dt=encodeURIComponent(val)},${inputs.eval_dt=encodeURIComponent(val)},${inputs.playbook_id}
+      ExtractMode:
+        simple: ${inputs.extract_mode}
+      Ids:
+        simple: id
+      Interval:
+        complex:
+          root: inputs.frequency
+      PollingCommandArgName:
+        simple: id
+      PollingCommandName:
+        simple: EvaluateContextValue
+      Timeout:
+        complex:
+          root: inputs.timeout
+      dt:
+        simple: EvaluateContextValue(val.id=='id' && val.ok==false).id
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: d90c99f0-ec70-4b2a-87ae-6b9c0cb163f4
+    type: title
+    task:
+      id: d90c99f0-ec70-4b2a-87ae-6b9c0cb163f4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 3cccb08c-ed99-48e5-803a-e8f4206d5634
+    type: regular
+    task:
+      id: 3cccb08c-ed99-48e5-803a-e8f4206d5634
+      version: -1
+      name: Complete Waiting Tasks
+      description: commands.local.cmd.task.complete
+      script: Builtin|||taskComplete
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      id:
+        complex:
+          root: inputs.tags
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 3fc4e8a3-b17f-4119-89a7-8de5ec556408
+    type: condition
+    task:
+      id: 3fc4e8a3-b17f-4119-89a7-8de5ec556408
+      version: -1
+      name: Are tags given to complete tasks?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.tags
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_9_yes": 0.26
+    },
+    "paper": {
+      "dimensions": {
+        "height": 730,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: value_dt
+  value: {}
+  required: true
+  description: The DT expression for retrieving a value from the context data.
+  playbookInputQuery:
+- key: eval_dt
+  value: {}
+  required: false
+  description: The DT expression for retrieving data for the evaluation from the data returned by `value_dt`.
+  playbookInputQuery:
+- key: playbook_id
+  value: {}
+  required: false
+  description: The sub-playbook ID for retrieving its local context from the context data. Use ${currentPlaybookID} to specify the current sub-playbook ID.
+  playbookInputQuery:
+- key: frequency
+  value:
+    simple: "1"
+  required: true
+  description: How often to check (in minutes).
+  playbookInputQuery:
+- key: timeout
+  value:
+    simple: "10"
+  required: true
+  description: When to timeout (in minutes).
+  playbookInputQuery:
+- key: tags
+  value: {}
+  required: false
+  description: Tags of waiting tasks to be completed upon polling completion.
+  playbookInputQuery:
+- key: extract_mode
+  value: {}
+  required: false
+  description: Indicator Extraction mode for the command sequence. (In XSOAR 8 and above, for first run command set manually the RunPollingCommand task in the playbook, Advanced -> Indicator Extraction mode).
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - value_dt
+  - eval_dt
+  - playbook_id
+  - frequency
+  - timeout
+  - tags
+  - extract_mode
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+tests:
+- Context Polling - DT - Test
+fromversion: 6.10.0

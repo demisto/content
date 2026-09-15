@@ -3324,8 +3324,10 @@ outputs:
 - contextPath: CDL.HuntingResults.HTTPMethod
   description: |-
     The HTTP Method used
-    in the web request
+    in the web request.
   type: string
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+marketplaces:
+- xsoar

@@ -156,9 +156,7 @@ def get_file_verdict():
 def parse_get_file_verdict_response(response):
     # Parse results
     if response.status_code != RESPONSE_CODE_OK:
-        raise Exception(
-            f"Get file verdict failed. Response code -{str(response.status_code)}, Data- '{response.content}'"
-        )
+        raise Exception(f"Get file verdict failed. Response code -{str(response.status_code)}, Data- '{response.content}'")
     response_json = json.loads(response.content)
     status = ""
     verdict = ""

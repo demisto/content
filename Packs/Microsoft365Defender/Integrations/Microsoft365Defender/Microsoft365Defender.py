@@ -321,6 +321,47 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
+def _format_user_entity(entity: dict[str, Any]) -> str:
+    """
+    Builds a readable user identity from a User entity, retaining the full identity
+    (userPrincipalName or accountName) together with the domain, instead of only the domain name.
+
+    Args:
+        entity (dict): A single "User" entity from a Microsoft 365 Defender alert.
+
+    Returns:
+        str: A readable user identity, e.g. "username@domain (BOQDEVUSER.LOCAL)".
+             Returns an empty string if no identifying information is present.
+    """
+    user = entity.get("userPrincipalName") or entity.get("accountName") or ""
+    domain = entity.get("domainName") or ""
+    if user and domain:
+        return f"{user} ({domain})"
+    return user or domain
+
+
+def _get_impacted_entities(alerts_list: list[dict[str, Any]]) -> list[str]:
+    """
+    Collects the impacted user entities across all alerts, keeping the full user identity
+    and preserving order while removing duplicates and empty values.
+
+    Args:
+        alerts_list (list): The alerts of a Microsoft 365 Defender incident.
+
+    Returns:
+        list: An ordered, de-duplicated list of readable user identities.
+    """
+    impacted_entities: list = []
+    for alert in alerts_list:
+        for entity in alert.get("entities") or []:
+            if entity.get("entityType") != "User":
+                continue
+            formatted_user = _format_user_entity(entity)
+            if formatted_user and formatted_user not in impacted_entities:
+                impacted_entities.append(formatted_user)
+    return impacted_entities
+
+
 def _get_meta_data_for_incident(raw_incident: dict) -> dict:
     """
     Calculated metadata for the gicen incident
@@ -351,14 +392,7 @@ def _get_meta_data_for_incident(raw_incident: dict) -> dict:
 
     return {
         "Categories": [alert.get("category", "") for alert in alerts_list],
-        "Impacted entities": list(
-            {
-                (entity.get("domainName", ""))
-                for alert in alerts_list
-                for entity in alert.get("entities")
-                if entity.get("entityType") == "User"
-            }
-        ),
+        "Impacted entities": _get_impacted_entities(alerts_list),
         "Active alerts": f'{alerts_status.count("Active") + alerts_status.count("New")} / {len(alerts_status)}',
         "Service sources": list({alert.get("serviceSource", "") for alert in alerts_list}),
         "Detection sources": list({alert.get("detectionSource", "") for alert in alerts_list}),
@@ -411,6 +445,62 @@ def convert_incident_to_readable(raw_incident: dict) -> dict:
         "Assigned to": raw_incident.get("assignedTo", "Unassigned"),
         "Classification": raw_incident.get("classification", "Not set"),
         "Device groups": ", ".join(device_groups),
+    }
+
+
+def _get_default_incident_close_out_or_reactivation_reason(delta: dict):
+    """
+    Get the default incident close reason for the given classification.
+    Args:
+        delta (dict): The delta of the incident to update.
+    """
+    if delta.get("closeReason") == "FalsePositive" and delta.get("classification") != "FalsePositive":
+        delta.update({"classification": "FalsePositive", "determination": "Other"})
+        demisto.debug("Microsoft Defender 365 - Updating classification and determination to FalsePositive and Other")
+    elif delta.get("closeReason") == "Other" or delta.get("closeReason") == "Duplicate":
+        delta.update({"classification": "Unknown", "determination": "NotAvailable"})
+        demisto.debug("Microsoft Defender 365 - Updating classification and determination to Unknown and NotAvailable")
+
+
+def _parse_classification_mapping(mapped_value: str) -> tuple[str, str]:
+    """
+    Safely parse a mapping value in the format 'Classification-Determination'.
+
+    Falls back to safe defaults if format is invalid.
+    """
+    if not mapped_value:
+        return "Unknown", "NotAvailable"
+
+    parts = mapped_value.split("-", 1)  # split only once
+
+    if len(parts) != 2 or not parts[0] or not parts[1]:
+        demisto.debug(
+            f"Microsoft Defender 365 - Invalid classification mapping format: '{mapped_value}'. "
+            "Falling back to Unknown/NotAvailable."
+        )
+        return "Unknown", "NotAvailable"
+
+    return parts[0], parts[1]
+
+
+def _get_default_modified_incidents_close_or_reopen_entries_reason(incident: dict) -> dict:
+    """
+    Get the default incident close reason for the given classification.
+    Args:
+        incident (dict): The incident which holds the classification.
+
+    Returns:
+        dict: A dictionary containing the default close or reopen entries reason.
+    """
+    return {
+        "Type": EntryType.NOTE,
+        "Contents": {
+            "dbotIncidentClose": True,
+            "closeReason": MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON.get(
+                incident.get("classification", "Unknown"), "Other"
+            ),
+        },
+        "ContentsFormat": EntryFormat.JSON,
     }
 
 
@@ -693,6 +783,8 @@ def fetch_incidents(
 def _query_set_limit(query: str, limit: int) -> str:
     """
     Add limit to given query. If the query has limit, changes it.
+    This function now properly handles complex queries with parentheses, unions, and joins.
+
     Args:
         query: the original query
         limit: new limit value, if the value is negative return the original query.
@@ -701,23 +793,61 @@ def _query_set_limit(query: str, limit: int) -> str:
     if limit < 0:
         return query
 
-    # the query has the structure of "section | section | section ..."
-    query_list = re.split(r"(?<!\|)\|(?!\|)", query)
+    # Check if query already has a limit or take at the top level (not inside parentheses)
+    # We'll use a simple approach: only add/modify limit at the top level (outside parentheses)
 
-    # split the query to sections and find limit sections
+    def get_top_level_pipes(query_str: str) -> list:
+        """Split query by pipes that are at parenthesis level 0 (top level)."""
+        parts: list[str] = []
+        current_part: list[str] = []
+        paren_depth = 0
+
+        i = 0
+        while i < len(query_str):
+            char = query_str[i]
+            next_char = query_str[i + 1] if i + 1 < len(query_str) else ""
+            prev_char = query_str[i - 1] if i > 0 else ""
+
+            if char == "(":
+                paren_depth += 1
+            elif char == ")":
+                paren_depth -= 1
+
+            # Handle pipes (avoid splitting on ||)
+            is_pipe = char == "|" and next_char != "|" and prev_char != "|"
+
+            if is_pipe and paren_depth == 0:
+                parts.append("".join(current_part))
+                current_part = []
+            else:
+                current_part.append(char)
+
+            i += 1
+
+        # Add the last part
+        if current_part:
+            parts.append("".join(current_part))
+
+        return parts
+
+    # Split query into top-level sections
+    query_parts = get_top_level_pipes(query)
+
+    # Check if any top-level section starts with limit or take (case-insensitive)
     changed = False
-    for i, section in enumerate(query_list):
-        section_list = section.split()
-        # 'take' and 'limit' are synonyms.
-        if (section_list and section_list[0] == "limit") or section_list[0] == "take":
-            query_list[i] = f" limit {limit} "
+    for i, part in enumerate(query_parts):
+        stripped = part.strip()
+        if stripped.lower().startswith(("limit ", "take ")):
+            # Replace this section with new limit
+            query_parts[i] = f" limit {limit} "
             changed = True
 
-    # if the query have not been changed than limit is added to the query
+    # If no limit found, append it
     if not changed:
-        query_list.append(f" limit {limit} ")
+        query_parts.append(f" limit {limit} ")
 
-    fixed_query = "|".join(query_list)
+    # Rejoin with pipes (using single pipe to match original behavior)
+    fixed_query = "|".join(query_parts)
     return fixed_query
 
 
@@ -803,22 +933,39 @@ def get_modified_incidents_close_or_repopen_entries(modified_incidents: List[dic
     demisto.debug("Microsoft Defender 365 - Starting get_modified_incidents_close_or_repopen_entries")
     entries = []
     if close_incident:
+        custom_close_reason = demisto.params().get("custom_defender_to_xsoar_close_reason", False)
         for incident in modified_incidents:
-            if incident.get("status") == "Resolved":
+            if incident.get("status") in ("Resolved", "Redirected"):
                 demisto.debug(
-                    f"Microsoft Defender 365 - incident {incident.get(MICROSOFT_INCIDENT_ID_KEY)} is resolved in Microsoft, "
+                    f"Microsoft Defender 365 - incident {incident.get(MICROSOFT_INCIDENT_ID_KEY)} is "
+                    f"{(incident.get('status') or '').lower()} in Microsoft, "
                     f"adding close entry to XSOAR."
                 )
-                entry = {
-                    "Type": EntryType.NOTE,
-                    "Contents": {
-                        "dbotIncidentClose": True,
-                        "closeReason": MICROSOFT_RESOLVED_CLASSIFICATION_TO_XSOAR_CLOSE_REASON.get(
-                            incident.get("classification", "Unknown"), "Other"
-                        ),
-                    },
-                    "ContentsFormat": EntryFormat.JSON,
-                }
+                if custom_close_reason:
+                    # Reading custom Defender->XSOAR close-reason mapping.
+                    custom_defender_to_xsoar_close_reason_mapping = comma_separated_mapping_to_dict(
+                        demisto.params().get("custom_defender_to_xsoar_close_reason_mapping", "")
+                    )
+
+                    # Overriding default close-reason mapping if there exists a custom one.
+                    incident_close_reason = incident.get("classification")
+                    demisto.debug(
+                        f"mapping is {custom_defender_to_xsoar_close_reason_mapping} "
+                        f"and classification is {incident_close_reason}"
+                    )
+                    if incident_close_reason in custom_defender_to_xsoar_close_reason_mapping:
+                        entry = {
+                            "Type": EntryType.NOTE,
+                            "Contents": {
+                                "dbotIncidentClose": True,
+                                "closeReason": custom_defender_to_xsoar_close_reason_mapping.get(incident_close_reason, "Other"),
+                            },
+                            "ContentsFormat": EntryFormat.JSON,
+                        }
+                    else:
+                        entry = _get_default_modified_incidents_close_or_reopen_entries_reason(incident)
+                else:
+                    entry = _get_default_modified_incidents_close_or_reopen_entries_reason(incident)
             else:
                 demisto.debug(
                     f"Microsoft Defender 365 - incident {incident.get(MICROSOFT_INCIDENT_ID_KEY)} "
@@ -1007,12 +1154,33 @@ def handle_incident_close_out_or_reactivation(delta: dict, incident_status: Inci
             # this functionality awaits https://jira-dc.paloaltonetworks.com/browse/CRTX-151123?filter=-2
             # once resolved the microsoft365classification field needs to be returned to the close form in order to get
             # the classification and determination fields in delta.
-            if delta.get("closeReason") == "FalsePositive" and delta.get("classification") != "FalsePositive":
-                delta.update({"classification": "FalsePositive", "determination": "Other"})
-                demisto.debug("Microsoft Defender 365 - Updating classification and determination to FalsePositive and Other")
-            elif delta.get("closeReason") == "Other" or delta.get("closeReason") == "Duplicate":
-                delta.update({"classification": "Unknown", "determination": "NotAvailable"})
-                demisto.debug("Microsoft Defender 365 - Updating classification and determination to Unknown and NotAvailable")
+
+            if demisto.params().get("custom_xsoar_to_defender_close_reason", False):
+                # Reading custom XSOAR->Defender close-reason mapping.
+                custom_xsoar_to_defender_close_reason_mapping = comma_separated_mapping_to_dict(
+                    demisto.params().get("custom_xsoar_to_defender_close_reason_mapping", "")
+                )
+
+                # Overriding default close-reason mapping if there exists a custom one.
+                incident_close_reason = delta.get("closeReason")
+                demisto.debug(f"mapping is {custom_xsoar_to_defender_close_reason_mapping} and status is {incident_close_reason}")
+                if incident_close_reason in custom_xsoar_to_defender_close_reason_mapping:
+                    defender_close_reason_candidate = custom_xsoar_to_defender_close_reason_mapping.get(incident_close_reason)
+                    # Transforming resolved close-reason to match Defender format.
+                    defender_classification, defender_determination = _parse_classification_mapping(
+                        defender_close_reason_candidate
+                    )
+                    demisto.debug(
+                        f"Resolving Defender incident with classification"
+                        f"{defender_classification} and determination {defender_determination}"
+                    )
+                    delta.update({"classification": defender_classification, "determination": defender_determination})
+                else:
+                    demisto.debug("resolve_defender_close_reason using default mapping")
+                    _get_default_incident_close_out_or_reactivation_reason(delta)
+
+            else:
+                _get_default_incident_close_out_or_reactivation_reason(delta)
     else:
         if any(delta.get(key) == "" for key in ["closeReason", "closeNotes", "closingUserId"]):
             delta["status"] = "Active"

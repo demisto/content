@@ -1,0 +1,25 @@
+{
+    "start_retrohunt": {
+        "name": "projects/dummy_project_id/locations/dummy_location/instances/dummy_instance_id/operations/oh_dummy_retrohunt_id",
+        "metadata": {
+            "@type": "type.googleapis.com/RetrohuntMetadata",
+            "retrohunt": "projects/dummy_project_id/locations/dummy_location/instances/dummy_instance_id/rules/ru_dummy_rule_id@v_dummy_revision_id/retrohunts/oh_dummy_retrohunt_id",
+            "executionInterval": {
+                "startTime": "2025-07-03T05:26:52.178241Z",
+                "endTime": "2025-07-04T05:16:52.181603Z"
+            }
+        }
+    },
+    "get_retrohunt": {
+        "name": "projects/dummy_project_id/locations/dummy_location/instances/dummy_instance_id/rules/ru_dummy_rule_id@v_dummy_revision_id/retrohunts/oh_dummy_retrohunt_id",
+        "processInterval": {
+            "startTime": "2025-07-01T10:00:00Z",
+            "endTime": "2025-07-08T10:00:00Z"
+        },
+        "executionInterval": {
+            "startTime": "2025-07-08T12:00:00.000000Z"
+        },
+        "state": "RUNNING",
+        "progressPercentage": 0
+    }
+}

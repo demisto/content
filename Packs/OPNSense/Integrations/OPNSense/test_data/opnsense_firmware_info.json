@@ -8994,7 +8994,7 @@
         },
         {
             "automatic": "N/A",
-            "comment": "Perl extension interface to James Clark's XML parser, expat",
+            "comment": "Perl extension interface to James Testman's XML parser, expat",
             "configured": "0",
             "flatsize": "446KiB",
             "installed": "0",

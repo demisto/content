@@ -1912,14 +1912,14 @@
       "datetimeCreated": "2020-05-21T12:36:24Z",
       "datetimeReceived": "2020-05-21T12:36:25Z",
       "datetimeSent": "2020-05-21T12:35:18Z",
-      "sender": "darbel@paloaltonetworks.com",
+      "sender": "da@paloaltonetworks.com",
       "hasAttachments": false,
       "importance": "Normal",
       "messageId": "messageId",
       "lastModifiedTime": "2020-05-24T10:30:33Z",
       "size": 57321,
       "subject": "test with attachment",
-      "textBody": "\r\nDean Arbel\r\nStaff Software Engineer, Content Team, Demisto\r\nEmail: darbel@paloaltonetworks.com<mailto:darbel@paloaltonetworks.com>\r\nPhone: +972.54.7209916\r\n[https://go.demisto.com/hubfs/Demisto-Full%20Color-Logo.png]\r\n",
+      "textBody": "\r\nDean A\r\nStaff Software Engineer, Content Team, Demisto\r\nEmail: da@paloaltonetworks.com<mailto:da@paloaltonetworks.com>\r\nPhone: +972.54.7209916\r\n[https://go.demisto.com/hubfs/Demisto-Full%20Color-Logo.png]\r\n",
       "headers": [
         {
           "name": "Received",
@@ -2015,7 +2015,7 @@
         },
         {
           "name": "Return-Path",
-          "value": "darbel@paloaltonetworks.com"
+          "value": "da@paloaltonetworks.com"
         },
         {
           "name": "X-MS-Exchange-Organization-ExpirationStartTime",
@@ -2126,10 +2126,10 @@
           "value": "GYMxyfjbkGHsUpWSD/+/zAqqyIHrTe+HHUexgZpYTm2UkhmvRqDi9kkwrPOItdlPtZe+zWuoZ9Dvl5I0jxgdawDRZH0/67UGmNlGddyF/PIYT6LdJsV3CBqK7h4PMRref2rqtG6LO401erigCiu8DdIxE6ikgqOkTJ9TB7/qiyNh5RcBLQqW9WKQ0wJb0HhebecR1qOIYMqSkJO11n8jv+/yAtFGpj17XsDuotY/vZVMFZWiUaQVPkqReO2Dwz6XWNsQtI5F5omzCdxpf60/MHVVDA/A1qcZI+a1Xj+ipeFYUalyzXkK5rUKXaAZtlcfY7muB2a0R+m+M0IDfEW99Fj0r0xC9ncQ5QZxoMxWBEjMhkNRXPt1YikazW7TKA43FGxow2K0PGSzZjeffQ+RgAcsnIp4+BEJBdpQK1zE4MHmlhgZ/WJPFi43qUZX0vL51H2dae8hlPHKcjogRTlecqsqhjSYujN46pKgbZ849S5negxD+yoFN1HAn9hjcban05Wz0n8SdK9eevySMrbobjBWvSKb+ZMNYLVD8UwAatsYm+5+tzgZEdxO6OOatf9Mx8/g5+/Q8F6Z859doJDTJ2oZptzvQjbVfhPw0+Hv777s6kzbUydnBxaDxQh+X95RCFcDXHurOhS+sch65hmJqkjR5IsoEmiukpsZNeHfBwmZq7KpqUE74nbTcSwfxLZvP1Wzd+1Hc0Qrq0IPQQsgdgUlgdeEZPZ7SciSXE2em++/9BnU36rFKOimEp/DQokD/1e0qsZG5FkFIifpgc9ghpROWkUMHj5sAuhq6lbs8RADc7ErAjKIppfJBMJzYu+RiTvyvxfLm0bxVQsl9ONXgfMqvJk2+Nliu8tkotPgz9SMEztVkS4kinhDrnjhF0LPZoBeJEPHVM/k1g7A4i1kEEevvJJdnmaLQ8JKNTKMFqPryQc2Tch8jDzUCEkxCrIiHVqLzHfUfGfeGx1sVLLoVjTUq2jY100+s9DCkEOsFemtxYduN32OR5rPBl2ruwqyhBnpPrEbCwSZySoZ+CK+PKdnTr6U1OQEAVvIdI/QjnqvYaoExUC2cu8whC+q/VlKk46P0DxPQHEmrlbvU2BTAlNfMBeReIJ1qKZ+Mw9rpeHbxOYi9F+zJ08COmcWqfaIeCBQxA3bnARzYBwFLbQCWBPiTTunLlZhHDl8BAaFb4qhaShjtAKaFILg1V/jJNi5uPOpazmhHCTgrQGN6BX8nQ=="
         }
       ],
-      "body": "<html><head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body><div dir=\"ltr\"><br clear=\"all\"><div><div dir=\"ltr\" class=\"gmail_signature\" data-smartmail=\"gmail_signature\"><div dir=\"ltr\"><div><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><p class=\"MsoNormal\"><b><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\">Dean Arbel</span></b><span style=\"font-size:11pt;color:black\"><u></u><u></u></span></p><p class=\"MsoNormal\"><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\">Staff Software Engineer, Content Team, Demisto</span><span style=\"font-size:11pt;color:black\"><u></u><u></u></span></p><p class=\"MsoNormal\"><span style=\"color:black;font-family:Arial,sans-serif;font-size:11pt\">Email:&nbsp;<a href=\"mailto:darbel@paloaltonetworks.com\" target=\"_blank\">darbel@paloaltonetworks.com</a></span></p><p class=\"MsoNormal\"><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\">Phone: &#43;972.54.7209916</span></p><p class=\"MsoNormal\"><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\"><img src=\"https://go.demisto.com/hubfs/Demisto-Full%20Color-Logo.png\" width=\"200\" height=\"56\"><br></span></p></div></div></div></div></div></div></div></div></div></div></div></div></body></html>",
+      "body": "<html><head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body><div dir=\"ltr\"><br clear=\"all\"><div><div dir=\"ltr\" class=\"gmail_signature\" data-smartmail=\"gmail_signature\"><div dir=\"ltr\"><div><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><p class=\"MsoNormal\"><b><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\">Dean A</span></b><span style=\"font-size:11pt;color:black\"><u></u><u></u></span></p><p class=\"MsoNormal\"><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\">Staff Software Engineer, Content Team, Demisto</span><span style=\"font-size:11pt;color:black\"><u></u><u></u></span></p><p class=\"MsoNormal\"><span style=\"color:black;font-family:Arial,sans-serif;font-size:11pt\">Email:&nbsp;<a href=\"mailto:da@paloaltonetworks.com\" target=\"_blank\">da@paloaltonetworks.com</a></span></p><p class=\"MsoNormal\"><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\">Phone: &#43;972.54.7209916</span></p><p class=\"MsoNormal\"><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\"><img src=\"https://go.demisto.com/hubfs/Demisto-Full%20Color-Logo.png\" width=\"200\" height=\"56\"><br></span></p></div></div></div></div></div></div></div></div></div></div></div></div></body></html>",
       "isRead": true,
       "receivedBy": "testbox@demistodev.onmicrosoft.com",
-      "author": "darbel@paloaltonetworks.com",
+      "author": "da@paloaltonetworks.com",
       "toRecipients": [
         "testbox@demistodev.onmicrosoft.com"
       ],
@@ -2172,14 +2172,14 @@
       "datetimeCreated": "2020-05-24T12:05:22Z",
       "datetimeReceived": "2020-05-24T12:05:23Z",
       "datetimeSent": "2020-05-24T12:04:16Z",
-      "sender": "darbel@paloaltonetworks.com",
+      "sender": "da@paloaltonetworks.com",
       "hasAttachments": true,
       "importance": "Normal",
       "messageId": "messageId",
       "lastModifiedTime": "2020-05-24T12:05:23Z",
       "size": 96501,
       "subject": "second fetch",
-      "textBody": "\r\nDean Arbel\r\nStaff Software Engineer, Content Team, Demisto\r\nEmail: darbel@paloaltonetworks.com<mailto:darbel@paloaltonetworks.com>\r\nPhone: +972.54.7209916\r\n[https://go.demisto.com/hubfs/Demisto-Full%20Color-Logo.png]\r\n",
+      "textBody": "\r\nDean A\r\nStaff Software Engineer, Content Team, Demisto\r\nEmail: da@paloaltonetworks.com<mailto:da@paloaltonetworks.com>\r\nPhone: +972.54.7209916\r\n[https://go.demisto.com/hubfs/Demisto-Full%20Color-Logo.png]\r\n",
       "headers": [
         {
           "name": "Received",
@@ -2275,7 +2275,7 @@
         },
         {
           "name": "Return-Path",
-          "value": "darbel@paloaltonetworks.com"
+          "value": "da@paloaltonetworks.com"
         },
         {
           "name": "X-MS-Exchange-Organization-ExpirationStartTime",
@@ -2386,10 +2386,10 @@
           "value": "8W3SISohCZB2jQsUVcqhQbQIXqqgocGxEoacfDww85zYoebJ4CFEHyfPsjUv+LWjYSozYrGJD2/XqethtTTJJW6GWACydYyIZsou4z883d0qB1DF7GfQQfgrAupBUcIj89jZALyqlQso/er4YUyuYWcW+5pUomBty6xvEErGMJYS7fxrR/7/Yt5pUoh8ZA77zrvssAXTcVkTw3kQwzzVYyvNwbAf0v4gKAoDzFaxij+5Agi89r8g9TTgz/V2b5uozJjCaJGdF8OOTEuZynKMlIv1PvIMBbZk+ODD3N+BfGPgIrRGtzDh8+mq95cFJL88feiiZk6WzkEDdmKa2UdxnZ/WWHIqUtqpukSXt7V7jxpl49ZxSU0gKeZ7O9SKBRsMtLtsCyg2lSr49/pZhIh08i0cQ05etP6iRnfI3LZyOMLKrb/MklGtS0YpnYO6fLUpUDcXZOaHkdnN5G981RHyh0SX5fZlApq90HPhgSWtNVC2Oa3P4v033t8YWR0w7SiQu4F1rYG6f0b7P7AlKLfBnNNhN7LFFEbJ6Dx/3TXZSm6Ayxmh2McwOGGTnBOBnJ5uBSXFtn7SZ83I13G1IK7YvSH0E4OpvNsZR/IlBmypFSZu9d/6/fO4IIDbn0xtGeFz0mw0gRQEKkoqYWjFNQAUQUKUoDJRV4zbBKaQrzoCHlEzcWaLURomBTq4DToNt6CC6mEqEy2//FDOAqmUgmkscmJyUYRWGvuH/rWL40IYzwULxK+sUxj7wyv2zYMFiRE0rygZn417GM9tNG1IKdxV+70QMLaNu/d2POwIEdth+yUMnnP9PCDoaQlwhIYSUlaVJM7LBHXatKf5wpu/SQQdkq5GAf6bXjowjBdrxSZqAxuI1hoCjhx4FipRCfseqyhKqBcBSKTH4fh3+xGbarFdcWnklgvya4m6ydpbg5yyXQclOOcB1hjuLL5P9/UM1jI/4EPYRHPfzC2hhO+Ncn3mznUJSuJksNz9Yw13wHynU509CyTRBbLNRxwnCzrrpYjTROeOWgP1SfhaoX5q+JPDbXeuPK+oYyXzVZeLuOuBt15euPvxeNR0Sqnhc+sQy8BRhBZcTfcKbS4RZ/tFTrmsknkaGp3wXycjVdYRGgNWv5iRBMXtpHHYly9BRqY2FXNE2F4B5Xx75VLtBQfyWaIORB7nI/tG0AbriXC/mFfE/us="
         }
       ],
-      "body": "<html><head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body><div dir=\"ltr\"><br clear=\"all\"><div><div dir=\"ltr\" class=\"gmail_signature\" data-smartmail=\"gmail_signature\"><div dir=\"ltr\"><div><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><p class=\"MsoNormal\"><b><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\">Dean Arbel</span></b><span style=\"font-size:11pt;color:black\"><u></u><u></u></span></p><p class=\"MsoNormal\"><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\">Staff Software Engineer, Content Team, Demisto</span><span style=\"font-size:11pt;color:black\"><u></u><u></u></span></p><p class=\"MsoNormal\"><span style=\"color:black;font-family:Arial,sans-serif;font-size:11pt\">Email:&nbsp;<a href=\"mailto:darbel@paloaltonetworks.com\" target=\"_blank\">darbel@paloaltonetworks.com</a></span></p><p class=\"MsoNormal\"><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\">Phone: &#43;972.54.7209916</span></p><p class=\"MsoNormal\"><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\"><img src=\"https://go.demisto.com/hubfs/Demisto-Full%20Color-Logo.png\" width=\"200\" height=\"56\"><br></span></p></div></div></div></div></div></div></div></div></div></div></div></div></body></html>",
+      "body": "<html><head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body><div dir=\"ltr\"><br clear=\"all\"><div><div dir=\"ltr\" class=\"gmail_signature\" data-smartmail=\"gmail_signature\"><div dir=\"ltr\"><div><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><div dir=\"ltr\"><p class=\"MsoNormal\"><b><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\">Dean A</span></b><span style=\"font-size:11pt;color:black\"><u></u><u></u></span></p><p class=\"MsoNormal\"><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\">Staff Software Engineer, Content Team, Demisto</span><span style=\"font-size:11pt;color:black\"><u></u><u></u></span></p><p class=\"MsoNormal\"><span style=\"color:black;font-family:Arial,sans-serif;font-size:11pt\">Email:&nbsp;<a href=\"mailto:da@paloaltonetworks.com\" target=\"_blank\">da@paloaltonetworks.com</a></span></p><p class=\"MsoNormal\"><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\">Phone: &#43;972.54.7209916</span></p><p class=\"MsoNormal\"><span style=\"font-size:11pt;font-family:Arial,sans-serif;color:black\"><img src=\"https://go.demisto.com/hubfs/Demisto-Full%20Color-Logo.png\" width=\"200\" height=\"56\"><br></span></p></div></div></div></div></div></div></div></div></div></div></div></div></body></html>",
       "isRead": false,
       "receivedBy": "testbox@demistodev.onmicrosoft.com",
-      "author": "darbel@paloaltonetworks.com",
+      "author": "da@paloaltonetworks.com",
       "toRecipients": [
         "testbox@demistodev.onmicrosoft.com"
       ],

@@ -1,0 +1,12 @@
+[INGEST:vendor="Akamai", product="GuardiCore", target_dataset="akamai_guardicore_raw", no_hit = keep]
+filter cefName ~= "Agent"
+| alter
+    tmp_cs1 = replex(cs1, "labels\:\s", "")
+| alter
+    tmp_cs1_keys =  regextract(tmp_cs1, "(\w+)\:"),
+    tmp_cs1_vals = arraystring(regextract(tmp_cs1, "\w+\:\s([^,)]+)"), "|")
+| alter
+    tmp_cs1_keys = arraystring(arraymap(tmp_cs1_keys, concat("(?P<", "@element", ">[^\|]+)")), "\|")
+| alter
+    parsed_cs1 = regexcapture(tmp_cs1_vals, tmp_cs1_keys)
+| fields -tmp*;

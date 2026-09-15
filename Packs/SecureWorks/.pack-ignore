@@ -1,6 +1,9 @@
 [file:SecureWorks.yml]
 ignore=IN126
 
+[file:TaegisXDRv2.yml]
+ignore=BA129
+
 [file:README.md]
 ignore=RM104
 

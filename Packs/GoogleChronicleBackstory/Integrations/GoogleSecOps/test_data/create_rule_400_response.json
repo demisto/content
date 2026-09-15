@@ -1,0 +1,7 @@
+{
+    "error": {
+        "code": 400,
+        "message": "compiling rule: parsing: error with token: \"=\"\nexpected identifier for meta assignment key\nline: 1 \ncolumn: 32-33 ",
+        "status": "INVALID_ARGUMENT"
+    }
+}

@@ -1,5 +1,6 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+provider: Urlscan io
+sectionorder:
 - Connect
 - Collect
 commonfields:

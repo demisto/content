@@ -1,6 +1,6 @@
 '''
     From: *test@gmail.com*
-    To: *["test1@gmail.com"]*
+    To: *[&quot;test1@gmail.com&quot;]*
     CC: *test2@gmail.com*
 
     Attachments: ['image.png']

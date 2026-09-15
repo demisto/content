@@ -1,0 +1,22 @@
+{
+    "alerts": [
+        {
+            "id": "alert-001",
+            "finding_info": {
+                "created_time": 1704067200000,
+                "title": "Suspicious extension detected"
+            },
+            "severity": "high",
+            "status": "open"
+        },
+        {
+            "id": "alert-002",
+            "finding_info": {
+                "created_time": 1704067260000,
+                "title": "Malicious URL blocked"
+            },
+            "severity": "critical",
+            "status": "open"
+        }
+    ]
+}

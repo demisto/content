@@ -3,3 +3,5 @@ id: DropboxEventCollector
 name: DropboxEventCollector
 rules: ''
 schema: ''
+supportedModules:
+- xsiam

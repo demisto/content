@@ -1,5 +1,6 @@
 """Demisto Integration for Axonius."""
 
+import json
 import requests
 from axonius_api_client.api.assets.devices import Devices
 from axonius_api_client.api.assets.users import Users
@@ -17,6 +18,14 @@ SKIPS: List[str] = ["specific_data.data.image", "view"]
 FIELDS_TIME: List[str] = ["seen", "fetch", "time", "date"]
 """Fields to try and convert to date time if they have these words in them."""
 AXONIUS_ID = "internal_axon_id"
+V2_PAGE_SIZE_DEFAULT: int = 50
+"""Default page size for v2 API pagination."""
+V2_PAGE_SIZE_ALL_PAGES: int = 100
+"""Page size used when fetching all pages."""
+MAX_PAGES: int = 200
+"""Maximum number of pages to fetch in a single paginated request (infinite-loop guard)."""
+REQUEST_TIMEOUT: int = 30
+"""HTTP request timeout in seconds to prevent silent hangs in Playbooks."""
 
 
 def get_int_arg(
@@ -102,7 +111,20 @@ def get_saved_queries(client: Connect, args: dict) -> CommandResults:  # noqa: F
 def make_api_call(
     endpoint: str,
     payload: dict = None,
+    method: str = "POST",
+    query_params: dict = None,
 ) -> requests.Response | None:
+    """Make an authenticated HTTP API call to the Axonius instance.
+
+    Args:
+        endpoint: API endpoint path (appended to the base URL).
+        payload: JSON body for POST/DELETE requests.
+        method: HTTP method — GET, POST, or DELETE (default: POST).
+        query_params: URL query parameters for GET requests.
+
+    Returns:
+        The HTTP response, or None if no URL is configured.
+    """
     params: dict = demisto.params()
     url: str | None = params.get("ax_url")
     key: str = params.get("credentials", {}).get("identifier")
@@ -122,7 +144,38 @@ def make_api_call(
         "content-type": "application/json",
     }
 
-    return requests.post(url, json=payload, headers=headers, verify=certverify)
+    try:
+        if method == "GET":
+            return requests.get(url, headers=headers, params=query_params, verify=certverify, timeout=REQUEST_TIMEOUT)
+        elif method == "DELETE":
+            return requests.delete(url, json=payload, headers=headers, verify=certverify, timeout=REQUEST_TIMEOUT)
+        else:
+            return requests.post(url, json=payload, headers=headers, verify=certverify, timeout=REQUEST_TIMEOUT)
+    except requests.exceptions.Timeout as exc:
+        raise DemistoException(f"Request to Axonius timed out: {exc}") from exc
+    except requests.exceptions.RequestException as exc:
+        raise DemistoException(f"Error connecting to Axonius: {exc}") from exc
+
+
+def _handle_api_response(response: Optional[requests.Response], endpoint: str) -> dict:
+    """Validate an API response and return parsed JSON.
+
+    Raises:
+        DemistoException: on missing URL, non-2xx status, or invalid JSON.
+    """
+    if response is None:
+        raise DemistoException("No URL configured for the Axonius instance.")
+
+    if not response.ok:
+        raise DemistoException(f"API call to '{endpoint}' failed with HTTP {response.status_code}: {response.text[:1000]}")
+
+    if not response.content:
+        return {}
+
+    try:
+        return response.json()
+    except ValueError as exc:
+        raise DemistoException(f"Failed to parse response from '{endpoint}' as JSON: {exc}") from exc
 
 
 def add_note(client: Connect, args: dict) -> CommandResults:
@@ -278,6 +331,481 @@ def parse_assets(
     )  # noqa: F821, F405
 
 
+# ---------------------------------------------------------------------------
+# v2 API helpers
+# ---------------------------------------------------------------------------
+
+
+def _build_v2_page(limit: int, cursor: Optional[str] = None) -> dict:
+    """Build a v2 API page object."""
+    page: dict = {"limit": limit}
+    if cursor:
+        page["cursor"] = cursor
+    return page
+
+
+# ---------------------------------------------------------------------------
+# axonius-get-assets
+# ---------------------------------------------------------------------------
+
+
+def get_assets(args: dict) -> CommandResults:
+    """Fetch assets of any type via POST /api/v2/assets/{asset_type}.
+
+    Supports all asset types including alert_findings and
+    vulnerability_instances. Returns a single page of results together with a
+    cursor (next_token) for subsequent calls.
+
+    Note on large payloads: when a response exceeds ~10 MB, XSOAR automatically
+    stores the data as a downloadable file instead of writing it to the context.
+    Use the page_size argument to keep responses within manageable bounds.
+    """
+    asset_type: str = args.get("asset_type", "devices")
+    query: Optional[str] = args.get("query") or None
+    fields: List[str] = argToList(args.get("fields"))
+    fields_to_exclude: List[str] = argToList(args.get("fields_to_exclude"))
+    page_size: int = arg_to_number(args.get("page_size")) or V2_PAGE_SIZE_DEFAULT
+    limit: int = arg_to_number(args.get("limit")) or page_size
+    next_token: Optional[str] = args.get("next_token") or None
+    include_metadata: bool = argToBoolean(args.get("include_metadata", False))
+    include_details: bool = argToBoolean(args.get("include_details", False))
+    use_cache_entry: bool = argToBoolean(args.get("use_cache_entry", False))
+
+    payload: dict = {"page": _build_v2_page(limit=page_size, cursor=next_token)}
+    if query:
+        payload["query"] = query
+    if fields:
+        payload["fields"] = fields
+    if fields_to_exclude:
+        payload["fields_to_exclude"] = fields_to_exclude
+    if include_metadata:
+        payload["include_metadata"] = True
+    if include_details:
+        payload["include_details"] = True
+    if use_cache_entry:
+        payload["use_cache_entry"] = True
+
+    endpoint = f"api/v2/assets/{asset_type}"
+    response = make_api_call(endpoint=endpoint, payload=payload, method="POST")
+    data = _handle_api_response(response=response, endpoint=endpoint)
+
+    assets: List[dict] = data.get("assets") or []
+    assets = assets[:limit]
+    meta: dict = data.get("meta") or {}
+    next_cursor: Optional[str] = meta.get("next_page")
+    page_meta: dict = meta.get("page") or {}
+    total_count: Optional[int] = page_meta.get("totalResources")
+
+    if not assets:
+        readable_output = f"No {asset_type} assets found."
+    else:
+        readable_output = tableToMarkdown(
+            f"Axonius Assets — {asset_type} ({len(assets)} returned)",
+            assets,
+            removeNull=True,
+        )
+
+    outputs: dict = {
+        "asset_type": asset_type,
+        "assets": assets,
+        "count": len(assets),
+    }
+    if total_count is not None:
+        outputs["total_count"] = total_count
+    if next_cursor:
+        outputs["next_token"] = next_cursor
+
+    return CommandResults(
+        outputs_prefix="Axonius.Assets",
+        outputs_key_field="asset_type",
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=data,
+    )
+
+
+# ---------------------------------------------------------------------------
+# axonius-get-asset-types
+# ---------------------------------------------------------------------------
+
+
+def get_asset_types() -> CommandResults:
+    """Return available asset types via GET /api/v2/assets/asset_types."""
+    endpoint = "api/v2/assets/asset_types"
+    response = make_api_call(endpoint=endpoint, method="GET")
+    data = _handle_api_response(response=response, endpoint=endpoint)
+
+    raw_types: list = data.get("asset_types") or []
+    asset_types: List[dict] = [t if isinstance(t, dict) else {"asset_type": t} for t in raw_types]
+
+    readable_output = tableToMarkdown("Axonius Asset Types", asset_types, removeNull=True)
+
+    return CommandResults(
+        outputs_prefix="Axonius.AssetTypes",
+        outputs_key_field="asset_type",
+        readable_output=readable_output,
+        outputs=asset_types,
+        raw_response=data,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Custom Data Management
+# ---------------------------------------------------------------------------
+
+
+def get_custom_data(args: dict) -> CommandResults:
+    """List custom data entries via GET /api/v2/custom_data_management."""
+    page: int = arg_to_number(args.get("page")) or 1
+    page_size: int = arg_to_number(args.get("page_size")) or 50
+    limit: int = arg_to_number(args.get("limit")) or page_size
+    offset: int = (page - 1) * page_size
+    endpoint = "api/v2/custom_data_management"
+    response = make_api_call(
+        endpoint=endpoint,
+        method="GET",
+        query_params={"limit": min(page_size, limit), "offset": offset},
+    )
+    data = _handle_api_response(response=response, endpoint=endpoint)
+
+    entries: list = (data.get("custom_fields") or [])[:limit]
+
+    readable_output = tableToMarkdown(
+        "Axonius Custom Data",
+        entries,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="Axonius.CustomData",
+        outputs_key_field="id",
+        readable_output=readable_output,
+        outputs=entries,
+        raw_response=data,
+    )
+
+
+def create_custom_data(args: dict) -> CommandResults:
+    """Create a custom data entry via POST /api/v2/custom_data_management."""
+    payload_str: Optional[str] = args.get("payload")
+    if not payload_str:
+        raise DemistoException("The 'payload' argument is required for axonius-create-custom-data.")
+    try:
+        payload: dict = json.loads(payload_str)
+    except (ValueError, TypeError) as exc:
+        raise DemistoException(f"Invalid JSON in 'payload' argument: {exc}") from exc
+
+    endpoint = "api/v2/custom_data_management"
+    response = make_api_call(endpoint=endpoint, payload=payload, method="POST")
+    data = _handle_api_response(response=response, endpoint=endpoint)
+
+    return CommandResults(
+        outputs_prefix="Axonius.CustomData",
+        readable_output="Custom data entry created successfully.",
+        outputs=data,
+        raw_response=data,
+    )
+
+
+def delete_custom_data(args: dict) -> CommandResults:
+    """Delete a custom data entry via DELETE /api/v2/custom_data_management/{id}."""
+    entry_id: str = args.get("id", "")
+    if not entry_id:
+        raise DemistoException("The 'id' argument is required for axonius-delete-custom-data.")
+
+    endpoint = f"api/v2/custom_data_management/{entry_id}"
+    response = make_api_call(endpoint=endpoint, method="DELETE")
+    _handle_api_response(response=response, endpoint=endpoint)
+
+    return CommandResults(
+        outputs_prefix="Axonius.CustomData",
+        readable_output=f"Custom data entry '{entry_id}' deleted successfully.",
+        outputs={"id": entry_id, "deleted": True},
+    )
+
+
+# ---------------------------------------------------------------------------
+# Enforcements
+# ---------------------------------------------------------------------------
+
+
+def get_enforcements(args: dict) -> CommandResults:
+    """List enforcements via GET /api/v2/enforcements."""
+    page: int = arg_to_number(args.get("page")) or 1
+    page_size: int = arg_to_number(args.get("page_size")) or 50
+    limit: int = arg_to_number(args.get("limit")) or page_size
+    offset: int = (page - 1) * page_size
+    endpoint = "api/v2/enforcements"
+    response = make_api_call(
+        endpoint=endpoint,
+        method="GET",
+        query_params={"limit": min(page_size, limit), "offset": offset},
+    )
+    data = _handle_api_response(response=response, endpoint=endpoint)
+
+    enforcements: list = (data.get("enforcements") or [])[:limit]
+
+    readable_output = tableToMarkdown(
+        "Axonius Enforcements",
+        enforcements,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="Axonius.Enforcements",
+        outputs_key_field="uuid",
+        readable_output=readable_output,
+        outputs=enforcements,
+        raw_response=data,
+    )
+
+
+def run_enforcement(args: dict) -> CommandResults:
+    """Trigger an enforcement run via POST /api/v2/enforcements/{id}/run."""
+    enforcement_id: str = args.get("enforcement_id", "")
+    if not enforcement_id:
+        raise DemistoException("The 'enforcement_id' argument is required for axonius-run-enforcement.")
+
+    endpoint = f"api/v2/enforcements/{enforcement_id}/run"
+    response = make_api_call(endpoint=endpoint, method="POST")
+    data = _handle_api_response(response=response, endpoint=endpoint)
+
+    return CommandResults(
+        outputs_prefix="Axonius.Enforcements",
+        readable_output=f"Enforcement '{enforcement_id}' triggered successfully.",
+        outputs={"enforcement_id": enforcement_id, "triggered": True, "response": data},
+        raw_response=data,
+    )
+
+
+# ---------------------------------------------------------------------------
+# Queries
+# ---------------------------------------------------------------------------
+
+
+def get_queries(args: dict) -> CommandResults:
+    """List saved queries via GET /api/v2/queries."""
+    asset_type: Optional[str] = args.get("asset_type") or None
+    page: int = arg_to_number(args.get("page")) or 1
+    page_size: int = arg_to_number(args.get("page_size")) or 50
+    limit: int = arg_to_number(args.get("limit")) or page_size
+    offset: int = (page - 1) * page_size
+    endpoint = "api/v2/queries"
+    qp: dict = {"limit": min(page_size, limit), "offset": offset}
+    if asset_type:
+        qp["asset_type"] = asset_type
+    response = make_api_call(endpoint=endpoint, method="GET", query_params=qp)
+    data = _handle_api_response(response=response, endpoint=endpoint)
+
+    queries: list = (data.get("queries") or [])[:limit]
+
+    readable_output = tableToMarkdown(
+        "Axonius Queries",
+        queries,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="Axonius.Queries",
+        outputs_key_field="uuid",
+        readable_output=readable_output,
+        outputs=queries,
+        raw_response=data,
+    )
+
+
+def create_query(args: dict) -> CommandResults:
+    """Create a saved query via POST /api/v2/queries."""
+    name: str = args.get("name", "")
+    query: str = args.get("query", "")
+    asset_type: str = args.get("asset_type", "devices")
+    description: Optional[str] = args.get("description") or None
+
+    if not name:
+        raise DemistoException("The 'name' argument is required for axonius-create-query.")
+    if not query:
+        raise DemistoException("The 'query' argument is required for axonius-create-query.")
+
+    payload: dict = {"name": name, "query": query, "asset_type": asset_type}
+    if description:
+        payload["description"] = description
+
+    endpoint = "api/v2/queries"
+    response = make_api_call(endpoint=endpoint, payload=payload, method="POST")
+    data = _handle_api_response(response=response, endpoint=endpoint)
+
+    return CommandResults(
+        outputs_prefix="Axonius.Queries",
+        outputs_key_field="uuid",
+        readable_output=f"Query '{name}' created successfully.",
+        outputs=data,
+        raw_response=data,
+    )
+
+
+def delete_query(args: dict) -> CommandResults:
+    """Delete a saved query via DELETE /api/v2/queries/{query_id}."""
+    query_id: str = args.get("query_id", "")
+    if not query_id:
+        raise DemistoException("The 'query_id' argument is required for axonius-delete-query.")
+
+    endpoint = f"api/v2/queries/{query_id}"
+    response = make_api_call(endpoint=endpoint, method="DELETE")
+    _handle_api_response(response=response, endpoint=endpoint)
+
+    return CommandResults(
+        outputs_prefix="Axonius.Queries",
+        readable_output=f"Query '{query_id}' deleted successfully.",
+        outputs={"query_id": query_id, "deleted": True},
+    )
+
+
+# ---------------------------------------------------------------------------
+# Grouped Vulnerabilities
+# ---------------------------------------------------------------------------
+
+
+def _fetch_all_pages(asset_type: str, query: Optional[str] = None, page_size: int = V2_PAGE_SIZE_ALL_PAGES) -> List[dict]:
+    """Fetch all pages of an asset type from the v2 API.
+
+    Args:
+        asset_type: Axonius asset type (e.g. 'vulnerability_instances').
+        query: Optional AQL filter string.
+        page_size: Number of records per page request.
+
+    Returns:
+        Flat list of all asset records across all pages.
+    """
+    all_assets: List[dict] = []
+    cursor: Optional[str] = None
+    endpoint = f"api/v2/assets/{asset_type}"
+
+    for _ in range(MAX_PAGES):
+        payload: dict = {"page": _build_v2_page(limit=page_size, cursor=cursor)}
+        if query:
+            payload["query"] = query
+
+        response = make_api_call(endpoint=endpoint, payload=payload, method="POST")
+        data = _handle_api_response(response=response, endpoint=endpoint)
+
+        page_assets: List[dict] = data.get("assets") or []
+        all_assets.extend(page_assets)
+
+        meta: dict = data.get("meta") or {}
+        cursor = meta.get("next_page")
+
+        if not cursor or not page_assets:
+            break
+    else:
+        if cursor:
+            demisto.debug(
+                f"_fetch_all_pages: reached MAX_PAGES ({MAX_PAGES}) for '{asset_type}'; "
+                f"stopping pagination early with {len(all_assets)} records collected."
+            )
+
+    return all_assets
+
+
+def _flatten_instance(instance: dict) -> dict:
+    """Flatten single-element lists in a vulnerability instance dict."""
+    flattened: dict = {}
+    for key, value in instance.items():
+        if isinstance(value, list) and len(value) == 1:
+            flattened[key] = value[0]
+        else:
+            flattened[key] = value
+    return flattened
+
+
+def _safe_float(value: Any) -> Optional[float]:
+    """Convert value to float, returning None on failure."""
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def get_grouped_vulnerabilities(args: dict) -> CommandResults:
+    """Fetch all vulnerability instances and group them by CVE ID.
+
+    Fetches all pages of /v2/assets/vulnerability_instances, flattens each
+    instance, groups by cve_id, counts affected hosts, averages CVSS scores,
+    and returns the Top N CVEs sorted by affected_hosts_count descending.
+    """
+    query: Optional[str] = args.get("query") or None
+    team_name: Optional[str] = args.get("team_name") or None
+    urgent: Optional[str] = args.get("urgent") or None
+    top_n: int = arg_to_number(args.get("top_n")) or 10
+    page_size: int = arg_to_number(args.get("page_size")) or V2_PAGE_SIZE_ALL_PAGES
+
+    # Build composite query filter
+    query_parts: List[str] = []
+    if query:
+        query_parts.append(query)
+    if team_name:
+        query_parts.append(f'(specific_data.data.team_name == "{team_name}")')
+    if urgent is not None:
+        urgent_bool = "true" if argToBoolean(urgent) else "false"
+        query_parts.append(f"(specific_data.data.urgent == {urgent_bool})")
+    final_query = " and ".join(query_parts) if query_parts else None
+
+    instances = _fetch_all_pages(asset_type="vulnerability_instances", query=final_query, page_size=page_size)
+
+    if not instances:
+        return CommandResults(
+            outputs_prefix="Axonius.GroupedVulnerabilities",
+            outputs_key_field="cve_id",
+            readable_output="No vulnerability instances found.",
+            outputs=[],
+        )
+
+    # Group by CVE ID
+    grouped: dict = {}
+    for raw in instances:
+        inst = _flatten_instance(raw)
+        cve_id = inst.get("cve_id") or inst.get("specific_data.data.cve_id")
+        if not cve_id:
+            continue
+
+        if cve_id not in grouped:
+            grouped[cve_id] = {"affected_hosts_count": 0, "cvss_scores": []}
+
+        grouped[cve_id]["affected_hosts_count"] += 1
+        cvss = _safe_float(inst.get("cvss_score") or inst.get("specific_data.data.cvss_score"))
+        if cvss is not None:
+            grouped[cve_id]["cvss_scores"].append(cvss)
+
+    # Build sorted output
+    results: List[dict] = []
+    for cve_id, group_data in grouped.items():
+        scores = group_data["cvss_scores"]
+        avg_cvss = round(sum(scores) / len(scores), 2) if scores else None
+        results.append(
+            {
+                "cve_id": cve_id,
+                "affected_hosts_count": group_data["affected_hosts_count"],
+                "average_cvss_score": avg_cvss,
+            }
+        )
+
+    results.sort(key=lambda x: x["affected_hosts_count"], reverse=True)
+    top_results = results[:top_n]
+
+    readable_output = tableToMarkdown(
+        f"Top {top_n} CVEs by Affected Hosts",
+        top_results,
+        removeNull=True,
+    )
+
+    return CommandResults(
+        outputs_prefix="Axonius.GroupedVulnerabilities",
+        outputs_key_field="cve_id",
+        readable_output=readable_output,
+        outputs=top_results,
+        raw_response=top_results,
+    )
+
+
 def run_command(client: Connect, args: dict, command: str):
     results: Union[CommandResults, str, None] = None
 
@@ -340,6 +868,40 @@ def run_command(client: Connect, args: dict, command: str):
 
     elif command == "axonius-remove-tag":
         results = update_tags(client=client, args=args, method_name="remove")
+
+    # v2 API commands
+    elif command == "axonius-get-assets":
+        results = get_assets(args=args)
+
+    elif command == "axonius-get-asset-types":
+        results = get_asset_types()
+
+    elif command == "axonius-get-custom-data":
+        results = get_custom_data(args=args)
+
+    elif command == "axonius-create-custom-data":
+        results = create_custom_data(args=args)
+
+    elif command == "axonius-delete-custom-data":
+        results = delete_custom_data(args=args)
+
+    elif command == "axonius-get-enforcements":
+        results = get_enforcements(args=args)
+
+    elif command == "axonius-run-enforcement":
+        results = run_enforcement(args=args)
+
+    elif command == "axonius-get-queries":
+        results = get_queries(args=args)
+
+    elif command == "axonius-create-query":
+        results = create_query(args=args)
+
+    elif command == "axonius-delete-query":
+        results = delete_query(args=args)
+
+    elif command == "axonius-get-grouped-vulnerabilities":
+        results = get_grouped_vulnerabilities(args=args)
 
     return results
 

@@ -95,7 +95,7 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 | MSGraphDeviceManagement.Device.EASActivationDateTime | Date | Exchange ActivationSync activation time of the device. |
 | MSGraphDeviceManagement.Device.ActivationLockBypassCode | String | Code that allows the Activation Lock on a device to be bypassed. |
 | MSGraphDeviceManagement.Device.EmailAddress | String | Email\(s\) for the user associated with the device |
-| MSGraphDeviceManagement.Device.AzureADDeviceId | String | The unique identifier for the Azure Active Directory device. Read only. |
+| MSGraphDeviceManagement.Device.AzureADDeviceId | String | The unique identifier for the Entra ID device. Read only. |
 | MSGraphDeviceManagement.Device.CategoryDisplayName | String | Device category display name |
 | MSGraphDeviceManagement.Device.ExchangeAccessState | String | The Access State of the device in Exchange. Possible values are none, unknown, allowed, blocked, quarantined. |
 | MSGraphDeviceManagement.Device.exchangeAccessStateReason | String | The reason for the device's access state in Exchange. Possible values are none, unknown, exchangeGlobalRule, exchangeIndividualRule, exchangeDeviceRule, exchangeUpgrade, exchangeMailboxPolicy, other, compliant, notCompliant, notEnrolled, unknownLocation, mfaRequired, azureADBlockDueToAccessPolicy, compromisedPassword, deviceNotKnownWithManagedApp. |
@@ -812,7 +812,7 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 | MSGraphDeviceManagement.Device.EASActivationDateTime | Date | Exchange ActivationSync activation time of the device. |
 | MSGraphDeviceManagement.Device.ActivationLockBypassCode | String | Code that allows the Activation Lock on a device to be bypassed. |
 | MSGraphDeviceManagement.Device.EmailAddress | String | Email\(s\) for the user associated with the device. |
-| MSGraphDeviceManagement.Device.AzureADDeviceId | String | The unique identifier for the Azure Active Directory device. Read only. |
+| MSGraphDeviceManagement.Device.AzureADDeviceId | String | The unique identifier for the Entra ID device. Read only. |
 | MSGraphDeviceManagement.Device.CategoryDisplayName | String | Device category display name. |
 | MSGraphDeviceManagement.Device.ExchangeAccessState | String | The Access State of the device in Exchange. Possible values are none, unknown, allowed, blocked, quarantined. |
 | MSGraphDeviceManagement.Device.exchangeAccessStateReason | String | The reason for the device's access state in Exchange. Possible values are none, unknown, exchangeGlobalRule, exchangeIndividualRule, exchangeDeviceRule, exchangeUpgrade, exchangeMailboxPolicy, other, compliant, notCompliant, notEnrolled, unknownLocation, mfaRequired, azureADBlockDueToAccessPolicy, compromisedPassword, deviceNotKnownWithManagedApp. |
@@ -961,7 +961,7 @@ DeviceManagementManagedDevices.ReadWrite.All, DeviceManagementManagedDevices.Rea
 | MSGraphDeviceManagement.Device.EASActivationDateTime | Date | Exchange ActivationSync activation time of the device. |
 | MSGraphDeviceManagement.Device.ActivationLockBypassCode | String | Code that allows the Activation Lock on a device to be bypassed. |
 | MSGraphDeviceManagement.Device.EmailAddress | String | Email\(s\) for the user associated with the device |
-| MSGraphDeviceManagement.Device.AzureADDeviceId | String | The unique identifier for the Azure Active Directory device. Read only. |
+| MSGraphDeviceManagement.Device.AzureADDeviceId | String | The unique identifier for the Entra ID device. Read only. |
 | MSGraphDeviceManagement.Device.CategoryDisplayName | String | Device category display name |
 | MSGraphDeviceManagement.Device.ExchangeAccessState | String | The Access State of the device in Exchange. Possible values are none, unknown, allowed, blocked, quarantined. |
 | MSGraphDeviceManagement.Device.exchangeAccessStateReason | String | The reason for the device's access state in Exchange. Possible values are none, unknown, exchangeGlobalRule, exchangeIndividualRule, exchangeDeviceRule, exchangeUpgrade, exchangeMailboxPolicy, other, compliant, notCompliant, notEnrolled, unknownLocation, mfaRequired, azureADBlockDueToAccessPolicy, compromisedPassword, deviceNotKnownWithManagedApp. |

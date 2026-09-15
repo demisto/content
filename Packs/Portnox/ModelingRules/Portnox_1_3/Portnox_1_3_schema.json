@@ -6,6 +6,24 @@
       },"act": {
           "type": "string",
           "is_array": false
+      },"description": {
+          "type": "string",
+          "is_array": false
+      },"alert_category": {
+          "type": "string",
+          "is_array": false
+      },"device_ip": {
+          "type": "string",
+          "is_array": false
+      },"policy": {
+          "type": "string",
+          "is_array": false
+      },"mac_address": {
+          "type": "string",
+          "is_array": false
+      },"group": {
+          "type": "string",
+          "is_array": false
       },"cn1": {
           "type": "string",
           "is_array": false

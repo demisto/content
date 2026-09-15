@@ -1,7 +1,8 @@
 {
+  "id": "MicrosoftECM",
+  "name": "MicrosoftECM",
   "os_type": "AGENT_OS_WINDOWS",
   "profile_type": "STANDARD",
-  "name": "MicrosoftECM",
   "content_global_id": "MicrosoftECM",
   "from_xdr_version": "3.5.0",
   "yaml_template": ""

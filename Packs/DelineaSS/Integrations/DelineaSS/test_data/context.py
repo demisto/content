@@ -3,13 +3,21 @@ import collections
 Credentials = collections.namedtuple("Credentials", ["name", "user", "password"])
 GET_PASSWORD_BY_ID_CONTEXT = {
     "Delinea.Secret.Password(val.secret_password && val.secret_password == obj.secret_password)": {
-        "Delinea": {"Secret": {"Password": "test00111"}}
+        "Delinea": {
+            "Secret": {
+                "Password": "test00111"
+            }
+        }
     }
 }
 
 GET_USERNAME_BY_ID_CONTENT = {
     "Delinea.Secret.Username(val.secret_username && val.secret_username == obj.secret_username)": {
-        "Delinea": {"Secret": {"Username": "andy"}}
+        "Delinea": {
+            "Secret": {
+                "Username": "andy"
+            }
+        }
     }
 }
 
@@ -32,7 +40,7 @@ SECRET_GET_CONTENT = {
                 "fieldDescription": "The Server or Location of the Unix Machine.",
                 "isFile": False,
                 "isNotes": False,
-                "isPassword": False,
+                "isPassword": False
             },
             {
                 "itemId": 14,
@@ -45,7 +53,7 @@ SECRET_GET_CONTENT = {
                 "fieldDescription": "The Unix Machine Username.",
                 "isFile": False,
                 "isNotes": False,
-                "isPassword": False,
+                "isPassword": False
             },
             {
                 "itemId": 15,
@@ -58,7 +66,7 @@ SECRET_GET_CONTENT = {
                 "fieldDescription": "The password of the Unix Machine.",
                 "isFile": False,
                 "isNotes": False,
-                "isPassword": True,
+                "isPassword": True
             },
             {
                 "itemId": 16,
@@ -71,7 +79,7 @@ SECRET_GET_CONTENT = {
                 "fieldDescription": "Any additional notes.",
                 "isFile": False,
                 "isNotes": True,
-                "isPassword": False,
+                "isPassword": False
             },
             {
                 "itemId": 17,
@@ -84,7 +92,7 @@ SECRET_GET_CONTENT = {
                 "fieldDescription": "The SSH private key.",
                 "isFile": True,
                 "isNotes": False,
-                "isPassword": False,
+                "isPassword": False
             },
             {
                 "itemId": 18,
@@ -97,8 +105,8 @@ SECRET_GET_CONTENT = {
                 "fieldDescription": "The passphrase for decrypting the SSH private key.",
                 "isFile": False,
                 "isNotes": False,
-                "isPassword": True,
-            },
+                "isPassword": True
+            }
         ],
         "launcherConnectAsSecretId": -1,
         "checkOutMinutesRemaining": 0,
@@ -132,18 +140,24 @@ SECRET_GET_CONTENT = {
         "failedPasswordChangeAttempts": 160,
         "lastPasswordChangeAttempt": "2020-11-10T10:32:59.217",
         "secretTemplateName": "Unix Account (SSH)",
-        "responseCodes": [],
+        "responseCodes": []
     }
 }
 
 SECRET_PASSWORD_UPDATE_CONTEXT = {
     "Delinea.Secret.Newpassword(val.secret_newpassword && val.secret_newpassword == obj.secret_newpassword)": {
-        "Delinea": {"Secret": {"Newpassword": "NEWPASSWORD1"}}
+        "Delinea": {
+            "Secret": {
+                "Newpassword": "NEWPASSWORD1"
+            }
+        }
     }
 }
 
 SECRET_CHECKOUT_CONTEXT = {
-    "Delinea.Secret.Checkout(val.secret_checkout && val.secret_checkout == obj.secret_checkout)": {"responseCodes": []}
+    "Delinea.Secret.Checkout(val.secret_checkout && val.secret_checkout == obj.secret_checkout)": {
+        "responseCodes": []
+    }
 }
 
 SECRET_CHECKIN_CONTEXT = {
@@ -172,12 +186,16 @@ SECRET_CHECKIN_CONTEXT = {
         "responseCodes": "null",
         "secretTemplateId": 6007,
         "secretTemplateName": "Unix Account (SSH)",
-        "siteId": 1,
+        "siteId": 1
     }
 }
 
 SECRET_DELETE_CONTEXT = {
-    "Delinea.Secret.Deleted(val.delete && val.delete == obj.delete)": {"id": 9, "objectType": "Secret", "responseCodes": []}
+    "Delinea.Secret.Deleted(val.delete && val.delete == obj.delete)": {
+        "id": 9,
+        "objectType": "Secret",
+        "responseCodes": []
+    }
 }
 
 FOLDER_CREATE_CONTEXT = {
@@ -191,12 +209,16 @@ FOLDER_CREATE_CONTEXT = {
         "inheritSecretPolicy": "false",
         "parentFolderId": 3,
         "secretPolicyId": -1,
-        "secretTemplates": "null",
+        "secretTemplates": "null"
     }
 }
 
 FOLDER_DELETE_CONTEXT = {
-    "Delinea.Folder.Delete(val.folder && val.folder == obj.folder)": {"id": 11, "objectType": "Folder", "responseCodes": []}
+    "Delinea.Folder.Delete(val.folder && val.folder == obj.folder)": {
+        "id": 11,
+        "objectType": "Folder",
+        "responseCodes": []
+    }
 }
 
 FOLDER_UPDATE_CONTEXT = {
@@ -210,12 +232,16 @@ FOLDER_UPDATE_CONTEXT = {
         "inheritSecretPolicy": "false",
         "parentFolderId": 3,
         "secretPolicyId": -1,
-        "secretTemplates": "null",
+        "secretTemplates": "null"
     }
 }
 
-USER_DELETE_CONTEXT = {
-    "Delinea.User.Delete(val.user && val.user == obj.user)": {"id": 5, "objectType": "User", "responseCodes": []}
+SECRET_SERVER_USER_DELETE_CONTEXT = {
+    "Delinea.Secret.Server.User.Delete(val.user && val.user == obj.user)": {
+        "id": 5,
+        "objectType": "User",
+        "responseCodes": []
+    }
 }
 
 SECRET_CREATE_CONTEXT = {
@@ -253,7 +279,7 @@ SECRET_CREATE_CONTEXT = {
                 "isPassword": "false",
                 "itemId": 22,
                 "itemValue": "",
-                "slug": "notes",
+                "slug": "notes"
             }
         ],
         "lastHeartBeatCheck": "0001-01-01T00:00:00",
@@ -272,12 +298,12 @@ SECRET_CREATE_CONTEXT = {
         "secretTemplateId": 6003,
         "secretTemplateName": "Windows Account",
         "sessionRecordingEnabled": "false",
-        "siteId": 1,
+        "siteId": 1
     }
 }
 
-USER_CREATE_CONTEXT = {
-    "Delinea.User.Create(val.user && val.user == obj.user)": {
+SECRET_SERVER_USER_CREATE_CONTEXT = {
+    "Delinea.Secret.Server.User.Create(val.user && val.user == obj.user)": {
         "adAccountExpires": "0001-01-01T00:00:00",
         "adGuid": "null",
         "created": "2022-06-01T08:31:15.275Z",
@@ -314,12 +340,12 @@ USER_CREATE_CONTEXT = {
         "unixAuthenticationMethod": "Password",
         "userLcid": 0,
         "userName": "UserOne",
-        "verifyEmailSentDate": "0001-01-01T00:00:00",
+        "verifyEmailSentDate": "0001-01-01T00:00:00"
     }
 }
 
-USER_UPDATE_CONTEXT = {
-    "Delinea.User.Update(val.user && val.user == obj.user)": {
+SECRET_SERVER_USER_UPDATE_CONTEXT = {
+    "Delinea.Secret.Server.User.Update(val.user && val.user == obj.user)": {
         "unixAuthenticationMethod": "Password",
         "enabled": "true",
         "passwordLastChanged": "0001-01-01T00:00:00",
@@ -356,7 +382,7 @@ USER_UPDATE_CONTEXT = {
         "timeOptionId": -1,
         "userLcid": 0,
         "dateOptionId": -1,
-        "domainId": -1,
+        "domainId": -1
     }
 }
 
@@ -387,26 +413,44 @@ SECRET_RPC_CHANGE_PASSWORD_CONTEXT = {
         "hidePassword": "false",
         "createDate": "2022-08-30T10:32:14.407",
         "daysUntilExpiration": "null",
-        "hasLauncher": "false",
+        "hasLauncher": "false"
     }
 }
 
 SECRET_GET_CREDENTIALS_CONTEXT = {
     "Delinea.Secret.Fetch.Credentials(val.credentials && val.credentials == obj.credentials)": [
-        {"name": "4", "password": "password", "user": "user"}
+        {
+            "name": "4",
+            "password": "password",
+            "user": "user"
+        }
+    ]
+
+}
+
+SECRET_SEARCH_NAME_CONTEXT = {
+    "Delinea.Secret.Id(val.search_id && val.search_id == obj.search_id)": [
+        3564,
+        3566,
+        4241
     ]
 }
 
-SECRET_SEARCH_NAME_CONTEXT = {"Delinea.Secret.Id(val.search_id && val.search_id == obj.search_id)": [3564, 3566, 4241]}
+SECRET_SEARCH_CONTEXT = {
+    "Delinea.Secret.Secret(val.search_secret && val.search_secret == obj.search_secret)": [
+        967,
+        966
+    ]
+}
 
+FOLDER_SEARCH_CONTEXT = {
+    "Delinea.Folder.Id(val.folder_id && val.folder_id == obj.folder_id)": [
+        145
+    ]
+}
 
-SECRET_SEARCH_CONTEXT = {"Delinea.Secret.Secret(val.search_secret && val.search_secret == obj.search_secret)": [967, 966]}
-
-
-FOLDER_SEARCH_CONTEXT = {"Delinea.Folder.Id(val.folder_id && val.folder_id == obj.folder_id)": [145]}
-
-USER_SEARCH_CONTEXT = {
-    "Delinea.User.Search(val.user && val.user == obj.user)": [
+SECRET_SERVER_USER_SEARCH_CONTEXT = {
+    "Delinea.Secret.Server.User.Search(val.user && val.user == obj.user)": [
         {
             "id": 236,
             "userName": "adil@jim",
@@ -422,7 +466,123 @@ USER_SEARCH_CONTEXT = {
             "isApplicationAccount": False,
             "twoFactorMethod": "None",
             "externalUserSource": "Platform",
-            "platformIntegrationType": "Native",
+            "platformIntegrationType": "Native"
+        }
+    ]
+
+}
+
+PLATFORM_USER_DELETE_CONTEXT = {
+    "Delinea.Platform.User.Delete(val.user && val.user == obj.user)": {
+        "id": 5,
+        "objectType": "User",
+        "responseCodes": []
+    }
+}
+
+PLATFORM_USER_CREATE_CONTEXT = {
+    "Delinea.Platform.User.Create(val.user && val.user == obj.user)": {
+        "MobileNumber": "null",
+        "AccountExp": "null",
+        "Disabled": False,
+        "SendEmailInvite": True,
+        "Name": "Name",
+        "DisplayName": "XSOAR",
+        "PasswordNeverExpire": False,
+        "Mail": "example@example.com",
+        "CmaRedirectedUserUuid": "null",
+        "Password": "password",
+        "Groups": "Admins,Developers,Auditors",
+        "OfficeNumber": "null",
+        "ForcePasswordChangeNext": True,
+        "ReportsTo": "null",
+        "ServiceUser": False,
+        "Description": "Automation-created test user",
+        "HomeNumber": "null"
+    }
+}
+
+PLATFORM_USER_UPDATE_CONTEXT = {
+    "Delinea.Platform.User.Update(val.user && val.user == obj.user)": {
+        "MobileNumber": "null",
+        "AccountExp": "null",
+        "Disabled": False,
+        "SendEmailInvite": True,
+        "Name": "Name",
+        "DisplayName": "XSOAR",
+        "PasswordNeverExpire": False,
+        "Mail": "example@example.com",
+        "CmaRedirectedUserUuid": "null",
+        "Password": "password",
+        "Groups": "Admins,Developers,Auditors",
+        "OfficeNumber": "null",
+        "ForcePasswordChangeNext": True,
+        "ReportsTo": "null",
+        "ServiceUser": False,
+        "Description": "Automation-created test user",
+        "HomeNumber": "null"
+    }
+}
+
+PLATFORM_USER_GET_CONTEXT = {
+    "Delinea.Platform.User.Get(val.uuid && val.uuid == obj.uuid)": {
+        "userUuidOrUpn": "10",
+        "name": "Automation User",
+        "displayName": "Automation User",
+        "mail": "user@example.com",
+        "description": "Test user returned from mocked API",
+        "disabled": False,
+        "serviceUser": False,
+        "mobileNumber": "null",
+        "officeNumber": "null",
+        "homeNumber": "null",
+        "groups": "null",
+        "reportsTo": "null"
+    }
+}
+
+PLATFORM_GET_ALL_USERS_CONTEXT = {
+    "Delinea.Platform.Users(val.uuid && val.uuid == obj.uuid)": [
+        {
+            "uuid": "user-111",
+            "name": "John Doe",
+            "displayName": "John Doe",
+            "mail": "john@example.com",
+            "description": "Test user 1",
+            "disabled": False,
+            "serviceUser": False
+        },
+        {
+            "uuid": "user-222",
+            "name": "Jane Smith",
+            "displayName": "Jane Smith",
+            "mail": "jane@example.com",
+            "description": "Test user 2",
+            "disabled": False,
+            "serviceUser": False
+        }
+    ]
+}
+
+PLATFORM_USER_SEARCH_TEXT_CONTEXT = {
+    "Delinea.Platform.UserSearchResults(val.uuid && val.uuid == obj.uuid)": [
+        {
+            "uuid": "user-111",
+            "name": "John Doe",
+            "displayName": "John Doe",
+            "mail": "john@example.com",
+            "description": "Matched by search text",
+            "disabled": False,
+            "serviceUser": False
+        },
+        {
+            "uuid": "user-222",
+            "name": "Jane Smith",
+            "displayName": "Jane Smith",
+            "mail": "jane@example.com",
+            "description": "Test user 2",
+            "disabled": False,
+            "serviceUser": False
         }
     ]
 }

@@ -1,8 +1,8 @@
 {
-    "name": "Trend Micro Deep Security",
-    "description": "Trend Micro Deep Security provides runtime security for workloads (physical, virtual, cloud, and containers).",
+    "name": "TrendAI™ Deep Security™",
+    "description": "TrendAI™ Deep Security™ provides runtime security for workloads (physical, virtual, cloud, and containers).",
     "support": "xsoar",
-    "currentVersion": "1.1.4",
+    "currentVersion": "1.1.9",
     "author": "Cortex XSOAR",
     "url": "",
     "email": "",
@@ -19,10 +19,7 @@
         "platform"
     ],
     "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS",
-        "agentix"
+        "agentix",
+        "xsiam"
     ]
 }

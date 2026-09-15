@@ -1,0 +1,32 @@
+{
+    "id": "incident_infobloxcloudeventnotblockedcount",
+    "version": -1,
+    "modified": "2025-07-14T18:42:38.095938818+05:30",
+    "name": "Infoblox Cloud Event Not Blocked Count",
+    "ownerOnly": false,
+    "description": "The not blocked event count of the Infoblox Cloud SOC Insight.",
+    "cliName": "infobloxcloudeventnotblockedcount",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Infoblox Cloud SOC Insight"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

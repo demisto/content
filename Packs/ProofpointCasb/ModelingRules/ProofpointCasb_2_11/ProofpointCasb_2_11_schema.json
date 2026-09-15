@@ -1,0 +1,10 @@
+{
+    "proofpoint_casb_raw": {
+      "event": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }
+
+

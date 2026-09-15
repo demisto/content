@@ -5,6 +5,7 @@
 <ul>
 <li>Make sure you have administrator permissions.</li>
 <li>Make sure you have port 15873 open.</li>
+<li>Make sure you have Forcepoint API version 8.5.7 or later.</li>
 </ul>
 <h3>To set up the integration on Cortex XSOAR:</h3>
 <ol>

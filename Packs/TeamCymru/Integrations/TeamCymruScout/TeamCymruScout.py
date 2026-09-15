@@ -945,6 +945,60 @@ def create_relationship(response: dict) -> list:
     return relationships
 
 
+def ip_enrichment_using_foundation_api(response: dict, command_name: str) -> tuple[list[CommandResults], CommandResults]:
+    """
+    Process IP enrichment response from Foundation API.
+
+    Args:
+        response: API response containing IP data and usage information
+
+    Returns:
+        Tuple of (IP command results list, usage command result)
+    """
+    ip_command_results = []
+    ips_data = deepcopy(response.get("data", []))
+
+    if not ips_data:
+        ip_command_results.append(
+            CommandResults(
+                readable_output=ERROR_MESSAGES["NO_INDICATORS_FOUND"],
+            )
+        )
+    else:
+        for ip_response in ips_data:
+            ip_hr, ip_context, ip_indicator = prepare_hr_and_context_for_ip_list(ip_response)
+            ip_command_results.append(
+                CommandResults(
+                    outputs_prefix=OUTPUT_PREFIX["IP"],
+                    outputs_key_field=OUTPUT_KEY_FIELD["IP"],
+                    outputs=ip_context,
+                    raw_response=ip_response,
+                    readable_output=ip_hr,
+                    indicator=ip_indicator,
+                )
+            )
+
+    # Extract usage data (everything except 'data' field)
+    usage_response = {key: value for key, value in response.items() if key != "data"}
+    usage_data = usage_response.get("usage", {})
+
+    # Prepare usage context and human readable output
+    usage_hr, usage_context = prepare_hr_and_context_for_api_usage(usage_data, command_name)
+    usage_context.update(usage_response)
+    remove_empty_elements(usage_context)
+    usage_context.pop("usage", None)
+
+    usage_command_result = CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["QUERY_USAGE"],
+        outputs_key_field=OUTPUT_KEY_FIELD["QUERY_USAGE"],
+        outputs=usage_context,
+        raw_response=usage_response,
+        readable_output=usage_hr,
+    )
+
+    return ip_command_results, usage_command_result
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -961,6 +1015,8 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     :rtype: ``List[CommandResults]``
     :return: List of standard command result.
     """
+    use_foundation_api = demisto.params().get("use_foundation_api", False)
+    force_use_scout_details_api = argToBoolean(args.get("force_use_scout_details_api", "No"))
     ips, start_date, end_date, days, size = validate_common_search_command_args(args=args, required_arg="ip")
     size = arg_to_number(args.get("size"), "size")
 
@@ -972,6 +1028,18 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
         )
 
     command_results = []
+
+    # if force_use_scout_details_api is false and use_foundation_api is true than use founddation api.
+    if not force_use_scout_details_api and use_foundation_api:
+        for batch_ips in batch(valid_ips, batch_size=MAXIMUM_IP_LIST_SIZE):
+            response = client.scout_ip_list(params={"ips": ",".join(batch_ips)})
+            ip_results, usage_result = ip_enrichment_using_foundation_api(response, "ip")
+
+            command_results.extend(ip_results)
+
+        # Add only last API usage command result
+        command_results.append(usage_result)
+        return command_results
 
     for ip in valid_ips:
         response = client.ip_request(ip, start_date, end_date, days, size)
@@ -1138,43 +1206,10 @@ def scout_ip_list_command(client: Client, args: dict) -> list[CommandResults]:
     """
     validated_args = validate_ip_list_args(args)
     response = client.scout_ip_list(params=validated_args)
-    ips_data = deepcopy(response.get("data", []))
-    ip_command_results = []
 
-    if not ips_data:
-        ip_command_results.append(
-            CommandResults(
-                readable_output=ERROR_MESSAGES["NO_INDICATORS_FOUND"],
-            )
-        )
-    else:
-        for ip_response in ips_data:
-            ip_hr, ip_context, ip_indicator = prepare_hr_and_context_for_ip_list(ip_response)
-            ip_command_results.append(
-                CommandResults(
-                    outputs_prefix=OUTPUT_PREFIX["IP"],
-                    outputs_key_field=OUTPUT_KEY_FIELD["IP"],
-                    outputs=ip_context,
-                    raw_response=ip_response,
-                    readable_output=ip_hr,
-                    indicator=ip_indicator,
-                )
-            )
+    # Using the Foundation API, it returns ip list ip_command_results and usage_command_result.
+    ip_command_results, usage_command_result = ip_enrichment_using_foundation_api(response, "scout-ip-list")
 
-    usage_response = {key: value for key, value in response.items() if key != "data"}
-
-    usage_hr, usage_context = prepare_hr_and_context_for_api_usage(usage_response.get("usage", {}), "scout-ip-list")
-    usage_context.update(usage_response)
-    remove_empty_elements(usage_context)
-    usage_context.pop("usage", None)
-
-    usage_command_result = CommandResults(
-        outputs_prefix=OUTPUT_PREFIX["QUERY_USAGE"],
-        outputs_key_field=OUTPUT_KEY_FIELD["QUERY_USAGE"],
-        outputs=usage_context,
-        raw_response=usage_response,
-        readable_output=usage_hr,
-    )
     return [*ip_command_results, usage_command_result]
 
 
@@ -1205,11 +1240,10 @@ def main() -> None:
 
     headers = {}
     authentication_type = params.get("authentication_type", "")
-
+    auth_tuple = None
     if authentication_type == API_KEY:
         api_key = str(params.get("api_key", {}).get("password", "")).strip()
         headers["Authorization"] = f"Token {api_key}"
-        auth_tuple = None
     elif authentication_type == BASIC_AUTH:
         basic_auth = params.get("basic_auth", {})
         username = str(basic_auth.get("identifier", "")).strip()

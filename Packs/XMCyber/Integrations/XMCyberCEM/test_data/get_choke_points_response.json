@@ -1,0 +1,185 @@
+{
+    "data": [
+        {
+            "id": "123",
+            "entityId": "123",
+            "source_entity": {
+                "name": "abc",
+                "id": "123",
+                "isAsset": false,
+                "subType": "activeDirectoryUser",
+                "subTypeDisplayName": "Active Directory User"
+            },
+            "typeDisplayName": "Active Directory User",
+            "lastCompromised": "2025-12-20T13:00:37.986Z",
+            "riskScore": {
+                "severity": "high",
+                "severityScore": 81
+            },
+            "chokePointScore": {
+                "severity": "critical",
+                "severityScore": 100
+            },
+            "labels": {
+                "id": []
+            },
+            "xmLabels": {
+                "id": [
+                    "AD Risk to Domain",
+                    "AD Risky Principals"
+                ]
+            },
+            "inboundTechniques": [
+                "Highly privileged compromise",
+                "AD Reset User Password"
+            ],
+            "outboundTechniques": [
+                "AD Reset User Password",
+                "AD DCSync"
+            ],
+            "compromisedScenariosNames": [],
+            "crossEnvironment": "no",
+            "affectedCriticalAssetsCount": {
+                "count": 1,
+                "percentOfTotal": 0.74
+            },
+            "reportEntitiesCount": 540,
+            "cpScenarioNames": [
+                "ADSecurity|ADReplicationAttack"
+            ],
+            "cpInboundTechniques": [
+                "AD Reset User Password",
+                "Highly privileged compromise"
+            ],
+            "cpOutboundTechniques": [
+                "AD Reset User Password",
+                "AD DCSync"
+            ],
+            "isWatched": false,
+            "machine": {
+                "name": ""
+            }
+        },
+        {
+            "id": "234",
+            "entityId": "234",
+            "source_entity": {
+                "name": "Corporate.xm Everyone",
+                "id": "234",
+                "isAsset": false,
+                "subType": "activeDirectoryEveryone",
+                "subTypeDisplayName": "Active Directory Everyone"
+            },
+            "typeDisplayName": "Active Directory Everyone",
+            "lastCompromised": "2025-12-19T14:00:34.723Z",
+            "riskScore": {
+                "severity": "high",
+                "severityScore": 74
+            },
+            "chokePointScore": {
+                "severity": "critical",
+                "severityScore": 100
+            },
+            "labels": {
+                "id": []
+            },
+            "xmLabels": {
+                "id": []
+            },
+            "inboundTechniques": [
+                "Techniques without remediation"
+            ],
+            "outboundTechniques": [
+                "AD Add Logon Script",
+                "AD Reset User Password"
+            ],
+            "compromisedScenariosNames": [],
+            "crossEnvironment": "no",
+            "affectedCriticalAssetsCount": {
+                "count": 1,
+                "percentOfTotal": 0.5
+            },
+            "reportEntitiesCount": 540,
+            "cpScenarioNames": [
+                "ADSecurity|RisktoITGroupUsers"
+            ],
+            "cpInboundTechniques": [
+                "Techniques without remediation"
+            ],
+            "cpOutboundTechniques": [
+                "AD Change the GPO Path"
+            ],
+            "isWatched": false,
+            "machine": {
+                "name": ""
+            }
+        },
+        {
+            "id": "345",
+            "entityId": "345",
+            "source_entity": {
+                "name": "FileServer",
+                "id": "345",
+                "isAsset": true,
+                "subType": "windows",
+                "subTypeDisplayName": "Device"
+            },
+            "typeDisplayName": "Device",
+            "lastCompromised": "2025-12-19T12:59:40.945Z",
+            "riskScore": {
+                "severity": "critical",
+                "severityScore": 89
+            },
+            "chokePointScore": {
+                "severity": "critical",
+                "severityScore": 100
+            },
+            "labels": {
+                "id": []
+            },
+            "xmLabels": {
+                "id": [
+                    "Public IP",
+                    "Private key files"
+                ]
+            },
+            "inboundTechniques": [
+                "Highly privileged compromise"
+            ],
+            "outboundTechniques": [
+                "DNS Heap Overflow (CVE-2018-8626)",
+                "Text4Shell Vulnerability (CVE-2022-42889)"
+            ],
+            "compromisedScenariosNames": [
+                "On-PremRisk|Workstations>DC",
+                "WorkstationstoServers(bothonpremandazure)"
+            ],
+            "crossEnvironment": "no",
+            "affectedCriticalAssetsCount": {
+                "count": 33,
+                "percentOfTotal": 24.5
+            },
+            "reportEntitiesCount": 540,
+            "cpScenarioNames": [
+                "On-PremRisk|Workstations>DC"
+            ],
+            "cpInboundTechniques": [
+                "Highly privileged compromise"
+            ],
+            "cpOutboundTechniques": [
+                "DNS Heap Overflow (CVE-2018-8626)",
+                "Text4Shell Vulnerability (CVE-2022-42889)"
+            ],
+            "isWatched": false,
+            "machine": {
+                "name": ""
+            }
+        }
+    ],
+    "paging": {
+        "page": 1,
+        "pageSize": 3,
+        "total": 35,
+        "totalPages": 12
+    }
+}

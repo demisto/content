@@ -129,7 +129,7 @@ def get_open_incidents_command(client: Client, args: dict[str, Any]) -> Union[Co
     company_id = args.get("company_id", None)
 
     open_incidents = client.get_open_incidents(company_id)
-    if open_incidents:
+    if open_incidents and open_incidents.get("incident_ids"):
         readable_output = tableToMarkdown("Open Incidents:", open_incidents)
         return CommandResults(
             readable_output=readable_output,

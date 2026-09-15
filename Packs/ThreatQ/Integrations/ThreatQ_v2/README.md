@@ -1220,7 +1220,7 @@
 </table>
 <p> </p>
 <h5>Command Example</h5>
-<pre>  !threatq-create-adversary name="Reut Shalem"
+<pre>  !threatq-create-adversary name="Ruth Testman"
 </pre>
 <h5>Human Readable Output</h5>
 <p><img src="../../doc_files/create-adversary.png" alt="create-adversary.png"></p>

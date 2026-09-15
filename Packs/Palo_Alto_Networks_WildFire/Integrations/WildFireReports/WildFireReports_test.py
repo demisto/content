@@ -28,7 +28,7 @@ def test_wildfire_report(mocker):
         demisto_mock = mocker.patch.object(demisto, "results")
 
     with requests_mock.Mocker() as m:
-        m.post(f"https://test.com/publicapi/get/report?format=pdf&hash={mock_sha256}", content=file_content)
+        m.post("https://test.com/publicapi/get/report", content=file_content)
 
         import WildFireReports
 
@@ -53,7 +53,7 @@ def test_report_not_found(mocker):
     demisto_mock = mocker.patch.object(demisto, "results")
 
     with requests_mock.Mocker() as m:
-        m.post(f"https://test.com/publicapi/get/report?format=pdf&hash={mock_sha256}", status_code=404)
+        m.post("https://test.com/publicapi/get/report", status_code=404)
 
         import WildFireReports
 
@@ -99,11 +99,8 @@ def test_incorrect_authorization(mocker):
     demisto_mock = mocker.patch.object(demisto, "results")
     expected_description_error = "Authorization Error: make sure API Key is correctly set"
 
-    url = "https://test.com/publicapi/get/report"
-    params = "?apikey=incorrect+api+token&format=pdf&hash=dca86121cc7427e375fd24fe5871d727"
-
     with requests_mock.Mocker() as m:
-        m.post(url + params, status_code=401)
+        m.post("https://test.com/publicapi/get/report", status_code=401)
 
         import WildFireReports
 
@@ -146,7 +143,10 @@ def test_user_secrets():
     assert "%%This_is_API_key%%" not in res
 
 
-@pytest.mark.parametrize("platform_to_return,expected_agent", [("xsoar", "xsoartim"), ("x2", "xdr")])
+@pytest.mark.parametrize(
+    "platform_to_return,expected_agent",
+    [("xsoar", "xsoartim"), ("x2", "xdr")],
+)
 def test_agent_config(mocker, platform_to_return, expected_agent):
     """
     Given:
@@ -162,14 +162,59 @@ def test_agent_config(mocker, platform_to_return, expected_agent):
     """
     demisto_version_res = {"platform": platform_to_return}
 
-    # We need to make two mocks since the get_demisto_version is being called twice, once from within WildFireReports
-    # module and once from within CommonServerPython
+    mocker.patch.object(demisto, "demistoVersion", return_value=demisto_version_res)
     mocker.patch("CommonServerPython.get_demisto_version", return_value=demisto_version_res)
     mocker.patch("WildFireReports.get_demisto_version", return_value=demisto_version_res)
     get_file_call = mocker.patch("CommonServerPython.BaseClient._http_request")
     import WildFireReports
 
     client = WildFireReports.Client(token="%%This_is_API_key%%", base_url="url")
+
+    client.get_file_report(file_hash="hash")
+    get_file_call.assert_called_with(
+        "POST",
+        url_suffix="/get/report",
+        params={
+            "apikey": "%%This_is_API_key%%",
+            "agent": expected_agent,
+            "format": "pdf",
+            "hash": "hash",
+        },
+        resp_type="response",
+        ok_codes=(200, 401, 404),
+    )
+
+
+@pytest.mark.parametrize(
+    "agent,expected_agent",
+    [
+        ("auto", "xsoartim"),
+        ("xdr", "xdr"),
+        ("pcc", "pcc"),
+        ("prismaaccessapi", "prismaaccessapi"),
+        ("other", "other"),
+        ("custom_value", "custom_value"),
+    ],
+)
+def test_agent_override(mocker, agent, expected_agent):
+    """
+    Given:
+        Various agent override values from the integration configuration.
+
+    When:
+        Creating a Client with the agent parameter.
+
+    Then:
+        Ensure the correct agent value is used in API calls.
+    """
+    demisto_version_res = {"platform": "xsoar"}
+    mocker.patch.object(demisto, "demistoVersion", return_value=demisto_version_res)
+    mocker.patch("CommonServerPython.get_demisto_version", return_value=demisto_version_res)
+    mocker.patch("WildFireReports.get_demisto_version", return_value=demisto_version_res)
+    get_file_call = mocker.patch("CommonServerPython.BaseClient._http_request")
+    import WildFireReports
+
+    client = WildFireReports.Client(token="%%This_is_API_key%%", base_url="url", agent=agent)
 
     client.get_file_report(file_hash="hash")
     get_file_call.assert_called_with(

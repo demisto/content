@@ -1,0 +1,15 @@
+{
+     "take_down_list": {
+          "ticket_id": "T00001",
+          "url_status_updated_by": "",
+          "url_status": "",
+          "domain": "acme.net",
+          "sub_category": "Domain Impersonation",
+          "category": "impersonation",
+          "status": "Takedown Requested",
+          "created_date": "2026-04-23T10:42:37.236",
+          "modified_date": "2026-04-23T10:42:37.236",
+          "created_by": "API-User",
+          "modified_by": "API-User"
+     }
+}

@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Cloudflare
 commonfields:
   id: Cloudflare Feed
   version: -1
@@ -142,7 +143,7 @@ script:
       name: limit
     description: Gets the feed indicators.
     name: cloudflare-get-indicators
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10116658
   feed: true
   runonce: false
   script: '-'
@@ -151,6 +152,6 @@ script:
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)
-sectionOrder:
+sectionorder:
 - Connect
 - Collect

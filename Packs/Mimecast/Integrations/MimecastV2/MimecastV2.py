@@ -55,6 +55,9 @@ CLIENT_SECRET = demisto.params().get("client_secret", {}).get("password") if dem
 USE_OAUTH2 = bool(CLIENT_ID and CLIENT_SECRET)
 TOKEN_OAUTH2 = ""
 DEFAULT_POLICY_TYPE = "blockedsenders"
+# v2 blocked-senders endpoints (OAuth2 only); the other policy types still use the v1 /api/policy routes.
+BLOCKED_SENDERS_V2_ENDPOINT = "/policy-management/cloud-gateway/v1/blocked-senders/policies"
+BLOCKED_SENDERS_HR_HEADERS = ["Policy ID", "Sender", "Receiver", "Bidirectional", "Start", "End"]
 LOG(f"command is {demisto.command()}")
 PAGE_SIZE_MAX = 100
 DEFAULT_PAGE_SIZE = 50
@@ -89,6 +92,27 @@ default_query_xml = '<?xml version="1.0"?> \n\
 """ API COMMUNICATION FUNCTIONS"""
 
 
+def handle_error_response(failure_response, error_key="errors"):
+    """
+    Safely extract error details from Mimecast API failure response.
+
+    Args:
+        failure_response: The 'fail' field from API response
+        error_key: The key to extract from error object (default: "errors", can be "message")
+
+    Returns:
+        Error details suitable for json.dumps()
+
+    Raises:
+        Exception with formatted error message
+    """
+    if isinstance(failure_response, list) and failure_response:
+        error_details = failure_response[0].get(error_key, failure_response[0])
+    else:
+        error_details = failure_response
+    raise Exception(json.dumps(error_details))
+
+
 def request_with_pagination(
     api_endpoint: str,
     data: list,
@@ -116,22 +140,20 @@ def request_with_pagination(
     response = http_request("POST", api_endpoint, payload, headers=headers, is_file=is_file)
 
     next_page = str(response.get("meta", {}).get("pagination", {}).get("next", ""))
-    len_of_results = 0
-    results = []
+    results: list[Any] = []
     while True:
-        if response.get("fail"):
-            raise Exception(json.dumps(response.get("fail")[0].get("errors")))
+        if failure_response := response.get("fail"):
+            handle_error_response(failure_response)
         if response_param:
             response_data = response.get("data")[0].get(response_param)
         else:
             response_data = response.get("data")
         for entry in response_data:
             # If returning this log will not exceed the specified limit
-            if not limit or len_of_results < limit:
-                len_of_results += 1
+            if not limit or len(results) < limit:
                 results.append(entry)
         # If limit is reached or there are no more pages
-        if not next_page or (limit and len_of_results >= limit):
+        if not next_page or (limit and len(results) >= limit):
             break
         pagination = {
             "page_size": page_size,  # type: ignore
@@ -143,44 +165,94 @@ def request_with_pagination(
     if page and page_size:
         return results[(-1 * page_size) :], page_size
 
-    return results, len_of_results
+    return results, len(results)
 
 
-def fetch_held_messages_with_pagination(
-    api_endpoint: str, data: list, limit: int = 100, dedup_messages: list = [], current_next_page: str = ""
+def fetch_logs_with_pagination(
+    api_endpoint: str,
+    data: list,
+    response_param: str = None,
+    limit: int = PAGE_SIZE_MAX,
+    dedup_messages: list | None = None,
+    current_next_page: str = "",
+    log_type: str = "",
 ):
     """
-    Creates paging response for fetching held_messages.
+    Generic function for fetching logs with pagination and deduplication support.
+
+    Args:
+        api_endpoint: The API endpoint to call
+        data: The data payload to send
+        response_param: The parameter name in response containing the logs (e.g., 'clickLogs', 'attachmentLogs')
+                       If None, uses response.get("data") directly
+        limit: Maximum number of results to fetch
+        dedup_messages: List of message IDs to deduplicate against
+        current_next_page: Token for continuing from a previous pagination
+        log_type: Type of log for ID generation (e.g., 'url', 'attachment', 'impersonation', 'held_message')
+
+    Returns:
+        Tuple of (results, len_of_results, next_page)
     """
-    demisto.debug(f"Sending request from request_with_pagination with {limit=}, {data=}")
+    demisto.debug(f"fetch_logs_with_pagination: Starting request to {api_endpoint}")
+    demisto.debug(f"fetch_logs_with_pagination: {limit=}, dedup_count={len(dedup_messages or [])}, {current_next_page=}")
+    demisto.debug(f"fetch_logs_with_pagination: Request data={data}")
+
     payload: dict[str, Any] = {"meta": {}, "data": data}
-    len_of_results = 0
     results = []
     dropped = 0
     next_page = current_next_page or ""
-    while True:
+    dedup_messages = dedup_messages or []
+
+    for iteration in range(1, 11):
         pagination = {"pageSize": limit}
         if next_page:
-            demisto.debug(f"next_page exists with value {next_page}")
+            demisto.debug(f"fetch_logs_with_pagination: Iteration {iteration} - Using next_page token (pagination continuation)")
             pagination = {"pageSize": limit, "pageToken": next_page}  # type: ignore
+        else:
+            demisto.debug(f"fetch_logs_with_pagination: Iteration {iteration} - Starting new query (no next_page token)")
+
         payload["meta"]["pagination"] = pagination
+        demisto.debug(f"fetch_logs_with_pagination: Iteration {iteration} - Sending HTTP request")
         response = http_request("POST", api_endpoint, payload, headers={})
+
         if failure_response := response.get("fail"):
-            raise Exception(json.dumps(failure_response[0].get("errors")))
-        response_data = response.get("data", [])
+            handle_error_response(failure_response)
+
+        # Extract response data based on response_param
+        if response_param:
+            data_list = response.get("data", [])
+            response_data = data_list[0].get(response_param, []) if data_list else []
+        else:
+            response_data = response.get("data", [])
+
+        demisto.debug(f"fetch_logs_with_pagination: Iteration {iteration} - Received {len(response_data)} entries from API")
+
         for entry in response_data:
-            entry_id = entry.get("id")
-            if not entry_id or entry_id not in dedup_messages:  # Dedup for fetch
-                len_of_results += 1
-                results.append(entry)
-            elif entry_id in dedup_messages:
+            entry_id = generate_log_id(entry, log_type) if log_type else entry.get("id")
+            # Dedup for fetch - only if dedup_messages is provided and entry has an id
+            if dedup_messages and entry_id and entry_id in dedup_messages:
                 dropped += 1
-                demisto.debug(f"Dropped {entry_id} as it already exists.")
+                demisto.debug(f"fetch_logs_with_pagination: Dropped {entry_id} (duplicate)")
+            else:
+                results.append(entry)
+
         next_page = str(response.get("meta", {}).get("pagination", {}).get("next", ""))
-        if not next_page or (limit and len_of_results >= limit):
+        demisto.debug(
+            f"fetch_logs_with_pagination: Iteration {iteration} - Results so far: {len(results)}, "
+            f"next_page_exists={bool(next_page)}"
+        )
+
+        if not next_page:
+            demisto.debug("fetch_logs_with_pagination: No more pages - pagination complete")
             break
-    demisto.debug(f"Dropped {dropped} incidents.")
-    return results, len_of_results, next_page
+        if limit and len(results) >= limit:
+            demisto.debug(f"fetch_logs_with_pagination: Limit reached ({len(results)} >= {limit}) - stopping pagination")
+            break
+
+    demisto.debug(
+        f"fetch_logs_with_pagination: Final results - total={len(results)}, dropped={dropped}, has_next_page={bool(next_page)}"
+    )
+    return results, len(results), next_page
 
 
 def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, is_file=False, headers={}, data=None):
@@ -215,9 +287,11 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
             return res
         return res.json()
 
-    except HTTPError as e:
+    except (HTTPError, requests.exceptions.HTTPError) as e:
         LOG(e)
-        if e.response.status_code == 418:  # type: ignore  # pylint: disable=no-member
+        response = getattr(e, "response", None)
+        status_code = getattr(response, "status_code", None)
+        if status_code == 418:
             if not APP_ID or not EMAIL_ADDRESS or not PASSWORD:
                 raise Exception(
                     "Credentials provided are expired, could not automatically refresh tokens."
@@ -225,6 +299,14 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
                     "+ Password are required."
                 )
         else:
+            # Attempt to parse v2 error envelope: {"error": [{"code": ..., "message": ...}]}
+            try:
+                error_body = response.json() if response is not None else None
+                if error_body and (errors := error_body.get("error")):
+                    messages = "; ".join(err.get("message", str(err)) for err in errors)
+                    raise DemistoException(messages) from e
+            except (ValueError, AttributeError):
+                demisto.debug("Could not parse v2 error body; re-raising original HTTPError")
             raise
 
     except Exception as e:
@@ -232,14 +314,15 @@ def http_request(method, api_endpoint, payload=None, params={}, user_auth=True, 
         raise
 
 
-def token_oauth2_request():
+def token_oauth2_request() -> tuple[str, int]:
+    """Fetch a new OAuth2 token and return (access_token, expires_in)."""
     api_endpoint = "/oauth/token"
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     data = {"client_id": CLIENT_ID, "client_secret": CLIENT_SECRET, "grant_type": "client_credentials"}
     response = http_request("POST", api_endpoint, user_auth=False, headers=headers, data=data)
-    if response.get("fail"):
-        raise Exception(json.dumps(response.get("fail")[0].get("message")))
-    return response.get("access_token")
+    if failure_response := response.get("fail"):
+        handle_error_response(failure_response, error_key="message")
+    return response.get("access_token"), int(response.get("expires_in", 1799))
 
 
 def search_message_request(args):
@@ -308,6 +391,11 @@ def list_held_messages_request(args):
     to_date = arg_to_datetime(args.get("to_date")).isoformat() if args.get("to_date") else None  # type: ignore
     value = args.get("value", "")
     field_name = args.get("field_name", "")
+
+    # Backward compatibility: map old 'reason_code' to new 'reasonCode'
+    if field_name == "reason_code":
+        field_name = "reasonCode"
+
     limit = arg_to_number(args.get("limit")) or 20
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size"))
@@ -451,24 +539,17 @@ def auto_refresh_token():
 
 
 def updating_token_oauth2():
-    """
-    Ensures the OAuth2 token is up to date, refreshing it if necessary.
-
-    Returns:
-        str: The updated OAuth2 token.
-    """
+    """Ensures the OAuth2 token is up to date, refreshing it if necessary."""
     global TOKEN_OAUTH2
-    global USE_SSL
-    USE_SSL = False
 
     integration_context = demisto.getIntegrationContext()
     current_ts = epoch_seconds()
     last_update_ts = integration_context.get("last_update")
-    if last_update_ts is None or (current_ts - last_update_ts > 15 * 60):
-        TOKEN_OAUTH2 = token_oauth2_request()
+    expires_in = integration_context.get("expires_in", 1799)
+    if last_update_ts is None or (current_ts - last_update_ts >= expires_in - 60):
+        TOKEN_OAUTH2, expires_in = token_oauth2_request()
         if TOKEN_OAUTH2:
-            token_oauth2 = {"value": TOKEN_OAUTH2, "last_update": current_ts}
-            demisto.setIntegrationContext(token_oauth2)
+            demisto.setIntegrationContext({"value": TOKEN_OAUTH2, "last_update": current_ts, "expires_in": expires_in})
     else:
         TOKEN_OAUTH2 = integration_context.get("value")
 
@@ -955,12 +1036,46 @@ def list_blocked_sender_policies_command(args):
     return results
 
 
+def build_blocked_senders_v2_hr_row(policy: dict) -> dict:
+    """Map one flat v2 blocked-senders policy to a war-room table row."""
+    sender = policy.get("from") or {}
+    receiver = policy.get("to") or {}
+    return {
+        "Policy ID": policy.get("id"),
+        "Sender": sender.get("emailAddress") or sender.get("domain") or (sender.get("group") or {}).get("id"),
+        "Receiver": receiver.get("emailAddress") or receiver.get("domain") or (receiver.get("group") or {}).get("id"),
+        "Bidirectional": policy.get("bidirectional"),
+        "Start": policy.get("fromDateTime"),
+        "End": policy.get("toDateTime"),
+    }
+
+
+def get_blocked_senders_policy_command(policy_id: str) -> CommandResults:
+    """Get a single Blocked Senders policy by ID using the v2 GET API. The flat response is emitted verbatim."""
+    if not policy_id:
+        raise DemistoException("You need to enter policy ID")
+
+    policy = http_request("GET", f"{BLOCKED_SENDERS_V2_ENDPOINT}/{policy_id}")
+
+    return CommandResults(
+        outputs_prefix="Mimecast.BlockedSendersPolicy",
+        outputs=policy,
+        readable_output=tableToMarkdown(
+            "Mimecast Get blockedsenders Policy", build_blocked_senders_v2_hr_row(policy), BLOCKED_SENDERS_HR_HEADERS
+        ),
+        outputs_key_field="id",
+    )
+
+
 def get_policy_command(args):
     headers = ["Policy ID", "Sender", "Reciever", "Bidirectional", "Start", "End"]
     contents = []
     policy_id = args.get("policyID")
     policy_type = args.get("policyType", "blockedsenders")
     title = f"Mimecast Get {policy_type} Policy"
+
+    if policy_type == DEFAULT_POLICY_TYPE:
+        return get_blocked_senders_policy_command(policy_id)
 
     policies_list = get_policy_request(policy_type, policy_id)
     policies_context = []
@@ -1109,72 +1224,19 @@ def get_arguments_for_policy_command(args):
     return policy_obj, option
 
 
-def create_block_sender_policy_command(policy_args):
-    headers = ["Policy ID", "Description", "Sender", "Receiver", "Bidirectional", "Start", "End"]
-    policy_obj, option = get_arguments_for_policy_command(policy_args)
-    policy_list = create_or_update_policy_request(policy_obj, option)
-    policy = policy_list.get("policy")
-    policy_id = policy_list.get("id")
-    title = "Mimecast Create block sender Policy: \n Policy Was Created Successfully!"
-    sender = policy.get("from")
-    receiver = policy.get("to")
-    description = policy.get("description")
-    content = {
-        "Policy ID": policy_id,
-        "Description": description,
-        "Sender": {
-            "Group": sender.get("groupId"),
-            "Email Address": sender.get("emailAddress"),
-            "Domain": sender.get("emailDomain"),
-            "Type": sender.get("type"),
-        },
-        "Receiver": {
-            "Group": receiver.get("groupId"),
-            "Email Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Reciever": {
-            "Group": receiver.get("groupId"),
-            "Email Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Bidirectional": policy.get("bidirectional"),
-        "Start": policy.get("fromDate"),
-        "End": policy.get("toDate"),
-    }  # type: Dict[Any, Any]
-    policies_context = {
-        "ID": policy_id,
-        "Description": description,
-        "Sender": {
-            "Group": sender.get("groupId"),
-            "Address": sender.get("emailAddress"),
-            "Domain": sender.get("emailDomain"),
-            "Type": sender.get("type"),
-        },
-        "Receiver": {
-            "Group": receiver.get("groupId"),
-            "Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Reciever": {
-            "Group": receiver.get("groupId"),
-            "Email Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Bidirectional": policy.get("bidirectional"),
-        "FromDate": policy.get("fromDate"),
-        "ToDate": policy.get("toDate"),
-    }  # type: Dict[Any, Any]
+def create_block_sender_policy_command(policy_args: dict) -> CommandResults:
+    """Create a Blocked Senders policy using the v2 POST API. The response holds only the new policy ID."""
+    body = build_blocked_senders_policy_v2_body(policy_args)
+
+    response = http_request("POST", BLOCKED_SENDERS_V2_ENDPOINT, payload=body)
+    policy_id = response.get("id")
+    demisto.debug(f"Created blocked-senders policy {policy_id}")
 
     return CommandResults(
+        readable_output=f"Policy {policy_id} was created successfully.",
         outputs_prefix="Mimecast.BlockedSendersPolicy",
-        outputs=policies_context,
-        readable_output=tableToMarkdown(title, content, headers),
         outputs_key_field="id",
+        outputs={"id": policy_id},
     )
 
 
@@ -1358,67 +1420,76 @@ def update_policy_command():
     return results
 
 
-def update_block_sender_policy_command(policy_args):
+def build_policy_target(target_type: str, value: str | None, attribute_id: str | None, attribute_value: str | None) -> dict:
     """
-    Update policy according to policy ID
+    Build a v2 policy target object (the 'from' or 'to' member of a blocked-senders policy).
+
+    The key carrying the value depends on the target type: email_domain uses 'domain',
+    individual_email_address uses 'emailAddress', profile_group uses 'groupId', and
+    address_attribute_value uses a nested 'attribute' object. The remaining types
+    (everyone, internal_addresses, external_addresses) carry no value at all.
     """
-    headers = ["Policy ID", "Description", "Sender", "Receiver", "Bidirectional", "Start", "End"]
-    policy_obj, option = get_arguments_for_policy_command(policy_args)
+    attribute = assign_params(id=attribute_id, value=attribute_value) if target_type == "address_attribute_value" else None
+
+    return assign_params(
+        type=target_type,
+        domain=value if target_type == "email_domain" else None,
+        emailAddress=value if target_type == "individual_email_address" else None,
+        groupId=value if target_type == "profile_group" else None,
+        attribute=attribute,
+    )
+
+
+def build_blocked_senders_policy_v2_body(args: dict) -> dict:
+    """Build body for v2 blocked-senders create/update requests."""
+    from_date_str = arg_to_datetime(args["from_date"]).strftime(DATE_FORMAT) if args.get("from_date") else None  # type: ignore
+    to_date_str = arg_to_datetime(args["to_date"]).strftime(DATE_FORMAT) if args.get("to_date") else None  # type: ignore
+
+    body: dict = assign_params(
+        description=args.get("description"),
+        option=args.get("option"),
+        fromPart=args.get("fromPart"),
+        fromDateTime=from_date_str,
+        toDateTime=to_date_str,
+    )
+
+    from_type = args.get("fromType")
+    if from_type is not None:
+        body["from"] = build_policy_target(
+            from_type,
+            args.get("fromValue"),
+            args.get("from_attribute_id"),
+            args.get("from_attribute_value"),
+        )
+
+    to_type = args.get("toType")
+    if to_type is not None:
+        body["to"] = build_policy_target(
+            to_type,
+            args.get("toValue"),
+            args.get("to_attribute_id"),
+            args.get("to_attribute_value"),
+        )
+
+    return body
+
+
+def update_block_sender_policy_command(policy_args: dict) -> CommandResults:
+    """
+    Update an existing Blocked Senders policy using the v2 PATCH API.
+    Only fields explicitly provided are sent (partial update semantics).
+    """
     policy_id = str(policy_args.get("policy_id", ""))
     if not policy_id:
-        raise Exception("You need to enter policy ID")
-    policy_obj, option, policy_id = set_empty_value_args_policy_update(policy_obj, option, policy_id)
-    response = create_or_update_policy_request(policy_obj, option, policy_id=policy_id)
-    policy = response.get("policy")
-    title = "Mimecast Update Policy: \n Policy Was Updated Successfully!"
-    sender = policy.get("from")
-    receiver = policy.get("to")
-    description = policy.get("description")
-    contents = {
-        "Policy ID": policy_id,
-        "Description": description,
-        "Sender": {
-            "Group": sender.get("groupId"),
-            "Email Address": sender.get("emailAddress"),
-            "Domain": sender.get("emailDomain"),
-            "Type": sender.get("type"),
-        },
-        "Receiver": {
-            "Group": receiver.get("groupId"),
-            "Email Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Bidirectional": policy.get("bidirectional"),
-        "Start": policy.get("fromDate"),
-        "End": policy.get("toDate"),
-    }  # type: Dict[Any, Any]
-    policies_context = {
-        "ID": policy_id,
-        "Description": description,
-        "Sender": {
-            "Group": sender.get("groupId"),
-            "Address": sender.get("emailAddress"),
-            "Domain": sender.get("emailDomain"),
-            "Type": sender.get("type"),
-        },
-        "Receiver": {
-            "Group": receiver.get("groupId"),
-            "Address": receiver.get("emailAddress"),
-            "Domain": receiver.get("emailDomain"),
-            "Type": receiver.get("type"),
-        },
-        "Bidirectional": policy.get("bidirectional"),
-        "FromDate": policy.get("fromDate"),
-        "ToDate": policy.get("toDate"),
-    }  # type: Dict[Any, Any]
+        raise DemistoException("You need to enter policy ID")
 
-    return CommandResults(
-        outputs_prefix="Mimecast.BlockedSendersPolicy",
-        outputs=policies_context,
-        readable_output=tableToMarkdown(title, contents, headers),
-        outputs_key_field="id",
-    )
+    body = build_blocked_senders_policy_v2_body(policy_args)
+
+    api_endpoint = f"/policy-management/cloud-gateway/v1/blocked-senders/policies/{policy_id}"
+    # is_file=True returns the raw response without parsing JSON, as the endpoint returns 204 No Content
+    http_request("PATCH", api_endpoint, payload=body, is_file=True)
+
+    return CommandResults(readable_output=f"Policy {policy_id} was updated successfully.")
 
 
 def create_or_update_policy_request(policy, option, policy_id=None, policy_type="blockedsenders"):
@@ -1441,14 +1512,19 @@ def create_or_update_policy_request(policy, option, policy_id=None, policy_type=
 
 def delete_policy(args):
     policy_id = args.get("policyID")
-    policy_type = args.get("policyType")
+    policy_type = args.get("policyType") or DEFAULT_POLICY_TYPE
 
-    delete_policy_request(policy_type, policy_id)
+    if policy_type == DEFAULT_POLICY_TYPE:
+        # is_file=True returns the raw response without parsing JSON, as the endpoint returns 204 No Content
+        http_request("DELETE", f"{BLOCKED_SENDERS_V2_ENDPOINT}/{policy_id}", is_file=True)
+        demisto.debug(f"Deleted blocked-senders policy {policy_id}")
+    else:
+        delete_policy_request(policy_type, policy_id)
 
     context = {"ID": policy_id, "Deleted": True}
 
     output_type = {
-        "blockedsenders": "Blockedsenders",
+        "blockedsenders": "BlockedSendersPolicy",
         "antispoofing-bypass": "AntispoofingBypassPolicy",
         "address-alteration": "AddressAlterationPolicy",
     }
@@ -1474,7 +1550,6 @@ def delete_policy_request(policy_type, policy_id=None):
     api_endpoints = {
         "antispoofing-bypass": "antispoofing-bypass/delete-policy",
         "address-alteration": "address-alteration/delete-policy",
-        "blockedsenders": "blockedsenders/delete-policy",
     }
     api_endpoint = f"/api/policy/{api_endpoints[policy_type]}"
     id = "id"
@@ -1976,200 +2051,264 @@ def get_impersonation_logs():
     return results
 
 
+def generate_log_id(log_entry, log_type):
+    """
+    Generate a unique ID for log entries that don't have a native ID field.
+    Uses the native 'id' field if available, otherwise generates a descriptive ID based on log type.
+
+    Args:
+        log_entry: The log entry dictionary
+        log_type: Type of log (url, attachment, impersonation, held_message)
+
+    Returns:
+        A unique identifier string for the log entry
+    """
+    if log_entry.get("id"):
+        return log_entry.get("id")
+
+    # Generate descriptive IDs based on log type for better debugging
+    if log_type == "url":
+        # URL logs: use url + date + userEmailAddress
+        return f"{log_entry.get('url')}_{log_entry.get('date')}_{log_entry.get('userEmailAddress', '')}"
+
+    elif log_type == "attachment":
+        # Attachment logs: use fileName + date + senderAddress + recipientAddress
+        return (
+            f"{log_entry.get('fileName')}_{log_entry.get('date')}_"
+            f"{log_entry.get('senderAddress')}_{log_entry.get('recipientAddress')}"
+        )
+
+    elif log_type == "impersonation":
+        # Impersonation logs: use subject + eventTime + senderAddress
+        return f"{log_entry.get('subject')}_{log_entry.get('date')}_{log_entry.get('senderAddress')}"
+
+    # Fallback: use MD5 hash of the entire entry for deterministic deduplication
+    return hashlib.md5(json.dumps(log_entry, sort_keys=True).encode()).hexdigest()
+
+
+def get_log_type_fetch_time(last_run: dict, time_key: str, default_fetch_date_time: str) -> str:
+    """
+    Get the fetch time for a specific log type from last_run, or return default.
+
+    Args:
+        last_run: The last run context dictionary
+        time_key: The key to look up in last_run (e.g., 'time_url', 'time_attachment')
+        default_fetch_date_time: The default time to use if key not found
+
+    Returns:
+        Formatted date time string in Mimecast format (YYYY-MM-DDTHH:MM:SS+0000)
+    """
+    last_fetch = last_run.get(time_key)
+    if last_fetch:
+        fetch_time = datetime.strptime(last_fetch, "%Y-%m-%dT%H:%M:%SZ")
+        return fetch_time.strftime("%Y-%m-%dT%H:%M:%S") + "+0000"
+    return default_fetch_date_time
+
+
 def fetch_incidents():
     last_run = demisto.getLastRun()
-    last_fetch = last_run.get("time")
-    last_fetch_held_messages = last_run.get("time_held_messages")
-    new_last_fetch_held_messages = None
-    held_message_next_page = None
-    next_dedup_held_messages = None
     demisto.debug(f"Before fetch {last_run=}")
 
-    # handle first time fetch
-    if last_fetch is None:
-        last_fetch = datetime.now() - timedelta(hours=FETCH_DELTA)
-        last_fetch_held_messages = last_fetch
-        last_fetch_date_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S") + "+0000"
-        last_fetch_held_messages_date_time = last_fetch_date_time
-    else:
-        last_fetch = datetime.strptime(last_fetch, "%Y-%m-%dT%H:%M:%SZ")
-        last_fetch_date_time = last_fetch.strftime("%Y-%m-%dT%H:%M:%S") + "+0000"
-        if last_fetch_held_messages:
-            last_fetch_held_messages = datetime.strptime(last_fetch_held_messages, "%Y-%m-%dT%H:%M:%SZ")
-            last_fetch_held_messages_date_time = last_fetch_held_messages.strftime("%Y-%m-%dT%H:%M:%S") + "+0000"
-        else:
-            last_fetch_held_messages = last_fetch
-            last_fetch_held_messages_date_time = last_fetch_date_time
-    current_fetch = last_fetch
-    current_fetch_held_message = last_fetch_held_messages
-    demisto.debug(
-        f"last fetch dates {current_fetch=}, {last_fetch=}, "
-        f"{last_fetch_date_time=}, {current_fetch_held_message=}, {last_fetch_held_messages=},"
-        f" {last_fetch_held_messages_date_time=}"
-    )
+    # handle first time fetch - calculate default time for any log type that doesn't have a time yet
+    default_fetch_time = datetime.now() - timedelta(hours=FETCH_DELTA)
+    default_fetch_date_time = default_fetch_time.strftime("%Y-%m-%dT%H:%M:%S") + "+0000"
+
+    current_fetch = default_fetch_time
+    demisto.debug(f"Default fetch time for first-time fetches: {default_fetch_time=}, {default_fetch_date_time=}")
 
     incidents = []  # type: List[Any]
+    new_last_run = {}  # type: Dict[str, Any]
+
+    # Fetch URL logs with enhancement mechanism
     if FETCH_URL:
-        search_params = {"from": last_fetch_date_time, "scanResult": "malicious"}
-        url_logs, _ = request_with_pagination(
-            api_endpoint="/api/ttp/url/get-logs", data=[search_params], response_param="clickLogs", limit=MAX_FETCH
+        demisto.debug("Fetching URL logs")
+        url_fetch_date_time = get_log_type_fetch_time(last_run, "time_url", default_fetch_date_time)
+        fetch_log_type(
+            log_type="url",
+            api_endpoint="/api/ttp/url/get-logs",
+            response_param="clickLogs",
+            search_params={"from": url_fetch_date_time, "scanResult": "malicious", "oldestFirst": True},
+            to_incident_func=url_to_incident,
+            last_run=last_run,
+            current_fetch=current_fetch,
+            incidents=incidents,
+            new_last_run=new_last_run,
         )
-        demisto.debug(f"Pulled {len(url_logs)} click logs.")
-        for url_log in url_logs:
-            incident = url_to_incident(url_log)
-            temp_date = datetime.strptime(incident["occurred"], "%Y-%m-%dT%H:%M:%SZ")
-            # update last run
-            if temp_date > last_fetch:
-                demisto.debug(f"Increasing last_fetch since {temp_date=} but {last_fetch=}")
-                last_fetch = temp_date + timedelta(seconds=1)
-                demisto.debug(f"Increased last_fetch to {last_fetch}")
 
-            # avoid duplication due to weak time query
-            if temp_date > current_fetch:
-                incidents.append(incident)
-            else:
-                demisto.debug(f"Did not appended url_log with name {incident.get('name')} since {temp_date=}<= {current_fetch=}")
-
+    # Fetch Attachment logs with enhancement mechanism
     if FETCH_ATTACHMENTS:
-        search_params = {"from": last_fetch_date_time, "result": "malicious"}
-        demisto.debug(search_params, "search_params")
-        attachment_logs, _ = request_with_pagination(
-            api_endpoint="/api/ttp/attachment/get-logs", data=[search_params], response_param="attachmentLogs", limit=MAX_FETCH
+        demisto.debug("Fetching Attachment logs")
+        attachment_fetch_date_time = get_log_type_fetch_time(last_run, "time_attachment", default_fetch_date_time)
+        fetch_log_type(
+            log_type="attachment",
+            api_endpoint="/api/ttp/attachment/get-logs",
+            response_param="attachmentLogs",
+            search_params={"from": attachment_fetch_date_time, "scanResult": "malicious", "oldestFirst": True},
+            to_incident_func=attachment_to_incident,
+            last_run=last_run,
+            current_fetch=current_fetch,
+            incidents=incidents,
+            new_last_run=new_last_run,
         )
-        demisto.debug(f"Pulled {len(attachment_logs)} attachment logs.")
-        for attachment_log in attachment_logs:
-            incident = attachment_to_incident(attachment_log)
-            temp_date = datetime.strptime(incident["occurred"], "%Y-%m-%dT%H:%M:%SZ")
 
-            # update last run
-            if temp_date > last_fetch:
-                demisto.debug(f"Increasing last_fetch since {temp_date=} but {last_fetch=}")
-                last_fetch = temp_date + timedelta(seconds=1)
-                demisto.debug(f"Increased last_fetch to {last_fetch}")
-
-            # avoid duplication due to weak time query
-            if temp_date > current_fetch:
-                incidents.append(incident)
-            else:
-                demisto.debug(
-                    f"Did not appended attachment_log with name {incident.get('name')} since {temp_date=}<= {current_fetch=}"
-                )
-
+    # Fetch Impersonation logs with enhancement mechanism
     if FETCH_IMPERSONATIONS:
-        search_params = {"from": last_fetch_date_time, "taggedMalicious": True}
-        impersonation_logs, _ = request_with_pagination(
+        demisto.debug("Fetching Impersonation logs")
+        impersonation_fetch_date_time = get_log_type_fetch_time(last_run, "time_impersonation", default_fetch_date_time)
+        fetch_log_type(
+            log_type="impersonation",
             api_endpoint="/api/ttp/impersonation/get-logs",
-            data=[search_params],
             response_param="impersonationLogs",
-            limit=MAX_FETCH,
+            search_params={"from": impersonation_fetch_date_time, "taggedMalicious": True, "oldestFirst": True},
+            to_incident_func=impersonation_to_incident,
+            last_run=last_run,
+            current_fetch=current_fetch,
+            incidents=incidents,
+            new_last_run=new_last_run,
         )
-        demisto.debug(f"number of impersonation_logs={len(impersonation_logs)}")
-        for impersonation_log in impersonation_logs:
-            incident = impersonation_to_incident(impersonation_log)
-            temp_date = datetime.strptime(incident["occurred"], "%Y-%m-%dT%H:%M:%SZ")
 
-            # update last run
-            if temp_date > last_fetch:
-                demisto.debug(f"Increasing last_fetch since {temp_date=} but {last_fetch=}")
-                last_fetch = temp_date + timedelta(seconds=1)
-                demisto.debug(f"Increased last_fetch to {last_fetch}")
-
-            # avoid duplication due to weak time query
-            if temp_date > current_fetch:
-                incidents.append(incident)
-            else:
-                demisto.debug(
-                    f"Did not appended impersonation_logs with name {incident.get('name')} since {temp_date=}<= {current_fetch=}"
-                )
+    # Fetch Held Messages with enhancement mechanism
     if FETCH_HELD_MESSAGES:
-        # Re-write fetching held_messages due to a bug but no testing data in our instance
-        dedup_held_messages = last_run.get("dedup_held_messages", [])
-        current_next_page = last_run.get("held_message_next_page", "")
-        time_held_messages_for_next_page = last_run.get("time_held_messages_for_next_page")
-        time_held_messages_for_next_page_date_time = ""
-        if time_held_messages_for_next_page:
-            time_held_messages_for_next_page = datetime.strptime(time_held_messages_for_next_page, "%Y-%m-%dT%H:%M:%SZ")
-            time_held_messages_for_next_page_date_time = time_held_messages_for_next_page.strftime("%Y-%m-%dT%H:%M:%S") + "+0000"
-            current_fetch_held_message = time_held_messages_for_next_page
-        demisto.debug(f"{current_next_page=}")
-        demisto.debug(f"{dedup_held_messages=}")
-        demisto.debug(f"{time_held_messages_for_next_page=}")
-        held_message_next_page, next_dedup_held_messages, new_last_fetch_held_messages = fetch_held_messages(
-            last_fetch_held_messages_date_time,
-            time_held_messages_for_next_page_date_time,
-            last_fetch_held_messages,
-            current_fetch_held_message,
-            dedup_held_messages,
-            current_next_page,
-            incidents,
+        demisto.debug("Fetching Held Messages")
+        held_message_fetch_date_time = get_log_type_fetch_time(last_run, "time_held_message", default_fetch_date_time)
+        fetch_log_type(
+            log_type="held_message",
+            api_endpoint="/api/gateway/get-hold-message-list",
+            response_param=None,
+            search_params={"start": held_message_fetch_date_time, "admin": True},
+            to_incident_func=held_to_incident,
+            last_run=last_run,
+            current_fetch=current_fetch,
+            incidents=incidents,
+            new_last_run=new_last_run,
         )
 
-    time = last_fetch.isoformat().split(".")[0] + "Z"
-    new_last_run = {"time": time}
-    if next_dedup_held_messages:
-        new_last_run = {"time": time, "dedup_held_messages": next_dedup_held_messages}
-    if new_last_fetch_held_messages:
-        time_held_messages = new_last_fetch_held_messages.isoformat().split(".")[0] + "Z"
-        new_last_run["time_held_messages"] = time_held_messages
-    if held_message_next_page:
-        new_last_run["held_message_next_page"] = held_message_next_page
-        new_last_run["time_held_messages_for_next_page"] = last_fetch_held_messages.isoformat().split(".")[0] + "Z"
     demisto.setLastRun(new_last_run)
     demisto.debug(f"Changed last_run to {new_last_run=}")
-    demisto.debug(f"saving {len(incidents)}.")
+    demisto.debug(f"saving {len(incidents)} incidents.")
     demisto.incidents(incidents)
 
 
-def fetch_held_messages(
-    last_fetch_held_messages_date_time,
-    time_held_messages_for_next_page,
-    last_fetch_held_messages,
-    current_fetch_held_message,
-    dedup_held_messages,
-    current_next_page,
+def fetch_log_type(
+    log_type,
+    api_endpoint,
+    response_param,
+    search_params,
+    to_incident_func,
+    last_run,
+    current_fetch,
     incidents,
+    new_last_run,
 ):
-    search_params = {"start": last_fetch_held_messages_date_time, "admin": True}
-    if current_next_page:
-        search_params["start"] = time_held_messages_for_next_page
-    held_messages, len_of_results, next_page = fetch_held_messages_with_pagination(
-        api_endpoint="/api/gateway/get-hold-message-list",
+    """
+    Generic function to fetch logs of any type with pagination and deduplication.
+
+    Args:
+        log_type: Type of log (e.g., 'url', 'attachment', 'impersonation', 'held_message')
+        api_endpoint: API endpoint to call
+        response_param: Response parameter containing logs (None for direct data access)
+        search_params: Search parameters for the API call
+        to_incident_func: Function to convert log entry to incident
+        last_run: Last run context from Demisto
+        current_fetch: Current fetch datetime for deduplication
+        incidents: List to append new incidents to
+        new_last_run: Dictionary to update with new last run data
+    """
+    # Get state from last run
+    time_key = f"time_{log_type}"
+    dedup_key = f"dedup_{log_type}"
+    next_page_key = f"{log_type}_next_page"
+    time_for_next_page_key = f"time_{log_type}_for_next_page"
+
+    last_fetch_log_type = last_run.get(time_key)
+    dedup_messages = last_run.get(dedup_key, [])
+    current_next_page = last_run.get(next_page_key, "")
+    time_for_next_page = last_run.get(time_for_next_page_key)
+
+    # Parse last fetch time for this log type
+    if last_fetch_log_type:
+        last_fetch_log_type = datetime.strptime(last_fetch_log_type, "%Y-%m-%dT%H:%M:%SZ")
+    else:
+        last_fetch_log_type = current_fetch
+
+    current_fetch_log_type = last_fetch_log_type
+    original_query_time = last_fetch_log_type
+
+    # Handle pagination continuation
+    if time_for_next_page:
+        time_for_next_page = datetime.strptime(time_for_next_page, "%Y-%m-%dT%H:%M:%SZ")
+        current_fetch_log_type = time_for_next_page
+        original_query_time = time_for_next_page
+
+    demisto.debug(f"{log_type}: {current_next_page=}, {dedup_messages=}, " f"{last_fetch_log_type=}, {current_fetch_log_type=}")
+
+    # Fetch logs with pagination and deduplication
+    logs, len_of_results, next_page = fetch_logs_with_pagination(
+        api_endpoint=api_endpoint,
         data=[search_params],
+        response_param=response_param,
         limit=MAX_FETCH,
-        dedup_messages=dedup_held_messages,
+        dedup_messages=dedup_messages,
         current_next_page=current_next_page,
+        log_type=log_type,
     )
-    demisto.debug(f"Fetched {len_of_results} held messages")
-    for held_message in held_messages:
-        incident = held_to_incident(held_message)
-        held_message_id = held_message.get("id")
+
+    demisto.debug(f"Fetched {len_of_results} {log_type} logs")
+
+    # Process each log entry
+    for log_entry in logs:
+        incident = to_incident_func(log_entry)
+        # Generate unique ID for the log entry (uses native ID if available, otherwise generates one)
+        log_id = generate_log_id(log_entry, log_type)
         temp_date = datetime.strptime(incident["occurred"], "%Y-%m-%dT%H:%M:%SZ")
-        # update last run
-        if temp_date > last_fetch_held_messages:
-            demisto.debug(f"Increasing last_fetch since {temp_date=} > {last_fetch_held_messages=}")
-            last_fetch_held_messages = temp_date
-            dedup_held_messages = [held_message.get("id")]
-            demisto.debug(f"Increased last_fetch to {last_fetch_held_messages}")
-        elif temp_date == last_fetch_held_messages:
-            dedup_held_messages.append(held_message_id)
-            demisto.debug(
-                f"Appended a held message {held_message_id} to dedup as temp_date=last_fetch_held_messages"
-                f"={last_fetch_held_messages}"
-            )
+
+        # Update last fetch time and dedup list
+        if temp_date > last_fetch_log_type:
+            demisto.debug(f"{log_type}: Increasing last_fetch since {temp_date=} > {last_fetch_log_type=}")
+            last_fetch_log_type = temp_date
+            dedup_messages = [log_id] if log_id else []
+            demisto.debug(f"{log_type}: Increased last_fetch to {last_fetch_log_type}")
+        elif temp_date == last_fetch_log_type and log_id:
+            dedup_messages.append(log_id)
+            demisto.debug(f"{log_type}: Appended {log_id} to dedup as temp_date=last_fetch_log_type={last_fetch_log_type}")
         else:
             demisto.debug(
-                "dedup_held_messages and last_fetch_held_messages remain the same for"
-                f"{held_message_id} as {temp_date=} < {last_fetch_held_messages=}"
+                f"{log_type}: dedup and last_fetch remain the same for {log_id} as {temp_date=} < {last_fetch_log_type=}"
             )
-        # avoid duplication due to weak time query
-        if temp_date >= current_fetch_held_message:
+
+        # Avoid duplication due to weak time query
+        if temp_date >= current_fetch_log_type:
             incidents.append(incident)
         else:
-            demisto.debug(
-                f"Did not append held_message with id {held_message_id} since {temp_date=} < {current_fetch_held_message=}."
-            )
-    demisto.debug(f"Filtered the messages, saving {len(held_messages)} held messages.")
-    return next_page, dedup_held_messages, last_fetch_held_messages
+            demisto.debug(f"{log_type}: Did not append {log_id} since {temp_date=} < {current_fetch_log_type=}")
+
+    demisto.debug(f"{log_type}: Filtered the logs, saving {len(logs)} incidents.")
+
+    # Update new_last_run with state for this log type
+    if dedup_messages:
+        new_last_run[dedup_key] = dedup_messages
+        demisto.debug(f"{log_type}: Saving {len(dedup_messages)} dedup messages")
+
+    if next_page:
+        # During pagination, save the next page token and the original query time
+        demisto.debug(f"{log_type}: Pagination active - saving next_page token and original_query_time={original_query_time}")
+        new_last_run[next_page_key] = next_page
+        new_last_run[time_for_next_page_key] = original_query_time.isoformat().split(".")[0] + "Z"
+        demisto.debug(f"{log_type}: NOT updating main time_key during pagination")
+    else:
+        # Pagination complete - update the time with the latest incident time
+        demisto.debug(f"{log_type}: Pagination complete - updating time_key to latest incident time={last_fetch_log_type}")
+        if last_fetch_log_type:
+            new_last_run[time_key] = last_fetch_log_type.isoformat().split(".")[0] + "Z"
+        # Remove pagination keys from last_run as they are no longer relevant
+        demisto.debug(f"{log_type}: Removing pagination keys from last_run")
+        new_last_run.pop(next_page_key, None)
+        new_last_run.pop(time_for_next_page_key, None)
+
+    demisto.debug(
+        f"{log_type}: Final last_run state - time_key={new_last_run.get(time_key)}, "
+        f"next_page_exists={bool(new_last_run.get(next_page_key))}"
+    )
 
 
 def url_to_incident(url_log):
@@ -2326,6 +2465,7 @@ def get_message():
     message_context = demisto.args().get("context")
     message_type = demisto.args().get("type")
     message_part = demisto.args().get("part")
+    mailbox = demisto.args().get("mailbox")
 
     if message_part == "all" or message_part == "metadata":
         contents, metadata_context = get_message_metadata(message_id)
@@ -2344,17 +2484,24 @@ def get_message():
         )
 
     if message_part == "all" or message_part == "message":
-        email_file = get_message_body_content_request(message_id, message_context, message_type)
+        email_file = get_message_body_content_request(message_id, message_context, message_type, mailbox)
         results.append(fileResult(message_id, email_file))
 
     return results
 
 
-def get_message_body_content_request(message_id, message_context, message_type):
+def get_message_body_content_request(message_id, message_context, message_type, mailbox=None):
     # Setup required variables
     api_endpoint = "/api/archive/get-message-part"
 
     data = [{"id": message_id, "type": message_type, "context": message_context}]
+
+    # Add mailbox parameter when context is DELIVERED
+    if message_context and message_context.upper() == "DELIVERED":
+        if not mailbox:
+            raise ValueError("The 'mailbox' parameter is required when context is set to 'DELIVERED'")
+        data[0]["mailbox"] = mailbox
+
     payload = {"data": data}
 
     response = http_request("POST", api_endpoint, payload, is_file=True)
@@ -2789,8 +2936,8 @@ def change_user_status_removed_in_context(user_info, group_id):
             [groups_entry_in_context] if isinstance(groups_entry_in_context, dict) else groups_entry_in_context
         )
         for group in groups_entry_in_context:
-            if group["ID"] == group_id:
-                for user in group["Users"]:
+            if group.get("ID") == group_id:
+                for user in group.get("Users", []):
                     if user["EmailAddress"] == user_info.get("EmailAddress", ""):
                         user["IsRemoved"] = True
                 return groups_entry_in_context
@@ -3465,14 +3612,48 @@ def list_account_command(args: dict) -> CommandResults:
     return CommandResults(outputs_prefix="Mimecast.Account", outputs=response[0], outputs_key_field="accountCode")
 
 
+def list_blocked_senders_policies_command(args: dict) -> CommandResults:
+    """List Blocked Senders policies using the v2 GET API. The flat items are emitted verbatim.
+
+    Args:
+        args: Command arguments. Supports ``next_token`` to fetch a specific page returned
+        by a previous call, and ``page_size`` to control the number of results per page.
+    """
+    params = assign_params(
+        pageToken=args.get("next_token"),
+        pageSize=arg_to_number(args.get("page_size")),
+    )
+    limit = arg_to_number(args.get("limit")) or 50
+
+    response = http_request("GET", BLOCKED_SENDERS_V2_ENDPOINT, params=params)
+    policies = response.get("policies", [])
+    policies = policies[:limit]
+    next_token = (response.get("meta") or {}).get("nextPage")
+    demisto.debug(f"Got {len(policies)} blocked-senders policies, nextPage={next_token!r}")
+
+    title = "Mimecast list blockedsenders policies: \n These are the existing blockedsenders Policies:"
+    contents = [build_blocked_senders_v2_hr_row(policy) for policy in policies]
+
+    context_outputs = assign_params(policies=policies, NextToken=next_token)
+
+    return CommandResults(
+        outputs_prefix="Mimecast.BlockedSendersPolicy",
+        outputs=context_outputs,
+        readable_output=tableToMarkdown(title, contents, BLOCKED_SENDERS_HR_HEADERS),
+        outputs_key_field="id",
+    )
+
+
 def list_policies_command(args: dict) -> CommandResults:
     policy_type = args.get("policyType", "blockedsenders")
     page = arg_to_number(args.get("page"))
     page_size = arg_to_number(args.get("page_size"))
     limit = arg_to_number(args.get("limit"))
 
+    if policy_type == DEFAULT_POLICY_TYPE:
+        return list_blocked_senders_policies_command(args)
+
     api_endpoints = {
-        "blockedsenders": "blockedsenders/get-policy",
         "antispoofing-bypass": "antispoofing-bypass/get-policy",
         "address-alteration": "address-alteration/get-policy",
     }
@@ -3516,7 +3697,6 @@ def list_policies_command(args: dict) -> CommandResults:
     title = f"Mimecast list {policy_type} policies: \n These are the existing {policy_type} Policies:"
 
     output_type = {
-        "blockedsenders": "BlockedSendersPolicy",
         "antispoofing-bypass": "AntispoofingBypassPolicy",
         "address-alteration": "AddressAlterationPolicy",
     }

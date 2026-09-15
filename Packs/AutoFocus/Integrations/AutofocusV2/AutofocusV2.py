@@ -1891,6 +1891,10 @@ def get_export_list_command(client: Client, args):
 
 
 def main():
+    if is_demisto_version_ge("8.12.0") and datetime.now() > datetime(2025, 12, 1):
+        return_error("Palo Alto Networks AutoFocus v2 integration is deprecated. Please use Unit 42 Intelligence integration instead.")
+    else:
+        return_warning("AutoFocus v2 is deprecated and will stop working after December 1, 2025. Please migrate to Unit 42 Intelligence integration.")
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
     reliability = PARAMS.get("integrationReliability", "B - Usually reliable")

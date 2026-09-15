@@ -12,7 +12,7 @@ from SiemApiModule import *
 
 API_VERSION = "0.6.0"
 VENDOR = "alibaba"
-PRODUCT = "action-trail"
+PRODUCT = "action_trail"
 urllib3.disable_warnings()
 
 
@@ -172,7 +172,7 @@ def main():
     access_key = demisto_params.get("access_key").get("password")
     access_key_id = demisto_params.get("access_key").get("identifier")
     query = demisto_params.get("query")
-    from_ = get_alibaba_timestamp_format(demisto_params.get("from"))
+    from_ = get_alibaba_timestamp_format(demisto_params.get("from") or "3 days")
     should_push_events = argToBoolean(demisto_params.get("should_push_events", "false"))
 
     headers = {

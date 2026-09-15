@@ -1,0 +1,39 @@
+{
+    "results": [
+        {
+            "address": "0.0.0.1",
+            "comment": "comment",
+            "compartment_id": "00000000-0000-0000-0000-000000000000",
+            "created_at": "2025-06-27T13:07:21.476126Z",
+            "dhcp_info": null,
+            "disable_dhcp": false,
+            "discovery_attrs": null,
+            "discovery_metadata": null,
+            "external_keys": {
+                "e3": "3e3"
+            },
+            "host": "ipam/host/00000000-0000-0000-0000-000000000000",
+            "hwaddr": "00:00:00:00:00:00",
+            "id": "ipam/address/00000000-0000-0000-0000-000000000000",
+            "interface": "interface",
+            "names": [
+                {
+                    "name": "name",
+                    "type": "user"
+                }
+            ],
+            "parent": "ipam/subnet/00000000-0000-0000-0000-000000000000",
+            "protocol": "ip4",
+            "range": "ipam/range/00000000-0000-0000-0000-000000000000",
+            "space": "ipam/ip_space/00000000-0000-0000-0000-000000000000",
+            "state": "used",
+            "tags": {
+                "temp": "true"
+            },
+            "updated_at": "2025-06-27T13:07:21.429056Z",
+            "usage": [
+                "IPAM RESERVED"
+            ]
+        }
+    ]
+}

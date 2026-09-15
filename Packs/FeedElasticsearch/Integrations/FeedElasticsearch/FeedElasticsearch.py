@@ -46,13 +46,13 @@ if ELASTIC_SEARCH_CLIENT == OPEN_SEARCH:
 elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
     from elasticsearch import Elasticsearch  # type: ignore[assignment]
     from elasticsearch.helpers import scan  # type: ignore[assignment]
-    from elasticsearch_dsl import Search
-    from elasticsearch_dsl.query import QueryString
+    from elasticsearch_dsl import Search  # pylint: disable=E0611
+    from elasticsearch_dsl.query import QueryString  # pylint: disable=E0401,E0611
 else:  # Elasticsearch (<= v7)
     from elasticsearch7 import Elasticsearch, RequestsHttpConnection  # type: ignore[assignment]
     from elasticsearch7.helpers import scan  # type: ignore[assignment]
-    from elasticsearch_dsl import Search
-    from elasticsearch_dsl.query import QueryString
+    from elasticsearch_dsl import Search  # pylint: disable=E0611
+    from elasticsearch_dsl.query import QueryString  # pylint: disable=E0401,E0611
 
 
 class ElasticsearchClient:
@@ -621,8 +621,12 @@ def hit_to_indicator(
     if ELASTIC_SEARCH_CLIENT not in [ELASTICSEARCH_V8, OPEN_SEARCH] and isinstance(hit, dict):
         # For client version elastic <= v7, we get a different hit structure during the fetch indicators (due to BC code changes).
         ioc_dict = hit.get("_source", {})
+        if "id" not in ioc_dict:
+            ioc_dict["id"] = hit.get("_id")
     else:
         ioc_dict = hit.to_dict()
+        if "id" not in ioc_dict and hasattr(hit, "meta") and hasattr(hit.meta, "id"):
+            ioc_dict["id"] = hit.meta.id
     ioc_dict["value"] = ioc_dict.get(ioc_val_key)
     ioc_dict["rawJSON"] = dict(ioc_dict)
     if default_ioc_type:
@@ -668,9 +672,9 @@ def main():
         insecure = not params.get("insecure")
         tags = argToList(params.get("feedTags"))
         tlp_color = params.get("tlp_color")
-        feed_type = params.get("feed_type")
+        feed_type = params.get("feed_type") or "Cortex XSOAR MT Shared Feed"
         time_field = params.get("time_field") if FEED_TYPE_GENERIC in feed_type else "calculatedTime"
-        time_method = params.get("time_method")
+        time_method = params.get("time_method") or "Simple-Date"
         fetch_index = params.get("fetch_index")
         fetch_time = params.get("fetch_time", "3 days")
         fetch_limit = arg_to_number(params.get("fetch_limit", FETCH_LIMIT))
@@ -679,7 +683,7 @@ def main():
         )
         if not fetch_limit or fetch_limit > 10_000:
             raise DemistoException(f"Fetch limit must be between 1-10,000, got {fetch_limit}")
-        query = params.get("es_query")
+        query = params.get("es_query") or "*"
         api_id, api_key = extract_api_from_username_password(username, password)
         client = ElasticsearchClient(
             insecure,

@@ -1,0 +1,32 @@
+{
+    "id": "incident_infobloxcloudrip",
+    "version": -1,
+    "modified": "2025-09-22T13:20:53.888392533+05:30",
+    "name": "Infoblox Cloud RIP",
+    "ownerOnly": false,
+    "description": "The RIP of the Infoblox DNS Security Event.",
+    "cliName": "infobloxcloudrip",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Infoblox Cloud DNS Security Event"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.5.0"
+}

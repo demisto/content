@@ -1,0 +1,40 @@
+{
+    "result": [
+        {
+            "_ref": "ipv6address/1234:2001:db8::1",
+            "comment": "HOS T Wizard",
+            "conflict_types": [
+                "NONE"
+            ],
+            "discover_now_status": "NONE",
+            "duid": "",
+            "extattrs": {
+                "IB Discovery Owned": {
+                    "value": "host-wiz"
+                },
+                "Site": {
+                    "value": "host-site"
+                }
+            },
+            "ip_address": "2001:db8::1",
+            "is_conflict": false,
+            "lease_state": "FREE",
+            "names": [
+                "auth zone"
+            ],
+            "network": "2001:db8::1/64",
+            "network_view": "default",
+            "objects": [
+                "record:host/1234:auth zone/default"
+            ],
+            "status": "USED",
+            "types": [
+                "HOST",
+                "RESERVED_RANGE"
+            ],
+            "usage": [
+                "DNS"
+            ]
+        }
+    ]
+}
