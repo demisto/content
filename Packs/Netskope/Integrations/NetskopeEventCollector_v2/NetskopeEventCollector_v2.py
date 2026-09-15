@@ -1,5 +1,5 @@
 from itertools import chain
-from aiohttp import ClientResponseError
+from aiohttp import ClientResponseError, ClientPayloadError
 import asyncio
 import aiohttp
 import traceback
@@ -18,6 +18,10 @@ MAX_EVENTS_PAGE_SIZE = 10000
 MAX_RETRY = 3
 NETSKOPE_SEMAPHORE_COUNT = 4
 MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE = 10
+# Minimum page size to shrink to when the server keeps truncating the response payload
+MIN_EVENTS_PAGE_SIZE = 100
+# Base backoff (in seconds) used between retries after a truncated/incomplete response payload
+PAYLOAD_ERROR_BACKOFF_SECONDS = 1
 
 # Netskope response constants
 RATE_LIMIT_REMAINING = "ratelimit-remaining"  # Rate limit remaining
@@ -381,28 +385,31 @@ async def handle_event_type_async(
         demisto.error(msg)
         raise DemistoException(msg, exception=failures[0])
     failures_data = handle_errors(failures)
-    events = list(chain.from_iterable(success_res))
+    # success_res is a list of per-page dicts {"offset": int, "events": list}, present only for
+    # pages that were both fetched and (when applicable) sent to XSIAM.
+    events = list(chain.from_iterable(page["events"] for page in success_res))
+    # Number of events across every page that was attempted this window (sent + failed),
+    # so the offset advances past the whole scheduled window regardless of which page failed.
+    attempted_events = len(events) + sum(int(failure.get("limit") or 0) for failure in failures_data)
 
     res_dict = {"events": events, "failures": failures_data}
     demisto.debug(f"[{coord_id}] Fetched {len(events)} {event_type} events")
     if not is_re_fetch_failed_fetch:
-        # if we are retrying a failed fetch (is_re_fetch_failed_fetch=True)
-        # no additional info is needed, as we are only trying to fetch the same chunk again.
-        if len(events) == limit:
-            # meaning, there may be another events to fetch for the current time "window"
-            # save the start_time and end_time and the next offset
-
+        # Any page that failed (at any position - first, middle or last) is recorded in
+        # failures_data and retried individually on the next run via handle_prev_fetch_failures.
+        # So we advance the offset past the entire scheduled window; sent pages are never
+        # re-fetched (no duplicates) and failed pages are recovered via the failures list.
+        if attempted_events == limit:
+            # The window may still hold more events - keep the window and resume after it.
             next_fetch_data = {
                 "next_fetch_start_time": start_time,
                 "next_fetch_end_time": end_time,
-                "next_fetch_offset": offset + len(events),
+                "next_fetch_offset": offset + attempted_events,
             }
-            demisto.debug(
-                f"[{coord_id}] fetched {(len(events) == limit)=}, need to store the time window and offset "
-                f"for next fetch, {next_fetch_data=}"
-            )
+            demisto.debug(f"[{coord_id}] {attempted_events=} == {limit=}, {next_fetch_data=}")
             res_dict |= next_fetch_data
         else:
+            # Window exhausted - move to a fresh time window on the next run.
             res_dict |= {"next_fetch_start_time": end_time}
 
     demisto.debug(f"[{coord_id}] Completed event_type processing, returning {len(events)} events")
@@ -415,6 +422,9 @@ async def fetch_and_send_events_async(
     async def _handle_page(params):
         async def _fetch_page():
             retry_count = 0
+            # separate counter for truncated/incomplete response payload errors, so it
+            # does not interfere with the rate-limit (429) retry semantics
+            payload_error_retry_count = 0
             while retry_count < MAX_RETRY:
                 try:
                     if retry_count > 0:
@@ -433,6 +443,30 @@ async def fetch_and_send_events_async(
                         retry_count += 1
                     else:
                         raise e
+                except ClientPayloadError as e:
+                    # The server (or a proxy in between) announced a body length via
+                    # Content-Length / Transfer-Encoding but closed the connection before
+                    # sending all the bytes (e.g. TransferEncodingError). This is transient
+                    # and is frequently triggered by large/slow responses, so we retry with a
+                    # backoff while shrinking the page size to reduce the payload that has to
+                    # be streamed before the connection is torn down.
+                    if payload_error_retry_count >= MAX_RETRY:
+                        demisto.debug(
+                            f"Incomplete response payload for {type=} with {params=} persisted after "
+                            f"{payload_error_retry_count=} retries (>= {MAX_RETRY=}), giving up"
+                        )
+                        raise e
+                    current_limit = int(params.get("limit", MAX_EVENTS_PAGE_SIZE))
+                    new_limit = max(MIN_EVENTS_PAGE_SIZE, current_limit // 2)
+                    params["limit"] = new_limit
+                    payload_error_retry_count += 1
+                    backoff = PAYLOAD_ERROR_BACKOFF_SECONDS * payload_error_retry_count
+                    demisto.debug(
+                        f"Incomplete response payload for {type=} ({str(e)}). "
+                        f"Retrying ({payload_error_retry_count}/{MAX_RETRY}) after {backoff}s "
+                        f"with reduced page size {current_limit} -> {new_limit}"
+                    )
+                    await asyncio.sleep(backoff)
             demisto.debug(f"Rate limit (429) occurred and {retry_count=} reached the {MAX_RETRY=}")
             return {}
 
@@ -443,15 +477,28 @@ async def fetch_and_send_events_async(
                     send_events_to_xsiam, events=events, vendor=VENDOR, product=PRODUCT, chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT
                 )
 
+        page_offset = int(params.get("offset", 0))
         try:
             res = await _fetch_page()
             events = res.get("result", [])
             events = prepare_events(events, type)
             if send_to_xsiam:
-                await _send_page_to_xsiam(events)
+                # Sending is wrapped separately so a send failure for this page does not
+                # discard the pages that were already fetched AND sent successfully. The
+                # failure is recorded (with this page's offset) so this page alone is
+                # retried via the failures list on the next run, preventing re-sending
+                # already-ingested events (duplicates).
+                try:
+                    await _send_page_to_xsiam(events)
+                except Exception as e:
+                    raise DemistoException(message=str(e), exception=e, res=params)
+        except DemistoException:
+            raise
         except Exception as e:
             raise DemistoException(message=str(e), exception=e, res=params)
-        return events
+        # Return a structured per-page result so the caller can reason about which
+        # offsets were successfully fetched and sent.
+        return {"offset": page_offset, "events": events}
 
     async def _handle_all_pages():
         try:
@@ -481,7 +528,9 @@ async def fetch_and_send_events_async(
             raise DemistoException(message=str(e), exception=e, res=request_params)
 
     try:
-        results: list[list[dict] | BaseException] = await _handle_all_pages()
+        # Each successful entry is a per-page result dict: {"offset": int, "events": list}.
+        # Each failure is a BaseException whose ``res`` holds the failed page params (incl. offset).
+        results: list[dict | BaseException] = await _handle_all_pages()
         success_tasks = list(filter(lambda res: not isinstance(res, BaseException), results))
         failures = list(filter(lambda res: isinstance(res, BaseException), results))
         return success_tasks, failures

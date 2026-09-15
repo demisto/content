@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 import pytest
 import demistomock as demisto
 
-from NetskopeEventCollector_v2 import ALL_SUPPORTED_EVENT_TYPES, Client
+from NetskopeEventCollector_v2 import ALL_SUPPORTED_EVENT_TYPES, Client, DemistoException
 
 # Individual async tests are marked with @pytest.mark.asyncio decorator
 
@@ -505,3 +505,187 @@ def test_get_time_window_params(mocker, mock_config, start_time, end_time, expec
 
     # Verify the key mapping worked correctly
     assert params == expected_params, f"Expected {expected_params}, got {params}"
+
+
+@pytest.mark.asyncio
+async def test_fetch_and_send_events_async_retries_on_payload_error(mocker):
+    """
+    Given:
+        - The Netskope API returns an incomplete/truncated response payload (ClientPayloadError,
+          e.g. TransferEncodingError) on the first attempt and then succeeds.
+    When:
+        - Fetching a page of events via fetch_and_send_events_async.
+    Then:
+        - The page fetch is retried instead of failing.
+        - The page size (limit) is reduced on the retry to lower the chance of truncation.
+        - The events from the successful retry are returned with no failures.
+    """
+    from aiohttp import ClientPayloadError
+    from NetskopeEventCollector_v2 import fetch_and_send_events_async, MAX_EVENTS_PAGE_SIZE
+
+    mocker.patch("NetskopeEventCollector_v2.asyncio.sleep", return_value=None)
+
+    client = Client(BASE_URL, "token", False, False, ["alert"])
+    # count call (used by _handle_all_pages) returns a small number so a single page is scheduled
+    mocker.patch.object(client, "get_events_count", return_value=1)
+
+    observed_limits = []
+
+    async def get_events_data_async(event_type, params):
+        observed_limits.append(params.get("limit"))
+        if len(observed_limits) == 1:
+            raise ClientPayloadError("Not enough data to satisfy transfer length header.")
+        return {"result": [{"_id": "1", "timestamp": 1680000000}]}
+
+    mocker.patch.object(client, "get_events_data_async", side_effect=get_events_data_async)
+
+    request_params = {"limit": MAX_EVENTS_PAGE_SIZE, "offset": 0}
+    success, failures = await fetch_and_send_events_async(
+        client, "alert", request_params, limit=MAX_EVENTS_PAGE_SIZE, send_to_xsiam=False
+    )
+
+    assert failures == [], f"Expected no failures after a successful retry, got {failures}"
+    assert len(success) == 1, f"Expected one successful page, got {success}"
+    # first attempt used the full page size, retry used a reduced (halved) page size
+    assert observed_limits[0] == MAX_EVENTS_PAGE_SIZE
+    assert observed_limits[1] == MAX_EVENTS_PAGE_SIZE // 2
+
+
+@pytest.mark.asyncio
+async def test_fetch_and_send_events_async_payload_error_persists(mocker):
+    """
+    Given:
+        - The Netskope API persistently returns an incomplete/truncated response payload
+          (ClientPayloadError) on every attempt.
+    When:
+        - Fetching a page of events via fetch_and_send_events_async.
+    Then:
+        - After exhausting the retries the error is surfaced as a failure (recorded for
+          the next-fetch failure-replay mechanism) rather than crashing the fetch.
+    """
+    from aiohttp import ClientPayloadError
+    from NetskopeEventCollector_v2 import fetch_and_send_events_async, MAX_EVENTS_PAGE_SIZE, MIN_EVENTS_PAGE_SIZE
+
+    mocker.patch("NetskopeEventCollector_v2.asyncio.sleep", return_value=None)
+
+    client = Client(BASE_URL, "token", False, False, ["alert"])
+    mocker.patch.object(client, "get_events_count", return_value=1)
+
+    observed_limits = []
+
+    async def get_events_data_async(event_type, params):
+        observed_limits.append(params.get("limit"))
+        raise ClientPayloadError("Not enough data to satisfy transfer length header.")
+
+    mocker.patch.object(client, "get_events_data_async", side_effect=get_events_data_async)
+
+    request_params = {"limit": MAX_EVENTS_PAGE_SIZE, "offset": 0}
+    success, failures = await fetch_and_send_events_async(
+        client, "alert", request_params, limit=MAX_EVENTS_PAGE_SIZE, send_to_xsiam=False
+    )
+
+    assert success == [], f"Expected no successful pages, got {success}"
+    assert len(failures) == 1, f"Expected a single recorded failure, got {failures}"
+    # page size was shrunk on each retry but never below the configured floor
+    assert min(observed_limits) >= MIN_EVENTS_PAGE_SIZE
+
+
+@pytest.mark.parametrize(
+    "failing_offset",
+    [
+        0,  # first page fails to send
+        1,  # middle page fails to send
+        2,  # last page fails to send
+    ],
+)
+@pytest.mark.asyncio
+async def test_fetch_and_send_events_async_partial_send_failure(mocker, failing_offset):
+    """
+    Given:
+        - Three pages (offsets 0, 1, 2) are fetched concurrently and sent to XSIAM, but sending
+          one of them fails. The failing page is parametrized to be the first, a middle, or the last.
+    When:
+        - Running fetch_and_send_events_async.
+    Then:
+        - Only the pages that were sent successfully are returned as successes (never re-sent).
+        - The failed page - regardless of its position - is returned as a single failure carrying
+          its offset, so it is retried individually on the next run.
+    """
+    from NetskopeEventCollector_v2 import fetch_and_send_events_async
+
+    client = Client(BASE_URL, "token", False, False, ["alert"])
+    # 3 pages of size 1 -> offsets 0, 1, 2
+    total_pages = 3
+    mocker.patch.object(client, "get_events_count", return_value=total_pages)
+
+    async def get_events_data_async(event_type, params):
+        offset = params.get("offset", 0)
+        return {"result": [{"_id": f"evt-{offset}", "timestamp": 1680000000 + offset}]}
+
+    mocker.patch.object(client, "get_events_data_async", side_effect=get_events_data_async)
+
+    def fake_send_events_to_xsiam(events, **kwargs):
+        # fail only for the parametrized failing page
+        if any(event.get("_id") == f"evt-{failing_offset}" for event in events):
+            raise DemistoException(f"send to xsiam failed for page offset {failing_offset}")
+
+    mocker.patch("NetskopeEventCollector_v2.send_events_to_xsiam", side_effect=fake_send_events_to_xsiam)
+
+    # request page size of 1 so each offset is a separate page
+    request_params = {"limit": 1, "offset": 0}
+    success, failures = await fetch_and_send_events_async(client, "alert", request_params, limit=total_pages, send_to_xsiam=True)
+
+    # every page except the failing one was sent successfully
+    sent_offsets = sorted(page["offset"] for page in success)
+    assert sent_offsets == [offset for offset in range(total_pages) if offset != failing_offset]
+    sent_ids = sorted(event["_id"] for page in success for event in page["events"])
+    assert sent_ids == sorted(f"evt-{offset}" for offset in range(total_pages) if offset != failing_offset)
+    # the failed page (at any position) is surfaced as a single failure carrying its offset
+    assert len(failures) == 1
+    assert failures[0].res.get("offset") == failing_offset
+
+
+@pytest.mark.asyncio
+async def test_handle_event_type_async_advances_offset_past_failed_page(mocker):
+    """
+    Given:
+        - A full window where some pages were sent to XSIAM and one page failed to send
+          (returned as a failure with its offset).
+    When:
+        - Running handle_event_type_async.
+    Then:
+        - Only the successfully-sent events are returned.
+        - The failed page is recorded in the failures list (for individual retry next run).
+        - next_fetch_offset advances past the whole scheduled window, so already-sent pages are
+          never re-fetched (no duplicates) while the failed page is recovered from the failures list.
+    """
+    from NetskopeEventCollector_v2 import handle_event_type_async
+
+    client = Client(BASE_URL, "token", False, False, ["alert"])
+
+    # 3 sent pages (offsets 0, 2, 3) and 1 failed page (offset 1) -> full window of size 4
+    sent_pages = [
+        {"offset": 0, "events": [{"_id": "evt-0"}]},
+        {"offset": 2, "events": [{"_id": "evt-2"}]},
+        {"offset": 3, "events": [{"_id": "evt-3"}]},
+    ]
+    failed_page = DemistoException(
+        message="send failed", res={"offset": 1, "limit": 1, "insertionstarttime": "start", "insertionendtime": "end"}
+    )
+
+    async def fake_fetch_and_send(*args, **kwargs):
+        return sent_pages, [failed_page]
+
+    mocker.patch("NetskopeEventCollector_v2.fetch_and_send_events_async", side_effect=fake_fetch_and_send)
+
+    event_type, res = await handle_event_type_async(
+        client, "alert", start_time="start", end_time="end", offset=0, limit=4, send_to_xsiam=True, coord_id="test"
+    )
+
+    assert event_type == "alert"
+    assert sorted(event["_id"] for event in res["events"]) == ["evt-0", "evt-2", "evt-3"]
+    # the failed page is recorded for individual retry
+    assert len(res["failures"]) == 1
+    assert res["failures"][0]["offset"] == 1
+    # offset advances past the whole window (3 sent + 1 failed page of size 1 = 4)
+    assert res["next_fetch_offset"] == 4
