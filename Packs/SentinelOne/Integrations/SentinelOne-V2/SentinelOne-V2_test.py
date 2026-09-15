@@ -2595,9 +2595,10 @@ def test_export_threat_events(mocker, requests_mock):
 def test_get_unified_exclusions(mocker, requests_mock):
     """
     When:
-        sentinelone-get-unified-exclusions command is called with a limit filter
+        sentinelone-get-unified-exclusions command is called with filters
     Returns:
-        List of unified exclusion items matching the filter with correct context outputs.
+        List of unified exclusion items with correct context outputs, and camelCase
+        query parameters sent to the API (e.g. osTypes, includeChildren, not ostypes).
     """
     raw_response = util_load_json("test_data/get_unified_exclusions_raw_response.json")
     requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/unified-exclusions", json=raw_response)
@@ -2608,7 +2609,18 @@ def test_get_unified_exclusions(mocker, requests_mock):
         return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1"},
     )
     mocker.patch.object(demisto, "command", return_value="sentinelone-get-unified-exclusions")
-    mocker.patch.object(demisto, "args", return_value={"limit": "10"})
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={
+            "limit": "10",
+            "os_types": "windows",
+            "mode_type": "suppression",
+            "include_children": "true",
+            "include_parents": "false",
+            "exclusion_name_contains": "test",
+        },
+    )
 
     mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
 
@@ -2624,6 +2636,13 @@ def test_get_unified_exclusions(mocker, requests_mock):
     assert outputs[0]["Value"] == "ffffffffffffffffffffffffffffffffffffffff"
     assert outputs[0]["OsType"] == "windows"
     assert outputs[0]["ModeType"] == "suppression"
+
+    sent_qs = requests_mock.last_request.qs
+    assert sent_qs.get("ostypes") == ["windows"]
+    assert sent_qs.get("modetype") == ["suppression"]
+    assert sent_qs.get("includechildren") == ["true"]
+    assert sent_qs.get("includeparents") == ["false"]
+    assert sent_qs.get("exclusionname__contains") == ["test"]
 
 
 def test_create_unified_exclusion(mocker, requests_mock):
