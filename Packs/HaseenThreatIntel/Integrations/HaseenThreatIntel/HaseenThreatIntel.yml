@@ -155,7 +155,7 @@ configuration:
   - suddenDeath
 script:
   commands: []
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.14.13053055
   feed: true
   runonce: false
   script: '-'
