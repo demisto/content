@@ -14,15 +14,11 @@ SUBMISSION_API_LIMIT = 1000
 MAX_FETCH_DEFAULT = 10
 TAKEDOWN_OK_CODE = "TD_OK"
 
-# Format used for the Netcraft API's `date_from` parameter and for the internal
-# last_run["time"] bookkeeping value maintained by get_fetch_run_time_range /
-# update_last_run_object. Netcraft's takedown API documents this exact format
-# ("YYYY-MM-DD HH:MM:SS" in UTC).
+# Format used for the Netcraft API's `date_from` parameter and for lastRun
 LOOKBACK_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
-# Format used for the XSOAR incident `occurred` field. XSOAR requires RFC 3339
-# (e.g. "2026-08-28T20:05:02Z")
-OCCURRED_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+# Format used for the XSOAR incident `occurred` field.
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 RES_CODE_TO_MESSAGE = {
     TAKEDOWN_OK_CODE: "The attack was submitted to Netcraft successfully.",
@@ -552,15 +548,7 @@ def fetch_incidents_with_lookback(client: Client, look_back: int) -> list[dict[s
     raw_incidents = client.get_takedowns(params) or []
     demisto.debug(f"{prefix}API returned {len(raw_incidents)} incidents")
 
-    # Build incidents with `occurred` in LOOKBACK_DATE_FORMAT so it stays
-    # consistent with start_fetch_time / end_fetch_time inside
-    # update_last_run_object (both its strptime read of `occurred` and its
-    # `latest_incident_fetched_time == start_fetch_time` string comparison
-    # depend on all three inputs using a single, matching format).
-    # `occurred` is rewritten to RFC 3339 further below, right before the
-    # incidents are handed to XSOAR.
     xsoar_incidents = [to_xsoar_incident(incident, date_format=LOOKBACK_DATE_FORMAT) for incident in raw_incidents]
-
     xsoar_incidents = filter_incidents_by_duplicates_and_limit(
         incidents_res=xsoar_incidents,
         last_run=last_run,
@@ -583,15 +571,11 @@ def fetch_incidents_with_lookback(client: Client, look_back: int) -> list[dict[s
 
     demisto.setLastRun(last_run)
 
-    # XSOAR rejects `occurred` in LOOKBACK_DATE_FORMAT ("2026-08-28 20:05:02")
-    # with 'cannot parse " 20:05:02" as "T"'. Convert to RFC 3339 with a Z
-    # suffix, which the XSOAR server accepts. This happens after
-    # update_last_run_object so its internal string comparisons and strptime
-    # calls remain consistent with start_fetch_time / end_fetch_time above.
+    # convert the occurred field to the format expected by the server-side.
     for incident in xsoar_incidents:
         incident["occurred"] = datetime.strptime(  # noqa: DTZ007
             incident["occurred"], LOOKBACK_DATE_FORMAT
-        ).strftime(OCCURRED_DATE_FORMAT)
+        ).strftime(DATE_FORMAT)
 
     return xsoar_incidents
 
