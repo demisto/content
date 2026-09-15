@@ -8,162 +8,1695 @@ configuration:
   name: url
   required: true
   type: 0
+  additionalinfo: The URL of the Netskope tenant.
 - display: API Key
   name: api_key
   required: false
   type: 4
   hidden: true
+  additionalinfo: Legacy API key field retained for backward compatibility.
 - name: api_key_credentials
   type: 9
   required: false
   displaypassword: API Key
   hiddenusername: true
+  additionalinfo: The API v2 key used to authenticate to Netskope.
+- name: api_v1_token_credentials
+  type: 9
+  required: false
+  displaypassword: API v1 Token (for file hash list commands)
+  additionalinfo: The API v1 token used by the file hash list command.
+  hiddenusername: true
 - display: Trust any certificate (not secure)
   name: insecure
-  type: 8
   required: false
+  type: 8
+  additionalinfo: Whether to trust unverified TLS certificates. Not recommended.
 - display: Use system proxy settings
   name: proxy
+  additionalinfo: Whether to use the system proxy settings for connections.
   required: false
   type: 8
-description: Block URLs, domains and file hashes.
-display: Netskope (API v2)
+description: Manages Netskope policy enforcement workflows for URLs, domains, file hashes, destination and network profiles, device classification, private applications, file inspection, and URL reputation.
+display: Netskope - Direct to Zero Trust
 name: Netskope (API v2)
 script:
   commands:
   - arguments:
-    - description: Name of the URL list.
+    - description: The name of the URL list.
       name: list_name
       required: true
-    - description: URLs to add to the list.
+    - description: A comma-separated list of URLs to add to the list.
       isArray: true
       name: url
       required: true
-    description: Add URLs to the Netskope URL block list.
+    description: Adds URLs to the Netskope URL block list.
     name: netskopev2-add-url
     outputs:
     - contextPath: Netskope.URLList.id
-      description: URL List ID.
+      description: The URL List ID.
       type: number
     - contextPath: Netskope.URLList.name
-      description: URL List name.
+      description: The URL List name.
       type: string
     - contextPath: Netskope.URLList.data
-      description: URL List contents.
+      description: The URL List contents.
     - contextPath: Netskope.URLList.data.urls
-      description: List of URLs in URL List.
+      description: The list of URLs in URL List.
     - contextPath: Netskope.URLList.data.type
-      description: URL List type ('exact' or 'regex').
+      description: The URL List type ('exact' or 'regex').
       type: string
     - contextPath: Netskope.URLList.modify_by
-      description: User which last modified URL List.
+      description: The user which last modified URL List.
       type: string
     - contextPath: Netskope.URLList.modify_time
-      description: Time which URL List was last modified.
+      description: The date and time when URL List was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
       type: date
     - contextPath: Netskope.URLList.modify_type
-      description: URL List modification type ('Created', 'Edited' or 'Deleted').
+      description: The URL List modification type ('Created', 'Edited' or 'Deleted').
       type: string
     - contextPath: Netskope.URLList.pending
-      description: URL List pending status ('1' if pending, '0' if not).
+      description: The URL List pending status ('1' if pending, '0' if not).
       type: number
   - arguments:
-    - description: Name of the URL list.
+    - description: The name of the URL list.
       name: list_name
       required: true
-    - description: URLs to remove from the list.
+    - description: A comma-separated list of URLs to remove from the list.
       isArray: true
       name: url
       required: true
-    description: Remove URLs from the Netskope URL block list.
+    description: Removes URLs from the Netskope URL block list.
     name: netskopev2-remove-url
     outputs:
     - contextPath: Netskope.URLList.id
-      description: URL List ID.
+      description: The URL List ID.
       type: number
     - contextPath: Netskope.URLList.name
-      description: URL List name.
+      description: The URL List name.
       type: string
     - contextPath: Netskope.URLList.data
-      description: URL List contents.
+      description: The URL List contents.
     - contextPath: Netskope.URLList.data.urls
-      description: List of URLs in URL List.
+      description: The list of URLs in URL List.
     - contextPath: Netskope.URLList.data.type
-      description: URL List type ('exact' or 'regex').
+      description: The URL List type ('exact' or 'regex').
       type: string
     - contextPath: Netskope.URLList.modify_by
-      description: User which last modified URL List.
+      description: The user which last modified URL List.
       type: string
     - contextPath: Netskope.URLList.modify_time
-      description: Time which URL List was last modified.
+      description: The date and time when URL List was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
       type: date
     - contextPath: Netskope.URLList.modify_type
-      description: URL List modification type ('Created', 'Edited' or 'Deleted').
+      description: The URL List modification type ('Created', 'Edited' or 'Deleted').
       type: string
     - contextPath: Netskope.URLList.pending
-      description: URL List pending status ('1' if pending, '0' if not).
+      description: The URL List pending status ('1' if pending, '0' if not).
       type: number
   - arguments: []
-    description: Get all applied and pending URL lists.
+    description: Gets all applied and pending URL lists.
     name: netskopev2-get-lists
     outputs:
     - contextPath: Netskope.List.id
-      description: URL List ID.
+      description: The URL List ID.
       type: number
     - contextPath: Netskope.List.name
-      description: URL List name.
+      description: The URL List name.
       type: string
     - contextPath: Netskope.List.data
-      description: URL List contents.
+      description: The URL List contents.
     - contextPath: Netskope.List.data.urls
-      description: List of URLs in URL List.
+      description: The list of URLs in URL List.
     - contextPath: Netskope.List.data.type
-      description: URL List type ('exact' or 'regex').
+      description: The URL List type ('exact' or 'regex').
       type: string
     - contextPath: Netskope.List.modify_by
-      description: User which last modified URL List.
+      description: The user which last modified URL List.
       type: string
     - contextPath: Netskope.List.modify_time
-      description: Time which URL List was last modified.
+      description: The date and time when URL List was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
       type: date
     - contextPath: Netskope.List.modify_type
-      description: URL List modification type ('Created', 'Edited' or 'Deleted').
+      description: The URL List modification type ('Created', 'Edited' or 'Deleted').
       type: string
     - contextPath: Netskope.List.pending
-      description: URL List pending status ('1' if pending, '0' if not).
+      description: The URL List pending status ('1' if pending, '0' if not).
       type: number
   - arguments:
-    - description: Name of the URL list.
+    - description: The name of the URL list.
       name: list_name
       required: true
-    description: Get URL list by ID.
+    description: Gets URL list by ID.
     name: netskopev2-get-list
     outputs:
     - contextPath: Netskope.List.id
-      description: URL List ID.
+      description: The URL List ID.
       type: number
     - contextPath: Netskope.List.name
-      description: URL List name.
+      description: The URL List name.
       type: string
     - contextPath: Netskope.List.data
-      description: URL List contents.
+      description: The URL List contents.
     - contextPath: Netskope.List.data.urls
-      description: List of URLs in URL List.
+      description: The list of URLs in URL List.
     - contextPath: Netskope.List.data.type
-      description: URL List type ('exact' or 'regex').
+      description: The URL List type ('exact' or 'regex').
       type: string
     - contextPath: Netskope.List.modify_by
-      description: User which last modified URL List.
+      description: The user which last modified URL List.
       type: string
     - contextPath: Netskope.List.modify_time
-      description: Time which URL List was last modified.
+      description: The date and time when URL List was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
       type: date
     - contextPath: Netskope.List.modify_type
-      description: URL List modification type ('Created', 'Edited' or 'Deleted').
+      description: The URL List modification type ('Created', 'Edited' or 'Deleted').
       type: string
     - contextPath: Netskope.List.pending
-      description: URL List pending status ('1' if pending, '0' if not).
+      description: The URL List pending status ('1' if pending, '0' if not).
       type: number
+  - arguments: []
+    description: Lists existing device classification tags. Requires the Device Classification API (beta) to be enabled for the tenant.
+    name: netskopev2-list-device-classification-tags
+    outputs:
+    - contextPath: Netskope.DeviceClassificationTag.id
+      description: The device classification tag ID.
+      type: number
+    - contextPath: Netskope.DeviceClassificationTag.priority
+      description: The device classification tag priority.
+      type: number
+    - contextPath: Netskope.DeviceClassificationTag.name
+      description: The device classification tag name.
+      type: string
+    - contextPath: Netskope.DeviceClassificationTag.description
+      description: The device classification tag description.
+      type: string
+    - contextPath: Netskope.DeviceClassificationTag.modifiedBy
+      description: The user which last modified the tag.
+      type: string
+    - contextPath: Netskope.DeviceClassificationTag.modifiedTime
+      description: The time the tag was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+    - contextPath: Netskope.DeviceClassificationTag.policyNames
+      description: The names of policies referencing this classification tag.
+      type: unknown
+  - arguments:
+    - description: The name of the device classification tag.
+      name: name
+      required: true
+    - description: The description of the device classification tag.
+      name: description
+    description: Creates a new device classification tag (label). Requires the Device Classification API (beta) to be enabled for the tenant.
+    name: netskopev2-create-device-classification-tag
+    outputs:
+    - contextPath: Netskope.DeviceClassificationTag.ids
+      description: The IDs of the created device classification tag(s).
+      type: unknown
+    - contextPath: Netskope.DeviceClassificationTag.name
+      description: The device classification tag name.
+      type: string
+    - contextPath: Netskope.DeviceClassificationTag.description
+      description: The device classification tag description.
+      type: string
+  - arguments:
+    - description: The name of the classification rule.
+      name: name
+      required: true
+    - description: The name of the classification tag this rule applies (must already exist).
+      name: label
+      required: true
+    - auto: PREDEFINED
+      description: The operating system this rule applies to.
+      name: os
+      predefined:
+      - windows
+      - mac
+      - linux
+      - android
+      - ios
+      required: true
+    - description: "The JSON object describing the rule conditions, e.g. {\"$and\": [{\"device_tag_check\": {\"tag_id\": 1137}}]}."
+      name: conditions
+      required: true
+    description: Creates a device classification rule linking conditions (OS version, device tag presence, etc.) to a classification label. Requires the Device Classification API (beta) to be enabled for the tenant.
+    name: netskopev2-create-device-classification-rule
+    outputs:
+    - contextPath: Netskope.DeviceClassificationRule.ids
+      description: The IDs of the created device classification rule(s).
+      type: unknown
+    - contextPath: Netskope.DeviceClassificationRule.name
+      description: The device classification rule name.
+      type: string
+    - contextPath: Netskope.DeviceClassificationRule.label
+      description: The device classification tag name this rule applies.
+      type: string
+    - contextPath: Netskope.DeviceClassificationRule.os
+      description: The operating system this rule applies to.
+      type: string
+  - arguments:
+    - description: The UNIX timestamp for the start of the query window.
+      name: start_time
+      required: true
+    - description: The UNIX timestamp for the end of the query window.
+      name: end_time
+      required: true
+    - description: The comma-separated list of fields to return.
+      name: fields
+    description: Finds devices by client status query, to resolve a device's nsdeviceuid before tagging it. Requires the Device Classification API (beta) to be enabled for the tenant.
+    name: netskopev2-find-device
+    outputs:
+    - contextPath: Netskope.Device.nsdeviceuid
+      description: The Netskope device UID.
+      type: string
+    - contextPath: Netskope.Device.hostname
+      description: The device hostname.
+      type: string
+    - contextPath: Netskope.Device.os
+      description: The device operating system.
+      type: string
+    - contextPath: Netskope.Device.client_version
+      description: The Netskope client version installed on the device.
+      type: string
+  - arguments:
+    - description: The name of the device tag.
+      name: name
+      required: true
+    - description: The description of the device tag.
+      name: description
+    description: Registers a new device tag. Check netskopev2-list-device-tags first to avoid creating a duplicate. Requires the Device Classification API (beta) to be enabled for the tenant.
+    name: netskopev2-create-device-tag
+    outputs:
+    - contextPath: Netskope.DeviceTag.id
+      description: The device tag ID.
+      type: number
+    - contextPath: Netskope.DeviceTag.name
+      description: The device tag name.
+      type: string
+    - contextPath: Netskope.DeviceTag.description
+      description: The device tag description.
+      type: string
+  - arguments:
+    - description: The Netskope device UID (nsdeviceuid) to look up tags for.
+      name: device_id
+      required: true
+    description: Finds existing device tags applied to a device. Requires the Device Classification API (beta) to be enabled for the tenant.
+    name: netskopev2-list-device-tags
+    outputs:
+    - contextPath: Netskope.DeviceTag.id
+      description: The device tag ID.
+      type: number
+    - contextPath: Netskope.DeviceTag.name
+      description: The device tag name.
+      type: string
+  - arguments:
+    - description: A comma-separated list of device tag IDs to apply. A device supports a maximum of 5 tags.
+      isArray: true
+      name: tag_id
+      required: true
+    - description: A comma-separated list of netskope device UIDs (nsdeviceuid) to apply the tags to.
+      isArray: true
+      name: nsdeviceuid
+      required: true
+    - description: The hostname to associate with the device entries.
+      name: hostname
+    - description: The user key to associate with the device entries. If omitted, the device UID is used.
+      name: userkey
+    description: Applies device tag(s) to one or more devices. This replaces all existing tags on the specified devices — it is not additive. Requires the Device Classification API (beta) to be enabled for the tenant.
+    name: netskopev2-apply-device-tags
+    outputs:
+    - contextPath: Netskope.DeviceTagApplication.affected_device_tags
+      description: The number of device tags affected.
+      type: number
+    - contextPath: Netskope.DeviceTagApplication.affected_device_classification_tags
+      description: The number of device classification tags affected.
+      type: number
+    - contextPath: Netskope.DeviceTagApplication.message
+      description: The result message.
+      type: string
+  - name: netskopev2-list-destination-profiles
+    description: Lists and filters destination profiles.
+    arguments:
+    - name: fields
+      description: The comma-separated list of fields to return. The id field is always returned.
+    - name: page
+      description: The page number to return. Must be used with page_size.
+    - name: page_size
+      description: The number of items per page, from 1 through 100.
+    - name: limit
+      defaultValue: '10'
+      description: The maximum number of items to return when page is not specified, up to 100.
+    - name: sortby
+      description: 'The field to sort by: name, create_time, or modify_time.'
+    - name: sortorder
+      description: The sort order.
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    - name: filter
+      description: The filter expression, e.g. name co "eng" or status in ("pending-update","pending-delete").
+    outputs:
+    - contextPath: Netskope.DestinationProfile.id
+      description: The profile ID.
+      type: string
+    - contextPath: Netskope.DestinationProfile.name
+      description: The profile name.
+      type: string
+    - contextPath: Netskope.DestinationProfile.description
+      description: The profile description.
+      type: string
+    - contextPath: Netskope.DestinationProfile.type
+      description: The profile type ('regex', 'sensitive', or 'insensitive').
+      type: string
+    - contextPath: Netskope.DestinationProfile.values
+      description: The profile values.
+      type: unknown
+    - contextPath: Netskope.DestinationProfile.values_count
+      description: The number of values in the profile.
+      type: number
+    - contextPath: Netskope.DestinationProfile.label_ids
+      description: The label IDs associated with the profile.
+      type: unknown
+    - contextPath: Netskope.DestinationProfile.status
+      description: The profile status ('applied', 'pending-create', 'pending-update', or 'pending-delete').
+      type: string
+    - contextPath: Netskope.DestinationProfile.create_by
+      description: The user who created the profile.
+      type: string
+    - contextPath: Netskope.DestinationProfile.create_time
+      description: The date and time when the profile was created, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+    - contextPath: Netskope.DestinationProfile.modify_by
+      description: The user who last modified the profile.
+      type: string
+    - contextPath: Netskope.DestinationProfile.modify_time
+      description: The date and time when the profile was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-create-destination-profile
+    description: Creates a new destination profile.
+    arguments:
+    - name: name
+      description: The name of the profile. Must be unique, maximum 100 characters.
+      required: true
+    - name: description
+      description: The description of the profile. Maximum 200 characters.
+    - name: values
+      description: A comma-separated list of values for the profile.
+      isArray: true
+    - name: type
+      description: The profile match type.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - regex
+      - sensitive
+      - insensitive
+    - name: label_ids
+      description: A comma-separated list of label IDs to associate with the profile.
+      isArray: true
+    - name: id
+      description: The client-supplied ID for the profile. Must be a UUID if provided.
+    - name: interactive
+      description: Whether to stage the change as pending instead of applying it immediately.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: details
+      description: Whether to omit the values array from the response.
+    outputs:
+    - contextPath: Netskope.DestinationProfile.id
+      description: The profile ID.
+      type: string
+    - contextPath: Netskope.DestinationProfile.name
+      description: The profile name.
+      type: string
+    - contextPath: Netskope.DestinationProfile.description
+      description: The profile description.
+      type: string
+    - contextPath: Netskope.DestinationProfile.type
+      description: The profile type ('regex', 'sensitive', or 'insensitive').
+      type: string
+    - contextPath: Netskope.DestinationProfile.values
+      description: The profile values.
+      type: unknown
+    - contextPath: Netskope.DestinationProfile.values_count
+      description: The number of values in the profile.
+      type: number
+    - contextPath: Netskope.DestinationProfile.label_ids
+      description: The label IDs associated with the profile.
+      type: unknown
+    - contextPath: Netskope.DestinationProfile.status
+      description: The profile status ('applied', 'pending-create', 'pending-update', or 'pending-delete').
+      type: string
+    - contextPath: Netskope.DestinationProfile.create_by
+      description: The user who created the profile.
+      type: string
+    - contextPath: Netskope.DestinationProfile.create_time
+      description: The date and time when the profile was created, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+    - contextPath: Netskope.DestinationProfile.modify_by
+      description: The user who last modified the profile.
+      type: string
+    - contextPath: Netskope.DestinationProfile.modify_time
+      description: The date and time when the profile was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-get-destination-profile
+    description: Gets a destination profile by ID.
+    arguments:
+    - name: id
+      description: The ID of the profile.
+      required: true
+    - name: details
+      description: Whether to omit the values array from the response.
+    outputs:
+    - contextPath: Netskope.DestinationProfile.id
+      description: The profile ID.
+      type: string
+    - contextPath: Netskope.DestinationProfile.name
+      description: The profile name.
+      type: string
+    - contextPath: Netskope.DestinationProfile.description
+      description: The profile description.
+      type: string
+    - contextPath: Netskope.DestinationProfile.type
+      description: The profile type ('regex', 'sensitive', or 'insensitive').
+      type: string
+    - contextPath: Netskope.DestinationProfile.values
+      description: The profile values.
+      type: unknown
+    - contextPath: Netskope.DestinationProfile.values_count
+      description: The number of values in the profile.
+      type: number
+    - contextPath: Netskope.DestinationProfile.label_ids
+      description: The label IDs associated with the profile.
+      type: unknown
+    - contextPath: Netskope.DestinationProfile.status
+      description: The profile status ('applied', 'pending-create', 'pending-update', or 'pending-delete').
+      type: string
+    - contextPath: Netskope.DestinationProfile.create_by
+      description: The user who created the profile.
+      type: string
+    - contextPath: Netskope.DestinationProfile.create_time
+      description: The date and time when the profile was created, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+    - contextPath: Netskope.DestinationProfile.modify_by
+      description: The user who last modified the profile.
+      type: string
+    - contextPath: Netskope.DestinationProfile.modify_time
+      description: The date and time when the profile was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-update-destination-profile
+    description: Partially updates a destination profile.
+    arguments:
+    - name: id
+      description: The ID of the profile.
+      required: true
+    - name: name
+      description: The new name for the profile.
+    - name: description
+      description: The new description for the profile.
+    - name: values
+      description: A comma-separated list of new values for the profile (replaces the full list).
+      isArray: true
+    - name: type
+      description: The new profile match type. If provided, "values" must also be provided.
+      auto: PREDEFINED
+      predefined:
+      - regex
+      - sensitive
+      - insensitive
+    - name: label_ids
+      description: A comma-separated list of new label IDs. An empty list clears existing labels.
+      isArray: true
+    - name: interactive
+      description: Whether to stage the change as pending instead of applying it immediately.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: Netskope.DestinationProfile.id
+      description: The profile ID.
+      type: string
+    - contextPath: Netskope.DestinationProfile.name
+      description: The profile name.
+      type: string
+    - contextPath: Netskope.DestinationProfile.description
+      description: The profile description.
+      type: string
+    - contextPath: Netskope.DestinationProfile.type
+      description: The profile type ('regex', 'sensitive', or 'insensitive').
+      type: string
+    - contextPath: Netskope.DestinationProfile.values
+      description: The profile values.
+      type: unknown
+    - contextPath: Netskope.DestinationProfile.values_count
+      description: The number of values in the profile.
+      type: number
+    - contextPath: Netskope.DestinationProfile.label_ids
+      description: The label IDs associated with the profile.
+      type: unknown
+    - contextPath: Netskope.DestinationProfile.status
+      description: The profile status ('applied', 'pending-create', 'pending-update', or 'pending-delete').
+      type: string
+    - contextPath: Netskope.DestinationProfile.create_by
+      description: The user who created the profile.
+      type: string
+    - contextPath: Netskope.DestinationProfile.create_time
+      description: The date and time when the profile was created, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+    - contextPath: Netskope.DestinationProfile.modify_by
+      description: The user who last modified the profile.
+      type: string
+    - contextPath: Netskope.DestinationProfile.modify_time
+      description: The date and time when the profile was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-update-destination-profile-values
+    description: Appends or removes values on a destination profile without replacing the full list.
+    arguments:
+    - name: id
+      description: The ID of the profile.
+      required: true
+    - name: operation
+      description: Whether to append or remove values.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - append
+      - remove
+    - name: values
+      description: A comma-separated list of values to append or remove (1-10 per call). For remove, this is a case-sensitive exact match.
+      isArray: true
+    - name: indexes
+      description: A comma-separated list of index positions to remove (1-10 per call). Only supported for remove.
+      isArray: true
+    outputs:
+    - contextPath: Netskope.DestinationProfile.id
+      description: The profile ID.
+      type: string
+    - contextPath: Netskope.DestinationProfile.name
+      description: The profile name.
+      type: string
+    - contextPath: Netskope.DestinationProfile.description
+      description: The profile description.
+      type: string
+    - contextPath: Netskope.DestinationProfile.type
+      description: The profile type ('regex', 'sensitive', or 'insensitive').
+      type: string
+    - contextPath: Netskope.DestinationProfile.values
+      description: The profile values.
+      type: unknown
+    - contextPath: Netskope.DestinationProfile.values_count
+      description: The number of values in the profile.
+      type: number
+    - contextPath: Netskope.DestinationProfile.label_ids
+      description: The label IDs associated with the profile.
+      type: unknown
+    - contextPath: Netskope.DestinationProfile.status
+      description: The profile status ('applied', 'pending-create', 'pending-update', or 'pending-delete').
+      type: string
+    - contextPath: Netskope.DestinationProfile.create_by
+      description: The user who created the profile.
+      type: string
+    - contextPath: Netskope.DestinationProfile.create_time
+      description: The date and time when the profile was created, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+    - contextPath: Netskope.DestinationProfile.modify_by
+      description: The user who last modified the profile.
+      type: string
+    - contextPath: Netskope.DestinationProfile.modify_time
+      description: The date and time when the profile was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-delete-destination-profile
+    description: Deletes a destination profile.
+    arguments:
+    - name: id
+      description: The ID of the profile.
+      required: true
+    - name: interactive
+      description: Whether to stage the deletion as pending instead of applying it immediately.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: Netskope.DestinationProfile.status
+      description: The result status ('success' or 'pending-delete').
+      type: string
+  - name: netskopev2-deploy-destination-profiles
+    description: Deploys staged (pending) changes for destination profiles. Maximum 50 profile IDs per call.
+    arguments:
+    - name: ids
+      description: A comma-separated list of profile IDs to deploy (maximum 50).
+      isArray: true
+    - name: all
+      description: Whether the all option is enabled. Deploy every pending profile. Requires ids to be empty. Only allowed when 50 or fewer profiles are pending.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: change_note
+      description: The note describing the change. Maximum 100 characters.
+    outputs:
+    - contextPath: Netskope.DestinationProfileDeploy.applied
+      description: The IDs of the profiles that were applied.
+      type: unknown
+  - name: netskopev2-revert-destination-profile
+    description: Reverts a pending update or delete on a destination profile back to its applied version.
+    arguments:
+    - name: id
+      description: The ID of the profile.
+      required: true
+    - name: details
+      description: Whether to omit the values array from the response.
+    outputs:
+    - contextPath: Netskope.DestinationProfile.id
+      description: The profile ID.
+      type: string
+    - contextPath: Netskope.DestinationProfile.name
+      description: The profile name.
+      type: string
+    - contextPath: Netskope.DestinationProfile.description
+      description: The profile description.
+      type: string
+    - contextPath: Netskope.DestinationProfile.type
+      description: The profile type ('regex', 'sensitive', or 'insensitive').
+      type: string
+    - contextPath: Netskope.DestinationProfile.values
+      description: The profile values.
+      type: unknown
+    - contextPath: Netskope.DestinationProfile.values_count
+      description: The number of values in the profile.
+      type: number
+    - contextPath: Netskope.DestinationProfile.label_ids
+      description: The label IDs associated with the profile.
+      type: unknown
+    - contextPath: Netskope.DestinationProfile.status
+      description: The profile status ('applied', 'pending-create', 'pending-update', or 'pending-delete').
+      type: string
+    - contextPath: Netskope.DestinationProfile.create_by
+      description: The user who created the profile.
+      type: string
+    - contextPath: Netskope.DestinationProfile.create_time
+      description: The date and time when the profile was created, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+    - contextPath: Netskope.DestinationProfile.modify_by
+      description: The user who last modified the profile.
+      type: string
+    - contextPath: Netskope.DestinationProfile.modify_time
+      description: The date and time when the profile was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-get-destination-profile-applied-version
+    description: Gets the currently applied version of a destination profile, even if a pending change exists.
+    arguments:
+    - name: id
+      description: The ID of the profile.
+      required: true
+    outputs:
+    - contextPath: Netskope.DestinationProfile.id
+      description: The profile ID.
+      type: string
+    - contextPath: Netskope.DestinationProfile.name
+      description: The profile name.
+      type: string
+    - contextPath: Netskope.DestinationProfile.description
+      description: The profile description.
+      type: string
+    - contextPath: Netskope.DestinationProfile.type
+      description: The profile type ('regex', 'sensitive', or 'insensitive').
+      type: string
+    - contextPath: Netskope.DestinationProfile.values
+      description: The profile values.
+      type: unknown
+    - contextPath: Netskope.DestinationProfile.values_count
+      description: The number of values in the profile.
+      type: number
+    - contextPath: Netskope.DestinationProfile.label_ids
+      description: The label IDs associated with the profile.
+      type: unknown
+    - contextPath: Netskope.DestinationProfile.status
+      description: The profile status ('applied', 'pending-create', 'pending-update', or 'pending-delete').
+      type: string
+    - contextPath: Netskope.DestinationProfile.create_by
+      description: The user who created the profile.
+      type: string
+    - contextPath: Netskope.DestinationProfile.create_time
+      description: The date and time when the profile was created, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+    - contextPath: Netskope.DestinationProfile.modify_by
+      description: The user who last modified the profile.
+      type: string
+    - contextPath: Netskope.DestinationProfile.modify_time
+      description: The date and time when the profile was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-migrate-url-list-to-destination-profile
+    description: Migrates an existing URL List into a new Destination Profile. The new profile is created in pending-create status and must be deployed to take effect.
+    arguments:
+    - name: url_list_id
+      description: The ID of the URL List to migrate.
+      required: true
+    - name: destination_profile_name
+      description: The name for the new destination profile. If omitted, the URL List's name is used.
+    outputs:
+    - contextPath: Netskope.DestinationProfile.id
+      description: The profile ID.
+      type: string
+    - contextPath: Netskope.DestinationProfile.name
+      description: The profile name.
+      type: string
+    - contextPath: Netskope.DestinationProfile.description
+      description: The profile description.
+      type: string
+    - contextPath: Netskope.DestinationProfile.type
+      description: The profile type ('regex', 'sensitive', or 'insensitive').
+      type: string
+    - contextPath: Netskope.DestinationProfile.values
+      description: The profile values.
+      type: unknown
+    - contextPath: Netskope.DestinationProfile.values_count
+      description: The number of values in the profile.
+      type: number
+    - contextPath: Netskope.DestinationProfile.label_ids
+      description: The label IDs associated with the profile.
+      type: unknown
+    - contextPath: Netskope.DestinationProfile.status
+      description: The profile status ('applied', 'pending-create', 'pending-update', or 'pending-delete').
+      type: string
+    - contextPath: Netskope.DestinationProfile.create_by
+      description: The user who created the profile.
+      type: string
+    - contextPath: Netskope.DestinationProfile.create_time
+      description: The date and time when the profile was created, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+    - contextPath: Netskope.DestinationProfile.modify_by
+      description: The user who last modified the profile.
+      type: string
+    - contextPath: Netskope.DestinationProfile.modify_time
+      description: The date and time when the profile was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-migrate-url-list-into-destination-profile
+    description: Overrides an existing Destination Profile's values with a URL List's content. The profile is placed in pending-update status and must be deployed to take effect.
+    arguments:
+    - name: id
+      description: The ID of the destination profile to override.
+      required: true
+    - name: url_list_id
+      description: The ID of the URL List to migrate in.
+      required: true
+    outputs:
+    - contextPath: Netskope.DestinationProfile.id
+      description: The profile ID.
+      type: string
+    - contextPath: Netskope.DestinationProfile.name
+      description: The profile name.
+      type: string
+    - contextPath: Netskope.DestinationProfile.description
+      description: The profile description.
+      type: string
+    - contextPath: Netskope.DestinationProfile.type
+      description: The profile type ('regex', 'sensitive', or 'insensitive').
+      type: string
+    - contextPath: Netskope.DestinationProfile.values
+      description: The profile values.
+      type: unknown
+    - contextPath: Netskope.DestinationProfile.values_count
+      description: The number of values in the profile.
+      type: number
+    - contextPath: Netskope.DestinationProfile.label_ids
+      description: The label IDs associated with the profile.
+      type: unknown
+    - contextPath: Netskope.DestinationProfile.status
+      description: The profile status ('applied', 'pending-create', 'pending-update', or 'pending-delete').
+      type: string
+    - contextPath: Netskope.DestinationProfile.create_by
+      description: The user who created the profile.
+      type: string
+    - contextPath: Netskope.DestinationProfile.create_time
+      description: The date and time when the profile was created, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+    - contextPath: Netskope.DestinationProfile.modify_by
+      description: The user who last modified the profile.
+      type: string
+    - contextPath: Netskope.DestinationProfile.modify_time
+      description: The date and time when the profile was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-list-network-profiles
+    description: Lists and filters network profiles.
+    arguments:
+    - name: fields
+      description: The comma-separated list of fields to return. The id field is always returned.
+    - name: page
+      description: The page number to return. Must be used with page_size.
+    - name: page_size
+      description: The number of items per page, from 1 through 100.
+    - name: limit
+      defaultValue: '10'
+      description: The maximum number of items to return when page is not specified, up to 100.
+    - name: sortby
+      description: 'The field to sort by: name, create_time, or modify_time.'
+    - name: sortorder
+      description: The sort order.
+      auto: PREDEFINED
+      predefined:
+      - asc
+      - desc
+    - name: filter
+      description: The filter expression, e.g. name co "eng" or status in ("pending-update","pending-delete").
+    outputs:
+    - contextPath: Netskope.NetworkProfile.id
+      description: The profile ID.
+      type: string
+    - contextPath: Netskope.NetworkProfile.name
+      description: The profile name.
+      type: string
+    - contextPath: Netskope.NetworkProfile.description
+      description: The profile description.
+      type: string
+    - contextPath: Netskope.NetworkProfile.values
+      description: The profile values.
+      type: unknown
+    - contextPath: Netskope.NetworkProfile.values_count
+      description: The number of values in the profile.
+      type: number
+    - contextPath: Netskope.NetworkProfile.status
+      description: The profile status ('applied', 'pending-create', 'pending-update', or 'pending-delete').
+      type: string
+    - contextPath: Netskope.NetworkProfile.create_by
+      description: The user who created the profile.
+      type: string
+    - contextPath: Netskope.NetworkProfile.create_time
+      description: The date and time when the profile was created, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+    - contextPath: Netskope.NetworkProfile.modify_by
+      description: The user who last modified the profile.
+      type: string
+    - contextPath: Netskope.NetworkProfile.modify_time
+      description: The date and time when the profile was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-create-network-profile
+    description: Creates a new network profile.
+    arguments:
+    - name: name
+      description: The name of the profile. Must be unique, maximum 100 characters.
+      required: true
+    - name: description
+      description: The description of the profile. Maximum 200 characters.
+    - name: values
+      description: A comma-separated list of values for the profile.
+      isArray: true
+    - name: id
+      description: The client-supplied ID for the profile. Must be a UUID if provided.
+    - name: interactive
+      description: Whether to stage the change as pending instead of applying it immediately.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: details
+      description: Whether to omit the values array from the response.
+    outputs:
+    - contextPath: Netskope.NetworkProfile.id
+      description: The profile ID.
+      type: string
+    - contextPath: Netskope.NetworkProfile.name
+      description: The profile name.
+      type: string
+    - contextPath: Netskope.NetworkProfile.description
+      description: The profile description.
+      type: string
+    - contextPath: Netskope.NetworkProfile.values
+      description: The profile values.
+      type: unknown
+    - contextPath: Netskope.NetworkProfile.values_count
+      description: The number of values in the profile.
+      type: number
+    - contextPath: Netskope.NetworkProfile.status
+      description: The profile status ('applied', 'pending-create', 'pending-update', or 'pending-delete').
+      type: string
+    - contextPath: Netskope.NetworkProfile.create_by
+      description: The user who created the profile.
+      type: string
+    - contextPath: Netskope.NetworkProfile.create_time
+      description: The date and time when the profile was created, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+    - contextPath: Netskope.NetworkProfile.modify_by
+      description: The user who last modified the profile.
+      type: string
+    - contextPath: Netskope.NetworkProfile.modify_time
+      description: The date and time when the profile was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-get-network-profile
+    description: Gets a network profile by ID.
+    arguments:
+    - name: id
+      description: The ID of the profile.
+      required: true
+    - name: details
+      description: Whether to omit the values array from the response.
+    outputs:
+    - contextPath: Netskope.NetworkProfile.id
+      description: The profile ID.
+      type: string
+    - contextPath: Netskope.NetworkProfile.name
+      description: The profile name.
+      type: string
+    - contextPath: Netskope.NetworkProfile.description
+      description: The profile description.
+      type: string
+    - contextPath: Netskope.NetworkProfile.values
+      description: The profile values.
+      type: unknown
+    - contextPath: Netskope.NetworkProfile.values_count
+      description: The number of values in the profile.
+      type: number
+    - contextPath: Netskope.NetworkProfile.status
+      description: The profile status ('applied', 'pending-create', 'pending-update', or 'pending-delete').
+      type: string
+    - contextPath: Netskope.NetworkProfile.create_by
+      description: The user who created the profile.
+      type: string
+    - contextPath: Netskope.NetworkProfile.create_time
+      description: The date and time when the profile was created, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+    - contextPath: Netskope.NetworkProfile.modify_by
+      description: The user who last modified the profile.
+      type: string
+    - contextPath: Netskope.NetworkProfile.modify_time
+      description: The date and time when the profile was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-update-network-profile
+    description: Partially updates a network profile.
+    arguments:
+    - name: id
+      description: The ID of the profile.
+      required: true
+    - name: name
+      description: The new name for the profile.
+    - name: description
+      description: The new description for the profile.
+    - name: values
+      description: A comma-separated list of new values for the profile (replaces the full list).
+      isArray: true
+    - name: interactive
+      description: Whether to stage the change as pending instead of applying it immediately.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: Netskope.NetworkProfile.id
+      description: The profile ID.
+      type: string
+    - contextPath: Netskope.NetworkProfile.name
+      description: The profile name.
+      type: string
+    - contextPath: Netskope.NetworkProfile.description
+      description: The profile description.
+      type: string
+    - contextPath: Netskope.NetworkProfile.values
+      description: The profile values.
+      type: unknown
+    - contextPath: Netskope.NetworkProfile.values_count
+      description: The number of values in the profile.
+      type: number
+    - contextPath: Netskope.NetworkProfile.status
+      description: The profile status ('applied', 'pending-create', 'pending-update', or 'pending-delete').
+      type: string
+    - contextPath: Netskope.NetworkProfile.create_by
+      description: The user who created the profile.
+      type: string
+    - contextPath: Netskope.NetworkProfile.create_time
+      description: The date and time when the profile was created, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+    - contextPath: Netskope.NetworkProfile.modify_by
+      description: The user who last modified the profile.
+      type: string
+    - contextPath: Netskope.NetworkProfile.modify_time
+      description: The date and time when the profile was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-update-network-profile-values
+    description: Appends or removes values on a network profile without replacing the full list.
+    arguments:
+    - name: id
+      description: The ID of the profile.
+      required: true
+    - name: operation
+      description: Whether to append or remove values.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - append
+      - remove
+    - name: values
+      description: A comma-separated list of values to append or remove (1-10 per call). For remove, this is a case-sensitive exact match.
+      isArray: true
+    outputs:
+    - contextPath: Netskope.NetworkProfile.id
+      description: The profile ID.
+      type: string
+    - contextPath: Netskope.NetworkProfile.name
+      description: The profile name.
+      type: string
+    - contextPath: Netskope.NetworkProfile.description
+      description: The profile description.
+      type: string
+    - contextPath: Netskope.NetworkProfile.values
+      description: The profile values.
+      type: unknown
+    - contextPath: Netskope.NetworkProfile.values_count
+      description: The number of values in the profile.
+      type: number
+    - contextPath: Netskope.NetworkProfile.status
+      description: The profile status ('applied', 'pending-create', 'pending-update', or 'pending-delete').
+      type: string
+    - contextPath: Netskope.NetworkProfile.create_by
+      description: The user who created the profile.
+      type: string
+    - contextPath: Netskope.NetworkProfile.create_time
+      description: The date and time when the profile was created, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+    - contextPath: Netskope.NetworkProfile.modify_by
+      description: The user who last modified the profile.
+      type: string
+    - contextPath: Netskope.NetworkProfile.modify_time
+      description: The date and time when the profile was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-delete-network-profile
+    description: Deletes a network profile.
+    arguments:
+    - name: id
+      description: The ID of the profile.
+      required: true
+    - name: interactive
+      description: Whether to stage the deletion as pending instead of applying it immediately.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    outputs:
+    - contextPath: Netskope.NetworkProfile.status
+      description: The result status ('success' or 'pending-delete').
+      type: string
+  - name: netskopev2-deploy-network-profiles
+    description: Deploys staged (pending) changes for network profiles. Maximum 50 profile IDs per call.
+    arguments:
+    - name: ids
+      description: A comma-separated list of profile IDs to deploy (maximum 50).
+      isArray: true
+    - name: all
+      description: Whether the all option is enabled. Deploy every pending profile. Requires ids to be empty. Only allowed when 50 or fewer profiles are pending.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: change_note
+      description: The note describing the change. Maximum 100 characters.
+    outputs:
+    - contextPath: Netskope.NetworkProfileDeploy.applied
+      description: The IDs of the profiles that were applied.
+      type: unknown
+  - name: netskopev2-revert-network-profile
+    description: Reverts a pending update or delete on a network profile back to its applied version.
+    arguments:
+    - name: id
+      description: The ID of the profile.
+      required: true
+    - name: details
+      description: Whether to omit the values array from the response.
+    outputs:
+    - contextPath: Netskope.NetworkProfile.id
+      description: The profile ID.
+      type: string
+    - contextPath: Netskope.NetworkProfile.name
+      description: The profile name.
+      type: string
+    - contextPath: Netskope.NetworkProfile.description
+      description: The profile description.
+      type: string
+    - contextPath: Netskope.NetworkProfile.values
+      description: The profile values.
+      type: unknown
+    - contextPath: Netskope.NetworkProfile.values_count
+      description: The number of values in the profile.
+      type: number
+    - contextPath: Netskope.NetworkProfile.status
+      description: The profile status ('applied', 'pending-create', 'pending-update', or 'pending-delete').
+      type: string
+    - contextPath: Netskope.NetworkProfile.create_by
+      description: The user who created the profile.
+      type: string
+    - contextPath: Netskope.NetworkProfile.create_time
+      description: The date and time when the profile was created, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+    - contextPath: Netskope.NetworkProfile.modify_by
+      description: The user who last modified the profile.
+      type: string
+    - contextPath: Netskope.NetworkProfile.modify_time
+      description: The date and time when the profile was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-get-network-profile-applied-version
+    description: Gets the currently applied version of a network profile, even if a pending change exists.
+    arguments:
+    - name: id
+      description: The ID of the profile.
+      required: true
+    outputs:
+    - contextPath: Netskope.NetworkProfile.id
+      description: The profile ID.
+      type: string
+    - contextPath: Netskope.NetworkProfile.name
+      description: The profile name.
+      type: string
+    - contextPath: Netskope.NetworkProfile.description
+      description: The profile description.
+      type: string
+    - contextPath: Netskope.NetworkProfile.values
+      description: The profile values.
+      type: unknown
+    - contextPath: Netskope.NetworkProfile.values_count
+      description: The number of values in the profile.
+      type: number
+    - contextPath: Netskope.NetworkProfile.status
+      description: The profile status ('applied', 'pending-create', 'pending-update', or 'pending-delete').
+      type: string
+    - contextPath: Netskope.NetworkProfile.create_by
+      description: The user who created the profile.
+      type: string
+    - contextPath: Netskope.NetworkProfile.create_time
+      description: The date and time when the profile was created, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+    - contextPath: Netskope.NetworkProfile.modify_by
+      description: The user who last modified the profile.
+      type: string
+    - contextPath: Netskope.NetworkProfile.modify_time
+      description: The date and time when the profile was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-update-file-hash-list
+    description: Updates a Netskope file hash list (Netskope API v1) with the values provided. This replaces the full list content—there is no v1 endpoint to read the current list first. The list must already exist in the Netskope UI.
+    arguments:
+    - name: name
+      description: The name of an existing file hash list shown in the Netskope UI.
+      required: true
+    - name: hash
+      description: A comma-separated list of file hashes to set as the full list content. Only MD5 (32 hex characters) or SHA256 (64 hex characters) are accepted - anything else is rejected. This replaces the entire list, so include existing hashes here too if you don't want to lose them.
+      isArray: true
+      required: true
+    outputs:
+    - contextPath: Netskope.FileHashList.name
+      description: The file hash list name.
+      type: string
+    - contextPath: Netskope.FileHashList.hash
+      description: The file hashes set on the list.
+      type: unknown
+  - name: netskopev2-list-private-apps
+    description: Queries all configured private applications (ZTNA/NPA) and their details.
+    arguments:
+    - name: limit
+      defaultValue: '50'
+      description: The maximum number of private applications to return.
+    - name: all_results
+      defaultValue: 'false'
+      description: Whether to return all private applications and ignore the limit argument.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: Netskope.PrivateApp.app_id
+      description: The private app ID.
+      type: number
+    - contextPath: Netskope.PrivateApp.id
+      description: The private app ID (alias returned on create/update).
+      type: number
+    - contextPath: Netskope.PrivateApp.app_name
+      description: The private app name (wrapped in brackets by Netskope).
+      type: string
+    - contextPath: Netskope.PrivateApp.name
+      description: The private app name (alias returned on create).
+      type: string
+    - contextPath: Netskope.PrivateApp.host
+      description: The private IP address or hostname of the app.
+      type: string
+    - contextPath: Netskope.PrivateApp.public_host
+      description: The public host, if configured.
+      type: string
+    - contextPath: Netskope.PrivateApp.clientless_access
+      description: The value indicating whether browser-based (clientless) access is enabled.
+      type: boolean
+    - contextPath: Netskope.PrivateApp.trust_self_signed_certs
+      description: The value indicating whether self-signed certificates are trusted.
+      type: boolean
+    - contextPath: Netskope.PrivateApp.use_publisher_dns
+      description: The value indicating whether the publisher's DNS is used.
+      type: boolean
+    - contextPath: Netskope.PrivateApp.private_app_protocol
+      description: The primary protocol of the private app.
+      type: string
+    - contextPath: Netskope.PrivateApp.protocols
+      description: The TCP/UDP ports and transport configured for the app.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.service_publisher_assignments
+      description: The publishers providing access to the app.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.policies
+      description: The policies referencing this app.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.tags
+      description: The tags associated with the app, used for policy matching.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.reachability
+      description: The reachability status of the app.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.modified_by
+      description: The user who last modified the app.
+      type: string
+    - contextPath: Netskope.PrivateApp.modify_time
+      description: The date and time when the app was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-list-publishers
+    description: Lists all NPA publishers and their connection status.
+    arguments:
+    - name: fields
+      description: The comma-separated list of fields to return (e.g. "publisher_id,publisher_name"). Omit to get every field. Restricting fields is recommended when a publisher has many connected app segments - the full unrestricted response can be large enough that Cortex XSOAR strips it from context and attaches it as a file instead.
+    outputs:
+    - contextPath: Netskope.Publisher.publisher_id
+      description: The publisher ID.
+      type: number
+    - contextPath: Netskope.Publisher.publisher_name
+      description: The publisher name.
+      type: string
+    - contextPath: Netskope.Publisher.status
+      description: The publisher connection status ('connected' or disconnected).
+      type: string
+    - contextPath: Netskope.Publisher.apps_count
+      description: The number of apps assigned to this publisher.
+      type: number
+    - contextPath: Netskope.Publisher.connected_apps
+      description: The names of apps currently assigned to this publisher.
+      type: unknown
+    - contextPath: Netskope.Publisher.common_name
+      description: The publisher common name.
+      type: string
+    - contextPath: Netskope.Publisher.registered
+      description: The value indicating whether the publisher is registered.
+      type: boolean
+    - contextPath: Netskope.Publisher.assessment
+      description: The publisher host assessment (version, latency, disk, etc.).
+      type: unknown
+    - contextPath: Netskope.Publisher.tags
+      description: The tags associated with the publisher.
+      type: unknown
+    - contextPath: Netskope.Publisher.upgrade_status
+      description: The publisher upgrade status.
+      type: unknown
+    - contextPath: Netskope.Publisher.upgrade_request
+      description: The value indicating whether an upgrade has been requested.
+      type: boolean
+    - contextPath: Netskope.Publisher.upgrade_failed_reason
+      description: The reason the last upgrade failed, if any.
+      type: string
+  - name: netskopev2-create-private-app
+    description: Creates a new private application (ZTNA/NPA) with protocols, host, publishers, and tags.
+    arguments:
+    - name: app_name
+      description: The name of the private app. Netskope wraps it as "[app_name]".
+      required: true
+    - name: host
+      description: The IP address or hostname of the private app.
+      required: true
+    - name: protocols
+      description: 'The JSON array of {type, port} objects, e.g. [{"type": "tcp", "port": "443"}].'
+      required: true
+    - name: publishers
+      description: 'The JSON array of {publisher_id, publisher_name} objects, e.g. [{"publisher_id": "15", "publisher_name": "AWS-NPA"}].'
+      required: true
+    - name: tags
+      description: A comma-separated list of tag names to associate with the app, for policy matching.
+      isArray: true
+    - name: use_publisher_dns
+      description: Whether to use the publisher's DNS.
+    - name: clientless_access
+      description: Whether to enable browser-based (clientless) access.
+    - name: allow_unauthenticated_cors
+      description: Whether to allow unauthenticated CORS requests.
+    - name: trust_self_signed_certs
+      description: Whether to accept self-signed certificates.
+    outputs:
+    - contextPath: Netskope.PrivateApp.app_id
+      description: The private app ID.
+      type: number
+    - contextPath: Netskope.PrivateApp.id
+      description: The private app ID (alias returned on create/update).
+      type: number
+    - contextPath: Netskope.PrivateApp.app_name
+      description: The private app name (wrapped in brackets by Netskope).
+      type: string
+    - contextPath: Netskope.PrivateApp.name
+      description: The private app name (alias returned on create).
+      type: string
+    - contextPath: Netskope.PrivateApp.host
+      description: The private IP address or hostname of the app.
+      type: string
+    - contextPath: Netskope.PrivateApp.public_host
+      description: The public host, if configured.
+      type: string
+    - contextPath: Netskope.PrivateApp.clientless_access
+      description: The value indicating whether browser-based (clientless) access is enabled.
+      type: boolean
+    - contextPath: Netskope.PrivateApp.trust_self_signed_certs
+      description: The value indicating whether self-signed certificates are trusted.
+      type: boolean
+    - contextPath: Netskope.PrivateApp.use_publisher_dns
+      description: The value indicating whether the publisher's DNS is used.
+      type: boolean
+    - contextPath: Netskope.PrivateApp.private_app_protocol
+      description: The primary protocol of the private app.
+      type: string
+    - contextPath: Netskope.PrivateApp.protocols
+      description: The TCP/UDP ports and transport configured for the app.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.service_publisher_assignments
+      description: The publishers providing access to the app.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.policies
+      description: The policies referencing this app.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.tags
+      description: The tags associated with the app, used for policy matching.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.reachability
+      description: The reachability status of the app.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.modified_by
+      description: The user who last modified the app.
+      type: string
+    - contextPath: Netskope.PrivateApp.modify_time
+      description: The date and time when the app was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-update-private-app
+    description: Updates an existing private application's host, protocols, publishers, or tags. Only fields provided are changed.
+    arguments:
+    - name: app_id
+      description: The ID of the private app to update.
+      required: true
+    - name: app_name
+      description: The new name for the private app.
+    - name: host
+      description: The new IP address or hostname for the private app.
+    - name: protocols
+      description: The JSON array of {type, port} objects to replace the app's protocols.
+    - name: publishers
+      description: The JSON array of {publisher_id, publisher_name} objects to replace the app's publishers.
+    - name: tags
+      description: A comma-separated list of tag names to set on the app, for policy matching.
+      isArray: true
+    - name: use_publisher_dns
+      description: Whether to use the publisher's DNS.
+    - name: clientless_access
+      description: Whether to enable browser-based (clientless) access.
+    - name: allow_unauthenticated_cors
+      description: Whether to allow unauthenticated CORS requests.
+    - name: trust_self_signed_certs
+      description: Whether to accept self-signed certificates.
+    outputs:
+    - contextPath: Netskope.PrivateApp.app_id
+      description: The private app ID.
+      type: number
+    - contextPath: Netskope.PrivateApp.id
+      description: The private app ID (alias returned on create/update).
+      type: number
+    - contextPath: Netskope.PrivateApp.app_name
+      description: The private app name (wrapped in brackets by Netskope).
+      type: string
+    - contextPath: Netskope.PrivateApp.name
+      description: The private app name (alias returned on create).
+      type: string
+    - contextPath: Netskope.PrivateApp.host
+      description: The private IP address or hostname of the app.
+      type: string
+    - contextPath: Netskope.PrivateApp.public_host
+      description: The public host, if configured.
+      type: string
+    - contextPath: Netskope.PrivateApp.clientless_access
+      description: The value indicating whether browser-based (clientless) access is enabled.
+      type: boolean
+    - contextPath: Netskope.PrivateApp.trust_self_signed_certs
+      description: The value indicating whether self-signed certificates are trusted.
+      type: boolean
+    - contextPath: Netskope.PrivateApp.use_publisher_dns
+      description: The value indicating whether the publisher's DNS is used.
+      type: boolean
+    - contextPath: Netskope.PrivateApp.private_app_protocol
+      description: The primary protocol of the private app.
+      type: string
+    - contextPath: Netskope.PrivateApp.protocols
+      description: The TCP/UDP ports and transport configured for the app.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.service_publisher_assignments
+      description: The publishers providing access to the app.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.policies
+      description: The policies referencing this app.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.tags
+      description: The tags associated with the app, used for policy matching.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.reachability
+      description: The reachability status of the app.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.modified_by
+      description: The user who last modified the app.
+      type: string
+    - contextPath: Netskope.PrivateApp.modify_time
+      description: The date and time when the app was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-replace-private-app
+    description: 'Fully replaces an existing private application through PUT. Netskope''s documentation calls this operation "Update a private application," which is also the wording used for the PATCH-based netskopev2-update-private-app command. This command uses "replace" to distinguish the two operations. Unlike netskopev2-update-private-app, this is not a partial merge: host, protocols, and publishers must all be provided, and any other omitted field may be cleared rather than left unchanged.'
+    arguments:
+    - name: app_id
+      description: The ID of the private app to replace.
+      required: true
+    - name: app_name
+      description: The new name for the private app.
+    - name: host
+      description: The IP address or hostname for the private app.
+      required: true
+    - name: protocols
+      description: 'The JSON array of {type, port} objects, e.g. [{"type": "tcp", "port": "443"}].'
+      required: true
+    - name: publishers
+      description: 'The JSON array of {publisher_id, publisher_name} objects, e.g. [{"publisher_id": "15", "publisher_name": "AWS-NPA"}].'
+      required: true
+    - name: tags
+      description: A comma-separated list of tag names to set on the app, for policy matching.
+      isArray: true
+    - name: use_publisher_dns
+      description: Whether to use the publisher's DNS.
+    - name: clientless_access
+      description: Whether to enable browser-based (clientless) access.
+    - name: allow_unauthenticated_cors
+      description: Whether to allow unauthenticated CORS requests.
+    - name: trust_self_signed_certs
+      description: Whether to accept self-signed certificates.
+    outputs:
+    - contextPath: Netskope.PrivateApp.app_id
+      description: The private app ID.
+      type: number
+    - contextPath: Netskope.PrivateApp.id
+      description: The private app ID (alias returned on create/update).
+      type: number
+    - contextPath: Netskope.PrivateApp.app_name
+      description: The private app name (wrapped in brackets by Netskope).
+      type: string
+    - contextPath: Netskope.PrivateApp.name
+      description: The private app name (alias returned on create).
+      type: string
+    - contextPath: Netskope.PrivateApp.host
+      description: The private IP address or hostname of the app.
+      type: string
+    - contextPath: Netskope.PrivateApp.public_host
+      description: The public host, if configured.
+      type: string
+    - contextPath: Netskope.PrivateApp.clientless_access
+      description: The value indicating whether browser-based (clientless) access is enabled.
+      type: boolean
+    - contextPath: Netskope.PrivateApp.trust_self_signed_certs
+      description: The value indicating whether self-signed certificates are trusted.
+      type: boolean
+    - contextPath: Netskope.PrivateApp.use_publisher_dns
+      description: The value indicating whether the publisher's DNS is used.
+      type: boolean
+    - contextPath: Netskope.PrivateApp.private_app_protocol
+      description: The primary protocol of the private app.
+      type: string
+    - contextPath: Netskope.PrivateApp.protocols
+      description: The TCP/UDP ports and transport configured for the app.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.service_publisher_assignments
+      description: The publishers providing access to the app.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.policies
+      description: The policies referencing this app.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.tags
+      description: The tags associated with the app, used for policy matching.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.reachability
+      description: The reachability status of the app.
+      type: unknown
+    - contextPath: Netskope.PrivateApp.modified_by
+      description: The user who last modified the app.
+      type: string
+    - contextPath: Netskope.PrivateApp.modify_time
+      description: The date and time when the app was last modified, in ISO 8601 format (for example, 2026-01-01T12:00:00Z).
+      type: date
+  - name: netskopev2-update-private-app-tags
+    description: Adds or replaces the tags on one or more existing private apps in bulk, without touching host/protocol/publisher configuration. Powers dynamic, risk-based ZTNA routing by re-tagging apps in place.
+    arguments:
+    - name: app_id
+      description: A comma-separated list of private app IDs to re-tag.
+      isArray: true
+      required: true
+    - name: tags
+      description: A comma-separated list of tag names to set on the apps. Replaces the existing tag set.
+      isArray: true
+      required: true
+    outputs:
+    - contextPath: Netskope.PrivateApp.app_id
+      description: The private app ID.
+      type: number
+    - contextPath: Netskope.PrivateApp.app_name
+      description: The private app name.
+      type: string
+    - contextPath: Netskope.PrivateApp.tags
+      description: The tags now set on the app.
+      type: unknown
+  - name: netskopev2-delete-private-app
+    description: Permanently deletes a private application. Use when an app is decommissioned or was created for a temporary workflow.
+    arguments:
+    - name: app_id
+      description: The ID of the private app to delete.
+      required: true
+    outputs:
+    - contextPath: Netskope.PrivateApp.app_id
+      description: The ID of the deleted private app.
+      type: number
+  - name: netskopev2-submit-file-scan
+    description: 'Submits a password-protected .zip file for scan by the Netskope sandbox. Supported encryption: ZipCrypto. Supported member file types: .exe, .pdf, .doc, .xls, .ppt, .rtf. One file per zip, up to 16MB, up to 1000 requests per day.'
+    arguments:
+    - name: entry_id
+      description: The War Room entry ID of the .zip file to submit for scanning.
+      required: true
+    outputs:
+    - contextPath: Netskope.FileScan.jobid
+      description: The job ID to use with netskopev2-get-scan-report to retrieve the analysis report.
+      type: string
+    - contextPath: Netskope.FileScan.md5
+      description: The MD5 hash of the submitted file.
+      type: string
+    - contextPath: Netskope.FileScan.sha256
+      description: The SHA256 hash of the submitted file.
+      type: string
+    - contextPath: Netskope.FileScan.status
+      description: The submission status.
+      type: string
+  - name: netskopev2-get-scan-report
+    description: Gets the sandbox analysis report for a file scan job. Up to 10,000 requests per day. Returns a 202-equivalent 'InProgress' status while the scan is still running.
+    arguments:
+    - name: jobid
+      description: The job ID returned by netskopev2-submit-file-scan.
+      required: true
+    outputs:
+    - contextPath: Netskope.FileScanReport.jobid
+      description: The job ID of the scan.
+      type: string
+    - contextPath: Netskope.FileScanReport.md5
+      description: The MD5 hash of the scanned file.
+      type: string
+    - contextPath: Netskope.FileScanReport.sha256
+      description: The SHA256 hash of the scanned file.
+      type: string
+    - contextPath: Netskope.FileScanReport.status
+      description: The scan status ('Ok' if the report is ready, 'InProgress' if the scan is still running).
+      type: string
+    - contextPath: Netskope.FileScanReport.verdict
+      description: The sandbox verdict (e.g. 'malicious', 'benign'). Only present once status is 'Ok'.
+      type: string
+    - contextPath: Netskope.FileScanReport.av_detection
+      description: The antivirus detection details.
+      type: unknown
+    - contextPath: Netskope.FileScanReport.dropped
+      description: The files dropped by the sample during sandbox execution.
+      type: unknown
+    - contextPath: Netskope.FileScanReport.network
+      description: The network activity observed during sandbox execution (DNS, HTTP, TCP/UDP, etc.).
+      type: unknown
+    - contextPath: Netskope.FileScanReport.observed_behavior
+      description: The behavioral summary, grouped by MITRE-style category with severity scores.
+      type: unknown
+    - contextPath: Netskope.FileScanReport.process_tree
+      description: The process tree observed during sandbox execution.
+      type: unknown
+  - name: netskopev2-url-lookup
+    description: Looks up URL categorization/reputation info (up to 100 URLs per call). This is a licensed feature - Netskope returns an error if URL Lookup isn't enabled for the tenant.
+    arguments:
+    - name: urls
+      description: A comma-separated list of URLs to look up (maximum 100 per call).
+      isArray: true
+      required: true
+    - name: disable_dns_lookup
+      description: Whether to turn off DNS resolution and IP address matching on the queried URLs.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+      defaultValue: 'false'
+    - name: category
+      description: The predefined category type to return.
+      auto: PREDEFINED
+      predefined:
+      - casb
+      - swg
+    outputs:
+    - contextPath: Netskope.URLLookup.url
+      description: The queried URL.
+      type: string
+    - contextPath: Netskope.URLLookup.site
+      description: The site or app name associated with the URL.
+      type: string
+    - contextPath: Netskope.URLLookup.app
+      description: The application name associated with the URL, if any (empty otherwise).
+      type: string
+    - contextPath: Netskope.URLLookup.dynamic_classification
+      description: The value indicating whether the site was dynamically categorized based on website content.
+      type: boolean
+    - contextPath: Netskope.URLLookup.resolved_ip
+      description: The resolved IP used for URL matching, if DNS resolution succeeded.
+      type: string
+    - contextPath: Netskope.URLLookup.categories.id
+      description: The matched category ID.
+      type: string
+    - contextPath: Netskope.URLLookup.categories.name
+      description: The matched category name.
+      type: string
+    - contextPath: Netskope.URLLookup.categories.type
+      description: The category type ('predefined' or 'custom').
+      type: string
+    - contextPath: Netskope.URLLookup.url_lists.id
+      description: The ID of a matched custom URL list.
+      type: string
+    - contextPath: Netskope.URLLookup.url_lists.name
+      description: The name of a matched custom URL list.
+      type: string
   dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: ''
