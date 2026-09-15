@@ -1,0 +1,10 @@
+[MODEL: dataset="izoologic_izoologic_raw"]
+alter
+    xdm.alert.original_alert_id = incidentID,
+    xdm.alert.name = incidentType,
+    xdm.alert.category = incidentType,
+    xdm.alert.subcategory = subIncidentType,
+    xdm.target.url = url,
+    xdm.event.outcome_reason = status,
+    xdm.alert.description = detectedBy,
+    xdm.alert.severity = if(threatType = "Critical Threat", "Critical", threatType = "High Threat", "High", threatType = "Substantial Threat", "Medium", threatType = "Moderate Threat", "Low", threatType = "Low Threat", "Informational", "Informational");
