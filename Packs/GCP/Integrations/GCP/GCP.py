@@ -526,6 +526,18 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-compute-network-peering-add": (GCPServices.COMPUTE, ["compute.networks.addPeering"]),
     "gcp-compute-network-delete": (GCPServices.COMPUTE, ["compute.networks.delete"]),
     "gcp-compute-network-peering-remove": (GCPServices.COMPUTE, ["compute.networks.removePeering"]),
+    "gcp-compute-machine-type-get": (GCPServices.COMPUTE, ["compute.machineTypes.get"]),
+    "gcp-compute-machine-types-list": (GCPServices.COMPUTE, ["compute.machineTypes.list"]),
+    "gcp-compute-machine-types-aggregated-list": (GCPServices.COMPUTE, ["compute.machineTypes.list"]),
+    "gcp-compute-global-operation-get": (GCPServices.COMPUTE, ["compute.globalOperations.get"]),
+    "gcp-compute-zone-operation-get": (GCPServices.COMPUTE, ["compute.zoneOperations.get"]),
+    "gcp-compute-region-operation-get": (GCPServices.COMPUTE, ["compute.regionOperations.get"]),
+    "gcp-compute-global-operation-list": (GCPServices.COMPUTE, ["compute.globalOperations.list"]),
+    "gcp-compute-zone-operation-list": (GCPServices.COMPUTE, ["compute.zoneOperations.list"]),
+    "gcp-compute-region-operation-list": (GCPServices.COMPUTE, ["compute.regionOperations.list"]),
+    "gcp-compute-global-operation-delete": (GCPServices.COMPUTE, ["compute.globalOperations.delete"]),
+    "gcp-compute-zone-operation-delete": (GCPServices.COMPUTE, ["compute.zoneOperations.delete"]),
+    "gcp-compute-region-operation-delete": (GCPServices.COMPUTE, ["compute.regionOperations.delete"]),
     "gcp-container-cluster-security-update": (
         GCPServices.CONTAINER,
         ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
@@ -7011,6 +7023,504 @@ def compute_global_address_delete(creds: Credentials, args: dict[str, Any]) -> C
     )
 
 
+def gcp_compute_machine_type_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Returns the specified machine type.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'machine_type' and 'zone'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    machine_type = args.get("machine_type")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = (
+        compute.machineTypes().get(project=project_id, zone=zone, machineType=machine_type).execute()  # pylint: disable=E1101
+    )
+    demisto.debug(f"GCP Compute machine type get response for {project_id}: retrieved machine type {response.get('name')}")
+
+    readable_output = tableToMarkdown(
+        f"GCP Compute Machine Type {machine_type}",
+        response,
+        headers=["id", "name", "memoryMb", "guestCpus"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.Compute.MachineTypes",
+        outputs_key_field="id",
+        outputs=response,
+        raw_response=response,
+    )
+
+
+def gcp_compute_machine_types_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves a list of machine types available in the specified zone.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'zone'. May include 'limit', 'filter', 'order_by' and 'next_token'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    limit = arg_to_number(args.get("limit")) or 50
+    validate_limit(limit)
+
+    kwargs = remove_empty_elements(
+        {
+            "project": args.get("project_id"),
+            "zone": extract_zone_name(args.get("zone")),
+            "filter": args.get("filter"),
+            "maxResults": limit,
+            "orderBy": args.get("order_by"),
+            "pageToken": args.get("next_token"),
+        }
+    )
+    demisto.debug(f"GCP Compute machine types list request arguments: {kwargs}")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.machineTypes().list(**kwargs).execute()  # pylint: disable=E1101
+    machine_types = response.get("items", [])
+    next_page_token = response.get("nextPageToken")
+    demisto.debug(
+        f"GCP Compute machine types list response for {kwargs.get('project')}: "
+        f"{len(machine_types)} machine types returned, {next_page_token=}"
+    )
+
+    readable_output = tableToMarkdown(
+        "GCP Compute Machine Types",
+        machine_types,
+        headers=["id", "name", "memoryMb", "guestCpus"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    outputs = {
+        "GCP.Compute.MachineTypes(val.id && val.id == obj.id)": machine_types,
+        "GCP.Compute(true)": {"MachineTypesNextToken": next_page_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def gcp_compute_machine_types_aggregated_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves an aggregated list of machine types across all zones of the specified project.
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): May include 'limit', 'filter', 'order_by' and 'next_token'.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    limit = arg_to_number(args.get("limit")) or 50
+    validate_limit(limit)
+
+    kwargs = remove_empty_elements(
+        {
+            "project": args.get("project_id"),
+            "filter": args.get("filter"),
+            "maxResults": limit,
+            "orderBy": args.get("order_by"),
+            "pageToken": args.get("next_token"),
+        }
+    )
+    demisto.debug(f"GCP Compute machine types aggregated list request arguments: {kwargs}")
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.machineTypes().aggregatedList(**kwargs).execute()  # pylint: disable=E1101
+    machine_types: list[dict[str, Any]] = []
+    for scope, scoped_list in response.get("items", {}).items():
+        if warning := scoped_list.get("warning"):
+            demisto.debug(f"GCP Compute machine types aggregated list returned a warning for {scope}: {warning}")
+        else:
+            machine_types.extend(scoped_list.get("machineTypes", []))
+
+    next_page_token = response.get("nextPageToken")
+    demisto.debug(
+        f"GCP Compute machine types aggregated list response for {kwargs.get('project')}: "
+        f"{len(machine_types)} machine types returned, {next_page_token=}"
+    )
+
+    readable_output = tableToMarkdown(
+        "GCP Compute Machine Types",
+        machine_types,
+        headers=["id", "name", "zone", "memoryMb", "guestCpus"],
+        removeNull=True,
+        headerTransform=pascalToSpace,
+    )
+
+    outputs = {
+        "GCP.Compute.MachineTypes(val.id && val.id == obj.id)": machine_types,
+        "GCP.Compute(true)": {"AggregatedMachineTypesNextToken": next_page_token},
+    }
+    return CommandResults(
+        readable_output=readable_output,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def compute_global_operation_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the specified global Operations resource.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - operation (str): The name of the Operations resource to return.
+
+    Returns:
+        CommandResults: Object containing the operation details under `GCP.Compute.Operations`.
+    """
+    project_id = args.get("project_id")
+    operation = args.get("operation")
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.globalOperations().get(project=project_id, operation=operation).execute()  # pylint: disable=E1101
+    demisto.debug(f"[GCP] Retrieved global operation {response.get('name')} with status {response.get('status')}.")
+    hr = tableToMarkdown(
+        f"GCP Compute Global Operation: {operation}",
+        response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_zone_operation_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the specified zone-specific Operations resource.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - zone (str): The name of the zone for this request.
+            - operation (str): The name of the Operations resource to return.
+
+    Returns:
+        CommandResults: Object containing the operation details under `GCP.Compute.Operations`.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    operation = args.get("operation")
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.zoneOperations().get(project=project_id, zone=zone, operation=operation).execute()  # pylint: disable=E1101
+    demisto.debug(f"[GCP] Retrieved zone operation {response.get('name')} with status {response.get('status')}.")
+    hr = tableToMarkdown(
+        f"GCP Compute Zone Operation: {operation}",
+        response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_region_operation_get(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Retrieves the specified region-specific Operations resource.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - region (str): The name of the region for this request.
+            - operation (str): The name of the Operations resource to return.
+
+    Returns:
+        CommandResults: Object containing the operation details under `GCP.Compute.Operations`.
+    """
+    project_id = args.get("project_id")
+    region = extract_region_name(args.get("region"))
+    operation = args.get("operation")
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.regionOperations().get(project=project_id, region=region, operation=operation).execute()  # pylint: disable=E1101
+    demisto.debug(f"[GCP] Retrieved region operation {response.get('name')} with status {response.get('status')}.")
+    hr = tableToMarkdown(
+        f"GCP Compute Region Operation: {operation}",
+        response,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Operations",
+        outputs=response,
+        outputs_key_field="id",
+        raw_response=response,
+    )
+
+
+def compute_global_operation_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists the global Operations resources in the specified GCP project.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - limit (int, optional): Maximum number of results to return (1-500).
+            - next_token (str, optional): Token for pagination.
+            - filter (str, optional): Expression for filtering the listed resources.
+            - order_by (str, optional): Sorts list results by a certain order.
+
+    Returns:
+        CommandResults: Object containing the list of operations under `GCP.Compute.Operations`
+        and pagination token under `GCP.Compute.GlobalOperationsNextToken`.
+    """
+    project_id = args.get("project_id")
+    limit = arg_to_number(args.get("limit")) or 50
+    next_token = args.get("next_token")
+    flt = args.get("filter")
+    order_by = args.get("order_by")
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "maxResults": limit,
+        "pageToken": next_token,
+        "filter": flt,
+        "orderBy": order_by,
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.globalOperations().list(**params).execute()  # pylint: disable=E1101
+    items = response.get("items", [])
+    demisto.debug(f"[GCP] Retrieved {len(items)} global operations for project {project_id}.")
+    if not items:
+        return CommandResults(readable_output="No global operations were found.")
+    next_page_token = response.get("nextPageToken")
+    hr = tableToMarkdown(
+        "GCP Compute Global Operations",
+        items,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    outputs = {
+        "GCP.Compute.Operations(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"GlobalOperationsNextToken": next_page_token},
+    }
+    return CommandResults(
+        readable_output=hr,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def compute_zone_operation_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists the zone-specific Operations resources in the specified GCP project and zone.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - zone (str): The name of the zone for this request.
+            - limit (int, optional): Maximum number of results to return (1-500).
+            - next_token (str, optional): Token for pagination.
+            - filter (str, optional): Expression for filtering the listed resources.
+            - order_by (str, optional): Sorts list results by a certain order.
+
+    Returns:
+        CommandResults: Object containing the list of operations under `GCP.Compute.Operations`
+        and pagination token under `GCP.Compute.ZoneOperationsNextToken`.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    limit = arg_to_number(args.get("limit")) or 50
+    next_token = args.get("next_token")
+    flt = args.get("filter")
+    order_by = args.get("order_by")
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "zone": zone,
+        "maxResults": limit,
+        "pageToken": next_token,
+        "filter": flt,
+        "orderBy": order_by,
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.zoneOperations().list(**params).execute()  # pylint: disable=E1101
+    items = response.get("items", [])
+    demisto.debug(f"[GCP] Retrieved {len(items)} zone operations for project {project_id} in zone {zone}.")
+    if not items:
+        return CommandResults(readable_output="No zone operations were found.")
+    next_page_token = response.get("nextPageToken")
+    hr = tableToMarkdown(
+        "GCP Compute Zone Operations",
+        items,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    outputs = {
+        "GCP.Compute.Operations(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"ZoneOperationsNextToken": next_page_token},
+    }
+    return CommandResults(
+        readable_output=hr,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def compute_region_operation_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists the region-specific Operations resources in the specified GCP project and region.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - region (str): The name of the region for this request.
+            - limit (int, optional): Maximum number of results to return (1-500).
+            - next_token (str, optional): Token for pagination.
+            - filter (str, optional): Expression for filtering the listed resources.
+            - order_by (str, optional): Sorts list results by a certain order.
+
+    Returns:
+        CommandResults: Object containing the list of operations under `GCP.Compute.Operations`
+        and pagination token under `GCP.Compute.RegionOperationsNextToken`.
+    """
+    project_id = args.get("project_id")
+    region = extract_region_name(args.get("region"))
+    limit = arg_to_number(args.get("limit")) or 50
+    next_token = args.get("next_token")
+    flt = args.get("filter")
+    order_by = args.get("order_by")
+    validate_limit(limit)
+
+    params: dict[str, Any] = {
+        "project": project_id,
+        "region": region,
+        "maxResults": limit,
+        "pageToken": next_token,
+        "filter": flt,
+        "orderBy": order_by,
+    }
+    remove_nulls_from_dictionary(params)
+
+    compute = GCPServices.COMPUTE.build(creds)
+    response = compute.regionOperations().list(**params).execute()  # pylint: disable=E1101
+    items = response.get("items", [])
+    demisto.debug(f"[GCP] Retrieved {len(items)} region operations for project {project_id} in region {region}.")
+    if not items:
+        return CommandResults(readable_output="No region operations were found.")
+    next_page_token = response.get("nextPageToken")
+    hr = tableToMarkdown(
+        "GCP Compute Region Operations",
+        items,
+        headers=OPERATION_TABLE,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+    outputs = {
+        "GCP.Compute.Operations(val.id && val.id == obj.id)": items,
+        "GCP.Compute(true)": {"RegionOperationsNextToken": next_page_token},
+    }
+    return CommandResults(
+        readable_output=hr,
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def compute_global_operation_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified global Operations resource.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - operation (str): The name of the Operations resource to delete.
+
+    Returns:
+        CommandResults: A human-readable confirmation that the operation was deleted.
+    """
+    project_id = args.get("project_id")
+    operation = args.get("operation")
+    compute = GCPServices.COMPUTE.build(creds)
+    compute.globalOperations().delete(project=project_id, operation=operation).execute()  # pylint: disable=E1101
+    return CommandResults(readable_output=f"Global operation '{operation}' was successfully deleted from project '{project_id}'.")
+
+
+def compute_zone_operation_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified zone-specific Operations resource.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - zone (str): The name of the zone for this request.
+            - operation (str): The name of the Operations resource to delete.
+
+    Returns:
+        CommandResults: A human-readable confirmation that the operation was deleted.
+    """
+    project_id = args.get("project_id")
+    zone = extract_zone_name(args.get("zone"))
+    operation = args.get("operation")
+    compute = GCPServices.COMPUTE.build(creds)
+    compute.zoneOperations().delete(project=project_id, zone=zone, operation=operation).execute()  # pylint: disable=E1101
+    return CommandResults(readable_output=f"Zone operation '{operation}' was successfully deleted from project '{project_id}'.")
+
+
+def compute_region_operation_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes the specified region-specific Operations resource.
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Compute Engine API.
+        args (dict): Command arguments including:
+            - project_id (str): The GCP project ID.
+            - region (str): The name of the region for this request.
+            - operation (str): The name of the Operations resource to delete.
+
+    Returns:
+        CommandResults: A human-readable confirmation that the operation was deleted.
+    """
+    project_id = args.get("project_id")
+    region = extract_region_name(args.get("region"))
+    operation = args.get("operation")
+    compute = GCPServices.COMPUTE.build(creds)
+    compute.regionOperations().delete(project=project_id, region=region, operation=operation).execute()  # pylint: disable=E1101
+    return CommandResults(readable_output=f"Region operation '{operation}' was successfully deleted from project '{project_id}'.")
+
+
 def main():  # pragma: no cover
     """
     Main function to route commands and execute logic.
@@ -7101,6 +7611,18 @@ def main():  # pragma: no cover
             "gcp-compute-network-peering-add": gcp_compute_network_peering_add,
             "gcp-compute-network-delete": gcp_compute_network_delete,
             "gcp-compute-network-peering-remove": gcp_compute_network_peering_remove,
+            "gcp-compute-machine-type-get": gcp_compute_machine_type_get,
+            "gcp-compute-machine-types-list": gcp_compute_machine_types_list,
+            "gcp-compute-machine-types-aggregated-list": gcp_compute_machine_types_aggregated_list,
+            "gcp-compute-global-operation-get": compute_global_operation_get,
+            "gcp-compute-zone-operation-get": compute_zone_operation_get,
+            "gcp-compute-region-operation-get": compute_region_operation_get,
+            "gcp-compute-global-operation-list": compute_global_operation_list,
+            "gcp-compute-zone-operation-list": compute_zone_operation_list,
+            "gcp-compute-region-operation-list": compute_region_operation_list,
+            "gcp-compute-global-operation-delete": compute_global_operation_delete,
+            "gcp-compute-zone-operation-delete": compute_zone_operation_delete,
+            "gcp-compute-region-operation-delete": compute_region_operation_delete,
             # Storage commands
             "gcp-storage-bucket-list": storage_bucket_list,
             "gcp-storage-buckets-list": storage_bucket_list,
