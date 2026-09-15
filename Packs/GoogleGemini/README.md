@@ -117,3 +117,10 @@ For more information, see the [Google AI documentation](https://ai.google.dev/) 
  - Brad Reimers
 
 Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
+### Pack Contributors:
+
+---
+ - Mu Wang
+ - Brad Reimers
+
+Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
