@@ -278,6 +278,8 @@ def test_test_module_success(client, mocker):
         - Returns 'ok' indicating successful connection
     """
     mock_response = {"data": [{"indicator_value": "test"}]}
+    # Set a valid fetch interval so the guard passes and the connection logic runs
+    mocker.patch("Unit42Feed.demisto.params", return_value={"feedFetchInterval": "60"})
     # Mock the _http_request method to avoid actual API calls
     mocker.patch.object(client, "_http_request", return_value=mock_response)
 
@@ -297,6 +299,8 @@ def test_test_module_empty_result(client, mocker):
         - Returns ok
     """
     mock_response = {"data": []}
+    # Set a valid fetch interval so the guard passes and the connection logic runs
+    mocker.patch("Unit42Feed.demisto.params", return_value={"feedFetchInterval": "60"})
     # Mock the _http_request method to avoid actual API calls
     mocker.patch.object(client, "_http_request", return_value=mock_response)
 
@@ -315,6 +319,8 @@ def test_test_module_exception(client, mocker):
     Then:
         - Raises an exception (since test_module doesn't catch exceptions)
     """
+    # Set a valid fetch interval so the guard passes and the connection logic runs
+    mocker.patch("Unit42Feed.demisto.params", return_value={"feedFetchInterval": "60"})
     # Mock the _http_request method to raise an exception
     mocker.patch.object(client, "_http_request", side_effect=Exception("API Error"))
 

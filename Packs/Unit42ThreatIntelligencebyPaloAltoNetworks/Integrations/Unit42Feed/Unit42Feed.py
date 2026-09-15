@@ -985,6 +985,13 @@ def test_module(client: Client) -> str:
     Returns:
         Outputs.
     """
+    fetch_interval = arg_to_number(demisto.params().get("feedFetchInterval"))
+    if fetch_interval != 60:
+        return (
+            "This integration requires a fetch interval of 1 hour. The fetch interval cannot be changed on an "
+            "existing instance - please create a new integration instance to apply the correct interval."
+        )
+
     # Test connection by getting a small number of indicators
     try:
         client.get_indicators(limit=1)
