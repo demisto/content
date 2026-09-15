@@ -34,3 +34,5 @@ This integration supports two authentication modes:
 - The integration attempts to use models not included in the official list and issues a warning.
 - Ensure the service account has the `roles/aiplatform.user` role and the Vertex AI API is enabled in your project.
 - **Server URL**: For AI Studio, use `https://generativelanguage.googleapis.com`. For Vertex AI, the URL auto-switches to `https://aiplatform.googleapis.com` if left at the default.
+- **Temperature**: Use the `temperature` argument on `google-gemini-send-message` to override the instance-level Temperature per call (defaults to 0.5) without needing to reconfigure the instance.
+- **Context window sizes**: Use `max_input_tokens` on `google-gemini-send-message` to cap the combined prompt + history size for a request; the command reports the actual token counts (`InputTokenCount`, `OutputTokenCount`, `TotalTokenCount`). Set `truncate=true` to automatically shorten history (oldest first) and then the prompt to fit the budget instead of erroring out.
