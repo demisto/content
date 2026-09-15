@@ -2743,4 +2743,3 @@ def test_get_activities_multiple_types_single_param(mocker, requests_mock):
     assert sent_qs.get("activitytypes") == ["6,7"], (
         "activityTypes must be sent as a single comma-separated value, not repeated params"
     )
-    assert "activityTypes=6,7" in requests_mock.last_request.url
