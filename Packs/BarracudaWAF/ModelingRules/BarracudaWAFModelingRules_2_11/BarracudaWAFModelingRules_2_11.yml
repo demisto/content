@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: barracudaWAF
-name: Barracuda WAF
+id: barracuda_WAF_ModelingRule
+name: Barracuda WAF Modeling Rule
 rules: ''
 schema: ''
 tags: ''

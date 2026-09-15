@@ -1,9 +1,6 @@
 [file:ClearswiftDLP.yml]
 ignore=MR108,PR101
 
-[file:ClearswiftDLP_2_11.yml]
-ignore=MR108
-
 [known_words]
 dlp
 Clearswift

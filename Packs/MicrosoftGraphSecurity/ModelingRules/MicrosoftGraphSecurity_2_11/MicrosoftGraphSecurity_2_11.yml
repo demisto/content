@@ -1,6 +1,6 @@
 fromversion: 8.15.0
 id: Microsoft_Graph_Security_ModelingRule
-name: Microsoft Graph Security Modeling Rules
+name: Microsoft Graph Security Modeling Rule
 rules: ''
 schema: ''
 supportedModules:

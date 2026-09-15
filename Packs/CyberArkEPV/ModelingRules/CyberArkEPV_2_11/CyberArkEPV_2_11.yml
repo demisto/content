@@ -1,6 +1,6 @@
 fromversion: 8.15.0
-id: CyberArkEPV_ModelingRule
-name: CyberArkEPV Modeling Rule
+id: CyberArk_EPV_ModelingRule
+name: CyberArk EPV Modeling Rule
 rules: ''
 schema: ''
 supportedModules:
