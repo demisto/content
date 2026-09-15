@@ -943,6 +943,8 @@ async def test_fetch_and_send_events_async_payload_error_persists(mocker):
     from NetskopeEventCollector_v2 import fetch_and_send_events_async, MAX_EVENTS_PAGE_SIZE, MIN_EVENTS_PAGE_SIZE
 
     mocker.patch("NetskopeEventCollector_v2.asyncio.sleep", return_value=None)
+    # The failure path logs via demisto.error; mock it so it doesn't write to stdout (conftest forbids it).
+    mocker.patch.object(demisto, "error")
 
     client = Client(BASE_URL, "token", False, False, ["alert"])
     mocker.patch.object(client, "get_events_count", return_value=1)
