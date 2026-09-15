@@ -2709,3 +2709,38 @@ def test_delete_unified_exclusions(mocker, requests_mock):
     assert outputs["Affected"] == 1
     assert requests_mock.request_history[0].method == "DELETE"
     assert requests_mock.last_request.json() == {"data": {"exclusions": [{"id": "2543493559305834189", "type": "path"}]}}
+
+
+def test_get_activities_multiple_types_single_param(mocker, requests_mock):
+    """
+    When:
+        sentinelone-get-activities is called with multiple activity_types (e.g. "6,7")
+    Then:
+        The API request must send activityTypes as a single comma-separated query parameter,
+        not as repeated query parameters (activityTypes=6&activityTypes=7).
+    """
+    raw_response = util_load_json("test_data/get_activities_raw_response.json")
+    requests_mock.get("https://usea1.sentinelone.net/web/api/v2.1/activities", json=raw_response)
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-get-activities")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"activity_types": "6,7"},
+    )
+
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    assert mock_return_results.called
+    sent_qs = requests_mock.last_request.qs
+    assert sent_qs.get("activitytypes") == ["6,7"], (
+        "activityTypes must be sent as a single comma-separated value, not repeated params"
+    )
+    assert "activityTypes=6,7" in requests_mock.last_request.url

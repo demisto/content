@@ -306,7 +306,7 @@ class Client(BaseClient):
             includeHidden=include_hidden,
             created_at__lt=created_before,
             threatIds=argToList(threats_ids),
-            activityTypes=argToList(activity_types),
+            activityTypes=activity_types,
             userIds=argToList(user_ids),
             created_at__gte=created_from,
             createdAt_between=created_between,
