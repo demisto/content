@@ -2,7 +2,7 @@
     "id": "Gmail",
     "name": "Gmail - Classifier",
     "type": "classification",
-    "description": "Classifies Gmail phishing email messages.",
+    "description": "Classifies Gmail phishing and email messages.",
     "version": -1,
     "defaultIncidentType": "",
     "transformer": {
