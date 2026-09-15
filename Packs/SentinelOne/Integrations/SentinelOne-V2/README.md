@@ -2396,12 +2396,12 @@ Creates a new unified exclusion using a type and value (e.g. path, hash, certifi
 | os_type | Operating system type. Possible values are: windows, windows_legacy, macos, linux. | Required |
 | mode_type | Exclusion mode type. Possible values are: suppression, agent_interoperability, binary_vault, all. | Required |
 | exclusion_type | Exclusion type that determines how the value is interpreted. Possible values are: file_type, path, white_hash, certificate, browser. | Required |
-| value | The exclusion value, for example a file path or hash. | Required |
+| value | The exclusion value, for example a file path or hash. | Optional |
 | scope_level | Scope level for the exclusion. Possible values are: group, site, account, tenant. | Required |
 | scope_level_id | ID of the scope (group, site, or account). Not required when scope_level is tenant. | Optional |
 | reason | Reason for creating the exclusion. Possible values are: performance_issue, false_positive, other. | Required |
 | description | Description of the exclusion item. | Optional |
-| threat_type | Threat type associated with the exclusion, for example "EDR". | Optional |
+| threat_type | Threat type associated with the exclusion, for example "EDR". | Required |
 | engines | Engine associated with the exclusion, for example "suppress". | Optional |
 | path_exclusion_type | Path exclusion type. Applies to path exclusions only. Possible values are: file, folder, subfolder. | Optional |
 | sha256_value | SHA-256 value associated with the exclusion. | Optional |

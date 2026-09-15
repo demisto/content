@@ -497,7 +497,6 @@ script:
       required: true
     - description: The exclusion value, for example a file path or hash.
       name: value
-      required: true
     - auto: PREDEFINED
       description: Scope level for the exclusion.
       name: scope_level
@@ -521,6 +520,7 @@ script:
       name: description
     - description: Threat type associated with the exclusion, for example "EDR".
       name: threat_type
+      required: true
     - description: Engine associated with the exclusion, for example "suppress".
       name: engines
     - auto: PREDEFINED

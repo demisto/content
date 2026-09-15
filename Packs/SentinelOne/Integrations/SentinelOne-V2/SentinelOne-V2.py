@@ -636,12 +636,12 @@ class Client(BaseClient):
         os_type: str,
         mode_type: str,
         exclusion_type: str,
-        value: str,
+        value: str | None,
         scope_level: str,
         reason: str,
+        threat_type: str,
         scope_level_id: str | None = None,
         description: str | None = None,
-        threat_type: str | None = None,
         engines: str | None = None,
         path_exclusion_type: str | None = None,
         sha256_value: str | None = None,
@@ -3687,12 +3687,12 @@ def create_unified_exclusion_command(client: Client, args: dict) -> CommandResul
     os_type = args["os_type"]
     mode_type = args["mode_type"]
     exclusion_type = args["exclusion_type"]
-    value = args["value"]
+    value = args.get("value")
     scope_level = args["scope_level"]
     scope_level_id = args.get("scope_level_id")
     reason = args["reason"]
     description = args.get("description")
-    threat_type = args.get("threat_type")
+    threat_type = args["threat_type"]
     engines = args.get("engines")
     path_exclusion_type = args.get("path_exclusion_type")
     sha256_value = args.get("sha256_value")
