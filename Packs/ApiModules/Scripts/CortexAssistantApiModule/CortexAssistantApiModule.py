@@ -1229,6 +1229,27 @@ class AssistantMessagingHandler:
         original_message = assistant[assistant_id_key].get("message", "")
 
         if user_id == locked_user:
+            # Guard against duplicate agent selections (XSOAR async listeners can process
+            # a second click before the first selection finished updating the status).
+            # We only proceed when the conversation is actually awaiting an agent selection.
+            current_status = assistant[assistant_id_key].get("status", "")
+            if current_status != AssistantStatus.AWAITING_AGENT_SELECTION.value:
+                demisto.error(
+                    f"Ignoring agent selection for {assistant_id_key}: expected status "
+                    f"'{AssistantStatus.AWAITING_AGENT_SELECTION.value}' but current status is '{current_status}'."
+                )
+                # An agent was most likely already selected and we're just waiting for a response
+                # (the previous selection took time to come back). This is not an error state, so we
+                # reassure the user instead of showing an error - and we never open another conversation.
+                if current_status == AssistantStatus.RESPONDING_WITH_PLAN.value:
+                    info_msg = AssistantMessages.WAITING_FOR_COMPLETION
+                else:
+                    info_msg = AssistantMessages.ALREADY_PROCESSING
+                await self.send_message_async(
+                    channel_id, info_msg, thread_id=thread_id, ephemeral=True, user_id=user_id
+                )
+                return
+
             # Correct user selected an agent
             selected_agent_id = option_value.replace(AssistantActionIds.AGENT_SELECTION_VALUE_PREFIX.value, "")
             selected_agent_name = selected_option.get("text", {}).get("text", "")

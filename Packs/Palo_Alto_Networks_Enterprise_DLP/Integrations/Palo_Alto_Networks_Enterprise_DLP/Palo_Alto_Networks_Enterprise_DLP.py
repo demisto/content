@@ -19,6 +19,7 @@ DEFAULT_MAX_FETCH = 50
 DEFAULT_BASE_URL = "https://api.dlp.paloaltonetworks.com/v1/"
 DEFAULT_AUTH_URL = "https://auth.apps.paloaltonetworks.com/auth/v1/oauth2/access_token"
 REPORT_URL = "public/report/{}"
+SERVICE_NAME_HEADER = "service-name"
 INCIDENTS_URL = "public/incident-notifications"
 REFRESH_TOKEN_URL = "public/oauth/refreshToken"
 UPDATE_INCIDENT_URL = "public/incident-feedback"
@@ -121,18 +122,22 @@ class Client(BaseClient):
         except Exception:
             pass
 
-    def _get_dlp_api_call(self, url_suffix: str) -> tuple[dict[str, Any], int]:
+    def _get_dlp_api_call(self, url_suffix: str, extra_headers: dict[str, str] | None = None) -> tuple[dict[str, Any], int]:
         """
         Makes a HTTPS Get call on the DLP API
         Args:
             url_suffix: URL suffix for dlp api call
+            extra_headers: Optional additional request headers
         """
         count = 0
         print_debug_msg(f"Calling GET method on {self._base_url}{url_suffix}")
         while count < MAX_ATTEMPTS:
+            headers = {"Authorization": "Bearer " + self.access_token}
+            if extra_headers:
+                headers.update(extra_headers)
             res = self._http_request(
                 method="GET",
-                headers={"Authorization": "Bearer " + self.access_token},
+                headers=headers,
                 url_suffix=url_suffix,
                 ok_codes=[200, 201, 204],
                 error_handler=self._handle_4xx_errors,
@@ -190,12 +195,14 @@ class Client(BaseClient):
     def set_access_token(self, access_token):
         self.access_token = access_token
 
-    def get_dlp_report(self, report_id: str, fetch_snippets=False):
+    def get_dlp_report(self, report_id: str, fetch_snippets=False, service_name: str | None = None):
         """
         Fetches DLP reports
         Args:
             report_id: Report ID to fetch from DLP service
             fetch_snippets: if True, fetches the snippets
+            service_name: Optional DLP service the report belongs to. When omitted, the
+                service defaults to Prisma Access on the server side.
 
         Returns: DLP Report json
         """
@@ -203,7 +210,8 @@ class Client(BaseClient):
         if fetch_snippets:
             url = url + "?fetchSnippets=true"
 
-        return self._get_dlp_api_call(url)
+        extra_headers = {SERVICE_NAME_HEADER: service_name} if service_name else None
+        return self._get_dlp_api_call(url, extra_headers)
 
     def get_dlp_incidents(
         self,
@@ -395,6 +403,22 @@ def parse_dlp_report(report_json) -> CommandResults:
         readable_output=convert_to_human_readable(data_patterns),
         raw_response=report_json,
     )
+
+
+def get_dlp_report_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves a DLP report and parses it for display.
+    Args:
+        client: DLP client
+        args: Command arguments
+
+    Returns: DLP report results
+    """
+    report_id = args.get("report_id", "")
+    fetch_snippets = argToBoolean(args.get("fetch_snippets"))
+    service_name = args.get("service_name")
+    report_json, _ = client.get_dlp_report(report_id, fetch_snippets, service_name)
+    return parse_dlp_report(report_json)
 
 
 def test(client: Client, params: dict):
@@ -799,10 +823,7 @@ def main():
         client = Client(base_url, auth_url, credentials, verify, proxy)
 
         if command == "pan-dlp-get-report":
-            report_id = args.get("report_id")
-            fetch_snippets = argToBoolean(args.get("fetch_snippets"))
-            report_json, _ = client.get_dlp_report(report_id, fetch_snippets)
-            return_results(parse_dlp_report(report_json))
+            return_results(get_dlp_report_command(client, args))
         elif command == "fetch-incidents":
             next_run, new_incidents = fetch_incidents(client, params)
             demisto.incidents(new_incidents)
