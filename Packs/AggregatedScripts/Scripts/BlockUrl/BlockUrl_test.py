@@ -4,6 +4,7 @@ import os
 import pytest
 
 import demistomock as demisto
+import BlockUrl
 from BlockUrl import BlockUrlError, PanOs
 
 TEST_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "test_data")
@@ -766,7 +767,6 @@ def test_pan_os_commit_starts_polling(mocker):
     Then:
        - Polling starts and the commit job ID is stored for the next round.
     """
-    import BlockUrl
     from BlockUrl import pan_os_commit
 
     execute_mock = mocker.patch.object(demisto, "executeCommand", return_value=RESPONSES["commit_started"])
@@ -788,7 +788,6 @@ def test_pan_os_commit_nothing_to_commit(mocker):
     Then:
        - Polling does not start, since there is no job to wait for.
     """
-    import BlockUrl
     from BlockUrl import pan_os_commit
 
     mocker.patch.object(demisto, "executeCommand", return_value=RESPONSES["commit_nothing_to_commit"])
