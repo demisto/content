@@ -1,0 +1,128 @@
+{
+    "cisco_firepower_raw": {
+        "dpt": {
+          "type": "int",
+          "is_array": false
+        },
+        "dst": {
+          "type": "string",
+          "is_array": false
+        },
+        "src": {
+          "type": "string",
+          "is_array": false
+        },
+        "spt": {
+          "type": "int",
+          "is_array": false
+        },
+        "act": {
+          "type": "string",
+          "is_array": false
+        },
+        "cs2": {
+          "type": "string",
+          "is_array": false
+        },
+        "cs3": {
+          "type": "string",
+          "is_array": false
+        },
+        "app": {
+          "type": "string",
+          "is_array": false
+        },
+        "cs4": {
+          "type": "string",
+          "is_array": false
+        },
+        "cs5": {
+          "type": "string",
+          "is_array": false
+        },
+        "suser": {
+          "type": "string",
+          "is_array": false
+        },
+        "duser": {
+          "type": "string",
+          "is_array": false
+        },
+        "dvcpid": {
+          "type": "string",
+          "is_array": false
+        },
+        "reason": {
+          "type": "string",
+          "is_array": false
+        },
+        "requestClientApplication": {
+          "type": "string",
+          "is_array": false
+        },
+        "deviceOutboundInterface": {
+          "type": "string",
+          "is_array": false
+        },
+        "deviceInboundInterface": {
+          "type": "string",
+          "is_array": false
+        },
+        "deviceExternalId": {
+          "type": "string",
+          "is_array": false
+        },
+        "cefSeverity": {
+          "type": "string",
+          "is_array": false
+        },
+        "externalId": {
+          "type": "string",
+          "is_array": false
+        },
+        "request": {
+          "type": "string",
+          "is_array": false
+        },
+        "dvchost": {
+          "type": "string",
+          "is_array": false
+        },
+        "outcome": {
+          "type": "string",
+          "is_array": false
+        },
+        "bytesOut": {
+          "type": "int",
+          "is_array": false
+        },
+        "bytesIn": {
+          "type": "int",
+          "is_array": false
+        },
+        "cefName": {
+            "type": "string",
+            "is_array": false
+          },
+        "cefDeviceVendor": {
+            "type": "string",
+            "is_array": false
+          },
+        "cefDeviceProduct": {
+            "type": "string",
+            "is_array": false
+          },
+        "fname": {
+            "type": "string",
+            "is_array": false
+          },
+        "fileHash": {
+            "type": "string",
+            "is_array": false
+          },
+        "fileType": {
+            "type": "string",
+            "is_array": false
+    }
+  }
+}
