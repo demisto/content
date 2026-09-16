@@ -550,6 +550,31 @@ def test_jira_asset_object_search_command(mocker: MockerFixture):
     mocked_client.assert_called_with(ql_query, False, 1, 50, None)
 
 
+def test_jira_asset_object_search_command_no_results(mocker: MockerFixture):
+    """
+    Given: A ql_query that matches no objects (API returns a response without 'objectEntries' key,
+           e.g. a 404 error body such as {"errorMessages": [...], "errors": {}}).
+    When: The jira_asset_object_search_command function is called.
+    Then: The command returns a human-readable "No objects found." message instead of raising a KeyError.
+    """
+    ql_query = '"Hostname" in ("NONEXISTENT")'
+    mocker.patch.object(client, "search_objects", return_value={"errorMessages": ["No resource found"], "errors": {}})
+    result = JSM.jira_asset_object_search_command(client, {"ql_query": ql_query})
+    assert result.readable_output == "No objects found."
+
+
+def test_jira_asset_object_search_command_empty_object_entries(mocker: MockerFixture):
+    """
+    Given: A ql_query that matches no objects (API returns {"objectEntries": [], "total": 0}).
+    When: The jira_asset_object_search_command function is called.
+    Then: The command returns a human-readable "No objects found." message.
+    """
+    ql_query = '"Hostname" in ("NONEXISTENT")'
+    mocker.patch.object(client, "search_objects", return_value={"objectEntries": [], "total": 0})
+    result = JSM.jira_asset_object_search_command(client, {"ql_query": ql_query})
+    assert result.readable_output == "No objects found."
+
+
 @pytest.mark.parametrize(
     "args, expected_len", [({"object_type_id": "1"}, 6), ({"object_type_id": "1", "is_required": "true"}, 4)]
 )

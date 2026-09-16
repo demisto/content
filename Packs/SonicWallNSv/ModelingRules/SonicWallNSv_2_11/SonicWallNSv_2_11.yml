@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: SonicWallNSv_ModelingRule
+name: SonicWallNSv Modeling Rule
+rules: ''
+schema: ''
+tags: SonicWallNSv
+supportedModules:
+- xsiam
