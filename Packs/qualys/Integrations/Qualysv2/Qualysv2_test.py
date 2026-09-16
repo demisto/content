@@ -35,6 +35,7 @@ from Qualysv2 import (
     fetch_assets,
     get_detections_from_hosts,
     handle_host_list_detection_result,
+    handle_vulnerabilities_result,
     fetch_vulnerabilities,
     fetch_assets_and_vulnerabilities_by_date,
     fetch_assets_and_vulnerabilities_by_qids,
@@ -401,6 +402,37 @@ def test_fetch_vulnerabilities_command_by_qid(requests_mock: RequestsMocker, cli
     assert vulnerabilities == expected_vulnerabilities
     assert next_run["next_page"] == ""
     assert next_run["stage"] == "assets"
+
+
+def test_handle_vulnerabilities_result_none_response():
+    """
+    Given:
+    - A None response (e.g. the vulnerabilities request failed/returned nothing).
+    When:
+    - Calling handle_vulnerabilities_result.
+    Then:
+    - Ensure an empty list is returned without raising.
+    """
+    assert handle_vulnerabilities_result(None) == []
+
+
+def test_handle_vulnerabilities_result_streams_vulnerabilities():
+    """
+    Given:
+    - A streamed vulnerabilities XML response body.
+    When:
+    - Calling handle_vulnerabilities_result (single-pass streaming parse).
+    Then:
+    - Ensure all VULN records are extracted and match the expected parsed vulnerabilities.
+    """
+    with open("./test_data/vulnerabilities_raw.xml", "rb") as f:
+        xml_bytes = f.read()
+
+    expected_vulnerabilities = util_load_json("./test_data/fetched_vulnerabilities.json")
+
+    vulnerabilities = handle_vulnerabilities_result(_streamed_response(xml_bytes))
+
+    assert vulnerabilities == expected_vulnerabilities
 
 
 class TestIsEmptyResult:
@@ -1834,6 +1866,9 @@ def test_get_vulnerabilities_valid_inputs(
         - Ensure correct request HTTP method, API endpoint, and params.
     """
     client_http_request = mocker.patch.object(client, "_http_request")
+    # The streamed response body is not relevant here - this test only verifies the outgoing request,
+    # so bypass the streaming XML parse.
+    mocker.patch("Qualysv2.handle_vulnerabilities_result", return_value=[])
 
     get_vulnerabilities(client, since_datetime, detection_qids)
 

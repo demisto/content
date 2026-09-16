@@ -1798,14 +1798,21 @@ class Client(BaseClient):
         demisto.debug(f"Got streamed host list detections response. Set new limit: {set_new_limit}.")
         return response, set_new_limit
 
-    def get_vulnerabilities(self, since_datetime: str | None = None, detection_qids: str | None = None) -> str:
+    def get_vulnerabilities(
+        self, since_datetime: str | None = None, detection_qids: str | None = None
+    ) -> Optional[requests.Response]:
         """
-        Make a http request to Qualys API to get vulnerabilities
+        Make a http request to Qualys API to get vulnerabilities.
+
+        The response is requested as a *streamed* response (``stream=True``) so the (potentially very large) XML body
+        is not buffered in memory. The caller is responsible for consuming the body incrementally
+        (see ``handle_vulnerabilities_result``).
+
         Args:
             since_datetime (str | None): Optional timestamp for filtering vulnerabilities that have been modified afterwards.
             detection_qids (str | None): Optional string of comma-separated values for filtering by Qualys host detection IDs.
         Returns:
-            response from Qualys API
+            A streamed ``requests.Response`` from the Qualys API.
         Raises:
             DemistoException: can be raised by the _http_request function
         """
@@ -1819,12 +1826,14 @@ class Client(BaseClient):
         )
 
         try:
+            demisto.debug(f"Requesting vulnerabilities (streamed). Used query params: {params}.")
             response = self._http_request(
                 method="POST",
                 url_suffix=urljoin(API_SUFFIX_KNOWLEDGEBASE, "knowledge_base/vuln/?action=list"),
-                resp_type="text",
+                resp_type="response",
                 params=params,
                 timeout=timeout,
+                stream=True,
                 error_handler=self.error_handler,
             )
         except (requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError) as e:
@@ -2912,19 +2921,39 @@ def handle_host_list_detection_result(raw_response: Optional[requests.Response])
     return hosts, str(response_next_url)
 
 
-def handle_vulnerabilities_result(raw_response: str) -> list:
+def handle_vulnerabilities_result(raw_response: Optional[requests.Response]) -> list:
     """
-    Handles vulnerabilities response - parses xml to json and gets the list
-    Args:
-        raw_response (str): the raw XML result received from Qualys API command
-    Returns:
-        List with data generated for the result given
-    """
-    formatted_response = parse_raw_response(raw_response)
+    Handles vulnerabilities response.
 
-    vulnerabilities = dict_safe_get(formatted_response, ["KNOWLEDGE_BASE_VULN_LIST_OUTPUT", "RESPONSE", "VULN_LIST", "VULN"])
-    if isinstance(vulnerabilities, dict):
-        vulnerabilities = [vulnerabilities]
+    Consumes the (potentially very large) XML body *incrementally* using the shared ``stream_xml_elements`` helper,
+    so the whole document is never held in memory at once. Only the repeated ``VULN`` element is extracted - the
+    large, memory-heavy part of the response - streamed one record at a time.
+
+    API errors on this endpoint are surfaced by the HTTP-layer ``error_handler`` (which parses the ``SIMPLE_RETURN``
+    envelope and raises before the body reaches this function), so a successful response contains only ``VULN``
+    records. This preserves the original (pre-streaming) behavior, which likewise only read ``VULN`` elements.
+
+    Args:
+        raw_response (Optional[requests.Response]): the streamed response received from the Qualys API command.
+    Returns:
+        List of vulnerability dicts.
+    """
+    demisto.debug("Going to stream-parse the vulnerabilities response into the vulnerabilities list")
+
+    if raw_response is None:
+        demisto.debug("Received an empty (None) vulnerabilities response. Returning no vulnerabilities.")
+        return []
+
+    vulnerabilities: list = []
+
+    # Single low-memory pass over the streamed body. Data must be extracted from each element *during* iteration,
+    # because `stream_xml_elements` clears each element once the generator advances past it.
+    for _local_tag, element in stream_xml_elements(raw_response.raw, tags=["VULN"]):
+        # Convert this single VULN subtree to the same JSON structure produced previously by `xml2json`.
+        vuln_dict = json.loads(xml2json(ElementTree.tostring(element)))
+        vulnerabilities.append(vuln_dict.get("VULN", vuln_dict))
+
+    demisto.debug(f"Extracted a list of {len(vulnerabilities)} vulnerabilities")
 
     return vulnerabilities
 
