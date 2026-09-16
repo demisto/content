@@ -28,7 +28,7 @@ from Qualysv2 import (
     validate_required_group,
     get_vulnerabilities,
     get_activity_logs_events_command,
-    send_assets_and_vulnerabilities_to_xsiam,
+    handle_assets_and_vulnerabilities_send,
     set_assets_last_run_with_new_limit,
     fetch_events,
     get_activity_logs_events,
@@ -1889,7 +1889,7 @@ def test_fetch_assets_and_vulnerabilities_by_date_assets_stage(mocker: MockerFix
     next_page, set_new_limit = "", False
     mocker.patch("Qualysv2.get_host_list_detections_events", return_value=(expected_assets, next_page, set_new_limit))
 
-    mock_send_assets_to_xsiam = mocker.patch("Qualysv2.send_assets_to_xsiam")
+    mock_send_assets_to_xsiam = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
     mock_set_assets_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
 
     fetch_assets_and_vulnerabilities_by_date(client, last_run)
@@ -1930,7 +1930,7 @@ def test_fetch_assets_and_vulnerabilities_by_date_vulnerabilities_stage(mocker: 
     expected_vulnerabilities = util_load_json("./test_data/fetched_vulnerabilities.json")
     mocker.patch("Qualysv2.get_vulnerabilities", return_value=expected_vulnerabilities)
 
-    mock_send_assets_to_xsiam = mocker.patch("Qualysv2.send_assets_to_xsiam")
+    mock_send_assets_to_xsiam = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
     mock_set_assets_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
 
     fetch_assets_and_vulnerabilities_by_date(client, last_run)
@@ -2017,20 +2017,20 @@ def test_test_fetch_assets_and_vulnerabilities_by_qids(mocker: MockerFixture, cl
     expected_vulnerabilities = util_load_json("./test_data/fetched_vulnerabilities.json")
     mocker.patch("Qualysv2.fetch_vulnerabilities", return_value=(expected_vulnerabilities, {}))
 
-    mock_send_assets_and_vulnerabilities_to_xsiam = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
+    mock_handle_assets_and_vulnerabilities_send = mocker.patch("Qualysv2.handle_assets_and_vulnerabilities_send")
     mock_set_assets_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
 
     fetch_assets_and_vulnerabilities_by_qids(client, last_run)
 
-    send_assets_and_vulnerabilities_to_xsiam = mock_send_assets_and_vulnerabilities_to_xsiam.call_args.kwargs
+    handle_assets_and_vulnerabilities_send = mock_handle_assets_and_vulnerabilities_send.call_args.kwargs
     next_run = mock_set_assets_last_run.call_args[0][0]
 
-    assert send_assets_and_vulnerabilities_to_xsiam["assets"] == expected_assets
-    assert send_assets_and_vulnerabilities_to_xsiam["vulnerabilities"] == expected_vulnerabilities
-    assert send_assets_and_vulnerabilities_to_xsiam["cumulative_assets_count"] == last_total_assets + len(expected_assets)
-    assert send_assets_and_vulnerabilities_to_xsiam["cumulative_vulns_count"] == last_total_vulns + len(expected_vulnerabilities)
-    assert send_assets_and_vulnerabilities_to_xsiam["has_next_page"] is True  # next_page not empty (not done pulling)
-    assert send_assets_and_vulnerabilities_to_xsiam["snapshot_id"] == SNAPSHOT_ID  # keep snapshot ID (not done pulling)
+    assert handle_assets_and_vulnerabilities_send["assets"] == expected_assets
+    assert handle_assets_and_vulnerabilities_send["vulnerabilities"] == expected_vulnerabilities
+    assert handle_assets_and_vulnerabilities_send["cumulative_assets_count"] == last_total_assets + len(expected_assets)
+    assert handle_assets_and_vulnerabilities_send["cumulative_vulns_count"] == last_total_vulns + len(expected_vulnerabilities)
+    assert handle_assets_and_vulnerabilities_send["has_next_page"] is True  # next_page not empty (not done pulling)
+    assert handle_assets_and_vulnerabilities_send["snapshot_id"] == SNAPSHOT_ID  # keep snapshot ID (not done pulling)
 
     assert next_run == {
         "stage": "assets",
@@ -2051,7 +2051,7 @@ def test_test_fetch_assets_and_vulnerabilities_by_qids(mocker: MockerFixture, cl
         pytest.param(False, "10", "13", id="Specified detection QIDs"),
     ],
 )
-def test_send_assets_and_vulnerabilities_to_xsiam(
+def test_handle_assets_and_vulnerabilities_send(
     mocker: MockerFixture,
     has_assets_next_page: bool,
     expected_assets_count_to_report: str,
@@ -2062,7 +2062,7 @@ def test_send_assets_and_vulnerabilities_to_xsiam(
         - Lists of assets and vulnerabilities, along with their respective cumulative counts, and a snapshot ID.
 
     When:
-        - Calling send_assets_and_vulnerabilities_to_xsiam.
+        - Calling handle_assets_and_vulnerabilities_send.
 
     Assert:
         - Ensure correct sending of assets and vulnerabilities data to XSIAM with the correct vendor and product.
@@ -2073,9 +2073,9 @@ def test_send_assets_and_vulnerabilities_to_xsiam(
     cumulative_assets_count = 10
     cumulative_vulns_count = 13
 
-    mock_send_assets_to_xsiam = mocker.patch("Qualysv2.send_assets_to_xsiam")
+    mock_send_assets_to_xsiam = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
 
-    send_assets_and_vulnerabilities_to_xsiam(
+    handle_assets_and_vulnerabilities_send(
         assets=expected_assets,
         vulnerabilities=expected_vulnerabilities,
         cumulative_assets_count=cumulative_assets_count,
@@ -2104,14 +2104,14 @@ def test_send_assets_and_vulnerabilities_to_xsiam(
     assert not send_vulns_call.kwargs["should_update_health_module"]
 
 
-def test_send_assets_and_vulnerabilities_to_xsiam_empty_last_page(mocker: MockerFixture):
+def test_handle_assets_and_vulnerabilities_send_empty_last_page(mocker: MockerFixture):
     """
     Given:
         - Empty assets and vulnerabilities lists on the closing snapshot (has_next_page=False).
         - Cumulative counts of 500 assets and 200 vulnerabilities from previous pages.
 
     When:
-        - Calling send_assets_and_vulnerabilities_to_xsiam with empty data and has_next_page=False.
+        - Calling handle_assets_and_vulnerabilities_send with empty data and has_next_page=False.
 
     Then:
         - Ensure close_snapshot_if_empty replaces empty lists with [{}] and increments items_count by 1.
@@ -2120,9 +2120,9 @@ def test_send_assets_and_vulnerabilities_to_xsiam_empty_last_page(mocker: Mocker
     cumulative_assets_count = 500
     cumulative_vulns_count = 200
 
-    mock_send_assets_to_xsiam = mocker.patch("Qualysv2.send_assets_to_xsiam")
+    mock_send_assets_to_xsiam = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
 
-    send_assets_and_vulnerabilities_to_xsiam(
+    handle_assets_and_vulnerabilities_send(
         assets=[],
         vulnerabilities=[],
         cumulative_assets_count=cumulative_assets_count,
@@ -2243,7 +2243,7 @@ def test_fetch_assets_and_vulnerabilities_by_date_last_page_empty(mocker: Mocker
     empty_assets, next_page, set_new_limit = [], "", False
     mocker.patch("Qualysv2.get_host_list_detections_events", return_value=(empty_assets, next_page, set_new_limit))
 
-    mock_send_assets_to_xsiam = mocker.patch("Qualysv2.send_assets_to_xsiam")
+    mock_send_assets_to_xsiam = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
     mock_set_assets_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
 
     fetch_assets_and_vulnerabilities_by_date(client, last_run)

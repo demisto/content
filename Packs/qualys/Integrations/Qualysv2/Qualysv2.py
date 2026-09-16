@@ -3060,7 +3060,7 @@ def close_snapshot_if_empty(
     return data, items_count
 
 
-def send_assets_and_vulnerabilities_to_xsiam(
+def handle_assets_and_vulnerabilities_send(
     assets: list,
     vulnerabilities: list,
     cumulative_assets_count: int,
@@ -3093,7 +3093,7 @@ def send_assets_and_vulnerabilities_to_xsiam(
     if is_closing_snapshot:
         assets, total_assets_to_report = close_snapshot_if_empty(assets, total_assets_to_report, snapshot_id, "assets")
 
-    send_assets_to_xsiam(
+    send_assets_and_vulnerabilities_to_xsiam(
         assets,
         vendor=VENDOR,
         product="assets",
@@ -3113,7 +3113,7 @@ def send_assets_and_vulnerabilities_to_xsiam(
             vulnerabilities, total_vulns_to_report, snapshot_id, "vulnerabilities"
         )
 
-    send_assets_to_xsiam(
+    send_assets_and_vulnerabilities_to_xsiam(
         vulnerabilities,
         vendor=VENDOR,
         product="vulnerabilities",
@@ -3556,7 +3556,7 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
             if is_last_page:
                 assets, total_assets_to_report = close_snapshot_if_empty(assets, total_assets_to_report, snapshot_id, "assets")
 
-            send_assets_to_xsiam(
+            send_assets_and_vulnerabilities_to_xsiam(
                 assets,
                 vendor=VENDOR,
                 product="assets",
@@ -3572,7 +3572,7 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
     elif fetch_stage == "vulnerabilities":
         vulnerabilities, new_last_run = fetch_vulnerabilities(client, last_run)
         demisto.debug(f"Sending {len(vulnerabilities)} vulnerabilities to XSIAM.")
-        send_assets_to_xsiam(vulnerabilities, vendor=VENDOR, product="vulnerabilities")
+        send_assets_and_vulnerabilities_to_xsiam(vulnerabilities, vendor=VENDOR, product="vulnerabilities")
         demisto.setAssetsLastRun(new_last_run)
 
     demisto.debug(f"Finished fetch assets and vulnerabilities run (by date). Set last assets run: {new_last_run}")
@@ -3614,7 +3614,7 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
         new_last_run["total_vulnerabilities"] = cumulative_vulns_count
 
         demisto.debug(f"Starting to send {len(assets)} assets and {len(vulnerabilities)} vulnerabilities to XSIAM")
-        send_assets_and_vulnerabilities_to_xsiam(
+        handle_assets_and_vulnerabilities_send(
             assets=assets,
             vulnerabilities=vulnerabilities,
             cumulative_assets_count=cumulative_assets_count,
@@ -3919,7 +3919,7 @@ def main():  # pragma: no cover
             since_datetime = arg_to_datetime("1 hour").strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
             assets, _, _ = get_host_list_detections_events(client=client, since_datetime=since_datetime, limit=1, qid=qid)
             if should_push_events:
-                send_assets_to_xsiam(assets, vendor=VENDOR, product="host_detections")
+                send_assets_and_vulnerabilities_to_xsiam(assets, vendor=VENDOR, product="host_detections")
 
             readable_output = tableToMarkdown(name="Assets from Qualys:", t=assets)
 
