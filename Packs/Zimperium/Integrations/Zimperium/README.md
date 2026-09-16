@@ -276,7 +276,7 @@ Search users.
                 "alias": "paxsoar-9ok5bgx3o8ax6vd8xk9rrq6x25v5ml808djrvwb94e",
                 "createdDate": "2020-06-02T19:48:47+0000",
                 "dateJoined": "2020-06-02T19:48:47+0000",
-                "email": "akrupnik@paloaltonetworks.com",
+                "email": "akrupnik@example.com",
                 "firstName": "A",
                 "lastLogin": "2020-06-11T06:33:53+0000",
                 "lastName": "Krupnik",
@@ -315,7 +315,7 @@ Search users.
 >|---|---|---|---|---|
 >| 3d588112-6467-4c2d-932a-b728f866163d | paxsoar-rbaqodbmqad6dr53qmx0jvl2ze5v02pw | Fname | Lname | test@gmail.com |
 >| 437c8d9f-e9c2-44a0-bd8d-5cebd5cd8162 | paxsoar-kz9qvdnvedqnkkkrgdvrobr3pkagmlovaoz3vo0dkp | Hema | Halliyal | hhalliyal@paloaltonetworks.com |
->| 109e9873-29a4-49f3-bcf1-fd24ec634517 | paxsoar-9ok5bgx3o8ax6vd8xk9rrq6x25v5ml808djrvwb94e | A | Krupnik | akrupnik@paloaltonetworks.com |
+>| 109e9873-29a4-49f3-bcf1-fd24ec634517 | paxsoar-9ok5bgx3o8ax6vd8xk9rrq6x25v5ml808djrvwb94e | A | Krupnik | akrupnik@example.com |
 
 ### zimperium-user-get-by-id
 

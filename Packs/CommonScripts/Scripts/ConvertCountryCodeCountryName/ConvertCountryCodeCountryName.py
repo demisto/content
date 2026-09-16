@@ -203,7 +203,7 @@ COUNTRY_CODES_TO_NAMES = {
     "SG": "Singapore",
     "SH": "Saint Helena",
     "SI": "Slovenia",
-    "SJ": "Svalbard and Jan Mayen",
+    "SJ": "Svalbard and Jan Testmonthen",
     "SK": "Slovakia",
     "SL": "Sierra Leone",
     "SM": "San Marino",

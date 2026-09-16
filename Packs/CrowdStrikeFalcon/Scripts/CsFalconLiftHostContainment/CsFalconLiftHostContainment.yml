@@ -15,7 +15,10 @@ args:
     required: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.12.11.4508456
+dockerimage: demisto/python3:3.12.13.10116658
+dependson:
+  must:
+  - cs-falcon-lift-host-containment
 fromversion: 6.1.0
 isInternal: true
 tests:
@@ -23,4 +26,8 @@ tests:
 marketplaces:
   - platform
 supportedModules:
-  - agentix
+- agentix
+- xsiam
+- edr
+- cloud
+- cloud_runtime_security

@@ -1,8 +1,8 @@
 # Authentication
-You can authenticate either by Azure Active Directory applications or by Azure Managed Identities.
-### Authentication Based on Azure Active Directory Applications
+You can authenticate either by Entra ID applications or by Azure Managed Identities.
+### Authentication Based on Entra ID Applications
 
-Microsoft integrations (Graph and Azure) in Cortex XSOAR use Azure Active Directory applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard compliant authentication services, which use an application to sign in or delegate authentication. For more information, see the Microsoft identity platform overview.
+Microsoft integrations (Graph and Azure) in Cortex XSOAR use Entra ID applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard compliant authentication services, which use an application to sign in or delegate authentication. For more information, see the Microsoft identity platform overview.
 
 There are two application authentication methods available:
 
@@ -15,6 +15,8 @@ To use the **Cortex XSOAR application** and allow Cortex XSOAR access to O365 Ou
 After authorizing the Cortex XSOAR app, you will get an ID, Token, and Key which should be inserted in the integration instance settings fields.
 
 **Note**: These credentials are valid for a single instance only.
+
+**Note**: When authenticating with the Cortex application, sign in with the same user you want to integrate with. Since this user must grant consent for the app's permissions, they must be an **administrator**. To let a non-admin user use the app instead, after an admin has consented to the application once, go to the [Azure Portal](https://portal.azure.com/) > **Enterprise applications**, find the app, and set **Assignment required?** to **No**. This way, other users can obtain the Cortex application credentials without needing to sign in or consent themselves. Alternatively, you can use a **[Self-Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)**.
 
 ### Authentication Based on Azure Managed Identities
 ##### Note: This option is relevant only if the integration is running on Azure VM.

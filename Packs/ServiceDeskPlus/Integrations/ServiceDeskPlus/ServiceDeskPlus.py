@@ -15,12 +15,19 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 API_VERSION = "/api/v3/"
-OAUTH = "https://accounts.zoho.com/oauth/v2/token"
+OAUTH_URL = {
+    "United States": "https://accounts.zoho.com/oauth/v2/token",
+    "Europe": "https://accounts.zoho.eu/oauth/v2/token",
+    "India": "https://accounts.zoho.in/oauth/v2/token",
+    "China": "https://accounts.zoho.cn/oauth/v2/token",
+    "Australia": "https://accounts.zoho.au/oauth/v2/token",
+}
 
 REQUEST_FIELDS = [
     "subject",
     "description",
     "request_type",
+    "impact_details",
     "impact",
     "status",
     "mode",
@@ -92,6 +99,7 @@ class Client(BaseClient):
     def __init__(
         self,
         url: str,
+        outh_url: str,
         use_ssl: bool,
         use_proxy: bool,
         client_id: str = None,
@@ -107,6 +115,7 @@ class Client(BaseClient):
         if fetch_status is None:
             fetch_status = []
         self.client_id = client_id
+        self.outh_url = outh_url
         self.client_secret = client_secret
         self.refresh_token = refresh_token
         self.technician_key = technician_key
@@ -142,7 +151,7 @@ class Client(BaseClient):
                 "client_secret": self.client_secret,
             }
             try:
-                res = self.http_request("POST", url_suffix="", full_url=OAUTH, params=params)
+                res = self.http_request("POST", url_suffix="", full_url=self.outh_url, params=params)
                 if "error" in res:
                     return_error(
                         f"Error occurred while creating an access token. Please check the Client ID, Client Secret "
@@ -166,7 +175,12 @@ class Client(BaseClient):
         # handled by the client and not in the BaseClient
         try:
             res = self._http_request(
-                method, url_suffix, full_url=full_url, resp_type="response", ok_codes=ok_codes, params=params
+                method,
+                url_suffix,
+                full_url=full_url,
+                resp_type="response",
+                ok_codes=ok_codes,
+                params=params,
             )
             if res.status_code in [200, 201]:
                 try:
@@ -339,6 +353,23 @@ def resolution_human_readable(output: dict) -> dict:
         else:
             hr[key] = output.get(key, "")
     return hr
+
+
+def note_human_readable(res: dict | list) -> str:
+    if isinstance(res, dict):
+        prefix = f"Note of request {res.get('request', {}).get('id')}:"
+        res = [res]
+    else:
+        prefix = f"Notes of request {res[0].get('request', {}).get('id')}:"
+    hr = [
+        {
+            "Note ID": note.get("id"),
+            "Description": note.get("description"),
+            "Created time": note.get("created_time", {}).get("display_value"),
+        }
+        for note in res
+    ]
+    return tableToMarkdown(prefix, t=hr)
 
 
 def create_requests_list_info(start_index, row_count, search_fields, filter_by):
@@ -709,6 +740,94 @@ def close_request_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     return hr, {}, result
 
 
+def get_request_notes_list_command(client: Client, args: dict) -> CommandResults:
+    request_id = args.get("request_id")
+    request_note_id = args.get("request_note_id")
+    if request_note_id:
+        raw_result = client.http_request("GET", url_suffix=f"requests/{request_id}/notes/{request_note_id}")
+        res = raw_result.get("request_note")
+    else:
+        raw_result = client.http_request("GET", url_suffix=f"requests/{request_id}/notes")
+        res = raw_result.get("notes")
+
+    return CommandResults(
+        outputs_prefix="ServiceDeskPlus.Request.Note",
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=note_human_readable(res),
+        raw_response=raw_result,
+    )
+
+
+def add_request_note_command(client: Client, args: dict) -> CommandResults:
+    request_id = args.get("request_id")
+    description = args.get("description")
+
+    data = {
+        "request_note": {
+            "mark_first_response": argToBoolean(args.get("mark_first_response")) or False,
+            "add_to_linked_requests": argToBoolean(args.get("add_to_linked_requests")) or False,
+            "notify_technician": argToBoolean(args.get("notify_technician")) or False,
+            "show_to_requester": argToBoolean(args.get("show_to_requester")) or False,
+            "description": description,
+        }
+    }
+    raw_result = client.http_request(method="POST", url_suffix=f"requests/{request_id}/notes", params={"input_data": f"{data}"})
+    res = raw_result.get("request_note")
+
+    return CommandResults(
+        outputs_prefix="ServiceDeskPlus.Request.Note",
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=note_human_readable(res),
+        raw_response=raw_result,
+    )
+
+
+def delete_request_note_command(client: Client, args: dict) -> CommandResults:
+    request_id = args.get("request_id")
+    request_note_id = args.get("request_note_id")
+
+    raw_result = client.http_request("DELETE", url_suffix=f"requests/{request_id}/notes/{request_note_id}")
+    res = raw_result.get("request_note")
+
+    return CommandResults(
+        outputs_prefix="ServiceDeskPlus.Request.Note",
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=f"The request note {request_note_id} has been successfully deleted from the request {request_id}.",
+        raw_response=raw_result,
+    )
+
+
+def update_request_note_command(client: Client, args: dict) -> CommandResults:
+    request_id = args.get("request_id")
+    request_note_id = args.get("request_note_id")
+    description = args.get("description")
+
+    data = {
+        "request_note": {
+            "mark_first_response": argToBoolean(args.get("mark_first_response")) or False,
+            "add_to_linked_requests": argToBoolean(args.get("add_to_linked_requests")) or False,
+            "notify_technician": argToBoolean(args.get("notify_technician")) or False,
+            "show_to_requester": argToBoolean(args.get("show_to_requester")) or False,
+            "description": description,
+        }
+    }
+    raw_result = client.http_request(
+        method="PUT", url_suffix=f"requests/{request_id}/notes/{request_note_id}", params={"input_data": f"{data}"}
+    )
+    res = raw_result.get("request_note")
+
+    return CommandResults(
+        outputs_prefix="ServiceDeskPlus.Request.Note",
+        outputs_key_field="id",
+        outputs=res,
+        readable_output=note_human_readable(res),
+        raw_response=raw_result,
+    )
+
+
 def fetch_incidents(client: Client, test_command: bool = False) -> list:
     date_format = "%Y-%m-%dT%H:%M:%S"
     last_run = {}
@@ -819,7 +938,7 @@ def generate_refresh_token(client: Client, args: dict) -> tuple[str, dict, Any]:
         "client_id": client.client_id,
         "client_secret": client.client_secret,
     }
-    res = client.http_request("POST", url_suffix="", full_url=OAUTH, params=params)
+    res = client.http_request("POST", url_suffix="", full_url=client.outh_url, params=params)
     if res.get("refresh_token"):
         hr = (
             f'### Refresh Token: {res.get("refresh_token")}\n Please paste the Refresh Token in the instance '
@@ -834,14 +953,15 @@ def generate_refresh_token(client: Client, args: dict) -> tuple[str, dict, Any]:
 
 def main():
     params = demisto.params()
-    server_url = params.get("server_url")
+    region = params.get("server_url")
     technician_key = params.get("credentials_technician_key", {}).get("password") or params.get("technician_key")
     client_id = params.get("credentials_client", {}).get("identifier") or params.get("client_id")
     client_secret = params.get("credentials_client", {}).get("password") or params.get("client_secret")
     refresh_token = params.get("credentials_refresh_token", {}).get("password") or params.get("refresh_token")
-    if server_url == "On-Premise":
+    if region == "On-Premise":
         client = Client(
             url=params.get("server_url_on_premise") + API_VERSION,
+            outh_url=OAUTH_URL["United States"],
             use_ssl=not params.get("insecure", False),
             use_proxy=params.get("proxy", False),
             technician_key=technician_key,
@@ -852,9 +972,10 @@ def main():
             on_premise=True,
         )
     else:
-        server_url = SERVER_URL[params.get("server_url")]
+        server_url = SERVER_URL[region]
         client = Client(
             url=server_url + API_VERSION,
+            outh_url=OAUTH_URL[region],
             use_ssl=not params.get("insecure", False),
             use_proxy=params.get("proxy", False),
             client_id=client_id,
@@ -880,6 +1001,12 @@ def main():
         "service-desk-plus-request-resolution-add": add_resolution_command,
         "service-desk-plus-request-resolutions-list": get_resolutions_list_command,
     }
+    notes_commands = {
+        "service-desk-plus-request-notes-list": get_request_notes_list_command,
+        "service-desk-plus-request-notes-add": add_request_note_command,
+        "service-desk-plus-request-notes-delete": delete_request_note_command,
+        "service-desk-plus-request-notes-update": update_request_note_command,
+    }
     command = demisto.command()
     LOG(f"Command being called is {command}")
 
@@ -891,6 +1018,8 @@ def main():
             demisto.incidents(incidents)
         elif command in commands:
             return_outputs(*commands[command](client, demisto.args()))
+        elif command in notes_commands:
+            return_results(notes_commands[command](client, demisto.args()))
         else:
             return_error("Command not found.")
     except Exception as e:

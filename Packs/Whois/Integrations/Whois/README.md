@@ -1092,8 +1092,17 @@ Provides data enrichment for ips.
 
 ## Troubleshooting
 
-- The error message *Bad Gateway* (502) might occur when using a firewall/proxy. To fix the issue, make sure the whois TLD provider exists in your allowlist.
--
+- *Bad Gateway* (502) error when using a firewall or proxy.
+  - This occurs when the WHOIS Top-Level Domain (TLD) provider is not reachable through the configured firewall or proxy.
+  - **Resolution**: Add the relevant WHOIS TLD provider to your firewall or proxy allowlist.
+
+- Connection timeout errors when running in a FedRAMP High environment.
+  - The Whois integration connects to external WHOIS servers over TCP port 43. On FedRAMP High tenants, outbound traffic from engines is only permitted on port 443, so port 43 connections are blocked and the integration times out. For more information, refer to the documentation on outbound engine IPs for [Cortex XSOAR SaaS](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-SaaS-Documentation/Enable-access-to-Palo-Alto-Networks-resources) and [Cortex XSIAM](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-3.x-Documentation/FedRamp-and-the-US-Federal-Government-required-resources).
+  - **Resolution**: Configure a SOCKS5 proxy in the **Proxy URL** field (for example, `socks5h://your-proxy-host:1080`) that is reachable on port 443 and can forward traffic to external WHOIS servers on port 43. Note that this proxy setting affects all commands except the `ip` command. A standard HTTP proxy is not sufficient, as most HTTP proxies do not support the CONNECT method on non-standard ports such as port 43.
+
+- Rate-limiting or IP blocking errors when querying WHOIS servers.
+  - This can occur when multiple users or systems make requests from the same IP address, causing the WHOIS server to block or throttle queries.
+  - **Resolution**: Use a dedicated engine or a SOCKS5 proxy for WHOIS queries to provide a unique outbound IP address and avoid shared-IP blocking.
 
 ## Known limitations
 

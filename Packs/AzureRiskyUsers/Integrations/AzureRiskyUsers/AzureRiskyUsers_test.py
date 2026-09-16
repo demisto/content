@@ -453,3 +453,65 @@ def test_do_pagination_without_next_token(mocker):
     assert requests_mock.call_count == 0
     assert data == expected_result
     assert last_next_link == mock_response.get("@odata.nextLink")
+
+
+def test_risky_users_confirm_compromise_command(mocker):
+    """
+    Scenario: Confirm users as compromised.
+    Given:
+     - A list of users (UPNs).
+    When:
+     - risky_users_confirm_compromise_command is called.
+    Then:
+     - Ensure client.upn_to_user_id is called for each user.
+     - Ensure client.confirm_compromised_request is called with the correct user IDs.
+     - Ensure the readable output is as expected.
+    """
+    from AzureRiskyUsers import risky_users_confirm
+
+    mock_client_instance = mock_client()
+    mocker.patch.object(mock_client_instance, "upn_to_user_id", side_effect=lambda x: f"id_{x}")
+    mocker.patch.object(mock_client_instance, "confirm_compromised_request")
+
+    users_to_compromise = ["user1@example.com", "user2@example.com"]
+    args = {"user": users_to_compromise}
+
+    result = risky_users_confirm(mock_client_instance, args, mock_client_instance.confirm_compromised_request, "compromised")
+
+    mock_client_instance.upn_to_user_id.assert_has_calls([mocker.call("user1@example.com"), mocker.call("user2@example.com")])
+    mock_client_instance.confirm_compromised_request.assert_has_calls(
+        [mocker.call(user_ids=["id_user1@example.com"]), mocker.call(user_ids=["id_user2@example.com"])]
+    )
+    assert result[0].outputs[0]["Success"] is True
+    assert result[0].outputs[1]["Success"] is True
+
+
+def test_risky_users_confirm_safe_command(mocker):
+    """
+    Scenario: Confirm users as safe.
+    Given:
+     - A list of users (UPNs).
+    When:
+     - risky_users_confirm_safe_command is called.
+    Then:
+     - Ensure client.upn_to_user_id is called for each user.
+     - Ensure client.confirm_safe_request is called with the correct user IDs.
+     - Ensure the readable output is as expected.
+    """
+    from AzureRiskyUsers import risky_users_confirm
+
+    mock_client_instance = mock_client()
+    mocker.patch.object(mock_client_instance, "upn_to_user_id", side_effect=lambda x: f"id_{x}")
+    mocker.patch.object(mock_client_instance, "confirm_safe_request")
+
+    users_to_safe = ["user3@example.com", "user4@example.com"]
+    args = {"user": users_to_safe}
+
+    result = risky_users_confirm(mock_client_instance, args, mock_client_instance.confirm_safe_request, "safe")
+
+    mock_client_instance.upn_to_user_id.assert_has_calls([mocker.call("user3@example.com"), mocker.call("user4@example.com")])
+    mock_client_instance.confirm_safe_request.assert_has_calls(
+        [mocker.call(user_ids=["id_user3@example.com"]), mocker.call(user_ids=["id_user4@example.com"])]
+    )
+    assert result[0].outputs[0]["Success"] is True
+    assert result[0].outputs[1]["Success"] is True

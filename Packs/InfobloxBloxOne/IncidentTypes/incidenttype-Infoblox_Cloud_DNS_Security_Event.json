@@ -1,0 +1,60 @@
+{
+    "id": "Infoblox Cloud DNS Security Event",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Infoblox Cloud DNS Security Event",
+    "prevName": "Infoblox Cloud DNS Security Event",
+    "color": "#B287FE",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": false,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "Infoblox Cloud DNS Security Event",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {
+            "details": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "infobloxcloudprivateip": {
+                "extractAsIsIndicatorTypeId": "ipRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "infobloxcloudqip": {
+                "extractAsIsIndicatorTypeId": "ipRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "infobloxcloudqname": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            },
+            "infobloxcloudrip": {
+                "extractAsIsIndicatorTypeId": "ipRep",
+                "isExtractingAllIndicatorTypes": false,
+                "extractIndicatorTypesIDs": []
+            },
+            "infobloxcloudthreatindicator": {
+                "extractAsIsIndicatorTypeId": "",
+                "isExtractingAllIndicatorTypes": true,
+                "extractIndicatorTypesIDs": []
+            }
+        }
+    },
+    "fromVersion": "6.5.0"
+}

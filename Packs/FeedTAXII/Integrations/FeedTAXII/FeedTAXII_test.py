@@ -1,5 +1,6 @@
 import json
 import pytest
+import demistomock as demisto
 
 from FeedTAXII import TAXIIClient, fetch_indicators_command, Taxii11
 
@@ -245,3 +246,45 @@ def test_decoding_url():
     indicator = URIObject.decode(props)[0]
     assert indicator.get("indicator") == "www.a.com"
     assert indicator.get("type") == "Domain"
+
+
+def test_poll_collection_uses_safe_xml_parser_settings(mocker):
+    """
+    Given:
+        - A TAXIIClient that polls a collection.
+    When:
+        - The _poll_collection method invokes etree.iterparse.
+    Then:
+        - Verify that safe XML parser settings are used:
+          resolve_entities=False, load_dtd=False, no_network=True.
+    """
+    from datetime import datetime, UTC
+
+    mock_iterparse = mocker.patch("FeedTAXII.etree.iterparse", return_value=iter([]))
+    mocker.patch.object(demisto, "getLastRun", return_value={})
+
+    mock_response = mocker.MagicMock()
+    mock_response.raw = mocker.MagicMock()
+    mock_response.raw.decode_content = True
+
+    client = TAXIIClient(
+        poll_service="https://test.com/poll",
+        collection="test_collection",
+        credentials={"identifier": "user", "password": "pass"},
+        cert_text=None,
+        key_text=None,
+        insecure=True,
+    )
+    mocker.patch.object(client, "_send_request", return_value=mock_response)
+
+    begin = datetime(2024, 1, 1, tzinfo=UTC)
+    end = datetime(2024, 1, 2, tzinfo=UTC)
+
+    # _poll_collection is a generator; exhaust it to trigger iterparse call
+    list(client._poll_collection("https://test.com/poll", begin, end))
+
+    mock_iterparse.assert_called_once()
+    call_kwargs = mock_iterparse.call_args.kwargs
+    assert call_kwargs.get("resolve_entities") is False, "resolve_entities should be False"
+    assert call_kwargs.get("load_dtd") is False, "load_dtd should be False"
+    assert call_kwargs.get("no_network") is True, "no_network should be True"

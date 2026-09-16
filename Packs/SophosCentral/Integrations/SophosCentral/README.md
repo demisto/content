@@ -2650,7 +2650,7 @@ Returns the details of the GroupID specified.
 | SophosCentral.UserGroups.description | String | Group description. |
 | SophosCentral.UserGroups.groups.total | Number | Count of total groups. |
 | SophosCentral.UserGroups.groups.itemsCount | Number | Count of items. |
-| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory |
+| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Entra ID have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory |
 | SophosCentral.UserGroups.usersTotal | Number | Total count of users. |
 | SophosCentral.UserGroups.usersItemsCount | Number | Count of items. |
 | SophosCentral.UserGroups.users.id | String | User ID. |
@@ -2746,7 +2746,7 @@ Creates a new “custom” (Centrally Managed) Group
 | SophosCentral.UserGroups.description | String | Group description. |
 | SophosCentral.UserGroups.groups.total | Number | Total count of groups. |
 | SophosCentral.UserGroups.groups.itemsCount | Number | Count of items. |
-| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory |
+| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Entra ID have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory |
 | SophosCentral.UserGroups.usersTotal | Number | Total count of users. |
 | SophosCentral.UserGroups.usersItemsCount | Number | Count of items. |
 | SophosCentral.UserGroups.users.id | String | User ID. |
@@ -2819,7 +2819,7 @@ Allows for the editing of the group name and description for a usergroup.
 | SophosCentral.UserGroups.description | String | Group description. |
 | SophosCentral.UserGroups.groups.total | Number | Total count of groups. |
 | SophosCentral.UserGroups.groups.itemsCount | Number | Count of items. |
-| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory |
+| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Entra ID have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory |
 | SophosCentral.UserGroups.usersTotal | Number | Total count of users. |
 | SophosCentral.UserGroups.usersItemsCount | Number | Count of items. |
 | SophosCentral.UserGroups.users.id | String | User ID. |
@@ -2936,7 +2936,7 @@ Returns a list of all user groups that match the search criteria (optional).
 | search | Search for items that match the given terms. | Optional |
 | searchFields | Search only within the allowed comma-separated field values. When not specified, the default behavior is to search group by names only. The following are Group fields values allowed to be searched:- name,description. | Optional |
 | domain | List the items that match the given domain. | Optional |
-| sourceType | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed:- custom, activeDirectory, azureActiveDirectory. Possible values are: custom, activeDirectory, azureActiveDirectory. | Optional |
+| sourceType | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Entra ID have the source type activeDirectory or azureActiveDirectory. The following values are allowed:- custom, activeDirectory, azureActiveDirectory. Possible values are: custom, activeDirectory, azureActiveDirectory. | Optional |
 | userId | Search groups associated with the given user ID. | Optional |
 | page | The page number to fetch. Default is "1". Default is 1. | Optional |
 | pageSize | Size of the page requested. Default is "50". Maximum is "100". Default is 50. | Optional |
@@ -2951,7 +2951,7 @@ Returns a list of all user groups that match the search criteria (optional).
 | SophosCentral.UserGroups.description | String | Group description. |
 | SophosCentral.UserGroups.groups.total | Number | Total Count of groups. |
 | SophosCentral.UserGroups.groups.itemsCount | Number | Count of items. |
-| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Azure Active Directory have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory |
+| SophosCentral.UserGroups.source.type | String | Types of sources of directory information. All users and groups created using this API have the source type custom. All users and groups synced from Active Directory or Entra ID have the source type activeDirectory or azureActiveDirectory. The following values are allowed: custom, activeDirectory, azureActiveDirectory |
 | SophosCentral.UserGroups.usersTotal | Number | Total count of users. |
 | SophosCentral.UserGroups.usersItemsCount | Number | Count of items. |
 | SophosCentral.UserGroups.users.id | String | User ID. |

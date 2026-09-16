@@ -49,6 +49,7 @@ Fetch & triage Recorded Future Classic and Playbook alerts.
 | **rf-alert-update** | Update alert status, assignee, comment/note, or reopen strategy.              |
 | **rf-alert-rules**  | Search for alert rule IDs by (partial) rule name.                             |
 | **rf-alert-images** | Retrieve the latest screenshots for an alert and attach them to the incident. |
+| **rf-alert-lookup** | Look up a single Recorded Future alert by ID.                                 |
 
 Full parameter, example, and context details are available in
 the [integration README](https://xsoar.pan.dev/docs/reference/integrations/recorded-future-alerts).

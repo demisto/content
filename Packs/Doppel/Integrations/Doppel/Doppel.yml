@@ -1,5 +1,6 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+provider: Doppel
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -13,12 +14,43 @@ configuration:
   required: true
   type: 0
   section: Connect
-- additionalinfo: The API Key to use for connection with Doppel.
+- additionalinfo: 'The Doppel API version to use. V1 authenticates with a static API Key; V2 authenticates with OAuth 2.0 client credentials (Client ID and Client Secret). New Doppel API capabilities are added to V2 only, so V2 is recommended.'
+  defaultvalue: V1 (API Key)
+  display: API Version
+  name: api_version
+  required: true
+  type: 15
+  options:
+  - V1 (API Key)
+  - V2 (OAuth 2.0 Client Credentials)
+  section: Connect
+- additionalinfo: The API Key to use for connection with Doppel. Required when API Version is V1.
   display: ""
-  displaypassword: API Key
+  displaypassword: API Key (V1)
   hiddenusername: true
   name: credentials
-  required: true
+  required: false
+  type: 9
+  section: Connect
+- additionalinfo: The User API Key (Optional) to use for connection with Doppel. Applies to API Version V1 only.
+  display: ""
+  displaypassword: User API Key (V1)
+  hiddenusername: true
+  name: user_credentials
+  required: false
+  type: 9
+  section: Connect
+- display: Organization Code (V1)
+  name: organization_code
+  required: false
+  type: 0
+  section: Connect
+  additionalinfo: The Organization Code to use for connection with Doppel. Applies to API Version V1 only; V2 scopes requests to your organization automatically.
+- additionalinfo: 'The OAuth 2.0 client credentials to use for connection with Doppel. Required when API Version is V2. An organization admin can create these from the Version 2 tab on the API Settings page in Doppel Vision.'
+  display: Client ID (V2)
+  displaypassword: Client Secret (V2)
+  name: client_credentials
+  required: false
   type: 9
   section: Connect
 - display: Fetch incidents
@@ -26,31 +58,43 @@ configuration:
   required: false
   type: 8
   section: Collect
-- additionalinfo: The interval specifies the cadence with which the Doppel alerts be fetched.
-  defaultvalue: "1"
-  display: Incidents Fetch Interval
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: true
   type: 19
   section: Connect
+  additionalinfo: The interval specifies the cadence with which the Doppel alerts be fetched.
+  defaultvalue: "1"
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   required: false
   type: 13
   section: Connect
-- additionalinfo: 'Choose the direction to mirror the incident: None (No mirroring), Incoming (from Doppel to Cortex XSOAR), Outgoing (from Cortex XSOAR to Doppel), Incoming and Outgoing (from/to Cortex XSOAR and Doppel).'
+  supportedModules:
+  - agentix
+  - xsiam
+- additionalinfo: 'Choose the direction to mirror the incident: None (No mirroring), Incoming (from Doppel to Cortex XSOAR), Outgoing (from Cortex XSOAR to Doppel), Incoming and Outgoing (from/to Cortex XSOAR and Doppel). Cortex XSOAR only parameter.'
   display: Mirror Direction
   name: mirror_direction
+  required: false
+  type: 15
+  section: Collect
   options:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
   - None
-  required: false
-  type: 15
-  section: Collect
+  hidden:
+  - marketplacev2
+  - platform
 - additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
-  defaultvalue: 1 day
+  defaultvalue: "1 day"
   display: First fetch
   name: first_fetch
   required: false
@@ -63,23 +107,55 @@ configuration:
   required: false
   type: 0
   section: Collect
-- additionalinfo: Due to API limitations, the maximum is 100.
-  defaultvalue: "10"
-  display: Number of incidents for each fetch.
+- display: Number of incidents for each fetch.
   name: max_fetch
-  required: false
   type: 0
+  required: false
   section: Collect
+  additionalinfo: Due to API limitations, the maximum is 100.
+  defaultvalue: "10"
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  required: false
   section: Connect
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   required: false
+triggers:
+- conditions:
+  - name: api_version
+    operator: equal
+    value: V1 (API Key)
+  effects:
+  - name: credentials
+    action:
+      required: true
+  - name: client_credentials
+    action:
+      hidden: true
+- conditions:
+  - name: api_version
+    operator: equal
+    value: V2 (OAuth 2.0 Client Credentials)
+  effects:
+  - name: credentials
+    action:
+      hidden: true
+  - name: user_credentials
+    action:
+      hidden: true
+  - name: organization_code
+    action:
+      hidden: true
+  - name: client_credentials
+    action:
+      required: true
 description: |-
   Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively.
   The Cortex XSOAR pack for Doppel mirrors the alerts created by Doppel as Cortex XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.
@@ -290,12 +366,16 @@ script:
       - mobile_apps
       - ecommerce
       - crypto
-      - emails
-      - paid_adds
+      - email
+      - paid_ads
+      - telco
+      - darkweb
     - description: Filter alerts created before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'.
       name: created_before
     - description: Filter alerts created after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'.
       name: created_after
+    - description: The filter for alerts whose last activity (creation or any update) occurred at or after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'.
+      name: last_activity_timestamp
     - auto: PREDEFINED
       description: The field to sort the reports by.
       defaultValue: date_sourced
@@ -313,6 +393,8 @@ script:
     - description: Page number for pagination.
       defaultValue: '0'
       name: page
+    - description: The number of alerts to return per page. The maximum supported by the Doppel API is 200.
+      name: page_size
     - description: List of tags to filter alerts.
       isArray: true
       name: tags
@@ -423,7 +505,6 @@ script:
       required: false
       secret: false
     description: Get the list of incidents that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
-    execution: false
     name: get-modified-remote-data
   - arguments:
     - default: false
@@ -440,9 +521,8 @@ script:
       required: false
       secret: false
     description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
-    execution: false
     name: get-remote-data
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.13.10404775
   script: '-'
   type: python
   subtype: python3

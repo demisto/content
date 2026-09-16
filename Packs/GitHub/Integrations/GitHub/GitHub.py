@@ -60,6 +60,46 @@ DEFAULT_PAGE_NUMBER = 1
 """ HELPER FUNCTIONS """
 
 
+def github_delete_file_command():
+    args = demisto.args()
+    commit_message = args.get("commit_message")
+    path_to_file = args.get("path_to_file")
+    branch = args.get("branch_name")
+
+    # 1. Get the file's current SHA
+    # Endpoint: GET /repos/{owner}/{repo}/contents/{path}
+    get_url = f"{FILE_SUFFIX}/{path_to_file}"
+    try:
+        response = http_request("GET", get_url)
+        file_sha = response.get("sha")
+    except Exception as e:
+        # Handle file not found (404) or other API errors
+        raise DemistoException(f"Could not retrieve file SHA for deletion: {e}")
+
+    # 2. Build the DELETE request body
+    delete_body = {"message": commit_message, "sha": file_sha, "branch": branch}
+
+    # 3. Delete the file by sending a DELETE request with the commit info
+    # Endpoint: DELETE /repos/{owner}/{repo}/contents/{path}
+    try:
+        delete_url = f"{FILE_SUFFIX}/{path_to_file}"
+        response = http_request("DELETE", delete_url, data=delete_body)
+
+        # Format the command result for XSOAR
+        hr_output = f"Successfully deleted file **{path_to_file}** from branch **{branch}**."
+        return_results(
+            CommandResults(
+                readable_output=hr_output,
+                outputs_prefix="GitHub.File",
+                outputs_key_field="path",
+                outputs={"path": path_to_file, "sha": response.get("commit", {}).get("sha"), "deleted": True},
+            )
+        )
+
+    except Exception as e:
+        raise DemistoException(f"Failed to delete file on GitHub: {e}")
+
+
 def create_jwt(private_key: str, integration_id: str):
     """
     Create a JWT token used for getting access token. It's needed for github bots.
@@ -130,36 +170,47 @@ def http_request(method, url_suffix, params=None, data=None, headers=None, is_ra
         headers=headers or HEADERS,
     )
     if res.status_code >= 400:
+        demisto.debug(f"GitHub API error response [{res.status_code} {res.reason}] for {method} {url_suffix}: {res.text}")
         try:
             json_res = res.json()
             # add message from GitHub if available
             err_msg = json_res.get("message", "")
             if err_msg and "documentation_url" in json_res:
                 err_msg += f' see: {json_res["documentation_url"]}'
-            if json_res.get("errors") is None:
+            errors = json_res.get("errors")
+            if errors is None:
                 err_msg = f"Error in API call to the GitHub Integration [{res.status_code}] {res.reason}. {err_msg}"
-            else:
-                error_code = json_res.get("errors")[0].get("code")
-                if error_code == "missing_field":
-                    err_msg = f'Error: the field: "{json_res.get("errors")[0].get("field")}" requires a value. {err_msg}'
-                elif error_code == "invalid":
-                    field = json_res.get("errors")[0].get("field")
-                    if field == "q":
-                        err_msg = f'Error: invalid query - {json_res.get("errors")[0].get("message")}. {err_msg}'
-                    else:
-                        err_msg = f'Error: the field: "{field}" has an invalid value. {err_msg}'
-
-                elif error_code == "missing":
-                    err_msg = f"Error: {json_res.get('errors')[0].get('resource')} does not exist. {err_msg}"
-
-                elif error_code == "already_exists":
-                    err_msg = f"Error: the field {json_res.get('errors')[0].get('field')} must be unique. {err_msg}"
-
+            elif isinstance(errors, list) and errors:
+                first_error = errors[0]
+                if isinstance(first_error, str):
+                    # validation-error-simple: errors is list[str]
+                    err_msg = f"Error: {', '.join(str(e) for e in errors)}. {err_msg}"
                 else:
-                    err_msg = f"Error in API call to the GitHub Integration [{res.status_code}] - {res.reason}. {err_msg}"
+                    match first_error:
+                        case {"code": "missing_field", "field": field}:
+                            err_msg = f'Error: the field: "{field}" requires a value. {err_msg}'
+
+                        case {"code": "invalid", "field": "q", "message": message}:
+                            err_msg = f"Error: invalid query - {message}. {err_msg}"
+
+                        case {"code": "invalid", "field": field}:
+                            err_msg = f'Error: the field: "{field}" has an invalid value. {err_msg}'
+
+                        case {"code": "missing", "resource": resource}:
+                            err_msg = f"Error: {resource} does not exist. {err_msg}"
+
+                        case {"code": "already_exists", "field": field}:
+                            err_msg = f"Error: the field {field} must be unique. {err_msg}"
+
+                        case _:
+                            err_msg = f"Error in API call to the GitHub Integration [{res.status_code}] - {res.reason}. {err_msg}"
+            else:
+                # errors is None-like, empty list, or unexpected type
+                err_msg = f"Error in API call to the GitHub Integration [{res.status_code}] - {res.reason}. {err_msg}"
             raise DemistoException(err_msg)
 
-        except ValueError:
+        except ValueError as exc:
+            demisto.debug(f"Failed to parse GitHub error response as JSON: {exc!r}")
             raise DemistoException(f"Error in API call to GitHub Integration [{res.status_code}] - {res.reason}")
 
     try:
@@ -1553,8 +1604,16 @@ def list_files_command():
 
     res = http_request(method="GET", url_suffix=suffix, params=params)
 
+    # We may get either a list of dicts or a single dict as a result from the API call above
+    # Modify object type to allow iteration below to work.
+    if isinstance(res, dict):
+        results = []
+        results.append(res)
+    else:
+        results = res
+
     ec_object = []
-    for file in res:
+    for file in results:
         ec_object.append(
             {
                 "Type": file.get("type"),
@@ -1967,7 +2026,8 @@ def github_trigger_workflow_command():
             inputs (str): The inputs of the workflow.
 
         Returns:
-            CommandResults object with informative printout if trigger the workflow succeeded or not.
+            CommandResults with the workflow run details when the API returns a JSON body,
+            or a plain success message when the API returns 204 No Content.
     """
     args = demisto.args()
     owner = args.get("owner") or USER
@@ -1980,13 +2040,73 @@ def github_trigger_workflow_command():
     headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github.v3+json"}
     data = assign_params(ref=branch, inputs=inputs)
     response = http_request("POST", url_suffix=suffix, headers=headers, data=data)
-
-    if response.status_code == 204:
-        return_results(CommandResults(readable_output="Workflow triggered successfully."))
-    else:
+    # http_request returns a dict for 200 (JSON body) and a Response object for 204 No Content.
+    if isinstance(response, dict):
+        outputs = {
+            "ID": response.get("workflow_run_id") or response.get("id"),
+            "RunUrl": response.get("run_url") or response.get("url"),
+            "HtmlUrl": response.get("html_url"),
+        }
         return_results(
-            CommandResults(raw_response=response, readable_output=f"Failed to trigger workflow. {response.json().get('message')}")
+            CommandResults(
+                outputs_prefix="GitHub.WorkflowRun",
+                outputs_key_field="ID",
+                outputs=outputs,
+                raw_response=response,
+                readable_output=tableToMarkdown("Triggered Workflow Run", outputs, removeNull=True),
+            )
         )
+    else:
+        return_results(CommandResults(readable_output="Workflow triggered successfully."))
+
+
+def github_get_workflow_run_command():
+    """Gets a specific workflow run (dispatched event) in a repository.
+
+    Args:
+        owner (str): The GitHub owner (organization or username) of the repository.
+        repository (str): The GitHub repository name.
+        run_id (str): The unique identifier of the workflow run.
+
+    Returns:
+        CommandResults with the workflow run details.
+    """
+    args = demisto.args()
+    owner = args.get("owner") or USER
+    repository = args.get("repository") or REPOSITORY
+    run_id = args.get("run_id")
+
+    suffix = f"/repos/{owner}/{repository}/actions/runs/{run_id}"
+    headers = {"Authorization": f"Bearer {TOKEN}", "Accept": "application/vnd.github.v3+json"}
+
+    response = http_request("GET", url_suffix=suffix, headers=headers)
+
+    output = {
+        "ID": response.get("id"),
+        "Name": response.get("name"),
+        "HeadBranch": response.get("head_branch"),
+        "HeadSha": response.get("head_sha"),
+        "DisplayTitle": response.get("display_title"),
+        "RunNumber": response.get("run_number"),
+        "Event": response.get("event"),
+        "Status": response.get("status"),
+        "Conclusion": response.get("conclusion"),
+        "WorkflowID": response.get("workflow_id"),
+        "CreatedAt": response.get("created_at"),
+        "UpdatedAt": response.get("updated_at"),
+        "Url": response.get("url"),
+        "HtmlUrl": response.get("html_url"),
+    }
+
+    return_results(
+        CommandResults(
+            outputs_prefix="GitHub.WorkflowRun",
+            outputs_key_field="ID",
+            outputs=output,
+            raw_response=response,
+            readable_output=tableToMarkdown(f"Workflow Run {run_id}", output, removeNull=True),
+        )
+    )
 
 
 def github_cancel_workflow_command():
@@ -2075,11 +2195,166 @@ def github_list_workflows_command():
     )
 
 
+VALID_CREDENTIAL_PREFIXES = ("ghp_", "github_pat_", "gho_", "ghu_", "ghr_")
+
+
+def github_revoke_credentials_command() -> None:
+    """Revoke exposed GitHub credentials (tokens) via the GitHub credential revocation API.
+
+    This endpoint is unauthenticated by design -- sending an Authorization header returns 403.
+    Accepts up to 1000 tokens per request. Rate-limited to 60 unauthenticated requests/hour.
+    """
+    credentials: list[str] = argToList(demisto.args().get("credentials"))
+    if not credentials:
+        raise DemistoException("The 'credentials' argument is required and must contain at least one token.")
+
+    if len(credentials) > 1000:
+        raise DemistoException(f"The GitHub API accepts a maximum of 1000 credentials per request. Received {len(credentials)}.")
+
+    invalid = [c for c in credentials if not c.startswith(VALID_CREDENTIAL_PREFIXES)]
+    if invalid:
+        raise DemistoException(
+            f"{len(invalid)} credential(s) have invalid prefixes. " f"Supported prefixes: {', '.join(VALID_CREDENTIAL_PREFIXES)}"
+        )
+
+    headers = {"Accept": "application/vnd.github+json"}
+    response = http_request("POST", "/credentials/revoke", data={"credentials": credentials}, headers=headers)
+
+    if response.status_code == 202:
+        return_results(
+            CommandResults(
+                readable_output=f"Successfully submitted {len(credentials)} credential(s) for revocation.",
+            )
+        )
+    else:
+        raise DemistoException(
+            f"Unexpected response from GitHub credential revocation API: [{response.status_code}] {response.reason}"
+        )
+
+
+def github_list_organization_repositories_command() -> None:
+    args = demisto.args()
+    organization = args.get("organization") or USER
+    repo_type = args.get("type", "all")
+    page = arg_to_number(args.get("page")) or DEFAULT_PAGE_NUMBER
+    per_page = arg_to_number(args.get("per_page")) or DEFAULT_PAGE_SIZE
+
+    url_suffix = f"/orgs/{organization}/repos"
+    params: dict[str, Any] = {"type": repo_type, "per_page": per_page, "page": page}
+    results = http_request(method="GET", url_suffix=url_suffix, params=params)
+
+    return_results(
+        CommandResults(
+            outputs_prefix="GitHub.Repository",
+            outputs_key_field="id",
+            outputs=results,
+            readable_output=tableToMarkdown(
+                "Organization Repositories",
+                results,
+                headers=["id", "name", "full_name", "private", "default_branch", "updated_at"],
+                removeNull=True,
+            ),
+        )
+    )
+
+
+def github_list_actions_caches_command() -> None:
+    args = demisto.args()
+    owner = args.get("owner") or USER
+    repository = args.get("repository") or REPOSITORY
+    page = arg_to_number(args.get("page")) or DEFAULT_PAGE_NUMBER
+    per_page = arg_to_number(args.get("per_page")) or DEFAULT_PAGE_SIZE
+    ref = args.get("ref")
+    key = args.get("key")
+    sort = args.get("sort")
+    direction = args.get("direction")
+
+    url_suffix = f"/repos/{owner}/{repository}/actions/caches"
+    params: dict[str, Any] = {"per_page": per_page, "page": page}
+    if ref:
+        params["ref"] = ref
+    if key:
+        params["key"] = key
+    if sort:
+        params["sort"] = sort
+    if direction:
+        params["direction"] = direction
+
+    response = http_request(method="GET", url_suffix=url_suffix, params=params)
+    caches = response.get("actions_caches", [])
+
+    return_results(
+        CommandResults(
+            outputs_prefix="GitHub.ActionsCache",
+            outputs_key_field="id",
+            outputs=caches,
+            readable_output=tableToMarkdown(
+                f"Actions Caches for {owner}/{repository}",
+                caches,
+                headers=["id", "key", "ref", "size_in_bytes", "last_accessed_at", "created_at"],
+                removeNull=True,
+            ),
+        )
+    )
+
+
+def github_delete_actions_cache_command() -> None:
+    args = demisto.args()
+    owner = args.get("owner") or USER
+    repository = args.get("repository") or REPOSITORY
+    cache_id = args.get("cache_id")
+    url_suffix = f"/repos/{owner}/{repository}/actions/caches/{cache_id}"
+    http_request("DELETE", url_suffix=url_suffix)
+    return_results(f"Actions cache {cache_id} in {owner}/{repository} was deleted successfully.")
+
+
+def github_list_actions_artifacts_command() -> None:
+    args = demisto.args()
+    owner = args.get("owner") or USER
+    repository = args.get("repository") or REPOSITORY
+    page = arg_to_number(args.get("page")) or DEFAULT_PAGE_NUMBER
+    per_page = arg_to_number(args.get("per_page")) or DEFAULT_PAGE_SIZE
+    name = args.get("name")
+
+    url_suffix = f"/repos/{owner}/{repository}/actions/artifacts"
+    params: dict[str, Any] = {"per_page": per_page, "page": page}
+    if name:
+        params["name"] = name
+
+    response = http_request(method="GET", url_suffix=url_suffix, params=params)
+    artifacts = response.get("artifacts", [])
+
+    return_results(
+        CommandResults(
+            outputs_prefix="GitHub.ActionsArtifact",
+            outputs_key_field="id",
+            outputs=artifacts,
+            readable_output=tableToMarkdown(
+                f"Actions Artifacts for {owner}/{repository}",
+                artifacts,
+                headers=["id", "name", "size_in_bytes", "expired", "created_at", "expires_at"],
+                removeNull=True,
+            ),
+        )
+    )
+
+
+def github_delete_actions_artifact_command() -> None:
+    args = demisto.args()
+    owner = args.get("owner") or USER
+    repository = args.get("repository") or REPOSITORY
+    artifact_id = args.get("artifact_id")
+    url_suffix = f"/repos/{owner}/{repository}/actions/artifacts/{artifact_id}"
+    http_request("DELETE", url_suffix=url_suffix)
+    return_results(f"Actions artifact {artifact_id} in {owner}/{repository} was deleted successfully.")
+
+
 """ COMMANDS MANAGER / SWITCH PANEL """
 
 COMMANDS = {
     "test-module": test_module,
     "fetch-incidents": fetch_incidents_command,
+    # Deprecated commands (kept for backward compatibility)
     "GitHub-create-issue": create_command,
     "GitHub-close-issue": close_command,
     "GitHub-update-issue": update_command,
@@ -2124,6 +2399,60 @@ COMMANDS = {
     "GitHub-trigger-workflow": github_trigger_workflow_command,
     "GitHub-cancel-workflow": github_cancel_workflow_command,
     "GitHub-list-workflows": github_list_workflows_command,
+    "GitHub-delete-file": github_delete_file_command,
+    # New lowercase kebab-case commands (canonical names)
+    "github-create-issue": create_command,
+    "github-close-issue": close_command,
+    "github-update-issue": update_command,
+    "github-list-all-issues": list_all_command,
+    "github-list-all-projects": list_all_projects_command,
+    "github-search-issues": search_command,
+    "github-get-download-count": get_download_count,
+    "github-get-stale-prs": get_stale_prs_command,
+    "github-get-branch": get_branch_command,
+    "github-create-branch": create_branch_command,
+    "github-get-team-membership": get_team_membership_command,
+    "github-request-review": request_review_command,
+    "github-create-comment": create_comment_command,
+    "github-list-issue-comments": list_issue_comments_command,
+    "github-list-pr-files": list_pr_files_command,
+    "github-list-pr-reviews": list_pr_reviews_command,
+    "github-get-commit": get_commit_command,
+    "github-add-label": add_label_command,
+    "github-get-pull-request": get_pull_request_command,
+    "github-list-teams": list_teams_command,
+    "github-delete-branch": delete_branch_command,
+    "github-list-pr-review-comments": list_pr_review_comments_command,
+    "github-update-pull-request": update_pull_request_command,
+    "github-is-pr-merged": is_pr_merged_command,
+    "github-create-pull-request": create_pull_request_command,
+    "github-get-github-actions-usage": get_github_actions_usage,
+    "github-list-files": list_files_command,
+    "github-get-file-content": get_file_content_from_repo,
+    "github-search-code": search_code_command,
+    "github-list-team-members": list_team_members_command,
+    "github-list-branch-pull-requests": list_branch_pull_requests_command,
+    "github-get-check-run": get_github_get_check_run,
+    "github-commit-file": commit_file_command,
+    "github-create-release": create_release_command,
+    "github-list-issue-events": get_issue_events_command,
+    "github-add-issue-to-project-board": add_issue_to_project_board_command,
+    "github-get-path-data": get_path_data,
+    "github-releases-list": github_releases_list_command,
+    "github-update-comment": github_update_comment_command,
+    "github-delete-comment": github_delete_comment_command,
+    "github-add-assignee": github_add_assignee_command,
+    "github-trigger-workflow": github_trigger_workflow_command,
+    "github-cancel-workflow": github_cancel_workflow_command,
+    "github-list-workflows": github_list_workflows_command,
+    "github-get-workflow-run": github_get_workflow_run_command,
+    "github-delete-file": github_delete_file_command,
+    "github-revoke-credentials": github_revoke_credentials_command,
+    "github-list-organization-repositories": github_list_organization_repositories_command,
+    "github-list-actions-caches": github_list_actions_caches_command,
+    "github-delete-actions-cache": github_delete_actions_cache_command,
+    "github-list-actions-artifacts": github_list_actions_artifacts_command,
+    "github-delete-actions-artifact": github_delete_actions_artifact_command,
 }
 
 
@@ -2186,8 +2515,9 @@ def main():
     try:
         if cmd in COMMANDS:
             COMMANDS[cmd]()
-    except Exception as e:
-        return_error(str(e))
+    except Exception as err:
+        demisto.error(traceback.format_exc())
+        return_error(f"Failed to execute {cmd} command.\nError:\n{str(err)}")
 
 
 # python2 uses __builtin__ python3 uses builtins

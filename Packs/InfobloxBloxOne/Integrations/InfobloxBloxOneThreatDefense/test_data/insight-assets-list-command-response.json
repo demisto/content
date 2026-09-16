@@ -1,0 +1,24 @@
+{
+    "assets": [
+        {
+            "count": 5,
+            "qip": "0.0.0.0",
+            "threatLevelMax": 8,
+            "location": "New York, USA",
+            "threatIndicatorDistinctCount": 3,
+            "timeMax": "2023-01-05T10:30:00Z",
+            "timeMin": "2023-01-01T08:15:00Z",
+            "mostRecentAction": "Blocked"
+        },
+        {
+            "count": 2,
+            "qip": "0.0.0.1",
+            "threatLevelMax": 6,
+            "location": "London, UK",
+            "threatIndicatorDistinctCount": 1,
+            "timeMax": "2023-01-04T15:45:00Z",
+            "timeMin": "2023-01-04T15:30:00Z",
+            "mostRecentAction": "Blocked"
+        }
+    ]
+}

@@ -1,8 +1,7 @@
 id: Cisco FirePower- Append network group object
 version: -1
 name: Cisco FirePower- Append network group object
-description: This playbook will append a network group object with new elements 
-  (IPs or network objects).
+description: This playbook will append a network group object with new elements (IPs or network objects).
 starttaskid: "0"
 tasks:
   "0":
@@ -103,8 +102,7 @@ tasks:
       id: a4f08c04-264a-4584-8a71-609478c9df9b
       version: -1
       name: Cisco FirePower - Get Objects' details
-      description: Retrieves the groups of network objects and addresses associated
-        with the specified ID. If not supplied, retrieves a list of all network objects.
+      description: Retrieves the groups of network objects and addresses associated with the specified ID. If not supplied, retrieves a list of all network objects.
       script: Cisco Firepower|||ciscofp-get-network-groups-object
       type: regular
       iscommand: true
@@ -139,8 +137,7 @@ tasks:
       id: 8d06a82a-99f5-4d2b-851b-a0c299da87e5
       version: -1
       name: IP From Input
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script does nothing.
+      description: Set a value in context under the key you entered. If no value is entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -187,8 +184,7 @@ tasks:
       id: a102ad54-aa37-4f62-831e-e577c17fee01
       version: -1
       name: Objects From Input
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script does nothing.
+      description: Set a value in context under the key you entered. If no value is entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -235,8 +231,7 @@ tasks:
       id: 0973a580-8da1-4a97-804a-6e3c8193dead
       version: -1
       name: IP From the Group
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script does nothing.
+      description: Set a value in context under the key you entered. If no value is entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -280,8 +275,7 @@ tasks:
       id: 1312d2d6-0dd3-4bec-81af-a69ae7770a96
       version: -1
       name: Objects From the Group
-      description: Set a value in context under the key you entered. If no value is
-        entered, the script does nothing.
+      description: Set a value in context under the key you entered. If no value is entered, the script does nothing.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -352,8 +346,7 @@ tasks:
       id: eaebb59f-41ff-4356-8846-a3f5ff882a51
       version: -1
       name: Is Cisco FirePower Integration Enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -402,8 +395,7 @@ inputs:
 - key: ID
   value: {}
   required: true
-  description: "The ID of the network group object that you would like to append.\
-    \ This information can be retrieved using -  \n!ciscofp-get-network-groups-object"
+  description: "The ID of the network group object that you would like to append. This information can be retrieved using -  \n!ciscofp-get-network-groups-object"
   playbookInputQuery:
 - key: Name
   value: {}

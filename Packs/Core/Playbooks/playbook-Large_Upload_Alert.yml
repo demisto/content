@@ -328,13 +328,11 @@ tasks:
                 - operator: RegexGroups
                   args:
                     flags: {}
-                    groups:
-                      value:
-                        simple: "1"
+                    groups: {}
                     keys: {}
                     regex:
                       value:
-                        simple: uploaded\s(.*(MB|GB|TB))
+                        simple: uploaded\s(?:\d+(?:[.]\d+)?(MB|GB|TB))\b
             iscontext: true
           right:
             value:
@@ -350,13 +348,11 @@ tasks:
                 - operator: RegexGroups
                   args:
                     flags: {}
-                    groups:
-                      value:
-                        simple: "1"
+                    groups: {}
                     keys: {}
                     regex:
                       value:
-                        simple: uploaded\s(.*(MB|GB|TB))
+                        simple: uploaded\s(?:\d+(?:[.]\d+)?(MB|GB|TB))\b
             iscontext: true
           right:
             value:
@@ -3918,8 +3914,8 @@ inputs:
   description: |-
     Determine whether the given indicators be automatically blocked, or if the user should be given the option to choose.
     Possible values:True/False. Default: True.
-    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
-    If set to True - the user will be prompted to select which indicators to block.
+    If set to True - no prompt will appear, and all provided indicators will be blocked automatically.
+    If set to False - the user will be prompted to select which indicators to block.
   playbookInputQuery:
 - key: BlockIndicators_UserVerification
   value:
@@ -3976,7 +3972,9 @@ marketplaces:
 
 
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
+- agentix
+- cloud
+- cloud_posture
+- cloud_runtime_security
+- edr
+- xsiam

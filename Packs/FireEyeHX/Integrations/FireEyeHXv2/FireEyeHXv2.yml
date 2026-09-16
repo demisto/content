@@ -1,4 +1,8 @@
 category: Endpoint
+provider: Trellix
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: FireEyeHX v2
   version: -1
@@ -33,17 +37,26 @@ configuration:
   type: 8
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13
   section: Connect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: '50'
   display: Fetch limit
   name: max_fetch
   type: 0
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 3 days)
   name: first_fetch
@@ -56,6 +69,9 @@ configuration:
   type: 19
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 description: FireEye Endpoint Security is an integrated solution that detects and protects endpoints against known and unknown threats. This integration provides access to information about endpoints, acquisitions, alerts, indicators, and containment. You can extract critical data and effectively operate the security operations automated playbook.
 display: FireEye Endpoint Security (HX) v2
 name: FireEyeHX v2
@@ -1799,11 +1815,95 @@ script:
     - contextPath: FireEyeHX.HostSets.deleted
       description: Was the host set deleted.
       type: Boolean
+  - name: fireeye-hx-triage-acquisition-package-get
+    description: Gets the triage acquisition package for the given acquisition ID.
+    arguments:
+    - name: acquisitionId
+      description: The acquisition ID.
+      required: true
+    outputs:
+    - contextPath: FireEyeHX.Acquisitions.Triage._id
+      description: The triage ID.
+      type: String
+    - contextPath: FireEyeHX.Acquisitions.Triage.state
+      description: The acquisition state.
+      type: String
+    - contextPath: FireEyeHX.Acquisitions.Triage.host._id
+      description: The host ID.
+      type: String
+    - contextPath: FireEyeHX.Acquisitions.Triage.host.hostname
+      description: The hostname.
+      type: String
+  - name: fireeye-hx-triage-acquisition-get
+    description: Gets information about a specified triage acquisition.
+    arguments:
+    - name: acquisitionId
+      required: true
+      description: The acquisition ID.
+    outputs:
+    - contextPath: FireEyeHX.Acquisitions.Triage._id
+      description: The triage ID.
+      type: String
+    - contextPath: FireEyeHX.Acquisitions.Triage.state
+      description: The acquisition state.
+      type: String
+    - contextPath: FireEyeHX.Acquisitions.Triage.host._id
+      description: The host ID.
+      type: String
+    - contextPath: FireEyeHX.Acquisitions.Triage.host.hostname
+      description: The hostname.
+      type: String
+  - name: fireeye-hx-triage-acquisition-delete
+    description: Deletes a triage acquisition.
+    arguments:
+    - name: acquisitionId
+      required: true
+      description: The acquisition ID.
+  - name: fireeye-hx-triage-acquisition-start
+    arguments:
+    - name: hostName
+      description: The host name. If the host name is not specified, the agent ID must be specified.
+    - name: agentId
+      description: The agent ID. If the agent ID is not specified, the host name must be specified.
+    outputs:
+    - contextPath: FireEyeHX.Acquisitions.Triage._id
+      description: The triage ID.
+      type: String
+    - contextPath: FireEyeHX.Acquisitions.Triage.state
+      description: The acquisition state.
+      type: String
+    - contextPath: FireEyeHX.Acquisitions.Triage.host._id
+      description: The host ID.
+      type: String
+    - contextPath: FireEyeHX.Acquisitions.Triage.host.hostname
+      description: The hostname.
+      type: String
+    description: Starts a triage acquisition
+  - name: fireeye-hx-host-acquisitions-list
+    description: Gets all acquisitions for a host
+    arguments:
+    - name: hostName
+      description: The host name. If the host name is not specified, the agent ID must be specified.
+    - name: agentId
+      description: The agent ID. If the agent ID is not specified, the host name must be specified.
+    outputs:
+    - contextPath: FireEyeHX.Host.Acquisitions.All._id
+      description: The acquisition ID.
+      type: String
+    - contextPath: FireEyeHX.Host.Acquisitions.All.state
+      description: The state of the acquisition.
+      type: String
+    - contextPath: FireEyeHX.Host.Acquisitions.All.acq_type
+      description: The type of acquisition.
+      type: String
+    - contextPath: FireEyeHX.Host.Acquisitions.All.request_time
+      description: The requested date of the acquisition.
+      type: Date
   isfetch: true
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10116658
 fromversion: 6.0.0
 tests:
 - FireEyeHX_v2

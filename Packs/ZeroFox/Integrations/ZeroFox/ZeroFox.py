@@ -429,12 +429,15 @@ class ZFClient(BaseClient):
         except Exception as e:
             raise ZeroFoxModifyNotesException(alert_id=alert_id, cause=e)
 
-    def submit_threat(self, source: str, alert_type: str, violation: str, entity_id: str) -> dict[str, Any]:
+    def submit_threat(
+        self, source: str, alert_type: str, violation: str, entity_id: str, request_takedown: bool = False
+    ) -> dict[str, Any]:
         """
         :param source: The source of the threat.
         :param alert_type: The type of the alert.
         :param violation: The violation of the alert.
         :param entity_id: The ID of the entity.
+        :param request_takedown: Whether to request a takedown of the submitted threat.
         :return: HTTP request content.
         """
         url_suffix: str = "/threat_submit/"
@@ -443,6 +446,7 @@ class ZFClient(BaseClient):
             "alert_type": alert_type,
             "violation": violation,
             "entity_id": entity_id,
+            "request_takedown": request_takedown,
         }
         request_body = remove_none_dict(request_body)
         response_content = self.api_request(
@@ -1639,11 +1643,13 @@ def submit_threat_command(client: ZFClient, args: dict[str, Any]) -> CommandResu
     alert_type: str = args.get("alert_type", "")
     violation: str = args.get("violation", "")
     entity_id: str = args.get("entity_id", "")
+    request_takedown: bool = argToBoolean(args.get("request_takedown", False))
     response_content = client.submit_threat(
         source,
         alert_type,
         violation,
         entity_id,
+        request_takedown,
     )
     alert_id = response_content.get("alert_id")
     if alert_id is None:

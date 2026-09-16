@@ -1,6 +1,9 @@
 fromversion: 8.4.0
+toversion: 8.14.0
 id: Citrix_ADC_ModelingRule
 name: Citrix ADC Modeling Rule
 rules: ''
 schema: ''
 tags: Citrix ADC
+supportedModules:
+- xsiam

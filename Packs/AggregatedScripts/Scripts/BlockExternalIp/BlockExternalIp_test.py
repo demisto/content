@@ -99,7 +99,7 @@ def test_create_final_context_failure():
             "IP": "1.1.1.1",
             "Message": "Failed to execute cisco-asa-create-rule command. Error: You are trying to create a rule "
             "that already exists.",
-            "result": "Failed",
+            "Result": "Failed",
         }
     ]
     result_context = create_final_context(failure_message, used_integration, ip_list)

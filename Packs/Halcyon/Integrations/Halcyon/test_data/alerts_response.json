@@ -1,0 +1,53 @@
+{
+    "data": [
+        {
+            "alertId": "alert-001",
+            "lastOccurredAt": "2024-01-15T10:30:00.000Z",
+            "firstOccurredAt": "2024-01-15T10:25:00.000Z",
+            "kind": "ThreatDetection",
+            "severity": "High",
+            "status": "Active",
+            "description": "Ransomware activity detected on endpoint",
+            "deviceId": "device-123",
+            "deviceName": "WORKSTATION-001",
+            "userName": "john.doe",
+            "offendingSha256": "abc123def456789",
+            "action": "Blocked",
+            "count": 1
+        },
+        {
+            "alertId": "alert-002",
+            "lastOccurredAt": "2024-01-15T11:00:00.000Z",
+            "firstOccurredAt": "2024-01-15T11:00:00.000Z",
+            "kind": "PolicyViolation",
+            "severity": "Medium",
+            "status": "Active",
+            "description": "Unauthorized software installation attempt",
+            "deviceId": "device-456",
+            "deviceName": "WORKSTATION-002",
+            "userName": "jane.smith",
+            "offendingSha256": "xyz789abc123456",
+            "action": "Warned",
+            "count": 3
+        },
+        {
+            "alertId": "alert-003",
+            "lastOccurredAt": "2024-01-15T12:15:00.000Z",
+            "firstOccurredAt": "2024-01-15T12:10:00.000Z",
+            "kind": "SuspiciousActivity",
+            "severity": "Low",
+            "status": "Resolved",
+            "description": "Unusual network connection pattern detected",
+            "deviceId": "device-789",
+            "deviceName": "SERVER-001",
+            "userName": "admin",
+            "offendingSha256": null,
+            "action": "Monitored",
+            "count": 5
+        }
+    ],
+    "page": 1,
+    "pageSize": 100,
+    "totalCount": 3,
+    "totalPages": 1
+}

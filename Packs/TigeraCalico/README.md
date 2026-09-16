@@ -74,7 +74,7 @@ Perform the following steps on the Tigera Calico side and then the Cortex XSIAM 
 4. Using the self-signed CA with the field name `tls.crt`, create a `configmap` in the `tigera-operator` namespace named `syslog-ca`.
     Example:
     'kubectl create configmap syslog-ca --from-file=tls.crt -n tigera-operator'
-For more information <[Link to the official docs](https://docs.tigera.io/calico-cloud/observability/elastic/archive-storage)>.
+For more information [Link to the official docs](https://docs.tigera.io/calico-cloud/observability/elastic/archive-storage).
 
 ### Cortex XSIAM side - Broker VM
 

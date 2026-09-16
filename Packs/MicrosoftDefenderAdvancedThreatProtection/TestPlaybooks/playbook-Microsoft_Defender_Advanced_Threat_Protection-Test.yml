@@ -117,7 +117,6 @@ tasks:
       - "15"
       - "28"
       - "29"
-      - "44"
       - "50"
       - "37"
     scriptarguments:
@@ -459,89 +458,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "44":
-    id: "44"
-    taskid: 343e8ba6-f8c2-4e28-8680-2e6a507d09a2
-    type: regular
-    task:
-      id: 343e8ba6-f8c2-4e28-8680-2e6a507d09a2
-      version: -1
-      name: Start Investigation
-      description: Start an automated investigation on a machine.
-      script: '|||microsoft-atp-start-investigation'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "45"
-    scriptarguments:
-      comment:
-        simple: testing
-      machine_id:
-        complex:
-          root: MicrosoftATP.DomainMachine.Machines
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: MicrosoftATP.DomainMachine.Machines.OSPlatform
-                iscontext: true
-              right:
-                value:
-                  simple: Windows10
-          accessor: ID
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 2295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "45":
-    id: "45"
-    taskid: 6ddb3950-33da-467c-8ee5-f8168215362a
-    type: regular
-    task:
-      id: 6ddb3950-33da-467c-8ee5-f8168215362a
-      version: -1
-      name: List investigations
-      description: Retrieves a collection of investigations or retrieves a specific investigation by its ID.
-      script: '|||microsoft-atp-list-investigations'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "8"
-    scriptarguments:
-      limit:
-        simple: "5"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1340,
-          "y": 2470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "46":
     id: "46"
     taskid: 5f13748a-9f96-4b8b-8283-1df5b529f456
@@ -562,7 +478,17 @@ tasks:
       hostname:
         simple: ${MicrosoftATP.Machine.ComputerDNSName}
       id:
-        simple: ${MicrosoftATP.Machine.ID}
+        complex:
+          root: ${MicrosoftATP.Machine.ID}
+          transformers:
+          - operator: slice
+            args:
+              from:
+                value:
+                  simple: '0'
+              to:
+                value:
+                  simple: '5'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1269,3 +1195,4 @@ inputs: []
 outputs: []
 fromversion: 6.2.0
 description: ''
+

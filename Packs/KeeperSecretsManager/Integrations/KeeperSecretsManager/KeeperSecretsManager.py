@@ -136,10 +136,9 @@ class Client:
 
     def ksm_list_records(self) -> list[dict[str, str]]:
         result = []
-        records = self.secrets_manager.get_secrets()
-        if records:
-            for r in records:
-                result.append({"uid": r.uid, "type": r.type, "title": r.title})
+        records = self.secrets_manager.get_secrets() or []
+        for r in records:
+            result.append({"uid": r.uid, "type": r.type, "title": r.title})
         return result
 
     def ksm_find_records(self, title: str, partial_match: bool = True) -> list[dict[str, str]]:
@@ -154,20 +153,18 @@ class Client:
 
     def ksm_fetch_credentials(self) -> list[dict[str, str]]:
         result = []
-        records = self.secrets_manager.get_secrets()
-        if records:
-            for r in records:
-                if r.type == "login":
-                    result.append({"user": r.get_standard_field_value("login", True), "password": r.password, "name": r.title})
+        records = self.secrets_manager.get_secrets() or []
+        for r in records:
+            if r.type == "login":
+                result.append({"user": r.get_standard_field_value("login", True), "password": r.password, "name": r.title})
         return result
 
     def list_credentials(self) -> list[dict[str, str]]:
         result = []
-        records = self.secrets_manager.get_secrets()
-        if records:
-            for r in records:
-                if r.type == "login":
-                    result.append({"name": r.title, "user": r.get_standard_field_value("login", True), "uid": r.uid})
+        records = self.secrets_manager.get_secrets() or []
+        for r in records:
+            if r.type == "login":
+                result.append({"name": r.title, "user": r.get_standard_field_value("login", True), "uid": r.uid})
         return result
 
     def ksm_list_files(self, record_uids: list[str]) -> list[dict[str, str]]:

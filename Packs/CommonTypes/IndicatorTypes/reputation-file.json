@@ -119,6 +119,24 @@
           ]
         }
       },
+      "imphash": {
+        "simple": "",
+        "complex": {
+          "root": "File",
+          "filters": [],
+          "accessor": "Imphash",
+          "transformers": [
+            {
+              "operator": "toUpperCase",
+              "args": {}
+            },
+            {
+              "operator": "uniq",
+              "args": {}
+            }
+          ]
+        }
+      },
       "md5": {
         "simple": "",
         "complex": {
@@ -510,5 +528,10 @@
       "sha1",
       "sha256"
     ],
-    "layout": "unifiedFileRep1"
+    "layout": "unifiedFileRep1",
+    "supportedModules": [
+        "agentix",
+        "xsiam",
+        "xti"
+    ]
 }

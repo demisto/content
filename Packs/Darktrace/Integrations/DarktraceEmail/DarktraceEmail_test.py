@@ -1,13 +1,7 @@
 import json
 
 
-from DarktraceEmail import (
-    Client,
-    get_email_command,
-    release_email_command,
-    hold_email_command,
-    fetch_incidents
-)
+from DarktraceEmail import Client, get_email_command, release_email_command, hold_email_command, fetch_incidents
 
 
 """*****HELPER FUNCTIONS****"""
@@ -115,12 +109,14 @@ def test_fetch_incidents(requests_mock):
     uuid_02 = "8EEFBFA4-6CA2-4306-B688-BA6B9F60AEEF.1"
 
     mock_api_response_incident_01 = util_load_json("test_data/incident_01.json")
-    requests_mock.get(f"https://mock.darktrace.com/agemail/api/v1.0/emails/{uuid_01}?dtime=1744300527341",
-                      json=mock_api_response_incident_01)
+    requests_mock.get(
+        f"https://mock.darktrace.com/agemail/api/v1.0/emails/{uuid_01}?dtime=1744300527341", json=mock_api_response_incident_01
+    )
 
     mock_api_response_incident_02 = util_load_json("test_data/incident_02.json")
-    requests_mock.get(f"https://mock.darktrace.com/agemail/api/v1.0/emails/{uuid_02}?dtime=1744300434119",
-                      json=mock_api_response_incident_02)
+    requests_mock.get(
+        f"https://mock.darktrace.com/agemail/api/v1.0/emails/{uuid_02}?dtime=1744300434119", json=mock_api_response_incident_02
+    )
 
     mock_api_response_get_email = util_load_json("test_data/fetch_incidents.json")
     requests_mock.post("https://mock.darktrace.com/agemail/api/v1.0/emails/search", json=mock_api_response_get_email)
@@ -132,18 +128,19 @@ def test_fetch_incidents(requests_mock):
     client.get_tag_mapper()
 
     last_run = {
-        'last_fetch': 1598932817000  # Mon, Aug 31, 2020 9 PM Pacific
+        "last_fetch": 1598932817000  # Mon, Aug 31, 2020 9 PM Pacific
     }
 
     _, integration_response = fetch_incidents(
         client,
         max_alerts=20,
         last_run=last_run,
-        first_fetch_time='1 day ago',
+        first_fetch_time="1 day ago",
         min_score=20,
         tag_severity=["Critical", "Warning", "Informational"],
         actioned=False,
-        direction=False)
+        direction=False,
+    )
 
     expected_response = util_load_json("test_data/formatted_fetch_incidents.json")
 

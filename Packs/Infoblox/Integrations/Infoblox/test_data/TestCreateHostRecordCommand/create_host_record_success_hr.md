@@ -1,0 +1,4 @@
+### Host record created
+|Configure For DNS|DDNS Protected|DNS Name|Disable|Disable Discovery|IPV4 Addresses|IPV6 Addresses|Name|Network View|RR Set Order|Reference ID|Type|Use CLI Credentials|Use SNMP3 Credential|Use SNMP Credential|Use TTL|View|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| false | false | example | false | false | **-**	***ReferenceID***: record:host_ipv4addr/12345:0.0.0.1/example/ <br>	***ConfigureForDHCP***: false<br>	***Host***: example<br>	***IPV4Address***: 0.0.0.1 | **-**	***ReferenceID***: record:host_ipv6addr/23456:0000:000:0000::0000:000:001/example/ <br>	***ConfigureForDHCP***: false<br>	***Host***: example<br>	***IPV6Address***: 0000:000:0000::0000:000:001 | example | default | cyclic | record:host/45678:example/  | record:host | false | false | false | false | default |

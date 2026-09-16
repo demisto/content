@@ -19,7 +19,7 @@
         "SourceAccountID": 9,
         "SourceIP": "101.162.72.123",
         "Type": "Azure AD Suspicious Sign-On",
-        "URL": "https://vectra.test/detections/14?pivot=Vectra_AI-XSOAR-2.0.0"
+        "URL": "https://vectra.test/detections/14?pivot=Vectra_AI-XSOAR-2.1.0"
     },
     "common_extract": {
         "AssignedDate": null,

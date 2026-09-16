@@ -1,0 +1,3 @@
+{
+    "whitelistUrls": ["trusted.com", "safe.net", "192.168.1.1"]
+}

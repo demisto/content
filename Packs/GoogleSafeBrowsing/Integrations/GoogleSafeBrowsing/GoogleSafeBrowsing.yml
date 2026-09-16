@@ -4,6 +4,7 @@ commonfields:
 name: GoogleSafeBrowsing
 display: Google Safe Browsing (Deprecated)
 category: Data Enrichment & Threat Intelligence
+provider: Google
 description: Deprecated. Use Google Safe Browsing v2 instead.
 deprecated: true
 configuration:

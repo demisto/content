@@ -4,3 +4,5 @@ name: Tigera Calico Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

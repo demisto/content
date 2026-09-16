@@ -1,0 +1,756 @@
+id: Unblock Indicator - Infoblox NIOS
+version: -1
+name: Unblock Indicator - Infoblox NIOS
+description: This playbook unblocks the given Indicator by deleting its RP Zone rule from Infoblox NIOS platform.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 44eb42c3-141d-4cb1-8ad5-2098e3360677
+    type: start
+    task:
+      id: 44eb42c3-141d-4cb1-8ad5-2098e3360677
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 8f8df96a-afe6-4036-8cbe-e7601bad293e
+    type: condition
+    task:
+      id: 8f8df96a-afe6-4036-8cbe-e7601bad293e
+      version: -1
+      name: Is Infoblox NIOS integration enabled?
+      description: Check whether Infoblox NIOS integration is installed and enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Infoblox
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 3ba154d3-ca1e-43bd-81de-e37689c2fa64
+    type: regular
+    task:
+      id: 3ba154d3-ca1e-43bd-81de-e37689c2fa64
+      version: -1
+      name: Clear previous inputs
+      description: "Delete field from context.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: ExtractedIndicators, Collect indicator and RP Zone details, target_rp_zone_name, rule_ref_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: dc272a8a-a4d6-4036-8805-b5717e8f5a04
+    type: condition
+    task:
+      id: dc272a8a-a4d6-4036-8805-b5717e8f5a04
+      version: -1
+      name: Check whether indicator and RP Zone are available in playbook input
+      description: Check whether indicator and RP Zone inputs are available in playbook input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.indicator
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.target_rp_zone
+                transformers:
+                - operator: trim
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 03d9d9f4-ae10-487f-8cfb-6f3576af1faf
+    type: collection
+    task:
+      id: 03d9d9f4-ae10-487f-8cfb-6f3576af1faf
+      version: -1
+      name: Collect indicator and RP Zone details
+      description: Collect indicator and RP Zone details.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Collect indicator and RP Zone details.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the indicator to unblock.
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The provided indicator will be unblocked.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Specify the target Response Policy Zone
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The Response Policy Zone to target.
+        readonly: false
+      title: Collect indicator and RP Zone details
+      description: This task collects the RP Zone and indicator values to unblock.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 087200d8-2a9a-4a92-86b9-f43fead107f9
+    type: condition
+    task:
+      id: 087200d8-2a9a-4a92-86b9-f43fead107f9
+      version: -1
+      name: Check whether indicator and RP Zone are present or not.
+      description: Check whether indicator and RP Zone are present or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Collect indicator and RP Zone details.Answers
+                accessor: "0"
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.indicator
+                      iscontext: true
+                - operator: trim
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Collect indicator and RP Zone details.Answers
+                accessor: "1"
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: inputs.target_rp_zone
+                      iscontext: true
+                - operator: trim
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: ae902fbc-60e2-4428-840d-e8afed34ba10
+    type: regular
+    task:
+      id: ae902fbc-60e2-4428-840d-e8afed34ba10
+      version: -1
+      name: Extract indicator
+      description: commands.local.cmd.extract.indicators
+      script: Builtin|||extractIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      text:
+        complex:
+          root: Collect indicator and RP Zone details.Answers
+          accessor: "0"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.indicator
+                iscontext: true
+          - operator: trim
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 2434982b-20d3-4584-85b1-b50f95e0e21a
+    type: condition
+    task:
+      id: 2434982b-20d3-4584-85b1-b50f95e0e21a
+      version: -1
+      name: Check whether indicator is IP or domain
+      description: Check whether indicator is IP or domain.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Domain:
+      - "8"
+      IP:
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: Domain
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ExtractedIndicators
+                accessor: Domain
+            iscontext: true
+          right:
+            value: {}
+    - label: IP
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ExtractedIndicators
+                accessor: IP
+                transformers:
+                - operator: SetIfEmpty
+                  args:
+                    applyIfEmpty: {}
+                    defaultValue:
+                      value:
+                        simple: ExtractedIndicators.IPv6
+                      iscontext: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: f3ae2941-585b-41e2-8440-58103959a2a4
+    type: regular
+    task:
+      id: f3ae2941-585b-41e2-8440-58103959a2a4
+      version: -1
+      name: Search for RP Zone rule
+      description: Searches a specific rule by its name.
+      script: '|||infoblox-search-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "12"
+      '#none#':
+      - "10"
+    scriptarguments:
+      extend-context:
+        simple: rule_ref_id=result.[0]._ref
+      object_type:
+        simple: record:rpz:cname
+      rule_name:
+        complex:
+          root: ExtractedIndicators
+          accessor: Domain
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: .
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${target_rp_zone_name}
+                iscontext: true
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 92f4e094-8aa0-4458-8583-f97fb01479c7
+    type: regular
+    task:
+      id: 92f4e094-8aa0-4458-8583-f97fb01479c7
+      version: -1
+      name: Search for RP Zone rule
+      description: Searches a specific rule by its name.
+      script: '|||infoblox-search-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "12"
+      '#none#':
+      - "10"
+    scriptarguments:
+      extend-context:
+        simple: rule_ref_id=result.[0]._ref
+      object_type:
+        simple: record:rpz:cname:ipaddress
+      rule_name:
+        complex:
+          root: ExtractedIndicators
+          accessor: IP
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ExtractedIndicators.IPv6
+                iscontext: true
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: .
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${target_rp_zone_name}
+                iscontext: true
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 290,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: ae34d3a5-27f9-46d3-882f-ad2621ba5915
+    type: condition
+    task:
+      id: ae34d3a5-27f9-46d3-882f-ad2621ba5915
+      version: -1
+      name: Check whether RP Zone rule exists
+      description: Check if RP Zone rule exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: rule_ref_id
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 50285226-8aef-4b94-865f-f3304b244a01
+    type: regular
+    task:
+      id: 50285226-8aef-4b94-865f-f3304b244a01
+      version: -1
+      name: Delete RP Zone rule
+      description: Deletes a rule.
+      script: '|||infoblox-delete-rpz-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      reference_id:
+        complex:
+          root: rule_ref_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: ea02d1e6-fb79-4bcf-82d3-4449f4a75306
+    type: title
+    task:
+      id: ea02d1e6-fb79-4bcf-82d3-4449f4a75306
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: bc820a20-28b9-4844-8a3d-8477a2e678ee
+    type: regular
+    task:
+      id: bc820a20-28b9-4844-8a3d-8477a2e678ee
+      version: -1
+      name: Extract response policy zone
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      key:
+        simple: target_rp_zone_name
+      value:
+        complex:
+          root: Collect indicator and RP Zone details.Answers
+          accessor: "1"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: inputs.target_rp_zone
+                iscontext: true
+          - operator: trim
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_11_yes": 0.49,
+      "10_12_#default#": 0.79,
+      "1_2_yes": 0.46,
+      "3_4_#default#": 0.53,
+      "5_13_yes": 0.38,
+      "8_12_#error#": 0.37,
+      "9_12_#error#": 0.37
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2445,
+        "width": 870,
+        "x": -200,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: indicator
+  value: {}
+  required: false
+  description: The indicator to unblock.
+  playbookInputQuery:
+- key: target_rp_zone
+  value: {}
+  required: false
+  description: The target Response Policy Zone.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

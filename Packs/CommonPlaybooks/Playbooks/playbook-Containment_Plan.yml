@@ -506,7 +506,9 @@ tasks:
                   simple: inputs.AutoContainment
                 iscontext: true
               lhsB: {}
-              options: {}
+              options:
+                value:
+                  simple: case_insensitive
               optionsB: {}
               rhs:
                 value:
@@ -584,7 +586,9 @@ tasks:
                   simple: inputs.AutoContainment
                 iscontext: true
               lhsB: {}
-              options: {}
+              options:
+                value:
+                  simple: case_insensitive
               optionsB: {}
               rhs:
                 value:
@@ -615,7 +619,9 @@ tasks:
                   simple: inputs.AutoContainment
                 iscontext: true
               lhsB: {}
-              options: {}
+              options:
+                value:
+                  simple: case_insensitive
               optionsB: {}
               rhs:
                 value:
@@ -727,7 +733,9 @@ tasks:
                   simple: inputs.AutoContainment
                 iscontext: true
               lhsB: {}
-              options: {}
+              options:
+                value:
+                  simple: case_insensitive
               optionsB: {}
               rhs:
                 value:
@@ -761,7 +769,9 @@ tasks:
                   simple: inputs.AutoContainment
                 iscontext: true
               lhsB: {}
-              options: {}
+              options:
+                value:
+                  simple: case_insensitive
               optionsB: {}
               rhs:
                 value:
@@ -873,7 +883,9 @@ tasks:
                   simple: inputs.AutoContainment
                 iscontext: true
               lhsB: {}
-              options: {}
+              options:
+                value:
+                  simple: case_insensitive
               optionsB: {}
               rhs:
                 value:
@@ -942,7 +954,9 @@ tasks:
                   simple: inputs.AutoContainment
                 iscontext: true
               lhsB: {}
-              options: {}
+              options:
+                value:
+                  simple: case_insensitive
               optionsB: {}
               rhs:
                 value:
@@ -973,7 +987,9 @@ tasks:
                   simple: inputs.AutoContainment
                 iscontext: true
               lhsB: {}
-              options: {}
+              options:
+                value:
+                  simple: case_insensitive
               optionsB: {}
               rhs:
                 value:
@@ -1335,8 +1351,8 @@ inputs:
     Possible values: True/False.  Default: True.
     Should the given indicators be automatically blocked, or should the user be given the option to choose?
 
-    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
-    If set to True - the user will be prompted to select which indicators to block.
+    If set to True - no prompt will appear, and all provided indicators will be blocked automatically.
+    If set to False - the user will be prompted to select which indicators to block.
   playbookInputQuery:
 outputs:
 - contextPath: Blocklist.Final
@@ -1357,7 +1373,6 @@ marketplaces:
 - marketplacev2
 - platform
 supportedModules:
-- X1
-- X3
-- X5
-- ENT_PLUS
+- cloud_runtime_security
+- xsiam
+- edr

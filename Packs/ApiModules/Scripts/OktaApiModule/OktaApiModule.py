@@ -58,6 +58,7 @@ class OktaClient(BaseClient):
         self.jwt_algorithm = jwt_algorithm
         self.private_key = private_key
         self.key_id = key_id
+        self.request_metadata: dict = {}
 
         missing_required_params = []
 
@@ -199,7 +200,29 @@ class OktaClient(BaseClient):
 
         return token
 
-    def http_request(self, auth_type: AuthType | None = None, **kwargs):
+    @staticmethod
+    def get_rate_limit_context(headers) -> dict:
+        """Takes the response headers and returns the rate limit data to the context
+
+        Args:
+            headers: The response headers (can be dict or CaseInsensitiveDict)
+
+        Returns:
+            dict: The rate limit data to the context
+        """
+        rate_limit_context = {
+            "x-rate-limit-limit": headers["x-rate-limit-limit"],
+            "x-rate-limit-remaining": headers["x-rate-limit-remaining"],
+            "x-rate-limit-reset": headers["x-rate-limit-reset"],
+        }
+        return rate_limit_context
+
+    def parse_response_headers(self, raw_response: requests.Response):
+        """deconstruct the raw response to headers and content"""
+        headers = raw_response.headers
+        self.request_metadata = self.get_rate_limit_context(headers)
+
+    def http_request(self, auth_type: AuthType | None = None, resp_type: str = "json", **kwargs):
         """
         Override BaseClient._http_request() to automatically add authentication headers.
 
@@ -218,7 +241,28 @@ class OktaClient(BaseClient):
 
         original_headers = kwargs.get("headers") or self._headers or {}
         kwargs["headers"] = {**auth_headers, **original_headers}
-        return self._http_request(**kwargs)
+        response = self._http_request(resp_type="response", **kwargs)
+        self.parse_response_headers(response)
+
+        resp_type = resp_type.lower()
+        try:
+            if resp_type == "json":
+                return response.json()
+            if resp_type == "text":
+                return response.text
+            if resp_type == "content":
+                return response.content
+            if resp_type == "xml":
+                ET.fromstring(response.text)
+            if resp_type == "response":
+                return response
+            return response
+        except ValueError as exception:
+            raise DemistoException(
+                f"Failed to parse {resp_type} object from response: {response.content}",  # type: ignore[str-bytes-safe]
+                exception,
+                response,
+            )
 
 
 def reset_integration_context():

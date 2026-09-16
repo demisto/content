@@ -1,3 +1,8 @@
+import uuid
+from datetime import UTC
+
+import jwt
+
 from CommonServerPython import *
 
 from CommonServerUserPython import *
@@ -8,7 +13,8 @@ OAUTH_URL = "/oauth_token.do"
 class ServiceNowClient(BaseClient):
     def __init__(
         self,
-        credentials: dict,
+        username: str = "",
+        password: str = "",
         use_oauth: bool = False,
         client_id: str = "",
         client_secret: str = "",
@@ -16,11 +22,13 @@ class ServiceNowClient(BaseClient):
         verify: bool = False,
         proxy: bool = False,
         headers: dict = None,
+        jwt_params: dict = None,
     ):
         """
         ServiceNow Client class. The class can use either basic authorization with username and password, or OAuth2.
         Args:
-            - credentials: the username and password given by the user.
+            - username: the username for authentication.
+            - password: the password for authentication.
             - client_id: the client id of the application of the user.
             - client_secret - the client secret of the application of the user.
             - url: the instance url of the user, i.e: https://<instance>.service-now.com.
@@ -29,17 +37,20 @@ class ServiceNowClient(BaseClient):
             - proxy: Whether to run the integration using the system proxy.
             - headers: The request headers, for example: {'Accept`: `application/json`}. Can be None.
             - use_oauth: a flag indicating whether the user wants to use OAuth 2.0 or basic authorization.
+            - jwt_params: a dict containing the JWT parameters
         """
         self.auth = None
         self.use_oauth = use_oauth
-        self.jwt: Optional[str] = None
+        self.username = username
+        self.password = password
+
         if self.use_oauth:  # if user selected the `Use OAuth` box use OAuth authorization, else use basic authorization
             self.client_id = client_id
             self.client_secret = client_secret
         else:
-            self.username = credentials.get("identifier")
-            self.password = credentials.get("password")
             self.auth = (self.username, self.password)
+
+        self.jwt = self.create_jwt(jwt_params) if jwt_params else None
 
         if "@" in client_id:  # for use in OAuth test-playbook
             self.client_id, refresh_token = client_id.split("@")
@@ -48,9 +59,6 @@ class ServiceNowClient(BaseClient):
         self.base_url = url
         super().__init__(base_url=self.base_url, verify=verify, proxy=proxy, headers=headers, auth=self.auth)  # type
         # : ignore[misc]
-
-    def set_jwt(self, jwt: str):
-        self.jwt = jwt
 
     def http_request(
         self,
@@ -146,10 +154,93 @@ class ServiceNowClient(BaseClient):
                 f"Login failed. Please check the instance configuration and the given username and password.\n{e.args[0]}"
             )
 
-    def get_access_token(self):
+    @staticmethod
+    def _validate_and_format_private_key(private_key: str) -> str:
         """
-        Get an access token that was previously created if it is still valid, else, generate a new access token from
-        the client id, client secret and refresh token.
+        Validate the private key format and reformat it to a valid PEM format.
+
+        Supports these private key types:
+            - PRIVATE KEY
+            - RSA PRIVATE KEY
+            - EC PRIVATE KEY
+            - ENCRYPTED PRIVATE KEY
+
+        Args:
+            private_key (str): The user Private key.
+
+        Raises:
+            ValueError: If the private key format is incorrect.
+
+        Returns:
+            str: Key formatted in valid PEM with consistent newlines.
+        """
+        # Match and extract the first valid private key block
+        pem_pattern = re.compile(
+            r"-----BEGIN (?P<label>(ENCRYPTED )?(RSA |EC )?PRIVATE KEY)-----\s*" r"(?P<content>.*?)" r"\s*-----END \1-----",
+            re.DOTALL,
+        )
+
+        match = pem_pattern.search(private_key)
+        if not match:
+            raise ValueError("Invalid private key format.")
+
+        key_type = match.group("label")
+        key_content = match.group("content")
+
+        # Clean content: remove all non-base64 characters
+        key_content = re.sub(r"[^A-Za-z0-9+/=]", "", key_content)
+
+        # Format content into 64-character lines
+        key_lines = [key_content[i : i + 64] for i in range(0, len(key_content), 64)]
+
+        # Reattach markers
+        processed_key = f"-----BEGIN {key_type}-----\n" + "\n".join(key_lines) + f"\n-----END {key_type}-----"
+
+        return processed_key
+
+    def create_jwt(self, jwt_params: dict) -> str:
+        """
+        Create JWT token
+        Returns:
+            JWT token
+        """
+        private_key = self._validate_and_format_private_key(jwt_params.get("private_key", ""))
+
+        header = {
+            "alg": "RS256",  # Signing algorithm
+            "typ": "JWT",  # Token type
+            "kid": jwt_params.get("kid"),
+        }
+        now = datetime.now(UTC)
+        payload = {
+            "sub": jwt_params.get("sub"),
+            "aud": jwt_params.get("aud"),
+            "iss": jwt_params.get("iss"),
+            "iat": now,
+            "exp": now + timedelta(hours=1),
+            "jti": str(uuid.uuid4()),  # Unique JWT ID
+        }
+        try:
+            jwt_token = jwt.encode(payload, private_key, algorithm="RS256", headers=header)
+        except Exception:
+            # Regenerate if failed
+            jwt_token = jwt.encode(payload, private_key, algorithm="RS256", headers=header)
+        return jwt_token
+
+    def get_access_token(self, retry_attempted: bool = False):
+        """
+        Get an access token that was previously created if it is still valid, else, generate a new access token using
+        one of the following methods (in order of precedence):
+        1. Refresh token - if a refresh token exists in the integration context.
+        2. JWT assertion - if JWT parameters were configured.
+        3. Auto-login - if OAuth is enabled and username/password credentials are available,
+           automatically performs a login to obtain a new refresh token.
+
+        If the refresh token has expired and credentials are available, the method will automatically
+        re-login and retry once.
+
+        Args:
+            retry_attempted: Internal flag to prevent infinite retry loops. Should not be set by callers.
         """
         ok_codes = (200, 201, 401)
         previous_token = get_integration_context()
@@ -165,8 +256,14 @@ class ServiceNowClient(BaseClient):
                 data["refresh_token"] = previous_token.get("refresh_token")
                 data["grant_type"] = "refresh_token"
             elif not self.jwt:
+                if self.use_oauth and self.username and self.password and not retry_attempted:
+                    self.login(username=self.username, password=self.password)
+                    return self.get_access_token(retry_attempted=True)
+
                 raise Exception(
-                    "Could not create an access token. User might be not logged in. Try running the oauth-login command first."
+                    "Could not create an access token. The user may not be logged in. "
+                    "Please run the oauth-login command, or ensure that username and password "
+                    "parameters are set in your instance configuration to enable auto-login."
                 )
 
             try:
@@ -183,10 +280,19 @@ class ServiceNowClient(BaseClient):
                 except ValueError as exception:
                     raise DemistoException(f"Failed to parse json object from response: {res.content}", exception)
                 if "error" in res:
+                    # NOTE: This token regeneration logic is inherited by all integrations but currently relies on
+                    # the 'username' and 'password' fields. The Event Collector is the only integration that
+                    # supplies these fields under the OAuth method to utilize this retry logic.
+                    # Other inherited integrations require modification to function here
+                    if self.use_oauth and self.username and self.password and not retry_attempted:
+                        demisto.debug("Refresh token may have expired, automatically generating new refresh token via login")
+                        self.login(username=self.username, password=self.password)
+                        return self.get_access_token(retry_attempted=True)
+
+                    # If retry was already attempted or credentials not available, raise the error
                     return_error(
                         f"Error occurred while creating an access token. Please check the Client ID, Client Secret "
-                        f"and try to run again the login command to generate a new refresh token as it "
-                        f"might have expired.\n{res}"
+                        f"and try to run again the login command to generate a new refresh token.\n{res}"
                     )
                 if res.get("access_token"):
                     expiry_time = date_to_timestamp(datetime.now(), date_format="%Y-%m-%dT%H:%M:%S")

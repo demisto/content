@@ -4,3 +4,5 @@ name: Microsoft Defender for Identity Modeling Rule
 rules: ''
 schema: ''
 tags: ''
+supportedModules:
+- xsiam

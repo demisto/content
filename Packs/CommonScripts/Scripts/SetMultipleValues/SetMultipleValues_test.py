@@ -4,7 +4,21 @@ from CommonServerPython import *  # noqa: F401
 from SetMultipleValues import main
 
 
-def test_main(mocker):
+@pytest.mark.parametrize(
+    "args, excepted_result",
+    [
+        ({"keys": "a,b,c", "values": "1,2,3", "parent": "Test"}, {"Test(true)": {"a": "1", "b": "2", "c": "3"}}),
+        (
+            {"keys": "a:b:c", "values": "1:2:3", "parent": "Test", "delimiter": ":"},
+            {"Test(true)": {"a": "1", "b": "2", "c": "3"}},
+        ),
+        (
+            {"keys": "a|||b|||c", "values": "1,|||2,|||3,", "parent": "Test", "delimiter": "|||"},
+            {"Test(true)": {"a": "1,", "b": "2,", "c": "3,"}},
+        ),
+    ],
+)
+def test_main(mocker, args, excepted_result):
     """
     Given:
         - The script args.
@@ -14,10 +28,9 @@ def test_main(mocker):
         - Validating the outputs as expected.
     """
     results_mock = mocker.patch.object(demisto, "results")
-    args = {"keys": "a,b,c", "values": "1,2,3", "parent": "Test"}
     mocker.patch.object(demisto, "args", return_value=args)
     main()
-    assert results_mock.call_args[0][0]["Contents"] == {"Test(true)": {"a": "1", "b": "2", "c": "3"}}
+    assert results_mock.call_args[0][0]["Contents"] == excepted_result
 
 
 @pytest.mark.parametrize(

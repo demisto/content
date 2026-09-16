@@ -2,161 +2,3350 @@
     "fetch_incidents_with_alerts": [
         [
             {
-                "name": "RSA NetWitness 11.5 INC-00 - test ",
-                "occurred": "2023-06-19T12:03:01.466Z",
-                "rawJSON": "{\"id\": \"INC-00\", \"title\": \"test \", \"summary\": null, \"priority\": \"Low\", \"riskScore\": 50, \"status\": \"New\", \"alertCount\": 1, \"averageAlertRiskScore\": 50, \"sealed\": false, \"totalRemediationTaskCount\": 0, \"openRemediationTaskCount\": 0, \"created\": \"2023-06-19T12:03:01.466Z\", \"lastUpdated\": \"2023-06-19T12:03:01.466Z\", \"lastUpdatedBy\": null, \"assignee\": null, \"sources\": [\"NetWitness Investigate\"], \"ruleId\": null, \"firstAlertTime\": null, \"categories\": null, \"journalEntries\": null, \"createdBy\": \"dummy\", \"deletedAlertCount\": 0, \"eventCount\": 1, \"alertMeta\": {\"SourceIp\": [\"\"], \"DestinationIp\": [\"\"]}, \"incident_url\": \"http://test.com/respond/incident/INC-00\", \"alerts\": [{\"id\": \"1111\", \"title\": \"test \", \"detail\": null, \"created\": \"2023-06-19T12:03:01.454Z\", \"source\": \"NetWitness Investigate\", \"riskScore\": 50, \"type\": \"Log\", \"events\": [{\"source\": {\"device\": {\"ipAddress\": null, \"port\": null, \"macAddress\": null, \"dnsHostname\": null, \"dnsDomain\": null}, \"user\": {\"username\": null, \"emailAddress\": null, \"adUsername\": null, \"adDomain\": null}}, \"destination\": {\"device\": {\"ipAddress\": null, \"port\": null, \"macAddress\": null, \"dnsHostname\": null, \"dnsDomain\": null}, \"user\": {\"username\": null, \"emailAddress\": null, \"adUsername\": null, \"adDomain\": null}}, \"domain\": null, \"eventSource\": null, \"eventSourceId\": \"1\"}]}], \"mirror_instance\": \"\", \"mirror_direction\": null}"
-            }
-        ],
-        [
-            {
-                "id": "INC-00",
-                "title": "test",
-                "summary": null,
-                "priority": "Low",
-                "riskScore": 50,
-                "status": "New",
-                "alertCount": 1,
-                "averageAlertRiskScore": 50,
-                "sealed": false,
-                "totalRemediationTaskCount": 0,
-                "openRemediationTaskCount": 0,
-                "created": "2023-06-19T12:03:01.466Z",
-                "lastUpdated": "2023-06-19T12:03:01.466Z",
-                "lastUpdatedBy": null,
-                "assignee": null,
-                "sources": [
-                    "NetWitness Investigate"
-                ],
-                "ruleId": null,
-                "firstAlertTime": null,
-                "categories": null,
-                "journalEntries": null,
-                "createdBy": "dummy",
-                "deletedAlertCount": 0,
-                "eventCount": 1,
-                "alertMeta": {
-                    "SourceIp": [
-                        ""
-                    ],
-                    "DestinationIp": [
-                        ""
-                    ]
-                }
+                "name": "RSA NetWitness 11.5 INC-345 - User Behavior for ca1dmc,guest,root", 
+                "occurred": "2026-01-08T05:51:24.769Z", 
+                "rawJSON": "{\"id\": \"INC-345\", \"title\": \"User Behavior for ca1dmc,guest,root\", \"summary\": \"\", \"priority\": \"Critical\", \"riskScore\": 30, \"status\": \"New\", \"alertCount\": 2, \"averageAlertRiskScore\": 30, \"sealed\": true, \"totalRemediationTaskCount\": 0, \"openRemediationTaskCount\": 0, \"created\": \"2026-01-08T05:51:24.769Z\", \"lastUpdated\": \"2026-01-08T05:53:20.322Z\", \"lastUpdatedBy\": null, \"assignee\": null, \"sources\": [\"Event Stream Analysis\"], \"ruleId\": \"6904a91794e9df71b27b5cda\", \"firstAlertTime\": \"2026-01-08T05:50:35.042Z\", \"categories\": [], \"journalEntries\": null, \"createdBy\": \"User Behavior\", \"deletedAlertCount\": 0, \"eventCount\": 6, \"alertMeta\": {\"SourceIp\": [\"\"], \"DestinationIp\": [\"\"]}, \"tactics\": [\"TA0006\"], \"techniques\": [\"T1110\"], \"incident_url\": \"http://test.com/respond/incident/INC-345\", \"alerts\": [{\"groupby_alias_ip\": \"\", \"groupby_source_device_mac_address\": \"\", \"user_summary\": [\"5302 , user3\", \"uid=user4,ou=People,dc=host2,dc=site\", \"0 , srohatgi\"], \"groupby_dst_device_geolocation_domain\": \"\", \"source\": \"Event Stream Analysis\", \"type\": [\"Log\"], \"groupby_user_src\": \"\", \"groupby_src_device_dns_domain\": \"\", \"groupby_source_country\": \"\", \"groupby_analysis_file\": \"\", \"groupby_filename\": \"\", \"groupby_source_username\": \"0,5302\", \"groupby_detector_ip\": \"9.4.4.9\", \"groupby_dst_usr_username\": \"srohatgi,uid=user4,ou=People,dc=host2,dc=site,user3\", \"events\": [{\"agent_id\": \"\", \"data\": [{\"filename\": \"\", \"size\": 182, \"hash\": \"\"}], \"destination\": {\"path\": \"\", \"file_SHA256\": \"\", \"filename\": \"\", \"launch_argument\": \"\", \"device\": {\"compliance_rating\": \"\", \"netbios_name\": \"\", \"port\": \"\", \"mac_address\": \"\", \"criticality\": \"\", \"asset_type\": \"\", \"ip_address\": \"\", \"facility\": \"\", \"business_unit\": \"\", \"geolocation\": {\"country\": \"\", \"city\": \"\", \"latitude\": null, \"organization\": \"\", \"domain\": \"\", \"longitude\": null}}, \"user\": {\"email_address\": \"\", \"ad_username\": \"\", \"ad_domain\": \"\", \"username\": \"user3\"}, \"hash\": \"\"}, \"description\": \"authentication failure\", \"domain_src\": \"\", \"port_src\": \"\", \"device_type\": \"rhlinux\", \"event_source\": \"a68645fa-b683-4a38-9f5c-653e405a403a:56005\", \"source\": {\"path\": \"\", \"file_SHA256\": \"\", \"filename\": \"\", \"launch_argument\": \"\", \"device\": {\"compliance_rating\": \"\", \"netbios_name\": \"\", \"port\": \"\", \"mac_address\": \"\", \"criticality\": \"\", \"asset_type\": \"\", \"ip_address\": \"\", \"facility\": \"\", \"business_unit\": \"\", \"geolocation\": {\"country\": \"\", \"city\": \"\", \"latitude\": null, \"organization\": \"\", \"domain\": \"\", \"longitude\": null}}, \"user\": {\"email_address\": \"\", \"ad_username\": \"\", \"ad_domain\": \"\", \"username\": \"5302\"}, \"hash\": \"\"}, \"type\": \"Log\", \"analysis_file\": \"\", \"directory\": \"\", \"registry_key\": \"\", \"enrichment\": \"\", \"user_src\": \"\", \"hostname\": \"\", \"analysis_service\": \"\", \"detected_by\": \"Unix-rhlinux,9.4.4.9\", \"process_vid\": \"\", \"host_src\": \"\", \"function\": null, \"context\": \"\", \"action\": \"\", \"operating_system\": \"\", \"alias_ip\": \"\", \"from\": \"\", \"timestamp\": 1762505966000, \"ec_subject\": \"User\", \"event_source_id\": \"337745\", \"related_links\": [{\"type\": \"investigate_original_event\", \"url\": \"/investigation/host/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/event/AUTO/337745\"}], \"service_name\": \"\", \"port_dst\": \"\", \"domain_dst\": \"\", \"user_dst\": \"user3\", \"autorun_type\": \"\", \"host_dst\": \"\", \"domain\": \"\", \"user_account\": \"\", \"to\": \"\", \"category\": \"\", \"cert_common\": \"\", \"detector\": {\"device_class\": \"Unix\", \"ip_address\": \"9.4.4.9\", \"product_name\": \"rhlinux\"}, \"user\": \"5302 , user3\", \"analysis_session\": \"\", \"event_time\": null, \"site_categorization\": null, \"username\": \"5302\"}, {\"agent_id\": \"\", \"data\": [{\"filename\": \"\", \"size\": 168, \"hash\": \"\"}], \"destination\": {\"path\": \"\", \"file_SHA256\": \"\", \"filename\": \"\", \"launch_argument\": \"\", \"device\": {\"compliance_rating\": \"\", \"netbios_name\": \"\", \"port\": \"\", \"mac_address\": \"\", \"criticality\": \"\", \"asset_type\": \"\", \"ip_address\": \"\", \"facility\": \"\", \"business_unit\": \"\", \"geolocation\": {\"country\": \"\", \"city\": \"\", \"latitude\": null, \"organization\": \"\", \"domain\": \"\", \"longitude\": null}}, \"user\": {\"email_address\": \"\", \"ad_username\": \"\", \"ad_domain\": \"\", \"username\": \"uid=user4,ou=People,dc=host2,dc=site\"}, \"hash\": \"\"}, \"description\": \"bind error\", \"domain_src\": \"\", \"port_src\": \"\", \"device_type\": \"rhlinux\", \"event_source\": \"a68645fa-b683-4a38-9f5c-653e405a403a:56005\", \"source\": {\"path\": \"\", \"file_SHA256\": \"\", \"filename\": \"\", \"launch_argument\": \"\", \"device\": {\"compliance_rating\": \"\", \"netbios_name\": \"\", \"port\": \"\", \"mac_address\": \"\", \"criticality\": \"\", \"asset_type\": \"\", \"ip_address\": \"\", \"facility\": \"\", \"business_unit\": \"\", \"geolocation\": {\"country\": \"\", \"city\": \"\", \"latitude\": null, \"organization\": \"\", \"domain\": \"\", \"longitude\": null}}, \"user\": {\"email_address\": \"\", \"ad_username\": \"\", \"ad_domain\": \"\", \"username\": \"\"}, \"hash\": \"\"}, \"type\": \"Log\", \"analysis_file\": \"\", \"directory\": \"\", \"registry_key\": \"\", \"enrichment\": \"\", \"user_src\": \"\", \"hostname\": \"\", \"analysis_service\": \"\", \"detected_by\": \"Unix-rhlinux,9.4.4.9\", \"process_vid\": \"\", \"host_src\": \"\", \"function\": null, \"context\": \"\", \"action\": \"\", \"operating_system\": \"\", \"alias_ip\": \"\", \"from\": \"\", \"timestamp\": 1762505966000, \"ec_subject\": \"User\", \"event_source_id\": \"337746\", \"related_links\": [{\"type\": \"investigate_original_event\", \"url\": \"/investigation/host/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/event/AUTO/337746\"}], \"service_name\": \"\", \"port_dst\": \"\", \"domain_dst\": \"\", \"user_dst\": \"uid=user4,ou=People,dc=host2,dc=site\", \"autorun_type\": \"\", \"host_dst\": \"\", \"domain\": \"\", \"user_account\": \"\", \"to\": \"\", \"category\": \"\", \"cert_common\": \"\", \"detector\": {\"device_class\": \"Unix\", \"ip_address\": \"9.4.4.9\", \"product_name\": \"rhlinux\"}, \"user\": \"uid=user4,ou=People,dc=host2,dc=site\", \"analysis_session\": \"\", \"event_time\": null, \"site_categorization\": null, \"username\": \"\"}, {\"agent_id\": \"\", \"data\": [{\"filename\": \"\", \"size\": 191, \"hash\": \"\"}], \"destination\": {\"path\": \"\", \"file_SHA256\": \"\", \"filename\": \"\", \"launch_argument\": \"\", \"device\": {\"compliance_rating\": \"\", \"netbios_name\": \"\", \"port\": \"\", \"mac_address\": \"\", \"criticality\": \"\", \"asset_type\": \"\", \"ip_address\": \"\", \"facility\": \"\", \"business_unit\": \"\", \"geolocation\": {\"country\": \"\", \"city\": \"\", \"latitude\": null, \"organization\": \"\", \"domain\": \"\", \"longitude\": null}}, \"user\": {\"email_address\": \"\", \"ad_username\": \"\", \"ad_domain\": \"\", \"username\": \"srohatgi\"}, \"hash\": \"\"}, \"description\": \"authentication failure(s)\", \"domain_src\": \"\", \"port_src\": \"\", \"device_type\": \"rhlinux\", \"event_source\": \"a68645fa-b683-4a38-9f5c-653e405a403a:56005\", \"source\": {\"path\": \"\", \"file_SHA256\": \"\", \"filename\": \"\", \"launch_argument\": \"\", \"device\": {\"compliance_rating\": \"\", \"netbios_name\": \"\", \"port\": \"\", \"mac_address\": \"\", \"criticality\": \"\", \"asset_type\": \"\", \"ip_address\": \"\", \"facility\": \"\", \"business_unit\": \"\", \"geolocation\": {\"country\": \"\", \"city\": \"\", \"latitude\": null, \"organization\": \"\", \"domain\": \"\", \"longitude\": null}}, \"user\": {\"email_address\": \"\", \"ad_username\": \"\", \"ad_domain\": \"\", \"username\": \"0\"}, \"hash\": \"\"}, \"type\": \"Log\", \"analysis_file\": \"\", \"directory\": \"\", \"registry_key\": \"\", \"enrichment\": \"\", \"user_src\": \"\", \"hostname\": \"\", \"analysis_service\": \"\", \"detected_by\": \"Unix-rhlinux,9.4.4.9\", \"process_vid\": \"\", \"host_src\": \"lxdm14545.etrade.com\", \"function\": null, \"context\": \"\", \"action\": \"\", \"operating_system\": \"\", \"alias_ip\": \"\", \"from\": \"\", \"timestamp\": 1762505966000, \"ec_subject\": \"User\", \"event_source_id\": \"337828\", \"related_links\": [{\"type\": \"investigate_original_event\", \"url\": \"/investigation/host/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/event/AUTO/337828\"}], \"service_name\": \"\", \"port_dst\": \"\", \"domain_dst\": \"\", \"user_dst\": \"srohatgi\", \"autorun_type\": \"\", \"host_dst\": \"\", \"domain\": \"\", \"user_account\": \"\", \"to\": \"\", \"category\": \"\", \"cert_common\": \"\", \"detector\": {\"device_class\": \"Unix\", \"ip_address\": \"9.4.4.9\", \"product_name\": \"rhlinux\"}, \"user\": \"0 , srohatgi\", \"analysis_session\": \"\", \"event_time\": null, \"site_categorization\": null, \"username\": \"0\"}], \"groupby_detector_dns_hostname\": \"\", \"host_summary\": [\"Unix-rhlinux,9.4.4.9\"], \"groupby_username\": \"0,5302\", \"groupby_file_sha_256\": \"\", \"groupby_user_dst\": \"srohatgi,uid=user4,ou=People,dc=host2,dc=site,user3\", \"groupby_dst_device_dns_hostname\": \"\", \"groupby_os\": \"\", \"groupby_src_usr_ad_domain\": \"\", \"groupby_dst_usr_ad_username\": \"\", \"name\": \"Multiple Failed Logons from Same Source IP with Unique Usernames\", \"groupby_detector_dns_domain\": \"\", \"groupby_host_src\": \"lxdm14545.etrade.com\", \"groupby_analysis_service\": \"\", \"groupby_destination_device_mac_address\": \"\", \"groupby_version\": \"0\", \"groupby_dst_device_netbios_name\": \"\", \"destination_country\": [], \"groupby_type\": \"Log\", \"groupby_device_type\": \"rhlinux\", \"groupby_domain\": \"\", \"groupby_destination_country\": \"\", \"groupby_dst_device_dns_domain\": \"\", \"groupby_analysis_session\": \"\", \"signature_id\": \"1d8fc6ceb1f94c6326d6d5483d258fcb2e179e9869325b245d105c2219bf69fd\", \"groupby_data_hash\": \"\", \"groupby_domain_dst\": \"\", \"groupby_src_device_netbios_name\": \"\", \"groupby_destination_ip\": \"\", \"groupby_host_dst\": \"\", \"groupby_source_ip\": \"\", \"groupby_detector_mac_address\": \"\", \"timestamp\": 1762505967983, \"severity\": 30.0, \"related_links\": [{\"type\": \"investigate_session\", \"url\": \"/investigation/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/query/sessionid%3D337745%7C%7Csessionid%3D337746%7C%7Csessionid%3D337828\"}, {\"type\": \"investigate_device_ip\", \"url\": \"/investigation/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/query/device.ip%3D9.4.4.9%2Fdate%2F2025-11-07T08%3A49%3A26.000Z%2F2025-11-07T09%3A09%3A26.000Z\"}], \"risk_score\": 30.0, \"groupby_src_device_geolocation_domain\": \"\", \"groupby_dst_usr_ad_domain\": \"\", \"groupby_destination_port\": \"\", \"groupby_c2domain\": \"\", \"groupby_host_name\": \"\", \"groupby_src_usr_ad_username\": \"\", \"groupby_src_device_dns_hostname\": \"\", \"source_country\": [], \"groupby_domain_src\": \"\", \"numEvents\": 3, \"groupby_agent_id\": \"\"}, {\"groupby_alias_ip\": \"\", \"groupby_source_device_mac_address\": \"\", \"user_summary\": [\"5302 , user3\", \"uid=user4,ou=People,dc=host2,dc=site\", \"0 , srohatgi\"], \"groupby_dst_device_geolocation_domain\": \"\", \"source\": \"Event Stream Analysis\", \"type\": [\"Log\"], \"groupby_user_src\": \"\", \"groupby_src_device_dns_domain\": \"\", \"groupby_source_country\": \"\", \"groupby_analysis_file\": \"\", \"groupby_filename\": \"\", \"groupby_source_username\": \"0,5302\", \"groupby_detector_ip\": \"9.4.4.9\", \"groupby_dst_usr_username\": \"srohatgi,uid=user4,ou=People,dc=host2,dc=site,user3\", \"events\": [{\"agent_id\": \"\", \"data\": [{\"filename\": \"\", \"size\": 182, \"hash\": \"\"}], \"destination\": {\"path\": \"\", \"file_SHA256\": \"\", \"filename\": \"\", \"launch_argument\": \"\", \"device\": {\"compliance_rating\": \"\", \"netbios_name\": \"\", \"port\": \"\", \"mac_address\": \"\", \"criticality\": \"\", \"asset_type\": \"\", \"ip_address\": \"\", \"facility\": \"\", \"business_unit\": \"\", \"geolocation\": {\"country\": \"\", \"city\": \"\", \"latitude\": null, \"organization\": \"\", \"domain\": \"\", \"longitude\": null}}, \"user\": {\"email_address\": \"\", \"ad_username\": \"\", \"ad_domain\": \"\", \"username\": \"user3\"}, \"hash\": \"\"}, \"description\": \"authentication failure\", \"domain_src\": \"\", \"port_src\": \"\", \"device_type\": \"rhlinux\", \"event_source\": \"a68645fa-b683-4a38-9f5c-653e405a403a:56005\", \"source\": {\"path\": \"\", \"file_SHA256\": \"\", \"filename\": \"\", \"launch_argument\": \"\", \"device\": {\"compliance_rating\": \"\", \"netbios_name\": \"\", \"port\": \"\", \"mac_address\": \"\", \"criticality\": \"\", \"asset_type\": \"\", \"ip_address\": \"\", \"facility\": \"\", \"business_unit\": \"\", \"geolocation\": {\"country\": \"\", \"city\": \"\", \"latitude\": null, \"organization\": \"\", \"domain\": \"\", \"longitude\": null}}, \"user\": {\"email_address\": \"\", \"ad_username\": \"\", \"ad_domain\": \"\", \"username\": \"5302\"}, \"hash\": \"\"}, \"type\": \"Log\", \"analysis_file\": \"\", \"directory\": \"\", \"registry_key\": \"\", \"enrichment\": \"\", \"user_src\": \"\", \"hostname\": \"\", \"analysis_service\": \"\", \"detected_by\": \"Unix-rhlinux,9.4.4.9\", \"process_vid\": \"\", \"host_src\": \"\", \"function\": null, \"context\": \"\", \"action\": \"\", \"operating_system\": \"\", \"alias_ip\": \"\", \"from\": \"\", \"timestamp\": 1762509362000, \"ec_subject\": \"User\", \"event_source_id\": \"342133\", \"related_links\": [{\"type\": \"investigate_original_event\", \"url\": \"/investigation/host/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/event/AUTO/342133\"}], \"service_name\": \"\", \"port_dst\": \"\", \"domain_dst\": \"\", \"user_dst\": \"user3\", \"autorun_type\": \"\", \"host_dst\": \"\", \"domain\": \"\", \"user_account\": \"\", \"to\": \"\", \"category\": \"\", \"cert_common\": \"\", \"detector\": {\"device_class\": \"Unix\", \"ip_address\": \"9.4.4.9\", \"product_name\": \"rhlinux\"}, \"user\": \"5302 , user3\", \"analysis_session\": \"\", \"event_time\": null, \"site_categorization\": null, \"username\": \"5302\"}, {\"agent_id\": \"\", \"data\": [{\"filename\": \"\", \"size\": 168, \"hash\": \"\"}], \"destination\": {\"path\": \"\", \"file_SHA256\": \"\", \"filename\": \"\", \"launch_argument\": \"\", \"device\": {\"compliance_rating\": \"\", \"netbios_name\": \"\", \"port\": \"\", \"mac_address\": \"\", \"criticality\": \"\", \"asset_type\": \"\", \"ip_address\": \"\", \"facility\": \"\", \"business_unit\": \"\", \"geolocation\": {\"country\": \"\", \"city\": \"\", \"latitude\": null, \"organization\": \"\", \"domain\": \"\", \"longitude\": null}}, \"user\": {\"email_address\": \"\", \"ad_username\": \"\", \"ad_domain\": \"\", \"username\": \"uid=user4,ou=People,dc=host2,dc=site\"}, \"hash\": \"\"}, \"description\": \"bind error\", \"domain_src\": \"\", \"port_src\": \"\", \"device_type\": \"rhlinux\", \"event_source\": \"a68645fa-b683-4a38-9f5c-653e405a403a:56005\", \"source\": {\"path\": \"\", \"file_SHA256\": \"\", \"filename\": \"\", \"launch_argument\": \"\", \"device\": {\"compliance_rating\": \"\", \"netbios_name\": \"\", \"port\": \"\", \"mac_address\": \"\", \"criticality\": \"\", \"asset_type\": \"\", \"ip_address\": \"\", \"facility\": \"\", \"business_unit\": \"\", \"geolocation\": {\"country\": \"\", \"city\": \"\", \"latitude\": null, \"organization\": \"\", \"domain\": \"\", \"longitude\": null}}, \"user\": {\"email_address\": \"\", \"ad_username\": \"\", \"ad_domain\": \"\", \"username\": \"\"}, \"hash\": \"\"}, \"type\": \"Log\", \"analysis_file\": \"\", \"directory\": \"\", \"registry_key\": \"\", \"enrichment\": \"\", \"user_src\": \"\", \"hostname\": \"\", \"analysis_service\": \"\", \"detected_by\": \"Unix-rhlinux,9.4.4.9\", \"process_vid\": \"\", \"host_src\": \"\", \"function\": null, \"context\": \"\", \"action\": \"\", \"operating_system\": \"\", \"alias_ip\": \"\", \"from\": \"\", \"timestamp\": 1762509362000, \"ec_subject\": \"User\", \"event_source_id\": \"342134\", \"related_links\": [{\"type\": \"investigate_original_event\", \"url\": \"/investigation/host/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/event/AUTO/342134\"}], \"service_name\": \"\", \"port_dst\": \"\", \"domain_dst\": \"\", \"user_dst\": \"uid=user4,ou=People,dc=host2,dc=site\", \"autorun_type\": \"\", \"host_dst\": \"\", \"domain\": \"\", \"user_account\": \"\", \"to\": \"\", \"category\": \"\", \"cert_common\": \"\", \"detector\": {\"device_class\": \"Unix\", \"ip_address\": \"9.4.4.9\", \"product_name\": \"rhlinux\"}, \"user\": \"uid=user4,ou=People,dc=host2,dc=site\", \"analysis_session\": \"\", \"event_time\": null, \"site_categorization\": null, \"username\": \"\"}, {\"agent_id\": \"\", \"data\": [{\"filename\": \"\", \"size\": 191, \"hash\": \"\"}], \"destination\": {\"path\": \"\", \"file_SHA256\": \"\", \"filename\": \"\", \"launch_argument\": \"\", \"device\": {\"compliance_rating\": \"\", \"netbios_name\": \"\", \"port\": \"\", \"mac_address\": \"\", \"criticality\": \"\", \"asset_type\": \"\", \"ip_address\": \"\", \"facility\": \"\", \"business_unit\": \"\", \"geolocation\": {\"country\": \"\", \"city\": \"\", \"latitude\": null, \"organization\": \"\", \"domain\": \"\", \"longitude\": null}}, \"user\": {\"email_address\": \"\", \"ad_username\": \"\", \"ad_domain\": \"\", \"username\": \"srohatgi\"}, \"hash\": \"\"}, \"description\": \"authentication failure(s)\", \"domain_src\": \"\", \"port_src\": \"\", \"device_type\": \"rhlinux\", \"event_source\": \"a68645fa-b683-4a38-9f5c-653e405a403a:56005\", \"source\": {\"path\": \"\", \"file_SHA256\": \"\", \"filename\": \"\", \"launch_argument\": \"\", \"device\": {\"compliance_rating\": \"\", \"netbios_name\": \"\", \"port\": \"\", \"mac_address\": \"\", \"criticality\": \"\", \"asset_type\": \"\", \"ip_address\": \"\", \"facility\": \"\", \"business_unit\": \"\", \"geolocation\": {\"country\": \"\", \"city\": \"\", \"latitude\": null, \"organization\": \"\", \"domain\": \"\", \"longitude\": null}}, \"user\": {\"email_address\": \"\", \"ad_username\": \"\", \"ad_domain\": \"\", \"username\": \"0\"}, \"hash\": \"\"}, \"type\": \"Log\", \"analysis_file\": \"\", \"directory\": \"\", \"registry_key\": \"\", \"enrichment\": \"\", \"user_src\": \"\", \"hostname\": \"\", \"analysis_service\": \"\", \"detected_by\": \"Unix-rhlinux,9.4.4.9\", \"process_vid\": \"\", \"host_src\": \"lxdm14545.etrade.com\", \"function\": null, \"context\": \"\", \"action\": \"\", \"operating_system\": \"\", \"alias_ip\": \"\", \"from\": \"\", \"timestamp\": 1762509362000, \"ec_subject\": \"User\", \"event_source_id\": \"342216\", \"related_links\": [{\"type\": \"investigate_original_event\", \"url\": \"/investigation/host/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/event/AUTO/342216\"}], \"service_name\": \"\", \"port_dst\": \"\", \"domain_dst\": \"\", \"user_dst\": \"srohatgi\", \"autorun_type\": \"\", \"host_dst\": \"\", \"domain\": \"\", \"user_account\": \"\", \"to\": \"\", \"category\": \"\", \"cert_common\": \"\", \"detector\": {\"device_class\": \"Unix\", \"ip_address\": \"9.4.4.9\", \"product_name\": \"rhlinux\"}, \"user\": \"0 , srohatgi\", \"analysis_session\": \"\", \"event_time\": null, \"site_categorization\": null, \"username\": \"0\"}], \"groupby_detector_dns_hostname\": \"\", \"host_summary\": [\"Unix-rhlinux,9.4.4.9\"], \"groupby_username\": \"0,5302\", \"groupby_file_sha_256\": \"\", \"groupby_user_dst\": \"srohatgi,uid=user4,ou=People,dc=host2,dc=site,user3\", \"groupby_dst_device_dns_hostname\": \"\", \"groupby_os\": \"\", \"groupby_src_usr_ad_domain\": \"\", \"groupby_dst_usr_ad_username\": \"\", \"name\": \"Multiple Failed Logons from Same Source IP with Unique Usernames\", \"groupby_detector_dns_domain\": \"\", \"groupby_host_src\": \"lxdm14545.etrade.com\", \"groupby_analysis_service\": \"\", \"groupby_destination_device_mac_address\": \"\", \"groupby_version\": \"0\", \"groupby_dst_device_netbios_name\": \"\", \"destination_country\": [], \"groupby_type\": \"Log\", \"groupby_device_type\": \"rhlinux\", \"groupby_domain\": \"\", \"groupby_destination_country\": \"\", \"groupby_dst_device_dns_domain\": \"\", \"groupby_analysis_session\": \"\", \"signature_id\": \"1d8fc6ceb1f94c6326d6d5483d258fcb2e179e9869325b245d105c2219bf69fd\", \"groupby_data_hash\": \"\", \"groupby_domain_dst\": \"\", \"groupby_src_device_netbios_name\": \"\", \"groupby_destination_ip\": \"\", \"groupby_host_dst\": \"\", \"groupby_source_ip\": \"\", \"groupby_detector_mac_address\": \"\", \"timestamp\": 1762509362241, \"severity\": 30.0, \"related_links\": [{\"type\": \"investigate_session\", \"url\": \"/investigation/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/query/sessionid%3D342133%7C%7Csessionid%3D342134%7C%7Csessionid%3D342216\"}, {\"type\": \"investigate_device_ip\", \"url\": \"/investigation/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/query/device.ip%3D9.4.4.9%2Fdate%2F2025-11-07T09%3A46%3A02.000Z%2F2025-11-07T10%3A06%3A02.000Z\"}], \"risk_score\": 30.0, \"groupby_src_device_geolocation_domain\": \"\", \"groupby_dst_usr_ad_domain\": \"\", \"groupby_destination_port\": \"\", \"groupby_c2domain\": \"\", \"groupby_host_name\": \"\", \"groupby_src_usr_ad_username\": \"\", \"groupby_src_device_dns_hostname\": \"\", \"source_country\": [], \"groupby_domain_src\": \"\", \"numEvents\": 3, \"groupby_agent_id\": \"\"}], \"mirror_instance\": \"\", \"mirror_direction\": null}"
             }
         ]
     ],
     "fetch_incidents_without_alerts": [
         [
             {
-                "name": "RSA NetWitness 11.5 INC-00 - test ",
-                "occurred": "2023-06-19T12:03:01.466Z",
-                "rawJSON": "{\"id\": \"INC-00\", \"title\": \"test \", \"summary\": null, \"priority\": \"Low\", \"riskScore\": 50, \"status\": \"New\", \"alertCount\": 1, \"averageAlertRiskScore\": 50, \"sealed\": false, \"totalRemediationTaskCount\": 0, \"openRemediationTaskCount\": 0, \"created\": \"2023-06-19T12:03:01.466Z\", \"lastUpdated\": \"2023-06-19T12:03:01.466Z\", \"lastUpdatedBy\": null, \"assignee\": null, \"sources\": [\"NetWitness Investigate\"], \"ruleId\": null, \"firstAlertTime\": null, \"categories\": null, \"journalEntries\": null, \"createdBy\": \"dummy\", \"deletedAlertCount\": 0, \"eventCount\": 1, \"alertMeta\": {\"SourceIp\": [\"\"], \"DestinationIp\": [\"\"]}, \"incident_url\": \"http://test.com/respond/incident/INC-00\", \"mirror_instance\": \"\", \"mirror_direction\": null}"
+                "name": "RSA NetWitness 11.5 INC-345 - User Behavior for ca1dmc,guest,root",
+                "occurred": "2026-01-08T05:51:24.769Z",
+                "rawJSON": "{\"id\": \"INC-345\", \"title\": \"User Behavior for ca1dmc,guest,root\", \"summary\": \"\", \"priority\": \"Critical\", \"riskScore\": 30, \"status\": \"New\", \"alertCount\": 2, \"averageAlertRiskScore\": 30, \"sealed\": true, \"totalRemediationTaskCount\": 0, \"openRemediationTaskCount\": 0, \"created\": \"2026-01-08T05:51:24.769Z\", \"lastUpdated\": \"2026-01-08T05:53:20.322Z\", \"lastUpdatedBy\": null, \"assignee\": null, \"sources\": [\"Event Stream Analysis\"], \"ruleId\": \"6904a91794e9df71b27b5cda\", \"firstAlertTime\": \"2026-01-08T05:50:35.042Z\", \"categories\": [], \"journalEntries\": null, \"createdBy\": \"User Behavior\", \"deletedAlertCount\": 0, \"eventCount\": 6, \"alertMeta\": {\"SourceIp\": [\"\"], \"DestinationIp\": [\"\"]}, \"tactics\": [\"TA0006\"], \"techniques\": [\"T1110\"], \"incident_url\": \"http://test.com/respond/incident/INC-345\", \"mirror_instance\": \"\", \"mirror_direction\": null}"
             }
         ]
     ],
-    "list_incidents_request": [
+    "list_incidents_request": {
+    "items": [
         {
-            "items": [
-                {
-                    "id": "INC-00",
-                    "title": "test ",
-                    "summary": null,
-                    "priority": "Low",
-                    "riskScore": 50,
-                    "status": "New",
-                    "alertCount": 1,
-                    "averageAlertRiskScore": 50,
-                    "sealed": false,
-                    "totalRemediationTaskCount": 0,
-                    "openRemediationTaskCount": 0,
-                    "created": "2023-06-19T12:03:01.466Z",
-                    "lastUpdated": "2023-06-19T12:03:01.466Z",
-                    "lastUpdatedBy": null,
-                    "assignee": null,
-                    "sources": [
-                        "NetWitness Investigate"
-                    ],
-                    "ruleId": null,
-                    "firstAlertTime": null,
-                    "categories": null,
-                    "journalEntries": null,
-                    "createdBy": "dummy",
-                    "deletedAlertCount": 0,
-                    "eventCount": 1,
-                    "alertMeta": {
-                        "SourceIp": [
-                            ""
-                        ],
-                        "DestinationIp": [
-                            ""
-                        ]
-                    }
-                }
+            "id": "INC-394",
+            "title": "User Behavior for a.donetti,master,root",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.718Z",
+            "lastUpdated": "2026-01-08T07:27:14.720Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
             ],
-            "pageNumber": 0,
-            "pageSize": 100,
-            "totalPages": 1,
-            "totalItems": 1,
-            "hasNext": false,
-            "hasPrevious": false
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.888Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-393",
+            "title": "User Behavior for dhelmen,mevelluc,vogelsak",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.710Z",
+            "lastUpdated": "2026-01-08T07:27:14.712Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.817Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-392",
+            "title": "User Behavior for jlowe,luis,msantost",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.701Z",
+            "lastUpdated": "2026-01-08T07:27:14.703Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.858Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-391",
+            "title": "User Behavior for (null),dlam,tsanghvi",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.693Z",
+            "lastUpdated": "2026-01-08T07:27:14.694Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.824Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-390",
+            "title": "User Behavior for srohatgi,uid=user4,ou=People,dc=host2,dc=site,user3",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.684Z",
+            "lastUpdated": "2026-01-08T07:27:14.685Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.824Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-389",
+            "title": "User Behavior for adm,hchow,root",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.675Z",
+            "lastUpdated": "2026-01-08T07:27:14.676Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.889Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-388",
+            "title": "User Behavior for dlam,dsumu64,secaudit",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.666Z",
+            "lastUpdated": "2026-01-08T07:27:14.667Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.826Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-387",
+            "title": "User Behavior for 044854,ppot,rdavis",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.656Z",
+            "lastUpdated": "2026-01-08T07:27:14.658Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.825Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-386",
+            "title": "User Behavior for hscroot,orenaul,root",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.647Z",
+            "lastUpdated": "2026-01-08T07:27:14.649Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.826Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-385",
+            "title": "User Behavior for luis,root,shiller",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.639Z",
+            "lastUpdated": "2026-01-08T07:27:14.640Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.858Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-384",
+            "title": "User Behavior for -froot,root,user2",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.630Z",
+            "lastUpdated": "2026-01-08T07:27:14.631Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.855Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-383",
+            "title": "User Behavior for admin,miuxp,sapadm",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.621Z",
+            "lastUpdated": "2026-01-08T07:27:14.622Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.856Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    "10.115.10.69"
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-382",
+            "title": "User Behavior for OMGEO\\ctm.build,jdeppen,root",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.612Z",
+            "lastUpdated": "2026-01-08T07:27:14.614Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.855Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-381",
+            "title": "User Behavior for chague,luis,p.bragadini",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.603Z",
+            "lastUpdated": "2026-01-08T07:27:14.605Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.889Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-380",
+            "title": "User Behavior for ca1dmc,guest,root",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.594Z",
+            "lastUpdated": "2026-01-08T07:27:14.596Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.823Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-379",
+            "title": "User Behavior for grosenkoetter,nasadmin,qlew\\hpsim",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.582Z",
+            "lastUpdated": "2026-01-08T07:27:14.584Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.816Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-378",
+            "title": "User Behavior for acmessh,c-smanan,joroot",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.573Z",
+            "lastUpdated": "2026-01-08T07:27:14.575Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.827Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-377",
+            "title": "User Behavior for Ypr603,root,vperumal",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.564Z",
+            "lastUpdated": "2026-01-08T07:27:14.566Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.857Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-376",
+            "title": "User Behavior for Administrator,admin,cust",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.556Z",
+            "lastUpdated": "2026-01-08T07:27:14.557Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.826Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-375",
+            "title": "User Behavior for ismdbsvc,jlcumm6,t_dfklube",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.547Z",
+            "lastUpdated": "2026-01-08T07:27:14.549Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.891Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-374",
+            "title": "User Behavior for admin,hscroot,root",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.538Z",
+            "lastUpdated": "2026-01-08T07:27:14.540Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.889Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    "206.213.41.1"
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-373",
+            "title": "User Behavior for a_tidewa,rh3svc,shiller",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.529Z",
+            "lastUpdated": "2026-01-08T07:27:14.530Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.827Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-372",
+            "title": "User Behavior for heisys,serena,sgooty",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.520Z",
+            "lastUpdated": "2026-01-08T07:27:14.522Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.855Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-371",
+            "title": "User Behavior for u92341,u95943,wliaa",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.512Z",
+            "lastUpdated": "2026-01-08T07:27:14.513Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.815Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-370",
+            "title": "User Behavior for OMGEO\\alla.fevraleva,beltp01,id04096",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.503Z",
+            "lastUpdated": "2026-01-08T07:27:14.504Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.817Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-369",
+            "title": "User Behavior for admin,autosys,root",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.493Z",
+            "lastUpdated": "2026-01-08T07:27:14.495Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.816Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-368",
+            "title": "User Behavior for dbobart,exchakr,grosenkoetter@ny1lpfg5 (RBA)",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.484Z",
+            "lastUpdated": "2026-01-08T07:27:14.486Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.890Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-367",
+            "title": "User Behavior for in.rlogind,root,sbidny",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T07:27:14.449Z",
+            "lastUpdated": "2026-01-08T07:27:14.452Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T07:26:22.824Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-366",
+            "title": "User Behavior for jlowe,luis,msantost",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:53:20.384Z",
+            "lastUpdated": "2026-01-08T05:53:20.386Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:52:31.228Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-365",
+            "title": "User Behavior for luis,root,shiller",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:53:20.342Z",
+            "lastUpdated": "2026-01-08T05:53:20.344Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:52:31.229Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-364",
+            "title": "User Behavior for admin,miuxp,sapadm",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:53:20.333Z",
+            "lastUpdated": "2026-01-08T05:53:20.335Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:52:31.227Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    "10.115.10.69"
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-363",
+            "title": "User Behavior for Ypr603,root,vperumal",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:53:20.305Z",
+            "lastUpdated": "2026-01-08T05:53:20.307Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:52:31.228Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-362",
+            "title": "User Behavior for admin,hscroot,root",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:53:20.284Z",
+            "lastUpdated": "2026-01-08T05:53:20.285Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:52:31.257Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    "206.213.41.1"
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-361",
+            "title": "User Behavior for dbobart,exchakr,grosenkoetter@ny1lpfg5 (RBA)",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:53:20.252Z",
+            "lastUpdated": "2026-01-08T05:53:20.253Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:52:31.258Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-360",
+            "title": "User Behavior for dhelmen,efreiborg,root",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 2,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:51:24.931Z",
+            "lastUpdated": "2026-01-08T05:53:20.413Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:50:35.056Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 6,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-359",
+            "title": "User Behavior for OMGEO\\babu.pinnamraju,OMGEO\\guy.moore,atoda2",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 2,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:51:24.916Z",
+            "lastUpdated": "2026-01-08T05:53:20.409Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:50:35.030Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 6,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-358",
+            "title": "User Behavior for a.donetti,master,root",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 2,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:51:24.906Z",
+            "lastUpdated": "2026-01-08T05:53:20.405Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:50:35.057Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 6,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-357",
+            "title": "User Behavior for root",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 8,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:51:24.895Z",
+            "lastUpdated": "2026-01-08T05:53:20.400Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:50:35.055Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 8,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0004",
+                "TA0001"
+            ],
+            "techniques": [
+                "T1078",
+                "T1098"
+            ]
+        },
+        {
+            "id": "INC-356",
+            "title": "User Behavior for dhelmen,mevelluc,vogelsak",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 2,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:51:24.882Z",
+            "lastUpdated": "2026-01-08T05:53:20.395Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:50:35.027Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 6,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-355",
+            "title": "User Behavior for srohatgi,uid=user4,ou=People,dc=host2,dc=site,user3",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 2,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:51:24.873Z",
+            "lastUpdated": "2026-01-08T05:53:20.382Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:50:35.043Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 6,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-354",
+            "title": "User Behavior for (null),dlam,tsanghvi",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 2,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:51:24.863Z",
+            "lastUpdated": "2026-01-08T05:53:20.377Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:50:35.044Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 6,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-353",
+            "title": "User Behavior for adm,hchow,root",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 2,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:51:24.852Z",
+            "lastUpdated": "2026-01-08T05:53:20.373Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:50:35.057Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 6,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-352",
+            "title": "User Behavior for dlam,dsumu64,secaudit",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 2,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:51:24.842Z",
+            "lastUpdated": "2026-01-08T05:53:20.366Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:50:35.046Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 6,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-351",
+            "title": "User Behavior for 044854,ppot,rdavis",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 2,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:51:24.831Z",
+            "lastUpdated": "2026-01-08T05:53:20.362Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:50:35.045Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 6,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-350",
+            "title": "User Behavior for hscroot,orenaul,root",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 2,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:51:24.821Z",
+            "lastUpdated": "2026-01-08T05:53:20.357Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:50:35.046Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 6,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-349",
+            "title": "User Behavior for -froot,root,user2",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 2,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:51:24.811Z",
+            "lastUpdated": "2026-01-08T05:53:20.353Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:50:35.050Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 6,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-348",
+            "title": "User Behavior for OMGEO\\ctm.build,jdeppen,root",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 2,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:51:24.801Z",
+            "lastUpdated": "2026-01-08T05:53:20.331Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:50:35.050Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 6,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-347",
+            "title": "User Behavior for exchakr,foobar,grosenkoetter@ny1lpfg5 (RBA)",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 1,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:51:24.790Z",
+            "lastUpdated": "2026-01-08T05:51:24.792Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:50:35.059Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 3,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-346",
+            "title": "User Behavior for chague,luis,p.bragadini",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 2,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:51:24.780Z",
+            "lastUpdated": "2026-01-08T05:53:20.327Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:50:35.057Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 6,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
+        },
+        {
+            "id": "INC-345",
+            "title": "User Behavior for ca1dmc,guest,root",
+            "summary": "",
+            "priority": "Critical",
+            "riskScore": 30,
+            "status": "New",
+            "alertCount": 2,
+            "averageAlertRiskScore": 30,
+            "sealed": true,
+            "totalRemediationTaskCount": 0,
+            "openRemediationTaskCount": 0,
+            "created": "2026-01-08T05:51:24.769Z",
+            "lastUpdated": "2026-01-08T05:53:20.322Z",
+            "lastUpdatedBy": null,
+            "assignee": null,
+            "sources": [
+                "Event Stream Analysis"
+            ],
+            "ruleId": "6904a91794e9df71b27b5cda",
+            "firstAlertTime": "2026-01-08T05:50:35.042Z",
+            "categories": [],
+            "journalEntries": null,
+            "createdBy": "User Behavior",
+            "deletedAlertCount": 0,
+            "eventCount": 6,
+            "alertMeta": {
+                "SourceIp": [
+                    ""
+                ],
+                "DestinationIp": [
+                    ""
+                ]
+            },
+            "tactics": [
+                "TA0006"
+            ],
+            "techniques": [
+                "T1110"
+            ]
         }
     ],
+    "pageNumber": 1,
+    "pageSize": 50,
+    "totalPages": 7,
+    "totalItems": 337,
+    "hasNext": true,
+    "hasPrevious": true
+},
     "incident_list_alerts_request": [
-        {
-            "items": [
+    {
+        "_id": "690db4f17ba19a1714249da6",
+        "receivedTime": 1762505969892,
+        "status": "GROUPED_IN_INCIDENT",
+        "originalHeaders": {
+            "name": "Multiple Failed Logons from Same Source IP with Unique Usernames",
+            "description": null,
+            "version": 0,
+            "severity": 3,
+            "timestamp": 1762505967983,
+            "signatureId": "1d8fc6ceb1f94c6326d6d5483d258fcb2e179e9869325b245d105c2219bf69fd",
+            "deviceVendor": "RSA Netwitness",
+            "deviceProduct": "Event Stream Analysis",
+            "deviceVersion": "12.5",
+            "uebaSource": null,
+            "whiteListAlertSources": []
+        },
+        "originalAlert": {
+            "severity": 3,
+            "eventSourceId": "a68645fa-b683-4a38-9f5c-653e405a403a:56005:337745",
+            "respondEnabled": true,
+            "moduleType": "ESPER",
+            "engineUri": "testesa",
+            "moduleName": "Multiple Failed Logons from Same Source IP with Unique Usernames",
+            "suppressMessageBus": false,
+            "transientAlert": false,
+            "version": "0.2",
+            "notificationReasons": [],
+            "actualEventsCount": 3,
+            "instanceId": "1d8fc6ceb1f94c6326d6d5483d258fcb2e179e9869325b245d105c2219bf69fd",
+            "statement": "Module_esa000067_v0_2_Alert",
+            "contentUuid": "1d6122d2-eb9e-4898-82b5-06b73183a8e9",
+            "id": "d81a7f7b-e12a-4b7f-a475-a84bf2121612",
+            "time": "Nov 7, 2025 08:59:27 AM UTC",
+            "moduleId": "esa000067_v0_2",
+            "events": [
                 {
-                    "id": "1111",
-                    "title": "test ",
-                    "detail": null,
-                    "created": "2023-06-19T12:03:01.454Z",
-                    "source": "NetWitness Investigate",
-                    "riskScore": 50,
-                    "type": "Log",
-                    "events": [
-                        {
-                            "source": {
-                                "device": {
-                                    "ipAddress": null,
-                                    "port": null,
-                                    "macAddress": null,
-                                    "dnsHostname": null,
-                                    "dnsDomain": null
-                                },
-                                "user": {
-                                    "username": null,
-                                    "emailAddress": null,
-                                    "adUsername": null,
-                                    "adDomain": null
-                                }
-                            },
-                            "destination": {
-                                "device": {
-                                    "ipAddress": null,
-                                    "port": null,
-                                    "macAddress": null,
-                                    "dnsHostname": null,
-                                    "dnsDomain": null
-                                },
-                                "user": {
-                                    "username": null,
-                                    "emailAddress": null,
-                                    "adUsername": null,
-                                    "adDomain": null
-                                }
-                            },
-                            "domain": null,
-                            "eventSource": null,
-                            "eventSourceId": "1"
-                        }
+                    "msg": "kcheckpass: pam_unix(kscreensaver:auth): authentication failure; logname= uid=5302 euid=5302 tty=:0 ruser= rhost=  user=user3",
+                    "ec_activity": "Logon",
+                    "header_id": "0007",
+                    "event_cat_name": "User.Activity.Failed Logins",
+                    "com_rsa_netwitness_streams_stream": "testesa",
+                    "device_type": "rhlinux",
+                    "event_source": "pam_unix(kscreensaver:auth)",
+                    "sessionid": 337745,
+                    "medium": 32,
+                    "rid": 337745,
+                    "msg_vid": "kcheckpass",
+                    "event_cat": 1401030000,
+                    "client": "kcheckpass",
+                    "msg_id": "01039:01",
+                    "device_disc": 66,
+                    "ec_subject": "User",
+                    "event_source_id": "a68645fa-b683-4a38-9f5c-653e405a403a:56005:337745",
+                    "com_rsa_netwitness_streams_arrival_timestamp": 1762505967974,
+                    "esa_time": 1762505967983,
+                    "ec_theme": "Authentication",
+                    "terminal": ":0",
+                    "device_disc_type": "rhlinux",
+                    "com_rsa_netwitness_streams_source_trail": [
+                        "10.237.168.21:56005"
+                    ],
+                    "device_ip": "9.4.4.9",
+                    "event_desc": "authentication failure",
+                    "user_dst": "user3",
+                    "size": 182,
+                    "device_class": "Unix",
+                    "time": 1762505966000,
+                    "ec_outcome": "Failure",
+                    "com_rsa_netwitness_streams_arrival_sequence": 60841,
+                    "did": "nwappliance4062",
+                    "forward_ipv6": "0:0:0:0:0:0:0:1",
+                    "username": [
+                        "5302"
+                    ]
+                },
+                {
+                    "msg": "kcheckpass: pam_ldap: error trying to bind as user \"uid=user4,ou=People,dc=host2,dc=site\" (Invalid credentials)",
+                    "ec_activity": "Logon",
+                    "header_id": "0007",
+                    "event_cat_name": "User.Activity.Failed Logins",
+                    "com_rsa_netwitness_streams_stream": "testesa",
+                    "device_type": "rhlinux",
+                    "event_source": "pam_ldap",
+                    "sessionid": 337746,
+                    "medium": 32,
+                    "rid": 337746,
+                    "msg_vid": "kcheckpass",
+                    "result": "Invalid credentials",
+                    "event_cat": 1401030000,
+                    "client": "kcheckpass",
+                    "msg_id": "01039:02",
+                    "device_disc": 70,
+                    "ec_subject": "User",
+                    "event_source_id": "a68645fa-b683-4a38-9f5c-653e405a403a:56005:337746",
+                    "com_rsa_netwitness_streams_arrival_timestamp": 1762505967974,
+                    "esa_time": 1762505967983,
+                    "ec_theme": "Authentication",
+                    "device_disc_type": "rhlinux",
+                    "com_rsa_netwitness_streams_source_trail": [
+                        "10.237.168.21:56005"
+                    ],
+                    "device_ip": "9.4.4.9",
+                    "event_desc": "bind error",
+                    "user_dst": "uid=user4,ou=People,dc=host2,dc=site",
+                    "size": 168,
+                    "device_class": "Unix",
+                    "time": 1762505966000,
+                    "ec_outcome": "Failure",
+                    "com_rsa_netwitness_streams_arrival_sequence": 60842,
+                    "did": "nwappliance4062",
+                    "forward_ipv6": "0:0:0:0:0:0:0:1"
+                },
+                {
+                    "msg": "login(pam_unix)[9101]: 1 more authentication failure; logname= uid=0 euid=0 tty=pts/2 ruser= rhost=lxdm14545.etrade.com  user=srohatgi",
+                    "process_id": 9101,
+                    "ec_activity": "Logon",
+                    "header_id": "0001",
+                    "event_cat_name": "User.Activity.Failed Logins",
+                    "com_rsa_netwitness_streams_stream": "testesa",
+                    "device_type": "rhlinux",
+                    "sessionid": 337828,
+                    "medium": 32,
+                    "rid": 337828,
+                    "msg_vid": "login",
+                    "event_cat": 1401030000,
+                    "host_src": [
+                        "lxdm14545.etrade.com"
+                    ],
+                    "client": "login(pam_unix)",
+                    "msg_id": "00010:03",
+                    "device_disc": 92,
+                    "ec_subject": "User",
+                    "event_source_id": "a68645fa-b683-4a38-9f5c-653e405a403a:56005:337828",
+                    "com_rsa_netwitness_streams_arrival_timestamp": 1762505967974,
+                    "esa_time": 1762505967983,
+                    "ec_theme": "Authentication",
+                    "terminal": "pts/2",
+                    "device_disc_type": "rhlinux",
+                    "com_rsa_netwitness_streams_source_trail": [
+                        "10.237.168.21:56005"
+                    ],
+                    "device_ip": "9.4.4.9",
+                    "event_desc": "authentication failure(s)",
+                    "user_dst": "srohatgi",
+                    "size": 191,
+                    "dclass_c1": 1,
+                    "device_class": "Unix",
+                    "time": 1762505966000,
+                    "ec_outcome": "Failure",
+                    "com_rsa_netwitness_streams_arrival_sequence": 60924,
+                    "did": "nwappliance4062",
+                    "forward_ipv6": "0:0:0:0:0:0:0:1",
+                    "username": [
+                        "0"
                     ]
                 }
             ],
-            "pageNumber": 0,
-            "pageSize": 100,
-            "totalPages": 1,
-            "totalItems": 1,
-            "hasNext": false,
-            "hasPrevious": false
-        }
-    ]
+            "suppressNotification": false
+        },
+        "alert": {
+            "groupby_alias_ip": "",
+            "groupby_source_device_mac_address": "",
+            "user_summary": [
+                "5302 , user3",
+                "uid=user4,ou=People,dc=host2,dc=site",
+                "0 , srohatgi"
+            ],
+            "groupby_dst_device_geolocation_domain": "",
+            "source": "Event Stream Analysis",
+            "type": [
+                "Log"
+            ],
+            "groupby_user_src": "",
+            "groupby_src_device_dns_domain": "",
+            "groupby_source_country": "",
+            "groupby_analysis_file": "",
+            "groupby_filename": "",
+            "groupby_source_username": "0,5302",
+            "groupby_detector_ip": "9.4.4.9",
+            "groupby_dst_usr_username": "srohatgi,uid=user4,ou=People,dc=host2,dc=site,user3",
+            "events": [
+                {
+                    "agent_id": "",
+                    "data": [
+                        {
+                            "filename": "",
+                            "size": 182,
+                            "hash": ""
+                        }
+                    ],
+                    "destination": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "user3"
+                        },
+                        "hash": ""
+                    },
+                    "description": "authentication failure",
+                    "domain_src": "",
+                    "port_src": "",
+                    "device_type": "rhlinux",
+                    "event_source": "a68645fa-b683-4a38-9f5c-653e405a403a:56005",
+                    "source": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "5302"
+                        },
+                        "hash": ""
+                    },
+                    "type": "Log",
+                    "analysis_file": "",
+                    "directory": "",
+                    "registry_key": "",
+                    "enrichment": "",
+                    "user_src": "",
+                    "hostname": "",
+                    "analysis_service": "",
+                    "detected_by": "Unix-rhlinux,9.4.4.9",
+                    "process_vid": "",
+                    "host_src": "",
+                    "function": null,
+                    "context": "",
+                    "action": "",
+                    "operating_system": "",
+                    "alias_ip": "",
+                    "from": "",
+                    "timestamp": 1762505966000,
+                    "ec_subject": "User",
+                    "event_source_id": "337745",
+                    "related_links": [
+                        {
+                            "type": "investigate_original_event",
+                            "url": "/investigation/host/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/event/AUTO/337745"
+                        }
+                    ],
+                    "service_name": "",
+                    "port_dst": "",
+                    "domain_dst": "",
+                    "user_dst": "user3",
+                    "autorun_type": "",
+                    "host_dst": "",
+                    "domain": "",
+                    "user_account": "",
+                    "to": "",
+                    "category": "",
+                    "cert_common": "",
+                    "detector": {
+                        "device_class": "Unix",
+                        "ip_address": "9.4.4.9",
+                        "product_name": "rhlinux"
+                    },
+                    "user": "5302 , user3",
+                    "analysis_session": "",
+                    "event_time": null,
+                    "site_categorization": null,
+                    "username": "5302"
+                },
+                {
+                    "agent_id": "",
+                    "data": [
+                        {
+                            "filename": "",
+                            "size": 168,
+                            "hash": ""
+                        }
+                    ],
+                    "destination": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "uid=user4,ou=People,dc=host2,dc=site"
+                        },
+                        "hash": ""
+                    },
+                    "description": "bind error",
+                    "domain_src": "",
+                    "port_src": "",
+                    "device_type": "rhlinux",
+                    "event_source": "a68645fa-b683-4a38-9f5c-653e405a403a:56005",
+                    "source": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": ""
+                        },
+                        "hash": ""
+                    },
+                    "type": "Log",
+                    "analysis_file": "",
+                    "directory": "",
+                    "registry_key": "",
+                    "enrichment": "",
+                    "user_src": "",
+                    "hostname": "",
+                    "analysis_service": "",
+                    "detected_by": "Unix-rhlinux,9.4.4.9",
+                    "process_vid": "",
+                    "host_src": "",
+                    "function": null,
+                    "context": "",
+                    "action": "",
+                    "operating_system": "",
+                    "alias_ip": "",
+                    "from": "",
+                    "timestamp": 1762505966000,
+                    "ec_subject": "User",
+                    "event_source_id": "337746",
+                    "related_links": [
+                        {
+                            "type": "investigate_original_event",
+                            "url": "/investigation/host/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/event/AUTO/337746"
+                        }
+                    ],
+                    "service_name": "",
+                    "port_dst": "",
+                    "domain_dst": "",
+                    "user_dst": "uid=user4,ou=People,dc=host2,dc=site",
+                    "autorun_type": "",
+                    "host_dst": "",
+                    "domain": "",
+                    "user_account": "",
+                    "to": "",
+                    "category": "",
+                    "cert_common": "",
+                    "detector": {
+                        "device_class": "Unix",
+                        "ip_address": "9.4.4.9",
+                        "product_name": "rhlinux"
+                    },
+                    "user": "uid=user4,ou=People,dc=host2,dc=site",
+                    "analysis_session": "",
+                    "event_time": null,
+                    "site_categorization": null,
+                    "username": ""
+                },
+                {
+                    "agent_id": "",
+                    "data": [
+                        {
+                            "filename": "",
+                            "size": 191,
+                            "hash": ""
+                        }
+                    ],
+                    "destination": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "srohatgi"
+                        },
+                        "hash": ""
+                    },
+                    "description": "authentication failure(s)",
+                    "domain_src": "",
+                    "port_src": "",
+                    "device_type": "rhlinux",
+                    "event_source": "a68645fa-b683-4a38-9f5c-653e405a403a:56005",
+                    "source": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "0"
+                        },
+                        "hash": ""
+                    },
+                    "type": "Log",
+                    "analysis_file": "",
+                    "directory": "",
+                    "registry_key": "",
+                    "enrichment": "",
+                    "user_src": "",
+                    "hostname": "",
+                    "analysis_service": "",
+                    "detected_by": "Unix-rhlinux,9.4.4.9",
+                    "process_vid": "",
+                    "host_src": "lxdm14545.etrade.com",
+                    "function": null,
+                    "context": "",
+                    "action": "",
+                    "operating_system": "",
+                    "alias_ip": "",
+                    "from": "",
+                    "timestamp": 1762505966000,
+                    "ec_subject": "User",
+                    "event_source_id": "337828",
+                    "related_links": [
+                        {
+                            "type": "investigate_original_event",
+                            "url": "/investigation/host/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/event/AUTO/337828"
+                        }
+                    ],
+                    "service_name": "",
+                    "port_dst": "",
+                    "domain_dst": "",
+                    "user_dst": "srohatgi",
+                    "autorun_type": "",
+                    "host_dst": "",
+                    "domain": "",
+                    "user_account": "",
+                    "to": "",
+                    "category": "",
+                    "cert_common": "",
+                    "detector": {
+                        "device_class": "Unix",
+                        "ip_address": "9.4.4.9",
+                        "product_name": "rhlinux"
+                    },
+                    "user": "0 , srohatgi",
+                    "analysis_session": "",
+                    "event_time": null,
+                    "site_categorization": null,
+                    "username": "0"
+                }
+            ],
+            "groupby_detector_dns_hostname": "",
+            "host_summary": [
+                "Unix-rhlinux,9.4.4.9"
+            ],
+            "groupby_username": "0,5302",
+            "groupby_file_sha_256": "",
+            "groupby_user_dst": "srohatgi,uid=user4,ou=People,dc=host2,dc=site,user3",
+            "groupby_dst_device_dns_hostname": "",
+            "groupby_os": "",
+            "groupby_src_usr_ad_domain": "",
+            "groupby_dst_usr_ad_username": "",
+            "name": "Multiple Failed Logons from Same Source IP with Unique Usernames",
+            "groupby_detector_dns_domain": "",
+            "groupby_host_src": "lxdm14545.etrade.com",
+            "groupby_analysis_service": "",
+            "groupby_destination_device_mac_address": "",
+            "groupby_version": "0",
+            "groupby_dst_device_netbios_name": "",
+            "destination_country": [],
+            "groupby_type": "Log",
+            "groupby_device_type": "rhlinux",
+            "groupby_domain": "",
+            "groupby_destination_country": "",
+            "groupby_dst_device_dns_domain": "",
+            "groupby_analysis_session": "",
+            "signature_id": "1d8fc6ceb1f94c6326d6d5483d258fcb2e179e9869325b245d105c2219bf69fd",
+            "groupby_data_hash": "",
+            "groupby_domain_dst": "",
+            "groupby_src_device_netbios_name": "",
+            "groupby_destination_ip": "",
+            "groupby_host_dst": "",
+            "groupby_source_ip": "",
+            "groupby_detector_mac_address": "",
+            "timestamp": 1762505967983,
+            "severity": 30.0,
+            "related_links": [
+                {
+                    "type": "investigate_session",
+                    "url": "/investigation/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/query/sessionid%3D337745%7C%7Csessionid%3D337746%7C%7Csessionid%3D337828"
+                },
+                {
+                    "type": "investigate_device_ip",
+                    "url": "/investigation/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/query/device.ip%3D9.4.4.9%2Fdate%2F2025-11-07T08%3A49%3A26.000Z%2F2025-11-07T09%3A09%3A26.000Z"
+                }
+            ],
+            "risk_score": 30.0,
+            "groupby_src_device_geolocation_domain": "",
+            "groupby_dst_usr_ad_domain": "",
+            "groupby_destination_port": "",
+            "groupby_c2domain": "",
+            "groupby_host_name": "",
+            "groupby_src_usr_ad_username": "",
+            "groupby_src_device_dns_hostname": "",
+            "source_country": [],
+            "groupby_domain_src": "",
+            "numEvents": 3,
+            "groupby_agent_id": ""
+        },
+        "partOfIncident": true,
+        "lastUpdated": 1762505973068,
+        "risk": "",
+        "tactics": [
+            "TA0006"
+        ],
+        "techniques": [
+            "T1110"
+        ],
+        "_class": "com.rsa.asoc.respond.commons.domain.Alert",
+        "incidentCreated": 1762505973068,
+        "incidentId": "INC-34"
+    },
+    {
+        "_id": "690dc2367ba19a1714249dd5",
+        "receivedTime": 1762509366117,
+        "status": "GROUPED_IN_INCIDENT",
+        "originalHeaders": {
+            "name": "Multiple Failed Logons from Same Source IP with Unique Usernames",
+            "description": null,
+            "version": 0,
+            "severity": 3,
+            "timestamp": 1762509362241,
+            "signatureId": "1d8fc6ceb1f94c6326d6d5483d258fcb2e179e9869325b245d105c2219bf69fd",
+            "deviceVendor": "RSA Netwitness",
+            "deviceProduct": "Event Stream Analysis",
+            "deviceVersion": "12.5",
+            "uebaSource": null,
+            "whiteListAlertSources": []
+        },
+        "originalAlert": {
+            "severity": 3,
+            "eventSourceId": "a68645fa-b683-4a38-9f5c-653e405a403a:56005:342133",
+            "respondEnabled": true,
+            "moduleType": "ESPER",
+            "engineUri": "testesa",
+            "moduleName": "Multiple Failed Logons from Same Source IP with Unique Usernames",
+            "suppressMessageBus": false,
+            "transientAlert": false,
+            "version": "0.2",
+            "notificationReasons": [],
+            "actualEventsCount": 3,
+            "instanceId": "1d8fc6ceb1f94c6326d6d5483d258fcb2e179e9869325b245d105c2219bf69fd",
+            "statement": "Module_esa000067_v0_2_Alert",
+            "contentUuid": "1d6122d2-eb9e-4898-82b5-06b73183a8e9",
+            "id": "2492ef5b-f2ac-47a9-9e63-a160c9fe3a92",
+            "time": "Nov 7, 2025 09:56:02 AM UTC",
+            "moduleId": "esa000067_v0_2",
+            "events": [
+                {
+                    "msg": "kcheckpass: pam_unix(kscreensaver:auth): authentication failure; logname= uid=5302 euid=5302 tty=:0 ruser= rhost=  user=user3",
+                    "ec_activity": "Logon",
+                    "header_id": "0007",
+                    "event_cat_name": "User.Activity.Failed Logins",
+                    "com_rsa_netwitness_streams_stream": "testesa",
+                    "device_type": "rhlinux",
+                    "event_source": "pam_unix(kscreensaver:auth)",
+                    "sessionid": 342133,
+                    "medium": 32,
+                    "rid": 342133,
+                    "msg_vid": "kcheckpass",
+                    "event_cat": 1401030000,
+                    "client": "kcheckpass",
+                    "msg_id": "01039:01",
+                    "device_disc": 66,
+                    "ec_subject": "User",
+                    "event_source_id": "a68645fa-b683-4a38-9f5c-653e405a403a:56005:342133",
+                    "com_rsa_netwitness_streams_arrival_timestamp": 1762509362214,
+                    "esa_time": 1762509362241,
+                    "ec_theme": "Authentication",
+                    "device_group": "All Unix Event Source(s)",
+                    "terminal": ":0",
+                    "device_disc_type": "rhlinux",
+                    "com_rsa_netwitness_streams_source_trail": [
+                        "10.237.168.21:56005"
+                    ],
+                    "device_ip": "9.4.4.9",
+                    "event_desc": "authentication failure",
+                    "user_dst": "user3",
+                    "size": 182,
+                    "device_class": "Unix",
+                    "time": 1762509362000,
+                    "ec_outcome": "Failure",
+                    "com_rsa_netwitness_streams_arrival_sequence": 65229,
+                    "did": "nwappliance4062",
+                    "forward_ipv6": "0:0:0:0:0:0:0:1",
+                    "username": [
+                        "5302"
+                    ]
+                },
+                {
+                    "msg": "kcheckpass: pam_ldap: error trying to bind as user \"uid=user4,ou=People,dc=host2,dc=site\" (Invalid credentials)",
+                    "ec_activity": "Logon",
+                    "header_id": "0007",
+                    "event_cat_name": "User.Activity.Failed Logins",
+                    "com_rsa_netwitness_streams_stream": "testesa",
+                    "device_type": "rhlinux",
+                    "event_source": "pam_ldap",
+                    "sessionid": 342134,
+                    "medium": 32,
+                    "rid": 342134,
+                    "msg_vid": "kcheckpass",
+                    "result": "Invalid credentials",
+                    "event_cat": 1401030000,
+                    "client": "kcheckpass",
+                    "msg_id": "01039:02",
+                    "device_disc": 70,
+                    "ec_subject": "User",
+                    "event_source_id": "a68645fa-b683-4a38-9f5c-653e405a403a:56005:342134",
+                    "com_rsa_netwitness_streams_arrival_timestamp": 1762509362214,
+                    "esa_time": 1762509362241,
+                    "ec_theme": "Authentication",
+                    "device_group": "All Unix Event Source(s)",
+                    "device_disc_type": "rhlinux",
+                    "com_rsa_netwitness_streams_source_trail": [
+                        "10.237.168.21:56005"
+                    ],
+                    "device_ip": "9.4.4.9",
+                    "event_desc": "bind error",
+                    "user_dst": "uid=user4,ou=People,dc=host2,dc=site",
+                    "size": 168,
+                    "device_class": "Unix",
+                    "time": 1762509362000,
+                    "ec_outcome": "Failure",
+                    "com_rsa_netwitness_streams_arrival_sequence": 65230,
+                    "did": "nwappliance4062",
+                    "forward_ipv6": "0:0:0:0:0:0:0:1"
+                },
+                {
+                    "msg": "login(pam_unix)[9101]: 1 more authentication failure; logname= uid=0 euid=0 tty=pts/2 ruser= rhost=lxdm14545.etrade.com  user=srohatgi",
+                    "process_id": 9101,
+                    "ec_activity": "Logon",
+                    "header_id": "0001",
+                    "event_cat_name": "User.Activity.Failed Logins",
+                    "com_rsa_netwitness_streams_stream": "testesa",
+                    "device_type": "rhlinux",
+                    "sessionid": 342216,
+                    "medium": 32,
+                    "rid": 342216,
+                    "msg_vid": "login",
+                    "event_cat": 1401030000,
+                    "host_src": [
+                        "lxdm14545.etrade.com"
+                    ],
+                    "client": "login(pam_unix)",
+                    "msg_id": "00010:03",
+                    "device_disc": 92,
+                    "ec_subject": "User",
+                    "event_source_id": "a68645fa-b683-4a38-9f5c-653e405a403a:56005:342216",
+                    "com_rsa_netwitness_streams_arrival_timestamp": 1762509362216,
+                    "esa_time": 1762509362241,
+                    "ec_theme": "Authentication",
+                    "device_group": "All Unix Event Source(s)",
+                    "terminal": "pts/2",
+                    "device_disc_type": "rhlinux",
+                    "com_rsa_netwitness_streams_source_trail": [
+                        "10.237.168.21:56005"
+                    ],
+                    "device_ip": "9.4.4.9",
+                    "event_desc": "authentication failure(s)",
+                    "user_dst": "srohatgi",
+                    "size": 191,
+                    "dclass_c1": 1,
+                    "device_class": "Unix",
+                    "time": 1762509362000,
+                    "ec_outcome": "Failure",
+                    "com_rsa_netwitness_streams_arrival_sequence": 65312,
+                    "did": "nwappliance4062",
+                    "forward_ipv6": "0:0:0:0:0:0:0:1",
+                    "username": [
+                        "0"
+                    ]
+                }
+            ],
+            "suppressNotification": false
+        },
+        "alert": {
+            "groupby_alias_ip": "",
+            "groupby_source_device_mac_address": "",
+            "user_summary": [
+                "5302 , user3",
+                "uid=user4,ou=People,dc=host2,dc=site",
+                "0 , srohatgi"
+            ],
+            "groupby_dst_device_geolocation_domain": "",
+            "source": "Event Stream Analysis",
+            "type": [
+                "Log"
+            ],
+            "groupby_user_src": "",
+            "groupby_src_device_dns_domain": "",
+            "groupby_source_country": "",
+            "groupby_analysis_file": "",
+            "groupby_filename": "",
+            "groupby_source_username": "0,5302",
+            "groupby_detector_ip": "9.4.4.9",
+            "groupby_dst_usr_username": "srohatgi,uid=user4,ou=People,dc=host2,dc=site,user3",
+            "events": [
+                {
+                    "agent_id": "",
+                    "data": [
+                        {
+                            "filename": "",
+                            "size": 182,
+                            "hash": ""
+                        }
+                    ],
+                    "destination": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "user3"
+                        },
+                        "hash": ""
+                    },
+                    "description": "authentication failure",
+                    "domain_src": "",
+                    "port_src": "",
+                    "device_type": "rhlinux",
+                    "event_source": "a68645fa-b683-4a38-9f5c-653e405a403a:56005",
+                    "source": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "5302"
+                        },
+                        "hash": ""
+                    },
+                    "type": "Log",
+                    "analysis_file": "",
+                    "directory": "",
+                    "registry_key": "",
+                    "enrichment": "",
+                    "user_src": "",
+                    "hostname": "",
+                    "analysis_service": "",
+                    "detected_by": "Unix-rhlinux,9.4.4.9",
+                    "process_vid": "",
+                    "host_src": "",
+                    "function": null,
+                    "context": "",
+                    "action": "",
+                    "operating_system": "",
+                    "alias_ip": "",
+                    "from": "",
+                    "timestamp": 1762509362000,
+                    "ec_subject": "User",
+                    "event_source_id": "342133",
+                    "related_links": [
+                        {
+                            "type": "investigate_original_event",
+                            "url": "/investigation/host/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/event/AUTO/342133"
+                        }
+                    ],
+                    "service_name": "",
+                    "port_dst": "",
+                    "domain_dst": "",
+                    "user_dst": "user3",
+                    "autorun_type": "",
+                    "host_dst": "",
+                    "domain": "",
+                    "user_account": "",
+                    "to": "",
+                    "category": "",
+                    "cert_common": "",
+                    "detector": {
+                        "device_class": "Unix",
+                        "ip_address": "9.4.4.9",
+                        "product_name": "rhlinux"
+                    },
+                    "user": "5302 , user3",
+                    "analysis_session": "",
+                    "event_time": null,
+                    "site_categorization": null,
+                    "username": "5302"
+                },
+                {
+                    "agent_id": "",
+                    "data": [
+                        {
+                            "filename": "",
+                            "size": 168,
+                            "hash": ""
+                        }
+                    ],
+                    "destination": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "uid=user4,ou=People,dc=host2,dc=site"
+                        },
+                        "hash": ""
+                    },
+                    "description": "bind error",
+                    "domain_src": "",
+                    "port_src": "",
+                    "device_type": "rhlinux",
+                    "event_source": "a68645fa-b683-4a38-9f5c-653e405a403a:56005",
+                    "source": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": ""
+                        },
+                        "hash": ""
+                    },
+                    "type": "Log",
+                    "analysis_file": "",
+                    "directory": "",
+                    "registry_key": "",
+                    "enrichment": "",
+                    "user_src": "",
+                    "hostname": "",
+                    "analysis_service": "",
+                    "detected_by": "Unix-rhlinux,9.4.4.9",
+                    "process_vid": "",
+                    "host_src": "",
+                    "function": null,
+                    "context": "",
+                    "action": "",
+                    "operating_system": "",
+                    "alias_ip": "",
+                    "from": "",
+                    "timestamp": 1762509362000,
+                    "ec_subject": "User",
+                    "event_source_id": "342134",
+                    "related_links": [
+                        {
+                            "type": "investigate_original_event",
+                            "url": "/investigation/host/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/event/AUTO/342134"
+                        }
+                    ],
+                    "service_name": "",
+                    "port_dst": "",
+                    "domain_dst": "",
+                    "user_dst": "uid=user4,ou=People,dc=host2,dc=site",
+                    "autorun_type": "",
+                    "host_dst": "",
+                    "domain": "",
+                    "user_account": "",
+                    "to": "",
+                    "category": "",
+                    "cert_common": "",
+                    "detector": {
+                        "device_class": "Unix",
+                        "ip_address": "9.4.4.9",
+                        "product_name": "rhlinux"
+                    },
+                    "user": "uid=user4,ou=People,dc=host2,dc=site",
+                    "analysis_session": "",
+                    "event_time": null,
+                    "site_categorization": null,
+                    "username": ""
+                },
+                {
+                    "agent_id": "",
+                    "data": [
+                        {
+                            "filename": "",
+                            "size": 191,
+                            "hash": ""
+                        }
+                    ],
+                    "destination": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "srohatgi"
+                        },
+                        "hash": ""
+                    },
+                    "description": "authentication failure(s)",
+                    "domain_src": "",
+                    "port_src": "",
+                    "device_type": "rhlinux",
+                    "event_source": "a68645fa-b683-4a38-9f5c-653e405a403a:56005",
+                    "source": {
+                        "path": "",
+                        "file_SHA256": "",
+                        "filename": "",
+                        "launch_argument": "",
+                        "device": {
+                            "compliance_rating": "",
+                            "netbios_name": "",
+                            "port": "",
+                            "mac_address": "",
+                            "criticality": "",
+                            "asset_type": "",
+                            "ip_address": "",
+                            "facility": "",
+                            "business_unit": "",
+                            "geolocation": {
+                                "country": "",
+                                "city": "",
+                                "latitude": null,
+                                "organization": "",
+                                "domain": "",
+                                "longitude": null
+                            }
+                        },
+                        "user": {
+                            "email_address": "",
+                            "ad_username": "",
+                            "ad_domain": "",
+                            "username": "0"
+                        },
+                        "hash": ""
+                    },
+                    "type": "Log",
+                    "analysis_file": "",
+                    "directory": "",
+                    "registry_key": "",
+                    "enrichment": "",
+                    "user_src": "",
+                    "hostname": "",
+                    "analysis_service": "",
+                    "detected_by": "Unix-rhlinux,9.4.4.9",
+                    "process_vid": "",
+                    "host_src": "lxdm14545.etrade.com",
+                    "function": null,
+                    "context": "",
+                    "action": "",
+                    "operating_system": "",
+                    "alias_ip": "",
+                    "from": "",
+                    "timestamp": 1762509362000,
+                    "ec_subject": "User",
+                    "event_source_id": "342216",
+                    "related_links": [
+                        {
+                            "type": "investigate_original_event",
+                            "url": "/investigation/host/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/event/AUTO/342216"
+                        }
+                    ],
+                    "service_name": "",
+                    "port_dst": "",
+                    "domain_dst": "",
+                    "user_dst": "srohatgi",
+                    "autorun_type": "",
+                    "host_dst": "",
+                    "domain": "",
+                    "user_account": "",
+                    "to": "",
+                    "category": "",
+                    "cert_common": "",
+                    "detector": {
+                        "device_class": "Unix",
+                        "ip_address": "9.4.4.9",
+                        "product_name": "rhlinux"
+                    },
+                    "user": "0 , srohatgi",
+                    "analysis_session": "",
+                    "event_time": null,
+                    "site_categorization": null,
+                    "username": "0"
+                }
+            ],
+            "groupby_detector_dns_hostname": "",
+            "host_summary": [
+                "Unix-rhlinux,9.4.4.9"
+            ],
+            "groupby_username": "0,5302",
+            "groupby_file_sha_256": "",
+            "groupby_user_dst": "srohatgi,uid=user4,ou=People,dc=host2,dc=site,user3",
+            "groupby_dst_device_dns_hostname": "",
+            "groupby_os": "",
+            "groupby_src_usr_ad_domain": "",
+            "groupby_dst_usr_ad_username": "",
+            "name": "Multiple Failed Logons from Same Source IP with Unique Usernames",
+            "groupby_detector_dns_domain": "",
+            "groupby_host_src": "lxdm14545.etrade.com",
+            "groupby_analysis_service": "",
+            "groupby_destination_device_mac_address": "",
+            "groupby_version": "0",
+            "groupby_dst_device_netbios_name": "",
+            "destination_country": [],
+            "groupby_type": "Log",
+            "groupby_device_type": "rhlinux",
+            "groupby_domain": "",
+            "groupby_destination_country": "",
+            "groupby_dst_device_dns_domain": "",
+            "groupby_analysis_session": "",
+            "signature_id": "1d8fc6ceb1f94c6326d6d5483d258fcb2e179e9869325b245d105c2219bf69fd",
+            "groupby_data_hash": "",
+            "groupby_domain_dst": "",
+            "groupby_src_device_netbios_name": "",
+            "groupby_destination_ip": "",
+            "groupby_host_dst": "",
+            "groupby_source_ip": "",
+            "groupby_detector_mac_address": "",
+            "timestamp": 1762509362241,
+            "severity": 30.0,
+            "related_links": [
+                {
+                    "type": "investigate_session",
+                    "url": "/investigation/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/query/sessionid%3D342133%7C%7Csessionid%3D342134%7C%7Csessionid%3D342216"
+                },
+                {
+                    "type": "investigate_device_ip",
+                    "url": "/investigation/a68645fa-b683-4a38-9f5c-653e405a403a:56005/navigate/query/device.ip%3D9.4.4.9%2Fdate%2F2025-11-07T09%3A46%3A02.000Z%2F2025-11-07T10%3A06%3A02.000Z"
+                }
+            ],
+            "risk_score": 30.0,
+            "groupby_src_device_geolocation_domain": "",
+            "groupby_dst_usr_ad_domain": "",
+            "groupby_destination_port": "",
+            "groupby_c2domain": "",
+            "groupby_host_name": "",
+            "groupby_src_usr_ad_username": "",
+            "groupby_src_device_dns_hostname": "",
+            "source_country": [],
+            "groupby_domain_src": "",
+            "numEvents": 3,
+            "groupby_agent_id": ""
+        },
+        "partOfIncident": true,
+        "lastUpdated": 1762509367640,
+        "risk": "",
+        "tactics": [
+            "TA0006"
+        ],
+        "techniques": [
+            "T1110"
+        ],
+        "_class": "com.rsa.asoc.respond.commons.domain.Alert",
+        "incidentCreated": 1762505973068,
+        "incidentId": "INC-34"
+    }
+]
 }

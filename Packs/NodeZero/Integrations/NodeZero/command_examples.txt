@@ -1,0 +1,2 @@
+!nodezero-get-weaknesses
+!nodezero-get-weaknesses since_date="2024-01-01T00:00:00" limit=10

@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "The argument issue_id has been replaced by the required argument issue_ids in the core-get-issue-recommendations command."
+}

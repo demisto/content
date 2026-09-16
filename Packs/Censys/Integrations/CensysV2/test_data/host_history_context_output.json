@@ -1,0 +1,228 @@
+{
+    "success_context": {
+        "ip": "0.0.0.1",
+        "total_events": 8,
+        "partial_data": false,
+        "events": [
+            {
+                "resource": {
+                    "event_time": "2026-03-01T10:00:00.000Z",
+                    "service_scanned": {
+                        "scan": {
+                            "port": 443,
+                            "protocol": "https",
+                            "transport_protocol": "tcp"
+                        }
+                    }
+                }
+            },
+            {
+                "resource": {
+                    "event_time": "2026-03-01T09:00:00.000Z",
+                    "reverse_dns_resolved": {
+                        "names": [
+                            "example.com",
+                            "www.example.com"
+                        ]
+                    }
+                }
+            },
+            {
+                "resource": {
+                    "event_time": "2026-03-01T08:00:00.000Z",
+                    "endpoint_scanned": {
+                        "scan": {
+                            "port": 8080,
+                            "endpoint_type": "http"
+                        }
+                    }
+                }
+            },
+            {
+                "resource": {
+                    "event_time": "2026-03-01T07:00:00.000Z",
+                    "forward_dns_resolved": {
+                        "name": "test.example.com"
+                    }
+                }
+            },
+            {
+                "resource": {
+                    "event_time": "2026-03-01T06:00:00.000Z",
+                    "jarm_scanned": {
+                        "scan": {
+                            "port": 443,
+                            "fingerprint": "0000000000000000000000000000000000000000000000000000000000001"
+                        }
+                    }
+                }
+            },
+            {
+                "resource": {
+                    "event_time": "2026-03-01T05:00:00.000Z",
+                    "location_updated": {
+                        "location": {
+                            "city": "San Francisco",
+                            "country": "United States"
+                        }
+                    }
+                }
+            },
+            {
+                "resource": {
+                    "event_time": "2026-03-01T04:00:00.000Z",
+                    "route_updated": {
+                        "route": {
+                            "asn": "15169",
+                            "organization": "Google LLC"
+                        }
+                    }
+                }
+            },
+            {
+                "resource": {
+                    "event_time": "2026-03-01T03:00:00.000Z",
+                    "whois_updated": {
+                        "whois": {
+                            "organization": {
+                                "name": "Example Organization"
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    "partial_data_scenario_context": {
+        "ip": "0.0.0.1",
+        "total_events": 2,
+        "partial_data": true,
+        "events": [
+            {
+                "resource": {
+                    "event_time": "2026-03-01T10:00:00.000Z",
+                    "service_scanned": {
+                        "scan": {
+                            "port": 443,
+                            "protocol": "https",
+                            "transport_protocol": "tcp"
+                        }
+                    }
+                }
+            },
+            {
+                "resource": {
+                    "event_time": "2026-03-01T09:00:00.000Z",
+                    "reverse_dns_resolved": {
+                        "names": [
+                            "example.com",
+                            "www.example.com"
+                        ]
+                    }
+                }
+            }
+        ]
+    },
+    "timeout_scenario_context": {
+        "ip": "0.0.0.1",
+        "total_events": 4,
+        "partial_data": true,
+        "events": [
+            {
+                "resource": {
+                    "event_time": "2026-03-01T10:00:00.000Z",
+                    "service_scanned": {
+                        "scan": {
+                            "port": 443,
+                            "protocol": "https",
+                            "transport_protocol": "tcp"
+                        }
+                    }
+                }
+            },
+            {
+                "resource": {
+                    "event_time": "2026-03-01T09:00:00.000Z",
+                    "reverse_dns_resolved": {
+                        "names": [
+                            "example.com",
+                            "www.example.com"
+                        ]
+                    }
+                }
+            },
+            {
+                "resource": {
+                    "event_time": "2026-03-01T08:00:00.000Z",
+                    "endpoint_scanned": {
+                        "scan": {
+                            "port": 8080,
+                            "endpoint_type": "http"
+                        }
+                    }
+                }
+            },
+            {
+                "resource": {
+                    "event_time": "2026-03-01T07:00:00.000Z",
+                    "forward_dns_resolved": {
+                        "name": "test.example.com"
+                    }
+                }
+            }
+        ]
+    },
+    "pagination_no_scanned_to_context": {
+        "ip": "0.0.0.1",
+        "total_events": 4,
+        "partial_data": false,
+        "events": [
+            {
+                "resource": {
+                    "event_time": "2026-03-01T10:00:00.000Z",
+                    "service_scanned": {
+                        "scan": {
+                            "port": 443,
+                            "protocol": "https",
+                            "transport_protocol": "tcp"
+                        }
+                    }
+                }
+            },
+            {
+                "resource": {
+                    "event_time": "2026-03-01T09:00:00.000Z",
+                    "reverse_dns_resolved": {
+                        "names": [
+                            "example.com",
+                            "www.example.com"
+                        ]
+                    }
+                }
+            },
+            {
+                "resource": {
+                    "event_time": "2026-03-01T04:00:00.000Z",
+                    "route_updated": {
+                        "route": {
+                            "asn": "15169",
+                            "organization": "Google LLC"
+                        }
+                    }
+                }
+            },
+            {
+                "resource": {
+                    "event_time": "2026-03-01T03:00:00.000Z",
+                    "whois_updated": {
+                        "whois": {
+                            "organization": {
+                                "name": "Example Organization"
+                            }
+                        }
+                    }
+                }
+            }
+        ]
+    }
+}

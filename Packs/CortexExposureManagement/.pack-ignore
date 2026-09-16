@@ -4,3 +4,12 @@ CMDB
 
 [file:RankRemediationOwners.yml]
 ignore=GR103
+
+[file:Cortex_EM_-_AWS_VM_Exposure_Remediation.yml]
+ignore=GR109
+
+[file:Cortex_EM_-_GCP_VM_Exposure_Remediation.yml]
+ignore=GR109
+
+[file:Cortex_EM_-_Azure_VM_Exposure_Remediation.yml]
+ignore=GR109

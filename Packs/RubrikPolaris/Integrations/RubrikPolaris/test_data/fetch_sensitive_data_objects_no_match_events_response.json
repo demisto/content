@@ -1,0 +1,180 @@
+{
+    "data": {
+        "activitySeriesConnection": {
+            "edges": [
+                {
+                    "node": {
+                        "id": 46549950,
+                        "fid": "00000000-0000-0000-0000-000000000008",
+                        "activitySeriesId": "00000000-0000-0000-0000-000000000001",
+                        "startTime": "2026-05-26T11:35:19.529Z",
+                        "lastUpdated": "2026-05-26T11:35:19.848Z",
+                        "lastActivityType": "Classification",
+                        "lastActivityStatus": "Success",
+                        "location": "",
+                        "objectName": "Adele Vance",
+                        "objectId": "00000000-0000-0000-0000-000000000008",
+                        "objectType": "O365Onedrive",
+                        "severity": "Info",
+                        "progress": "100%",
+                        "cluster": {
+                            "id": "00000000-0000-0000-0000-000000000000",
+                            "name": "Polaris"
+                        },
+                        "activityConnection": {
+                            "nodes": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000009",
+                                    "message": "Some unrelated classification message",
+                                    "severity": "Info",
+                                    "time": "2026-05-26T11:35:19.848Z"
+                                },
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000003",
+                                    "message": "Some unrelated classification message",
+                                    "severity": "Info",
+                                    "time": "2026-05-26T11:35:19.713Z"
+                                },
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000004",
+                                    "message": "Some unrelated classification message",
+                                    "severity": "Info",
+                                    "time": "2026-05-26T11:35:19.529Z"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "node": {
+                        "id": 46610656,
+                        "fid": "00000000-0000-0000-0000-000000000000",
+                        "activitySeriesId": "00000000-0000-0000-0000-000000000002",
+                        "startTime": "2026-05-26T14:50:55.581Z",
+                        "lastUpdated": "2026-05-26T14:50:55.581Z",
+                        "lastActivityType": "Classification",
+                        "lastActivityStatus": "Success",
+                        "location": "",
+                        "objectName": "",
+                        "objectId": "00000000-0000-0000-0000-000000000000",
+                        "objectType": "PolarisAccount",
+                        "severity": "Info",
+                        "progress": "100%",
+                        "cluster": {
+                            "id": "00000000-0000-0000-0000-000000000000",
+                            "name": "Polaris"
+                        },
+                        "activityConnection": {
+                            "nodes": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000010",
+                                    "message": "Some unrelated classification message",
+                                    "severity": "Info",
+                                    "time": "2026-05-26T14:50:55.581Z"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "node": {
+                        "id": 47139367,
+                        "fid": "00000000-0000-0000-0000-000000000007",
+                        "activitySeriesId": "00000000-0000-0000-0000-000000000005",
+                        "startTime": "2026-05-27T18:58:44.538Z",
+                        "lastUpdated": "2026-05-27T18:58:44.538Z",
+                        "lastActivityType": "Classification",
+                        "lastActivityStatus": "Success",
+                        "location": "",
+                        "objectName": "rubrik-tm-use-cases",
+                        "objectId": "00000000-0000-0000-0000-000000000007",
+                        "objectType": "AWS_NATIVE_S3_BUCKET",
+                        "severity": "Info",
+                        "progress": "100%",
+                        "cluster": {
+                            "id": "00000000-0000-0000-0000-000000000000",
+                            "name": "Polaris"
+                        },
+                        "activityConnection": {
+                            "nodes": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000006",
+                                    "message": "Some unrelated classification message",
+                                    "severity": "Info",
+                                    "time": "2026-05-27T18:58:44.538Z"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "node": {
+                        "id": 47139367,
+                        "fid": "00000000-0000-0000-0000-000000000007",
+                        "activitySeriesId": "00000000-0000-0000-0000-000000000005",
+                        "startTime": "2026-05-27T18:58:44.538Z",
+                        "lastUpdated": "2026-05-27T18:58:44.538Z",
+                        "lastActivityType": "Classification",
+                        "lastActivityStatus": "Success",
+                        "location": "",
+                        "objectName": "rubrik-tm-data",
+                        "objectId": "00000000-0000-0000-0000-000000000007",
+                        "objectType": "AWS_NATIVE_S3_BUCKET",
+                        "severity": "Info",
+                        "progress": "100%",
+                        "cluster": {
+                            "id": "00000000-0000-0000-0000-000000000000",
+                            "name": "Polaris"
+                        },
+                        "activityConnection": {
+                            "nodes": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000006",
+                                    "message": "Some unrelated classification message",
+                                    "severity": "Info",
+                                    "time": "2026-05-27T18:58:44.538Z"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "node": {
+                        "id": 46549950,
+                        "fid": "00000000-0000-0000-0000-000000000008",
+                        "activitySeriesId": "00000000-0000-0000-0000-000000000001",
+                        "startTime": "2026-05-26T11:35:19.529Z",
+                        "lastUpdated": "2026-05-26T11:35:19.848Z",
+                        "lastActivityType": "Classification",
+                        "lastActivityStatus": "Success",
+                        "location": "",
+                        "objectName": "Adele Vance",
+                        "objectId": "00000000-0000-0000-0000-000000000008",
+                        "objectType": "O365Onedrive",
+                        "severity": "Info",
+                        "progress": "100%",
+                        "cluster": {
+                            "id": "00000000-0000-0000-0000-000000000000",
+                            "name": "Polaris"
+                        },
+                        "activityConnection": {
+                            "nodes": [
+                                {
+                                    "id": "00000000-0000-0000-0000-000000000006",
+                                    "message": "Some unrelated classification message",
+                                    "severity": "Info",
+                                    "time": "2026-05-27T19:58:44.538Z"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ],
+            "pageInfo": {
+                "endCursor": "cursor_5",
+                "hasNextPage": true,
+                "hasPreviousPage": false
+            }
+        }
+    }
+}

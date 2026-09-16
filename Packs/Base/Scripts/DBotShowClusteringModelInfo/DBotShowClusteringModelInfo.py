@@ -41,7 +41,7 @@ def show_incidents_in_cluster(model_name, query, display_fields):
             incidents_in_cluster = json.loads(row["incidents"])
             incidents += incidents_in_cluster
             for inc in incidents_in_cluster:
-                id_to_cluster[inc["id"]] = re.sub("\D", "", row["pivot"])
+                id_to_cluster[inc["id"]] = re.sub(r"\D", "", row["pivot"])
                 id_to_cluster_name[inc["id"]] = row.get("name")
 
     incidents_to_show = []

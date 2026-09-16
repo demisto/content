@@ -1,0 +1,32 @@
+{
+    "id": "incident_gtidtmalertindicatormaliciousscore",
+    "version": -1,
+    "modified": "2025-09-01T20:38:33.203418184+05:30",
+    "name": "GTI DTM Alert Indicator Malicious Score",
+    "ownerOnly": false,
+    "description": "Malicious score of the indicator related to the alert.",
+    "cliName": "gtidtmalertindicatormaliciousscore",
+    "type": "number",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Google Threat Intelligence DTM Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

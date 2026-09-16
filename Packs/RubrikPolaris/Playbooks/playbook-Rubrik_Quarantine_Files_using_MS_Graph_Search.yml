@@ -1,0 +1,1056 @@
+id: Rubrik Quarantine Files using MS Graph Search
+version: -1
+name: Rubrik Quarantine Files using MS Graph Search
+description: This playbook quarantines files using the Microsoft Graph Search (O365 File Management) integration by downloading them, uploading them to a quarantine folder and deleting them from their original location.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b6be4dbb-26b6-4681-80cb-549c462cf62b
+    type: start
+    task:
+      id: b6be4dbb-26b6-4681-80cb-549c462cf62b
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 745,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 044e014c-1e1d-4a94-8b0c-355d279eaa39
+    type: condition
+    task:
+      id: 044e014c-1e1d-4a94-8b0c-355d279eaa39
+      version: -1
+      name: Are O365 File Management and Microsoft Graph Search integrations enabled?
+      description: Checks whether the O365 File Management and Microsoft Graph Search integrations are enabled and active.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Microsoft_Graph_Files
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Microsoft Graph Search
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 745,
+          "y": 185
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 975d5cab-3a30-41bb-893b-aa74f5ce0c1c
+    type: regular
+    task:
+      id: 975d5cab-3a30-41bb-893b-aa74f5ce0c1c
+      version: -1
+      name: Set the delete keys
+      description: Set the custom context keys to delete.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: delete_keys_for_rubrik_quarantine_ms_search_playbook
+      value:
+        simple: FileInfo, Provide quarantine folder ID, Provide file information to quarantine
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 567.5,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 9edb20bb-7979-4192-80df-17cb11f8e5cb
+    type: regular
+    task:
+      id: 9edb20bb-7979-4192-80df-17cb11f8e5cb
+      version: -1
+      name: Clear Previous Inputs
+      description: Delete the custom keys from the context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      key:
+        complex:
+          root: delete_keys_for_rubrik_quarantine_ms_search_playbook
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+      subplaybook:
+        simple: auto
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 567.5,
+          "y": 535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d3b90177-bb3f-4cfe-8d80-7d4f19efa188
+    type: regular
+    task:
+      id: d3b90177-bb3f-4cfe-8d80-7d4f19efa188
+      version: -1
+      name: Get the ID of the file
+      description: 'Use the Microsoft Search API in Microsoft Graph to search content stored in OneDrive or SharePoint: files, folders, lists, list items, or sites.'
+      script: '|||msgraph-search-content'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      entity_type:
+        simple: driveItem
+      extend-context:
+        simple: FileInfo=value.hitsContainers.hits={"item_id":val.hitId,"object_id":val.resource.parentReference.driveId,"file_path":val.resource.webUrl}
+      query_string:
+        complex:
+          root: inputs.file_name
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Provide file information to quarantine.Answers.1
+                iscontext: true
+          - operator: trim
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'filename:'
+              suffix: {}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 567.5,
+          "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 80807f19-20bf-42fa-8a25-09886a503bdf
+    type: regular
+    task:
+      id: 80807f19-20bf-42fa-8a25-09886a503bdf
+      version: -1
+      name: Download the file
+      description: Downloads the file contents of the drive item.
+      script: '|||msgraph-download-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "19"
+      '#none#':
+      - "13"
+    scriptarguments:
+      file_name:
+        complex:
+          root: inputs.file_name
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Provide file information to quarantine.Answers.1
+                iscontext: true
+          - operator: trim
+      item_id:
+        complex:
+          root: FileInfo
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: FileInfo.file_path
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.file_path
+                iscontext: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: FileInfo.file_path
+                iscontext: true
+              right:
+                value:
+                  simple: Provide file information to quarantine.Answers.0
+                iscontext: true
+          accessor: item_id
+          transformers:
+          - operator: FirstArrayElement
+      object_type:
+        simple: drives
+      object_type_id:
+        complex:
+          root: FileInfo
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: FileInfo.file_path
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.file_path
+                iscontext: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: FileInfo.file_path
+                iscontext: true
+              right:
+                value:
+                  simple: Provide file information to quarantine.Answers.0
+                iscontext: true
+          accessor: object_id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 44bde0c7-eb9f-48a6-8bdf-727c90af30ca
+    type: regular
+    task:
+      id: 44bde0c7-eb9f-48a6-8bdf-727c90af30ca
+      version: -1
+      name: Upload the file to the quarantine folder
+      description: Uploads a file from Cortex XSOAR to the specified MS Graph resource.
+      script: '|||msgraph-upload-new-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "19"
+      '#none#':
+      - "11"
+    scriptarguments:
+      entry_id:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.file_name
+                iscontext: true
+              ignorecase: true
+            - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: Provide file information to quarantine.Answers.1
+                iscontext: true
+          accessor: EntryID
+          transformers:
+          - operator: LastArrayElement
+      file_name:
+        complex:
+          root: inputs.file_name
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Provide file information to quarantine.Answers.1
+                iscontext: true
+          - operator: trim
+      object_type:
+        simple: drives
+      object_type_id:
+        complex:
+          root: FileInfo
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: FileInfo.file_path
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.file_path
+                iscontext: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: FileInfo.file_path
+                iscontext: true
+              right:
+                value:
+                  simple: Provide file information to quarantine.Answers.0
+                iscontext: true
+          accessor: object_id
+          transformers:
+          - operator: FirstArrayElement
+      parent_id:
+        complex:
+          root: inputs.quarantine_folder_id
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Provide quarantine folder ID.Answers.0
+                iscontext: true
+          - operator: trim
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 133bc62f-b374-4074-8ea1-f7ea36e661aa
+    type: regular
+    task:
+      id: 133bc62f-b374-4074-8ea1-f7ea36e661aa
+      version: -1
+      name: Delete the file from its original location
+      description: Deletes an item from OneDrive.
+      script: '|||msgraph-delete-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "19"
+      '#none#':
+      - "14"
+    scriptarguments:
+      item_id:
+        complex:
+          root: FileInfo
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: FileInfo.file_path
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.file_path
+                iscontext: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: FileInfo.file_path
+                iscontext: true
+              right:
+                value:
+                  simple: Provide file information to quarantine.Answers.0
+                iscontext: true
+          accessor: item_id
+          transformers:
+          - operator: FirstArrayElement
+      object_type:
+        simple: drives
+      object_type_id:
+        complex:
+          root: FileInfo
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: FileInfo.file_path
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.file_path
+                iscontext: true
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: FileInfo.file_path
+                iscontext: true
+              right:
+                value:
+                  simple: Provide file information to quarantine.Answers.0
+                iscontext: true
+          accessor: object_id
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 2100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 85258227-bfa1-4e4b-84c5-07368d3c0cb7
+    type: collection
+    task:
+      id: 85258227-bfa1-4e4b-84c5-07368d3c0cb7
+      version: -1
+      name: Collect the quarantine folder ID
+      description: "Collects the quarantine folder ID required to upload \nthe file.\n\nTo get the folder ID use the msgraph-list-drive-content command for object type as drive.\n\nIf the quarantine folder does not exist, User can create the folder using the msgraph-create-new-folder command."
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 120,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Provide quarantine folder ID
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the quarantine folder ID
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The ID of the folder where the file will be  uploaded for quarantine.
+        readonly: false
+      title: Provide quarantine folder ID
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 613e6e79-020f-4d24-8d6d-9c4d5b80e7e4
+    type: condition
+    task:
+      id: 613e6e79-020f-4d24-8d6d-9c4d5b80e7e4
+      version: -1
+      name: Is quarantine folder ID present in the playbook inputs?
+      description: Checks whether the quarantine folder ID is present in the playbook inputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.quarantine_folder_id
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 387.5,
+          "y": 1575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: e1224a8a-f962-4afe-8a43-b9678a401c7e
+    type: title
+    task:
+      id: e1224a8a-f962-4afe-8a43-b9678a401c7e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 947.5,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 744efc39-a816-4dc1-82b9-daf5aa660c57
+    type: condition
+    task:
+      id: 744efc39-a816-4dc1-82b9-daf5aa660c57
+      version: -1
+      name: Is file information present in the playbook inputs?
+      description: Checks whether the file path is present in the playbook inputs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.file_path
+                transformers:
+                - operator: trim
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.file_name
+                transformers:
+                - operator: trim
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 567.5,
+          "y": 710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 964eeed3-727e-4cda-8edd-c9c3f40ec317
+    type: collection
+    task:
+      id: 964eeed3-727e-4cda-8edd-c9c3f40ec317
+      version: -1
+      name: Collect the file information
+      description: Collects the file path to quarantine.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Provide file information to quarantine
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Specify the file path to quarantine
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The file path.
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Specify the file name to quarantine
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: The file name.
+        readonly: false
+      title: Provide file information to quarantine
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: b9936cad-e9d8-49f1-80c2-9608788bd8e4
+    type: condition
+    task:
+      id: b9936cad-e9d8-49f1-80c2-9608788bd8e4
+      version: -1
+      name: Is file information found?
+      description: Checks whether the file was found in OneDrive/SharePoint using the provided file path.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "18"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: FileInfo
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: FileInfo.file_path
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.file_path
+                      iscontext: true
+                  - operator: containsGeneral
+                    left:
+                      value:
+                        simple: FileInfo.file_path
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Provide file information to quarantine.Answers.0
+                      iscontext: true
+                accessor: item_id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 567.5,
+          "y": 1225
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 208a731d-65bc-4f7d-8656-8ad17e0a69d3
+    type: regular
+    task:
+      id: 208a731d-65bc-4f7d-8656-8ad17e0a69d3
+      version: -1
+      name: Print file not found message
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.file_path
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Provide file information to quarantine.Answers.0
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'The file was not found at the specified path '
+              suffix:
+                value:
+                  simple: ' in OneDrive/SharePoint.'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 1400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: a012738f-c154-4a31-88b8-37368473472a
+    type: regular
+    task:
+      id: a012738f-c154-4a31-88b8-37368473472a
+      version: -1
+      name: Print failed to quarantine the file
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      value:
+        complex:
+          root: inputs.file_path
+          transformers:
+          - operator: trim
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Provide file information to quarantine.Answers.0
+                iscontext: true
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Failed to quarantine the file at the specified path '
+              suffix:
+                value:
+                  simple: ' in OneDrive/SharePoint.'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 600,
+          "y": 2270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_19_#error#": 0.43,
+      "11_19_#error#": 0.46,
+      "13_10_yes": 0.48,
+      "13_12_#default#": 0.49,
+      "15_16_#default#": 0.49,
+      "15_5_yes": 0.49,
+      "17_18_#default#": 0.57,
+      "17_8_yes": 0.57,
+      "1_14_#default#": 0.41,
+      "1_2_yes": 0.43,
+      "8_19_#error#": 0.49
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2465,
+        "width": 1207.5,
+        "x": 120,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: file_path
+  value: {}
+  required: false
+  description: The file path of the file to quarantine in OneDrive/SharePoint.
+  playbookInputQuery:
+- key: file_name
+  value: {}
+  required: false
+  description: The name of the file to quarantine.
+  playbookInputQuery:
+- key: quarantine_folder_id
+  value: {}
+  required: false
+  description: The ID of the quarantine folder where the file will be uploaded.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

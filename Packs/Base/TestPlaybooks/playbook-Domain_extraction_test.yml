@@ -243,7 +243,7 @@ tasks:
       key:
         simple: invalid_domains
       value:
-        simple: "\"test.notexist\", \n\"test[.com\",\n\"bad_domain.com\",\n\"www.walla.co.il`\""
+        simple: "\"test.notexist\", \n\"test[.com\",\n\"bad_domain.com\",\n\"www.walla.co.il`\",\n\"example.ps1\""
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -279,6 +279,7 @@ tasks:
       - "83"
       - "86"
       - "87"
+      - "88"
     scriptarguments:
       value:
         simple: ${invalid_domains}
@@ -607,7 +608,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
+          "x": 695,
           "y": 1390
         }
       }
@@ -648,7 +649,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1125,
           "y": 1390
         }
       }
@@ -730,7 +731,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1770,
+          "x": 1555,
           "y": 1390
         }
       }
@@ -771,7 +772,48 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2200,
+          "x": 1985,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: abad1835-c3fc-443a-8c31-f93ad090cc60
+    type: condition
+    task:
+      id: abad1835-c3fc-443a-8c31-f93ad090cc60
+      version: -1
+      name: non extraction - example.ps1
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "77"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: ${Domain.Name}
+            iscontext: true
+          right:
+            value:
+              simple: example.ps1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2415,
           "y": 1390
         }
       }

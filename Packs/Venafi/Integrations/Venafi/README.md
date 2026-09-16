@@ -1,4 +1,4 @@
-Deprecated. use Venafi TLS Protect instead.
+Deprecated. use CyberArk Certificate Manager instead.
 
 This integration was integrated and tested with version 20.3.2.5263 of Venafi.
 

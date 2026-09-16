@@ -1,4 +1,5 @@
 import json
+from copy import deepcopy
 
 import pytest
 from incydr import Client as incydrClient
@@ -23,11 +24,13 @@ from Code42 import (
     add_user_to_watchlist_command,
     remove_user_from_watchlist_command,
     download_file_command,
+    download_file_by_xfc_id_command,
     fetch_incidents,
     Code42AlertNotFoundError,
     Code42UserNotFoundError,
     Code42UnsupportedHashError,
     Code42MissingSearchArgumentsError,
+    Code42FileDownloadError,
     file_events_search_command,
     file_events_to_table_command,
     run_command,
@@ -164,6 +167,7 @@ with open("test_data/alert_details_response.json") as f:
 
 
 MOCK_V2_FILE_EVENTS_RESPONSE = FileEventsPage.parse_file("test_data/v2_file_event_response.json")
+
 
 MOCK_SESSION_RESPONSE = Session.parse_file("test_data/session_response.json")
 
@@ -520,6 +524,31 @@ def test_client_when_no_alert_found_returns(mocker, incydr_sdk_mock):
         client.get_alert_details("mock-id")
 
 
+def test_client_uses_actor_and_rule_names_from_session(incydr_sessions_mock):
+    client = _create_incydr_client(incydr_sessions_mock)
+    alert = client.get_alert_details("sessionid-abc-1")
+    assert alert.actor == "someactor@domain.com"
+    assert alert.rule_names == "example rule name"
+    incydr_sessions_mock.actors.v1.get_actor_by_id.assert_not_called()
+    incydr_sessions_mock.alert_rules.v2.get_rule.assert_not_called()
+
+
+def test_client_falls_back_to_actor_and_rule_lookup_when_names_missing(incydr_sdk_mock):
+    session = deepcopy(MOCK_SESSION_RESPONSE)
+    session.actor_name = None
+    for triggered_alert in session.triggered_alerts:
+        triggered_alert.rule_name = None
+    incydr_sdk_mock.sessions.v1.get_session_details.return_value = session
+    incydr_sdk_mock.actors.v1.get_actor_by_id.return_value = MOCK_ACTOR_RESPONSE
+    incydr_sdk_mock.alert_rules.v2.get_rule.return_value = MOCK_RULE_RESPONSE
+    client = _create_incydr_client(incydr_sdk_mock)
+    alert = client.get_alert_details("sessionid-abc-1")
+    assert alert.actor == "someactor@domain.com"
+    assert alert.rule_names == "example rule name"
+    incydr_sdk_mock.actors.v1.get_actor_by_id.assert_called_once_with("someactorid")
+    incydr_sdk_mock.alert_rules.v2.get_rule.assert_called_once_with("rule-id-abc-123")
+
+
 def test_client_when_no_user_found_raises_user_not_found(mocker, incydr_sdk_mock):
     incydr_sdk_mock.users.v1.get_user.side_effect = ValueError
     client = _create_incydr_client(incydr_sdk_mock)
@@ -573,6 +602,8 @@ def test_alert_get_command(incydr_sessions_mock):
     assert cmd_res.outputs == [MOCK_CODE42_ALERT_CONTEXT[0]]
     assert cmd_res.outputs_prefix == "Code42.SecurityAlert"
     assert cmd_res.outputs_key_field == "ID"
+    incydr_sessions_mock.actors.v1.get_actor_by_id.assert_not_called()
+    incydr_sessions_mock.alert_rules.v2.get_rule.assert_not_called()
 
 
 def test_alert_get_command_when_no_alert_found(mocker, incydr_sdk_mock):
@@ -591,6 +622,8 @@ def test_alert_update_state_command(incydr_sessions_mock):
     assert cmd_res.outputs == [MOCK_CODE42_ALERT_CONTEXT[0]]
     assert cmd_res.outputs_prefix == "Code42.SecurityAlert"
     assert cmd_res.outputs_key_field == "ID"
+    incydr_sessions_mock.actors.v1.get_actor_by_id.assert_not_called()
+    incydr_sessions_mock.alert_rules.v2.get_rule.assert_not_called()
 
 
 def test_alert_resolve_command(incydr_sessions_mock):
@@ -750,6 +783,49 @@ def test_download_file_when_given_other_hash_raises_unsupported_hash(incydr_sdk_
     client = _create_incydr_client(incydr_sdk_mock)
     with pytest.raises(Code42UnsupportedHashError):
         _ = download_file_command(client, {"hash": _hash})
+
+
+def test_download_file_by_xfc_id(incydr_file_events_mock, mocker):
+    """
+    Scenario: User attempts to download a file using a valid XFC ID.
+    Given:
+     - User has provided a valid XFC ID.
+    When:
+     - The command is called with an XFC ID.
+    Then:
+     - Ensure that the underlying SDK method is called once.
+     - Ensure that the underlying SDK method is called with the given XFC ID.
+     - Ensure that a fileResult is created.
+     - Ensure the XFC ID is used as the returned file's filename.
+    """
+    fr = mocker.patch("Code42.fileResult")
+    incydr_file_events_mock.files.v1.stream_file_by_xfc_content_id.return_value = create_mock_requests_response(mocker, "")
+    client = _create_incydr_client(incydr_file_events_mock)
+    _ = download_file_by_xfc_id_command(client, {"xfc_id": "b6312dbe4aa4212da94523ccb28c5c16"})
+    incydr_file_events_mock.files.v1.stream_file_by_xfc_content_id.assert_called_once_with("b6312dbe4aa4212da94523ccb28c5c16")
+    fr.assert_called_once_with("b6312dbe4aa4212da94523ccb28c5c16", data=b"")
+
+
+def test_download_file_by_xfc_id_raises_exception(incydr_file_events_mock, mocker):
+    """
+    Scenario: User attempts to download a file using an invalid XFC ID.
+    Given:
+     - User has provided an invalid XFC ID.
+    When:
+     - The command is called with an invalid XFC ID.
+     - The underlying SDK method raises an exception.
+    Then:
+     - Ensure that the underlying SDK method is called once.
+     - Ensure that the underlying SDK method is called with the given XFC ID.
+     - Ensure that a Code42FileDownloadError is raised.
+    """
+    fr = mocker.patch("Code42.fileResult")
+    incydr_file_events_mock.files.v1.stream_file_by_xfc_content_id.side_effect = Exception
+    client = _create_incydr_client(incydr_file_events_mock)
+    with pytest.raises(Code42FileDownloadError):
+        _ = download_file_by_xfc_id_command(client, {"xfc_id": "b6312dbe4aa4212da94523ccb28c5c16"})
+        incydr_file_events_mock.files.v1.stream_file_by_xfc_content_id.assert_called_once_with("b6312dbe4aa4212da94523ccb28c5c16")
+        assert fr.call_count == 1
 
 
 def test_list_watchlists_command(incydr_watchlists_mock):
@@ -933,6 +1009,8 @@ def test_fetch_incidents_first_run(incydr_sessions_mock):
     )
     assert len(incidents) == 3
     assert next_run["last_fetch"]
+    incydr_sessions_mock.actors.v1.get_actor_by_id.assert_not_called()
+    incydr_sessions_mock.alert_rules.v2.get_rule.assert_not_called()
 
 
 def test_fetch_incidents_next_run(incydr_sessions_mock):

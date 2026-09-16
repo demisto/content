@@ -1580,7 +1580,7 @@ Retrieve a user's details given a user key
 >
 >|Id|Customer Id|Primary Email|First Name|Last Name|Archived|Suspended|Org Unit Path|Is Admin|Creation Time|Phone Details|Secondary Email Details|Ip Whitelisted|Recovery Email|Recovery Phone|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 103020731686044834269 | C02f0zfqw | adminemail@domain.com | Tomer | Malache | false | false | / | true | 2016-05-18T10:45:01.000Z | Value: 77777777<br/>Type: home | Address: adminemail@domain.com<br/>Primary: True | false | tmalache@paloaltonetworks.com | +972545429435 |
+>| 103020731686044834269 | C02f0zfqw | adminemail@domain.com | Tomer | Malache | false | false | / | true | 2016-05-18T10:45:01.000Z | Value: 77777777<br/>Type: home | Address: adminemail@domain.com<br/>Primary: True | false | tmalache@example.com | +972545429435 |
 
 ### google-mobiledevice-list
 

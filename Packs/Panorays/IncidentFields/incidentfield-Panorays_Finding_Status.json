@@ -1,0 +1,21 @@
+{
+    "cliName": "panoraysfindingstatus",
+    "description": "The current status of the Panorays finding.",
+    "group": 0,
+    "id": "incident_panoraysfindingstatus",
+    "name": "Panorays Finding Status",
+    "associatedTypes": [
+        "Panorays Finding"
+    ],
+    "associatedToAll": false,
+    "type": "shortText",
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "content": true,
+    "system": false,
+    "unsearchable": true,
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
+}

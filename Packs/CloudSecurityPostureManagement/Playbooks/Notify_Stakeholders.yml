@@ -1,0 +1,1445 @@
+id: Notify Stakeholders
+version: -1
+name: Notify Stakeholders
+description: This playbook automates stakeholder notifications via Slack v3, Microsoft Teams, or email. It requires active Slack, Microsoft Teams, Mail Sender, or Gmail integrations. If no supported integration is configured, the playbook exits without taking action.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 392e669d-6901-4f1b-841d-15fb88950703
+    type: start
+    task:
+      id: 392e669d-6901-4f1b-841d-15fb88950703
+      version: -1
+      name: ""
+      description: Playbook Triggered header
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 7531e2bc-565f-4be2-8bb9-5715a477f073
+    type: title
+    task:
+      id: 7531e2bc-565f-4be2-8bb9-5715a477f073
+      version: -1
+      name: Done
+      description: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 01847aaf-e9c8-4ea0-a9f3-c2283313d0fc
+    type: condition
+    task:
+      id: 01847aaf-e9c8-4ea0-a9f3-c2283313d0fc
+      version: -1
+      name: Is Microsoft Teams enabled and channel name provided?
+      description: Checks whether MS Teams is enabled and a channel is specified.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "62"
+      - "63"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Teams Channel
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Provide at least 1 notification recipient.Answers.1
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Microsoft Teams
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 135,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: b940dde4-9b20-45a3-88c3-5363244bc150
+    type: regular
+    task:
+      id: b940dde4-9b20-45a3-88c3-5363244bc150
+      version: -1
+      name: Send Slack Notification
+      description: Sends a message to a user, group, or channel.
+      script: SlackV3|||send-notification
+      type: regular
+      iscommand: true
+      brand: SlackV3
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      blocks:
+        simple: "[\n\t\t{\n\t\t\t\"type\": \"header\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\":
+          \"plain_text\",\n\t\t\t\t\"text\": \"${inputs.Subject}\",\n\t\t\t\t\"emoji\":
+          true\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"rich_text\",\n\t\t\t\"elements\":
+          [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"rich_text_section\",\n\t\t\t\t\t\"elements\":
+          [\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\": \"text\",\n\t\t\t\t\t\t\t\"text\":
+          \"Issue and Asset Details \\n\",\n\t\t\t\t\t\t\t\"style\": {\n\t\t\t\t\t\t\t\t\"bold\":
+          true\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t}\n\t\t\t\t\t]\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"type\":
+          \"rich_text_list\",\n\t\t\t\t\t\"style\": \"bullet\",\n\t\t\t\t\t\"indent\":
+          0,\n\t\t\t\t\t\"elements\": [\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\": \"rich_text_section\",\n\t\t\t\t\t\t\t\"elements\":
+          [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\": \"text\",\n\t\t\t\t\t\t\t\t\t\"text\":
+          \"Issue Name: \",\n\t\t\t\t\t\t\t\t\t\"style\": {\n\t\t\t\t\t\t\t\t\t\t\"bold\":
+          true\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"${issue.name}\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\":
+          \"rich_text_section\",\n\t\t\t\t\t\t\t\"elements\": [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"Severity: \",\n\t\t\t\t\t\t\t\t\t\"style\":
+          {\n\t\t\t\t\t\t\t\t\t\t\"bold\": true\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"${IssueSeverityText}\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\":
+          \"rich_text_section\",\n\t\t\t\t\t\t\t\"elements\": [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"Details: \",\n\t\t\t\t\t\t\t\t\t\"style\":
+          {\n\t\t\t\t\t\t\t\t\t\t\"bold\": true\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"${issue.details}\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\":
+          \"rich_text_section\",\n\t\t\t\t\t\t\t\"elements\": [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"Category: \",\n\t\t\t\t\t\t\t\t\t\"style\":
+          {\n\t\t\t\t\t\t\t\t\t\t\"bold\": true\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"${IssueCategory}\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\":
+          \"rich_text_section\",\n\t\t\t\t\t\t\t\"elements\": [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"Asset Name: \",\n\t\t\t\t\t\t\t\t\t\"style\":
+          {\n\t\t\t\t\t\t\t\t\t\t\"bold\": true\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"${inputs.AssetName}\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\":
+          \"rich_text_section\",\n\t\t\t\t\t\t\t\"elements\": [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"Asset Type: \",\n\t\t\t\t\t\t\t\t\t\"style\":
+          {\n\t\t\t\t\t\t\t\t\t\t\"bold\": true\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"${inputs.AssetType}\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\":
+          \"rich_text_section\",\n\t\t\t\t\t\t\t\"elements\": [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"Cloud Region: \",\n\t\t\t\t\t\t\t\t\t\"style\":
+          {\n\t\t\t\t\t\t\t\t\t\t\"bold\": true\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"${inputs.CloudRegion}\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\":
+          \"rich_text_section\",\n\t\t\t\t\t\t\t\"elements\": [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"Cloud Account ID: \",\n\t\t\t\t\t\t\t\t\t\"style\":
+          {\n\t\t\t\t\t\t\t\t\t\t\"bold\": true\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"${inputs.CloudAccountID}\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\":
+          \"rich_text_section\",\n\t\t\t\t\t\t\t\"elements\": [\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"Issue Created: \",\n\t\t\t\t\t\t\t\t\t\"style\":
+          {\n\t\t\t\t\t\t\t\t\t\t\"bold\": true\n\t\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t\t},\n\t\t\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\t\t\"text\": \"${IssueCreationTimestamp}\"\n\t\t\t\t\t\t\t\t}\n\t\t\t\t\t\t\t]\n\t\t\t\t\t\t}\n\t\t\t\t\t]\n\t\t\t\t}\n\t\t\t]\n\t\t},\n\t\t{\n\t\t\t\"type\":
+          \"divider\"\n\t\t},\n\t\t{\n\t\t\t\"type\": \"rich_text\",\n\t\t\t\"elements\":
+          [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"rich_text_section\",\n\t\t\t\t\t\"elements\":
+          [\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\": \"text\",\n\t\t\t\t\t\t\t\"text\":
+          \"Remediation Action Taken\\n\",\n\t\t\t\t\t\t\t\"style\": {\n\t\t\t\t\t\t\t\t\"bold\":
+          true\n\t\t\t\t\t\t\t}\n\t\t\t\t\t\t},\n\t\t\t\t\t\t{\n\t\t\t\t\t\t\t\"type\":
+          \"text\",\n\t\t\t\t\t\t\t\"text\": \"${remediation_action_slack_block}\"\n\t\t\t\t\t\t}\n\t\t\t\t\t]\n\t\t\t\t}\n\t\t\t]\n\t\t},\n\t\t{\n\t\t\t\"type\":
+          \"divider\"\n\t\t},\n\t\t{\n\t\t\t\"type\": \"actions\",\n\t\t\t\"elements\":
+          [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"button\",\n\t\t\t\t\t\"text\": {\n\t\t\t\t\t\t\"type\":
+          \"plain_text\",\n\t\t\t\t\t\t\"text\": \"View Issue\",\n\t\t\t\t\t\t\"emoji\":
+          true\n\t\t\t\t\t},\n\t\t\t\t\t\"value\": \"view_issue\",\n\t\t\t\t\t\"action_id\":
+          \"view_issue\",\n\t\t\t\t\t\"url\": \"${demistoUrls.server}/issue-view/${issue.id}\",\n\t\t\t\t\t\"style\":
+          \"primary\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"button\",\n\t\t\t\t\t\"text\":
+          {\n\t\t\t\t\t\t\"type\": \"plain_text\",\n\t\t\t\t\t\t\"text\": \"View Asset\",\n\t\t\t\t\t\t\"emoji\":
+          true\n\t\t\t\t\t},\n\t\t\t\t\t\"value\": \"view_asset\",\n\t\t\t\t\t\"action_id\":
+          \"view_asset\",\n\t\t\t\t\t\"url\": \"${demistoUrls.server}/assets/asset-layout/${inputs.AssetID}\",\n\t\t\t\t\t\"style\":
+          \"primary\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]"
+      channel:
+        complex:
+          root: inputs.Slack Channel
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Provide at least 1 notification recipient.Answers.2
+                iscontext: true
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 94ae2f9a-d739-40b9-b0d3-ee3d45f6bd82
+    type: regular
+    task:
+      id: 94ae2f9a-d739-40b9-b0d3-ee3d45f6bd82
+      version: -1
+      name: Send Microsoft Teams Notification
+      description: |-
+        Sends a message to the specified teams.
+        To mention a user in the message, add a semicolon ";" at the end of the user mention. For example: @Bruce Willis;.
+
+        If sending a reply to a message, the message ID must be provided and the reply will be sent via the Graph API which means
+        the message will appear from the account used to authorize the integration instance and not the bot. Setting the account's name
+        and picture to match the bot will make it appear to be from the same source.
+      script: Microsoft Teams|||send-notification
+      type: regular
+      iscommand: true
+      brand: Microsoft Teams
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      adaptive_card:
+        simple: |-
+          {
+              "type": "AdaptiveCard",
+              "$schema": "https://adaptivecards.io/schemas/adaptive-card.json",
+              "version": "1.6",
+              "body": [
+                  {
+                      "type": "TextBlock",
+                      "text": "**Issue and Asset Details**",
+                      "weight": "Bolder",
+                      "size": "Medium",
+                      "wrap": true
+                  },
+                  {
+                      "type": "Table",
+                      "columns": [
+                          { "width": 1 },
+                          { "width": 2 }
+                      ],
+                      "rows": [
+                          {
+                              "type": "TableRow",
+                              "cells": [
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "**Field**", "weight": "Bolder" }] },
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "**Value**", "weight": "Bolder" }] }
+                              ]
+                          },
+                          {
+                              "type": "TableRow",
+                              "cells": [
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "**Issue Name**" }] },
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "${issue.name}", "wrap": true }] }
+                              ]
+                          },
+                          {
+                              "type": "TableRow",
+                              "cells": [
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "**Severity**" }] },
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "${IssueSeverityText}" }] }
+                              ]
+                          },
+                          {
+                              "type": "TableRow",
+                              "cells": [
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "**Details**" }] },
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "${IssueDetails}", "wrap": true }] }
+                              ]
+                          },
+                          {
+                              "type": "TableRow",
+                              "cells": [
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "**Category**" }] },
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "${IssueCategory}" }] }
+                              ]
+                          },
+                          {
+                              "type": "TableRow",
+                              "cells": [
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "**Asset Name**" }] },
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "${inputs.AssetName}" }] }
+                              ]
+                          },
+                          {
+                              "type": "TableRow",
+                              "cells": [
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "**Asset Type**" }] },
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "${inputs.AssetType}" }] }
+                              ]
+                          },
+                          {
+                              "type": "TableRow",
+                              "cells": [
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "**Cloud Region**" }] },
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "${inputs.CloudRegion}" }] }
+                              ]
+                          },
+                          {
+                              "type": "TableRow",
+                              "cells": [
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "**Issue Created**" }] },
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "${IssueCreationTimestamp}" }] }
+                              ]
+                          },
+                          {
+                              "type": "TableRow",
+                              "cells": [
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "**Remediation Action Taken**" }] },
+                                  { "type": "TableCell", "items": [{ "type": "TextBlock", "text": "${remediation_action_teams}", "wrap": true }] }
+                              ]
+                          }
+                      ]
+                  }
+              ],
+              "actions": [
+                  {
+                      "type": "Action.OpenUrl",
+                      "title": "View Issue",
+                      "url": "${demistoUrls.server}/issue-view/${issue.id}"
+                  },
+                  {
+                      "type": "Action.OpenUrl",
+                      "title": "View Asset",
+                      "url": "${demistoUrls.server}/assets/asset-layout/${inputs.AssetID}"
+                  }
+              ]
+          }
+      channel:
+        complex:
+          root: inputs.Teams Channel
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Provide at least 1 notification recipient.Answers.1
+                iscontext: true
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 315,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 0877f2e6-18fc-4813-bb58-43d5f958a5e1
+    type: condition
+    task:
+      id: 0877f2e6-18fc-4813-bb58-43d5f958a5e1
+      version: -1
+      name: Is an Email integration enabled and address provided?
+      description: Checks whether the mail sender or Gmail integration is enabled and an email address is provided.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Email Address
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Provide at least 1 notification recipient.Answers.0
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.commands.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: send-mail
+                accessor: brand
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1550,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: ed7488d3-91ba-4835-8df2-510f68f3d10f
+    type: condition
+    task:
+      id: ed7488d3-91ba-4835-8df2-510f68f3d10f
+      version: -1
+      name: Is Slack enabled and channel name provided?
+      description: Checks whether the SlackV3 integration is enabled and a channel name is provided.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "yes":
+      - "59"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Slack Channel
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Provide at least 1 notification recipient.Answers.2
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: SlackV3
+                accessor: state
+            iscontext: true
+          right:
+            value:
+              simple: active
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 1256d5ee-c20b-4397-8ee6-5552a0046bf8
+    type: condition
+    task:
+      id: 1256d5ee-c20b-4397-8ee6-5552a0046bf8
+      version: -1
+      name: Is at least one notification recipient provided?
+      description: Checks whether at least one notification recipient is provided.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "47"
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Teams Channel
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Slack Channel
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.Email Address
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 500,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 1dad5497-be97-4a17-8450-2ddb734c17de
+    type: collection
+    task:
+      id: 1dad5497-be97-4a17-8450-2ddb734c17de
+      version: -1
+      name: Please provide at least 1 notification recipient
+      description: Prints an error entry with a given message.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      message:
+        simple: Please configure at least 1 recipient for notifications. Go to Notify
+          Stakeholders playbook -> Playbook Triggered header -> add inputs.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Email Address
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Use comma separated values to provide multiple addresses
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Microsoft Teams Channel
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: Slack Channel
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Provide at least 1 notification recipient
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 0efa90f7-f71d-4644-8e63-bcd3934cf750
+    type: condition
+    task:
+      id: 0efa90f7-f71d-4644-8e63-bcd3934cf750
+      version: -1
+      name: Is at least one notification recipient provided?
+      description: Checks whether at least one notification recipient is provided.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "49"
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Provide at least 1 notification recipient.Answers.0
+            iscontext: true
+          right:
+            value: {}
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Provide at least 1 notification recipient.Answers.1
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Provide at least 1 notification recipient.Answers.2
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: a9e1f60e-fb8a-4f50-844d-1d46d3554c73
+    type: regular
+    task:
+      id: a9e1f60e-fb8a-4f50-844d-1d46d3554c73
+      version: -1
+      name: Update war room - no message sent
+      description: Prints text to the War Room (Markdown supported).
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      value:
+        simple: No recipient was provided for notification and hence no message was
+          sent.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -570,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 2b0efc35-6d96-4cf8-8a67-61b73225ab49
+    type: title
+    task:
+      id: 2b0efc35-6d96-4cf8-8a67-61b73225ab49
+      version: -1
+      name: Format details
+      description: Formats the issue details for the notification message
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+      - "54"
+      - "55"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: e2c8d43f-bc08-4875-9d12-919c7f922e2f
+    type: regular
+    task:
+      id: e2c8d43f-bc08-4875-9d12-919c7f922e2f
+      version: -1
+      name: Send Email Notification
+      description: commands.server.mail.sendmail
+      script: mail-sender|||send-mail
+      type: regular
+      iscommand: true
+      brand: mail-sender
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      htmlBody:
+        simple: "<html>\n<body style=\"font-family: Arial, sans-serif; background-color:
+          #f6f7f9; margin: 0; padding: 30px;\">\n  <div style=\"max-width: 600px;
+          margin: auto; background-color: #ffffff; border-radius: 6px; box-shadow:
+          0 2px 5px rgba(0,0,0,0.1); padding: 25px 30px;\">\n\n    <div style=\"text-align:
+          center; color: #0067b8; font-size: 20px; font-weight: bold; margin-bottom:
+          25px;\">\n      Issue and Asset Details\n    </div>\n\n    <table style=\"width:
+          100%; border-collapse: collapse; margin-bottom: 20px; font-size: 14px; border:
+          1px solid #e0e0e0;\">\n      <tr>\n        <td style=\"padding: 10px; border:
+          1px solid #e0e0e0; background-color: #f9f9f9; font-weight: bold; width:
+          40%;\">Issue Name</td>\n        <td style=\"padding: 10px; border: 1px solid
+          #e0e0e0;\">${issue.name}</td>\n      </tr>\n      <tr>\n        <td style=\"padding:
+          10px; border: 1px solid #e0e0e0; background-color: #f9f9f9; font-weight:
+          bold;\">Severity</td>\n        <td style=\"padding: 10px; border: 1px solid
+          #e0e0e0;\">${IssueSeverityText}</td>\n      </tr>\n      <tr>\n        <td
+          style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9;
+          font-weight: bold;\">Details</td>\n        <td style=\"padding: 10px; border:
+          1px solid #e0e0e0;\">${issue.details}</td>\n      </tr>\n      <tr>\n        <td
+          style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9;
+          font-weight: bold;\">Category</td>\n        <td style=\"padding: 10px; border:
+          1px solid #e0e0e0;\">${IssueCategory}</td>\n      </tr>\n      <tr>\n        <td
+          style=\"padding: 10px; border: 1px solid #e0e0e0; background-color: #f9f9f9;
+          font-weight: bold;\">Asset Name</td>\n        <td style=\"padding: 10px;
+          border: 1px solid #e0e0e0;\">${inputs.AssetName}</td>\n      </tr>\n      <tr>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0; background-color:
+          #f9f9f9; font-weight: bold;\">Asset Type</td>\n        <td style=\"padding:
+          10px; border: 1px solid #e0e0e0;\">${inputs.AssetType}</td>\n      </tr>\n
+          \     <tr>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;
+          background-color: #f9f9f9; font-weight: bold;\">Cloud Region</td>\n        <td
+          style=\"padding: 10px; border: 1px solid #e0e0e0;\">${inputs.CloudRegion}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Cloud Account
+          ID</td>\n        <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${inputs.CloudAccountID}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Issue Created</td>\n
+          \       <td style=\"padding: 10px; border: 1px solid #e0e0e0;\">${IssueCreationTimestamp}</td>\n
+          \     </tr>\n      <tr>\n        <td style=\"padding: 10px; border: 1px
+          solid #e0e0e0; background-color: #f9f9f9; font-weight: bold;\">Remediation
+          Action Taken</td>\n        <td style=\"padding: 10px; border: 1px solid
+          #e0e0e0;\">${remediation_action_html}</td>\n      </tr>\n    </table>\n\n
+          \   <div style=\"text-align: center; margin: 30px 0 10px;\">\n      <a href=\"${demistoUrls.server}/issue-view/${issue.id}\"
+          \n         target=\"_blank\"\n         style=\"display: inline-block; padding:
+          10px 24px; background-color: #0067b8; color: white !important; text-decoration:
+          none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n
+          \        View Issue\n      </a>\n      <a href=\"${demistoUrls.server}/assets/asset-layout/${inputs.AssetID}\"
+          \n         target=\"_blank\"\n         style=\"display: inline-block; padding:
+          10px 24px; background-color: #0067b8; color: white !important; text-decoration:
+          none !important; border-radius: 4px; font-size: 14px; font-weight: bold;\">\n
+          \        View Asset\n      </a>\n    </div>\n  </div>\n</body>\n</html>"
+      subject:
+        simple: ${inputs.Subject}
+      to:
+        complex:
+          root: inputs.Email Address
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Provide at least 1 notification recipient.Answers.0
+                iscontext: true
+          - operator: RemoveEmpty
+            args:
+              empty_values: {}
+              remove_keys: {}
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1550,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: ec2f0a37-de94-43c5-8228-cab36c42d669
+    type: regular
+    task:
+      id: ec2f0a37-de94-43c5-8228-cab36c42d669
+      version: -1
+      name: Set Issue Severity Text
+      description: Sets the issue severity value, transformed from an integer value to its corresponding text value. 1 - Low, 2 - Medium, 3 - High, 4 - Critical
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      key:
+        simple: IssueSeverityText
+      value:
+        complex:
+          root: issue
+          accessor: severity
+          transformers:
+          - operator: MapValuesTransformer
+            args:
+              input_values:
+                value:
+                  simple: 1,2,3,4
+              mapped_values:
+                value:
+                  simple: Low,Medium,High,Critical
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 315,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: d70077ee-7ba4-4b04-820b-f8c89f966738
+    type: title
+    task:
+      id: d70077ee-7ba4-4b04-820b-f8c89f966738
+      version: -1
+      name: Send Notification with Details
+      description: Section header
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+      - "44"
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
+          "y": 1120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: faa0efb1-5b16-488c-8aee-3cd177163906
+    type: regular
+    task:
+      id: faa0efb1-5b16-488c-8aee-3cd177163906
+      version: -1
+      name: Set Issue Category
+      description: Sets the issue category value to a context key depending on the field name in the current platform.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      key:
+        simple: IssueCategory
+      value:
+        complex:
+          root: issue
+          accessor: alert_category
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: issue.categoryname
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
+          "y": 940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 0497ec59-0136-4356-ba1b-4bf40a49a49a
+    type: regular
+    task:
+      id: 0497ec59-0136-4356-ba1b-4bf40a49a49a
+      version: -1
+      name: Set Issue Creation timestamp
+      description: Sets the issue creation timestamp into a context key to prevent
+        additional quotation marks from being added.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      key:
+        simple: IssueCreationTimestamp
+      value:
+        simple: ${issue.created}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1340,
+          "y": 950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 68417acc-27b7-41e7-baf1-61915d883c2f
+    type: regular
+    task:
+      id: 68417acc-27b7-41e7-baf1-61915d883c2f
+      version: -1
+      name: Slack block formatting for quotes and new lines
+      description: "Set a value in context under the key you entered. If no value
+        is entered, the script doesn't do anything.\n\nThis automation runs using
+        the default Limited User role, unless you explicitly change the permissions.\nFor
+        more information, see the section about permissions here:\n- For Cortex XSOAR
+        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: remediation_action_slack_block
+      value:
+        complex:
+          root: inputs.remediation_action
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: \"
+              toReplace:
+                value:
+                  simple: '"'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: \n
+              toReplace:
+                value:
+                  simple: |2+
+
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 837.5,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 211d9489-ef3b-4810-bfb7-185c6a23c672
+    type: regular
+    task:
+      id: 211d9489-ef3b-4810-bfb7-185c6a23c672
+      version: -1
+      name: Html formatting for new lines
+      description: "Sets a value in context under the key you entered. If no value
+        is entered, the script doesn't do anything.\n\nThis automation runs using
+        the default Limited User role, unless you explicitly change the permissions.\nFor
+        more information, see the section about permissions here:\n- For Cortex XSOAR
+        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: remediation_action_html
+      value:
+        complex:
+          root: inputs.remediation_action
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: <br>
+              toReplace:
+                value:
+                  simple: |2+
+
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1550,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 18aab7c4-4935-4b3d-a02c-176d3bbc7f37
+    type: regular
+    task:
+      id: 18aab7c4-4935-4b3d-a02c-176d3bbc7f37
+      version: -1
+      name: Escape special characters in remediation action
+      description: "Set a value in context under the key you entered. If no value
+        is entered, the script doesn't do anything.\n\nThis automation runs using
+        the default Limited User role, unless you explicitly change the permissions.\nFor
+        more information, see the section about permissions here:\n- For Cortex XSOAR
+        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: remediation_action_teams
+      value:
+        complex:
+          root: inputs.remediation_action
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: \n
+              toReplace:
+                value:
+                  simple: |2+
+
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: \"
+              toReplace:
+                value:
+                  simple: '"'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 385,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 508b7284-2b0c-4501-a8c1-b47b78172ab3
+    type: regular
+    task:
+      id: 508b7284-2b0c-4501-a8c1-b47b78172ab3
+      version: -1
+      name: Formatting new lines in issue details
+      description: "Set a value in context under the key you entered. If no value
+        is entered, the script doesn't do anything.\n\nThis automation runs using
+        the default Limited User role, unless you explicitly change the permissions.\nFor
+        more information, see the section about permissions here:\n- For Cortex XSOAR
+        6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations
+        \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n-
+        For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: IssueDetails
+      value:
+        complex:
+          root: issue
+          accessor: details
+          transformers:
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: \n
+              toReplace:
+                value:
+                  simple: |2+
+
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -75,
+          "y": 1450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_15_#default#": 0.24,
+      "16_62_yes": 0.43,
+      "43_15_#default#": 0.23,
+      "44_15_#default#": 0.27
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1870,
+        "width": 2500,
+        "x": -570,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Teams Channel
+  value:
+    simple: ""
+  required: false
+  description: The Microsoft Teams channel to send messages to. 
+  playbookInputQuery: null
+- key: Slack Channel
+  value:
+    simple: ""
+  required: false
+  description: The Slack channel to send messages to.
+  playbookInputQuery: null
+- key: Email Address
+  value:
+    simple: ""
+  required: false
+  description: A comma-separated list of email address for notifications.
+  playbookInputQuery: null
+- key: Subject
+  value:
+    simple: You have a new message for - ${issue.name}
+  required: false
+  description: The email subject.
+  playbookInputQuery: null
+- key: AssetName
+  value:
+    complex:
+      root: Core.CoreAsset
+      accessor: xdm__asset__name
+      transformers:
+      - operator: FirstArrayElement
+  required: false
+  description: "The name of the asset related to the issue."
+  playbookInputQuery: null
+- key: AssetType
+  value:
+    complex:
+      root: Core.CoreAsset
+      accessor: xdm__asset__type__name
+      transformers:
+      - operator: FirstArrayElement
+  required: false
+  description: "The asset type related to the issue, for example, EC2, Azure VM, and Google Cloud Storage."
+  playbookInputQuery: null
+- key: CloudRegion
+  value:
+    complex:
+      root: Core.CoreAsset
+      accessor: xdm__asset__cloud__region
+      transformers:
+      - operator: FirstArrayElement
+  required: false
+  description: "The region of the asset related to the issue, for example, us-east-1, westus, etc."
+  playbookInputQuery: null
+- key: CloudAccountID
+  value:
+    complex:
+      root: Core.CoreAsset
+      accessor: xdm__asset__realm
+      transformers:
+      - operator: FirstArrayElement
+  required: false
+  description: "The account ID of the asset related to the issue. For AWS, it is a 12-digit account number. For Azure, it is the Subscription ID."
+  playbookInputQuery: null
+- key: remediation_action
+  value:
+    simple: ${remediation_action}
+  required: false
+  description: "The description of the remediation action that was taken to resolve this issue, if any."
+  playbookInputQuery: null
+- key: AssetID
+  value:
+    complex:
+      root: Core.CoreAsset
+      accessor: xdm__asset__id
+      transformers:
+      - operator: FirstArrayElement
+  required: false
+  description: "The internal ID of the asset related to the issue."
+  playbookInputQuery: null
+inputSections:
+- inputs:
+  - Teams Channel
+  - Slack Channel
+  - Email Address
+  - Subject
+  - AssetName
+  - AssetType
+  - CloudRegion
+  - CloudAccountID
+  - remediation_action
+  - AssetID
+  name: General Inputs
+  description: The default inputs defined at sub-playbook level.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs: []
+sourceplaybookid: Create Ticket and Notify
+adopted: true
+fromversion: 8.0.0

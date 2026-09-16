@@ -1,5 +1,6 @@
 category: Data Enrichment & Threat Intelligence
-sectionOrder:
+provider: Thoma Bravo
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -136,7 +137,7 @@ script:
       - ip
     description: Gets indicators from the feed.
     name: proofpoint-get-indicators
-  dockerimage: demisto/python3:3.12.11.4417419
+  dockerimage: demisto/python3:3.12.13.10116658
   feed: true
   runonce: false
   script: '-'

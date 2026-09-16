@@ -3,8 +3,17 @@ import os
 from pathlib import Path
 
 import pytest
-from CirclCVESearch import (Client, cve_command, generate_indicator, parse_cpe, valid_cve_id_format, get_cvss_version,
-                            detect_format, handle_cve_5_1, create_cve_summary)
+from CirclCVESearch import (
+    Client,
+    cve_command,
+    generate_indicator,
+    parse_cpe,
+    valid_cve_id_format,
+    get_cvss_version,
+    detect_format,
+    handle_cve_5_1,
+    create_cve_summary,
+)
 
 from CommonServerPython import DemistoException, EntityRelationship, argToList, CommandResults
 
@@ -154,13 +163,17 @@ def test_multiple_cve(cve_id_arg, response_data, expected, requests_mock):
     assert isinstance(command_results, list)
     assert len(command_results) == expected
 
-@pytest.mark.parametrize("input_data, expected", [
-    ({"cveMetadata": {"cveId": "CVE-2025-1234"}}, "cve_5_1"),
-    ({"document": {"title": "Example"}, "vulnerabilities": []}, "csaf"),
-    ({"schema_version": "1.4.0", "id": "GHSA-xxxx-yyyy-zzzz"}, "ghsa"),
-    ({"sourceIdentifier": "example@vendor.com", "id": "CVE-2025-5678"}, "nvd_cve_5_1"),
-    ({"id": "CVE-2021-0001", "summary": "Some legacy format CVE"}, "legacy"),
-])
+
+@pytest.mark.parametrize(
+    "input_data, expected",
+    [
+        ({"cveMetadata": {"cveId": "CVE-2025-1234"}}, "cve_5_1"),
+        ({"document": {"title": "Example"}, "vulnerabilities": []}, "csaf"),
+        ({"schema_version": "1.4.0", "id": "GHSA-xxxx-yyyy-zzzz"}, "ghsa"),
+        ({"sourceIdentifier": "example@vendor.com", "id": "CVE-2025-5678"}, "nvd_cve_5_1"),
+        ({"id": "CVE-2021-0001", "summary": "Some legacy format CVE"}, "legacy"),
+    ],
+)
 def test_detect_format_valid(input_data, expected):
     """
     Given: A valid CVE data structure in a known format (e.g., CVE 5.1, CSAF, GHSA, etc.)
@@ -169,6 +182,7 @@ def test_detect_format_valid(input_data, expected):
     """
     result = detect_format(input_data)
     assert result == expected
+
 
 def test_detect_format_invalid():
     """
@@ -179,7 +193,7 @@ def test_detect_format_invalid():
     result = detect_format({})
     assert result == "Unknown"
 
-        
+
 def test_handle_cve_5_1():
     """
     Given: A valid CVE 5.1 JSON file loaded from test data
@@ -208,6 +222,7 @@ def test_handle_cve_5_1():
     assert isinstance(result["access"], dict), "access should be a dictionary"
     assert isinstance(result["impact"], dict), "impact should be a dictionary"
 
+
 def test_create_cve_summary():
     """
     Given: A normalized CVE dictionary with keys for id, cvss, published/modified dates, and summary
@@ -223,7 +238,7 @@ def test_create_cve_summary():
         "cvss": "7.8",
         "Published": "2025-03-01T10:00:00Z",
         "Modified": "2025-03-05T15:00:00Z",
-        "summary": "Some vulnerability affecting X system..."
+        "summary": "Some vulnerability affecting X system...",
     }
 
     summary = create_cve_summary(cve_data)
@@ -233,6 +248,7 @@ def test_create_cve_summary():
     assert summary["Published"] == "2025-03-01T10:00:00"
     assert summary["Modified"] == "2025-03-05T15:00:00"
     assert summary["Description"].startswith("Some vulnerability")
+
 
 def test_cve_command_with_skipped_and_valid_cves():
     """
@@ -256,7 +272,7 @@ def test_cve_command_with_skipped_and_valid_cves():
     class MockClient(Client):
         def __init__(self):
             pass
-        
+
         def cve(self, cve_id):
             if cve_id == "CVE-2025-0001":
                 return {
@@ -266,11 +282,10 @@ def test_cve_command_with_skipped_and_valid_cves():
                     "impact": {},
                     "access": {},
                     "vulnerable_product": [],
-                    "cwe": "CWE-123"
+                    "cwe": "CWE-123",
                 }
             else:
                 return {"format": "bad_format"}
-
 
     client = MockClient()
     results = cve_command(client, args)

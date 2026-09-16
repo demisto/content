@@ -1,0 +1,10 @@
+{
+    "attributes": {
+        "reputation": 70
+    },
+    "id": "8.8.8.8",
+    "links": {
+        "self": ["https://example.com/related"]
+    },
+    "type": "ip_address"
+}

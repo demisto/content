@@ -14,14 +14,14 @@ Follow these steps for a self-deployed configuration:
 
 #### Get client ID and tenant ID values 
 
-1. In the Azure portal, select Azure Active Directory.
+1. In the Azure portal, select Entra ID.
 2. From App registrations in Azure AD, select your application.
 3. Copy the Directory (tenant) ID and enter it in the Tenant ID parameter.
 4. Copy the Application ID and store it in the Client ID parameter.
    
 #### Get client secret value
 
-1. In the Azure portal, select Azure Active Directory.
+1. In the Azure portal, select Entra ID.
 2. From App registrations in Azure AD, select your application.
 3. Select Certificates & secrets.
 4. Select Client secrets -> New client secret.
@@ -66,3 +66,8 @@ Credential Name: KEY_VAULT_NAME/SECRET_NAME
 Username: SECRET_NAME
 
 Password: SECRET_VALUE
+
+### Credentials Fetch Mode
+Set **Credentials Fetch Mode** to **External Credentials Vault (on-demand)** if your security policy does not allow secrets to be stored inside the Cortex credentials store. In this mode, the credentials picker in other integrations will list the configured secrets by name (KEY_VAULT_NAME/SECRET_NAME), but no secret values are pulled from Azure Key Vault. When a playbook or command actually executes an integration that uses one of those credentials, the secret value is fetched live from Azure Key Vault and is passed in memory only. Nothing is persisted in Cortex.
+
+The default mode **Store in Cortex** keeps the existing behavior: The secret values are fetched and stored in the Cortex credentials store.

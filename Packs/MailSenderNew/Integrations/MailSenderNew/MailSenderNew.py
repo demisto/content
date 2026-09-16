@@ -281,7 +281,7 @@ def create_msg():
 
     # Add the relevant headers to the most outer message
     msg["Subject"] = header(subject)
-    msg["From"] = header(demisto.getParam("from"))
+    msg["From"] = header(demisto.getArg("sender") or demisto.getParam("from"))
     if reply_to:
         msg["Reply-To"] = header(reply_to)
     if to:
@@ -370,6 +370,8 @@ def main():
             demisto.results("ok")
         elif demisto.command() == "send-mail":
             raw_message = demisto.getArg("raw_message")
+            sender = demisto.getArg("sender") or from_email
+            demisto.debug(f"Using '{sender}' as the sender address.")
             if raw_message:
                 to = argToList(demisto.getArg("to"))
                 cc = argToList(demisto.getArg("cc"))
@@ -379,7 +381,7 @@ def main():
             else:
                 (_, html_body, str_msg, to, cc, bcc) = create_msg()
 
-            SERVER.sendmail(from_email, to + cc + bcc, str_msg)  # type: ignore[union-attr]
+            SERVER.sendmail(sender, to + cc + bcc, str_msg)  # type: ignore[union-attr]
             SERVER.quit()
             render_body = argToBoolean(demisto.getArg("renderBody") or False)
             results = [CommandResults(entry_type=EntryType.NOTE, raw_response="Mail sent successfully")]

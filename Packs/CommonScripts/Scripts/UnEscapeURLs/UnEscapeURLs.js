@@ -75,8 +75,11 @@ function format_url(input) {
     // If proofpoint type v3
     if (v === 3 || v === 4) {
         var clean = input.substr(PROOFPOINT_PREFIXES[v - 1].length);
-        var closeIndex = clean.indexOf('__');
-        clean = clean.substr(0, closeIndex);
+        // The v3 URL ends with '__;' (double underscore + semicolon)
+        var closeIndex = clean.indexOf('__;');
+        if (closeIndex > -1) {
+            clean = clean.substr(0, closeIndex);
+        }
         var url_reg = /((http)s?:)(\/{1,2})(.*)/g;
         var clean_fixed = clean.replace(url_reg, '$1//$4');
         return clean_fixed;

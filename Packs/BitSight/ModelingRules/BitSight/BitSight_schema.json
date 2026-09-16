@@ -1,0 +1,81 @@
+{
+  "bitsight_bitsight_raw": {
+    "assets": {
+      "type": "string",
+      "is_array": false
+    },
+    "details": {
+      "type": "string",
+      "is_array": false
+    },
+    "pcap_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "severity": {
+      "type": "string",
+      "is_array": false
+    },
+    "severity_category": {
+      "type": "string",
+      "is_array": false
+    },
+    "last_seen": {
+      "type": "string",
+      "is_array": false
+    },
+    "first_seen": {
+      "type": "string",
+      "is_array": false
+    },
+    "_alert_data": {
+      "type": "string",
+      "is_array": false
+    },
+    "risk_vector": {
+      "type": "string",
+      "is_array": false
+    },
+    "evidence_key": {
+      "type": "string",
+      "is_array": false
+    },
+    "temporary_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "risk_category": {
+      "type": "string",
+      "is_array": false
+    },
+    "affects_rating": {
+      "type": "string",
+      "is_array": false
+    },
+    "asset_overrides": {
+      "type": "string",
+      "is_array": false
+    },
+    "risk_vector_label": {
+      "type": "string",
+      "is_array": false
+    },
+    "remediation_history": {
+      "type": "string",
+      "is_array": false
+    },
+    "attributed_companies": {
+      "type": "string",
+      "is_array": false
+    },
+    "rolledup_observation_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "impacts_risk_vector_details": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}
+

@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import os
 import shutil
 
 """ GLOBAL VARS """
@@ -60,12 +61,15 @@ def scan_file(file_entry_id, scan_rule=None):
         file_entry = demisto.getFilePath(file_entry_id)
     except ValueError as e:
         return_error(f'Failed to find file entry with id:"{file_entry_id}". got error: {e}')
-    file_name = file_entry["name"]
+    file_name = os.path.basename(file_entry["name"])
     shutil.copy(file_entry["path"], file_name)
     try:
         res = http_req(method="POST", url_suffix="file", file_name=file_name, scan_rule=scan_rule)
     finally:
-        shutil.rmtree(file_name, ignore_errors=True)
+        try:
+            os.remove(file_name)
+        except OSError:
+            demisto.debug(f"Could not remove temporary file: {file_name}")
     return res, file_name
 
 

@@ -2,6 +2,7 @@ id: SlashNextPhishingIncidentResponse-Test
 version: -1
 name: SlashNextPhishingIncidentResponse-Test
 description: A test playbook for SlashNext Phishing Incident Response.
+deprecated: true
 starttaskid: "0"
 tasks:
   "0":

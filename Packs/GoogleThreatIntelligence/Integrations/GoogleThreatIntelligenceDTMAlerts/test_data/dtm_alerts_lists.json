@@ -1,0 +1,320 @@
+{
+    "alerts": [
+        {
+            "aggregated_under_id": "dummyaggregated_id_01",
+            "ai_doc_summary": "This message advertises a service that provides fraudulent Google verification badges for any account. \n",
+            "alert_summary": "Google verification badges for any account of the gmail and cloud.",
+            "alert_type": "Message",
+            "confidence": 0.20271267571752816,
+            "confidence_reasoning": {
+                "benign_count": 0,
+                "malicious_count": 0,
+                "response_count": 0,
+                "version": ""
+            },
+            "created_at": "2025-05-21T11:28:02.646Z",
+            "doc": {
+                "__id": "dummy_id_01",
+                "__type": "message",
+                "body": "dummy body for DTM Alerts",
+                "channel": {
+                    "channel_id": "channeldummy",
+                    "channel_info": {
+                        "description": "Surge Market"
+                    },
+                    "channel_url": "dummyurl",
+                    "invite_url": "dummyurl",
+                    "messenger": {
+                        "id": "Googlechat",
+                        "name": "Googlechat"
+                    },
+                    "name": "social"
+                },
+                "ingested": "2025-05-21T11:27:45Z",
+                "message_id": "dummymessageid01",
+                "messenger": {
+                    "id": "Googlechat",
+                    "name": "Googlechat"
+                },
+                "sender": {
+                    "identity": {
+                        "first_name": "Crome Bot",
+                        "name": "Crome Bot "
+                    },
+                    "googlechat": {
+                        "name": "gmail",
+                        "user_id": 220903062
+                    }
+                },
+                "source": "googlw",
+                "timestamp": "2025-05-21T11:27:42Z"
+            },
+            "doc_matches": [
+                {
+                    "locations": [
+                        {
+                            "offsets": [
+                                688,
+                                692
+                            ],
+                            "value": "full"
+                        },
+                        {
+                            "offsets": [
+                                693,
+                                699
+                            ],
+                            "value": "access"
+                        }
+                    ],
+                    "match_path": "body"
+                }
+            ],
+            "doc_url": "https://www.example.com/v4/dtm/docs/message/dummydocurl01",
+            "email_sent_at": "",
+            "analysis": "dummy analysis alert",
+            "has_analysis": true,
+            "id": "dummy_0000",
+            "ignore": false,
+            "indicator_mscore": 11,
+            "tags": [
+                "attempt",
+                "Test"
+            ],
+            "labels": [
+                {
+                    "classifier": "classifier-content",
+                    "confidence": 100,
+                    "element_path": "body",
+                    "id": "dummy_label_id",
+                    "label": "prose",
+                    "version": "dummy_version"
+                }
+            ],
+            "labels_url": "https://exmaple.com/v4/dtm/docs/message/dummy0011/labels",
+            "monitor_id": "dummy_monitor_id",
+            "monitor_name": "Initial Access Broker",
+            "monitor_version": 1,
+            "severity": "low",
+            "severity_reasoning": {
+                "rule": ""
+            },
+            "similarity_score": 0.9906103,
+            "status": "read",
+            "title": "Found topic \"google\" posted by actor \"sevenbump\" on channel \"social\"",
+            "topic_matches": [
+                {
+                    "offsets": [
+                        0,
+                        4
+                    ],
+                    "term": "google",
+                    "topic_id": "dummy_topicid_01",
+                    "value": "google"
+                },
+                {
+                    "topic_id": "dummy_topicid_02",
+                    "value": "message"
+                }
+            ],
+            "topics": [
+                {
+                    "confidence": 99,
+                    "entity_locations": [
+                        {
+                            "element_path": "body",
+                            "offsets": [
+                                488,
+                                491
+                            ]
+                        }
+                    ],
+                    "extractor": "analysis of the message",
+                    "extractor_version": "4-0-2",
+                    "id": "dummy_topicid_01",
+                    "type": "organization",
+                    "value": "social"
+                },
+                {
+                    "confidence": 94,
+                    "entity_locations": [
+                        {
+                            "element_path": "body",
+                            "offsets": [
+                                701,
+                                704
+                            ]
+                        }
+                    ],
+                    "extractor": "analysis-pipeline",
+                    "extractor_version": "4-0-2",
+                    "id": "dummy_topicid_02",
+                    "type": "product",
+                    "value": "social"
+                }
+            ],
+            "topics_url": "https://example.com/v4/dtm/docs/message/dummy0011/topics",
+            "updated_at": "2025-05-22T07:09:51.257Z"
+        },
+        {
+            "aggregated_under_id": "dummy_aggregated_under_id_02",
+            "ai_doc_summary": "This message advertises a service that offers unauthorized google account.\n",
+            "alert_summary": "Google account verification service cromeam Stand out your way use any name any username any profile pic or none at all.",
+            "alert_type": "Message",
+            "confidence": 0.20271267571752816,
+            "confidence_reasoning": {
+                "benign_count": 0,
+                "malicious_count": 0,
+                "response_count": 0,
+                "version": ""
+            },
+            "created_at": "2025-05-21T10:19:04.241Z",
+            "doc": {
+                "__id": "dummy_doc_id_02",
+                "__type": "message",
+                "body": "this is body of message",
+                "channel": {
+                    "channel_id": "-1001097206146",
+                    "channel_info": {
+                        "description": "Surge Market"
+                    },
+                    "channel_url": "https://dummyurl.com",
+                    "invite_url": "https://dummyurl.com",
+                    "messenger": {
+                        "id": "googlechat",
+                        "name": "Googlechat"
+                    },
+                    "name": "social"
+                },
+                "ingested": "2025-05-21T10:19:00Z",
+                "message_id": "dummy_message_id_02",
+                "messenger": {
+                    "id": "googlechat",
+                    "name": "Googlechat"
+                },
+                "sender": {
+                    "identity": {
+                        "first_name": "Crome Bot",
+                        "name": "Crome Bot "
+                    },
+                    "telegram": {
+                        "name": "sevenbump",
+                        "user_id": 220903062
+                    }
+                },
+                "source": "google",
+                "timestamp": "2025-05-21T10:18:55Z"
+            },
+            "doc_matches": [
+                {
+                    "locations": [
+                        {
+                            "offsets": [
+                                688,
+                                692
+                            ],
+                            "value": "full"
+                        },
+                        {
+                            "offsets": [
+                                693,
+                                699
+                            ],
+                            "value": "access"
+                        }
+                    ],
+                    "match_path": "body"
+                }
+            ],
+            "doc_url": "https://www.example.com/v4/dtm/docs/message/dummydocurl01",
+            "email_sent_at": "",
+            "analysis": "dummy analysis alert",
+            "has_analysis": true,
+            "id": "dummy_0001",
+            "ignore": false,
+            "indicator_mscore": 11,
+            "tags": [
+                "attempt"
+            ],
+            "labels": [
+                {
+                    "classifier": "classifier-content",
+                    "confidence": 100,
+                    "element_path": "body",
+                    "id": "dummyid03",
+                    "label": "prose",
+                    "version": "dummyversion03"
+                }
+            ],
+            "labels_url": "https://exmaple.com/v4/dtm/docs/message/dummy0011/labels",
+            "monitor_id": "dummy_monitor_01",
+            "monitor_name": "Initial Access Broker",
+            "monitor_version": 1,
+            "severity": "low",
+            "severity_reasoning": {
+                "rule": ""
+            },
+            "similarity_score": 0.9906103,
+            "status": "read",
+            "title": "Found topic \"Google\" posted by actor \"sevenbump\" on Google channel \"social\"",
+            "topic_matches": [
+                {
+                    "offsets": [
+                        0,
+                        4
+                    ],
+                    "term": "dummyterm03",
+                    "topic_id": "dummy_topic_01",
+                    "value": "dummyvalue_03"
+                },
+                {
+                    "topic_id": "dummay_topic_02",
+                    "value": "message"
+                }
+            ],
+            "topics": [
+                {
+                    "entity_locations": [
+                        {
+                            "element_path": "channel.name",
+                            "offsets": [
+                                0,
+                                17
+                            ]
+                        }
+                    ],
+                    "extractor": "dtm-ma",
+                    "extractor_version": "1.0.595",
+                    "id": "dummy_topic_01",
+                    "type": "name",
+                    "value": "social"
+                },
+                {
+                    "entity_locations": [
+                        {
+                            "element_path": "messenger.name",
+                            "offsets": [
+                                0,
+                                8
+                            ]
+                        },
+                        {
+                            "element_path": "channel.messenger.name",
+                            "offsets": [
+                                0,
+                                8
+                            ]
+                        }
+                    ],
+                    "extractor": "dtm-ma",
+                    "extractor_version": "1.0.595",
+                    "id": "dummay_topic_02",
+                    "type": "service_name",
+                    "value": "Googlechat"
+                }
+            ],
+            "topics_url": "https://example.com/v4/dtm/docs/message/dummy0011/topics",
+            "updated_at": "2025-05-22T07:09:51.257Z"
+        }
+    ]
+}

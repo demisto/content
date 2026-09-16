@@ -5,6 +5,7 @@ from CommonServerPython import *  # noqa: F401
 import os
 import re
 import json
+import traceback
 from pan_cortex_data_lake import Credentials, exceptions, QueryService
 import time
 import base64
@@ -22,18 +23,33 @@ from urllib.parse import urlparse
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 """ GLOBAL CONSTS """
+# Integration context fields
 ACCESS_TOKEN_CONST = "access_token"  # guardrails-disable-line
 EXPIRES_IN = "expires_in"
+SCM_EXPIRATION_CONST = "expiration"
 INSTANCE_ID_CONST = "instance_id"
 API_URL_CONST = "api_url"
 FIRST_FAILURE_TIME_CONST = "first_failure_time"
 LAST_FAILURE_TIME_CONST = "last_failure_time"
+REFRESH_TOKEN_CONST = "refresh_token"
+IS_FEDRAMP_CONST = "is_fedramp"
+AUTH_MODE_CONST = "auth_mode"
 
+# Authentication modes
+AUTH_MODE_OPROXY = "oproxy"
+AUTH_MODE_SCM = "scm"
+
+FEDRAMP_HOSTNAME_SUFFIX = "federal.paloaltonetworks.com"
 DEFAULT_API_URL = "https://api.us.cdl.paloaltonetworks.com"
-STANDARD_TOKEN_URL = "https://oproxy.demisto.ninja"  # guardrails-disable-line
-FEDRAMP_TOKEN_URL = (
+LEGACY_COMMERCIAL_TOKEN_URL = "https://oproxy.demisto.ninja"  # guardrails-disable-line
+LEGACY_FEDRAMP_TOKEN_URL = (
     "https://cortex-gateway-federal.paloaltonetworks.com/api/xdr_gateway/external_services/cdl"  # guardrails-disable-line
 )
+
+# SCM (Cortex GW) gateway base URLs and path suffix
+SCM_GATEWAY_URL = "https://cortex-gateway.paloaltonetworks.com"  # guardrails-disable-line
+SCM_GATEWAY_FEDERAL_URL = "https://cortex-gateway-federal.paloaltonetworks.com"  # guardrails-disable-line
+SCM_TOKEN_PATH = "/api/xdr_gateway/external_services/scm/get_access_token"
 
 MINUTES_60 = 60 * 60
 SECONDS_30 = 30
@@ -54,6 +70,68 @@ FETCH_TABLE_HR_NAME = {
 }
 BAD_REQUEST_REGEX = r"^Error in API call \[400\].*"
 
+# Strata Logging Service (SLS) migration mapping.
+# Following the SLS migration, the oproxy may return a pre-migration URL that is no longer reachable.
+# If the URL returned by oproxy is unreachable, we fall back to the migrated URL using this table,
+# which maps the exact pre-migration URL (as returned by oproxy) to its migrated URL (whole URL to whole URL).
+# Only the URLs listed here are mapped; any other URL is left unchanged.
+MIGRATED_SLS_URL_BY_ORIGINAL_URL = {
+    # americas
+    "https://api.us.cdl.paloaltonetworks.com": "https://read-api.us1.prd.strata.logging.paloaltonetworks.com",
+    # europe
+    "https://api.nl.cdl.paloaltonetworks.com": "https://read-api.eu1.prd.strata.logging.paloaltonetworks.com",
+    # au
+    "https://api.au1.se1.cdl.paloaltonetworks.com": "https://read-api.au1.prd.strata.logging.paloaltonetworks.com",
+    # ca
+    "https://api.ca1.ne1.cdl.paloaltonetworks.com": "https://read-api.ca1.prd.strata.logging.paloaltonetworks.com",
+    # de
+    "https://api.de1.ew3.cdl.paloaltonetworks.com": "https://read-api.de1.prd.strata.logging.paloaltonetworks.com",
+    # fr
+    "https://api.fr1.ew9.cdl.paloaltonetworks.com": "https://read-api.fr1.prd.strata.logging.paloaltonetworks.com",
+    # jp
+    "https://api.jp1.ne1.cdl.paloaltonetworks.com": "https://read-api.jp1.prd.strata.logging.paloaltonetworks.com",
+    # in
+    "https://api.in1.as1.cdl.paloaltonetworks.com": "https://read-api.in1.prd.strata.logging.paloaltonetworks.com",
+    # id
+    "https://api.id1.se2.cdl.paloaltonetworks.com": "https://read-api.id1.prd.strata.logging.paloaltonetworks.com",
+    # sg
+    "https://api.sg1.se1.cdl.paloaltonetworks.com": "https://read-api.sg1.prd.strata.logging.paloaltonetworks.com",
+    # uk
+    "https://api.uk.cdl.paloaltonetworks.com": "https://read-api.uk1.prd.strata.logging.paloaltonetworks.com",
+}
+URL_REACHABILITY_TIMEOUT = 10
+
+
+def build_scm_signature(encryption_key_b64: str, client_secret: Optional[str], timestamp: int) -> str:
+    """Builds the base64 AES-GCM signature required by the SCM gateway.
+
+    Args:
+        encryption_key_b64: The base64-encoded 32-byte AES-GCM encryption key.
+        client_secret: The SCM client secret.
+        timestamp: Unix epoch seconds; must match the outer request timestamp.
+
+    Returns:
+        The base64-encoded (gcm_nonce + ciphertext) signature.
+    """
+    try:
+        encryption_key = base64.b64decode(encryption_key_b64)
+    except Exception as e:
+        raise DemistoException("Invalid Encryption Key: must be a valid base64 string.") from e
+    if len(encryption_key) != 32:
+        raise DemistoException("Invalid Encryption Key: the key must be the base64 value of exactly 32 raw bytes.")
+    nonce = base64.b64encode(os.urandom(16)).decode("ascii")
+    plaintext = json.dumps({"nonce": nonce, "timestamp": timestamp, "client_secret": client_secret}).encode("utf-8")
+    gcm_nonce = os.urandom(12)
+    ciphertext = AESGCM(encryption_key).encrypt(gcm_nonce, plaintext, None)
+    return base64.b64encode(gcm_nonce + ciphertext).decode("ascii")
+
+
+def build_scm_request_body(registration_id: str, encryption_key_b64: str, client_secret: Optional[str]) -> dict:
+    """Builds the SCM get_access_token request body with a bound inner/outer timestamp."""
+    timestamp = int(time.time())
+    signature = build_scm_signature(encryption_key_b64, client_secret, timestamp)
+    return {"registration_id": registration_id, "timestamp": timestamp, "signature": signature}
+
 
 class Client(BaseClient):
     """
@@ -61,16 +139,29 @@ class Client(BaseClient):
     Should only do requests and return data.
     """
 
-    def __init__(self, token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key, is_fr):
+    def __init__(
+        self,
+        token_retrieval_url,
+        registration_id,
+        use_ssl,
+        proxy,
+        refresh_token,
+        enc_key,
+        client_secret: Optional[str] = None,
+        auth_mode: str = AUTH_MODE_OPROXY,
+    ):
+        self.auth_mode = auth_mode
         headers = get_x_content_info_headers()
-        headers["Authorization"] = registration_id
+        if self.auth_mode == AUTH_MODE_OPROXY:
+            headers["Authorization"] = registration_id
         headers["Accept"] = "application/json"
         super().__init__(base_url=token_retrieval_url, headers=headers, verify=use_ssl, proxy=proxy)
         self.refresh_token = refresh_token
         self.enc_key = enc_key
         self.use_ssl = use_ssl
-        self.is_fr = is_fr
+        self.use_fr_token_headers = bool(FEDRAMP_HOSTNAME_SUFFIX in token_retrieval_url)
         self.registration_id = registration_id
+        self.client_secret = client_secret
         # Trust environment settings for proxy configuration
         self.trust_env = proxy
         self._set_access_token()
@@ -85,31 +176,118 @@ class Client(BaseClient):
         integration_context = demisto.getIntegrationContext()
         access_token = integration_context.get(ACCESS_TOKEN_CONST)
         valid_until = integration_context.get(EXPIRES_IN)
-        if access_token and valid_until and int(time.time()) < valid_until:
+        stored_auth_mode = (
+            integration_context.get(AUTH_MODE_CONST) or AUTH_MODE_OPROXY
+        )  # default to oproxy, since this field wasn't written before
+        auth_mode_matches = stored_auth_mode == self.auth_mode
+        demisto.debug(
+            f"Stored auth-mode is '{integration_context.get(AUTH_MODE_CONST)}' (defaulting to oproxy if NONE), current auth mode is '{self.auth_mode}'."  # noqa: E501
+        )
+        if access_token and valid_until and int(time.time()) < valid_until and auth_mode_matches:
             self.access_token = access_token
             self.api_url = integration_context.get(API_URL_CONST, DEFAULT_API_URL)
             self.instance_id = integration_context.get(INSTANCE_ID_CONST)
+            demisto.debug(f"access token time: {valid_until} still valid. Reusing.")
             return
-        demisto.debug(f"access token time: {valid_until} expired/none. Will call oproxy")
-        access_token, api_url, instance_id, refresh_token, expires_in = self._oproxy_authorize()
-        updated_integration_context = {
-            ACCESS_TOKEN_CONST: access_token,
-            EXPIRES_IN: int(time.time()) + expires_in - SECONDS_30,
-            API_URL_CONST: api_url,
-            INSTANCE_ID_CONST: instance_id,
-        }
+        demisto.debug(f"access token time: {valid_until} expired/none (auth_mode={self.auth_mode}). Refreshing.")
+        access_token, api_url, instance_id, refresh_token, expires_in = (
+            self._scm_authorize() if self.auth_mode == AUTH_MODE_SCM else self._oproxy_authorize()
+        )
+        integration_context.update(
+            {
+                ACCESS_TOKEN_CONST: access_token,
+                EXPIRES_IN: int(time.time()) + expires_in - SECONDS_30,
+                API_URL_CONST: api_url,
+                INSTANCE_ID_CONST: instance_id,
+                AUTH_MODE_CONST: self.auth_mode,
+            }
+        )
         if refresh_token:
-            updated_integration_context.update({"refresh_token": refresh_token})
-        demisto.setIntegrationContext(updated_integration_context)
+            integration_context.update({REFRESH_TOKEN_CONST: refresh_token})
+        demisto.setIntegrationContext(integration_context)
         self.access_token = access_token
         self.api_url = api_url
         self.instance_id = instance_id
 
+    def _scm_authorize(self) -> tuple[Any, Any, Any, Any, int]:
+        """Authorizes against the SCM (Cortex GW) gateway and returns the same shape as _oproxy_authorize."""
+        body = build_scm_request_body(self.registration_id, self.enc_key, self.client_secret)
+        headers = {"Content-Type": "application/json", "Accept": "application/json"}
+
+        demisto.debug("[_scm_authorize] CDL: authenticating via SCM (Cortex GW) auth mode")
+
+        try:
+            demisto.debug(f"[_scm_authorize] Attempting authorization against '{urljoin(self._base_url, SCM_TOKEN_PATH)}'.")
+            raw_response = self._http_request(
+                method="POST",
+                url_suffix=SCM_TOKEN_PATH,
+                json_data=body,
+                headers=headers,
+                timeout=(60 * 3, 60 * 3),
+                resp_type="response",
+            )
+        except DemistoException as e:
+            status_code = e.res.status_code if e.res is not None else None
+            demisto.debug(f"[_scm_authorize] CDL SCM request failed with status_code={status_code}")
+            if status_code == 429:
+                raise DemistoException(
+                    "SCM rate limit exceeded (60 requests/min per registration_id) - try again shortly."
+                ) from e
+            if status_code == 401:
+                raise DemistoException(
+                    "SCM authentication failed (check Registration ID, Encryption Key, and Client Secret)."
+                ) from e
+            raise
+
+        raw_text = raw_response.text or ""
+        if not raw_text.strip():
+            raise DemistoException(
+                f"SCM returned an empty response body (status={raw_response.status_code}, "
+                f"content_type={raw_response.headers.get('Content-Type')!r}). "
+                "Expected a JSON body with an access_token. Check the SCM token URL, redirects, and proxy settings."
+            )
+
+        try:
+            response = raw_response.json()
+        except ValueError as e:
+            # A non-JSON body here is an error body from the gateway
+            raise DemistoException(
+                f"SCM returned a non-JSON response (status={raw_response.status_code}): {raw_text[:200]!r}"
+            ) from e
+
+        access_token = response.get(ACCESS_TOKEN_CONST)
+        if not access_token:
+            demisto.debug(
+                "[_scm_authorize] Got a response from SCM auth, but the access token (used for query/v2/jobs requests) is missing!"  # noqa: E501
+            )
+            raise DemistoException("Missing access_token in SCM response.")
+        # The SCM gateway supplies the data-plane address and instance to query, alongside the token.
+        # It reports the TTL as "expiration"; fall back to "expires_in" and then to a default.
+        expires_in = int(response.get(SCM_EXPIRATION_CONST) or response.get(EXPIRES_IN) or 0)
+        api_url = response.get("url") or DEFAULT_API_URL
+        instance_id = response.get(INSTANCE_ID_CONST) or ""
+        # NOTE: refresh token is used only for oproxy, scm does not return it
+        refresh_token = None
+        if not response.get("url"):
+            demisto.debug(
+                f"[_scm_authorize] CDL: SCM response has no 'url'; falling back to the default API URL {DEFAULT_API_URL}."
+            )
+        if not instance_id:
+            demisto.debug("[_scm_authorize] CDL: SCM response has no 'instance_id'; queries will not be scoped to an instance.")
+        demisto.debug(
+            f"[_scm_authorize] CDL: SCM auth succeeded (expires_in={expires_in}, api_url={api_url}, instance_id={instance_id})"
+        )
+        return access_token, api_url, instance_id, refresh_token, expires_in
+
     def _oproxy_authorize(self) -> tuple[Any, Any, Any, Any, int]:
+        """LEGACY OProxy authentication (DEPRECATED).
+
+        Implements the legacy OProxy-based access-token retrieval.
+        """
         oproxy_response = self._get_access_token_with_backoff_strategy()
         access_token = oproxy_response.get(ACCESS_TOKEN_CONST)
         api_url = oproxy_response.get("url")
-        refresh_token = oproxy_response.get("refresh_token")
+        refresh_token = oproxy_response.get(REFRESH_TOKEN_CONST)
         instance_id = oproxy_response.get(INSTANCE_ID_CONST)
         # In case the response has EXPIRES_IN key with empty string as value, we need to make sure we don't try to cast
         # an empty string to an int.
@@ -119,11 +297,63 @@ class Client(BaseClient):
                 f"Missing attribute in response: access_token, instance_id or api are missing.\n"
                 f"Oproxy response: {oproxy_response}"
             )
+        # Following the SLS migration, the URL returned by oproxy may point to a pre-migration (unreachable) host.
+        # Probe it and, if unreachable, fall back to the migrated URL from the mapping table before it is persisted.
+        api_url = self._resolve_reachable_api_url(api_url)
         return access_token, api_url, instance_id, refresh_token, expires_in
 
+    def _resolve_reachable_api_url(self, api_url: str) -> str:
+        """Returns a reachable SLS API URL.
+
+        Probes the URL returned by oproxy; if it is unreachable (timeout / connection error / any error),
+        attempts to map it to its migrated equivalent via the whole-URL mapping table. If no mapping
+        exists, the original URL is returned unchanged.
+
+        Args:
+            api_url: The API URL as returned by oproxy.
+
+        Returns:
+            The reachable (or best-effort) API URL to use and persist.
+        """
+        if self._is_url_reachable(api_url):
+            demisto.debug(f"CDL - oproxy api_url is reachable, using it as-is: {api_url}")
+            return api_url
+
+        demisto.info(f"CDL - oproxy api_url is unreachable: {api_url}. Attempting to map to the migrated SLS URL.")
+        mapped_url = map_to_migrated_url(api_url)
+        if mapped_url != api_url:
+            demisto.info(f"CDL - Using migrated SLS api_url: {mapped_url}")
+        return mapped_url
+
+    def _is_url_reachable(self, url: str) -> bool:
+        """Performs a lightweight reachability probe against the given URL.
+
+        Any failure - including a timeout (host unreachable), connection error, or any other exception -
+        is treated as "not reachable" and returns False. A successful HTTP response means the host is
+        reachable and returns True.
+
+        Args:
+            url: The URL to probe.
+
+        Returns:
+            True if the host responded, False on timeout / connection error / any error.
+        """
+        try:
+            with requests.Session() as session:
+                session.trust_env = self.trust_env
+                session.get(url, timeout=URL_REACHABILITY_TIMEOUT, verify=self.use_ssl)
+            demisto.debug(f"CDL - URL reachable: {url}")
+            return True
+        except Exception as e:
+            demisto.info(f"CDL - URL not reachable: {url}. Error: {e}")
+            demisto.debug(f"CDL - URL reachability probe traceback for {url}:\n{traceback.format_exc()}")
+            return False
+
     def _get_access_token_with_backoff_strategy(self) -> dict:
-        """Implements a backoff strategy for retrieving an access token.
-        Raises an exception if the call is within one of the time windows, otherwise fetches the access token
+        """LEGACY OProxy authentication (DEPRECATED).
+
+        Implements a backoff strategy for retrieving an access token.
+        Raises an exception if the call is within one of the time windows, otherwise fetches the access token.
 
         Returns: The oproxy response or raising a DemistoException
 
@@ -176,8 +406,10 @@ class Client(BaseClient):
                     raise DemistoException(err_msg.format(window - time_from_last_failure, "minutes"))
 
     def _get_access_token(self) -> dict:
-        """Performs an http request to oproxy-cdl access token endpoint
-        In case of failure, handles the error, otherwise reset the failure counters and return the response
+        """LEGACY OProxy authentication (DEPRECATED).
+
+        Performs an http request to oproxy-cdl access token endpoint.
+        In case of failure, handles the error, otherwise reset the failure counters and return the response.
 
         Returns: The oproxy response or raising a DemistoException
 
@@ -185,9 +417,11 @@ class Client(BaseClient):
         demisto.debug("CDL - Fetching access token")
         try:
             token = get_encrypted(self.refresh_token, self.enc_key)
-            if self.is_fr:
+            if self.use_fr_token_headers:
+                demisto.debug("Using FedRAMP resource token request headers.")
                 data = {"encrypted_token": token, "registration_id": self.registration_id}
             else:
+                demisto.debug("Using standard resource token request headers.")
                 data = {"token": token}
             oproxy_response = self._http_request(
                 "POST",
@@ -241,8 +475,7 @@ class Client(BaseClient):
         self, query: str, page_number: Optional[str] = None, page_size: Optional[str] = None
     ) -> tuple[list[dict], list]:
         """
-        This function handles all the querying of Cortex Logging service
-
+        This function handles all the querying of Strata Logging Service
         Args:
             query: The sql string query.
             page_number: The page number to query.
@@ -252,7 +485,7 @@ class Client(BaseClient):
             A list of records according to the query
         """
         query_data = {"query": self.add_instance_id_to_query(query), "language": "csql"}
-        demisto.debug(f"Query being executed in CDL: {str(query_data)}")
+        demisto.debug(f"Query being executed in SLS: {str(query_data)}")
         query_service = self.initial_query_service()
         response = query_service.create_query(query_params=query_data, enforce_json=True)
         query_result = response.json()
@@ -267,7 +500,7 @@ class Client(BaseClient):
             except AttributeError:
                 error_message = query_result
 
-            raise DemistoException(f"Error in query to Cortex Data Lake XSOAR Connector [{status_code}] - {error_message}")
+            raise DemistoException(f"Error in query to Strata Logging Service XSOAR Connector [{status_code}] - {error_message}")
         raw_results = []
         try:
             for r in query_service.iter_job_results(
@@ -301,7 +534,10 @@ class Client(BaseClient):
 
     def initial_query_service(self) -> QueryService:
         credentials = Credentials(access_token=self.access_token, verify=self.use_ssl)
-        query_service = QueryService(url=self.api_url, credentials=credentials, trust_env=self.trust_env)
+        # `verify` has to be handed to the QueryService explicitly: passing it to Credentials only
+        # affects the SDK's own token-refresh call, leaving the data-plane session verifying against
+        # the default CA bundle. Without this the "Trust any certificate" parameter is ignored for queries.
+        query_service = QueryService(url=self.api_url, credentials=credentials, trust_env=self.trust_env, verify=self.use_ssl)
         return query_service
 
     def add_instance_id_to_query(self, query: str) -> str:
@@ -321,6 +557,29 @@ class Client(BaseClient):
 
 
 """ HELPER FUNCTIONS """
+
+
+def map_to_migrated_url(original_url: str) -> str:
+    """Maps a pre-migration SLS URL to its migrated equivalent by exact whole-URL lookup.
+
+    Looks up the exact URL returned by oproxy in the migration mapping table. If the URL
+    is present, the migrated URL is returned. If it is not in the table, the original URL
+    is returned unchanged.
+
+    Args:
+        original_url: The API URL as returned by oproxy.
+
+    Returns:
+        The migrated URL if the URL is mapped, otherwise the original URL.
+    """
+    migrated_url = MIGRATED_SLS_URL_BY_ORIGINAL_URL.get(original_url)
+
+    if not migrated_url:
+        demisto.info(f"CDL - URL '{original_url}' is not in the migration table. Using the original URL unchanged.")
+        return original_url
+
+    demisto.debug(f"CDL - Mapped URL '{original_url}' to migrated URL: {migrated_url}")
+    return migrated_url
 
 
 def human_readable_time_from_epoch_time(epoch_time: int, utc_time: bool = False):
@@ -947,7 +1206,10 @@ def build_where_clause(args: dict) -> str:
 
 
 def get_encrypted(auth_id: str, key: str) -> str:
-    """
+    """LEGACY OProxy authentication (DEPRECATED).
+
+    Encrypts the auth_id for the legacy OProxy token request. This is part of the legacy OProxy auth
+    path, DEPRECATED in favor of the SCM (Cortex GW) auth.
 
     Args:
         auth_id (str): auth_id from oproxy
@@ -1033,27 +1295,24 @@ def convert_log_to_incident(log: dict, fetch_table: str) -> dict:
     return incident
 
 
-def extract_client_args(configured_registration_id_and_url: str) -> tuple[str, str, bool]:
+def is_fedramp_tenant() -> bool:
     """
-    Extracts the API Client arguments, including token retrieval URL, the registration ID, and FedRAMP status.
-
-    If the URL is provided in the "Registration ID" parameter, it extracts the registration ID and URL directly.
-    Otherwise, it retrieves the tenant URL from the license custom field to determine if it is a FedRAMP or standard tenant,
-    then sets the corresponding token retrieval URL.
-
-    Args:
-        configured_registration_id_and_url (str): The "Registration ID" parameter; may contain a URL joined with an "@" symbol.
+    Retrieves the tenant URL from the license custom field to determine if it is a FedRAMP or standard tenant.
 
     Returns:
-        tuple[str, str, bool]: A tuple containing the following:
-            - Token retrieval URL
-            - Registration ID
-            - Boolean flag indicating if FedRAMP (`True`) or standard tenant (`False`).
+        bool: True if FedRAMP tenant, False otherwise.
     """
-    # Get tenant URL
-    demisto.debug("Getting URL from license custom field.")
+    # Try to get from integration context
+    integration_context = demisto.getIntegrationContext()
+    is_fedramp = integration_context.get(IS_FEDRAMP_CONST)
+    if is_fedramp is not None:
+        demisto.debug(f"Found FedRAMP status {is_fedramp=} in integration context.")
+        return is_fedramp
+
+    # If not in integration context, get tenant URL
+    demisto.debug("FedRAMP status not in integration context. Getting tenant URL from license custom field.")
     url = str(demisto.getLicenseCustomField("Http_Connector.url"))
-    demisto.debug(f"Got {url=} from license custom field.")
+    demisto.debug(f"Got tenant {url=} from license custom field.")
 
     # Ensure 'https' scheme in tenant URL, otherwise URL may not be parsed correctly
     if not url.startswith("https"):
@@ -1061,30 +1320,58 @@ def extract_client_args(configured_registration_id_and_url: str) -> tuple[str, s
         url = f"https://{url}"
 
     # Extract hostname from tenant URL
-    demisto.debug("Extracting hostname from parsed URL.")
+    demisto.debug("Extracting hostname from parsed tenant URL.")
     parsed_url = urlparse(url)
     hostname = parsed_url.hostname
-    demisto.debug(f"Extracted {hostname=} from parsed URL.")
+    demisto.debug(f"Extracted {hostname=} from parsed tenant URL.")
 
-    is_fr = isinstance(hostname, str) and hostname.endswith(".federal.paloaltonetworks.com")  # Indicates if FedRAMP tenant
-    demisto.debug(f"Working on tenant with {is_fr=}.")
+    is_fedramp = isinstance(hostname, str) and hostname.endswith(FEDRAMP_HOSTNAME_SUFFIX)
 
+    # Set in integration context for use next time
+    integration_context[IS_FEDRAMP_CONST] = is_fedramp
+    demisto.debug(f"Setting tenant FedRAMP status {is_fedramp=} in integration context.")
+    demisto.setIntegrationContext(integration_context)
+    return is_fedramp
+
+
+def extract_client_args(configured_registration_id_and_url: str, auth_mode: str) -> tuple[str, str]:
+    """
+    Extracts the API Client arguments, including token retrieval URL and the registration ID.
+
+    If the URL is provided in the "Registration ID" parameter, it extracts the registration ID and URL directly.
+    Otherwise, it infers the token retrieval URL based on the tenant FedRAMP status.
+
+    Args:
+        configured_registration_id_and_url (str): The "Registration ID" parameter; may contain a URL joined with an "@" symbol.
+        auth_mode (str): The authentication mode in use, inferred from credentials.
+
+    Returns:
+        tuple[str, str]: The token retrieval URL, registration ID
+    """
     registration_id_and_url = configured_registration_id_and_url.split("@")
     registration_id = registration_id_and_url[0]
 
+    # If directly supplied, take configured token URL
     if len(registration_id_and_url) == 2:
         demisto.debug("Getting token retrieval URL from configured Registration ID.")
         token_retrieval_url = registration_id_and_url[1]
+        demisto.debug(f"{token_retrieval_url=}")
+        return token_retrieval_url, registration_id
 
-    elif is_fr:
-        demisto.debug("Getting token retrieval URL for FedRAMP tenant.")
-        token_retrieval_url = FEDRAMP_TOKEN_URL
+    # Else, infer token URL based on tenant FedRAMP status
+    is_fr = is_fedramp_tenant()
+    demisto.debug(f"Working on tenant with {is_fr=}.")
+
+    if is_fr:
+        demisto.debug("Getting inferred token retrieval URL for FedRAMP tenant.")
+        token_retrieval_url = LEGACY_FEDRAMP_TOKEN_URL if auth_mode == AUTH_MODE_OPROXY else SCM_GATEWAY_FEDERAL_URL
 
     else:
-        demisto.debug("Getting token retrieval URL for standard tenant.")
-        token_retrieval_url = STANDARD_TOKEN_URL
+        demisto.debug("Getting inferred token retrieval URL for standard tenant.")
+        token_retrieval_url = LEGACY_COMMERCIAL_TOKEN_URL if auth_mode == AUTH_MODE_OPROXY else SCM_GATEWAY_URL
 
-    return token_retrieval_url, registration_id, is_fr
+    demisto.debug(f"{token_retrieval_url=}")
+    return token_retrieval_url, registration_id
 
 
 """ COMMANDS FUNCTIONS """
@@ -1131,6 +1418,36 @@ def query_logs_command(args: dict, client: Client) -> tuple[str, dict[str, list[
     return human_readable, ec, raw_results
 
 
+def query_logs_sls_command(args: dict, client: Client) -> tuple[str, dict[str, list[dict]], list[dict[str, Any]]]:
+    """
+    Table name is stored in log_type attribute of the records
+    Args:
+        query: Query string, i.e SELECT * FROM firewall.threat LIMIT 1
+
+    Returns:
+        the result of querying the Logging service
+    """
+    query = args.get("query", "")
+    limit = args.get("limit", "")
+    transform_results = argToBoolean(args.get("transform_results", "true"))
+
+    if not args.get("page") and "limit" not in query.lower():
+        query += f" LIMIT {limit}"
+
+    records, raw_results = client.query_loggings(query, page_number=args.get("page"), page_size=args.get("page_size"))
+
+    table_name = get_table_name(query)
+    output_results = records
+    if transform_results:
+        output_results = [
+            system_log_context_transformer(record) if "log.system" in query else common_context_transformer(record)
+            for record in records
+        ]
+    human_readable = tableToMarkdown("Logs " + table_name + " table", output_results, removeNull=True)
+    ec = {"SLS.Logging": output_results}
+    return human_readable, ec, raw_results
+
+
 def get_table_name(query: str) -> str:
     """
     Table name is stored in log_type attribute of the records
@@ -1168,6 +1485,29 @@ def get_critical_logs_command(args: dict, client: Client) -> tuple[str, dict[str
     return human_readable, ec, raw_results
 
 
+def get_critical_logs_sls_command(args: dict, client: Client) -> tuple[str, dict[str, list[dict]], list[dict[str, Any]]]:
+    """
+    Queries Cortex Logging according to a pre-set query
+    Returns:
+        The query's threat log critical events
+    """
+    logs_amount = args.get("limit")
+    query_start_time, query_end_time = query_timestamp(args)
+    query = 'SELECT * FROM `firewall.threat` WHERE severity = "Critical" '  # guardrails-disable-line
+    query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND TIMESTAMP("{query_end_time}")'
+
+    if not args.get("page"):
+        query += f" LIMIT {logs_amount}"
+
+    records, raw_results = client.query_loggings(query, page_number=args.get("page"), page_size=args.get("page_size"))
+
+    transformed_results = [threat_context_transformer(record) for record in records]
+
+    human_readable = tableToMarkdown("Logs threat table", transformed_results, removeNull=True)
+    ec = {"SLS.Logging.Threat": transformed_results}
+    return human_readable, ec, raw_results
+
+
 def query_timestamp(args: dict) -> tuple[datetime, datetime]:
     start_time = args.get("start_time", "")
     end_time = args.get("end_time", "")
@@ -1201,6 +1541,30 @@ def get_social_applications_command(args: dict, client: Client) -> tuple[str, di
     return human_readable, ec, raw_results
 
 
+def get_social_applications_sls_command(args: dict, client: Client) -> tuple[str, dict[str, list[dict]], list[dict[str, Any]]]:
+    """
+    Queries Cortex Logging according to a pre-set query
+
+    Returns:
+        The traffic log app category social-networking events
+    """
+    logs_amount = args.get("limit")
+    query_start_time, query_end_time = query_timestamp(args)
+    query = 'SELECT * FROM `firewall.traffic` WHERE app_sub_category = "social-networking" '  # guardrails-disable-line
+    query += f' AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND TIMESTAMP("{query_end_time}")'
+
+    if not args.get("page"):
+        query += f" LIMIT {logs_amount}"
+
+    records, raw_results = client.query_loggings(query, page_number=args.get("page"), page_size=args.get("page_size"))
+
+    transformed_results = [traffic_context_transformer(record) for record in records]
+
+    human_readable = tableToMarkdown("Logs traffic table", transformed_results, removeNull=True)
+    ec = {"SLS.Logging.Traffic": transformed_results}
+    return human_readable, ec, raw_results
+
+
 def search_by_file_hash_command(args: dict, client: Client) -> tuple[str, dict[str, list[dict]], list[dict[str, Any]]]:
     """
     Queries Cortex Logging according to a pre-set query
@@ -1224,6 +1588,31 @@ def search_by_file_hash_command(args: dict, client: Client) -> tuple[str, dict[s
     return human_readable, ec, raw_results
 
 
+def search_by_file_hash_sls_command(args: dict, client: Client) -> tuple[str, dict[str, list[dict]], list[dict[str, Any]]]:
+    """
+    Queries Cortex Logging according to a pre-set query
+    Returns:
+        threat logs where sha256 equals match
+    """
+    logs_amount = args.get("limit")
+    file_hash = args.get("SHA256")
+
+    query_start_time, query_end_time = query_timestamp(args)
+    query = f'SELECT * FROM `firewall.threat` WHERE file_sha_256 = "{file_hash}" '  # guardrails-disable-line  # noqa: S608
+    query += f'AND time_generated BETWEEN TIMESTAMP("{query_start_time}") AND TIMESTAMP("{query_end_time}")'
+
+    if not args.get("page"):
+        query += f" LIMIT {logs_amount}"
+
+    records, raw_results = client.query_loggings(query, page_number=args.get("page"), page_size=args.get("page_size"))
+
+    transformed_results = [threat_context_transformer(record) for record in records]
+
+    human_readable = tableToMarkdown("Logs threat table", transformed_results, removeNull=True)
+    ec = {"SLS.Logging.Threat": transformed_results}
+    return human_readable, ec, raw_results
+
+
 def query_traffic_logs_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
     """
     The function of the command that queries firewall.traffic table
@@ -1233,6 +1622,18 @@ def query_traffic_logs_command(args: dict, client: Client) -> tuple[str, dict, l
     table_name: str = "traffic"
     context_transformer_function = traffic_context_transformer
     table_context_path: str = "CDL.Logging.Traffic"
+    return query_table_logs(args, client, table_name, context_transformer_function, table_context_path)
+
+
+def query_traffic_logs_sls_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
+    """
+    The function of the command that queries firewall.traffic table
+
+        Returns: XSOAR entry with all the parsed data
+    """
+    table_name: str = "traffic"
+    context_transformer_function = traffic_context_transformer
+    table_context_path: str = "SLS.Logging.Traffic"
     return query_table_logs(args, client, table_name, context_transformer_function, table_context_path)
 
 
@@ -1248,6 +1649,18 @@ def query_threat_logs_command(args: dict, client: Client) -> tuple[str, dict, li
     return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
 
 
+def query_threat_logs_sls_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
+    """
+    The function of the command that queries firewall.threat table
+
+        Returns: XSOAR entry with all the parsed data
+    """
+    query_table_name: str = "threat"
+    context_transformer_function = threat_context_transformer
+    table_context_path: str = "SLS.Logging.Threat"
+    return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
+
+
 def query_url_logs_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
     """
     The function of the command that queries firewall.url table
@@ -1260,10 +1673,34 @@ def query_url_logs_command(args: dict, client: Client) -> tuple[str, dict, list[
     return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
 
 
+def query_url_logs_sls_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
+    """
+    The function of the command that queries firewall.url table
+
+        Returns: XSOAR entry with all the parsed data
+    """
+    query_table_name: str = "url"
+    context_transformer_function = url_context_transformer
+    table_context_path: str = "SLS.Logging.URL"
+    return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
+
+
 def query_file_data_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
     query_table_name: str = "file_data"
     context_transformer_function = files_context_transformer
     table_context_path: str = "CDL.Logging.File"
+    return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
+
+
+def query_file_data_sls_command(args: dict, client: Client) -> tuple[str, dict, list[dict[str, Any]]]:
+    """
+    The function of the command that queries firewall.file_data table
+
+        Returns: XSOAR entry with all the parsed data
+    """
+    query_table_name: str = "file_data"
+    context_transformer_function = files_context_transformer
+    table_context_path: str = "SLS.Logging.File"
     return query_table_logs(args, client, query_table_name, context_transformer_function, table_context_path)
 
 
@@ -1276,6 +1713,18 @@ def query_gp_logs_command(args: dict, client: Client):
     table_name: str = "globalprotect"
     context_transformer_function = gp_context_transformer
     table_context_path: str = "CDL.Logging.GlobalProtect"
+    return query_table_logs(args, client, table_name, context_transformer_function, table_context_path, True)
+
+
+def query_gp_logs_sls_command(args: dict, client: Client):
+    """
+    The function of the command that queries firewall.globalprotect table
+
+        Returns: XSOAR entry with all the parsed data
+    """
+    table_name: str = "globalprotect"
+    context_transformer_function = gp_context_transformer
+    table_context_path: str = "SLS.Logging.GlobalProtect"
     return query_table_logs(args, client, table_name, context_transformer_function, table_context_path, True)
 
 
@@ -1333,8 +1782,8 @@ def fetch_incidents(
     fetch_filter: str = "",
 ) -> tuple[dict[str, str], list]:
     last_fetched_event_timestamp = last_run.get("lastRun")
-    demisto.debug("CortexDataLake - Start fetching")
-    demisto.debug(f"CortexDataLake - Last run: {json.dumps(last_run)}")
+    demisto.debug("StrataLoggingService - Start fetching")
+    demisto.debug(f"StrataLoggingService - Last run: {json.dumps(last_run)}")
 
     if last_fetched_event_timestamp:
         last_fetched_event_timestamp = parser.parse(last_fetched_event_timestamp)
@@ -1344,7 +1793,7 @@ def fetch_incidents(
     query = prepare_fetch_incidents_query(
         last_fetched_event_timestamp, fetch_severity, fetch_table, fetch_subtype, fetch_fields, fetch_limit, fetch_filter
     )
-    demisto.debug(f"CortexDataLake - Query sent to the server: {query}")
+    demisto.debug(f"StrataLoggingService - Query sent to the server: {query}")
     records, _ = client.query_loggings(query)
     if not records:
         return {"lastRun": str(last_fetched_event_timestamp)}, []
@@ -1354,9 +1803,9 @@ def fetch_incidents(
     max_fetched_event_timestamp = max(records, key=lambda record: record.get(time_filter, 0)).get(time_filter, 0)
 
     next_run = {"lastRun": epoch_to_timestamp_and_add_milli(max_fetched_event_timestamp)}
-    demisto.debug(f"CortexDataLake - Next run after incidents fetching: {json.dumps(next_run)}")
-    demisto.debug(f"CortexDataLake- Number of incidents before filtering: {len(records)}")
-    demisto.debug(f"CortexDataLake - Number of incidents after filtering: {len(incidents)}")
+    demisto.debug(f"StrataLoggingService - Next run after incidents fetching: {json.dumps(next_run)}")
+    demisto.debug(f"StrataLoggingService- Number of incidents before filtering: {len(records)}")
+    demisto.debug(f"StrataLoggingService - Number of incidents after filtering: {len(incidents)}")
     return next_run, incidents
 
 
@@ -1370,24 +1819,46 @@ def main():
     # If there's a stored token in integration context, it's newer than current
     refresh_token = params.get("credentials_refresh_token", {}).get("password") or params.get("refresh_token")
     enc_key = params.get("credentials_auth_key", {}).get("password") or params.get("auth_key")
-    if not enc_key or not refresh_token or not registration_id_and_url:
-        raise DemistoException("Key, Token and ID must be provided.")
+    client_secret = params.get("credentials_client_secret", {}).get("password")
+    auth_mode = AUTH_MODE_SCM if client_secret else AUTH_MODE_OPROXY
+
+    demisto.debug(
+        f"CDL auth routing: auth_mode={auth_mode} client_secret_set={bool(client_secret)} "
+        f"enc_key_set={bool(enc_key)} refresh_token_set={bool(refresh_token)} "
+        f"registration_id_set={bool(registration_id_and_url)}"
+    )
+
+    if not enc_key:
+        raise DemistoException("Encryption Key must be provided.")
+    if not registration_id_and_url:
+        raise DemistoException("Registration ID must be provided.")
+    if bool(refresh_token) == bool(client_secret):
+        raise DemistoException("Either an Authentication Token or a Client Secret must be provided, but not both.")
 
     use_ssl = not params.get("insecure", False)
     proxy = params.get("proxy", False)
     args = demisto.args()
-    fetch_table = params.get("fetch_table")
+    fetch_table = params.get("fetch_table") or "firewall.threat"
     fetch_fields = params.get("fetch_fields") or "*"
     command = demisto.command()
-    LOG(f"command is {command}")
+    demisto.debug(f"Command called {command}")
     # needs to be executed before creating a Client
     if command == "cdl-reset-authentication-timeout":
         Client.reset_failure_times()
         return_outputs(readable_output="Caching mechanism failure time counters have been successfully reset.")
         return
 
-    token_retrieval_url, registration_id, is_fr = extract_client_args(registration_id_and_url)
-    client = Client(token_retrieval_url, registration_id, use_ssl, proxy, refresh_token, enc_key, is_fr)
+    token_retrieval_url, registration_id = extract_client_args(registration_id_and_url, auth_mode)
+    client = Client(
+        token_retrieval_url,
+        registration_id,
+        use_ssl,
+        proxy,
+        refresh_token,
+        enc_key,
+        client_secret=client_secret,
+        auth_mode=auth_mode,
+    )
 
     try:
         if command == "test-module":
@@ -1403,26 +1874,44 @@ def main():
             )
         elif command == "cdl-query-logs":
             return_outputs(*query_logs_command(args, client))
+        elif command == "sls-query-logs":
+            return_outputs(*query_logs_sls_command(args, client))
         elif command == "cdl-get-critical-threat-logs":
             return_outputs(*get_critical_logs_command(args, client))
+        elif command == "sls-get-critical-threat-logs":
+            return_outputs(*get_critical_logs_sls_command(args, client))
         elif command == "cdl-get-social-applications":
             return_outputs(*get_social_applications_command(args, client))
+        elif command == "sls-get-social-applications":
+            return_outputs(*get_social_applications_sls_command(args, client))
         elif command == "cdl-search-by-file-hash":
             return_outputs(*search_by_file_hash_command(args, client))
+        elif command == "sls-search-by-file-hash":
+            return_outputs(*search_by_file_hash_sls_command(args, client))
         elif command == "cdl-query-traffic-logs":
             return_outputs(*query_traffic_logs_command(args, client))
+        elif command == "sls-query-traffic-logs":
+            return_outputs(*query_traffic_logs_sls_command(args, client))
         elif command == "cdl-query-threat-logs":
             return_outputs(*query_threat_logs_command(args, client))
+        elif command == "sls-query-threat-logs":
+            return_outputs(*query_threat_logs_sls_command(args, client))
         elif command == "cdl-query-url-logs":
             return_outputs(*query_url_logs_command(args, client))
+        elif command == "sls-query-url-logs":
+            return_outputs(*query_url_logs_sls_command(args, client))
         elif command == "cdl-query-file-data":
             return_outputs(*query_file_data_command(args, client))
+        elif command == "sls-query-file-data":
+            return_outputs(*query_file_data_sls_command(args, client))
         elif command == "cdl-query-gp-logs":
             return_outputs(*query_gp_logs_command(args, client))
+        elif command == "sls-query-gp-logs":
+            return_outputs(*query_gp_logs_sls_command(args, client))
         elif command == "fetch-incidents":
             first_fetch_timestamp = params.get("first_fetch_timestamp", "24 hours").strip()
             fetch_severity = params.get("firewall_severity")
-            fetch_table = params.get("fetch_table")
+            fetch_table = params.get("fetch_table") or "firewall.threat"
             fetch_fields = params.get("fetch_fields") or "*"
             fetch_subtype = params.get("firewall_subtype")
             fetch_limit = params.get("limit")

@@ -184,6 +184,8 @@ class PanOs:
         Returns:
             A boolean representing the existence of the value (True) or False.
         """
+        if isinstance(context, dict):
+            context = [context]
         for item in context:
             match = item.get(key, "")
             if match and match == value:
@@ -480,7 +482,7 @@ def create_final_context(failure_message: str, used_integration: str, ip_list_ar
                 {
                     "IP": ip,
                     "Message": failure_message,
-                    "result": "Failed",
+                    "Result": "Failed",
                     "Brand": used_integration,
                 }
             )
@@ -590,7 +592,7 @@ def update_brands_to_run(brands_to_run: list) -> tuple[list, set]:
 @polling_function(
     name="block-external-ip",
     interval=60,
-    timeout=600,
+    timeout=1200,
 )
 def pan_os_commit_status(args: dict, responses: list) -> PollResult:
     """Check the status of the commit process in pan-os.
@@ -629,7 +631,7 @@ def pan_os_commit_status(args: dict, responses: list) -> PollResult:
 @polling_function(
     name="block-external-ip",
     interval=60,
-    timeout=600,
+    timeout=1200,
 )
 def pan_os_push_to_device(args: dict, responses: list) -> PollResult:
     """Execute pan-os-push-to-device-group.
@@ -670,7 +672,7 @@ def pan_os_push_to_device(args: dict, responses: list) -> PollResult:
 @polling_function(
     name="block-external-ip",
     interval=60,
-    timeout=600,
+    timeout=1200,
 )
 def pan_os_push_status(args: dict, responses: list):
     """Check the status of the push operation in pan-os.
@@ -712,7 +714,7 @@ def pan_os_push_status(args: dict, responses: list):
 @polling_function(
     name="block-external-ip",
     interval=60,
-    timeout=600,
+    timeout=1200,
 )
 def pan_os_commit(args: dict, responses: list) -> PollResult:
     """Execute pan-os-commit.
@@ -745,7 +747,7 @@ def pan_os_commit(args: dict, responses: list) -> PollResult:
     args_for_next_run = {
         "commit_job_id": job_id,
         "interval_in_seconds": arg_to_number(args.get("interval_in_seconds", 60)),
-        "timeout": arg_to_number(args.get("timeout", 600)),
+        "timeout": arg_to_number(args.get("timeout", 1200)),
         "polling": True,
     }
     demisto.debug(f"The initial {args_for_next_run=}")
@@ -796,7 +798,7 @@ def main():  # pragma: no cover
         brands_to_run = argToList(
             args.get(
                 "brands",
-                "Palo Alto Networks - Prisma SASE,Panorama,CheckPointFirewall_v2,FortiGate,F5Silverline,Cisco ASA,Zscaler",
+                "Palo Alto Networks - Prisma SASE,Panorama,FortiGate,F5Silverline,Cisco ASA,Zscaler",
             )
         )
         modules = demisto.getModules()
@@ -882,6 +884,7 @@ def main():  # pragma: no cover
                     )
             else:
                 results.append(CommandResults(readable_output=f"The brand {brand} isn't enabled."))  # type: ignore
+                executed_brands.append(brand)
         if POLLING:
             demisto.debug(f"Updating the executed_brands {executed_brands=}")
             demisto.setContext("executed_brands", str(executed_brands))

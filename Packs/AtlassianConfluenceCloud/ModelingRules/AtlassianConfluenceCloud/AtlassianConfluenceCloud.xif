@@ -1,8 +1,8 @@
 [MODEL: dataset = "atlassian_confluence_raw"]
 alter
-    ext_changed_values_name = arraystring(arraymap(changedvalues -> [], "@element" -> name),", "),
-    ext_changed_values_old_value = arraystring(arraymap(changedvalues -> [], "@element" -> oldValue),", "),
-    ext_changed_values_new_value = arraystring(arraymap(changedvalues -> [], "@element" -> newValue),", "),
+    ext_changed_values_name = arraystring(arraymap(to_string(changedvalues) -> [], "@element" -> name),", "),
+    ext_changed_values_old_value = arraystring(arraymap(to_string(changedvalues) -> [], "@element" -> oldValue),", "),
+    ext_changed_values_new_value = arraystring(arraymap(to_string(changedvalues) -> [], "@element" -> newValue),", "),
     ext_associated_objects_name = arraystring(arraymap(associatedobjects -> [],"@element" -> name),", "),
     ext_associated_objects_type = arraystring(arraymap(associatedobjects -> [],"@element" -> objectType),", "),
     ext_affected_object_name = affectedobject -> name,

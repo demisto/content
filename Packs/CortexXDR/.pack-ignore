@@ -2,7 +2,7 @@
 ignore=PA116
 
 [file:CortexXDRIR.yml]
-ignore=IN126,IN139
+ignore=IN126,IN139,BA129,BA130
 
 [file:XDR_iocs.yml]
 ignore=BA108,BA109
@@ -81,7 +81,7 @@ ignore=RM106,RM108
 ignore=RM108
 
 [file:Cortex_XDR_incident_handling_v3_6_5.yml]
-ignore=PB121
+ignore=PB121,GR107
 
 [file:XCloudResourcesPieWidget.yml]
 ignore=BA124
@@ -159,7 +159,7 @@ ignore=PB105
 ignore=PB105
 
 [file:Cortex_XDR_-_Large_Upload.yml]
-ignore=PB121
+ignore=PB121,GR107
 
 # GR103 is temporary, see CIAC-11705
 [file:Test_Playbook_-_Cortex_XDR_-_False_Positive_Incident_Handling.yml]
@@ -169,4 +169,10 @@ ignore=GR103
 ignore=GR107
 
 [file:Cortex_XDR_Port_Scan.json]
+ignore=GR107
+
+[file:Test_Playbook_-_Cortex_XDR_Malware_-_Incident_Enrichment.yml]
+ignore=BA130
+
+[file:playbook-Cortex_XDR_-_Identity_Analytics.yml]
 ignore=GR107

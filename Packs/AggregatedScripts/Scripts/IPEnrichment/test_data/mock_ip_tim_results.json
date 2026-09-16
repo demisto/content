@@ -1,0 +1,98 @@
+{
+    "pages": [
+      {
+        "iocs": [
+          {
+            "value": "1.1.1.1",
+            "score": 3,
+            "manuallyEditedFields": ["Score"],
+            "CustomFields": {
+              "detectionengines": 70,
+              "positivedetections": 37
+            },
+            "insightCache": {
+              "scores": {
+                "brand1": {
+                  "score": 2,
+                  "reliability": "High",
+                  "context": {
+                    "IP(val.Address && val.Address == obj.Address)": [
+                      {
+                        "Address": "1.1.1.1",
+                        "ASOwner": "Cloudflare",
+                        "Source": "feedA",
+                        "DetectionEngines": 60,
+                        "PositiveDetections": 5,
+                        "Score": 2
+                      }
+                    ]
+                  }
+                },
+                "brand2": {
+                  "score": 3,
+                  "reliability": "Medium",
+                  "context": {
+                    "DBotScore(val.Indicator && val.Vendor)": [
+                      {
+                        "Indicator": "1.1.1.1",
+                        "Vendor": "brand2",
+                        "Score": 3
+                      }
+                    ],
+                    "IP(val.Address && val.Address == obj.Address)": [
+                      {
+                        "Address": "1.1.1.1",
+                        "ASOwner": "Cloudflare",
+                        "Source": "feedB",
+                        "DetectionEngines": 70,
+                        "PositiveDetections": 37,
+                        "Score": 3
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          {
+            "value": "8.8.8.8",
+            "score": 1,
+            "CustomFields": {
+              "address": "8.8.8.8",
+              "detectionengines": 10,
+              "positivedetections": 1,
+              "score": 1
+            },
+            "insightCache": {
+              "scores": {
+                "brand3": {
+                  "score": 1,
+                  "reliability": "Low",
+                  "context": {
+                    "DBotScore(val.Indicator && val.Vendor)": [
+                      {
+                        "Indicator": "8.8.8.8",
+                        "Vendor": "brand3",
+                        "Score": 1
+                      }
+                    ],
+                    "IP(val.Address && val.Address == obj.Address)": [
+                      {
+                        "Address": "8.8.8.8",
+                        "ASOwner": "Google",
+                        "Source": "feedC",
+                        "DetectionEngines": 10,
+                        "PositiveDetections": 1,
+                        "Score": 1
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+  

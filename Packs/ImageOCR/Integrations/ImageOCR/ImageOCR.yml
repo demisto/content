@@ -1,5 +1,6 @@
 category: Utilities
-sectionOrder:
+provider: Open Source
+sectionorder:
 - Connect
 - Collect
 commonfields:
@@ -38,7 +39,7 @@ script:
       name: langs
     - description: Turn on verbose flag to display tesseract and other used libraries versions.
       required: false
-      defaultValue: False
+      defaultValue: false
       name: verbose
     name: image-ocr-extract-text
     description: Extract text from images.
@@ -46,7 +47,7 @@ script:
     - contextPath: File.Text
       description: Extracted text from the passed image file.
       type: String
-  dockerimage: demisto/tesseract:1.0.0.2038079
+  dockerimage: demisto/tesseract:1.0.0.11009641
   runonce: false
   script: '-'
   type: python

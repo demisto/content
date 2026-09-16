@@ -33,43 +33,43 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 handle_proxy()
 
 optional_general_properties_map: dict[str, tuple[str, Any]] = {
-    'cpe23': ('CPE23', []),
-    'device': ('Device', ''),
-    'devicetype': ('DeviceType', ''),
-    'info': ('Info', ''),
-    'ipv6': ('IPv6', ''),
-    'link': ('Link', ''),
-    'platform': ('Platform', ''),
-    'product': ('Product', ''),
-    'tags': ('Tags', []),
-    'transport': ('Transport', ''),
-    'vendor': ('Vendor', ''),
-    'version': ('Version', ''),
+    "cpe23": ("CPE23", []),
+    "device": ("Device", ""),
+    "devicetype": ("DeviceType", ""),
+    "info": ("Info", ""),
+    "ipv6": ("IPv6", ""),
+    "link": ("Link", ""),
+    "platform": ("Platform", ""),
+    "product": ("Product", ""),
+    "tags": ("Tags", []),
+    "transport": ("Transport", ""),
+    "vendor": ("Vendor", ""),
+    "version": ("Version", ""),
 }
 
 
 ntlm_properties_map: dict[str, tuple[str, Any]] = {
-    'dns_domain_name': ('DNSDomainName', ''),
-    'dns_forest_name': ('DNSForestName', ''),
-    'fqdn': ('FQDN', ''),
-    'netbios_computer_name': ('NetBIOSComputerName', ''),
-    'netbios_domain_name': ('NetBIOSDomainName', ''),
-    'os': ('OS', []),
-    'os_build': ('OSBuild', ''),
-    'target_realm': ('TargetRealm', ''),
-    'timestamp': ('Timestamp', 0)
+    "dns_domain_name": ("DNSDomainName", ""),
+    "dns_forest_name": ("DNSForestName", ""),
+    "fqdn": ("FQDN", ""),
+    "netbios_computer_name": ("NetBIOSComputerName", ""),
+    "netbios_domain_name": ("NetBIOSDomainName", ""),
+    "os": ("OS", []),
+    "os_build": ("OSBuild", ""),
+    "target_realm": ("TargetRealm", ""),
+    "timestamp": ("Timestamp", 0),
 }
 
 
 ssl_cert_properties_map: dict[str, tuple[str, Any]] = {
-    'expired': ('Expired', False),
-    'expires': ('Expires', ''),
-    'issued': ('Issued', ''),
-    'issuer': ('Issuer', {}),
-    'serial': ('Serial', 0),
-    'sig_alg': ('SigAlg', ''),
-    'subject': ('Subject', {}),
-    'version': ('Version', 0)
+    "expired": ("Expired", False),
+    "expires": ("Expires", ""),
+    "issued": ("Issued", ""),
+    "issuer": ("Issuer", {}),
+    "serial": ("Serial", 0),
+    "sig_alg": ("SigAlg", ""),
+    "subject": ("Subject", {}),
+    "version": ("Version", 0),
 }
 
 
@@ -236,8 +236,9 @@ def search_command():
     # Return the full list of match data as a JSON file if requested
     if return_json:
         formatted_json = json.dumps(matches).encode("utf-8")
-        file_entry = fileResult(filename=f"shodan_search_matches_page{page}.json",
-                                data=formatted_json, file_type=EntryType.ENTRY_INFO_FILE)
+        file_entry = fileResult(
+            filename=f"shodan_search_matches_page{page}.json", data=formatted_json, file_type=EntryType.ENTRY_INFO_FILE
+        )
         return_results(file_entry)
 
     for match in matches:
@@ -264,7 +265,7 @@ def search_command():
                     "Domains": match.get("domains", []),
                     "OS": match.get("os", ""),
                     "Data": match.get("data", ""),
-                    "Hash": match.get("hash", 0)
+                    "Hash": match.get("hash", 0),
                 }
             }
         }
@@ -294,8 +295,9 @@ def search_command():
                 ec["Shodan"]["Banner"]["Ntlm"][ec_key] = match["ntlm"].get(ntlm_property, default_value)
 
         # Format returned data as markdown table
-        human_readable = tableToMarkdown(f"Search results for query \"{query}\" - page {page}, facets: {facets}",
-                                         flattenRow(rowDict=ec["Shodan"]["Banner"]))
+        human_readable = tableToMarkdown(
+            f'Search results for query "{query}" - page {page}, facets: {facets}', flattenRow(rowDict=ec["Shodan"]["Banner"])
+        )
 
         demisto.results(
             {

@@ -1,4 +1,5 @@
 category: Data Enrichment & Threat Intelligence
+provider: Google
 commonfields:
   id: Google Vertex AI
   version: -1
@@ -51,7 +52,7 @@ detaileddescription: 'Fine-tuned to conduct natural conversation. Using Google V
   ---
 
   [View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/google-vertex-ai)'
-description: 'Fine-tuned to conduct natural conversation. Using Google Vertex Ai (PaLM API for Chat)
+description: 'Fine-tuned to conduct natural conversation. Using Google Vertex Ai (PaLM API for Chat).
 
 
   The current integration of Google Vertex Ai is focusing only on the Generative AI model (PaLM) using the Chat prediction.
@@ -63,14 +64,14 @@ description: 'Fine-tuned to conduct natural conversation. Using Google Vertex Ai
 
   - Model Fine Tuning
 
-  - PaLM Text'
+  - PaLM Text.'
 display: Google Vertex AI
 name: Google Vertex AI
 script:
   commands:
   - arguments:
     - name: prompt
-      description: The text that will be submitted to Google Vertex AI - PaLM for Chat
+      description: The text that will be submitted to Google Vertex AI - PaLM for Chat.
       required: true
     description: Send Text to Google Vertex Ai (PaLM for Chat) and receive a generative ai response
     name: google-vertex-PaLM-chat
@@ -83,4 +84,6 @@ script:
   script: ''
   type: python
   subtype: python3
+tests:
+- No tests
 fromversion: 5.0.0

@@ -1,5 +1,6 @@
 import io
 import os
+from dataclasses import dataclass
 from zipfile import ZipFile
 
 import demistomock as demisto  # noqa: F401
@@ -23,7 +24,6 @@ HEADERS = {"Authorization": f"api_key {API_KEY}", "User-Agent": "Cortex XSOAR/1.
 ERROR_FORMAT = "Error in API call to VMRay [{}] - {}"
 RELIABILITY = demisto.params().get("integrationReliability", DBotScoreReliability.C) or DBotScoreReliability.C
 INDEX_LOG_DELIMITER = "|"
-INDEX_LOG_FILENAME_POSITION = 3
 VENDOR_NAME = "vmray"
 
 # Disable insecure warnings
@@ -58,6 +58,46 @@ DBOTSCORE = {
 
 RATE_LIMIT_REACHED = 429
 MAX_RETRIES = 10
+
+""" HELPER CLASSES """
+
+
+@dataclass
+class ScreenshotLogEntry:
+    timestamp: int
+    file_size: int
+    md5: str
+    sha1: str
+    sha256: str
+    filename: str
+
+    @classmethod
+    def parse(cls, line: bytes) -> "ScreenshotLogEntry":
+        """Parse a log line and return a ScreenshotLogEntry instance."""
+        parts = [part.strip() for part in line.decode("utf-8", errors="replace").split(INDEX_LOG_DELIMITER)]
+
+        if len(parts) != 4:
+            raise ValueError(f"Expected 4 parts separated by `{INDEX_LOG_DELIMITER}`, got {len(parts)}")
+
+        timestamp = int(parts[0])
+        file_size = int(parts[1])
+        filename = parts[3]
+
+        # Parse the hash string
+        hashes = {}
+        for hash_pair in parts[2].split(","):
+            key, value = hash_pair.split("=")
+            hashes[key] = value
+
+        return cls(
+            timestamp=timestamp,
+            file_size=file_size,
+            md5=hashes["md5"],
+            sha1=hashes["sha1"],
+            sha256=hashes["sha256"],
+            filename=filename,
+        )
+
 
 """ HELPER FUNCTIONS """
 
@@ -1460,14 +1500,18 @@ def get_screenshots_command():
     screenshots_data = get_screenshots(analysis_id)
 
     file_results = []
+    processed_screenshots = []
     screenshot_counter = 0
     try:
         with ZipFile(io.BytesIO(screenshots_data), "r") as screenshots_zip:
             index_log_data = screenshots_zip.read("screenshots/index.log")
             for line in index_log_data.splitlines():
-                filename = line.decode("utf-8").split(INDEX_LOG_DELIMITER)[INDEX_LOG_FILENAME_POSITION].strip()
-                extension = os.path.splitext(filename)[1]
-                screenshot_data = screenshots_zip.read(f"screenshots/{filename}")
+                log_entry = ScreenshotLogEntry.parse(line)
+                if log_entry.sha256 in processed_screenshots:
+                    continue
+
+                extension = os.path.splitext(log_entry.filename)[1]
+                screenshot_data = screenshots_zip.read(f"screenshots/{log_entry.filename}")
                 file_results.append(
                     fileResult(
                         filename=f"analysis_{analysis_id}_screenshot_{screenshot_counter}{extension}",
@@ -1475,6 +1519,7 @@ def get_screenshots_command():
                         file_type=EntryType.IMAGE,
                     )
                 )
+                processed_screenshots.append(log_entry.sha256)
                 screenshot_counter += 1
     except Exception as exc:  # noqa
         demisto.error(f"Failed to read screenshots.zip, error: {exc}")

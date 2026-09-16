@@ -1,0 +1,31 @@
+{
+    "id": "incident_dataminrpulsepostenglishtext",
+    "version": -1,
+    "modified": "2025-09-24T17:01:36.068912632+05:30",
+    "name": "Dataminr Pulse Post English Text",
+    "ownerOnly": false,
+    "cliName": "dataminrpulsepostenglishtext",
+    "type": "longText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Dataminr Pulse ReGenAI Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

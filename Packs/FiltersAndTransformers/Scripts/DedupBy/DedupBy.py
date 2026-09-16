@@ -1,3 +1,4 @@
+import json
 from typing import Any
 
 import demistomock as demisto  # noqa: F401
@@ -95,18 +96,18 @@ class Key:
         return __equals(self.__value, other.__value)
 
     def __hash__(self) -> int:
-        def __get_hash_base(value: Any) -> Any:
-            if value is None or isinstance(value, bool | int | float | str):
-                return value
-            elif isinstance(value, dict):
-                return tuple((k, __get_hash_base(value[k])) for k in sorted(value.keys()))
-            elif isinstance(value, list):
-                return tuple(__get_hash_base(v) for v in value)
-            else:
-                return value
-
-        v = __get_hash_base(self.__value)
-        return hash((type(v), v))
+        """
+        Generate hash using json.dumps for better performance.
+        This replaces the recursive __get_hash_base approach with O(n) complexity.
+        """
+        try:
+            # Use json.dumps with sort_keys for consistent hashing of dicts
+            # This is O(n) instead of O(n*m) for the recursive approach
+            json_str = json.dumps(self.__value, sort_keys=True, default=str)
+            return hash((type(self.__value).__name__, json_str))
+        except (TypeError, ValueError):
+            # Fallback for non-JSON-serializable objects
+            return hash((type(self.__value).__name__, str(self.__value)))
 
 
 def main():

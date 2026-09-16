@@ -765,7 +765,7 @@ Get the escalation contact list for a given organization.
                 "job_title": "QA",
                 "last_name": "Tester",
                 "notes": "123\n456\n789",
-                "phone_number": "+16135551212",
+                "phone_number": "+15550199999",
                 "priority": 3,
                 "secondary_phone": "+15069999999"
             },
@@ -802,7 +802,7 @@ Get the escalation contact list for a given organization.
 >|---|---|---|---|---|---|---|---|
 >| 1 | John | Doe |  |  |  | test-email@fieldeffect.com | some other test note |
 >| 2 | Testing1 | User |  |  |  | test-user2@fieldeffect.com | test-note |
->| 3 | Bob | Tester | QA | +16135551212 | +15069999999 | test-user-4@fieldeffect.com |  |
+>| 3 | Bob | Tester | QA | +15550199999 | +15069999999 | test-user-4@fieldeffect.com |  |
 >| 4 | Smith | fes | UI Dev | +16135445544 | +16135554548 | test5@example.om |  |
 >| 5 | John | Doe | Head of UI Development | +16135554545 |  | test-user-44@fieldeffect.com |  |
 

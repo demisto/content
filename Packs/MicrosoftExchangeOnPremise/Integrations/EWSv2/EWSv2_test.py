@@ -98,7 +98,10 @@ def test_keys_to_camel_case():
     assert res["thisIsAList"][0] == "listValue"
 
 
-def test_start_logging():
+def test_start_logging(mocker):
+    mocker.patch.object(EWSv2, "is_debug_mode", return_value=True)
+    EWSv2.log_stream = None
+    EWSv2.log_handler = None
     EWSv2.start_logging()
     logging.getLogger().debug("test this")
     assert "test this" in EWSv2.log_stream.getvalue()
@@ -232,7 +235,10 @@ def test_get_formatted_message_bad_header():
     msg.set_payload(body)
     msg.add_header("Foo", "From: value==value=<= .palo.com =?utf-8?q?=3E?=")
     msg.add_header("Foo", "From: \tvalue=\r\n =value=\t<\r\n= .palo.com\r\n =?utf-8?q?=3E?=\r\n")
-    assert get_formatted_message(msg) == " Could not format message"
+
+    formatted_message = get_formatted_message(msg)
+    assert type(formatted_message) is bytes
+    assert body in str(formatted_message)
 
 
 def test_get_formatted_message_good_header():
@@ -1212,8 +1218,9 @@ def test_get_item_as_eml(mocker):
     ]
     expected_data = (
         "MIME-Version: 1.0\r\n"
-        "Message-ID: \r\n"
-        " <message-test-idRANDOMVALUES@testing.com>\r\n"
+        # Python 3.12's email generator no longer folds an empty Message-ID onto a
+        # separate continuation line, so the value stays on the same line as the header.
+        "Message-ID: <message-test-idRANDOMVALUES@testing.com>\r\n"
         'Content-Type: text/plain; charset="iso-8859-2"\r\n'
         "Content-Transfer-Encoding: quoted-printable\r\n"
         "X-FAKE-Header: HVALue\r\n"
@@ -1231,7 +1238,7 @@ def test_get_item_as_eml(mocker):
     )
     client = TestNormalCommands.MockClient()
 
-    get_item_as_eml(client, "Inbox", "test@gmail.com")
+    get_item_as_eml(client, {"item_id": "Inbox", "target_mailbox": "test@gmail.com"})
     mock_file_result.assert_called_once_with("demisto_untitled_eml.eml", expected_data)
 
 
@@ -1283,3 +1290,59 @@ def test_get_client_from_params(mocker, manual_username, expected_username):
     assert BaseProtocol.TIMEOUT == 60
     assert client.mark_as_read
     assert not client.insecure
+
+
+def test_start_logging_does_not_leak_exchangelib_output_to_stdout(mocker, capfd):
+    """
+    Given:
+        The instance Log Level is set to debug/verbose (is_debug_mode() is True), and a
+        stdout StreamHandler is attached to the root logger (as the docker runner environment does).
+    When:
+        start_logging() has run and exchangelib emits its HTTP transaction dump via logging
+        (e.g. "Request headers: {...}" and "Response XML: b'<xml/>'").
+    Then:
+        The exchangelib dump lines must NOT appear on real stdout (they would corrupt the
+        returned entry JSON), but they MUST still be captured in the in-memory debug buffer
+        so the error-path "Full debug log" feature keeps working.
+    """
+    import sys
+
+    mocker.patch.object(EWSv2, "is_debug_mode", return_value=True)
+
+    # Reset the module-level logging state so start_logging() re-initializes cleanly.
+    if EWSv2.log_handler is not None:
+        logging.getLogger().removeHandler(EWSv2.log_handler)
+        for logger_name in EWSv2.EXCHANGELIB_LOGGERS:
+            logging.getLogger(logger_name).removeHandler(EWSv2.log_handler)
+    EWSv2.log_stream = None
+    EWSv2.log_handler = None
+
+    # Simulate the docker runner environment: a stdout handler on the root logger.
+    stdout_handler = logging.StreamHandler(stream=sys.stdout)
+    root_logger = logging.getLogger()
+    root_logger.addHandler(stdout_handler)
+    try:
+        EWSv2.start_logging()
+
+        exchangelib_logger = logging.getLogger("exchangelib")
+        exchangelib_logger.debug("Request headers: {'X-Foo': 'bar'}")
+        exchangelib_logger.debug("Response XML: b'<xml/>'")
+
+        captured = capfd.readouterr()
+        # The exchangelib dump must not reach stdout.
+        assert "Request headers: {" not in captured.out
+        assert "Response XML:" not in captured.out
+
+        # But it must still be captured in the in-memory debug buffer.
+        debug_log = EWSv2.log_stream.getvalue()
+        assert "Request headers: {" in debug_log
+        assert "Response XML:" in debug_log
+        assert logging.getLogger("exchangelib").propagate is False
+    finally:
+        root_logger.removeHandler(stdout_handler)
+        if EWSv2.log_handler is not None:
+            logging.getLogger().removeHandler(EWSv2.log_handler)
+            for logger_name in EWSv2.EXCHANGELIB_LOGGERS:
+                logging.getLogger(logger_name).removeHandler(EWSv2.log_handler)
+        EWSv2.log_stream = None
+        EWSv2.log_handler = None

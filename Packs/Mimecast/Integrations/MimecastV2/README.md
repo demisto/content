@@ -1,5 +1,4 @@
-Mimecast unified email management offers cloud email services for email security, continuity and archiving emails.
-Please read detailed instructions in order to understand how to set the integration's parameters.
+Use the Mimecast integration to manage email security, continuity, and archiving services.
 
 ## Rate Limiting
 
@@ -47,6 +46,15 @@ successfully execute a command, a DBot message appears in the War Room with the 
 ***
 Query Mimecast emails. This is an archive search command.
 
+#### Prerequisite
+
+In order to successfully use this endpoint to search across a customer's entire archive, the role assigned to the app must have at least the following level of application permissions granted: `Archive | Search | Read`.
+To use this endpoint to search for messages for the logged in user or an address that the logged in user has delegate permission to, no administrator permissions are required.
+
+#### Required Permissions
+
+Archive | Search | Read
+
 #### Base Command
 
 `mimecast-query`
@@ -71,7 +79,7 @@ Query Mimecast emails. This is an archive search command.
 | startRow          | This parameter is ignored, use the pagination parameters instead. Possible values are: .                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Optional     |
 | active            | Defines if the search should query recently received messages that are not fully processed yet (default false). You can search by mailbox and date time across active messages. Possible values are: true, false. Default is false.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Optional     |
 | limit             | The maximum number of results to return. Possible values are: . Default is 100.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Optional     |
-| page              | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. Possible values are: .                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Optional     |
+| page              | The page number you would like to view. Each page contains page_size values. Must be used with page_size. Possible values are: .                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | Optional     |
 
 #### Context Output
 
@@ -137,26 +145,25 @@ Get a policy by ID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Mimecast.Policy.ID | string | Policy ID. |
-| Mimecast.Policy.Sender.Address | string | Block Sender by email address. |
-| Mimecast.Policy.Sender.Domain | string | Block Sender by domain. |
-| Mimecast.Policy.Sender.Group | string | Block Sender by group. |
-| Mimecast.Policy.Bidirectional | boolean | Blocked policy is bidirectional or not. |
-| Mimecast.Policy.Receiver.Address | string | Block emails to receiver type address. |
-| Mimecast.Policy.Receiver.Domain | string | Block emails to receiver type domain. |
-| Mimecast.Policy.Receiver.Group | string | Block emails to receiver type group. |
-| Mimecast.Policy.Fromdate | date | Policy validation start date. |
-| Mimecast.Policy.Todate | date | Policy expiration date. |
-| Mimecast.Blockedsenders.ID | string | Policy ID. |
-| Mimecast.Blockedsenders.Sender.Address | string | Block Sender by email address. |
-| Mimecast.Blockedsenders.Sender.Domain | string | Block Sender by domain. |
-| Mimecast.Blockedsenders.Sender.Group | string | Block Sender by group. |
-| Mimecast.Blockedsenders.Bidirectional | boolean | Blocked policy is bidirectional or not. |
-| Mimecast.Blockedsenders.Receiver.Address | string | Block emails to receiver type address. |
-| Mimecast.Blockedsenders.Receiver.Domain | string | Block emails to receiver type domain. |
-| Mimecast.Blockedsenders.Receiver.Group | string | Block emails to receiver type group. |
-| Mimecast.Blockedsenders.Fromdate | date | Policy validation start date. |
-| Mimecast.Blockedsenders.Todate | date | Policy expiration date. |
+| Mimecast.BlockedSendersPolicy.id | String | The unique identifier of the blocked senders policy. |
+| Mimecast.BlockedSendersPolicy.description | String | The description of the blocked senders policy. |
+| Mimecast.BlockedSendersPolicy.from.type | String | The sender address type considered by the policy. |
+| Mimecast.BlockedSendersPolicy.from.emailAddress | String | The sender email address considered by the policy. |
+| Mimecast.BlockedSendersPolicy.from.domain | String | The sender domain considered by the policy. |
+| Mimecast.BlockedSendersPolicy.from.groupId | String | The sender profile group ID considered by the policy. |
+| Mimecast.BlockedSendersPolicy.to.type | String | The recipient address type considered by the policy. |
+| Mimecast.BlockedSendersPolicy.to.emailAddress | String | The recipient email address considered by the policy. |
+| Mimecast.BlockedSendersPolicy.to.domain | String | The recipient domain considered by the policy. |
+| Mimecast.BlockedSendersPolicy.to.groupId | String | The recipient profile group ID considered by the policy. |
+| Mimecast.BlockedSendersPolicy.bidirectional | Boolean | Whether the policy also applies in reverse email flow. |
+| Mimecast.BlockedSendersPolicy.fromDateTime | Date | The date and time the policy starts to apply. |
+| Mimecast.BlockedSendersPolicy.toDateTime | Date | The date and time the policy ceases to apply. |
+| Mimecast.BlockedSendersPolicy.fromEternal | Boolean | Whether the policy applies regardless of the start date. |
+| Mimecast.BlockedSendersPolicy.toEternal | Boolean | Whether the policy applies regardless of the end date. |
+| Mimecast.BlockedSendersPolicy.fromPart | String | The sender address type considered, based on the envelope, header, or either address. |
+| Mimecast.BlockedSendersPolicy.enabled | Boolean | Whether the policy is enabled. |
+| Mimecast.BlockedSendersPolicy.enforced | Boolean | Whether the policy is enforced. |
+| Mimecast.BlockedSendersPolicy.override | Boolean | Whether the policy is considered prior to other policies of the same type. |
 | Mimecast.AntispoofingBypassPolicy.ID | string | Policy ID. |
 | Mimecast.AntispoofingBypassPolicy.Sender.Address | string | Block Sender by email address. |
 | Mimecast.AntispoofingBypassPolicy.Sender.Domain | string | Block Sender by domain. |
@@ -177,63 +184,6 @@ Get a policy by ID.
 | Mimecast.AddressAlterationPolicy.Receiver.Group | string | Block emails to receiver type group. |
 | Mimecast.AddressAlterationPolicy.Fromdate | date | Policy validation start date. |
 | Mimecast.AddressAlterationPolicy.Todate | date | Policy expiration date. |
-
-#### Command example
-
-```!mimecast-get-policy policyType=blockedsenders policyID=eNo1jkkOgjAAAP_Sqx4KLbgkHoggEjdcsOIN24p1odACBo1_Fw_eZzLzBprTSnHBwBAE_SZeTf0O0Q6rB0VaL_U8NNeEBta194xKFCrL1RSGkbsnXnCSaTTLEtw3jbt6XI4oiVO-K-TUIqVYJ_lz4KPsihcFxucNqpb7mzh4L7aZzNViBLogl3dBm1_ZwHbP7gJa6VI-uKKS8XZnHG0dA5qOieyWrrnSQmYt_Dd3Tc6Dnw0hhp8vdftBPg```
-
-#### Context Example
-
-```json
-{
-    "Mimecast": {
-        "Blockedsenders": {
-            "Bidirectional": false,
-            "FromDate": "1900-01-01T00:00:00+0000",
-            "ID": "eNo1jkkOgjAAAP_Sqx4KLbgkHoggEjdcsOIN24p1odACBo1_Fw_eZzLzBprTSnHBwBAE_SZeTf0O0Q6rB0VaL_U8NNeEBta194xKFCrL1RSGkbsnXnCSaTTLEtw3jbt6XI4oiVO-K-TUIqVYJ_lz4KPsihcFxucNqpb7mzh4L7aZzNViBLogl3dBm1_ZwHbP7gJa6VI-uKKS8XZnHG0dA5qOieyWrrnSQmYt_Dd3Tc6Dnw0hhp8vdftBPg",
-            "Reciever": {
-                "Address": null,
-                "Domain": null,
-                "Group": null,
-                "Type": "everyone"
-            },
-            "Sender": {
-                "Address": null,
-                "Domain": null,
-                "Group": null,
-                "Type": "everyone"
-            },
-            "ToDate": "2100-01-01T23:59:59+0000"
-        },
-        "Policy": {
-            "Bidirectional": false,
-            "FromDate": "1900-01-01T00:00:00+0000",
-            "ID": "eNo1jkkOgjAAAP_Sqx4KLbgkHoggEjdcsOIN24p1odACBo1_Fw_eZzLzBprTSnHBwBAE_SZeTf0O0Q6rB0VaL_U8NNeEBta194xKFCrL1RSGkbsnXnCSaTTLEtw3jbt6XI4oiVO-K-TUIqVYJ_lz4KPsihcFxucNqpb7mzh4L7aZzNViBLogl3dBm1_ZwHbP7gJa6VI-uKKS8XZnHG0dA5qOieyWrrnSQmYt_Dd3Tc6Dnw0hhp8vdftBPg",
-            "Reciever": {
-                "Address": null,
-                "Domain": null,
-                "Group": null,
-                "Type": "everyone"
-            },
-            "Sender": {
-                "Address": null,
-                "Domain": null,
-                "Group": null,
-                "Type": "everyone"
-            },
-            "ToDate": "2100-01-01T23:59:59+0000"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Mimecast Get blockedsenders Policy
->
->|Policy ID|Sender|Reciever|Bidirectional|Start|End|
->|---|---|---|---|---|---|
->| eNo1jkkOgjAAAP_Sqx4KLbgkHoggEjdcsOIN24p1odACBo1_Fw_eZzLzBprTSnHBwBAE_SZeTf0O0Q6rB0VaL_U8NNeEBta194xKFCrL1RSGkbsnXnCSaTTLEtw3jbt6XI4oiVO-K-TUIqVYJ_lz4KPsihcFxucNqpb7mzh4L7aZzNViBLogl3dBm1_ZwHbP7gJa6VI-uKKS8XZnHG0dA5qOieyWrrnSQmYt_Dd3Tc6Dnw0hhp8vdftBPg | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
 
 #### Command example
 
@@ -309,7 +259,7 @@ Deprecated. Please use mimecast-create-block-sender-policy
 | fromPart          | Addresses based on. Possible values are: envelope_from, header_from, both. Default is envelope_from.                                                                                                                                                                                          | Optional     |
 | fromType          | Blocked Sender type. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, individual_email_address.                                                                                                                                            | Required     |
 | fromValue         | Required if fromType is one of email domain, profile group, individual email address. Expected values: If fromType is email_domain, a domain name without the @ symbol. If fromType is profile_group, the ID of the profile group. If fromType is individual_email_address, an email address. | Optional     |
-| toType            | Receiver type. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address, free_mail_domains, header_display_name.                                                                                 | Required     |
+| toType            | The receiver type. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address, free_mail_domains, header_display_name.                                                                                 | Required     |
 | toValue           | Required if fromType is one of email domain, profile group, individual email address. Expected values: If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address.       | Optional     |
 | option            | The block option, must be one of: no_action, block_sender. Possible values are: no_action, block_sender.                                                                                                                                                                                      | Required     |
 
@@ -333,7 +283,7 @@ Deprecated. Please use mimecast-create-block-sender-policy
 ### mimecast-delete-policy
 
 ***
-Delete a Blocked Sender Policy.
+Deletes a policy by ID.
 
 #### Base Command
 
@@ -351,7 +301,7 @@ Delete a Blocked Sender Policy.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Mimecast.Policy.ID | string | Policy ID. |
-| Mimecast.Blockedsenders.ID | string | Policy ID. |
+| Mimecast.BlockedSendersPolicy.ID | string | Policy ID. |
 | Mimecast.AntispoofingBypassPolicy.ID | string | Policy ID. |
 | Mimecast.AddressAlterationPolicy.ID | string | Policy ID. |
 
@@ -359,6 +309,10 @@ Delete a Blocked Sender Policy.
 
 ***
 Permit or block a specific sender
+
+#### Required Permissions
+
+Gateway | Managed Senders | Edit
 
 #### Base Command
 
@@ -372,7 +326,7 @@ Permit or block a specific sender
 | recipient         | The email address of recipient to permit or block.                                                                                 | Required     |
 | action            | Choose to either "permit" (to bypass spam checks) or "block" (to reject the email). Possible values are: permit, block.            | Required     |
 | limit             | The maximum number of results to return. Possible values are: . Default is 100.                                                    | Optional     |
-| page              | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. Possible values are: . | Optional     |
+| page              | The page number you would like to view. Each page contains page_size values. Must be used with page_size. Possible values are: . | Optional     |
 | page_size         | Number of results per page to display. Possible values are: .                                                                      | Optional     |
 
 #### Context Output
@@ -388,6 +342,10 @@ Permit or block a specific sender
 
 ***
 Get a list of all managed URLs
+
+#### Required Permissions
+
+Services | Targeted Threat Protection - URL Protect | Edit
 
 #### Base Command
 
@@ -415,6 +373,10 @@ Get a list of all managed URLs
 
 ***
 Create a managed URL on Mimecast
+
+#### Required Permissions
+
+Services | Targeted Threat Protection - URL Protect | Edit
 
 #### Base Command
 
@@ -452,6 +414,10 @@ are required for this command.
 - Mimecast administrator with at least one of the following permissions: Archive/Search/Read.
 - or Mimecast user with delegate permissions to address or user.
 
+#### Required Permissions
+
+Archive | Search | Read
+
 #### Base Command
 
 `mimecast-list-messages`
@@ -466,7 +432,7 @@ are required for this command.
 | view                |  The message list type, must be one of: inbox or sent, default is inbox                                                    |Optional|
 | subject                     |     Filter by message subject                 | Optional|
 | limit | The maximum number of results to return. Default is 100. | Optional |
-| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional |
+| page | The page number you would like to view. Each page contains page_size values. Must be used with page_size. | Optional |
 | page_size | Number of results per page to display. | Optional |
 
 #### Context Output
@@ -485,6 +451,10 @@ are required for this command.
 ***
 Returns Attachment Protect logs for a Mimecast customer account
 
+#### Required Permissions
+
+Monitoring | Attachment Protection | Read
+
 #### Base Command
 
 `mimecast-get-attachment-logs`
@@ -498,7 +468,7 @@ Returns Attachment Protect logs for a Mimecast customer account
 | toDate            | End date of logs to return in the following format 2015-11-16T14:49:18+0000. Default is time of request.                                    | Optional     |
 | resultType        | Filters logs by scan result, default is malicious. Possible values are: safe, malicious, timeout, error, unsafe, all. Default is malicious. | Optional     |
 | limit             | The maximum number of results to return. Default is 100.                                                                                    | Optional     |
-| page              | Page number you would like to view. Each page contains page_size values. Must be used along with page_size.                                 | Optional     |
+| page              | The page number you would like to view. Each page contains page_size values. Must be used with page_size.                                 | Optional     |
 | page_size         | Number of results per page to display.                                                                                                      | Optional     |
 
 #### Context Output
@@ -519,6 +489,10 @@ Returns Attachment Protect logs for a Mimecast customer account
 ***
 Returns URL protect logs for a Mimecast customer account. Default value of scanResult as malicious
 
+#### Required Permissions
+
+Monitoring | URL Protection | Read
+
 #### Base Command
 
 `mimecast-get-url-logs`
@@ -532,7 +506,7 @@ Returns URL protect logs for a Mimecast customer account. Default value of scanR
 | toDate            | End date of logs to return in the following format 2015-11-16T14:49:18+0000. Default is time of request.                | Optional     |
 | resultType        | Filters logs by scan result, default is all                                                                             | Optional     |
 | limit             | The maximum number of results to return. Default is 100.                                                                | Optional     |
-| page              | Page number you would like to view. Each page contains page_size values. Must be used along with page_size.             | Optional     |
+| page              | The page number you would like to view. Each page contains page_size values. Must be used with page_size.             | Optional     |
 | page_size         | Number of results per page to display.                                                                                  | Optional     |
 
 #### Context Output
@@ -555,6 +529,10 @@ Returns URL protect logs for a Mimecast customer account. Default value of scanR
 ***
 Returns Impersonation Protect logs for a Mimecast customer account
 
+#### Required Permissions
+
+Monitoring | Impersonation Protection | Read
+
 #### Base Command
 
 `mimecast-get-impersonation-logs`
@@ -572,7 +550,7 @@ Returns Impersonation Protect logs for a Mimecast customer account
 | toDate            | End date of logs to return in the following format 2015-11-16T14:49:18+0000. Default is time of request.                                                                                                                                                                                                                         | Optional     |
 | actions           | Filters logs by action, you can choose more then one action separated by comma. Possible values are: delete, hold, bounce, smart_folder, disable_smart_folder, content_expire, meta_expire, stationery, gcc, secure_delivery, delivery_route, document_policy, disable_document_policy, attach_set_policy, remove_email.         | Optional     |
 | limit             | The maximum number of results to return. Default is 100.                                                                                                                                                                                                                                                                         | Optional     |
-| page              | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. Possible values are: .                                                                                                                                                                                               | Optional     |
+| page              | The page number you would like to view. Each page contains page_size values. Must be used with page_size. Possible values are: .                                                                                                                                                                                               | Optional     |
 | page_size         | Number of results per page to display. Possible values are: .                                                                                                                                                                                                                                                                    | Optional     |
 
 #### Context Output
@@ -597,6 +575,10 @@ Returns Impersonation Protect logs for a Mimecast customer account
 
 ***
 Decodes a given url from mimecast
+
+#### Required Permissions
+
+Account | Dashboard | Read
 
 #### Base Command
 
@@ -682,7 +664,7 @@ Get the contents or metadata of a given message. This is an archive search comma
 
 The following permissions are required for this command.
 
-- Mimecast administrator with at least one of the following permissions: Archive/Search Content View.
+- Mimecast administrator with at least one of the following permissions: Archive | Search Content View.
 - or Mimecast user with delegate permissions to address or user.
 
 #### Base Command
@@ -740,7 +722,7 @@ Download attachments from a specified message. This is an archive search command
 
 The following permissions are required for this command.
 
-- Mimecast administrator with at least one of the following permissions: Archive/Search Content View.
+- Mimecast administrator with at least one of the following permissions: Archive | Search Content View | Read.
 - or Mimecast user with delegate permissions to address or user.
 
 #### Base Command
@@ -774,6 +756,10 @@ The following permissions are required for this command.
 ***
 Returns the list of groups according to the specified query.
 
+#### Required Permissions
+
+Directories | Groups | Edit
+
 #### Base Command
 
 `mimecast-find-groups`
@@ -801,6 +787,10 @@ Returns the list of groups according to the specified query.
 
 ***
 Returns the members list for the specified group.
+
+#### Required Permissions
+
+Services | Directory Sync | Read
 
 #### Base Command
 
@@ -831,6 +821,10 @@ Returns the members list for the specified group.
 ***
 Adds a user to a group. The email_address and domain_address arguments are optional, but one of them must be supplied.
 
+#### Required Permissions
+
+Directories | Groups | Edit
+
 #### Base Command
 
 `mimecast-add-group-member`
@@ -857,6 +851,10 @@ Adds a user to a group. The email_address and domain_address arguments are optio
 Removes a user from a group. The email_address and domain_address arguments are optional, but one of them must be
 supplied.
 
+#### Required Permissions
+
+Services | Directory Sync | Edit
+
 #### Base Command
 
 `mimecast-remove-group-member`
@@ -880,6 +878,10 @@ supplied.
 
 ***
 Creates a new Mimecast group.
+
+#### Required Permissions
+
+Directories | Groups | Edit
 
 #### Base Command
 
@@ -908,6 +910,10 @@ Creates a new Mimecast group.
 ***
 Updates an existing Mimecast group.
 
+#### Required Permissions
+
+Services | Directory Sync | Edit
+
 #### Base Command
 
 `mimecast-update-group`
@@ -932,6 +938,10 @@ Updates an existing Mimecast group.
 
 ***
 Creates a new Mimecast remediation incident.
+
+#### Required Permissions
+
+Services | Threat Remediation | Edit
 
 #### Base Command
 
@@ -972,6 +982,10 @@ Creates a new Mimecast remediation incident.
 ***
 Returns a Mimecast remediation incident.
 
+#### Required Permissions
+
+Services | Threat Remediation | Read
+
 #### Base Command
 
 `mimecast-get-remediation-incident`
@@ -1006,6 +1020,10 @@ Returns a Mimecast remediation incident.
 
 ***
 Searches for one or more file hashes in the account. Maximum is 100.
+
+#### Required Permissions
+
+Services | Threat Remediation | Read
 
 #### Base Command
 
@@ -1068,6 +1086,10 @@ Updates the specified policy.
 ***
 Searches a message
 
+#### Required Permissions
+
+Gateway | Tracking | Read
+
 #### Base Command
 
 `mimecast-search-message`
@@ -1111,6 +1133,10 @@ Searches a message
 
 ***
 Retrieves detailed information about a specific message.
+
+#### Required Permissions
+
+Gateway | Tracking | Read
 
 #### Base Command
 
@@ -1231,6 +1257,10 @@ Retrieves detailed information about a specific message.
 ***
 Get information about held messages, including the reason, hold level, sender and recipients
 
+#### Required Permissions
+
+Account | Dashboard | Read
+
 #### Base Command
 
 `mimecast-list-held-message`
@@ -1245,7 +1275,7 @@ Get information about held messages, including the reason, hold level, sender an
 | value | Free text to filter results by. Possible values are: . | Optional |
 | field_name | Message fields to filter based on. Possible values are: all, subject, sender, recipient, reason_code. | Optional |
 | page_size | Number of results per page to display. Possible values are: . | Optional |
-| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. Possible values are: . | Optional |
+| page | The page number you would like to view. Each page contains page_size values. Must be used with page_size. Possible values are: . | Optional |
 | limit | The maximum number of results to return. Possible values are: . | Optional |
 
 #### Context Output
@@ -1274,6 +1304,10 @@ Get information about held messages, including the reason, hold level, sender an
 ***
 Get counts of currently held messages for each hold reason.
 
+#### Required Permissions
+
+Account | Monitoring | Held Summary | Read
+
 #### Base Command
 
 `mimecast-held-message-summary`
@@ -1294,6 +1328,10 @@ Get counts of currently held messages for each hold reason.
 
 ***
 Reject a currently held message.
+
+#### Required Permissions
+
+Account | Monitoring | Held | Edit
 
 #### Base Command
 
@@ -1325,6 +1363,10 @@ There is no context output for this command.
 ***
 Release a currently held message.
 
+#### Required Permissions
+
+Account | Monitoring | Held | Edit
+
 #### Base Command
 
 `mimecast-release-held-message`
@@ -1352,6 +1394,10 @@ There is no context output for this command.
 ***
 Return messages currently being processed by Mimecast. Note that most of the time, no results are returned.
 
+#### Required Permissions
+
+Monitoring | Processing | Read
+
 #### Base Command
 
 `mimecast-search-processing-message`
@@ -1368,7 +1414,7 @@ Return messages currently being processed by Mimecast. Note that most of the tim
 | attachments       | Whether there is an attachment in the message. Possible values are: .                                                              | Optional     |
 | route             | The message route. Possible values are: all, internal, outbound, inbound, external.                                                | Optional     |
 | page_size         | Number of results per page to display. Possible values are: .                                                                      | Optional     |
-| page              | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. Possible values are: . | Optional     |
+| page              | The page number you would like to view. Each page contains page_size values. Must be used with page_size. Possible values are: . | Optional     |
 | limit             | The maximum number of results to return. Possible values are: .                                                                    | Optional     |
 
 #### Context Output
@@ -1394,6 +1440,10 @@ Return messages currently being processed by Mimecast. Note that most of the tim
 
 ***
 Get the count of the inbound and outbound email queues at specified times.
+
+#### Required Permissions
+
+Account | Dashboard | Read
 
 #### Base Command
 
@@ -1466,6 +1516,10 @@ Get the count of the inbound and outbound email queues at specified times.
 ***
 Retrieves archived search logs.
 
+#### Required Permissions
+
+Archive | Search Logs | Read
+
 #### Base Command
 
 `mimecast-get-archive-search-logs`
@@ -1525,6 +1579,10 @@ Retrieves archived search logs.
 
 ***
 Retrieves the search logs.
+
+#### Required Permissions
+
+Archive | Search Logs | Read
 
 #### Base Command
 
@@ -1593,6 +1651,10 @@ Retrieves the search logs.
 ***
 Retrieves the email view logs.
 
+#### Required Permissions
+
+Archive | View Logs | Read
+
 #### Base Command
 
 `mimecast-get-view-logs`
@@ -1620,7 +1682,7 @@ Retrieves the email view logs.
 | Mimecast.ViewLog.subject | String | The subject of the viewed message. |
 | Mimecast.ViewLog.messageDate | Date | The date and time that the message was received. |
 | Mimecast.ViewLog.contentViewed | Boolean | Indicates if the message content was viewed or not. |
-| Mimecast.ViewLog.discoveryCase | Boolean | Indicates if the viewed message is a part of an existing discovery case. |
+| Mimecast.ViewLog.discoveryCase | Boolean | Whether the viewed message is a part of an existing discovery case. |
 
 #### Command example
 
@@ -1660,6 +1722,10 @@ Retrieves the email view logs.
 
 ***
 This endpoint returns the summary details for an account in Mimecast.
+
+#### Required Permissions
+
+Account | Dashboard | Read
 
 #### Base Command
 
@@ -1731,7 +1797,7 @@ This endpoint returns the summary details for an account in Mimecast.
                 "archive": false,
                 "automatedSegmentPurge": true,
                 "contactEmail": "example@test.com.com",
-                "contactName": "Adnan Kharuf",
+                "contactName": "Adam Testov",
                 "contentAdministratorDefaultView": "Metadata",
                 "cybergraphV2Enabled": false,
                 "databaseCode": "usterm13",
@@ -1795,7 +1861,7 @@ This endpoint returns the summary details for an account in Mimecast.
 >
 >|accountCode|accountName|adminEmail|adminSessionTimeout|archive|automatedSegmentPurge|contactEmail|contactName|contentAdministratorDefaultView|cybergraphV2Enabled|databaseCode|domain|exgestAllowExtraction|exgestAllowQuery|exportApi|expressAccount|gateway|maxRetention|maxRetentionConfirmed|mimecastId|minRetentionEnabled|packages|passphrase|policyInheritance|region|searchReason|supportCode|telephone|type|userCount|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| CUSA102A236 | API Alliance - Palo Alto Networks |  | 60 | false | true | example@test.com.com | Adnan Kharuf | Metadata | false | usterm13 |  | true | false | false | false | true | 30 | true | 01-0102-00236 | false | Attachment Management (Site) [1004],<br/>Attachment Protection (Site) [1056],<br/>Threat Remediation [1075],<br/>Journal Services [1053],<br/>Mimecast Platform [1033],<br/>Internal Email Protect [1064],<br/>Desktop Apps - Outlook (Pro) [1016],<br/>Desktop Apps - Mac (Pro) [1051],<br/>BYO: Threat Intelligence [1089],<br/>Enhanced Logging [1061],<br/>Message Recovery Service - User [1058],<br/>Branding [1003],<br/>Mobile Apps (Pro) [1036],<br/>Content Control and Data Leak Prevention (Site) [1013],<br/>Advanced MTA (Site) [1002],<br/>Email Encryption and Privacy (Site) [1023],<br/>Metadata Track and Trace (Site) [1032],<br/>Configuration Backup & Restore [1106],<br/>Attachment Protection (Pro) [1059],<br/>Stationery 1.0 (Site) [1042],<br/>URL Protection (Site) [1043],<br/>Secure Email Gateway (Site) [1039],<br/>Content Control and Data Leak Prevention (Pro) [1015],<br/>Impersonation Protection [1060],<br/>Auto Responders (Site) [1005],<br/>Message Recovery Service (Site) [1031],<br/>Mimecast Mobile Pro (Pro) [1055],<br/>Analysis and Response [1110] |  | false | us | false | D7F8 | 4088307584 | full | 10 |
+>| CUSA102A236 | API Alliance - Palo Alto Networks |  | 60 | false | true | example@test.com.com | Adam Testov | Metadata | false | usterm13 |  | true | false | false | false | true | 30 | true | 01-0102-00236 | false | Attachment Management (Site) [1004],<br/>Attachment Protection (Site) [1056],<br/>Threat Remediation [1075],<br/>Journal Services [1053],<br/>Mimecast Platform [1033],<br/>Internal Email Protect [1064],<br/>Desktop Apps - Outlook (Pro) [1016],<br/>Desktop Apps - Mac (Pro) [1051],<br/>BYO: Threat Intelligence [1089],<br/>Enhanced Logging [1061],<br/>Message Recovery Service - User [1058],<br/>Branding [1003],<br/>Mobile Apps (Pro) [1036],<br/>Content Control and Data Leak Prevention (Site) [1013],<br/>Advanced MTA (Site) [1002],<br/>Email Encryption and Privacy (Site) [1023],<br/>Metadata Track and Trace (Site) [1032],<br/>Configuration Backup & Restore [1106],<br/>Attachment Protection (Pro) [1059],<br/>Stationery 1.0 (Site) [1042],<br/>URL Protection (Site) [1043],<br/>Secure Email Gateway (Site) [1039],<br/>Content Control and Data Leak Prevention (Pro) [1015],<br/>Impersonation Protection [1060],<br/>Auto Responders (Site) [1005],<br/>Message Recovery Service (Site) [1031],<br/>Mimecast Mobile Pro (Pro) [1055],<br/>Analysis and Response [1110] |  | false | us | false | D7F8 | 4088307584 | full | 10 |
 
 ### mimecast-list-policies
 
@@ -1811,14 +1877,17 @@ List all existing Mimecast blocked sender policies.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policyType | According to this argument an endpoint is selected. Possible values are: blockedsenders, antispoofing-bypass, address-alteration. Default is blockedsenders. | Optional |
-| page | Page number you would like to view. Each page contains page_size values. Must be used along with page_size. | Optional |
+| page | The page number you would like to view. Each page contains page_size values. Must be used with page_size. Not supported when policyType is blockedsenders. | Optional |
 | page_size | Sets the result to start returning results. Default value is '50'. | Optional |
 | limit | The maximum number of results to return. Default is 50. | Optional |
+| next_token | Pagination token for requesting the next page. Only applicable when policyType is blockedsenders. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| Mimecast.BlockedSendersPolicy.policies | Unknown | The list of blocked-senders policies returned for the current page. |
+| Mimecast.BlockedSendersPolicy.NextToken | String | The pagination token for the next page of blocked-senders policies. |
 | Mimecast.AddressAlterationPolicy.ID | string | Policy ID. |
 | Mimecast.AddressAlterationPolicy.meta.status | Number | The status of the Address Alteration policy. |
 | Mimecast.AddressAlterationPolicy.addressAlterationSetId | String | The Mimecast secure ID of the Address Alteration Set \(folder\) that will be applied by this policy. |
@@ -1840,25 +1909,25 @@ List all existing Mimecast blocked sender policies.
 | Mimecast.AddressAlterationPolicy.policy.enforced | Boolean | Is the policy enforced. |
 | Mimecast.AddressAlterationPolicy.policy.createTime | String | The creation timestamp of the policy. |
 | Mimecast.AddressAlterationPolicy.policy.lastUpdated | string | Block emails to receiver type. |
-| Mimecast.BlockedSendersPolicy.option | String | The option for the blocked sender policy. |
-| Mimecast.BlockedSendersPolicy.id | String | The unique identifier for the blocked sender policy. |
-| Mimecast.BlockedSendersPolicy.policy.description | String | A description of the blocked sender policy. |
-| Mimecast.BlockedSendersPolicy.policy.fromPart | String | The part of the email address or domain from which the policy is applied. |
-| Mimecast.BlockedSendersPolicy.policy.from.type | String | The type of sender address or domain for the policy. |
-| Mimecast.BlockedSendersPolicy.policy.to.type | String | The type of recipient address or domain for the policy. |
-| Mimecast.BlockedSendersPolicy.policy.fromType | String | The type of sender for the policy. |
-| Mimecast.BlockedSendersPolicy.policy.toType | String | The type of recipient for the policy. |
-| Mimecast.BlockedSendersPolicy.policy.fromEternal | Boolean | Indicates whether the policy applies indefinitely to the sender. |
-| Mimecast.BlockedSendersPolicy.policy.toEternal | Boolean | Indicates whether the policy applies indefinitely to the recipient. |
-| Mimecast.BlockedSendersPolicy.policy.fromDate | Date | The start date from which the policy is effective. |
-| Mimecast.BlockedSendersPolicy.policy.toDate | Date | The end date until which the policy is effective. |
-| Mimecast.BlockedSendersPolicy.policy.override | Boolean | Indicates whether the policy overrides other policies. |
-| Mimecast.BlockedSendersPolicy.policy.bidirectional | Boolean | Indicates whether the policy applies in both directions. |
-| Mimecast.BlockedSendersPolicy.policy.conditions | Unknown | The conditions under which the policy is applied. |
-| Mimecast.BlockedSendersPolicy.policy.enabled | Boolean | Indicates whether the policy is enabled. |
-| Mimecast.BlockedSendersPolicy.policy.enforced | Boolean | Indicates whether the policy is enforced. |
-| Mimecast.BlockedSendersPolicy.policy.createTime | Date | The date and time when the policy was created. |
-| Mimecast.BlockedSendersPolicy.policy.lastUpdated | Date | The date and time when the policy was last updated. |
+| Mimecast.BlockedSendersPolicy.policies.id | String | The unique identifier of the blocked senders policy. |
+| Mimecast.BlockedSendersPolicy.policies.description | String | The description of the blocked senders policy. |
+| Mimecast.BlockedSendersPolicy.policies.from.type | String | The sender address type considered by the policy. |
+| Mimecast.BlockedSendersPolicy.policies.from.emailAddress | String | The sender email address considered by the policy. |
+| Mimecast.BlockedSendersPolicy.policies.from.domain | String | The sender domain considered by the policy. |
+| Mimecast.BlockedSendersPolicy.policies.from.groupId | String | The sender profile group ID considered by the policy. |
+| Mimecast.BlockedSendersPolicy.policies.to.type | String | The recipient address type considered by the policy. |
+| Mimecast.BlockedSendersPolicy.policies.to.emailAddress | String | The recipient email address considered by the policy. |
+| Mimecast.BlockedSendersPolicy.policies.to.domain | String | The recipient domain considered by the policy. |
+| Mimecast.BlockedSendersPolicy.policies.to.groupId | String | The recipient profile group ID considered by the policy. |
+| Mimecast.BlockedSendersPolicy.policies.bidirectional | Boolean | Whether the policy also applies in reverse email flow. |
+| Mimecast.BlockedSendersPolicy.policies.fromDateTime | Date | The date and time the policy starts to apply. |
+| Mimecast.BlockedSendersPolicy.policies.toDateTime | Date | The date and time the policy ceases to apply. |
+| Mimecast.BlockedSendersPolicy.policies.fromEternal | Boolean | Whether the policy applies regardless of the start date. |
+| Mimecast.BlockedSendersPolicy.policies.toEternal | Boolean | Whether the policy applies regardless of the end date. |
+| Mimecast.BlockedSendersPolicy.policies.fromPart | String | The sender address type considered, based on the envelope, header, or either address. |
+| Mimecast.BlockedSendersPolicy.policies.enabled | Boolean | Whether the policy is enabled. |
+| Mimecast.BlockedSendersPolicy.policies.enforced | Boolean | Whether the policy is enforced. |
+| Mimecast.BlockedSendersPolicy.policies.override | Boolean | Whether the policy is considered prior to other policies of the same type. |
 | Mimecast.AntispoofingBypassPolicy.option | String | The option for the antispoofing bypass policy. |
 | Mimecast.AntispoofingBypassPolicy.id | String | The unique identifier for the antispoofing bypass policy. |
 | Mimecast.AntispoofingBypassPolicy.policy.description | String | A description of the antispoofing bypass policy. |
@@ -1882,58 +1951,6 @@ List all existing Mimecast blocked sender policies.
 | Mimecast.AntispoofingBypassPolicy.policy.enforced | Boolean | Indicates whether the policy is enforced. |
 | Mimecast.AntispoofingBypassPolicy.policy.createTime | Date | The date and time when the policy was created. |
 | Mimecast.AntispoofingBypassPolicy.policy.lastUpdated | Date | The date and time when the policy was last updated. |
-
-#### Command example
-
-```!mimecast-list-policies policyType=blockedsenders limit=1```
-
-#### Context Example
-
-```json
-{
-    "Mimecast": {
-        "Policies": [
-            {
-                "addressAlterationSetId": "eNoVjr0OgjA111111",
-                "id": "eNo1jsESgU121111",
-                "policy": {
-                    "bidirectional": false,
-                    "conditions": {},
-                    "createTime": "2024-05-07T14:24:06+0000",
-                    "description": "שש",
-                    "enabled": true,
-                    "enforced": false,
-                    "from": {
-                        "type": "everyone"
-                    },
-                    "fromDate": "1900-01-01T00:00:00+0000",
-                    "fromEternal": true,
-                    "fromPart": "envelope_from",
-                    "fromType": "everyone",
-                    "lastUpdated": "2024-05-07T14:24:06+0000",
-                    "override": false,
-                    "to": {
-                        "type": "everyone"
-                    },
-                    "toDate": "2100-01-01T23:59:59+0000",
-                    "toEternal": true,
-                    "toType": "everyone"
-                }
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Mimecast list antispoofing-bypass policies
->
-> These are the existing antispoofing-bypass Policies:
->
->|Policy ID|Sender|Reciever|Bidirectional|Start|End|
->|---|---|---|---|---|---|
->| eNo1jksOgjAUAO_SNYmFFn-JCyN-iEJERNS4wfKEIlAsIEHj3cWF-5nMvFEJrJbAQzRGR4OAHvEmcy89C-w4SZzn5uQ7PjP1ZNB4FdlK3SgZ3nrGwZ-bVxF56zygQ01NZRafSXCKYP8QK92vuBMUzWhJ8oRaD0pvO1Lbhzs_zl_hbrGR1gQpqBApZ-0vrVKCiYJYXVYiA8lECN3PzHOnKtamGul39BNkyUXewX9z3xZg_myMsfr5AuuvQdE | Group: null<br/>Email Address: null<br/>Domain: google.com<br/>Type: email_domain | Group: null<br/>Email Address: null<br/>Domain: amazon.com<br/>Type: email_domain | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
 
 #### Command example
 
@@ -1996,7 +2013,15 @@ List all existing Mimecast blocked sender policies.
 ### mimecast-create-block-sender-policy
 
 ***
-Create a Blocked Sender Policy.
+Creates a blocked sender policy. This command does not set context outputs, use mimecast-get-policy to retrieve the full policy.
+
+#### Prerequisite
+
+In order to successfully use this endpoint the role assigned to the app must have at least the following level of application permissions granted Gateway | Policies | Edit.
+
+#### Required Permissions
+
+Gateway | Policies | Edit
 
 #### Base Command
 
@@ -2007,82 +2032,33 @@ Create a Blocked Sender Policy.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | description | Policy description. | Required |
-| fromPart | Addresses based on. Possible values are: envelope_from, header_from, both. Default is envelope_from. | Optional |
-| fromType | Blocked sender type. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, individual_email_address. | Required |
-| fromValue | Required if fromType is one of email_domain, profile_group, individual_email_address. Expected values: If fromType is email_domain, a domain name without the @ symbol. If fromType is profile_group, the ID of the profile group. If fromType is individual_email_address, an email address. | Optional |
-| toType | Receiver type. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address, free_mail_domains, header_display_name. | Required |
-| toValue | Required if fromType is one of email_domain, profile_group, individual_email_address. Expected values: If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address. | Optional |
+| fromPart | Addresses based on. Possible values are: envelope_from, header_from, both. Default is envelope_from. | Required |
+| fromType | Blocked sender type. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Required |
+| fromValue | Required if fromType is one of email_domain, profile_group, individual_email_address. Expected values: If fromType is email_domain, a domain name without the @ symbol. If fromType is profile_group, the ID of the profile group. If fromType is individual_email_address, an email address. For address_attribute_value, use the from_attribute_id and from_attribute_value arguments instead. | Optional |
+| from_attribute_id | The secure ID of the address attribute. Required if fromType is address_attribute_value. | Optional |
+| from_attribute_value | The value to which the address attribute is equal. Required if fromType is address_attribute_value. | Optional |
+| toType | The receiver type. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Required |
+| toValue | Required if toType is one of email_domain, profile_group, individual_email_address. Expected values: If toType is email_domain, a domain name without the @ symbol. If toType is profile_group, the ID of the profile group. If toType is individual_email_address, an email address. For address_attribute_value, use the to_attribute_id and to_attribute_value arguments instead. | Optional |
+| to_attribute_id | The secure ID of the address attribute. Required if toType is address_attribute_value. | Optional |
+| to_attribute_value | The value to which the address attribute is equal. Required if toType is address_attribute_value. | Optional |
 | option | The block option. Possible values are: no_action, block_sender. | Required |
+| from_date | The policy start date in ISO 8601 format (for example, 2024-01-15T12:34:56Z). | Optional |
+| to_date | The policy end date in ISO 8601 format (for example, 2024-01-15T12:34:56Z). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Mimecast.BlockedSendersPolicy.ID | string | Policy ID. |
-| Mimecast.BlockedSendersPolicy.Sender.Address | string | Block sender by email address. |
-| Mimecast.BlockedSendersPolicy.Sender.Domain | string | Block sender by domain. |
-| Mimecast.BlockedSendersPolicy.Sender.Group | string | Block sender by group. |
-| Mimecast.BlockedSendersPolicy.Bidirectional | boolean | Blocked policy is bidirectional or not. |
-| Mimecast.BlockedSendersPolicy.Receiver.Address | string | Block emails to receiver type address. |
-| Mimecast.BlockedSendersPolicy.Receiver.Domain | string | Block emails to receiver type domain. |
-| Mimecast.BlockedSendersPolicy.Receiver.Group | string | Block emails to receiver type group. |
-| Mimecast.BlockedSendersPolicy.Fromdate | date | Policy validation start date. |
-| Mimecast.BlockedSendersPolicy.Todate | date | Policy expiration date. |
-| Mimecast.BlockedSendersPolicy.Sender.Type | String | The sender type. |
-| Mimecast.BlockedSendersPolicy.Receiver.Type | String | The receiver type. |
-
-#### Command example
-
-```!mimecast-create-block-sender-policy description=test fromType=everyone option=block_sender toType=everyone```
-
-#### Context Example
-
-```json
-{
-    "Mimecast": {
-        "BlockedSendersPolicy": {
-            "Bidirectional": false,
-            "Description": "test",
-            "FromDate": "1900-01-01T00:00:00+0000",
-            "ID": "eNo1jrsOgjAAAP1234",
-            "Receiver": {
-                "Address": null,
-                "Domain": null,
-                "Group": null,
-                "Type": "everyone"
-            },
-            "Reciever": {
-                "Domain": null,
-                "Email Address": null,
-                "Group": null,
-                "Type": "everyone"
-            },
-            "Sender": {
-                "Address": null,
-                "Domain": null,
-                "Group": null,
-                "Type": "everyone"
-            },
-            "ToDate": "2100-01-01T23:59:59+0000"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Mimecast Create block sender Policy
->
-> Policy Was Created Successfully!
->
->|Policy ID|Description|Sender|Receiver|Bidirectional|Start|End|
->|---|---|---|---|---|---|---|
->| eNo1jrsOgjAAAP-l1234 | test | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
+| Mimecast.BlockedSendersPolicy.id | String | The ID of the newly created blocked senders policy. |
 
 ### mimecast-update-block-sender-policy
 
 ***
-Updates the specified policy.
+Updates an existing blocked senders policy. Only the fields you explicitly provide are sent to the API and updated, while fields you omit are left unchanged on the server. This command does not set context outputs, use mimecast-get-policy to retrieve the updated policy.
+
+#### Required Permissions
+
+Gateway | Policies | Edit
 
 #### Base Command
 
@@ -2094,76 +2070,31 @@ Updates the specified policy.
 | --- | --- | --- |
 | policy_id | The ID of the policy to update. | Required |
 | description | A new description for the policy. | Optional |
-| fromType | The sender type by which to block senders in the policy. This argument must match the fromValue argument. For example, if you specify email_domain, the fromValue must be an email_domain. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address, free_mail_domains, header_display_name. | Optional |
-| toType | The blocked receiver type by which to block receivers in the policy. This argument must match the toValue argument. For example, if you specify email_domain, the fromType must be an email_domain. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, individual_email_address. | Optional |
+| fromType | The sender type by which to block senders in the policy. For email_domain, profile_group, and individual_email_address, provide the value in the fromValue argument. For address_attribute_value, provide the values in the from_attribute_id and from_attribute_value arguments instead. The everyone, internal_addresses, and external_addresses types require no value. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Optional |
+| toType | The blocked receiver type by which to block receivers in the policy. For email_domain, profile_group, and individual_email_address, provide the value in the toValue argument. For address_attribute_value, provide the values in the to_attribute_id and to_attribute_value arguments instead. The everyone, internal_addresses, and external_addresses types require no value. Possible values are: everyone, internal_addresses, external_addresses, email_domain, profile_group, address_attribute_value, individual_email_address. | Optional |
 | option | The block action. Possible values are: no_action, block_sender. | Optional |
-| fromValue | The value of the fromType argument. For example, if you specify email_domain for fromType, the fromValue must be an email_domain. | Optional |
-| toValue | The value of the toType argument. For example, if you specify email_domain for toType, the toValue must be an email_domain. | Optional |
+| fromValue | The value of the fromType argument. For example, if you specify email_domain for fromType, the fromValue must be an email_domain. For address_attribute_value, use the from_attribute_id and from_attribute_value arguments instead. | Optional |
+| toValue | The value of the toType argument. For example, if you specify email_domain for toType, the toValue must be an email_domain. For address_attribute_value, use the to_attribute_id and to_attribute_value arguments instead. | Optional |
+| from_attribute_id | The secure ID of the address attribute. Required if fromType is address_attribute_value. | Optional |
+| from_attribute_value | The value to which the address attribute is equal. Required if fromType is address_attribute_value. | Optional |
+| to_attribute_id | The secure ID of the address attribute. Required if toType is address_attribute_value. | Optional |
+| to_attribute_value | The value to which the address attribute is equal. Required if toType is address_attribute_value. | Optional |
 | fromPart | The part from where addresses are pulled. Possible values are: envelope_from, header_from, both. | Optional |
+| from_date | The policy start date in ISO 8601 format (for example, 2024-01-15T12:34:56Z). | Optional |
+| to_date | The policy end date in ISO 8601 format (for example, 2024-01-15T12:34:56Z). | Optional |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Mimecast.BlockedSendersPolicy.ID | string | Policy ID. |
-| Mimecast.BlockedSendersPolicy.Sender.Address | string | Block sender by email address value. |
-| Mimecast.BlockedSendersPolicy.Sender.Domain | string | Block sender by domain value. |
-| Mimecast.BlockedSendersPolicy.Sender.Group | string | Block sender by group value. |
-| Mimecast.BlockedSendersPolicy.Bidirectional | boolean | Whether the blocked policy is bidirectional. |
-| Mimecast.BlockedSendersPolicy.Receiver.Address | string | Block emails to receiver type address. |
-| Mimecast.BlockedSendersPolicy.Receiver.Domain | string | Block emails to receiver type domain. |
-| Mimecast.BlockedSendersPolicy.Receiver.Group | string | Block emails to receiver type group. |
-| Mimecast.BlockedSendersPolicy.Fromdate | date | The policy validation start date. |
-| Mimecast.BlockedSendersPolicy.Todate | date | The policy expiration date. |
-| Mimecast.BlockedSendersPolicy.Sender.Type | String | The sender type. |
-| Mimecast.BlockedSendersPolicy.Receiver.Type | String | The receiver type. |
-
-#### Command example
-
-```!mimecast-update-block-sender-policy policy_id=eNo1jrsOgjAAAP-1234 description=test fromPart=both fromType=email_domain fromValue=google.com option=block_sender toType=everyone```
-
-#### Context Example
-
-```json
-{
-    "Mimecast": {
-        "BlockedSendersPolicy": {
-            "Bidirectional": false,
-            "Description": "test",
-            "FromDate": "1900-01-01T00:00:00+0000",
-            "ID": "eNo1jrsOgjAAAP-1234",
-            "Receiver": {
-                "Address": null,
-                "Domain": null,
-                "Group": null,
-                "Type": "everyone"
-            },
-            "Sender": {
-                "Address": null,
-                "Domain": "google.com",
-                "Group": null,
-                "Type": "email_domain"
-            },
-            "ToDate": "2100-01-01T23:59:59+0000"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Mimecast Update Policy
->
-> Policy Was Updated Successfully!
->
->|Policy ID|Description|Sender|Receiver|Bidirectional|Start|End|
->|---|---|---|---|---|---|---|
->| eNo1jrsOgjAAAP-1234 | test | Group: null<br/>Email Address: null<br/>Domain: google.com<br/>Type: email_domain | Group: null<br/>Email Address: null<br/>Domain: null<br/>Type: everyone | false | 1900-01-01T00:00:00+0000 | 2100-01-01T23:59:59+0000 |
+There is no context output for this command.
 
 ### mimecast-create-antispoofing-bypass-policy
 
 ***
 Create a new Anti-Spoofing SPF based Bypass policy.
+
+#### Required Permissions
+
+Gateway | Policies | Edit
 
 #### Base Command
 
@@ -2273,6 +2204,10 @@ Create a new Anti-Spoofing SPF based Bypass policy.
 ***
 Update an existing Anti-Spoofing SPF based Bypass policy.
 
+#### Required Permissions
+
+Gateway | Policies | Edit
+
 #### Base Command
 
 `mimecast-update-antispoofing-bypass-policy`
@@ -2367,6 +2302,10 @@ Update an existing Anti-Spoofing SPF based Bypass policy.
 
 ***
 This API endpoint can be used to create a new Address Alteration policy to apply an alteration definition based on sender and recipient values.
+
+#### Required Permissions
+
+Gateway | Policies | Edit
 
 #### Base Command
 
@@ -2467,6 +2406,10 @@ This API endpoint can be used to create a new Address Alteration policy to apply
 
 ***
 Update an existing Address Alteration policy.
+
+#### Required Permissions
+
+Gateway | Policies | Edit
 
 #### Base Command
 

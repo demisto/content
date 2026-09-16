@@ -310,6 +310,7 @@ def test_http_request_no_auth(mocker):
             "test_header": "test_value",
         },
         "method": "GET",
+        "resp_type": "response",
     }
 
 
@@ -341,6 +342,7 @@ def test_http_request_api_token_auth(mocker):
             "test_header": "test_value",
         },
         "method": "GET",
+        "resp_type": "response",
     }
 
 
@@ -377,6 +379,7 @@ def test_http_request_oauth_auth(mocker):
             "test_header": "test_value",
         },
         "method": "GET",
+        "resp_type": "response",
     }
 
 

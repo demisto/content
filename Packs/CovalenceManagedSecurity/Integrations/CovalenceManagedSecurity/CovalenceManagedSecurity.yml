@@ -1,10 +1,11 @@
 category: Endpoint
+provider: Field Effect Software Inc
 commonfields:
   id: Covalence Managed Security
   version: -1
 sectionorder:
-  - Connect
-  - Collect
+- Connect
+- Collect
 configuration:
 - display: Credentials
   name: credentials
@@ -28,6 +29,13 @@ configuration:
   type: 13
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -576,7 +584,7 @@ script:
     - contextPath: FESBroker.result
       description: Result.
       type: String
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.12.7090913
   isfetch: true
   runonce: false
   script: ''

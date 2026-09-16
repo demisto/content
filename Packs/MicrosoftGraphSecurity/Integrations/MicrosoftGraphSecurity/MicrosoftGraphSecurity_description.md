@@ -1,9 +1,22 @@
+# Microsoft Graph Security
+
+The eDiscovery APIs in Microsoft Graph only work with eDiscovery (Premium) cases.
+The legacy content search solution has been deprecated. You can now search by [case](https://learn.microsoft.com/en-us/purview/ediscovery).
+
+# Fetch
+Use the **Fetch incidents type** parameter to control what this integration ingests. You can select **Alerts**, **Incidents**, or both:
+
+* **Alerts** - Each Microsoft Graph Security alert is fetched individually.
+* **Incidents** - Each Microsoft Graph Security incident is fetched individually, with all associated alerts embedded within it and stored as raw JSON. This provides a single grouped incident containing its underlying alerts, rather than multiple separate alerts.
+
+You can narrow what is fetched using the **Alerts Filter** and **Incidents Filter** parameters. These accept an OData `$filter` expression, for example `severity eq 'medium' and status eq 'active'`. For the supported syntax and operators, see [Microsoft query parameters](https://learn.microsoft.com/en-us/graph/query-parameters?tabs=http).
+
 # Authentication
-You can authenticate either by Azure Active Directory applications or by Azure Managed Identities.
+You can authenticate either by Entra ID applications or by Azure Managed Identities.
 
-### Authentication Based on Azure Active Directory Applications
+### Authentication Based on Entra ID Applications
 
-Microsoft integrations (Graph and Azure) in Cortex XSOAR use Azure Active Directory applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard compliant authentication services, which use an application to sign in or delegate authentication. For more information, see the Microsoft identity platform overview.
+Microsoft integrations (Graph and Azure) in Cortex use Entra ID applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard compliant authentication services, which use an application to sign in or delegate authentication. For more information, see the Microsoft identity platform overview.
 
 There are two application authentication methods available:
 
@@ -12,8 +25,8 @@ There are two application authentication methods available:
 
 Depending on the authentication method that you use, the integration parameters might change.
 
-To use the **Cortex XSOAR application** and allow Cortex XSOAR access to Microsoft Graph Security an administrator has to approve our app using an admin consent flow by clicking this **[link](https://oproxy.demisto.ninja/ms-graph-security)**.
-After authorizing the Cortex XSOAR app, you will get an ID, Token, and Key which should be inserted in the integration instance settings fields.
+To use the integration and grant Cortex access to Microsoft Graph Security, an administrator must approve the application through the admin consent flow by clicking this **[link](https://oproxy.demisto.ninja/ms-graph-security)**.
+After authorizing the Cortex app, you will get an ID, Token, and Key which should be inserted in the integration instance settings fields.
 If you previously had an API V1 configured based on the credentials obtained from this method, refer to the link above to gain new credentials with the relevant permissions.
 
 ### Important

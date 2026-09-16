@@ -182,9 +182,9 @@ def get_incident_id(entry_id: str) -> str:
     Returns:
         str -- incident id
     """
-    res = re.findall("(.*?)@(\d+)", entry_id)
+    res = re.findall(r"(.*?)@(\d+)", entry_id)
     if len(res) <= 0:
-        return_error("EntryID unknow or malformatted !")
+        return_error("EntryID unknown or malformed!")
     return res[0][1]
 
 
@@ -196,7 +196,7 @@ def rename_file_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults -- Readable output
     Note:
-        This command should not be use in loop, I/O consumming
+        This command should not be use in loop, I/O consuming
     """
     entry_id = args.get("entryID", "")
     file_name = args.get("newFileName", "")
@@ -430,7 +430,7 @@ def download_file_command(client: Client, args: dict) -> CommandResults:
     inc = demisto.incident()
     incident_id = args.get("incidentID", inc.get("investigationId") if not inc.get("id") else inc.get("id"))
     file_name = args.get("fileName", "")
-    file_uri = re.sub(".*\/markdown\/image\/", "", args.get("fileURI", ""))
+    file_uri = re.sub(r".*\/markdown\/image\/", "", args.get("fileURI", ""))
     target = args.get("target", "war room entry")
 
     if not incident_id:
@@ -441,7 +441,7 @@ def download_file_command(client: Client, args: dict) -> CommandResults:
     response = client.get_markdown_file(file_uri)
     if response.status_code != 200:
         return_error(f"HTTP error {response.status_code}")
-    # extract file_name from URL or reponse header
+    # extract file_name from URL or response header
     if not file_name:
         headers = response.headers
         if "Content-Disposition" in headers:
@@ -467,7 +467,7 @@ def get_file_hash_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults -- Readable output
     """
-    file_uri = re.sub(".*\/markdown\/image\/", "", args.get("fileURI", ""))
+    file_uri = re.sub(r".*\/markdown\/image\/", "", args.get("fileURI", ""))
     if not file_uri:
         return_error("Please provide file URI")
     # download file

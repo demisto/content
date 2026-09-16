@@ -1,0 +1,16 @@
+{
+  "data": [
+    {
+      "id": "2309276688020782186",
+      "sha256Value": "3a7bd3e2360a3d5bca2c7e6f3c4d7b1a2e3f4a5b6c7d8e9f0a1b2c3d4e5f6a7b8",
+      "osType": "linux",
+      "scopeName": "scopeName",
+      "scopePath": "scopePath",
+      "type": "black_hash",
+      "createdAt": "2025-09-22T04:40:33.352005Z",
+      "updatedAt": "2025-09-22T04:40:33.350440Z",
+      "userId": "2220194304935260665",
+      "userName": "Tester"
+    }
+  ]
+}

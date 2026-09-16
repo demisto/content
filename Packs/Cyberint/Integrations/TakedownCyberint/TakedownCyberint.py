@@ -30,9 +30,9 @@ class Client(BaseClient):
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
             "X-Integration-Customer-Name": params.get("client_name", ""),
-            "X-Integration-Version": "1.1.9",
+            "X-Integration-Version": str(get_pack_version()),
         }
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=self._headers)
 
     @logger
     def submit_takedown_request(
@@ -197,7 +197,7 @@ def submit_takedown_request_command(
         url=args.get("url"),
         brand=args.get("brand"),
         original_url=args.get("original_url"),
-        alert_id=args.get("alert_id"),
+        alert_id=arg_to_number(args.get("alert_id"), arg_name="alert_id"),
         note=args.get("note"),
     )
 

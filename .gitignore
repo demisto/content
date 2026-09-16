@@ -109,3 +109,16 @@ pipeline_jobs_folder/
 
 # Ignore windsurf config
 .windsurf
+
+# Ignore AI generated dump files
+plan.md
+report.md
+plans/
+cooc_command_examples.txt
+
+# IDEX custom tools and rules
+.roomodes
+.roo/
+.idex/
+.worktree-context/
+

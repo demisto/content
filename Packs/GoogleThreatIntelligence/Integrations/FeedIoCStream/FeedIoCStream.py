@@ -100,11 +100,14 @@ def test_module(client: Client, args: dict) -> str:
     """Tests module."""
     try:
         client.fetch_indicators()
-    except Exception:
+    except Exception as exc:
+        # Keep the original proxy and SSL errors, as they are already descriptive.
+        if "Proxy Error" in str(exc) or "SSL Certificate Verification Failed" in str(exc):
+            raise
         raise Exception(
             "Could not fetch Google Threat Intelligence IoC Stream Feed\n"
             "\nCheck your API key and your connection to Google Threat Intelligence."
-        )
+        ) from exc
     return "ok"
 
 
@@ -452,11 +455,11 @@ def main():
     # If your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    insecure = not params.get("insecure", False)
+    secure = not argToBoolean(params.get("insecure", False))
 
     # If your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = params.get("proxy", False)
+    proxy = argToBoolean(params.get("proxy", False))
 
     command = demisto.command()
 
@@ -465,7 +468,7 @@ def main():
     try:
         client = Client(
             base_url="https://www.virustotal.com/api/v3/",
-            verify=insecure,
+            verify=secure,
             proxy=proxy,
             headers={
                 "x-apikey": params["credentials"]["password"],

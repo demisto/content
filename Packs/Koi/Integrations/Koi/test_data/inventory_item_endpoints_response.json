@@ -1,0 +1,29 @@
+{
+  "endpoints": [
+    {
+      "activation_status": "enabled",
+      "first_seen": "2024-01-01T10:00:00Z",
+      "hostname": "laptop-01",
+      "id": "device-123",
+      "last_logged_on_user": "john.doe",
+      "last_seen": "2024-10-15T10:00:00Z",
+      "os": "windows",
+      "path": "/Applications/Google Chrome.app/Contents/Extensions/abc123",
+      "platform": "chrome",
+      "serial": "ABC123XYZ"
+    },
+    {
+      "activation_status": "enabled",
+      "first_seen": "2024-02-15T08:30:00Z",
+      "hostname": "desktop-02",
+      "id": "device-456",
+      "last_logged_on_user": "jane.smith",
+      "last_seen": "2024-11-01T14:00:00Z",
+      "os": "macos",
+      "path": "/Users/jane/Library/Application Support/Google/Chrome/Extensions/abc123",
+      "platform": "chrome",
+      "serial": "DEF456UVW"
+    }
+  ],
+  "total_count": 42
+}

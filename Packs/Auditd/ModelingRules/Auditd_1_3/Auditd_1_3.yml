@@ -1,6 +1,9 @@
 fromversion: 6.10.0
+toversion: 8.14.0
 id: unix_auditd_modeling_rule
 name: Unix Auditd Modeling Rule
 rules: ''
 schema: ''
 tags: Unix Auditd
+supportedModules:
+- xsiam

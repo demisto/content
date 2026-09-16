@@ -294,7 +294,7 @@ def test_module(client: Client, last_run: dict, max_fetch: int) -> str:
 
 
 def get_events_command(client: Client, args: dict[str, Any], last_run: dict, events: list) -> tuple[CommandResults, list]:
-    limit = arg_to_number(args.get("limit")) or MAX_EVENTS_PAGE_SIZE
+    limit = arg_to_number(args.get("limit")) or 10
     _ = get_all_events(client=client, last_run=last_run, limit=limit, all_event_types=events)
 
     for event in events:

@@ -39,8 +39,7 @@ tasks:
       id: fc08bfe1-08dd-4d22-8147-85aced6e6a9d
       version: -1
       name: Is Carbon Black Enterprise Response enabled?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'.
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false

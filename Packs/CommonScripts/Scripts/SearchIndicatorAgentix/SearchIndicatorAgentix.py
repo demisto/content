@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 KEYS_TO_EXCLUDE_FROM_QUERY = ["size", "value"]
+SCORE_TO_REPUTATION = {0: "Unknown", 1: "Benign", 2: "Suspicious", 3: "Malicious"}
 
 
 def escape_special_characters(value):
@@ -57,7 +58,12 @@ def build_query_for_indicator_values(args: dict) -> list:
     try:
         values_as_list = json.loads(values)
     except (json.JSONDecodeError, TypeError) as e:
-        raise DemistoException(f"JSON decode failed for values {values}: {str(e)}.")
+        raise CortexInvalidArgError(
+            "value",
+            value=values,
+            reason=str(e),
+            override_message=f"JSON decode failed for values {values}: {str(e)}.",
+        )
 
     if not values_as_list:
         return []
@@ -219,9 +225,11 @@ def search_indicators(args):
         style_indicator = {}
 
         for field in fields:
-            style_indicator[field] = indicator.get(field, indicator.get("CustomFields", {}).get(field, "n/a"))
+            # Map investigationIDs to IssueIDs in the output
+            output_field = "IssueIDs" if field == "investigationIDs" else field
+            style_indicator[output_field] = indicator.get(field, indicator.get("CustomFields", {}).get(field, "n/a"))
 
-        style_indicator["verdict"] = scoreToReputation(style_indicator["score"])
+        style_indicator["verdict"] = SCORE_TO_REPUTATION.get(style_indicator["score"]) or "Unknown"
         filtered_indicators.append(style_indicator)
 
     headers = fields + ["verdict"]

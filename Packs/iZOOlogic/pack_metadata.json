@@ -1,0 +1,33 @@
+{
+    "name": "iZOOlogic",
+    "description": "Fetches threat incidents from iZOOlogic for automated ingestion into Cortex.",
+    "support": "xsoar",
+    "currentVersion": "1.1.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2026-05-11T00:00:00Z",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [
+        "Threat Intelligence",
+        "Malware"
+    ],
+    "useCases": [
+        "Phishing",
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "iZOOlogic",
+        "izoologic",
+        "brand protection",
+        "phishing",
+        "threat intelligence"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2",
+        "platform"
+    ]
+}

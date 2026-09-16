@@ -35,7 +35,7 @@ class DatetimeEncoder(json.JSONEncoder):
 
 
 """ COMMAND FUNCTIONS """
-SENSITIVE_COMMANDS = ["aws-secrets-manager-secret–value-get"]
+SENSITIVE_COMMANDS = ["aws-secrets-manager-secret–value-get"]  # noqa: RUF001
 
 
 def test_module(client: AWSClient):
@@ -270,7 +270,7 @@ def should_create_credential(secret_as_dict):
 def main():  # pragma: no cover:
     try:
         params = demisto.params()
-        if argToBoolean(params.get("disable_sensitive_commands")) and demisto.command() in SENSITIVE_COMMANDS:
+        if argToBoolean(params.get("disable_sensitive_commands") or False) and demisto.command() in SENSITIVE_COMMANDS:
             raise ValueError("Sensitive commands are disabled. You can reenable them in the integration settings.")
         aws_default_region = params.get("defaultRegion")
         aws_role_arn = params.get("roleArn")
@@ -279,9 +279,9 @@ def main():  # pragma: no cover:
         aws_role_policy = None
         aws_access_key_id = params.get("credentials", {}).get("identifier")
         aws_secret_access_key = params.get("credentials", {}).get("password")
-        verify_certificate = not argToBoolean(params.get("insecure"))
+        verify_certificate = not argToBoolean(params.get("insecure") or False)
         timeout = params.get("timeout")
-        retries = int(params.get("retries")) if params.get("retries") else 5
+        retries = int(params.get("retries")) if params.get("retries") else 5  # noqa: ucp-param-default  (guarded by `if params.get("retries")`; int() never sees None)
 
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id, aws_secret_access_key)
 
@@ -304,13 +304,13 @@ def main():  # pragma: no cover:
             test_module(aws_client)
         elif demisto.command() == "aws-secrets-manager-secret-list":
             aws_secrets_manager_secret_list_command(aws_client, args)
-        elif demisto.command() == "aws-secrets-manager-secret–value-get":
+        elif demisto.command() == "aws-secrets-manager-secret–value-get":  # noqa: RUF001 (backwards compatibility)
             aws_secrets_manager_secret_value_get_command(aws_client, args)
-        elif demisto.command() == "aws-secrets-manager-secret–delete":
+        elif demisto.command() == "aws-secrets-manager-secret–delete":  # noqa: RUF001 (backwards compatibility)
             aws_secrets_manager_secret_delete_command(aws_client, args)
-        elif demisto.command() == "aws-secrets-manager-secret–restore":
+        elif demisto.command() == "aws-secrets-manager-secret–restore":  # noqa: RUF001 (backwards compatibility)
             aws_secrets_manager_secret_restore_command(aws_client, args)
-        elif demisto.command() == "aws-secrets-manager-secret–policy-get":
+        elif demisto.command() == "aws-secrets-manager-secret–policy-get":  # noqa: RUF001 (backwards compatibility)
             aws_secrets_manager_secret_policy_get_command(aws_client, args)
         elif demisto.command() == "fetch-credentials":
             fetch_credentials(aws_client, args)

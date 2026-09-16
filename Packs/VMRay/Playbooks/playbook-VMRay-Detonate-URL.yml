@@ -301,6 +301,12 @@ tasks:
           accessor: Sample.SampleID
           transformers:
           - operator: uniq
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${VMRay.Sample.SampleID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -410,6 +416,12 @@ tasks:
           accessor: Analysis.SampleID
           transformers:
           - operator: uniq
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${VMRay.Sample.SampleID}
     reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
@@ -450,6 +462,12 @@ tasks:
           accessor: Analysis.SampleID
           transformers:
           - operator: uniq
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ${VMRay.Sample.SampleID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -474,8 +492,7 @@ tasks:
       id: bbcdb264-06cf-43f6-88c4-c816ee1c29dd
       version: -1
       name: Is there an active VMRay instance?
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -639,19 +656,19 @@ inputs:
       accessor: Data
   required: false
   description: The URL to detonate.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: interval
   value:
     simple: "1"
   required: false
   description: How often to poll for results (minutes).
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: timeout
   value:
     simple: "10"
   required: false
   description: How long to wait before giving up waiting for results (minutes).
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: VMRay.Job.JobID
   description: The ID of a new job.
@@ -699,8 +716,7 @@ outputs:
   description: Description of the Verdict Reason.
   type: String
 - contextPath: VMRay.Submission.Severity
-  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted,
-    Unknown). Deprecated.
+  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown). Deprecated.
   type: string
 - contextPath: VMRay.Submission.SSDeep
   description: The SSDeep hash of the sample in submission.
@@ -730,8 +746,7 @@ outputs:
   description: Description of the Verdict Reason.
   type: String
 - contextPath: VMRay.Sample.Severity
-  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted,
-    Unknown). Deprecated.
+  description: Severity of the sample (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown). Deprecated.
   type: string
 - contextPath: VMRay.Sample.Type
   description: The file type.

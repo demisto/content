@@ -34,7 +34,9 @@
         "CrowdStrike Falcon On-Demand Scans Detection",
         "CrowdStrike Falcon OFP Detection",
         "CrowdStrike Falcon Third Party Detection",
-        "CrowdStrike Falcon NGSIEM Detection"
+        "CrowdStrike Falcon NGSIEM Detection",
+        "Trellix Incident",
+        "CrowdStrike Falcon NGSIEM Automated Lead"
     ],
     "systemAssociatedTypes": [
         "CrowdStrike Falcon OFP Detection"
@@ -42,5 +44,9 @@
     "associatedToAll": false,
     "unmapped": false,
     "unsearchable": false,
-    "fromVersion": "5.0.0"
+    "fromVersion": "5.0.0",
+    "supportedModules": [
+        "agentix",
+        "xsiam"
+    ]
 }

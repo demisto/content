@@ -8,10 +8,15 @@ In order to connect to the AzureWAF using either Cortex XSOAR Azure App or the S
 ## Self-Deployed Application
 To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
 
-## Required Permissions:
-1. user_impersonation
-2. offline_access
-3. user.read 
+## Required Permissions
+
+The following API permissions are required in Azure:
+
+| API | Permission |
+|---|---|
+| Azure Service Management | user_impersonation |
+| Microsoft Graph | offline_access |
+| Microsoft Graph | User.Read |
 
 ## Authentication Using the Authorization Code Flow (recommended)
 

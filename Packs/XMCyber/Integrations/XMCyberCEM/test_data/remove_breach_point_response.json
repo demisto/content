@@ -1,0 +1,80 @@
+{
+    "raw_response": [
+        {
+            "id": "0000000000000000001",
+            "affectedUniqueEntities": 2,
+            "chokePointScore": 29,
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "displayName": "test.com\\user_1",
+            "domainName": "test.com",
+            "isEnabled": true,
+            "lastLogon": "2025-12-01T00:00:00.000Z",
+            "pwdLastSet": "2025-11-01T00:00:00.000Z",
+            "name": "user_1",
+            "riskScore": 88,
+            "type": "activeDirectoryUser",
+            "importedLabels": [
+                "importedLable1",
+                "XSOAR_Test"
+            ],
+            "xmLabels": [
+                {
+                    "id": "XSOAR_BP"
+                },
+                {
+                    "id": "Label1"
+                }
+            ]
+        },
+        {
+            "id": "0000000000000000002",
+            "affectedUniqueEntities": 2,
+            "chokePointScore": 75,
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "name": "hostname_1",
+            "os": {
+                "name": "Windows Server 2019"
+            },
+            "osType": "Windows",
+            "riskScore": 92,
+            "type": "agent",
+            "isEnabled": true,
+            "lastLogon": "2025-12-01T00:00:00.000Z",
+            "pwdLastSet": "2025-11-01T00:00:00.000Z",
+            "importedLabels": [
+                "importedLable1",
+                "XSOAR_Test"
+            ],
+            "xmLabels": [
+                {
+                    "id": "XSOAR_BP"
+                },
+                {
+                    "id": "Windows Server"
+                }
+            ]
+        },
+        {
+            "collectedAt": "2025-12-04T00:00:00.630Z",
+            "name": "hostname_4",
+            "os": {
+                "name": "Windows Server 2016"
+            },
+            "osType": "Windows",
+            "type": "agent",
+            "xmLabels": [
+                {
+                    "id": "Windows Server"
+                },
+                {
+                    "id": "Domain Controller"
+                }
+            ]
+        }
+    ],
+    "outputs": {
+        "attributeName": "XSOAR_Test",
+        "userSuppliedEntities": "hostname_1, non_existent_entity, user_1",
+        "removedLabelEntities": "hostname_1, user_1"
+    }
+}

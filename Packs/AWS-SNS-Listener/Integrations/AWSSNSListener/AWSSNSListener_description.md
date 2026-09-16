@@ -16,16 +16,16 @@ For more general information on long running integrations on XSOAR6:
 
 XSOAR8 or XSIAM:
 
-* The instance should be configured to run only on HTTP. 
+* The instance should be configured to run only on HTTPS. 
 * The instance is using the HTTPS certificate of the server.
 * Please set a user and password (can be global via long running integrations configurations)
 * or local for this integration only.
    
 Configuring the subscriber on AWS-SNS UI:
-```https://<username:password>@ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>```
+```https://<username>:<password>@ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>/<endpoint>```
 
 example:
-```https://user:pass@ext-myxsoar-address/xsoar/instance/execute/My-AWS-SNS-Listener/sns_ep```
+```https://user:pass@ext-myxsoar-address/xsoar/instance/execute/My-AWS-SNS-Listener-Instance/sns_ep```
 
 For more info on long running integrations on XSOAR8 or XSIAM:
 [XSOAR8 or XSIAM Long Running](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Forward-Requests-to-Long-Running-Integrations)

@@ -1,4 +1,4 @@
-Converts a custom-formatted timestamp to UNIX epoch time. Use it to convert custom time stamps to a XSOAR date field. If you pass formatter argument, we will use it to transform. If not, we will use dateparser.parse for transforming. For more info, see: https://docs.python.org/3.7/library/datetime.html#strftime-and-strptime-behavior
+Converts a custom-formatted timestamp to UNIX epoch time. Use it to convert custom time stamps to a XSOAR date field. If you pass formatter argument, we will use it to transform. If not, we will use dateparser.parse for transforming. For more info, see: <https://docs.python.org/3.7/library/datetime.html#strftime-and-strptime-behavior>
 
 ## Script Data
 

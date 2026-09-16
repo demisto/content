@@ -1,0 +1,61 @@
+{
+    "items": [
+        {
+            "id": "ea7fb4db-2cc9-4176-9d69-9f2673c2efd3",
+            "file": {
+                "name": "clean_file.png",
+                "mime_type": "image/png",
+                "short_type": "png",
+                "sha256": "b280719e9f2dd010260e6a023e0d69c64fbee8b6cbb8669c722a1da8142d3325",
+                "link": null
+            },
+            "scan_init": {
+                "id": "69d64f4b799d5bf325f27e77"
+            },
+            "state": "success",
+            "verdict": "no_threat",
+            "tags": [
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "png",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "NO_THREAT",
+                            "threatLevel": 0.1,
+                            "confidence": 1.0
+                        }
+                    }
+                },
+                {
+                    "source": "MEDIA_TYPE",
+                    "sourceIdentifier": "b280719e9f2dd010260e6a023e0d69c64fbee8b6cbb8669c722a1da8142d3325",
+                    "isRootTag": true,
+                    "tag": {
+                        "name": "png",
+                        "synonyms": [],
+                        "descriptions": [],
+                        "verdict": {
+                            "verdict": "UNKNOWN",
+                            "threatLevel": 0.0,
+                            "confidence": 1.0
+                        }
+                    }
+                }
+            ],
+            "date": "2026-04-08T12:51:24.716000",
+            "uploader": {
+                "email": null
+            },
+            "updated_date": "04/08/2026, 12:51:32"
+        }
+    ],
+    "count": 1,
+    "count_search_params": null,
+    "earliest_dates_covered": null,
+    "method": "or",
+    "dbs_sync": null
+}

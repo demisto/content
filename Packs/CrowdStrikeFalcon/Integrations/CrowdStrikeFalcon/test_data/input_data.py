@@ -354,131 +354,37 @@ remote_third_party_detection_id = (
     "cb28a1bf5xxxxxxxxx698253914:thirdparty:cb28a1bf5axxxxxxxxxx698253914:5efcd0feb3xxxxxxxxxxab190ab39a"
 )
 
-# remote_id, close_incident, incident_status, detection_status, mirrored_object, entries
-get_remote_incident = (
-    remote_incident_id,
-    False,
-    30,
-    None,
-    {
-        "hosts.hostname": "SFO-M-Y81WHJ",
-        "incident_type": "incident",
-        "state": "closed",
-        "status": "In Progress",
-        "tags": ["Objective/Keep Access"],
-        "fine_score": 38,
-        "incident_id": remote_incident_id,
-    },
-    [],
-)
-get_remote_incident_update = (
-    remote_incident_id,
-    True,
-    25,
-    None,
-    {
-        "hosts.hostname": "SFO-M-Y81WHJ",
-        "incident_type": "incident",
-        "state": "closed",
-        "status": "Reopened",
-        "tags": ["Objective/Keep Access"],
-        "fine_score": 38,
-        "incident_id": remote_incident_id,
-    },
-    [{"Contents": {"dbotIncidentReopen": True}, "ContentsFormat": "json", "Type": EntryType.NOTE}],
-)
-get_remote_incident_close = (
-    remote_incident_id,
-    True,
-    40,
-    None,
-    {
-        "hosts.hostname": "SFO-M-Y81WHJ",
-        "incident_type": "incident",
-        "state": "closed",
-        "status": "Closed",
-        "tags": ["Objective/Keep Access"],
-        "fine_score": 38,
-        "incident_id": remote_incident_id,
-    },
-    [
-        {
-            "Contents": {"closeReason": "Incident was closed on CrowdStrike Falcon", "dbotIncidentClose": True},
-            "ContentsFormat": "json",
-            "Type": EntryType.NOTE,
-        }
-    ],
-)
-get_remote_incident_no_close = (
-    remote_incident_id,
-    False,
-    40,
-    None,
-    {
-        "hosts.hostname": "SFO-M-Y81WHJ",
-        "incident_type": "incident",
-        "state": "closed",
-        "status": "Closed",
-        "tags": ["Objective/Keep Access"],
-        "fine_score": 38,
-        "incident_id": remote_incident_id,
-    },
-    [],
-)
+# remote_id, close_incident, detection_status, mirrored_object, entries
 get_remote_detection = (
     remote_detection_id,
     False,
-    None,
     "in_progress",
     {
-        "behaviors.objective": "Falcon Detection Method",
-        "behaviors.scenario": "suspicious_activity",
-        "behaviors.tactic": "Malware",
-        "behaviors.technique": "Malicious File",
         "device.hostname": "FALCON-CROWDSTR",
         "incident_type": "detection",
-        "severity": 2,
         "status": "in_progress",
-        "detection_id": remote_detection_id,
-        "behaviors.display_name": "SampleTemplateDetection",
     },
     [],
 )
 get_remote_detection_update = (
     remote_detection_id,
     True,
-    None,
     "reopened",
     {
-        "behaviors.objective": "Falcon Detection Method",
-        "behaviors.scenario": "suspicious_activity",
-        "behaviors.tactic": "Malware",
-        "behaviors.technique": "Malicious File",
         "device.hostname": "FALCON-CROWDSTR",
         "incident_type": "detection",
-        "severity": 2,
         "status": "reopened",
-        "detection_id": remote_detection_id,
-        "behaviors.display_name": "SampleTemplateDetection",
     },
     [{"Contents": {"dbotIncidentReopen": True}, "ContentsFormat": "json", "Type": EntryType.NOTE}],
 )
 get_remote_detection_close = (
     remote_detection_id,
     True,
-    None,
     "closed",
     {
-        "behaviors.objective": "Falcon Detection Method",
-        "behaviors.scenario": "suspicious_activity",
-        "behaviors.tactic": "Malware",
-        "behaviors.technique": "Malicious File",
         "device.hostname": "FALCON-CROWDSTR",
         "incident_type": "detection",
-        "severity": 2,
         "status": "closed",
-        "detection_id": remote_detection_id,
-        "behaviors.display_name": "SampleTemplateDetection",
     },
     [
         {
@@ -491,47 +397,21 @@ get_remote_detection_close = (
 get_remote_detection_no_close = (
     remote_detection_id,
     False,
-    None,
     "closed",
     {
-        "behaviors.objective": "Falcon Detection Method",
-        "behaviors.scenario": "suspicious_activity",
-        "behaviors.tactic": "Malware",
-        "behaviors.technique": "Malicious File",
+
         "device.hostname": "FALCON-CROWDSTR",
         "incident_type": "detection",
-        "severity": 2,
         "status": "closed",
-        "detection_id": remote_detection_id,
-        "behaviors.display_name": "SampleTemplateDetection",
     },
     [],
 )
 
 get_remote_data_command_args = [
-    get_remote_incident,
-    get_remote_incident_update,
-    get_remote_incident_close,
-    get_remote_incident_no_close,
     get_remote_detection,
     get_remote_detection_update,
     get_remote_detection_close,
     get_remote_detection_no_close,
-]
-
-# updated_object, entry_content, close_incident
-incident_closes = ({"status": "Closed"}, "dbotIncidentClose", True)
-incident_reopens = ({"status": "Reopened"}, "dbotIncidentReopen", True)
-incident_reopens_other_status = ({"status": "New"}, "dbotIncidentReopen", True)
-incident_not_closed = ({"status": "In Progress"}, None, False)
-incident_no_status = ({}, None, True)
-
-set_xsoar_incident_entries_args = [
-    incident_closes,
-    incident_reopens,
-    incident_reopens_other_status,
-    incident_not_closed,
-    incident_no_status,
 ]
 
 # updated_object
@@ -643,178 +523,6 @@ set_updated_object_args = [
     fields_nested_all_options,
 ]
 
-# args, to_mock, call_args, remote_id, prev_tags, close_in_cs_falcon_param
-incident_changed_status = (
-    {
-        "data": {"status": "New"},
-        "entries": [],
-        "incidentChanged": True,
-        "remoteId": remote_incident_id,
-        "status": IncidentStatus.ACTIVE,
-        "delta": {"status": "New"},
-    },
-    "update_incident_request",
-    [{"ids": [remote_incident_id], "action_parameters": {"update_status": "20"}}],
-    remote_incident_id,
-    None,
-    False,
-)
-incident_changed_tags = (
-    {
-        "data": {"tag": ["newTag"]},
-        "entries": [],
-        "incidentChanged": True,
-        "remoteId": remote_incident_id,
-        "status": IncidentStatus.PENDING,
-        "delta": {"tag": ["newTag"]},
-    },
-    "update_incident_request",
-    [
-        {"ids": [remote_incident_id], "action_parameters": {"delete_tag": "prevTag"}},
-        {"ids": [remote_incident_id], "action_parameters": {"add_tag": "newTag"}},
-    ],
-    remote_incident_id,
-    {"prevTag"},
-    False,
-)
-incident_changed_both = (
-    {
-        "data": {"tag": ["newTag"], "status": "Reopened"},
-        "entries": [],
-        "incidentChanged": True,
-        "remoteId": remote_incident_id,
-        "status": IncidentStatus.DONE,
-        "delta": {"tag": ["newTag"], "status": "Reopened"},
-    },
-    "update_incident_request",
-    [
-        {"ids": [remote_incident_id], "action_parameters": {"delete_tag": "prevTag"}},
-        {"ids": [remote_incident_id], "action_parameters": {"add_tag": "newTag"}},
-        {"ids": [remote_incident_id], "action_parameters": {"update_status": "25"}},
-    ],
-    remote_incident_id,
-    {"prevTag"},
-    False,
-)
-incident_changed_no_close = (
-    {
-        "data": {"tag": ["newTag"], "status": "Reopened"},
-        "entries": [],
-        "incidentChanged": True,
-        "remoteId": remote_incident_id,
-        "status": IncidentStatus.DONE,
-        "delta": {"tag": ["newTag"]},
-    },
-    "update_incident_request",
-    [{"ids": [remote_incident_id], "action_parameters": {"add_tag": "newTag"}}],
-    remote_incident_id,
-    set(),
-    False,
-)
-incident_changed_param_close = (
-    {
-        "data": {"tag": ["newTag"], "status": "Reopened"},
-        "entries": [],
-        "incidentChanged": True,
-        "remoteId": remote_incident_id,
-        "status": IncidentStatus.ACTIVE,
-        "delta": {"tag": ["newTag"]},
-    },
-    "update_incident_request",
-    [{"ids": [remote_incident_id], "action_parameters": {"add_tag": "newTag"}}],
-    remote_incident_id,
-    set(),
-    True,
-)
-incident_closed = (
-    {
-        "data": {"tag": ["newTag"], "status": "Reopened"},
-        "entries": [],
-        "incidentChanged": True,
-        "remoteId": remote_incident_id,
-        "status": IncidentStatus.DONE,
-        "delta": {"closeReason": "Other"},
-    },
-    "update_incident_request",
-    [{"ids": [remote_incident_id], "action_parameters": {"update_status": "40"}}],
-    remote_incident_id,
-    set(),
-    True,
-)
-detection_changed = (
-    {
-        "data": {"status": "new"},
-        "entries": [],
-        "incidentChanged": True,
-        "remoteId": remote_detection_id,
-        "status": IncidentStatus.PENDING,
-        "delta": {"status": "new"},
-    },
-    "update_detection_request",
-    [([remote_detection_id], "new")],
-    remote_detection_id,
-    None,
-    False,
-)
-detection_changed_no_close = (
-    {
-        "data": {"status": "new"},
-        "entries": [],
-        "incidentChanged": True,
-        "remoteId": remote_detection_id,
-        "status": IncidentStatus.DONE,
-        "delta": {"status": "new"},
-    },
-    "update_detection_request",
-    [([remote_detection_id], "new")],
-    remote_detection_id,
-    None,
-    False,
-)
-detection_changed_param_close = (
-    {
-        "data": {"status": "new"},
-        "entries": [],
-        "incidentChanged": True,
-        "remoteId": remote_detection_id,
-        "status": IncidentStatus.ACTIVE,
-        "delta": {"status": "new"},
-    },
-    "update_detection_request",
-    [([remote_detection_id], "new")],
-    remote_detection_id,
-    None,
-    True,
-)
-detection_closed = (
-    {
-        "data": {"status": "new"},
-        "entries": [],
-        "incidentChanged": True,
-        "remoteId": remote_detection_id,
-        "status": IncidentStatus.DONE,
-        "delta": {"closeReason": "Other"},
-    },
-    "update_detection_request",
-    [([remote_detection_id], "closed")],
-    remote_detection_id,
-    None,
-    True,
-)
-
-update_remote_system_command_args = [
-    incident_changed_status,
-    incident_changed_tags,
-    incident_changed_both,
-    incident_changed_no_close,
-    incident_changed_param_close,
-    incident_closed,
-    detection_changed,
-    detection_changed_no_close,
-    detection_changed_param_close,
-    detection_closed,
-]
-
 # delta, close_in_cs_falcon_param, to_close
 delta_closed = ({"closeReason": "Other", "closingUserId": "admin", "runStatus": ""}, True, True)
 param_no_close = ({"closeReason": "Other", "closingUserId": "admin", "runStatus": ""}, False, False)
@@ -843,38 +551,6 @@ update_remote_detection_args = [
     detection_update_status_false_close_remote,
     detection_update_by_status_dont_close,
     detection_didnt_change,
-]
-
-# delta, inc_status, close_in_cs_falcon, resolve_incident_status
-incident_closed_in_xsoar = ({"closeReason": "Other"}, IncidentStatus.DONE, True, "Closed")
-incident_status_closed = ({"status": "Closed"}, IncidentStatus.ACTIVE, False, "Closed")
-incident_update_status_true_close_remote = ({"status": "New"}, IncidentStatus.ACTIVE, True, "New")
-incident_update_status_false_close_remote = ({"status": "In Progress"}, IncidentStatus.ACTIVE, False, "In Progress")
-incident_update_by_status_dont_close = ({"status": "New"}, IncidentStatus.DONE, False, "New")
-incident_didnt_change = ({}, IncidentStatus.ACTIVE, False, "")
-
-update_remote_incident_status_args = [
-    incident_closed_in_xsoar,
-    incident_status_closed,
-    incident_update_status_true_close_remote,
-    incident_update_status_false_close_remote,
-    incident_update_by_status_dont_close,
-    incident_didnt_change,
-]
-
-# tags, action_name
-no_tags = (set(), "add_tag")
-one_tag_add = ({"tag1"}, "add_tag")
-one_tag_delete = ({"Tag2"}, "delete_tag")
-add_tags = ({"Objective/Keep Access", "Detected", "ignored"}, "add_tag")
-delete_tags = ({"Objective/Keep Access", "detected", "Ignored"}, "delete_tag")
-
-remote_incident_handle_tags_args = [
-    no_tags,
-    one_tag_add,
-    one_tag_delete,
-    add_tags,
-    delete_tags,
 ]
 
 response_detection_new_version = {
@@ -940,3 +616,36 @@ response_detection_new_version = {
     "source_products": None,
     "status": "new",
 }
+
+# XSUP-71944 — synthetic composite Spotlight ``aid`` fixtures, mirroring the shapes seen in the
+# field: on multi-CID tenants Spotlight returns ``aid`` as ``<cid><separator><device_id>``.
+
+spotlight_composite_cid = "11111111111111111111111111111111"
+spotlight_composite_cid_secondary = "22222222222222222222222222222222"
+
+# Sensor AID: <cid>-<32 hex>.
+spotlight_device_id = "aaaaaaaabbbbccccddddeeeeeeeeeeee"
+spotlight_composite_aid = f"{spotlight_composite_cid}-{spotlight_device_id}"
+spotlight_device_id_secondary = "ffffffff9999888877776666555544ee"
+spotlight_composite_aid_secondary = f"{spotlight_composite_cid_secondary}-{spotlight_device_id_secondary}"
+
+# Non-sensor asset: <cid>_<base64url>. The body holds its own "_" and mixed case, so splitting
+# on the first separator truncates the ID and a case-insensitive compare is unnecessary —
+# only stripping len(cid) + 1 is safe. Uppercase never appears in the CID prefix.
+spotlight_base64_asset_id = "ATBwIpzWCBraE2yOlq9_KeyZlDMr2bfZVH7oQkFjj3CD1w"
+spotlight_composite_aid_underscore = f"{spotlight_composite_cid}_{spotlight_base64_asset_id}"
+
+# Rare shape (2 rows in the field): a "n:" prefix puts a colon inside the body, so the body
+# charset is not limited to base64url and a regex-restricted parser would reject it.
+spotlight_prefixed_device_id = "n:f54c7a6eb87650ebbf162f9d11e5a007"
+spotlight_composite_aid_prefixed = f"{spotlight_composite_cid}-{spotlight_prefixed_device_id}"
+
+# Single-CID tenant: the AID is already bare and must pass through untouched.
+spotlight_single_cid = "33333333333333333333333333333333"
+spotlight_bare_aid = "dddddddd4444333322221111000099ff"
+
+# A CID that does not prefix the AID — nothing may be stripped.
+spotlight_unrelated_cid = "44444444444444444444444444444444"
+
+# Already in the accumulator from an earlier page.
+spotlight_previously_seen_device_id = "5555555566667777888899990000aaaa"

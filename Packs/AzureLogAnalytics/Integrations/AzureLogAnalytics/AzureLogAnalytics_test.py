@@ -547,3 +547,80 @@ def test_client_endpoints(azure_cloud) -> None:
     assert client.ms_client.managed_identities_resource_uri == azure_cloud.endpoints.resource_manager
     assert client.ms_client.azure_ad_endpoint == azure_cloud.endpoints.active_directory
     assert client.azure_cloud.name == azure_cloud.name
+
+
+def test_main_uses_new_separate_client_id(mocker):
+    """
+    Given
+    - The new 'creds_client_id' param is provided with a Client ID value.
+    - The legacy 'credentials' param does NOT contain an identifier.
+
+    When
+    - main() is called.
+
+    Then
+    - The Client object is instantiated with auth_and_token_url taken from 'creds_client_id'.
+    """
+    import AzureLogAnalytics
+    from AzureLogAnalytics import main
+
+    params = {
+        "creds_client_id": {"password": "new-client-id"},
+        "credentials": {"password": "client-secret"},
+        "credentials_refresh_token": {"password": "tenant-id"},
+        "subscriptionID": "sub-id",
+        "resourceGroupName": "rg-name",
+        "workspaceName": "ws-name",
+        "azure_cloud": "Worldwide",
+        "self_deployed": True,
+        "client_credentials": True,
+    }
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mock_client_cls = mocker.patch("AzureLogAnalytics.Client", autospec=True)
+    mocker.patch.object(AzureLogAnalytics, "return_results")
+    mocker.patch("AzureLogAnalytics.test_connection")
+
+    main()
+
+    call_kwargs = mock_client_cls.call_args[1]
+    assert call_kwargs["auth_and_token_url"] == "new-client-id"
+
+
+def test_main_falls_back_to_legacy_client_id_when_new_param_absent(mocker):
+    """
+    Given
+    - The new 'creds_client_id' param is NOT provided.
+    - The legacy 'credentials' param IS provided with both identifier (client_id) and password (client_secret).
+
+    When
+    - main() is called.
+
+    Then
+    - The Client object is instantiated with auth_and_token_url taken from 'credentials.identifier' (legacy fallback).
+    """
+    import AzureLogAnalytics
+    from AzureLogAnalytics import main
+
+    params = {
+        "credentials": {"identifier": "legacy-client-id", "password": "legacy-client-secret"},
+        "credentials_refresh_token": {"password": "tenant-id"},
+        "subscriptionID": "sub-id",
+        "resourceGroupName": "rg-name",
+        "workspaceName": "ws-name",
+        "azure_cloud": "Worldwide",
+        "self_deployed": True,
+        "client_credentials": True,
+    }
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "args", return_value={})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mock_client_cls = mocker.patch("AzureLogAnalytics.Client", autospec=True)
+    mocker.patch.object(AzureLogAnalytics, "return_results")
+    mocker.patch("AzureLogAnalytics.test_connection")
+
+    main()
+
+    call_kwargs = mock_client_cls.call_args[1]
+    assert call_kwargs["auth_and_token_url"] == "legacy-client-id"

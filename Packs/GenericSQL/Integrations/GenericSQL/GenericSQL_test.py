@@ -1,7 +1,7 @@
 import os
 from typing import Any
 
-import cx_Oracle
+import oracledb
 import demistomock as demisto
 import pyodbc
 import pytest
@@ -511,9 +511,9 @@ def test_loading_relevant_drivers():
     try:
         # make sure oracle manages to load tns client libraries.
         # Will fail, but we want to be sure we don't fail on loading the driver
-        cx_Oracle.connect()
+        oracledb.connect()
     except Exception as ex:
-        assert "ORA-12162" in str(ex)
+        assert "ORA-12162" in str(ex) or "DPY-4027" in str(ex), f"Unexpected Oracle error: {ex}"
 
     # freetds test
     engine = sqlalchemy.create_engine("mssql+pyodbc:///testuser:testpass@127.0.0.1:1433/TEST?driver=FreeTDS")

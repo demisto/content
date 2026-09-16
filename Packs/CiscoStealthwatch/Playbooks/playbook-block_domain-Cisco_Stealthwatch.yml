@@ -232,5 +232,5 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-  - No tests (auto formatted)
+- No tests (auto formatted)
 fromversion: 6.5.0

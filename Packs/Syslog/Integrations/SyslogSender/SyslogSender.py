@@ -74,8 +74,9 @@ class SyslogHandlerTLS(logging.Handler):
         if if_self_sign_cert:
             ssl_context.check_hostname = False
             ssl_context.verify_mode = ssl.CERT_NONE
-
-        ssl_context.load_verify_locations(self.certfile)
+        else:
+            # Only load certificate for verification if not using self-signed cert
+            ssl_context.load_verify_locations(self.certfile)
         ssl_sock = ssl_context.wrap_socket(ssl_sock, server_hostname=self.address)
         self.socket = ssl_sock
         try:

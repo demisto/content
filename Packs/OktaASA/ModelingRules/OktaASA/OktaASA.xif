@@ -1,0 +1,119 @@
+/* This modeling rule is designed to extract and map fields from all Okta ASA event types.
+ For the list of event types, see here: https://developer.okta.com/docs/reference/api/event-types/
+*/
+[MODEL: dataset = "okta_asa_raw"]
+alter //Extraction of fields
+    type = details -> type,
+    details_user_status = details -> user_status,
+    details_from_address = details -> from_address,
+    details_client_ip = details -> client_ip,
+    user_status = user -> status,
+    user_type = user -> user_type,
+    client_os = lowercase(client -> os),
+    server_project_name = server -> project_name,
+    server_os = lowercase(server -> os),
+    server_cloud_provider = lowercase(server -> cloud_provider),
+    server_source_details_cloud_provider = lowercase(server -> source_details.cloud_provider),
+    server_instance_details_external_ip = server -> instance_details.external_ip,
+    server_instance_details_internal_ip = server -> instance_details.internal_ip
+| alter //Mapping to XDM fields
+    xdm.event.id = id,
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_SAAS),
+    xdm.event.operation = if(
+        type IN("*enroll", "*create", "*add"), XDM_CONST.OPERATION_TYPE_CREATE,
+        details_user_status ~= "DELETE" OR type IN ("*remove","*delete"), XDM_CONST.OPERATION_TYPE_DELETE,
+        details_user_status ~= "UPDATE" OR type IN("active_directory.account_discovery.complete", "server_account.discovered", "*reveal"), XDM_CONST.OPERATION_TYPE_READ,
+        type IN("server_account.password_change.initiated", "server_account.password_change.out_of_band", "active_directory.account_rule.applied", "*activate", "incoming_federation.request"), XDM_CONST.OPERATION_TYPE_EXECUTION,
+        type IN ("*creds*", "*auth_token*", "*federation.approve", "security_policy.evaluate", "resource.*") ,XDM_CONST.OPERATION_TYPE_AUTHENTICATION,
+        type IN ("*ssh_login"),XDM_CONST.OPERATION_TYPE_AUTH_LOGIN,
+        type IN("*assign", "*update", "*rotate", "*bulk_membership_change", "offline_disabled_event", "offline_enabled_event","password.change", "password.reset", "permission.change", "service_account.password_rotation"), XDM_CONST.OPERATION_TYPE_UPDATE,
+        type), //Maps event operation based on the possible event types. For 'user' events, the 'details.user_status' field provides more specific information about the action. For the full list of the event types, see the docs: https://developer.okta.com/docs/reference/api/event-types/.
+    xdm.event.operation_sub_type = coalesce(details -> session_type,details_user_status),// Maps the operation sub-type: uses 'session_type' for 'auth_token_issue' event type and 'user_status' for user events.
+    xdm.observer.unique_identifier = details -> team_id,
+    xdm.observer.name = details -> team_name,
+    xdm.session_context_id = details -> trace_id,
+    xdm.event.type = type,
+    xdm.target.user.identifier = details -> target_user, //Related to 'user' events
+    xdm.target.user.username = coalesce(details -> unix_user_name, details -> user), //Related to 'server' events
+    xdm.source.ipv4 = if(
+        is_ipv4(details_from_address) = TRUE, details_from_address,
+        is_ipv4(details_client_ip) = TRUE, details_client_ip),
+    xdm.source.ipv6 = if(
+        is_ipv6(details_from_address) = TRUE,details_from_address,
+        is_ipv6(details_client_ip) = TRUE, details_client_ip),
+    xdm.auth.auth_method = details -> user_access_method, //Related to 'user_creds.issue' event
+    xdm.source.user.upn = user -> details.email,
+    xdm.source.user.first_name = user -> details.first_name,
+    xdm.source.user.last_name = user -> details.last_name,
+    xdm.source.user.identifier = user -> id,
+    xdm.source.user.username = user -> name,
+    xdm.source.user.is_disabled = if(
+        user_status ~= "ACTIVE|UNKNOWN|PENDING", FALSE,
+        user_status ~= "DISABLE", TRUE,
+        null),
+    xdm.source.user.user_type = if(
+        user_type = "human", XDM_CONST.USER_TYPE_REGULAR,
+        user_type = "service" OR details -> unix_user_name != null, XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        user_type),
+    xdm.source.user.roles = json_extract_scalar_array(user, "$.role_grants"),
+    xdm.source.host.hostname = client -> hostname,
+    xdm.source.host.device_id = client -> id,
+    xdm.source.host.os = client -> os,
+    xdm.source.host.os_family = if(
+        client_os CONTAINS "windows", XDM_CONST.OS_FAMILY_WINDOWS,
+        client_os CONTAINS "macos", XDM_CONST.OS_FAMILY_MACOS,
+        client_os CONTAINS "linux", XDM_CONST.OS_FAMILY_LINUX,
+        client_os CONTAINS "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU,
+        client -> os),
+    xdm.intermediate.cloud.project = project -> name,
+    xdm.intermediate.cloud.project_id = project -> id,
+    xdm.target.host.device_id = server -> id,
+    xdm.target.cloud.project = server_project_name,
+    xdm.target.host.hostname = server -> hostname,
+    xdm.intermediate.host.hostname = server -> bastion,
+    xdm.target.host.os = server -> os,
+    xdm.target.host.os_family = if(
+        server_os CONTAINS "windows", XDM_CONST.OS_FAMILY_WINDOWS,
+        server_os CONTAINS "macos", XDM_CONST.OS_FAMILY_MACOS,
+        server_os CONTAINS "linux", XDM_CONST.OS_FAMILY_LINUX,
+        server_os CONTAINS "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU,
+        server_os CONTAINS "debian", XDM_CONST.OS_FAMILY_DEBIAN,
+        server_os CONTAINS "fedora", XDM_CONST.OS_FAMILY_FEDORA,
+        server_os CONTAINS "centos", XDM_CONST.OS_FAMILY_CENTOS,
+        server_os CONTAINS "solaris", XDM_CONST.OS_FAMILY_SOLARIS,
+        server -> os_type),
+    xdm.target.cloud.provider = if(
+        server_cloud_provider IN("aws","amazon*"), XDM_CONST.CLOUD_PROVIDER_AWS,
+        server_cloud_provider IN("gce","gcp"), XDM_CONST.CLOUD_PROVIDER_GCP,
+        server_cloud_provider CONTAINS "azure", XDM_CONST.CLOUD_PROVIDER_AZURE,
+        server_cloud_provider CONTAINS "alibaba", XDM_CONST.CLOUD_PROVIDER_ALIBABA,
+        server_cloud_provider),
+    xdm.target.cloud.project_id = server -> instance_details.project_id,
+    xdm.target.cloud.zone = server -> instance_details.zone_id,
+    xdm.target.cloud.project_hierarchy = split(server -> instance_details.network, "/"), // Splits the cloud network path to populate the project hierarchy
+    xdm.target.host.ipv4_public_addresses = if(
+        is_ipv4(server_instance_details_external_ip) = TRUE, arraycreate(server_instance_details_external_ip)),
+    xdm.target.host.ipv6_public_addresses = if(
+        is_ipv6(server_instance_details_internal_ip) = TRUE, arraycreate(server_instance_details_internal_ip)),
+    xdm.target.host.ipv4_addresses = if(
+        is_ipv4(server_instance_details_internal_ip) = TRUE, arraycreate(server_instance_details_internal_ip)),
+    xdm.target.host.ipv6_addresses = if(
+        is_ipv6(server_instance_details_internal_ip) = TRUE, arraycreate(server_instance_details_internal_ip)),
+    xdm.target.ipv4 = if(
+        is_ipv4(server_instance_details_internal_ip) = TRUE, server_instance_details_internal_ip,
+        is_ipv4(server_instance_details_external_ip) = TRUE, server_instance_details_external_ip),
+    xdm.target.ipv6 = if(
+        is_ipv6(server_instance_details_internal_ip) = TRUE, server_instance_details_internal_ip,
+        is_ipv6(server_instance_details_external_ip) = TRUE, server_instance_details_external_ip),
+    xdm.target.is_internal_ip = if(
+        server_instance_details_internal_ip NOT IN ("""""", NULL), TRUE,
+        server_instance_details_external_ip NOT IN ("""""", NULL), TRUE,
+        NULL),
+    xdm.source.cloud.provider = if(
+        server_source_details_cloud_provider IN("aws","amazon*"), XDM_CONST.CLOUD_PROVIDER_AWS,
+        server_source_details_cloud_provider IN("gce","gcp"), XDM_CONST.CLOUD_PROVIDER_GCP,
+        server_source_details_cloud_provider CONTAINS "azure", XDM_CONST.CLOUD_PROVIDER_AZURE,
+        server_source_details_cloud_provider CONTAINS "alibaba", XDM_CONST.CLOUD_PROVIDER_ALIBABA,
+        server_source_details_cloud_provider),
+    xdm.source.cloud.project = server -> source_details.cloud_account,
+    xdm.logon.logon_guid = server -> source_details.ad_connection_id;

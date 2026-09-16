@@ -18,6 +18,7 @@ args:
   isArray: true
   description: A comma-separated list of IPv4 or IPv6 ranges in CIDR notation against which to match.
 scripttarget: 0
+isllm: false
 runas: DBotWeakRole
 tests:
 - TestIsInCidrRanges

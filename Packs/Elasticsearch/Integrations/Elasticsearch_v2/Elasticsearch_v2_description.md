@@ -1,57 +1,117 @@
 The Elasticsearch v2 integration supports Elasticsearch 6.0.0 and later.
 This integration was integrated and tested with versions 6.6.2, 7.3, 8.4.1 of Elasticsearch.
 
-#### Authentication
-* __Name__: Used for authentication via Username + Password or API ID + API Key (If you wish to use API Key authorization enter **_api_key_id:** followed by your API key ID).
-* __Password__: Used for authentication via Username + Password or API ID + API Key (If you wish to use API Key authorization enter your API key).]()
+## Authentication
 
-To use API Key authorization, in the **Password** field enter your API key, and for the **Username** parameter enter **_api_key_id:** followed by your API key ID.
-For example, for an API Key with ID: _VuaCfGcBCdbkQm-e5aOx_ and key value: _ui2lp2axTNmsyakw9tvNnw_ 
-- for the Username, enter: **_api_key_id:VuaCfGcBCdbkQm-e5aOx**
-- For the Password, enter: **ui2lp2axTNmsyakw9tvNnw**. 
+There are 3 different authentication [methods](https://www.elastic.co/docs/api/doc/elasticsearch#doc-authentication)
 
-For more info about API Key management see: [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.6/security-api-create-api-key.html)
+### Basic Auth (http)
 
-#### Instance Configuration
+To use **Basic Authentication**:
 
-* __Server URL__: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. By default this is 9200
-* __Username foe server login__: Provide Username \+ Passoword instead of API key \+ API ID
-* __Trust any certificate (not secure)__: Ignore HTTPS certificates.
-* __Use system proxy settings__: Enable/Disable
-* __Client type__: For Elasticsearch version 7 and below, select **Elasticsearch**. For Elasticsearch server version 8, select **Elasticsearch_v8**. In some hosted Elasticsearch environments, the standard Elasticsearch client is not supported. If you encounter any related client issues, consider using the **OpenSearch** client type.
-* __Index from which to fetch incidents (CSV)|__
-* __Query String__: The query will be used when fetching incidents. Index time field will be used as a filter in the query
-* __Index Time Field__: The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation.
-* __Raw Query__: Will override the 'Query String' Lucene syntax string. Results will not be filtered.
-* __Time Field Type__: Time field type used in the database.
-* __Map JSON fields into labels__
-* __First Fetch Time__: (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days)
-* __The maximum number of results to return per fetch__
-* __Request timeout (in seconds)__
-* __Incident type__
-* __fetch incidents__: Enable/Disable
+* Choose the **Basic Auth** type from the *Authorization type* dropdown list.
+* Enter your **Username** into the *Username* field.
+* Enter your **Password** into the *Password* field.
+
+### API Key Auth (http_api_key)
+
+To use **API Key Authentication**:
+
+* Choose the **API Key Auth** type from the *Authorization type* dropdown list.
+* Enter your **API key ID** into the *API key ID* field.
+* Enter your **API key** into the *API key* field.
+
+For more info about API Key management see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.6/security-api-create-api-key.html)
+
+**Note:** Optionally, you can choose **Basic Auth** type and use the *Username* and *Password* fields to enter the API key ID and API key.
+Example:
+for *API Key ID* kQme5aOx enter: _api_key_id:kQme5aOx
+for *API Key* ui2lp2axT enter: ui2lp2axT
+
+### Bearer Auth (http)
+
+To use **Bearer Authentication**:
+
+* Choose the **Bearer Auth** type from the *Authorization type* dropdown list.
+* Enter your **Username** into the *Username* field.
+* Enter your **Password** into the *Password* field.
+
+For more info see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.6/security-api-get-token.html#security-api-get-token-prereqs)
+
+## Kibana Integration
+
+This integration includes a set of **`es-kibana-*` commands** that let you interact with Kibana directly from Cortex XSOAR — no separate Kibana integration required.
+
+### What you can do with Kibana commands
+
+- **Case Management** — Create, update, delete, and list Kibana cases; add comments, attach files, and link alerts to cases.
+- **Alerting & Rules** — List rule types, retrieve rules, enable/disable rules, mute/unmute alerts.
+- **Detection Alerts** — Bulk-update the status of security detection alerts (open, acknowledged, closed).
+- **Exception Lists & Items** — Manage Kibana exception lists and their items, including Elastic Endpoint exceptions.
+- **Value Lists** — Create, update, delete, and import/export value lists used in detection rules.
+
+### Kibana URL
+
+- **On-premises (self-managed) deployments:** Set the **Kibana Server URL** parameter to the address of your Kibana server, including the port if it is not the default (e.g. `https://kibana.example.com:5601`). Kibana is usually hosted separately from Elasticsearch, so this URL cannot be derived from the Elasticsearch **Server URL**.
+- **Elastic Cloud deployments:** You can leave **Kibana Server URL** empty. The URL is then derived automatically from the **Server URL**, by replacing the `.es.` segment of the hostname with `.kb.` (for example, `https://my-deployment.es.us-central1.gcp.cloud.es.io` becomes `https://my-deployment.kb.us-central1.gcp.cloud.es.io`).
+
+> **Note:** When **Kibana Server URL** is set, it always takes precedence over the derivation from the **Server URL**.
+
+### Required Kibana Privileges
+
+Kibana API endpoints are gated by **feature privileges**. The level required depends on the operation:
+
+| Privilege level | Operations covered |
+|---|---|
+| **Read** | GET / list / view (`es-kibana-*-list`, `es-kibana-*-get`, `es-kibana-alerting-health-get`) |
+| **All** | POST / PUT / PATCH / DELETE — create, update, delete, and change-state commands |
+
+For **Cases** and **Rules**, the required privilege is also scoped to the feature that owns the object:
+
+- Objects owned by **Security** (e.g. SIEM detection rules, Security cases) require the **Security** feature privilege.
+- Objects owned by **Observability** require the **Observability** feature privilege.
+- Objects owned by **Stack / Management** (e.g. Stack Rules) require the **Stack Rules** / **Management** feature privilege.
 
 
-Query string is queried using the Lucene syntax. For more information about the Lucene syntax, see: [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.3/query-dsl-query-string-query.html#query-string-syntax)
+### Kibana Spaces (optional)
 
-**Raw Query** allows raw DSL queries, see: [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html)
+If you use [Kibana Spaces](https://www.elastic.co/docs/deploy-manage/manage-spaces) to separate your data, set the **Space ID** parameter in the instance configuration. All `es-kibana-*` commands will then operate within that space by default. You can also override the space per-command using the `space_id` argument.
 
-For further information about request response fields, see: [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/search-request-body.html#request-body-search-explain)
+## Notes
 
-Fetch incidents requires:
+* Not all fields can be used for sorting in Elasticsearch. Sorting is only supported for fields of the following types: **boolean**, **numeric**, **date**, and **keyword**.
+* The "Test" button does not fully validate the fetch incidents functionality. To ensure the instance is correctly fetching incidents, run the *!es-integration-health-check* command
+
+## Additional Configuration Parameters Details
+
+Use the **Fetch incident types** parameter to select what to fetch from Elasticsearch: the default **Elasticsearch Entity**, **Elasticsearch Security Alert**, or **Elasticsearch Case**.
+
+Mirroring is only available for Elasticsearch Security Alerts and Cases.
+
+Fetching security alerts requires:
     - Index
     - Index time field
     - Query String or Raw Query
 
-For further information about type mapping, see: [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.x/mapping.html#mapping-type)
+For further information about type mapping, see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.x/mapping.html#mapping-type).
 
-The types of time-fields supported are:
-    
-   - **Simple-Date** - A simple date string. Requires inserting the format in which the field is saved. For more info about time formatting ,see: [http://strftime.org/](http://strftime.org/)
-   - **Timestamp-Second** - A number referring to seconds since epoch (midnight, 1 January 1970). For example: '1572164838'.
-   - **Timestamp-Milliseconds** - A number referring to milliseconds since epoch (midnight, 1 January 1970). For example: '1572164838123'.
+**Query String**
+Query String is queried using the Lucene syntax. For more information about the Lucene syntax see [here](https://www.elastic.co/guide/en/elasticsearch/reference/7.3/query-dsl-query-string-query.html#query-string-syntax).
 
-Notes:
-- Not all fields can be sorted in Elasticsearch. The fields are used to sort the results table.
-  The supported result types are boolean, numeric, date, and keyword fields.
-- The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the ***!es-integration-health-check*** command.
+**Raw Query**
+Allows raw DSL queries. For more information about Query DSL see [here](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl.html).
+
+### Fetch Security Alerts
+
+To fetch security alerts, use the **Raw Query** field (DSL query). The index must follow one of these patterns: `.internal.alerts-security.alerts-*` or `.siem-signals-*`.
+
+### Fetch Cases
+
+Use the **Fetch cases by Severity** parameter to filter cases by the required severity and the **Fetch cases by Status** parameter to filter cases by the required status.
+
+**Time field type**
+3 formats supported:
+
+* Simple-Date - A plain date string. You must specify the format in which the date is stored. For more information about time formatting, see [here](http://strftime.org/).
+* Timestamp-Second - A numeric value representing the number of seconds since the Unix epoch (00:00:00 UTC on 1 January 1970). Example: '1572164838'
+* Timestamp-Milliseconds - A numeric value representing the number of milliseconds since the Unix epoch. Example: '1572164838123'

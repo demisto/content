@@ -1,0 +1,96 @@
+{
+    "host_initiate": {
+        "ioc_value": "0.0.0.1",
+        "status": "initiated",
+        "job_id": "00000000-0000-0000-0000-000000000001",
+        "is_completed": false
+    },
+    "host_initiate_no_job_id": {
+        "ioc_value": "0.0.0.1",
+        "status": "failed",
+        "job_id": "",
+        "is_completed": true
+    },
+    "web_property_initiate": {
+        "ioc_value": "example.com:443",
+        "status": "initiated",
+        "job_id": "00000000-0000-0000-0000-000000000002",
+        "is_completed": false
+    },
+    "certificate_initiate": {
+        "ioc_value": "0000000000000000000000000000000000000000000000000000000000000001",
+        "status": "initiated",
+        "job_id": "00000000-0000-0000-0000-000000000003",
+        "is_completed": false
+    },
+    "job_status_in_progress": {
+        "ioc_value": "0.0.0.1",
+        "status": "in_progress",
+        "job_id": "00000000-0000-0000-0000-000000000001",
+        "is_completed": false
+    },
+    "host_job_completed": {
+        "ioc_value": "0.0.0.1",
+        "status": "completed",
+        "job_id": "00000000-0000-0000-0000-000000000001",
+        "is_completed": true,
+        "pivot_data": [
+            {
+                "count": 5395,
+                "field_value_pairs": [
+                    {
+                        "field": "host.services.banner_hash_sha256",
+                        "value": "0000000000000000000000000000000000000000000000000000000000000001"
+                    }
+                ]
+            },
+            {
+                "count": 123620,
+                "field_value_pairs": [
+                    {
+                        "field": "host.services.endpoints.http.headers.key",
+                        "value": "Connection"
+                    },
+                    {
+                        "field": "host.services.endpoints.http.headers.value",
+                        "value": "close"
+                    }
+                ]
+            },
+            {
+                "count": 5395,
+                "field_value_pairs": [
+                    {
+                        "field": "host.services.endpoints.banner_hash_sha256",
+                        "value": "0000000000000000000000000000000000000000000000000000000000000001"
+                    }
+                ]
+            },
+            {
+                "count": 36216,
+                "field_value_pairs": [
+                    {
+                        "field": "host.services.endpoints.http.headers.key",
+                        "value": "Content-Type"
+                    },
+                    {
+                        "field": "host.services.endpoints.http.headers.value",
+                        "value": "text/plain"
+                    }
+                ]
+            }
+        ]
+    },
+    "job_status_failed": {
+        "ioc_value": "0.0.0.1",
+        "status": "failed",
+        "job_id": "00000000-0000-0000-0000-000000000001",
+        "is_completed": true
+    },
+    "host_job_completed_no_pivot_data": {
+        "ioc_value": "0.0.0.1",
+        "status": "completed",
+        "job_id": "00000000-0000-0000-0000-000000000001",
+        "is_completed": true
+    }
+}

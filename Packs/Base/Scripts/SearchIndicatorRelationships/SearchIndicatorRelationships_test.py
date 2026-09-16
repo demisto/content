@@ -93,4 +93,48 @@ def test_search_relationship_command_args_by_demisto_version(mocker, demisto_ver
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     mocker.patch.object(demisto, "searchRelationships", side_effect=searchRelationships)
     result = search_relationships(entities="1.1.1.1,8.8.8.8")
+    result = result.get("data", [])  # handle both old and new response formats
     assert result == expected_result
+
+
+@pytest.mark.parametrize("search_after, expected_type", [(["timestamp1", "id1"], dict), (None, dict), ([], dict)])
+def test_search_relationships_with_search_after(mocker, search_after, expected_type):
+    """
+    Given:
+        Different searchAfter parameter values:
+        1. searchAfter as list ["timestamp1", "id1"]
+        2. searchAfter as None
+        3. searchAfter as empty list []
+    When:
+        Calling search_relationships method with searchAfter parameter.
+    Then:
+        Make sure that search_relationships returns a dict for all searchAfter parameter variations.
+    """
+    mocker.patch.object(demisto, "demistoVersion", return_value={"version": "6.6.0"})
+    mocker.patch.object(demisto, "searchRelationships", return_value={"data": []})
+
+    result = search_relationships(searchAfter=search_after)
+    assert isinstance(result, expected_type), "search_relationships should return a dict"
+
+
+@pytest.mark.parametrize(
+    "search_after, expected_pagination", [(["test_timestamp", "test_id"], [["test_timestamp", "test_id"]]), (None, [])]
+)
+def test_to_context_with_search_after(search_after, expected_pagination):
+    """
+    Given:
+        Mock relationships data with different SearchAfter values:
+        1. SearchAfter as list ["test_timestamp", "test_id"]
+        2. SearchAfter as None
+    When:
+        Calling to_context method with the mock relationships data.
+    Then:
+        Make sure that:
+        - Context contains RelationshipsPagination key
+        - RelationshipsPagination contains the expected value based on SearchAfter
+        - When SearchAfter is None, RelationshipsPagination should be empty
+    """
+    mock_relationships_data = {"SearchAfter": search_after, "data": []}
+    context = to_context(mock_relationships_data, False)
+    assert "RelationshipsPagination" in context, "Context should contain RelationshipsPagination"
+    assert context["RelationshipsPagination"] == expected_pagination
