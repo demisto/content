@@ -96,11 +96,8 @@ class OktaClient(BaseClient):
 
         missing_required_params = []
 
-        # Under UCP the platform brokers the credential; the legacy auth params
-        # (api_token / client_id / private_key / ...) are not populated in
-        # demisto.params(), so these presence checks must be skipped or they
-        # would raise before any request is made. BaseClient injects the
-        # brokered credential at request time instead.
+        # Under UCP the legacy auth params are not in demisto.params(), so skip these presence
+        # checks; BaseClient injects the brokered credential at request time instead.
         if not should_use_ucp_auth():
             if self.auth_type == AuthType.API_TOKEN and not api_token:
                 raise ValueError("API token is missing")

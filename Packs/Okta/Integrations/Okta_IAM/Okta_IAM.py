@@ -56,12 +56,8 @@ class Client(BaseClient):
         ctx.headers["Authorization"] = f"SSWS {key}"
 
     def test_connection(self):
-        # ``users/me`` resolves the user a *token* belongs to. That works for an SSWS API token
-        # and for the api_key UCP profile, but an OAuth *app* token (oauth2_private_key_jwt /
-        # oauth2_client_credentials) belongs to no user, so ``users/me`` returns 403 E0000005.
-        # When UCP brokers an oauth2 credential, probe a user-list endpoint instead. This module
-        # (Okta_IAM) does not import OktaApiModule, so we inspect the envelope directly via the
-        # CommonServerPython UCP helpers rather than resolve_ucp_auth_type().
+        # ``users/me`` has no user under an OAuth app token (403 E0000005), so when UCP brokers an
+        # oauth2 credential probe the user-list endpoint instead (envelope type read directly).
         uri = "users/me"
         try:
             if should_use_ucp_auth():
@@ -126,10 +122,8 @@ class Client(BaseClient):
     def http_request(self, method, url_suffix, full_url=None, params=None, data=None, headers=None):
         full_url = full_url if full_url else urljoin(self._base_url, url_suffix)
 
-        # Under UCP this raw requests.request path would bypass BaseClient's credential
-        # injection (self._headers no longer carries the SSWS header). Route through
-        # BaseClient._http_request so the brokered credential is injected; resp_type="response"
-        # preserves the requests.Response return contract callers rely on (.json/.links/.status_code).
+        # Under UCP route through BaseClient._http_request so the brokered credential is injected;
+        # resp_type="response" preserves the requests.Response return contract callers rely on.
         if should_use_ucp_auth():
             return self._http_request(
                 method=method,
@@ -904,9 +898,8 @@ def main():
     base_url = urljoin(params["url"].strip("/"), "/api/v1/")
     token = params.get("credentials", {}).get("password", "") or params.get("apitoken", "")
 
-    # Under UCP the platform brokers the credential; the legacy token is not present in
-    # demisto.params(), so this presence gate must be skipped or it would raise before the
-    # client is built. BaseClient injects the brokered credential at request time instead.
+    # Under UCP the brokered credential is not in demisto.params(), so skip this presence gate;
+    # BaseClient injects the credential at request time instead.
     if not should_use_ucp_auth() and not token:
         raise ValueError("Missing API token.")
 
@@ -930,10 +923,8 @@ def main():
     fetch_query_filter = params.get("fetch_query_filter")
     context = demisto.getIntegrationContext()
 
-    # Under UCP, do NOT set the legacy SSWS Authorization header, or it would overwrite the
-    # brokered one that BaseClient injects (via the _apply_ucp_api_key SSWS override above) and
-    # cause a 401. The legacy header is used only when UCP is off, which includes the coexisting
-    # grouped connector (interpolation pre-injects params, so should_use_ucp_auth() is False).
+    # Under UCP do NOT set the legacy SSWS header or it overwrites the brokered one and 401s;
+    # set it only when UCP is off (which includes the coexisting grouped connector).
     headers = {"Content-Type": "application/json", "Accept": "application/json"}
     if not should_use_ucp_auth():
         headers["Authorization"] = f"SSWS {token}"
