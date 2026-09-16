@@ -126,6 +126,8 @@ filter action IN("user_login", "user_login*", "user_logout_compromised", "user_l
     xdm.target.file.filename = json_extract_scalar(entity, "$['file']['name']"),
     xdm.target.file.file_type = json_extract_scalar(entity, "$['file']['filetype']"),
     xdm.target.file.extension = arrayindex(regextract(json_extract_scalar(entity, "$['file']['name']"), "\.(\w+)$"),0),
+    xdm.target.resource.name = "Slack",
+    xdm.target.resource.id = "Slack",
     xdm.alert.source_url = json_extract_scalar(details, "$['url_private']");
 
 filter action NOT IN("user_login", "user_login*", "user_logout_compromised", "user_logout_non_compliant_mobile_app_version", "cli_login") //SaaS Audit Mapping

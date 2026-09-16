@@ -1,4 +1,5 @@
 fromversion: 8.3.0
+toversion: 8.14.0
 id: proofpoint_email_security_ModelingRule
 name: Proofpoint Email Security Modeling Rule
 rules: ''

@@ -166,7 +166,8 @@ class Client(BaseClient):
         if res.status_code in (401, 403):
             raise DemistoException(
                 f"Authentication/Authorization error ({res.status_code}): {res.text}. "
-                "Verify your Client ID, Client Secret, and Domain are correct."
+                "Verify your Client ID, Client Secret, and Domain are correct.",
+                res=res,
             )
         elif res.status_code == 400 and res.request.method == "PUT" and "/urlCategories/" in res.request.url:
             raise DemistoException(
