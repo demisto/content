@@ -453,7 +453,6 @@ Lists the node pools for a GKE cluster. Required permissions: container.clusters
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.GKE.NodePools.autopilotConfig | Unknown | Specifies the autopilot configuration for this node pool. |
 | GCP.GKE.NodePools.autoscaling | Unknown | Autoscaler configuration for this NodePool. |
 | GCP.GKE.NodePools.bestEffortProvisioning | Unknown | Enable best effort provisioning for nodes. |
 | GCP.GKE.NodePools.conditions | Unknown | Which conditions caused the current node pool state. |
@@ -508,7 +507,6 @@ Gets the details of a specific node pool in a GKE cluster. Required permissions:
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GCP.GKE.NodePools.autopilotConfig | Unknown | Specifies the autopilot configuration for this node pool. |
 | GCP.GKE.NodePools.autoscaling | Unknown | Autoscaler configuration for this NodePool. |
 | GCP.GKE.NodePools.bestEffortProvisioning | Unknown | Enable best effort provisioning for nodes. |
 | GCP.GKE.NodePools.conditions | Unknown | Which conditions caused the current node pool state. |

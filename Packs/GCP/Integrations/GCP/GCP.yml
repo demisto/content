@@ -3012,6 +3012,9 @@ script:
     - contextPath: GCP.GKE.Clusters.instanceGroupUrls
       description: The instanceGroupUrls of the resource.
       type: Unknown
+    - contextPath: GCP.GKE.Clusters.kubeletCertInfo
+      description: Contains expiry information about the kubelet certificate.
+      type: Unknown
     - contextPath: GCP.GKE.Clusters.ipAllocationPolicy
       description: Configuration for cluster IP allocation.
       type: Unknown
@@ -3581,6 +3584,9 @@ script:
       type: Number
     - contextPath: GCP.GKE.NodePools.instanceGroupUrls
       description: The resource URLs of the managed instance groups associated with this node pool.
+      type: Unknown
+    - contextPath: GCP.GKE.NodePools.kubeletCertInfo
+      description: Contains expiry information about the kubelet certificate.
       type: Unknown
     - contextPath: GCP.GKE.NodePools.locations
       description: The list of Google Compute Engine zones in which the NodePool's nodes should be located.
