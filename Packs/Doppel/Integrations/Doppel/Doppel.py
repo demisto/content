@@ -3,8 +3,9 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
+import time
+import traceback
 from datetime import datetime, UTC
-import dateparser
 
 """Doppel for Cortex XSOAR (aka Demisto)
 
@@ -42,6 +43,29 @@ MAX_FETCH_PAGES_PER_RUN = 1000
 # Map Doppel alert severities to XSOAR incident severities (0 = Unknown).
 SEVERITY_MAP = {"low": 1, "medium": 2, "high": 3, "critical": 4}
 
+# Queue states that mean the alert needs attention again. When Doppel's Revival
+# Monitoring reopens an alert (same alert id, no new row), it lands in doppel_review
+# or actioned; needs_confirmation is included because it also requires customer action.
+ACTIVE_QUEUE_STATES = {"doppel_review", "actioned", "needs_confirmation"}
+
+# Client attribution sent with every Doppel API request (usage attribution only; the header
+# is optional server-side and never affects request handling). The version is the pack
+# version and must be bumped on each release (pack_metadata.json is not readable at runtime).
+PACK_VERSION = "1.3.0"
+CLIENT_ATTRIBUTION = f"xsoar/{PACK_VERSION}"
+
+# --- API V2 (OAuth 2.0 client credentials) constants ---
+API_VERSION_V1 = "v1"
+API_VERSION_V2 = "v2"
+OAUTH_TOKEN_PATH = "/oauth/token"
+OAUTH_AUDIENCE = "doppel-external"
+# Key under which the minted token is cached in the integration context.
+OAUTH_CONTEXT_KEY = "oauth_token"
+# Tokens are valid for 24h; refresh a bit early so a token never expires mid-request.
+OAUTH_EXPIRY_SAFETY_MARGIN_SECONDS = 300
+# Fallback if the token response omits expires_in (documented value: 86400 = 24h).
+OAUTH_DEFAULT_EXPIRES_IN_SECONDS = 86400
+
 
 """ CLIENT CLASS """
 
@@ -58,23 +82,42 @@ class Client(BaseClient):
 
     def __init__(
         self,
-        base_url,
-        api_key,
-        user_api_key=None,
-        organization_code=None,
-        verify=None,
-        proxy=None,
-        retry_total=DEFAULT_RETRY_TOTAL,
-        retry_backoff_factor=DEFAULT_RETRY_BACKOFF_FACTOR,
-        retry_status_list=DEFAULT_RETRY_STATUS_LIST,
-    ):
+        base_url: str,
+        api_key: str | None = None,
+        user_api_key: str | None = None,
+        organization_code: str | None = None,
+        verify: bool | None = None,
+        proxy: bool | None = None,
+        retry_total: int = DEFAULT_RETRY_TOTAL,
+        retry_backoff_factor: int = DEFAULT_RETRY_BACKOFF_FACTOR,
+        retry_status_list: list[int] = DEFAULT_RETRY_STATUS_LIST,
+        api_version: str = API_VERSION_V1,
+        oauth_client_id: str | None = None,
+        oauth_client_secret: str | None = None,
+        token_url: str | None = None,
+    ) -> None:
         super().__init__(base_url, verify=verify, proxy=proxy)
 
-        self._headers = {"accept": "application/json", "x-api-key": api_key}
-        if user_api_key:
-            self._headers["x-user-api-key"] = user_api_key
-        if organization_code:
-            self._headers["x-organization-code"] = organization_code
+        self._api_version = api_version
+        self._oauth_client_id = oauth_client_id
+        self._oauth_client_secret = oauth_client_secret
+        self._token_url = token_url
+
+        self._headers = {
+            "accept": "application/json",
+            "x-doppel-client": CLIENT_ATTRIBUTION,
+            "User-Agent": f"doppel-{CLIENT_ATTRIBUTION}",
+        }
+        if api_version == API_VERSION_V2:
+            # The Authorization: Bearer header is attached lazily per request
+            # (see _http_request) so the token is only minted when needed.
+            pass
+        else:
+            self._headers["x-api-key"] = api_key
+            if user_api_key:
+                self._headers["x-user-api-key"] = user_api_key
+            if organization_code:
+                self._headers["x-organization-code"] = organization_code
 
         # Store retry configuration on the client and leverage BaseClient._http_request parameters
         self._retries = retry_total
@@ -82,11 +125,104 @@ class Client(BaseClient):
         self._status_list_to_retry = retry_status_list
 
         demisto.debug(
-            f"Initialized HTTP client using BaseClient._http_request retry params: total={retry_total}, "
-            f"backoff_factor={retry_backoff_factor}, status_list={retry_status_list}"
+            f"Initialized HTTP client (api_version={api_version}) using BaseClient._http_request retry params: "
+            f"total={retry_total}, backoff_factor={retry_backoff_factor}, status_list={retry_status_list}"
         )
 
-    def get_alert(self, id: str, entity: str) -> dict[str, str]:
+    def _http_request(self, *args: Any, **kwargs: Any) -> Any:
+        """Wrap BaseClient._http_request with V2 bearer-token handling.
+
+        For V1 this is a pass-through. For V2, a valid cached token is attached
+        as a Bearer header; on a 401 (token revoked or expired early) the cache
+        is invalidated and the request is retried exactly once with a fresh token.
+        """
+        if self._api_version != API_VERSION_V2:
+            return super()._http_request(*args, **kwargs)
+
+        self._headers["Authorization"] = f"Bearer {self._get_oauth_token()}"
+        try:
+            return super()._http_request(*args, **kwargs)
+        except DemistoException as e:
+            status_code = getattr(getattr(e, "res", None), "status_code", None)
+            if status_code != 401:
+                raise
+            demisto.debug("Received 401 with cached OAuth token; minting a fresh token and retrying once.")
+            self._invalidate_cached_token()
+            self._headers["Authorization"] = f"Bearer {self._mint_oauth_token()}"
+            return super()._http_request(*args, **kwargs)
+
+    def _get_oauth_token(self) -> str:
+        """Return a valid access token, reusing the integration-context cache when possible.
+
+        Token caching is NOT an optimization: Doppel's token endpoint allows only a
+        handful of successful mints per client per hour, so every code path must go
+        through this cache. Do not replace this with a mint-per-request call.
+        """
+        cached = (get_integration_context() or {}).get(OAUTH_CONTEXT_KEY) or {}
+        access_token = cached.get("access_token")
+        expiry_epoch = arg_to_number(cached.get("expiry_epoch")) or 0
+        if access_token and int(time.time()) < expiry_epoch:
+            return access_token
+        return self._mint_oauth_token()
+
+    def _mint_oauth_token(self) -> str:
+        """Mint a new access token via the client-credentials flow and cache it."""
+
+        def _token_error_handler(response: requests.Response) -> None:
+            if response.status_code == 429:
+                retry_after = response.headers.get("Retry-After", "3600")
+                raise DemistoException(
+                    f"Doppel token request limit reached (a few successful token requests are allowed per hour "
+                    f"per Client ID). Retry after {retry_after} seconds. If this recurs, check whether other "
+                    f"tools share this Client ID and mint tokens aggressively."
+                )
+            if response.status_code in (401, 403):
+                raise DemistoException(
+                    "Authorization Error while requesting an OAuth token: make sure the Client ID and "
+                    "Client Secret are correctly set."
+                )
+            raise DemistoException(f"Failed to obtain an OAuth token: {response.status_code} {response.text}")
+
+        # Call super() directly: going through self._http_request would try to
+        # attach a Bearer token and recurse back into this method.
+        response = super()._http_request(
+            method="POST",
+            full_url=self._token_url,
+            headers={
+                "accept": "application/json",
+                "Content-Type": "application/json",
+                "x-doppel-client": CLIENT_ATTRIBUTION,
+                "User-Agent": f"doppel-{CLIENT_ATTRIBUTION}",
+            },
+            json_data={
+                "client_id": self._oauth_client_id,
+                "client_secret": self._oauth_client_secret,
+                "audience": OAUTH_AUDIENCE,
+                "grant_type": "client_credentials",
+            },
+            resp_type="response",
+            ok_codes=(200,),
+            error_handler=_token_error_handler,
+        )
+        token_data = response.json()
+        access_token = token_data.get("access_token")
+        if not access_token:
+            raise DemistoException("The Doppel token endpoint returned a response without an access_token.")
+
+        expires_in = arg_to_number(token_data.get("expires_in")) or OAUTH_DEFAULT_EXPIRES_IN_SECONDS
+        expiry_epoch = int(time.time()) + expires_in - OAUTH_EXPIRY_SAFETY_MARGIN_SECONDS
+        context = get_integration_context() or {}
+        context[OAUTH_CONTEXT_KEY] = {"access_token": access_token, "expiry_epoch": expiry_epoch}
+        set_integration_context(context)
+        demisto.debug(f"Minted a new OAuth token; cached until epoch {expiry_epoch}.")
+        return access_token
+
+    def _invalidate_cached_token(self) -> None:
+        context = get_integration_context() or {}
+        if context.pop(OAUTH_CONTEXT_KEY, None) is not None:
+            set_integration_context(context)
+
+    def get_alert(self, id: str, entity: str) -> dict[str, Any]:
         """Return the alert's details when provided the Alert ID or Entity as input
 
         :type id: ``str``
@@ -140,9 +276,9 @@ class Client(BaseClient):
         api_name = "alert"
         api_url = f"{self._base_url}/{api_name}"
         params = {}
-        if alert_id is not None:
+        if alert_id:
             params["id"] = alert_id
-        elif entity is not None:
+        elif entity:
             params["entity"] = entity
         payload = {"queue_state": queue_state, "entity_state": entity_state, "comment": comment}
 
@@ -211,6 +347,76 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
+def _normalize_entity_content_for_grid(entity_content: Any) -> list[dict[str, Any]]:
+    """
+    Convert Doppel entity_content into a list of row dicts for the grid incident field.
+
+    Domains alerts nest fields under ``root_domain``; the XSOAR grid field expects a list of
+    flat objects whose keys match the grid columns (domain, registrar, ip_address, ...).
+    """
+    if not entity_content:
+        return []
+    if isinstance(entity_content, list):
+        return [row for row in entity_content if isinstance(row, dict)]
+    if not isinstance(entity_content, dict):
+        return []
+
+    root_domain = entity_content.get("root_domain")
+    if isinstance(root_domain, dict):
+        return [root_domain]
+    # Other product shapes: unwrap a single nested dict when present
+    nested_dicts = [value for value in entity_content.values() if isinstance(value, dict)]
+    if len(nested_dicts) == 1:
+        return [nested_dicts[0]]
+    # Already a flat row (no nested objects): use it as-is so no data is dropped
+    if not nested_dicts:
+        return [entity_content]
+    return []
+
+
+def _normalize_queue_state(value: Any) -> str:
+    """Normalize a queue-state-ish string ("Doppel Review" / "doppel_review") for comparison."""
+    return str(value or "").strip().lower().replace(" ", "_")
+
+
+def _ensure_aware(dt):
+    """Treat naive datetimes as UTC so aware/naive comparisons cannot raise."""
+    if dt and dt.tzinfo is None:
+        return dt.replace(tzinfo=UTC)
+    return dt
+
+
+def _reopen_entry_if_revived(updated_doppel_alert: dict, audit_logs: Any, last_update) -> dict | None:
+    """Return a dbotIncidentReopen entry when the alert re-entered an active queue after last_update.
+
+    Doppel's Revival Monitoring reopens the same alert (e.g. a parked domain going live, or a
+    taken-down domain coming back) by moving it into an active queue. Without this entry, a
+    closed XSOAR incident would only get silent field updates and the revival would be missed.
+    The reopen fires only on a transition observed in the audit trail *after* the incident's
+    last sync, so an incident closed by an analyst while the alert simply stays active is not
+    reopened on every mirror cycle.
+    """
+    queue_state = _normalize_queue_state(updated_doppel_alert.get("queue_state"))
+    if queue_state not in ACTIVE_QUEUE_STATES or not last_update or not isinstance(audit_logs, list):
+        return None
+
+    last_update = _ensure_aware(last_update)
+    for audit_log in audit_logs:
+        if not isinstance(audit_log, dict) or _normalize_queue_state(audit_log.get("value")) != queue_state:
+            continue
+        try:
+            log_time = _ensure_aware(arg_to_datetime(str(audit_log.get("timestamp")), required=False))
+        except ValueError:
+            continue
+        if log_time and log_time > last_update:
+            demisto.debug(
+                f"Doppel - Alert moved into active queue {queue_state!r} at {audit_log.get('timestamp')}; "
+                f"sending reopen entry."
+            )
+            return {"Type": EntryType.NOTE, "Contents": {"dbotIncidentReopen": True}, "ContentsFormat": EntryFormat.JSON}
+    return None
+
+
 def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id: str, last_update_str: str):
     """
     Retrieves updated incident data from the remote system based on the given alert ID and last update timestamp.
@@ -228,33 +434,49 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
             A dictionary containing the updated incident details, including entries related to the alert.
     """
 
-    # Truncate to microseconds since Python's datetime only supports up to 6 digits
-    last_update_str = last_update_str[:26] + "Z"
-    last_update = datetime.strptime(last_update_str, "%Y-%m-%dT%H:%M:%S.%fZ")
+    # A never-synced incident carries "0001-01-01T00:00:00Z" (no microseconds), which the
+    # previous strict strptime call could not parse, so the first sync never completed.
+    # The timestamp is only informational here (the server already filtered this incident as
+    # modified via get-modified-remote-data), so a parse failure must not block the sync.
+    try:
+        last_update = arg_to_datetime(last_update_str, required=False)
+    except ValueError:
+        last_update = None
     if not last_update:
-        demisto.debug(f"Warning: Could not parse timestamp: {last_update_str}")
-        return None, []
+        demisto.debug(f"Doppel - Could not parse lastUpdate timestamp {last_update_str!r}; syncing anyway.")
 
     demisto.debug(f"Getting Remote Data for {doppel_alert_id} which was last updated on: {last_update}")
     updated_doppel_alert = client.get_alert(id=doppel_alert_id, entity="")
     demisto.debug(f"Received alert data for {doppel_alert_id}")
-    audit_logs = updated_doppel_alert.get("audit_logs")
-    demisto.debug(f'The alert contains {len(audit_logs or "")} audit logs')
+    if not updated_doppel_alert:
+        demisto.debug(f"Doppel - No alert data returned for {doppel_alert_id}.")
+        return None, []
+    updated_doppel_alert["id"] = doppel_alert_id
 
-    if isinstance(audit_logs, list) and all(isinstance(log, dict) for log in audit_logs):
-        most_recent_audit_log = max(audit_logs, key=lambda audit_log: audit_log["timestamp"])
+    # Shape entity_content for the grid incident field (mapper expects a list of row dicts).
+    if "entity_content" in updated_doppel_alert:
+        updated_doppel_alert["entity_content"] = _normalize_entity_content_for_grid(updated_doppel_alert.get("entity_content"))
+
+    # Attach the most recent audit-log event as a War Room note when available, but never
+    # let a missing/empty audit trail discard the field updates themselves.
+    entries: list = []
+    audit_logs = updated_doppel_alert.get("audit_logs")
+    demisto.debug(f"The alert contains {len(audit_logs) if isinstance(audit_logs, list) else 0} audit logs")
+    if isinstance(audit_logs, list) and audit_logs and all(isinstance(log, dict) for log in audit_logs):
+        # ISO-8601 timestamps sort lexicographically, so string comparison is safe and avoids
+        # strptime failures on entries without microseconds.
+        most_recent_audit_log = max(audit_logs, key=lambda audit_log: str(audit_log.get("timestamp") or ""))
         demisto.debug(f"Most recent audit log is {most_recent_audit_log}")
-        if isinstance(most_recent_audit_log, dict):
-            recent_audit_log_datetime_str = most_recent_audit_log["timestamp"]
-            recent_audit_log_datetime = datetime.strptime(recent_audit_log_datetime_str, DOPPEL_PAYLOAD_DATE_FORMAT)
-            demisto.debug(f"The event was modified recently on {recent_audit_log_datetime}")
-            updated_doppel_alert["id"] = doppel_alert_id
-            entries: list = [
-                {"Type": EntryType.NOTE, "Contents": most_recent_audit_log, "ContentsFormat": EntryFormat.JSON, "Note": True}
-            ]
-            demisto.debug(f"Successfully returning the updated alert and entries: {updated_doppel_alert, entries}")
-            return updated_doppel_alert, entries
-    return None, []
+        entries = [{"Type": EntryType.NOTE, "Contents": most_recent_audit_log, "ContentsFormat": EntryFormat.JSON, "Note": True}]
+
+    # Revived alerts (Revival Monitoring moved the alert back into an active queue) must
+    # reopen a closed incident instead of silently updating its fields.
+    reopen_entry = _reopen_entry_if_revived(updated_doppel_alert, audit_logs, last_update)
+    if reopen_entry:
+        entries.append(reopen_entry)
+
+    demisto.debug(f"Successfully returning the updated alert and entries: {updated_doppel_alert, entries}")
+    return updated_doppel_alert, entries
 
 
 def _get_mirroring_fields():
@@ -278,8 +500,10 @@ def _get_last_fetch_datetime(last_run):
     else:
         # If no last run is found
         first_fetch_time = demisto.params().get("first_fetch", "3 days").strip()
-        last_fetch_datetime = dateparser.parse(first_fetch_time) or datetime.now()
-        assert last_fetch_datetime is not None, f"could not parse {first_fetch_time}"
+        try:
+            last_fetch_datetime = arg_to_datetime(first_fetch_time, required=False) or datetime.now()
+        except ValueError:
+            last_fetch_datetime = datetime.now()
         demisto.debug(f"This is the first time we are fetching the incidents. This time fetching it from: {last_fetch_datetime}")
 
     return last_fetch_datetime
@@ -331,7 +555,7 @@ def test_module(client: Client) -> str:
 
     except DemistoException as e:
         if "Forbidden" in str(e) or "Authorization" in str(e):
-            message = "Authorization Error: make sure API Key is correctly set"
+            message = "Authorization Error: make sure the API Key (V1) or the Client ID and Client Secret (V2) are correctly set"
         else:
             raise e
     return message
@@ -366,6 +590,7 @@ def doppel_get_alert_command(client: Client, args: dict[str, Any]) -> CommandRes
         outputs_key_field="id",
         outputs=result,
         readable_output=human_readable,
+        raw_response=result,
     )
 
 
@@ -377,6 +602,7 @@ def doppel_update_alert_command(client: Client, args: dict[str, Any]) -> Command
     :param args: Command arguments.
     :return: CommandResults object.
     """
+    demisto.debug(f"Update Alert cmd params: {args}")
     alert_id = args.get("alert_id", "")
     entity = args.get("entity", "")
     queue_state = args.get("queue_state", "")
@@ -403,6 +629,7 @@ def doppel_update_alert_command(client: Client, args: dict[str, Any]) -> Command
         outputs_key_field="id",
         outputs=result,
         readable_output=human_readable,
+        raw_response=result,
     )
 
 
@@ -443,6 +670,7 @@ def doppel_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandRe
 
     created_before = format_datetime(args.get("created_before"))
     created_after = format_datetime(args.get("created_after"))
+    last_activity_timestamp = format_datetime(args.get("last_activity_timestamp"))
 
     # Extract query parameters directly from arguments
     query_params = {
@@ -451,9 +679,11 @@ def doppel_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandRe
         "product": args.get("product"),
         "created_before": created_before,
         "created_after": created_after,
+        "last_activity_timestamp": last_activity_timestamp,
         "sort_type": args.get("sort_type"),
         "sort_order": args.get("sort_order"),
         "page": args.get("page"),
+        "page_size": args.get("page_size"),
         "tags": argToList(args.get("tags"), separator=",", transform=None),
     }
 
@@ -474,6 +704,7 @@ def doppel_get_alerts_command(client: Client, args: dict[str, Any]) -> CommandRe
         outputs_key_field="id",
         outputs=results,
         readable_output=human_readable,
+        raw_response=results,
     )
 
 
@@ -502,6 +733,7 @@ def doppel_create_alert_command(client: Client, args: dict[str, Any]) -> Command
         outputs_key_field="id",
         outputs=result,
         readable_output=human_readable,
+        raw_response=result,
     )
 
 
@@ -531,6 +763,7 @@ def doppel_create_abuse_alert_command(client: Client, args: dict[str, Any]) -> C
         outputs_key_field="id",
         outputs=result,
         readable_output=human_readable,
+        raw_response=result,
     )
 
 
@@ -589,6 +822,11 @@ def _alert_to_incident(alert, mirroring_object):
     if created_at_datetime is None:
         created_at_datetime = datetime.now(UTC)
     severity = _xsoar_severity(alert)
+
+    # Shape entity_content for the grid incident field before it is mapped from rawJSON.
+    if "entity_content" in alert:
+        alert["entity_content"] = _normalize_entity_content_for_grid(alert.get("entity_content"))
+
     alert.update(mirroring_object)
     # Use the external Doppel alert id (e.g. TET-1953421) as the incident name so it
     # is human-meaningful and duplicates are visually obvious.
@@ -696,19 +934,39 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
     """
 
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = dateparser.parse(remote_args.last_update, settings={"TIMEZONE": "UTC"}).strftime(  # type: ignore[union-attr]
-        DOPPEL_API_DATE_FORMAT
-    )
-
-    query_params = {
-        "last_activity_timestamp": last_update,
-    }
+    try:
+        last_update_datetime = arg_to_datetime(remote_args.last_update, required=False)
+    except ValueError:
+        last_update_datetime = None
+    if not last_update_datetime:
+        raise DemistoException(f"Doppel - Could not parse the lastUpdate timestamp: {remote_args.last_update!r}")
+    last_update = last_update_datetime.strftime(DOPPEL_API_DATE_FORMAT)
 
     try:
-        results = client.get_alerts(params=query_params)
-        alerts = results.get("alerts", [])
-
-        modified_incident_ids = [str(alert.get("id")) for alert in alerts if alert.get("id")]
+        # Page through the full set of modified alerts. Taking only the first page (the
+        # previous behavior) silently dropped changes on busy tenants, because the server
+        # advances lastUpdate after every cycle regardless of what was returned.
+        modified_incident_ids: list[str] = []
+        seen_ids: set[str] = set()
+        page = 0
+        while page < MAX_FETCH_PAGES_PER_RUN:
+            query_params = {
+                "last_activity_timestamp": last_update,
+                "page": page,
+                "page_size": DOPPEL_MAX_PAGE_SIZE,
+            }
+            results = client.get_alerts(params=query_params)
+            alerts = results.get("alerts", [])
+            if not alerts:
+                break
+            for alert in alerts:
+                alert_id = str(alert.get("id") or "")
+                if alert_id and alert_id not in seen_ids:
+                    seen_ids.add(alert_id)
+                    modified_incident_ids.append(alert_id)
+            if len(alerts) < DOPPEL_MAX_PAGE_SIZE:
+                break
+            page += 1
 
         demisto.debug(f"Found {len(modified_incident_ids)} modified remote incidents. Incidents: {modified_incident_ids}")
         return GetModifiedRemoteDataResponse(modified_incident_ids)
@@ -747,6 +1005,10 @@ def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDa
 def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
     """update-remote-system command: pushes local changes to the remote system
 
+    Outgoing mirroring only archives the Doppel alert when the XSOAR incident is closed.
+    ``entity_state`` is always read from the live Doppel alert so it is preserved even when
+    the outgoing mapper does not include it. Close notes from XSOAR are sent as the comment.
+
     :type client: ``Client``
     :param client: XSOAR client to use
 
@@ -763,41 +1025,52 @@ def update_remote_system_command(client: Client, args: dict[str, Any]) -> str:
 
     :rtype: ``str``
     """
-    demisto.debug(f"Arguments for the update-remote-system is: {args}")
     parsed_args = UpdateRemoteSystemArgs(args)
-    new_incident_id = parsed_args.remote_incident_id
+    remote_incident_id = parsed_args.remote_incident_id
 
-    demisto.debug(f"parsed_args data :- {parsed_args}")
-    demisto.debug(f"parsed_args data :- {parsed_args.data}")
+    # Only update Doppel when the XSOAR incident is closed (status DONE).
+    # This command is event-driven on local incident changes; it is not polled every minute.
+    if parsed_args.inc_status != IncidentStatus.DONE:
+        demisto.debug(f"Incident not closed. Skipping update for remote ID [{remote_incident_id}].")
+        return remote_incident_id
+
+    if not remote_incident_id:
+        demisto.debug("Doppel - No remote incident id; skipping outgoing update.")
+        return remote_incident_id
+
+    demisto.debug(f"Closing remote Doppel alert [{remote_incident_id}] (XSOAR incident closed).")
     try:
-        # Only update Doppel Alert if the XSOAR Incident is closed
-        if parsed_args.inc_status != IncidentStatus.DONE:
-            demisto.debug(f"Incident not closed. Skipping update for remote ID [{new_incident_id}].")
-            return new_incident_id
+        # Always fetch the live alert so entity_state comes from Doppel, not from the
+        # outgoing mapper (which currently only maps queue_state).
+        current_alert = client.get_alert(id=remote_incident_id, entity="") or {}
+        entity_state = current_alert.get("entity_state") or ""
+        delta = parsed_args.delta or {}
+        data = parsed_args.data or {}
+        comment = delta.get("closeNotes") or data.get("closeNotes") or ""
 
-        demisto.debug(f"Sending incident with remote ID [{new_incident_id}] to remote system")
+        already_archived = current_alert.get("queue_state") == "archived"
+        if already_archived and not comment:
+            demisto.debug(f"Doppel alert [{remote_incident_id}] already archived with no close notes; skipping.")
+            return remote_incident_id
 
-        if parsed_args.remote_incident_id and parsed_args.incident_changed:
-            # Fetch existing incident details to preserve versioning
-            old_incident = client.get_alert(id=new_incident_id, entity="")
-
-            # Apply changes from XSOAR to the existing incident
-            old_incident.update(parsed_args.delta)  # Simplifies key-value assignment
-
-            parsed_args.data = old_incident
-
-        # Ensure queue_state is updated to 'archived' if necessary
-        if parsed_args.data.get("queue_state") != "archived":
-            client.update_alert(
-                queue_state="archived",
-                entity_state=parsed_args.data.get("entity_state", ""),  # Preserve old entity_state
-                comment=parsed_args.data.get("notes", ""),
-                alert_id=new_incident_id,
-            )
+        client.update_alert(
+            queue_state="archived",
+            entity_state=entity_state,
+            comment=comment,
+            alert_id=remote_incident_id,
+        )
+        # Log only whether close notes were sent, not their content (analyst-authored text).
+        demisto.debug(
+            f"Doppel - Archived remote alert [{remote_incident_id}] "
+            f"with entity_state={entity_state!r} comment_sent={bool(comment)}."
+        )
     except Exception as e:
-        demisto.error(f"Doppel - Error in outgoing mirror for incident {new_incident_id} \nError message: {str(e)}")
+        demisto.error(
+            f"Doppel - Error in outgoing mirror for incident {remote_incident_id} "
+            f"\nError message: {str(e)}\n{traceback.format_exc()}"
+        )
 
-    return new_incident_id
+    return remote_incident_id
 
 
 def get_mapping_fields_command(client: Client, args: dict[str, Any]) -> GetMappingFieldsResponse:
@@ -814,17 +1087,40 @@ def get_mapping_fields_command(client: Client, args: dict[str, Any]) -> GetMappi
     Returns:
         GetMappingFieldsResponse: The mapping response containing field definitions.
     """
-    demisto.debug("Executing get_mapping_fields_command")  # Debug statement
 
-    # Define the incident mapping scheme
     xdr_incident_type_scheme = SchemeTypeMapping(type_name=DOPPEL_ALERT)
-    xdr_incident_type_scheme.add_field(name="queue_state", description="Queue State of the Doppel Alert")
+    doppel_fields = {
+        "id": "Unique identifier of the alert",
+        "entity": "URL or profile link related to the alert",
+        "brand": "Brand associated with the alert",
+        "queue_state": "Queue State of the Doppel Alert",
+        "entity_state": "Current state of the alert entity",
+        "severity": "Severity level of the alert",
+        "product": "Product category associated with the alert",
+        "platform": "Platform on which the alert was generated",
+        "source": "Source from which the alert was generated",
+        "notes": "Additional notes related to the alert",
+        "created_at": "Timestamp when the alert was created",
+        "screenshot_url": "URL of the alert screenshot when available",
+        "last_activity": "Timestamp of the last activity on the alert",
+        "score": "Score assigned to the alert",
+        "message": "Message associated with the alert",
+        "assignee": "User assigned to the alert",
+        "doppel_link": "Link to the alert in the Doppel platform",
+        "uploaded_by": "User who uploaded the alert",
+        "entity_content": "Additional content related to the alert entity",
+        "audit_logs": "Audit log entries for the alert",
+        "tags": "Tags associated with the alert",
+        "alert_summary": "Summary of the alert",
+    }
 
-    # Create the response object
+    for field_name, description in doppel_fields.items():
+        xdr_incident_type_scheme.add_field(name=field_name, description=description)
+
     mapping_response = GetMappingFieldsResponse()
     mapping_response.add_scheme_type(xdr_incident_type_scheme)
 
-    demisto.debug(f"Mapping fields response created: {mapping_response}")  # Debug statement
+    demisto.debug(f"Mapping fields response created: {mapping_response}")
     return mapping_response
 
 
@@ -833,16 +1129,25 @@ def get_mapping_fields_command(client: Client, args: dict[str, Any]) -> GetMappi
 
 def main() -> None:
     """Main function, parses params and runs command functions."""
-    api_key = demisto.params().get("credentials", {}).get("password")
-    user_api_key = demisto.params().get("user_credentials", {}).get("password")
-    organization_code = demisto.params().get("organization_code")
-    verify = not demisto.params().get("insecure")
-    proxy = demisto.params().get("proxy")
+    params = demisto.params()
+    api_key = (params.get("credentials") or {}).get("password")
+    user_api_key = (params.get("user_credentials") or {}).get("password")
+    organization_code = params.get("organization_code")
+    oauth_client_id = (params.get("client_credentials") or {}).get("identifier")
+    oauth_client_secret = (params.get("client_credentials") or {}).get("password")
+    verify = not params.get("insecure")
+    proxy = params.get("proxy")
 
-    demisto.debug(f"Verify SSL: {verify} and Proxy: {proxy}")
+    # The dropdown values are display-friendly (e.g. "V2 (OAuth 2.0 Client Credentials)");
+    # anything that does not start with V2 falls back to V1 for backwards compatibility.
+    api_version = API_VERSION_V2 if (params.get("api_version") or "").lower().startswith(API_VERSION_V2) else API_VERSION_V1
+
+    demisto.debug(f"Verify SSL: {verify} and Proxy: {proxy} and API Version: {api_version}")
 
     # Get the service API URL
-    base_url = urljoin(demisto.params()["url"], "/v1")
+    server_url = params["url"]
+    base_url = urljoin(server_url, f"/{api_version}")
+    token_url = urljoin(server_url, OAUTH_TOKEN_PATH)
 
     # Explicitly define the type for the command function dictionary
     supported_commands: dict[str, Callable[[Client, dict[str, Any]], Any]] = {
@@ -865,6 +1170,12 @@ def main() -> None:
     demisto.info(f"Command being called is {current_command}")
 
     try:
+        if api_version == API_VERSION_V2:
+            if not (oauth_client_id and oauth_client_secret):
+                raise DemistoException("API Version V2 requires both a Client ID and a Client Secret.")
+        elif not api_key:
+            raise DemistoException("API Version V1 requires an API Key.")
+
         client = Client(
             base_url=base_url,
             api_key=api_key,
@@ -872,6 +1183,10 @@ def main() -> None:
             organization_code=organization_code,
             verify=verify,
             proxy=proxy,
+            api_version=api_version,
+            oauth_client_id=oauth_client_id,
+            oauth_client_secret=oauth_client_secret,
+            token_url=token_url,
         )
 
         if current_command in supported_commands_test_module:
