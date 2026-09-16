@@ -3047,7 +3047,9 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
     outputs_prefix = (
         "GCP.Container.Operations" if command_name == "gcp-container-cluster-security-update" else "GCP.GKE.Operations"
     )
-    return _container_operation_result(response, "Google Cloud Container Cluster Security Update Operation Started Successfully", outputs_prefix)
+    return _container_operation_result(
+        response, "Google Cloud Container Cluster Security Update Operation Started Successfully", outputs_prefix
+    )
 
 
 def gke_cluster_legacy_abac_auth_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
