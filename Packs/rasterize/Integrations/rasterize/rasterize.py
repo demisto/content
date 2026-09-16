@@ -533,7 +533,6 @@ def wait_for_page_load_with_memory_guard(
     while True:
         # Check if the page has finished loading.
         if tab_ready_event.wait(timeout=poll_interval):
-            _freeze_tab_for_screenshot(tab, tab_id, path)
             demisto.debug(
                 f"wait_for_page_load_with_memory_guard: normal completion, "
                 f"available={get_container_available_memory_bytes() / (1024 * 1024):.1f} MiB, "
