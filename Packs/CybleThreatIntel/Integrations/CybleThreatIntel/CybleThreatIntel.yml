@@ -150,7 +150,7 @@ script:
   type: python
   subtype: python3
   script: "-"
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/python3:3.12.14.13053055
   feed: true
   runonce: false
   commands:
@@ -184,7 +184,7 @@ script:
         - contextPath: CybleIntel.collection.names
           description: Backward compatibility placeholder.
           type: String
-fromversion: 6.8.0
+fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
 sectionorder:

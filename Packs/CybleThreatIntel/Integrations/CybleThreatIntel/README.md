@@ -88,7 +88,7 @@ Prefix: `CybleIntel.IOCLookup`
 ### **Example**
 
 ```text
-!cyble-vision-ioc-lookup ioc=45.67.23.9
+!cyble-vision-ioc-lookup ioc=1.1.1.1
 
 ```
 
