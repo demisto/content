@@ -135,6 +135,15 @@ script:
       - 'false'
       description: If True, includes snippets with the reports.
       defaultValue: 'false'
+    - name: service_name
+      auto: PREDEFINED
+      predefined:
+        - ngfw
+        - prisma-access
+        - prisma-saas
+        - prisma-access-browser
+        - endpoint-dlp
+      description: The DLP service that the report belongs to. Determines which backend the report is retrieved from. When empty, the request does not specify a service and the server retrieves the report from Prisma Access.
     outputs:
     - contextPath: DLP.Report.DataProfile
       description: The data profile name.

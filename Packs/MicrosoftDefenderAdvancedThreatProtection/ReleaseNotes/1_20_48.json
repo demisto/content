@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Deprecated the ***microsoft-atp-start-investigation*** and ***microsoft-atp-list-investigations*** commands. The Automated investigation and response APIs are deprecated by Microsoft (see the Microsoft 365 Message Center announcement MC1411577). Use the ***microsoft-atp-run-antivirus-scan*** command instead of ***microsoft-atp-start-investigation***."
+}
