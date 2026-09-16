@@ -15334,7 +15334,7 @@ def should_use_ucp_auth():
     return is_ucp_enabled() and not _UCP_AUTH_PARAMS_INJECTED and not _ucp_auth_is_passthrough()
 
 
-def _ucp_profile_capabilities():
+def get_configured_ucp_capabilities():
     # type: () -> List[str]
     """Return the capabilities declared by the connector's connection profiles.
 
@@ -15342,14 +15342,15 @@ def _ucp_profile_capabilities():
         metadata is unavailable or carries no profiles.
     :rtype: ``List[str]``
     """
+    profiles = []  # type: list
     try:
         connector_metadata = demisto.unifiedConnectorMetadata() or {}
         profiles = connector_metadata.get('connectionProfiles') or []
         return [p.get('capability') for p in profiles if p.get('capability')]
     except Exception as e:
-        demisto.debug(
-            '[UCP][CommonServerPython.py] _ucp_profile_capabilities: could not read profiles ({}).\n{}'.format(
-                e, traceback.format_exc()))
+        demisto.error(
+            '[UCP][CommonServerPython.py] get_configured_ucp_capabilities: could not read profiles ({}).\n'
+            'connectionProfiles: {}\n{}'.format(e, profiles, traceback.format_exc()))
         return []
 
 
@@ -15383,7 +15384,7 @@ def resolve_ucp_capability(command=None):
         command = demisto.command()
     resolved = _UCP_COMMAND_CAPABILITIES.get(command, _UCP_DEFAULT_CAPABILITY)
 
-    available = _ucp_profile_capabilities()
+    available = get_configured_ucp_capabilities()
     if not available or resolved in available:
         return resolved
 

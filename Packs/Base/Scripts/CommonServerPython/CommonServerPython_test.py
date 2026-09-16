@@ -12882,11 +12882,11 @@ class TestUcpCapabilityReconciliation:
         mocker.patch.object(demisto, 'unifiedConnectorMetadata', side_effect=AttributeError)
         assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
 
-    def test_ucp_profile_capabilities_returns_declared_order(self, mocker, ucp_env,
+    def testget_configured_ucp_capabilities_returns_declared_order(self, mocker, ucp_env,
                                                              ucp_metadata_multi_no_automation):
         """Capabilities are reported in connectionProfiles order."""
         mocker.patch.object(demisto, 'unifiedConnectorMetadata', return_value=ucp_metadata_multi_no_automation)
-        assert CommonServerPython._ucp_profile_capabilities() == ['fetch-issues', 'log-collection']
+        assert CommonServerPython.get_configured_ucp_capabilities() == ['fetch-issues', 'log-collection']
 
     # ── reconciliation is not bypassed by an explicit command argument ──
 
