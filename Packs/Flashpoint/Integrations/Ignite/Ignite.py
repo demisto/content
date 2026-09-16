@@ -204,12 +204,15 @@ ALERT_SOURCES_MAPPING = {
     "Communities": "communities",
     "Images": "media",
     "Marketplaces": "marketplaces",
+    "Reports": "reports",
+    "Vulnerabilities": "vulnerabilities",
 }
 
 ALERT_RESOURCE_URL = {
     "communities": "/search/context/communities/{}",
     "marketplaces": "/search/context/marketplaces/{}",
     "media": "/search/results/media?include.date=all+time&include.media_id={}",
+    "reports": "/cti/intelligence/report/{}",
 }
 
 ALERT_STATUS_MAPPING = {
@@ -962,10 +965,12 @@ def prepare_incidents_from_alerts_data(
         alert["tag_as_list"] = list(tags.keys())
 
         origin = alert.get("reason", {}).get("origin")
-        source = alert.get("source")
-        resource_url = alert.get("resource", {}).get("url")
+        source = alert.get("source") or ""
+        resource_url = (alert.get("resource") or {}).get("url")
         if not resource_url and origin == "searches":
             resource_url = get_resource_url(source, alert.get("resource", {}).get("id"), platform_url)
+        if source and source.lower() == "vulnerabilities":
+            resource_url = (alert.get("resource") or {}).get("ignite_search_url")
 
         alert["resource"].update({"url": resource_url})
 
@@ -1431,6 +1436,9 @@ def validate_vulnerabilities_args(args: dict) -> tuple[dict, dict]:
     :rtype: ``tuple[dict, dict]``
     """
     tags = argToList(args.get("tags"))
+    vulnerability_ids = [
+        vulnerability_id.replace("FP-VULN-", "") for vulnerability_id in argToList(args.get("vulnerability_ids"))
+    ]
     products = argToList(args.get("products"))
     vendors = argToList(args.get("vendors"))
     cwe_ids = argToList(args.get("cwe_ids"))
@@ -1472,6 +1480,9 @@ def validate_vulnerabilities_args(args: dict) -> tuple[dict, dict]:
 
     valid_cwe_ids = [cwe_id for cwe_id in cwe_ids if cwe_id.isdigit()]
     invalid_cwe_ids = [cwe_id for cwe_id in cwe_ids if not cwe_id.isdigit()]
+
+    valid_vulnerability_ids = [vulnerability_id for vulnerability_id in vulnerability_ids if vulnerability_id.isdigit()]
+    invalid_vulnerability_ids = [vulnerability_id for vulnerability_id in vulnerability_ids if not vulnerability_id.isdigit()]
 
     valid_location = [LOCATION_MAPPING[loc] for loc in locations if loc in LOCATION_MAPPING]
     invalid_location = [loc for loc in locations if loc not in LOCATION_MAPPING]
@@ -1529,6 +1540,9 @@ def validate_vulnerabilities_args(args: dict) -> tuple[dict, dict]:
     if invalid_cwe_ids:
         errors.append(MESSAGES["INVALID_INT_PARAMS_PROVIDED"].format(invalid_cwe_ids, "CWE IDs"))
 
+    if invalid_vulnerability_ids:
+        errors.append(MESSAGES["INVALID_INT_PARAMS_PROVIDED"].format(invalid_vulnerability_ids, "Vulnerability IDs"))
+
     if invalid_location:
         errors.append(
             MESSAGES["INVALID_MULTI_PARAMS_PROVIDED"].format(
@@ -1554,6 +1568,7 @@ def validate_vulnerabilities_args(args: dict) -> tuple[dict, dict]:
     # Build payload (filters and search criteria)
 
     payload = assign_params(
+        ids=",".join(valid_vulnerability_ids),
         tags=",".join(tags),
         min_epss_score=min_epss_score,
         max_epss_score=max_epss_score,
@@ -1891,7 +1906,7 @@ def get_resource_url(source: str, resource_id: str, platform_url: str):
     if not resource_id:
         raise ValueError(MESSAGES["MISSING_DATA"].format("alerts"))
 
-    resource_url = platform_url + ALERT_RESOURCE_URL[source].format(resource_id)
+    resource_url = platform_url + ALERT_RESOURCE_URL.get(source, "").format(resource_id)
 
     return resource_url
 

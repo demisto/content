@@ -355,9 +355,6 @@ configuration:
   - xpanse
   supportedModules:
   - "xsiam"
-  - "edr"
-  - "cloud"
-  - "cloud_runtime_security"
 - display: 'Advanced: Time in minutes to look back when fetching events and detections'
   additionalinfo: Use this parameter to determine the look-back period for searching for events that were created before the last run time and did not match the query when they were created.
   defaultvalue: 2
@@ -374,6 +371,18 @@ configuration:
   - "edr"
   - "cloud"
   - "cloud_runtime_security"
+- display: Fetch assets and vulnerabilities
+  name: isFetchAssets
+  type: 8
+  section: Collect
+  required: false
+  defaultvalue: 'false'
+  hidden:
+  - xsoar
+  - xpanse
+  supportedModules:
+  - "xsiam"
+  - "exposure_management"
 - display: 'Fetch Asset types'
   name: fetch_assets_type
   defaultvalue: 'Spotlight,CNAPP Alerts'
@@ -388,6 +397,9 @@ configuration:
   - CNAPP Alerts
   hidden:
   - xsoar
+  supportedModules:
+  - "xsiam"
+  - "exposure_management"
 - additionalinfo: The fetch interval for assets and vulnerabilities. It is recommended to set it to 1 hour.
   defaultvalue: 60
   display: Assets Fetch Interval
@@ -399,6 +411,29 @@ configuration:
   hidden:
   - xsoar
   - xpanse
+  supportedModules:
+  - "xsiam"
+  - "exposure_management"
+- additionalinfo: |-
+    Whether to run the Spotlight vulnerabilities fetch in a long-running container instead of on the assets fetch schedule.
+    Use this when a full Spotlight fetch takes longer than the maximum execution time of a single assets fetch, and is therefore terminated before it completes.
+    When enabled, the assets fetch cannot be enabled as well; only one of the two may be active per instance.
+    This mode fetches Spotlight vulnerabilities ONLY, regardless of the Asset types to fetch selection.
+    CNAPP Alerts are not collected in this mode; to collect them, configure a separate integration instance using the regular assets fetch.
+    A fetch cycle starts every 24 hours. If a cycle runs longer than 24 hours, the next one starts as soon as it finishes.
+  display: Long running instance for Spotlight vulnerabilities
+  name: longRunning
+  defaultvalue: 'false'
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+  hidden:
+  - xsoar
+  - xpanse
+  supportedModules:
+  - "xsiam"
+  - "exposure_management"
 - display: 'Trust any certificate (not secure)'
   name: insecure
   type: 8
@@ -5340,6 +5375,7 @@ script:
   isfetch:platform: true
   isfetchevents: true
   isfetchassets: true
+  longRunning: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true

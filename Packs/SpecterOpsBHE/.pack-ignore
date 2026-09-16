@@ -1,1 +1,5 @@
+[file:incidenttype-SpecterOpsBHE_Attack_Path.json]
+ignore=GR107
 
+[file:SpecterOpsBHE.yml]
+ignore=IN126

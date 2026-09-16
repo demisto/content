@@ -1,4 +1,5 @@
 import json
+from datetime import datetime, UTC
 
 import demistomock as demisto
 import pytest
@@ -384,6 +385,59 @@ def test_fetch_events_in_multiple_cycles(mocker):
     assert "nextTrigger" not in next_run
     assert next_run.get("audit").get("last_fetch") == "2024-12-22T07:40:10Z"
     assert next_run.get("alerts").get("last_fetch") == "2024-12-22T07:29:00Z"
+
+
+def test_fetch_events_no_new_alerts_keeps_checkpoint(mocker):
+    """
+    Given:
+    - A previous last run state with "last_fetch" timestamps for alerts and audit events.
+    - A mock HTTP response where the alerts endpoint returns zero alerts for the current fetch window,
+      while the audit endpoint returns events as usual.
+    - A frozen "current time", so the calculated fetch window end date is deterministic.
+
+    When:
+    - Running the `fetch_events` function.
+
+    Then:
+    - Ensure the "last_fetch" checkpoint for alerts is advanced to the fetch window's end date instead of
+      being lost/reset to None. A lost checkpoint would collapse the next fetch window down to
+      "now minus 1 minute", causing alerts that occurred in between to be silently skipped forever.
+    """
+    import CiscoThousandEyes
+    from CiscoThousandEyes import fetch_events
+
+    client = mock_client()
+    frozen_now = datetime(2024, 12, 30, 8, 56, 46, tzinfo=UTC)
+    expected_end_date = "2024-12-30T08:56:46Z"
+    last_run = {
+        "alerts": {"last_fetch": "2024-11-19T14:20:00Z"},
+        "audit": {"last_fetch": "2024-11-28T08:59:17Z"},
+    }
+
+    def mock_http_request(method, full_url, params=None):
+        if "alerts" in full_url:
+            return {
+                "alerts": [],
+                "startDate": "2024-11-19T14:20:00Z",
+                "endDate": expected_end_date,
+                "_links": {"self": {"href": "https://example.com"}},
+            }
+        elif "audit" in full_url:
+            return util_load_json("test_data/events_list.json")
+        return {}
+
+    mocker.patch.object(demisto, "getLastRun", return_value=last_run)
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(CiscoThousandEyes, "get_current_time", return_value=frozen_now)
+    mocker.patch.object(client, "_http_request", side_effect=mock_http_request)
+
+    next_run, events = fetch_events(
+        client=client,
+        max_fetch_alerts=2,
+        max_fetch_audits=10,
+    )
+
+    assert next_run.get("alerts").get("last_fetch") == expected_end_date
 
 
 @pytest.mark.parametrize(

@@ -873,6 +873,245 @@
           }
         }
       }
+    },
+    "Rubrik Sensitive Data Object": {
+      "dontMapEventToLabels": false,
+      "internalMapping": {
+        "Incident Link": {
+          "complex": {
+            "filters": [],
+            "root": "incident_link",
+            "transformers": []
+          }
+        },
+        "Rubrik CDM Cluster ID": {
+          "complex": {
+            "accessor": "id",
+            "filters": [],
+            "root": "snappable.cluster",
+            "transformers": []
+          }
+        },
+        "Rubrik CDM Cluster Name": {
+          "complex": {
+            "accessor": "name",
+            "filters": [],
+            "root": "snappable.cluster",
+            "transformers": []
+          }
+        },
+        "Rubrik Daily Hits Change": {
+          "complex": {
+            "accessor": "totalHitsDelta",
+            "filters": [],
+            "root": "rootFileResult.hits",
+            "transformers": []
+          }
+        },
+        "Rubrik Data Categories": {
+          "complex": {
+            "filters": [],
+            "root": "dataCategories",
+            "transformers": []
+          }
+        },
+        "Rubrik Data Types": {
+          "complex": {
+            "filters": [],
+            "root": "dataTypes",
+            "transformers": []
+          }
+        },
+        "Rubrik High Risk Hits": {
+          "complex": {
+            "accessor": "totalHits",
+            "filters": [],
+            "root": "rootFileResult.sensitiveHits.highRiskHits",
+            "transformers": []
+          }
+        },
+        "Rubrik Logical Paths": {
+          "complex": {
+            "accessor": "logicalPath",
+            "filters": [],
+            "root": "snappable",
+            "transformers": []
+          }
+        },
+        "Rubrik Low Risk Hits": {
+          "complex": {
+            "accessor": "totalHits",
+            "filters": [],
+            "root": "rootFileResult.sensitiveHits.lowRiskHits",
+            "transformers": []
+          }
+        },
+        "Rubrik Medium Risk Hits": {
+          "complex": {
+            "accessor": "totalHits",
+            "filters": [],
+            "root": "rootFileResult.sensitiveHits.mediumRiskHits",
+            "transformers": []
+          }
+        },
+        "Rubrik No Risk Hits": {
+          "complex": {
+            "accessor": "totalHits",
+            "filters": [],
+            "root": "rootFileResult.sensitiveHits.noRiskHits",
+            "transformers": []
+          }
+        },
+        "Rubrik Object Account Name": {
+          "complex": {
+            "accessor": "name",
+            "filters": [
+              [
+                {
+                  "left": {
+                    "isContext": true,
+                    "value": {
+                      "simple": "snappable.logicalPath.objectType"
+                    }
+                  },
+                  "operator": "containsGeneral",
+                  "right": {
+                    "isContext": false,
+                    "value": {
+                      "simple": "Account"
+                    }
+                  }
+                }
+              ]
+            ],
+            "root": "snappable.logicalPath",
+            "transformers": []
+          }
+        },
+        "Rubrik Object Region": {
+          "complex": {
+            "accessor": "name",
+            "filters": [
+              [
+                {
+                  "left": {
+                    "isContext": true,
+                    "value": {
+                      "simple": "snappable.logicalPath.objectType"
+                    }
+                  },
+                  "operator": "containsGeneral",
+                  "right": {
+                    "isContext": false,
+                    "value": {
+                      "simple": "Region"
+                    }
+                  }
+                }
+              ]
+            ],
+            "root": "snappable.logicalPath",
+            "transformers": []
+          }
+        },
+        "Rubrik Object SLA Name": {
+          "complex": {
+            "accessor": "name",
+            "filters": [],
+            "root": "snappable.effectiveSlaDomain",
+            "transformers": []
+          }
+        },
+        "Rubrik Open Access Files with Hits": {
+          "complex": {
+            "accessor": "totalHits",
+            "filters": [],
+            "root": "rootFileResult.openAccessFilesWithHits",
+            "transformers": []
+          }
+        },
+        "Rubrik Physical Paths": {
+          "complex": {
+            "accessor": "physicalPath",
+            "filters": [],
+            "root": "snappable",
+            "transformers": []
+          }
+        },
+        "Rubrik Polaris Object ID": {
+          "complex": {
+            "filters": [],
+            "root": "id",
+            "transformers": []
+          }
+        },
+        "Rubrik Polaris Object Name": {
+          "complex": {
+            "accessor": "name",
+            "filters": [],
+            "root": "snappable",
+            "transformers": []
+          }
+        },
+        "Rubrik Polaris Object Type": {
+          "complex": {
+            "accessor": "objectType",
+            "filters": [],
+            "root": "snappable",
+            "transformers": []
+          }
+        },
+        "Rubrik Snapshot ID": {
+          "complex": {
+            "filters": [],
+            "root": "snapshotFid",
+            "transformers": []
+          }
+        },
+        "Rubrik Snapshot Timestamp": {
+          "complex": {
+            "filters": [],
+            "root": "snapshotTimestamp",
+            "transformers": [
+              {
+                "operator": "TimeStampToDate"
+              }
+            ]
+          }
+        },
+        "Rubrik Stale Files with Hits": {
+          "complex": {
+            "accessor": "totalHits",
+            "filters": [],
+            "root": "rootFileResult.staleFilesWithHits",
+            "transformers": []
+          }
+        },
+        "Rubrik Total Risk Hits": {
+          "complex": {
+            "accessor": "totalHits",
+            "filters": [],
+            "root": "rootFileResult.sensitiveHits.totalHits",
+            "transformers": []
+          }
+        },
+        "Rubrik Total Files with Hits": {
+          "complex": {
+            "accessor": "totalHits",
+            "filters": [],
+            "root": "rootFileResult.filesWithHits",
+            "transformers": []
+          }
+        },
+        "Rubrik User Principal Name": {
+          "complex": {
+            "accessor": "userPrincipalName",
+            "filters": [],
+            "root": "snappable",
+            "transformers": []
+          }
+        }
+      }
     }
   },
   "name": "Rubrik Polaris Radar - Mapping",

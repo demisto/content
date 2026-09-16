@@ -21,6 +21,29 @@ TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 """ HELPER FUNCTIONS """
 
+# GCC High and DoD tenants do not have the 'windowsatpservice' resource principal
+# in their Azure AD, so the scope must use the API endpoint directly.
+GOVERNMENT_ENDPOINT_TYPES = {"gcc-high", "dod"}
+
+
+def get_defender_scope(endpoint_type: str) -> str:
+    """Returns the correct OAuth scope for the given MDE endpoint type.
+
+    For GCC High and DoD, the 'windowsatpservice' service principal does not exist
+    in the government Azure AD tenant, so the scope uses the API endpoint directly.
+    For all other endpoint types, the scope uses the APT service endpoint with '/windowsatpservice/.default'.
+
+    Args:
+        endpoint_type: The endpoint type key (e.g., 'com', 'gcc-high', 'dod').
+
+    Returns:
+        The OAuth scope URL string.
+    """
+    if endpoint_type in GOVERNMENT_ENDPOINT_TYPES:
+        return urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_API[endpoint_type], "/.default")
+    return urljoin(MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS[endpoint_type], "/windowsatpservice/.default")
+
+
 SEVERITY_TO_NUMBER = {"Informational": 0, "Low": 1, "MediumLow": 2, "MediumHigh": 3, "High": 4}
 
 NUMBER_TO_SEVERITY = {0: "Informational", 1: "Low", 2: "MediumLow", 3: "MediumHigh", 4: "High", 5: "Informational"}
@@ -1259,9 +1282,7 @@ class MsClient:
             base_url=base_url,
             verify=verify,
             proxy=proxy,
-            scope=urljoin(
-                MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS[self.endpoint_type], "/windowsatpservice/.default"
-            ),
+            scope=get_defender_scope(self.endpoint_type),
             ok_codes=(200, 201, 202, 204),
             redirect_uri=redirect_uri,
             auth_code=auth_code,
@@ -1287,9 +1308,7 @@ class MsClient:
         should_use_security_center (bool): whether to use the security center's scope and resource
         """
         if kwargs.pop("should_use_security_center", None):
-            kwargs["scope"] = urljoin(
-                MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS[self.endpoint_type], "/windowsatpservice/.default"
-            )
+            kwargs["scope"] = get_defender_scope(self.endpoint_type)
             kwargs["resource"] = MICROSOFT_DEFENDER_FOR_ENDPOINT_API[self.endpoint_type]
         else:
             kwargs["scope"] = self.get_graph_scope()

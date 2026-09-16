@@ -1,0 +1,1409 @@
+description: Starts a Scan Backup session for a specific restore point.
+id: Veeam - Start Scan Backup
+inputs:
+- description: ""
+  key: Instance
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      accessor: sourceInstance
+      root: incident
+- description: ""
+  key: backupObjectId
+  playbookInputQuery: null
+  required: false
+  value:
+    complex:
+      accessor: veeambackupobjectid
+      root: incident
+name: Veeam - Start Scan Backup
+outputs: []
+quiet: true
+starttaskid: "0"
+fromversion: "6.10.0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5b99568c-5ce7-459e-8b9d-ddc5041067ef
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 5b99568c-5ce7-459e-8b9d-ddc5041067ef
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -110
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: 8898c438-f466-41ed-8c22-8b427baa8ec3
+      iscommand: false
+      name: |
+        Clear Context Data
+      script: DeleteContext
+      type: regular
+      version: -1
+    taskid: 8898c438-f466-41ed-8c22-8b427baa8ec3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      backupObjectIdFilter:
+        complex:
+          root: inputs.backupObjectId
+      limit:
+        simple: "1"
+      orderAsc:
+        simple: "false"
+      orderColumn:
+        simple: CreationTime
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Gets the list of restore points.
+      id: 1268e9fa-326c-4885-8884-c2a54bf53140
+      iscommand: true
+      name: Get Restore Points
+      script: VBR REST API|||veeam-vbr-get-restore-points
+      type: regular
+      version: -1
+    taskid: 1268e9fa-326c-4885-8884-c2a54bf53140
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 540
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Latest:
+      - "2"
+      Time Range:
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Specifies a restore point.
+      id: d38440dd-aa02-463a-8064-9dc4a0e01812
+      iscommand: false
+      name: Select Restore Point
+      type: condition
+      version: -1
+    taskid: d38440dd-aa02-463a-8064-9dc4a0e01812
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": 270
+        }
+      }
+  "4":
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      backupObjectIdFilter:
+        complex:
+          root: inputs.backupObjectId
+      createdAfterFilter:
+        complex:
+          accessor: "1"
+          root: TimeRange.Answers
+          transformers:
+          - args:
+              format: {}
+            operator: toString
+          - args:
+              add_utc_timezone: {}
+              dayfirst: {}
+              fuzzy: {}
+              yearfirst: {}
+            operator: DateStringToISOFormat
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: Z
+            operator: concat
+      createdBeforeFilter:
+        complex:
+          accessor: "0"
+          root: TimeRange.Answers
+          transformers:
+          - args:
+              format: {}
+            operator: toString
+          - args:
+              add_utc_timezone: {}
+              dayfirst: {}
+              fuzzy: {}
+              yearfirst: {}
+            operator: DateStringToISOFormat
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: Z
+            operator: concat
+      orderAsc:
+        simple: "false"
+      orderColumn:
+        simple: CreationTime
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Gets the list of restore points.
+      id: f781a2b9-b010-4b86-8d0e-88da0c26be7a
+      iscommand: true
+      name: Get Restore Points
+      script: VBR REST API|||veeam-vbr-get-restore-points
+      type: regular
+      version: -1
+    taskid: f781a2b9-b010-4b86-8d0e-88da0c26be7a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 710
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Select Start Date
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: date
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "1"
+        label: ""
+        labelarg:
+          simple: Select End Date
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: date
+      sender: ""
+      title: TimeRange
+      totalanswers: 0
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body: {}
+      cc: null
+      format: ""
+      methods: []
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Select Time Range.
+      id: bd432041-db4e-4ce7-810a-f727b68da104
+      iscommand: false
+      name: Select Time Range
+      type: collection
+      version: -1
+    taskid: bd432041-db4e-4ce7-810a-f727b68da104
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 520
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      AV:
+      - "7"
+      YARA:
+      - "8"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines a scan type - an antivirus solution or a Yara rule.
+      id: c4d076b4-b87c-4fcd-8658-23b03d613aae
+      iscommand: false
+      name: Select Scan Type
+      type: condition
+      version: -1
+    taskid: c4d076b4-b87c-4fcd-8658-23b03d613aae
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 1250
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      backupId:
+        complex:
+          accessor: backupId
+          root: Veeam.VBR.get_restore_points.data
+      backupObjectId:
+        complex:
+          root: inputs.backupObjectId
+      scanMode:
+        simple: MostRecent
+      useAntivirusEngine:
+        simple: "true"
+      useMostRecentPoint:
+        simple: "true"
+      useOldestPoint:
+        simple: "true"
+      useYaraRule:
+        simple: "false"
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Starts an antivirus scan.
+      id: 5b7f9b76-0eb3-4463-8274-6e485a5c5b1f
+      iscommand: true
+      name: Start AV Scan
+      script: VBR REST API|||veeam-vbr-start-malware-backup-scan
+      type: regular
+      version: -1
+    taskid: 5b7f9b76-0eb3-4463-8274-6e485a5c5b1f
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -800,
+          "y": 1985
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Gets a list of Yara rules.
+      id: 1cd3610f-e193-4096-827e-b299dfbf2034
+      iscommand: true
+      name: Get Yara Rules
+      script: VBR REST API|||veeam-vbr-get-yara-rules
+      type: regular
+      version: -1
+    taskid: 1cd3610f-e193-4096-827e-b299dfbf2034
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 1660
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Select Yara Rule
+        options: []
+        optionsarg:
+        - simple: ${Veeam.VBR.get_yara_rules.data}
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: YaraRule
+      totalanswers: 0
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: Select YARA Rule
+      cc: null
+      format: ""
+      methods: []
+      replyOptions:
+      - ""
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Select Yara Rule.
+      id: 0cb9153f-6006-4a79-8371-eb49450cc1b9
+      iscommand: false
+      name: Select Yara Rule
+      type: collection
+      version: -1
+    taskid: 0cb9153f-6006-4a79-8371-eb49450cc1b9
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 1890
+        }
+      }
+  "10":
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#error#':
+      - "27"
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      backupId:
+        complex:
+          accessor: backupId
+          root: Veeam.VBR.get_restore_points.data
+      backupObjectId:
+        complex:
+          root: inputs.backupObjectId
+      scanMode:
+        simple: MostRecent
+      useAntivirusEngine:
+        simple: "false"
+      useMostRecentPoint:
+        simple: "true"
+      useOldestPoint:
+        simple: "true"
+      useYaraRule:
+        simple: "true"
+      using:
+        complex:
+          root: inputs.Instance
+      yaraRule:
+        complex:
+          accessor: "0"
+          root: YaraRule.Answers
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Starts a Yara scan.
+      id: c02d43a8-87b2-4cc6-8750-038e01e2bdf4
+      iscommand: true
+      name: Start Yara Scan
+      script: VBR REST API|||veeam-vbr-start-malware-backup-scan
+      type: regular
+      version: -1
+    taskid: c02d43a8-87b2-4cc6-8750-038e01e2bdf4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 2140
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      AV:
+      - "14"
+      YARA:
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines a scan type - an antivirus solution or a Yara rule.
+      id: beaceb06-bdf2-4bf2-84ce-52766d203675
+      iscommand: false
+      name: Select Scan Type
+      type: condition
+      version: -1
+    taskid: beaceb06-bdf2-4bf2-84ce-52766d203675
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1220
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      backupId:
+        complex:
+          accessor: backupId
+          root: Veeam.VBR.get_restore_points.data
+      backupObjectId:
+        complex:
+          root: inputs.backupObjectId
+      endDate:
+        complex:
+          accessor: "1"
+          root: TimeRange.Answers
+          transformers:
+          - args:
+              format: {}
+            operator: toString
+          - args:
+              add_utc_timezone: {}
+              dayfirst: {}
+              fuzzy: {}
+              yearfirst: {}
+            operator: DateStringToISOFormat
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: Z
+            operator: concat
+      scanMode:
+        simple: AllInInterval
+      startDate:
+        complex:
+          accessor: "0"
+          root: TimeRange.Answers
+          transformers:
+          - args:
+              format: {}
+            operator: toString
+          - args:
+              add_utc_timezone: {}
+              dayfirst: {}
+              fuzzy: {}
+              yearfirst: {}
+            operator: DateStringToISOFormat
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: Z
+            operator: concat
+      useAntivirusEngine:
+        simple: "true"
+      useMostRecentPoint:
+        simple: "false"
+      useOldestPoint:
+        simple: "false"
+      useYaraRule:
+        simple: "false"
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Starts an antivirus scan.
+      id: 44f29dfd-f43c-4e58-8bd5-ae1bb96b8fc2
+      iscommand: true
+      name: Start AV Scan
+      script: VBR REST API|||veeam-vbr-start-malware-backup-scan
+      type: regular
+      version: -1
+    taskid: 44f29dfd-f43c-4e58-8bd5-ae1bb96b8fc2
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 810,
+          "y": 1590
+        }
+      }
+  "15":
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Gets a list of Yara rules.
+      id: dab3889a-02be-4531-82a6-d01e37dcc1e4
+      iscommand: true
+      name: Get Yara Rules
+      script: VBR REST API|||veeam-vbr-get-yara-rules
+      type: regular
+      version: -1
+    taskid: dab3889a-02be-4531-82a6-d01e37dcc1e4
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1230,
+          "y": 1600
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    form:
+      description: ""
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: Select Yara Rule
+        options: []
+        optionsarg:
+        - simple: ${Veeam.VBR.get_yara_rules.data}
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: ""
+        type: singleSelect
+      sender: ""
+      title: YaraRule
+      totalanswers: 0
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc: null
+      body:
+        simple: Select YARA Rule
+      cc: null
+      format: ""
+      methods: []
+      replyOptions:
+      - ""
+      subject: null
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to: null
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Select Yara Rule.
+      id: 1e0b4c98-1bda-4ea4-82d0-657ac1b71fbc
+      iscommand: false
+      name: Select Yara Rule
+      type: collection
+      version: -1
+    taskid: 1e0b4c98-1bda-4ea4-82d0-657ac1b71fbc
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 1250,
+          "y": 1770
+        }
+      }
+  "17":
+    continueonerror: true
+    continueonerrortype: errorPath
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#error#':
+      - "27"
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      backupId:
+        complex:
+          accessor: backupId
+          root: Veeam.VBR.get_restore_points.data
+      backupObjectId:
+        complex:
+          root: inputs.backupObjectId
+      endDate:
+        complex:
+          accessor: "1"
+          root: TimeRange.Answers
+          transformers:
+          - args:
+              format: {}
+            operator: toString
+          - args:
+              add_utc_timezone: {}
+              dayfirst: {}
+              fuzzy: {}
+              yearfirst: {}
+            operator: DateStringToISOFormat
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: Z
+            operator: concat
+      scanMode:
+        simple: AllInInterval
+      startDate:
+        complex:
+          accessor: "0"
+          root: TimeRange.Answers
+          transformers:
+          - args:
+              format: {}
+            operator: toString
+          - args:
+              add_utc_timezone: {}
+              dayfirst: {}
+              fuzzy: {}
+              yearfirst: {}
+            operator: DateStringToISOFormat
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: Z
+            operator: concat
+      useAntivirusEngine:
+        simple: "false"
+      useMostRecentPoint:
+        simple: "false"
+      useOldestPoint:
+        simple: "false"
+      useYaraRule:
+        simple: "true"
+      using:
+        complex:
+          root: inputs.Instance
+      yaraRule:
+        complex:
+          accessor: "0"
+          root: YaraRule.Answers
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Starts a Yara scan.
+      id: a5d741b6-b05d-416f-89ad-466f2e412b0b
+      iscommand: true
+      name: Start Yara Scan
+      script: VBR REST API|||veeam-vbr-start-malware-backup-scan
+      type: regular
+      version: -1
+    taskid: a5d741b6-b05d-416f-89ad-466f2e412b0b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 1985
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      AdditionalPollingCommandArgNames:
+        simple: using
+      AdditionalPollingCommandArgValues:
+        complex:
+          root: inputs.Instance
+      Ids:
+        complex:
+          accessor: id
+          root: Veeam.VBR.start_malware_backup_scan
+      Interval:
+        simple: "1"
+      PollingCommandArgName:
+        simple: id_
+      PollingCommandName:
+        simple: veeam-vbr-get-session
+      Timeout:
+        simple: "120"
+      dt:
+        simple: Veeam.VBR.get_session(val.state != 'Stopped').id
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
+        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
+        The remote action should have the following structure:
+
+        1. Initiate the operation.
+        2. Poll to check if the operation completed.
+        3. (optional) Get the results of the operation.
+      id: a9566d7f-f615-4f85-8b2b-ba8f1059d8ea
+      iscommand: false
+      name: GenericPolling
+      playbookId: GenericPolling
+      type: playbook
+      version: -1
+    taskid: a9566d7f-f615-4f85-8b2b-ba8f1059d8ea
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": 2580
+        }
+      }
+  "19":
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "20"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      id_:
+        complex:
+          accessor: id
+          root: Veeam.VBR.start_malware_backup_scan
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Gets session data.
+      id: db102743-1192-4d92-8fc6-dd7837d9b8c3
+      iscommand: true
+      name: Get Session
+      script: VBR REST API|||veeam-vbr-get-session
+      type: regular
+      version: -1
+    taskid: db102743-1192-4d92-8fc6-dd7837d9b8c3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 260,
+          "y": 2770
+        }
+      }
+  "20":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: result
+                root: Veeam.VBR.get_session.result
+          operator: isEqualString
+          right:
+            value:
+              simple: Success
+        - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: result
+                root: Veeam.VBR.get_session.result
+          operator: isEqualString
+          right:
+            value:
+              simple: Warning
+      label: "yes"
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "22"
+      "yes":
+      - "21"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check Session State.
+      id: 1ecb7cd1-bfda-48d2-84ba-d8cb95e30a65
+      iscommand: false
+      name: Check Session State
+      type: condition
+      version: -1
+    taskid: 1ecb7cd1-bfda-48d2-84ba-d8cb95e30a65
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 2960
+        }
+      }
+  "21":
+    continueonerrortype: ""
+    id: "21"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 4d187271-d4ad-40ad-8902-f52a7fb96774
+      iscommand: false
+      name: Success
+      type: title
+      version: -1
+      description: ''
+    taskid: 4d187271-d4ad-40ad-8902-f52a7fb96774
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 270,
+          "y": 3210
+        }
+      }
+  "22":
+    continueonerrortype: ""
+    id: "22"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Check Logs:
+      - "29"
+      Finish:
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns an error if Scan Backup has not been completed.
+      id: 52342b1d-95a1-4a22-8c97-11855c8f3ea4
+      iscommand: false
+      name: Failed
+      type: condition
+      version: -1
+    taskid: 52342b1d-95a1-4a22-8c97-11855c8f3ea4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -320,
+          "y": 3210
+        }
+      }
+  "23":
+    continueonerrortype: ""
+    id: "23"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: de3fdf0c-5430-4fc2-87a9-0c58e7adb3b3
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: de3fdf0c-5430-4fc2-87a9-0c58e7adb3b3
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 3830
+        }
+      }
+  "24":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: Veeam.VBR.get_restore_points.data
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "24"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "6"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check Restore Point Existence.
+      id: 8d891b50-22f6-4db3-8380-4a75efda0e4b
+      iscommand: false
+      name: Check Restore Point Existence
+      type: condition
+      version: -1
+    taskid: 8d891b50-22f6-4db3-8380-4a75efda0e4b
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 805
+        }
+      }
+  "25":
+    continueonerrortype: ""
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Finish:
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns an error if no restore points have been found.
+      id: 1c2878d9-5ad6-4533-8f57-39a20deb1a0d
+      iscommand: false
+      name: No Restore Points Found
+      type: condition
+      version: -1
+    taskid: 1c2878d9-5ad6-4533-8f57-39a20deb1a0d
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 240,
+          "y": 1155
+        }
+      }
+  "26":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                root: Veeam.VBR.get_restore_points.data
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "25"
+      "yes":
+      - "11"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check Restore Point Existence.
+      id: bdcaf5b1-9790-4092-8e48-634b9560e859
+      iscommand: false
+      name: Check Restore Point Existence
+      type: condition
+      version: -1
+    taskid: bdcaf5b1-9790-4092-8e48-634b9560e859
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 780,
+          "y": 905
+        }
+      }
+  "27":
+    continueonerrortype: ""
+    id: "27"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "28"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 78573dce-b338-4d10-8666-3cab0ef85f91
+      iscommand: false
+      name: Error
+      type: title
+      version: -1
+      description: ''
+    taskid: 78573dce-b338-4d10-8666-3cab0ef85f91
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 2500
+        }
+      }
+  "28":
+    continueonerrortype: ""
+    id: "28"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      Finish:
+      - "23"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns an error if a Yara scan cannot start.
+      id: da280c37-5919-4d1a-8e0e-18c480b488d4
+      iscommand: false
+      name: Failed to Start Yara Scan
+      type: condition
+      version: -1
+    taskid: da280c37-5919-4d1a-8e0e-18c480b488d4
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 2675
+        }
+      }
+  "29":
+    continueonerrortype: ""
+    id: "29"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "23"
+    note: false
+    quietmode: 2
+    scriptarguments:
+      id_:
+        complex:
+          accessor: id
+          root: Veeam.VBR.get_session
+      using:
+        complex:
+          root: inputs.Instance
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VBR REST API
+      description: Returns log records for the specified session.
+      id: a6f346a5-8d01-4935-850b-f12c9a209510
+      iscommand: true
+      name: Get Session Logs
+      script: VBR REST API|||veeam-vbr-get-session-logs
+      type: regular
+      version: -1
+    taskid: a6f346a5-8d01-4935-850b-f12c9a209510
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -430,
+          "y": 3460
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "22_23_Finish": 0.2,
+      "25_23_Finish": 0.31,
+      "28_23_Finish": 0.23
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4005,
+        "width": 2430,
+        "x": -800,
+        "y": -110
+      }
+    }
+  }

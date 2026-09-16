@@ -184,7 +184,7 @@ class DefaultValues(str, Enum):
 
     FROM_TIME = "1 minute ago"
     MAX_FETCH = "10000"
-    PAGE_SIZE = 1000
+    PAGE_SIZE = 500
 
 
 def get_formatted_time(date_input: str | None) -> str:
@@ -616,7 +616,7 @@ class Client(BaseClient):
 
         request_body = {
             APIKeys.QUERY.value: {
-                APIKeys.PAGE_SIZE.value: DefaultValues.PAGE_SIZE.value,
+                APIKeys.PAGE_SIZE.value: int(DefaultValues.PAGE_SIZE.value),
                 APIKeys.FILTER_MODEL.value: filter_model,
                 APIKeys.SORT_MODEL.value: sort_model,
             }

@@ -1,0 +1,34 @@
+{
+  "GoogleSecOps.CaseComment(val.name == obj.name)": [
+    {
+      "name": "projects/chronicle-mock-proj/locations/us/instances/mock-inst-uuid/cases/1001/caseComments/2001",
+      "commentId": "2001",
+      "createTime": "1780466772061",
+      "updateTime": "1780466772061",
+      "comment": "Initial assessment complete. Escalating to senior analyst.",
+      "isFavorite": true,
+      "alertIdentifier": "alert-mock-security-001",
+      "isDeleted": false,
+      "case": "1001"
+    },
+    {
+      "name": "projects/chronicle-mock-proj/locations/us/instances/mock-inst-uuid/cases/1001/caseComments/2002",
+      "commentId": "2002",
+      "createTime": "1780465892736",
+      "updateTime": "1780465892736",
+      "user": "user-uuid-mock-12345",
+      "comment": "Threat actor identified. Initiating containment measures.",
+      "userOwnerFullName": "Bob Wilson",
+      "lastEditorFullName": "Bob Wilson",
+      "isFavorite": false,
+      "isDeleted": false,
+      "deletedByUser": "user-uuid-mock-12345",
+      "case": "1001"
+    }
+  ],
+  "GoogleSecOps.PageToken(val.command == obj.command)": {
+    "command": "gcb-case-comment-list",
+    "nextPageToken": "mock-pagination-token",
+    "totalSize": 4
+  }
+}

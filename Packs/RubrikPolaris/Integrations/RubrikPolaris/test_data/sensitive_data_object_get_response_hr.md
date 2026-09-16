@@ -1,0 +1,4 @@
+### Sensitive Data Object
+|Object ID|Object Name|Object Type|Risk Level|OS Type|Account Name|Snapshot ID|Snapshot Timestamp|SLA Name|Daily Hits Change|Total Risk Hits|High Risk Hits|Medium Risk Hits|Low Risk Hits|No Risk Hits|Total Files with Hits|Stale Files with Hits|Open Access Files with Hits|Data Categories|Data Types|
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 00000000-0000-0000-0000-000000000001 | ran test | O365Site | High | NONE | rubrik-tme-lab | 00000000-0000-0000-0000-000000000001 | 2026-06-24T03:35:26Z | Silver | 0 | 40 | 20 | 10 | 5 | 5 | 11 | 8 | 0 | **-**	***name***: GLBA<br>	***totalViolatedHits***: 2<br>**-**	***name***: Financial<br>	***totalViolatedHits***: 3<br>**-**	***name***: U.S. Financials<br>	***totalViolatedHits***: 3 | **-**	***name***: Bank Account Number<br>	***totalViolatedHits***: 2<br>**-**	***name***: ABA Routing Number<br>	***totalViolatedHits***: 1 |

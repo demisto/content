@@ -1,4 +1,5 @@
 fromversion: 8.6.0  # Will be updated with XSIAM version updates
+toversion: 8.14.0
 id: IBM_Security_Verify_ModelingRule
 name: IBM Security Verify Modeling Rule
 rules: ''

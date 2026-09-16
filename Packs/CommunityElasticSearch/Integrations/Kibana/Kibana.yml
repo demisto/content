@@ -483,7 +483,7 @@ script:
       description: The version of the case being updated.
     - contextPath: Kibana.CaseInfo.id
       description: The unique identifier for a case.
-  dockerimage: demisto/elasticsearch:1.0.0.8425368
+  dockerimage: demisto/elasticsearch:1.0.0.10133006
   runonce: false
   script: ''
   subtype: python3

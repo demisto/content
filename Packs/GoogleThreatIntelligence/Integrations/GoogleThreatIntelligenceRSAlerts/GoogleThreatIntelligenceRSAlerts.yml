@@ -40,6 +40,16 @@ configuration:
   supportedModules:
   - xsiam
   - agentix
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  required: false
+  defaultvalue: '1'
+  advanced: true
+  section: Collect
+  supportedModules:
+  - xsiam
+  - agentix
 - display: Incident type
   name: incidentType
   defaultvalue: Google Threat Intelligence RS Alert
@@ -653,7 +663,7 @@ script:
     - contextPath: GoogleThreatIntelligenceRSAlerts.Alert.configurations
       description: List of configurations related to the alert.
       type: Array
-  dockerimage: demisto/python3:3.12.13.9059085
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true

@@ -1,0 +1,8 @@
+fromversion: 8.15.0
+id: ManageEngine-ADAudit_ModelingRule
+name: ManageEngine-ADAudit Modeling Rule
+rules: ''
+schema: ''
+tags: ManageEngine-ADAudit
+supportedModules:
+- xsiam

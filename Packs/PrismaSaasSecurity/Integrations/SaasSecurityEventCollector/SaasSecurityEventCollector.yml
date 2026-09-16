@@ -1,3 +1,5 @@
+name: SaaS Security Event Collector
+display: SaaS Security Event Collector
 category: Analytics & SIEM
 provider: Palo Alto Networks
 sectionorder:
@@ -32,29 +34,43 @@ configuration:
   required: false
   section: Connect
 - display: The maximum number of events per fetch.
-  additionalinfo: The maximum number of events to fetch every time fetch is being executed. This number must be divisible by 100 due to SaaS-Security api limitations. Default is 1000. In case this is empty, will default to 5000.
+  additionalinfo: 'The maximum number of events to fetch. Applies only to the manual ''saas-security-get-events'' command. During scheduled ''Fetch Events'', the collector drains as much of the queue as possible per cycle (bounded by ''The maximum number of iterations to retrieve events''), so this value does not throttle live ingestion. Must be divisible by 10 due to SaaS Security API limitations.'
   defaultvalue: 1000
   name: max_fetch
   type: 0
   required: false
   section: Collect
 - display: The maximum number of iterations to retrieve events
-  additionalinfo: In order to prevent timeouts, set this parameter to limit the number of iterations for retrieving events, Note - the default value is the recommended value to prevent timeouts. Increasing this value may cause timeouts.
-  defaultvalue: 50
+  additionalinfo: 'The maximum number of iterations to retrieve events. Each iteration retrieves up to 100 events from the SaaS Security queue (the API''s per-request limit). This is an upper bound on iterations per fetch execution; in practice each execution stops within a safe time budget before the engine timeout, so this mainly provides headroom to keep draining a large backlog for the full budget. The collector keeps draining across consecutive executions until the queue is empty. A lower configured value is automatically raised to the required minimum.'
+  defaultvalue: 900
   name: max_iterations
   type: 0
   required: false
   section: Collect
+- display: Number of concurrent fetch requests
+  additionalinfo: 'The number of GET requests issued concurrently against the SaaS Security queue per fetch round. Higher values increase drain throughput for high event rates. Maximum is 30. This is an advanced parameter.'
+  defaultvalue: 10
+  name: event_fetch_concurrency
+  type: 0
+  required: false
+  advanced: true
+  section: Collect
+- display: Treat an empty Cortex XSIAM response as delivered
+  additionalinfo: 'Whether to treat a send that fails only because Cortex XSIAM returned a success (200) with an empty/blank body (no JSON acknowledgement to parse) as delivered instead of being re-stashed and retried indefinitely. The events were already sent over the wire; only the acknowledgement was missing. Truncated or non-empty unparseable responses are still treated as real failures and retried. Enable this as a temporary workaround for a known server-side empty-body response; disable it to strictly require a valid acknowledgement. This is an advanced parameter.'
+  defaultvalue: 'true'
+  name: event_pass_over_empty_response
+  type: 8
+  required: false
+  advanced: true
+  section: Collect
 description: Palo Alto Networks SaaS Security Event Collector integration for XSIAM.
-display: SaaS Security Event Collector
-name: SaaS Security Event Collector
 script:
   commands:
-  - description: Manual command to fetch events and display them.
+  - description: Manual command to fetch events and display them. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     name: saas-security-get-events
     arguments:
     - name: limit
-      description: The maximum number of events to get. Must be divisible by 100 due to SaaS-Security api limitations. Overrides the max-fetch parameter of the integration.
+      description: The maximum number of events to get. Must be divisible by 10 due to SaaS Security API limitations. Overrides the max-fetch parameter of the integration.
     - auto: PREDEFINED
       defaultValue: 'False'
       description: Set this argument to True in order to create events, otherwise the command will only display them. *If setting to 'False' The returned events will be lost.
