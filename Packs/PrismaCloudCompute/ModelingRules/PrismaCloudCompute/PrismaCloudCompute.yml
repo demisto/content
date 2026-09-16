@@ -1,5 +1,4 @@
 fromversion: 8.3.0
-toversion: 8.14.0
 id: Prisma_Cloud_Compute_ModelingRule
 name: Prisma Cloud Compute Modeling Rule
 rules: ''
