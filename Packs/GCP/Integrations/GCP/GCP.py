@@ -2608,6 +2608,7 @@ def test_module(creds: Credentials, params: dict[str, Any]) -> str:
         GCPServices.STORAGE,
         GCPServices.CONTAINER,
         GCPServices.BIGQUERY,
+        GCPServices.LOGGING,
     ]
 
     for service in services_to_try:
