@@ -36,6 +36,12 @@ from GenericAPIEventCollector import (
 )
 from ContentClientApiModule import ContentClientAuthenticationError, OAuth2ClientCredentialsHandler
 
+# Async tests below carry an explicit @pytest.mark.asyncio. The test image ships pytest-asyncio
+# 0.21, which is strict-mode only: a bare `async def` test is reported as "async def functions
+# are not natively supported" and fails. A module-level pytestmark would also work, but it tags
+# the sync tests too and each one then emits a warning, so the marker is applied per test - the
+# same convention used across the repo.
+
 
 def test_datetime_to_timestamp_format():
     dt = datetime(2023, 5, 1, 12, 0, 0)
@@ -1105,6 +1111,7 @@ class _FakeClient:
     _verify = False
 
 
+@pytest.mark.asyncio
 async def test_refresh_token_stores_rotated_refresh_token_and_sets_expiry(mocker):
     """
     Given: an IdP that returns a new access token and a rotated refresh token.
@@ -1132,6 +1139,7 @@ async def test_refresh_token_stores_rotated_refresh_token_and_sets_expiry(mocker
     assert "rotated-refresh" in masked
 
 
+@pytest.mark.asyncio
 async def test_refresh_token_expiry_uses_the_same_clock_as_the_base_class(mocker):
     """
     Given: a token response with an expires_in of 120 seconds.
@@ -1158,6 +1166,7 @@ async def test_refresh_token_expiry_uses_the_same_clock_as_the_base_class(mocker
     assert not handler._should_refresh()
 
 
+@pytest.mark.asyncio
 async def test_refresh_token_falls_back_to_authorization_code_when_refresh_token_rejected(mocker):
     """
     Given: a stored refresh token that the IdP rejects with an HTTP 400.
@@ -1199,6 +1208,7 @@ async def test_refresh_token_falls_back_to_authorization_code_when_refresh_token
         "causes; this test then passes and the marker should be removed."
     ),
 )
+@pytest.mark.asyncio
 async def test_refresh_token_does_not_burn_the_authorization_code_on_a_timeout(mocker):
     """
     Given: a stored refresh token and a transient network timeout during the token request.
@@ -1222,6 +1232,7 @@ async def test_refresh_token_does_not_burn_the_authorization_code_on_a_timeout(m
     assert handler._stored_refresh_token == "stored-refresh"
 
 
+@pytest.mark.asyncio
 async def test_refresh_token_raises_when_the_response_has_no_access_token(mocker):
     """
     Given: an IdP that returns HTTP 200 with a body that omits access_token.
@@ -1251,6 +1262,7 @@ async def test_refresh_token_raises_when_the_response_has_no_access_token(mocker
         "the marker should be removed."
     ),
 )
+@pytest.mark.asyncio
 async def test_refresh_token_warns_when_the_idp_returns_no_refresh_token(mocker):
     """
     Given: an authorization-code redemption that returns no refresh token (a missing
@@ -1335,6 +1347,7 @@ def test_authorization_code_handler_uses_code_grant_when_context_is_empty(mocker
     assert handler.name == "oauth2_authorization_code"
 
 
+@pytest.mark.asyncio
 async def test_request_token_wraps_http_errors_with_status_and_body(mocker):
     """
     Given: an IdP that rejects the token request with an HTTP 401.
@@ -1362,6 +1375,7 @@ async def test_request_token_wraps_http_errors_with_status_and_body(mocker):
     assert "invalid_client" in str(exc_info.value)
 
 
+@pytest.mark.asyncio
 async def test_request_token_includes_credentials_and_scope_in_the_body(mocker):
     """
     Given: a handler configured with a scope.
@@ -1381,6 +1395,7 @@ async def test_request_token_includes_credentials_and_scope_in_the_body(mocker):
     assert body["scope"] == "events:read offline_access"
 
 
+@pytest.mark.asyncio
 async def test_request_token_omits_scope_when_not_configured(mocker):
     """
     Given: a handler with no scope configured.
