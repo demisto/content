@@ -13,7 +13,9 @@ filter
     xdm.source.ipv4 = ip_address,
     xdm.source.host.device_id = ip_address,
     xdm.source.user.upn = email,
+    xdm.source.identity.upn = email,
     xdm.source.user.username = email,
+    xdm.source.identity.username = email,
     xdm.target.resource.name = "Zoom",
 
     get_event_time = parse_timestamp("%Y-%m-%dT%H:%M:%SZ", time),
@@ -22,6 +24,7 @@ filter
     get_is_service = if(email ~= "^rooms_", true, false),
     xdm.logon.type = if(get_is_service, XDM_CONST.LOGON_TYPE_SERVICE, XDM_CONST.LOGON_TYPE_INTERACTIVE),
     xdm.source.user.user_type = if(get_is_service, XDM_CONST.USER_TYPE_SERVICE_ACCOUNT, XDM_CONST.USER_TYPE_REGULAR),
+    xdm.source.identity.user_type = if(get_is_service, XDM_CONST.USER_TYPE_SERVICE_ACCOUNT, XDM_CONST.USER_TYPE_REGULAR),
 
     get_user_agent = concat(client_type, " ", version),
     xdm.source.user_agent = get_user_agent,
@@ -51,8 +54,11 @@ filter
     xdm.event.original_event_type = action,
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
     xdm.source.user.upn = operator,
+    xdm.source.identity.upn = operator,
     xdm.source.user.identifier = operator,
+    xdm.source.identity.identifier = operator,
     xdm.source.user.full_domain_name = if(operator ~= "@", arrayindex(split(operator, "@"), 1), null),
+    xdm.source.identity.full_domain_name = if(operator ~= "@", arrayindex(split(operator, "@"), 1), null),
     xdm.target.resource.type = category_type,
     xdm.target.resource.name = operation_detail,
     xdm.observer.type = "Zoom",
@@ -68,6 +74,11 @@ filter
         XDM_CONST.OPERATION_TYPE_OTHER),
 
     xdm.source.user.user_type = if(
+        operator = null or operator = "", null,
+        operator ~= "^room_.*@", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
+        operator ~= "@", XDM_CONST.USER_TYPE_REGULAR,
+        XDM_CONST.USER_TYPE_APPLICATION),
+    xdm.source.identity.user_type = if(
         operator = null or operator = "", null,
         operator ~= "^room_.*@", XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,
         operator ~= "@", XDM_CONST.USER_TYPE_REGULAR,
