@@ -1,5 +1,6 @@
 from datetime import datetime
 import json
+import time
 import pytest
 import demistomock as demisto
 from unittest.mock import MagicMock
@@ -21,6 +22,7 @@ from Doppel import (
     _get_mirroring_fields,
     _get_remote_updated_incident_data_with_entry,
     _normalize_entity_content_for_grid,
+    _reopen_entry_if_revived,
     _parse_fetch_timeout,
     _parse_max_fetch,
     _incident_alert_id,
@@ -1281,6 +1283,43 @@ def test_client_initialization_proxy_default_none(mocker):
     assert call_kwargs["proxy"] is None
 
 
+def test_client_sends_attribution_headers(requests_mock):
+    """Every Doppel API request carries the x-doppel-client attribution header and User-Agent."""
+    from Doppel import CLIENT_ATTRIBUTION, PACK_VERSION
+
+    client = Client(base_url="https://api.doppel.com/v1", api_key="test-api-key", verify=True)
+    alert_mock = requests_mock.get("https://api.doppel.com/v1/alert", json={"id": "TET-1"})
+
+    client.get_alert(id="TET-1", entity="")
+
+    assert f"xsoar/{PACK_VERSION}" == CLIENT_ATTRIBUTION
+    assert alert_mock.last_request.headers["x-doppel-client"] == CLIENT_ATTRIBUTION
+    assert alert_mock.last_request.headers["User-Agent"] == f"doppel-{CLIENT_ATTRIBUTION}"
+    # Attribution never replaces auth headers.
+    assert alert_mock.last_request.headers["x-api-key"] == "test-api-key"
+
+
+def test_pack_version_matches_pack_metadata():
+    """PACK_VERSION (used in attribution headers) must match pack_metadata.json.
+
+    pack_metadata.json is not readable at runtime, so Doppel.py carries the version as a
+    hardcoded constant that must be bumped manually on every release. This test makes CI
+    fail if the two ever drift apart.
+    """
+    from pathlib import Path
+
+    from Doppel import PACK_VERSION
+
+    pack_metadata_path = Path(__file__).resolve().parents[2] / "pack_metadata.json"
+    pack_metadata = json.loads(pack_metadata_path.read_text())
+
+    assert pack_metadata["currentVersion"] == PACK_VERSION, (
+        f"pack_metadata.json currentVersion ({pack_metadata['currentVersion']}) does not match "
+        f"PACK_VERSION ({PACK_VERSION}) in Doppel.py; bump the constant so the x-doppel-client "
+        f"attribution header reports the released pack version."
+    )
+
+
 def test_main_function_with_proxy_enabled(mocker):
     """Test main function when proxy is enabled in params."""
     # Mock demisto functions
@@ -1479,3 +1518,205 @@ def test_fetch_incidents_persists_boundary_ids(mocker):
     last_run_data = set_last_run.call_args[0][0]
     assert last_run_data["last_run"] == "2025-01-27T07:55:12Z"
     assert last_run_data["recently_seen_ids"] == ["TET-2"]
+
+
+# ---------------- Revival reopen entries ----------------
+
+
+def test_reopen_entry_emitted_for_fresh_transition_into_active_queue():
+    """A queue move into an active queue after lastUpdate produces a dbotIncidentReopen entry."""
+    last_update = datetime(2025, 3, 1, 12, 0, 0)
+    alert = {"queue_state": "doppel_review"}
+    audit_logs = [
+        {"type": "queue_state_change", "value": "monitoring", "timestamp": "2025-02-01T09:00:00"},
+        {"type": "queue_state_change", "value": "Doppel Review", "timestamp": "2025-03-02T10:00:00"},
+    ]
+
+    entry = _reopen_entry_if_revived(alert, audit_logs, last_update)
+
+    assert entry is not None
+    assert entry["Contents"] == {"dbotIncidentReopen": True}
+
+
+def test_reopen_entry_not_emitted_for_inactive_queue():
+    """Alerts sitting in monitoring or archived never trigger a reopen."""
+    last_update = datetime(2025, 3, 1, 12, 0, 0)
+    audit_logs = [{"type": "queue_state_change", "value": "archived", "timestamp": "2025-03-02T10:00:00"}]
+
+    assert _reopen_entry_if_revived({"queue_state": "archived"}, audit_logs, last_update) is None
+    assert _reopen_entry_if_revived({"queue_state": "monitoring"}, audit_logs, last_update) is None
+
+
+def test_reopen_entry_not_emitted_for_stale_transition():
+    """An active queue state reached before lastUpdate does not reopen on every mirror cycle."""
+    last_update = datetime(2025, 3, 1, 12, 0, 0)
+    alert = {"queue_state": "actioned"}
+    audit_logs = [{"type": "queue_state_change", "value": "actioned", "timestamp": "2025-01-15T10:00:00"}]
+
+    assert _reopen_entry_if_revived(alert, audit_logs, last_update) is None
+
+
+def test_reopen_entry_requires_parseable_last_update():
+    """Without a usable lastUpdate there is no safe transition baseline, so no reopen."""
+    alert = {"queue_state": "actioned"}
+    audit_logs = [{"type": "queue_state_change", "value": "actioned", "timestamp": "2025-03-02T10:00:00"}]
+
+    assert _reopen_entry_if_revived(alert, audit_logs, None) is None
+
+
+# ---------------- API V2 (OAuth 2.0 client credentials) ----------------
+
+V2_BASE_URL = "https://api.doppel.com/v2"
+V2_TOKEN_URL = "https://api.doppel.com/oauth/token"
+
+
+def _v2_client():
+    return Client(
+        base_url=V2_BASE_URL,
+        verify=True,
+        api_version="v2",
+        oauth_client_id="test-client-id",
+        oauth_client_secret="test-client-secret",
+        token_url=V2_TOKEN_URL,
+    )
+
+
+def _mock_integration_context(mocker, initial=None):
+    """Replace the integration context with an in-memory store; returns the store."""
+    store = {"ctx": initial or {}}
+    mocker.patch("Doppel.get_integration_context", side_effect=lambda: store["ctx"])
+    mocker.patch("Doppel.set_integration_context", side_effect=lambda ctx: store.update(ctx=ctx))
+    return store
+
+
+def test_v2_mints_token_and_sends_bearer(mocker, requests_mock):
+    """With no cached token, a request first mints a token, caches it, and sends it as a Bearer header."""
+    store = _mock_integration_context(mocker)
+    token_mock = requests_mock.post(V2_TOKEN_URL, json={"access_token": "tok-1", "expires_in": 86400})
+    alert_mock = requests_mock.get(f"{V2_BASE_URL}/alert", json={"id": "TET-1"})
+
+    result = _v2_client().get_alert(id="TET-1", entity="")
+
+    assert result == {"id": "TET-1"}
+    assert token_mock.call_count == 1
+    assert token_mock.last_request.json() == {
+        "client_id": "test-client-id",
+        "client_secret": "test-client-secret",
+        "audience": "doppel-external",
+        "grant_type": "client_credentials",
+    }
+    assert alert_mock.last_request.headers["Authorization"] == "Bearer tok-1"
+    assert store["ctx"]["oauth_token"]["access_token"] == "tok-1"
+    # Attribution headers ride along on both the token mint and the API request.
+    from Doppel import CLIENT_ATTRIBUTION
+
+    assert token_mock.last_request.headers["x-doppel-client"] == CLIENT_ATTRIBUTION
+    assert alert_mock.last_request.headers["x-doppel-client"] == CLIENT_ATTRIBUTION
+    assert alert_mock.last_request.headers["User-Agent"] == f"doppel-{CLIENT_ATTRIBUTION}"
+
+
+def test_v2_reuses_cached_token(mocker, requests_mock):
+    """A cached, unexpired token is reused without calling the token endpoint."""
+    future_expiry = int(time.time()) + 3600
+    _mock_integration_context(mocker, {"oauth_token": {"access_token": "cached-tok", "expiry_epoch": future_expiry}})
+    token_mock = requests_mock.post(V2_TOKEN_URL, json={"access_token": "should-not-be-minted"})
+    alert_mock = requests_mock.get(f"{V2_BASE_URL}/alert", json={"id": "TET-1"})
+
+    _v2_client().get_alert(id="TET-1", entity="")
+
+    assert token_mock.call_count == 0
+    assert alert_mock.last_request.headers["Authorization"] == "Bearer cached-tok"
+
+
+def test_v2_expired_token_is_reminted(mocker, requests_mock):
+    """A cached token past its expiry is replaced with a freshly minted one."""
+    past_expiry = int(time.time()) - 10
+    store = _mock_integration_context(mocker, {"oauth_token": {"access_token": "old-tok", "expiry_epoch": past_expiry}})
+    requests_mock.post(V2_TOKEN_URL, json={"access_token": "fresh-tok", "expires_in": 86400})
+    alert_mock = requests_mock.get(f"{V2_BASE_URL}/alert", json={"id": "TET-1"})
+
+    _v2_client().get_alert(id="TET-1", entity="")
+
+    assert alert_mock.last_request.headers["Authorization"] == "Bearer fresh-tok"
+    assert store["ctx"]["oauth_token"]["access_token"] == "fresh-tok"
+
+
+def test_v2_401_retries_once_with_fresh_token(mocker, requests_mock):
+    """A 401 on a cached token invalidates the cache, mints once, and retries the request once."""
+    future_expiry = int(time.time()) + 3600
+    _mock_integration_context(mocker, {"oauth_token": {"access_token": "revoked-tok", "expiry_epoch": future_expiry}})
+    token_mock = requests_mock.post(V2_TOKEN_URL, json={"access_token": "fresh-tok", "expires_in": 86400})
+    alert_mock = requests_mock.get(
+        f"{V2_BASE_URL}/alert",
+        [
+            {"status_code": 401, "json": {"error": "unauthorized"}},
+            {"status_code": 200, "json": {"id": "TET-1"}},
+        ],
+    )
+
+    result = _v2_client().get_alert(id="TET-1", entity="")
+
+    assert result == {"id": "TET-1"}
+    assert token_mock.call_count == 1
+    assert alert_mock.call_count == 2
+    assert alert_mock.request_history[0].headers["Authorization"] == "Bearer revoked-tok"
+    assert alert_mock.request_history[1].headers["Authorization"] == "Bearer fresh-tok"
+
+
+def test_v2_token_429_raises_readable_error(mocker, requests_mock):
+    """A 429 from the token endpoint surfaces the mint quota and the Retry-After value."""
+    _mock_integration_context(mocker)
+    requests_mock.post(V2_TOKEN_URL, status_code=429, headers={"Retry-After": "1200"}, json={})
+
+    with pytest.raises(DemistoException, match="token request limit.*1200"):
+        _v2_client().get_alert(id="TET-1", entity="")
+
+
+def test_v2_token_401_raises_credentials_error(mocker, requests_mock):
+    """A 401 from the token endpoint points at the Client ID / Client Secret."""
+    _mock_integration_context(mocker)
+    requests_mock.post(V2_TOKEN_URL, status_code=401, json={})
+
+    with pytest.raises(DemistoException, match="Client ID and.*Client Secret"):
+        _v2_client().get_alert(id="TET-1", entity="")
+
+
+def test_v1_client_sends_api_key_not_bearer(requests_mock):
+    """A V1 client keeps the legacy header auth and never touches the OAuth flow."""
+    client = Client(base_url="https://api.doppel.com/v1", api_key="test-api-key", verify=True)
+    alert_mock = requests_mock.get("https://api.doppel.com/v1/alert", json={"id": "TET-1"})
+
+    client.get_alert(id="TET-1", entity="")
+
+    assert alert_mock.last_request.headers["x-api-key"] == "test-api-key"
+    assert "Authorization" not in alert_mock.last_request.headers
+
+
+def test_main_v2_requires_client_credentials(mocker):
+    """Selecting V2 without client credentials fails fast with a clear message."""
+    from Doppel import main
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"url": "https://api.doppel.com/", "api_version": "V2 (OAuth 2.0 Client Credentials)"},
+    )
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    return_error_mock = mocker.patch("Doppel.return_error")
+
+    main()
+
+    assert "Client ID and a Client Secret" in return_error_mock.call_args[0][0]
+
+
+def test_main_v1_requires_api_key(mocker):
+    """The V1 default without an API Key fails fast with a clear message."""
+    from Doppel import main
+
+    mocker.patch.object(demisto, "params", return_value={"url": "https://api.doppel.com/"})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    return_error_mock = mocker.patch("Doppel.return_error")
+
+    main()
+
+    assert "requires an API Key" in return_error_mock.call_args[0][0]

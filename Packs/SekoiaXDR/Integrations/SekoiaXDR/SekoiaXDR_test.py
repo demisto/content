@@ -1262,3 +1262,48 @@ def test_http_request_preserves_explicit_retry_args(client, mocker):
     assert kwargs["retries"] == 0
     assert kwargs["status_list_to_retry"] == SekoiaXDR.API_STATUS_LIST_TO_RETRY
     assert kwargs["backoff_factor"] == SekoiaXDR.API_BACKOFF_FACTOR
+
+
+def test_trigger_query_execution_command(client, requests_mock):
+    mock_response = {"task_id": "11111111-1111-1111-1111-111111111111", "uuid": "22222222-2222-2222-2222-222222222222"}
+    requests_mock.post(MOCK_URL + "/v1/notebooks/queries/runs", json=mock_response)
+
+    args = {"query_definition": json.dumps({"ql_query": "events\n| limit 10"})}
+    result = SekoiaXDR.trigger_query_execution_command(client=client, args=args)
+
+    assert result.outputs == mock_response
+
+
+def test_get_query_run_command(client, requests_mock):
+    query_run_uuid = "22222222-2222-2222-2222-222222222222"
+
+    requests_mock.get(MOCK_URL + f"/v1/notebooks/queries/runs/{query_run_uuid}", json={"status": "finished"})
+
+    args = {"query_run_uuid": query_run_uuid}
+    result = SekoiaXDR.get_query_run_command(client=client, args=args)
+
+    assert result.outputs["status"] == "finished"
+
+
+def test_download_query_result_command(client, requests_mock):
+    query_run_uuid = "22222222-2222-2222-2222-222222222222"
+
+    mock_response = "Header\nresult"
+    requests_mock.get(MOCK_URL + f"/v1/notebooks/queries/runs/{query_run_uuid}/download", text=mock_response)
+
+    args = {"query_run_uuid": query_run_uuid, "result_format": "csv"}
+    result = SekoiaXDR.download_query_result_command(client=client, args=args)
+
+    assert result["File"] == "result.csv"
+
+
+def test_run_query_command(client, requests_mock):
+    args = {"query_definition": json.dumps({"ql_query": "events\n| limit 10"}), "result_format": "csv"}
+    query_run_uuid = "22222222-2222-2222-2222-222222222222"
+    mock_response_1 = {"task_id": "11111111-1111-1111-1111-111111111111", "uuid": query_run_uuid}
+    requests_mock.post(MOCK_URL + "/v1/notebooks/queries/runs", json=mock_response_1)
+    requests_mock.get(MOCK_URL + f"/v1/notebooks/queries/runs/{query_run_uuid}", json={"status": "finished"})
+    requests_mock.get(MOCK_URL + f"/v1/notebooks/queries/runs/{query_run_uuid}/download", text="Header\nresult")
+
+    result = SekoiaXDR.run_query_command(args=args, client=client)
+    assert result["File"] == "result.csv"
