@@ -64,6 +64,23 @@ def get_mute_state(entries: list[dict[str, Any]]) -> str:
     return ""
 
 
+def get_error_message(result: Any) -> str:
+    """
+    Extract the readable error text from a failed command result.
+
+    :param result: The error returned by the command, either an error message or the raw entry(s).
+    :return: The extracted error text.
+    """
+    if isinstance(result, str):
+        return result.strip()
+
+    entries = result if isinstance(result, list) else [result]
+
+    messages = [str(entry.get("Contents") or "").strip() for entry in entries if isinstance(entry, dict)]
+
+    return "\n".join(message for message in messages if message) or str(result)
+
+
 def set_mute_state_on_incident(finding_name: str, mute_state: str) -> None:
     """
     Set the mute state of the finding on the "GoogleCloudSCC Finding Mute Status" field of the current incident.
@@ -79,7 +96,7 @@ def set_mute_state_on_incident(finding_name: str, mute_state: str) -> None:
         fail_on_error=False,
     )
     if not is_successful:
-        raise DemistoException(ERROR_MESSAGES["SET_INCIDENT_FAILED"].format(finding_name, entries))
+        raise DemistoException(ERROR_MESSAGES["SET_INCIDENT_FAILED"].format(finding_name, get_error_message(entries)))
 
 
 def unmute_finding(args: dict[str, Any]) -> list[dict[str, Any]]:
@@ -96,7 +113,7 @@ def unmute_finding(args: dict[str, Any]) -> list[dict[str, Any]]:
 
     is_successful, entries = execute_command(UNMUTE_COMMAND, command_args, extract_contents=False, fail_on_error=False)
     if not is_successful:
-        raise DemistoException(ERROR_MESSAGES["UNMUTE_FAILED"].format(finding_name, entries))
+        raise DemistoException(ERROR_MESSAGES["UNMUTE_FAILED"].format(finding_name, get_error_message(entries)))
 
     entries = entries if isinstance(entries, list) else [entries]
 
@@ -109,6 +126,7 @@ def main():  # pragma: no cover
     try:
         return_results(unmute_finding(demisto.args()))
     except Exception as exception:
+        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Failed to execute GoogleCloudSCCUnmuteFinding script. Error: {exception}")
 
 

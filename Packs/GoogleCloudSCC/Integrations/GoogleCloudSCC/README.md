@@ -77,7 +77,7 @@ To fetch incidents using Google Pub/Sub, we need to configure Pub/Sub first. Thi
 
 * Enable the Security Command Center API notifications feature. Notifications send information to a Pub/Sub topic to provide findings updates and new findings within minutes. Set up the notifications as per [Google Documentation](https://cloud.google.com/security-command-center/docs/how-to-notifications) available and get SCC data in Cortex XSOAR.
 * The basic parameters required for setting up pub/sub notifications are ORGANIZATION_ID, PUBSUB_TOPIC, DESCRIPTION and FILTER.
-* Before creating a pub/sub notification, make sure to check the filter parameters using **google-cloud-scc-v2-finding-list** command provided in this integration (**google-cloud-scc-finding-list** is deprecated). The total size applicable for the filter provided can be checked using _Total retrieved findings_ available inside the command results section. A maximum of 200 findings per minute is recommended.
+* Before creating a Pub/Sub notification, make sure to check the filter parameters using the **google-cloud-scc-v2-finding-list** command provided in this integration (**google-cloud-scc-finding-list** is deprecated). The total size applicable for the filter provided can be checked using _Total retrieved findings_ available inside the command results section. A maximum of 200 findings per minute is recommended.
 
 ## Configure GoogleCloudSCC on Cortex XSOAR
 
@@ -5796,9 +5796,9 @@ Mute an organization's or source's finding using the Security Command Center v2 
 {
     "GoogleCloudSCC": {
         "FindingV2": {
-            "name": "organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a",
-            "canonicalName": "organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a",
-            "parent": "organizations/1094826489209/sources/5629340921983475201",
+            "name": "organizations/123/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a",
+            "canonicalName": "organizations/123/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a",
+            "parent": "organizations/123/sources/5629340921983475201",
             "resourceName": "//compute.googleapis.com/projects/prod-webapp-284917/zones/us-central1-a/instances/web-server-01",
             "state": "ACTIVE",
             "category": "Malware: Cryptomining Bad IP",
@@ -5824,12 +5824,12 @@ Mute an organization's or source's finding using the Security Command Center v2 
                 "srcip": "0.0.0.1"
             },
             "securityMarks": {
-                "name": "organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a/securityMarks",
+                "name": "organizations/123/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a/securityMarks",
                 "marks": {
                     "priority": "P1",
                     "reviewed": "true"
                 },
-                "canonicalName": "organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a/securityMarks"
+                "canonicalName": "organizations/123/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a/securityMarks"
             },
             "eventTime": "2020-02-18T07:26:42Z",
             "createTime": "2020-02-19T13:37:43.858Z",
@@ -5842,7 +5842,7 @@ Mute an organization's or source's finding using the Security Command Center v2 
                 },
                 "dynamicMuteRecords": [
                     {
-                        "muteConfig": "organizations/1094826489209/muteConfigs/known-cryptomining-testrange",
+                        "muteConfig": "organizations/123/muteConfigs/known-cryptomining-testrange",
                         "matchTime": "2020-02-18T07:26:42Z"
                     }
                 ]
@@ -5938,7 +5938,7 @@ Mute an organization's or source's finding using the Security Command Center v2 
             "muteUpdateTime": "2020-02-18T07:26:42Z",
             "externalSystems": {
                 "jira": {
-                    "name": "organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a/externalSystems/jira",
+                    "name": "organizations/123/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a/externalSystems/jira",
                     "assignees": [
                         "secops@example.com"
                     ],
@@ -6256,7 +6256,7 @@ Mute an organization's or source's finding using the Security Command Center v2 
             "attackExposure": {
                 "score": 8.5,
                 "latestCalculationTime": "2020-02-18T07:26:42Z",
-                "attackExposureResult": "organizations/1094826489209/simulations/latest/attackExposureResults/6d7e8f9a",
+                "attackExposureResult": "organizations/123/simulations/latest/attackExposureResults/6d7e8f9a",
                 "state": "CALCULATED",
                 "exposedHighValueResourcesCount": 3,
                 "exposedMediumValueResourcesCount": 5,
@@ -6314,7 +6314,7 @@ Mute an organization's or source's finding using the Security Command Center v2 
             },
             "orgPolicies": [
                 {
-                    "name": "organizations/1094826489209/policies/compute.requireShieldedVm"
+                    "name": "organizations/123/policies/compute.requireShieldedVm"
                 }
             ],
             "job": {
@@ -6384,10 +6384,10 @@ Mute an organization's or source's finding using the Security Command Center v2 
                 "backupCreateTime": "2020-02-18T07:26:42Z"
             },
             "securityPosture": {
-                "name": "organizations/1094826489209/locations/global/postures/production-posture",
+                "name": "organizations/123/locations/global/postures/production-posture",
                 "revisionId": "a1b2c3d4",
-                "postureDeploymentResource": "organizations/1094826489209",
-                "postureDeployment": "organizations/1094826489209/locations/global/postureDeployments/prod-deployment",
+                "postureDeploymentResource": "organizations/123",
+                "postureDeployment": "organizations/123/locations/global/postureDeployments/prod-deployment",
                 "changedPolicy": "compute.requireShieldedVm",
                 "policySet": "cis-gcp-1.2",
                 "policy": "compute.requireShieldedVm",
@@ -6448,7 +6448,7 @@ Mute an organization's or source's finding using the Security Command Center v2 
             "toxicCombination": {
                 "attackExposureScore": 9.1,
                 "relatedFindings": [
-                    "organizations/1094826489209/sources/5629340921983475201/locations/global/findings/aabbccddeeff00112233445566778899"
+                    "organizations/123/sources/5629340921983475201/locations/global/findings/aabbccddeeff00112233445566778899"
                 ]
             },
             "groupMemberships": [
@@ -6506,7 +6506,7 @@ Mute an organization's or source's finding using the Security Command Center v2 
             },
             "chokepoint": {
                 "relatedFindings": [
-                    "organizations/1094826489209/sources/5629340921983475201/locations/global/findings/aabbccddeeff00112233445566778899"
+                    "organizations/123/sources/5629340921983475201/locations/global/findings/aabbccddeeff00112233445566778899"
                 ]
             },
             "complianceDetails": {
@@ -6533,7 +6533,7 @@ Mute an organization's or source's finding using the Security Command Center v2 
                     "version": 1
                 },
                 "cloudControlDeploymentNames": [
-                    "organizations/1094826489209/locations/global/cloudControlDeployments/shielded-vm-enabled"
+                    "organizations/123/locations/global/cloudControlDeployments/shielded-vm-enabled"
                 ]
             },
             "vertexAi": {
@@ -6635,7 +6635,7 @@ Mute an organization's or source's finding using the Security Command Center v2 
 >
 >|Organization ID|Name|Mute|State|Severity|Category|Event Time (In UTC)|Create Time (In UTC)|External Uri|Resource Name|
 >|---|---|---|---|---|---|---|---|---|---|
->| 123 | [organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a](https://console.cloud.google.com/security/command-center/findings?organizationId=123&resourceId=organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a) | MUTED | ACTIVE | CRITICAL | Malware: Cryptomining Bad IP | February 18, 2020 at 07:26:42 AM | February 19, 2020 at 01:37:43 PM | [https://console.cloud.google.com/compute/instancesDetail/zones/us-central1-a/instances/web-server-01?project=prod-webapp-284917](https://console.cloud.google.com/compute/instancesDetail/zones/us-central1-a/instances/web-server-01?project=prod-webapp-284917) | //compute.googleapis.com/projects/prod-webapp-284917/zones/us-central1-a/instances/web-server-01 |
+>| 123 | [organizations/123/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a](https://console.cloud.google.com/security/command-center/findings?organizationId=123&resourceId=organizations/123/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a) | MUTED | ACTIVE | CRITICAL | Malware: Cryptomining Bad IP | February 18, 2020 at 07:26:42 AM | February 19, 2020 at 01:37:43 PM | [https://console.cloud.google.com/compute/instancesDetail/zones/us-central1-a/instances/web-server-01?project=prod-webapp-284917](https://console.cloud.google.com/compute/instancesDetail/zones/us-central1-a/instances/web-server-01?project=prod-webapp-284917) | //compute.googleapis.com/projects/prod-webapp-284917/zones/us-central1-a/instances/web-server-01 |
 
 ### google-cloud-scc-finding-unmute
 
@@ -8039,7 +8039,7 @@ Get a mute rule (mute config) of an organization using the Security Command Cent
 
 #### Command Example
 
-```!google-cloud-scc-mute-rule-get name="organizations/1094826489209/locations/global/muteConfigs/mute-cryptomining-alerts"```
+```!google-cloud-scc-mute-rule-get name="organizations/123/locations/global/muteConfigs/mute-cryptomining-alerts"```
 
 #### Context Example
 
@@ -8047,7 +8047,7 @@ Get a mute rule (mute config) of an organization using the Security Command Cent
 {
     "GoogleCloudSCC": {
         "MuteRule": {
-            "name": "organizations/1094826489209/locations/global/muteConfigs/mute-cryptomining-alerts",
+            "name": "organizations/123/locations/global/muteConfigs/mute-cryptomining-alerts",
             "description": "Mute low severity cryptomining findings for the staging project.",
             "filter": "severity=\"LOW\" AND category=\"Malware: Cryptomining Bad IP\"",
             "createTime": "2020-02-18T07:26:42Z",
@@ -8067,7 +8067,7 @@ Get a mute rule (mute config) of an organization using the Security Command Cent
 >
 >|Organization ID|Name|Description|Filter|Type|Most Recent Editor|Create Time (In UTC)|Update Time (In UTC)|Expiry Time (In UTC)|
 >|---|---|---|---|---|---|---|---|---|
->| 123 | organizations/1094826489209/locations/global/muteConfigs/mute-cryptomining-alerts | Mute low severity cryptomining findings for the staging project. | severity="LOW" AND category="Malware: Cryptomining Bad IP" | DYNAMIC | <secops@example.com> | February 18, 2020 at 07:26:42 AM | February 19, 2020 at 01:37:43 PM | March 18, 2020 at 07:26:42 AM |
+>| 123 | organizations/123/locations/global/muteConfigs/mute-cryptomining-alerts | Mute low severity cryptomining findings for the staging project. | severity="LOW" AND category="Malware: Cryptomining Bad IP" | DYNAMIC | <secops@example.com> | February 18, 2020 at 07:26:42 AM | February 19, 2020 at 01:37:43 PM | March 18, 2020 at 07:26:42 AM |
 
 ### google-cloud-scc-mute-rule-create
 
@@ -8113,7 +8113,7 @@ Create a mute rule (mute config) for an organization using the Security Command 
 {
     "GoogleCloudSCC": {
         "MuteRule": {
-            "name": "organizations/1094826489209/locations/global/muteConfigs/mute-cryptomining-alerts",
+            "name": "organizations/123/locations/global/muteConfigs/mute-cryptomining-alerts",
             "description": "Mute low severity cryptomining findings for the staging project.",
             "filter": "severity=\"LOW\" AND category=\"Malware: Cryptomining Bad IP\"",
             "createTime": "2020-02-18T07:26:42Z",
@@ -8132,7 +8132,7 @@ Create a mute rule (mute config) for an organization using the Security Command 
 >
 >|Organization ID|Name|Description|Filter|Type|Most Recent Editor|Create Time (In UTC)|Update Time (In UTC)|Expiry Time (In UTC)|
 >|---|---|---|---|---|---|---|---|---|
->| 123 | organizations/1094826489209/locations/global/muteConfigs/mute-cryptomining-alerts | Mute low severity cryptomining findings for the staging project. | severity="LOW" AND category="Malware: Cryptomining Bad IP" | DYNAMIC | <secops@example.com> | February 18, 2020 at 07:26:42 AM | February 18, 2020 at 07:26:42 AM | March 18, 2020 at 07:26:42 AM |
+>| 123 | organizations/123/locations/global/muteConfigs/mute-cryptomining-alerts | Mute low severity cryptomining findings for the staging project. | severity="LOW" AND category="Malware: Cryptomining Bad IP" | DYNAMIC | <secops@example.com> | February 18, 2020 at 07:26:42 AM | February 18, 2020 at 07:26:42 AM | March 18, 2020 at 07:26:42 AM |
 
 ## Known Limitations
 

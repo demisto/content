@@ -30,7 +30,7 @@ An enabled **Google Cloud SCC** integration instance is required. The **GoogleCl
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| finding_name | The relative resource name of the finding to unmute.<br/>In the v2 API the name may include an optional "locations/{location}" segment. If no location is specified, the finding is assumed to be in "global".<br/><br/>Format: organizations/{organization_id}/sources/{source_id}/findings/{findingId} or organizations/{organization_id}/sources/{source_id}/locations/{location_id}/findings/{findingId}<br/><br/>Example: organizations/595779152576/sources/14801394649435054450/locations/global/findings/bc5a86da657611ebb979005056a5924e.<br/><br/>If not provided, the value of the "GoogleCloudSCC Finding Name" incident field is used. | Optional |
+| finding_name | The relative resource name of the finding to unmute.<br/>In the v2 API the name may include an optional "locations/\{location\}" segment. If no location is specified, the finding is assumed to be in "global".<br/><br/>Format: organizations/\{organization_id\}/sources/\{source_id\}/findings/\{findingId\} or organizations/\{organization_id\}/sources/\{source_id\}/locations/\{location_id\}/findings/\{findingId\}<br/><br/>Example: organizations/595779152576/sources/14801394649435054450/locations/global/findings/bc5a86da657611ebb979005056a5924e.<br/><br/>If not provided, the value of the "GoogleCloudSCC Finding Name" incident field is used. | Optional |
 
 ## Outputs
 
@@ -38,18 +38,18 @@ An enabled **Google Cloud SCC** integration instance is required. The **GoogleCl
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GoogleCloudSCC.FindingV2.name | String | 'The relative resource name of this finding. Format: organizations/\{organization\}/sources/\{source\}/locations/\{location\}/findings/\{finding\}.' |
+| GoogleCloudSCC.FindingV2.name | String | The relative resource name of this finding. Format: organizations/\{organization\}/sources/\{source\}/locations/\{location\}/findings/\{finding\}. |
 | GoogleCloudSCC.FindingV2.canonicalName | String | The canonical name of the finding, always suffixed with the region-agnostic \(global\) resource path. |
 | GoogleCloudSCC.FindingV2.parent | String | The relative resource name of the source the finding belongs to. |
-| GoogleCloudSCC.FindingV2.resourceName | String | For findings on Google Cloud resources, the full resource name of the Google Cloud resource this finding is for. |
+| GoogleCloudSCC.FindingV2.resourceName | String | The full resource name of the Google Cloud resource this finding is for, for findings on Google Cloud resources. |
 | GoogleCloudSCC.FindingV2.state | String | The state of the finding \(ACTIVE or INACTIVE\). |
 | GoogleCloudSCC.FindingV2.category | String | The additional taxonomy group within findings from a given source. |
 | GoogleCloudSCC.FindingV2.severity | String | The severity of the finding \(CRITICAL, HIGH, MEDIUM, LOW\). |
-| GoogleCloudSCC.FindingV2.mute | String | Indicates the mute state of the finding \(MUTED, UNMUTED, UNDEFINED\). |
+| GoogleCloudSCC.FindingV2.mute | String | The mute state of the finding \(MUTED, UNMUTED, UNDEFINED\). |
 | GoogleCloudSCC.FindingV2.muteInfo.staticMute.state | String | The static mute state. |
-| GoogleCloudSCC.FindingV2.muteInfo.staticMute.applyTime | String | When the static mute was applied. |
-| GoogleCloudSCC.FindingV2.eventTime | String | The time at which the event took place, or when an update to the finding occurred. |
-| GoogleCloudSCC.FindingV2.createTime | String | The time at which the finding was created in Security Command Center. |
+| GoogleCloudSCC.FindingV2.muteInfo.staticMute.applyTime | Date | The time when the static mute was applied, in ISO 8601 format \(e.g., 2026-09-15T12:34:56Z\). |
+| GoogleCloudSCC.FindingV2.eventTime | Date | The time at which the event took place, or when an update to the finding occurred, in ISO 8601 format \(e.g., 2026-09-15T12:34:56Z\). |
+| GoogleCloudSCC.FindingV2.createTime | Date | The time at which the finding was created in Security Command Center, in ISO 8601 format \(e.g., 2026-09-15T12:34:56Z\). |
 | GoogleCloudSCC.FindingV2.externalUri | String | The URI that, if available, points to a web page outside of Security Command Center where additional information about the finding can be found. |
 
 ## Use as an Incident Action Button

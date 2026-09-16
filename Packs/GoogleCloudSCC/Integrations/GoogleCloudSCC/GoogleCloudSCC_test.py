@@ -992,7 +992,7 @@ def test_validate_state_and_severity_list():
     """
     from GoogleCloudSCC import validate_state_and_severity_list
 
-    with pytest.raises(ValueError, match=ERROR_MESSAGES["INVALID_STATE_ERROR"]):
+    with pytest.raises(ValueError, match=ERROR_MESSAGES["INVALID_STATE_ERROR"].format("INVALID")):
         validate_state_and_severity_list(["INVALID"], [])
     with pytest.raises(ValueError, match=ERROR_MESSAGES["INVALID_SEVERITY_ERROR"]):
         validate_state_and_severity_list(["ACTIVE"], ["INVALID"])
@@ -1142,7 +1142,7 @@ def test_finding_state_update_command_invalid_args(client):
     with pytest.raises(ValueError) as err:
         finding_state_update_command(client, arguments)
 
-    assert str(err.value) == ERROR_MESSAGES["INVALID_STATE_ERROR"]
+    assert str(err.value) == ERROR_MESSAGES["INVALID_STATE_ERROR"].format("DUMMY")
 
 
 def test_findings_list_v2_command(client):
@@ -1307,7 +1307,7 @@ def test_findings_list_v2_command_invalid_state(client):
     """
     from GoogleCloudSCC import finding_list_v2_command
 
-    with pytest.raises(ValueError, match=ERROR_MESSAGES["INVALID_STATE_ERROR"]):
+    with pytest.raises(ValueError, match=ERROR_MESSAGES["INVALID_STATE_ERROR"].format("INVALID")):
         finding_list_v2_command(client, {"state": "INVALID"})
 
 
@@ -1430,7 +1430,7 @@ def test_get_and_validate_args_finding_state_update_v2():
         ),
         (
             {"name": "organizations/123/sources/456/locations/global/findings/789", "state": "INVALID"},
-            ERROR_MESSAGES["INVALID_STATE_ERROR"],
+            ERROR_MESSAGES["INVALID_STATE_ERROR"].format("INVALID"),
         ),
     ],
 )
@@ -1906,7 +1906,7 @@ def test_mute_rule_create_command_invalid_expiry_time(client, mocker):
         ),
         (
             {"muteConfigId": "mute-rule", "filter": 'severity="LOW"', "type": "INVALID"},
-            ERROR_MESSAGES["INVALID_MUTE_CONFIG_TYPE_ERROR"],
+            ERROR_MESSAGES["INVALID_MUTE_CONFIG_TYPE_ERROR"].format("INVALID"),
         ),
         (
             {"muteConfigId": "Mute-Rule", "filter": 'severity="LOW"', "type": "STATIC"},

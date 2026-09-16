@@ -132,6 +132,7 @@ def main():  # pragma: no cover
     try:
         return_results(mute_finding(demisto.args()))
     except Exception as exception:
+        demisto.error(traceback.format_exc())  # print the traceback
         return_error(f"Failed to execute GoogleCloudSCCMuteFinding script. Error: {exception}")
 
 

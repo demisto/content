@@ -8624,7 +8624,7 @@ script:
     - contextPath: GoogleCloudSCC.MuteRule.cryptoKeyName
       description: The resource name of the Cloud KMS CryptoKey used to encrypt this configuration data, if CMEK was enabled during Security Command Center activation.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.11643673
+  dockerimage: demisto/google-api-py3:1.0.0.12776751
   isfetch: true
   runonce: false
   script: '-'

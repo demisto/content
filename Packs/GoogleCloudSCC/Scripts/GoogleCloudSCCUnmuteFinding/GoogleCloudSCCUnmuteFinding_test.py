@@ -9,6 +9,7 @@ from GoogleCloudSCCUnmuteFinding import (
     MUTE_STATE_INCIDENT_FIELD,
     SET_INCIDENT_COMMAND,
     UNMUTE_COMMAND,
+    get_error_message,
     get_finding_name,
     get_finding_name_from_incident,
     get_mute_state,
@@ -118,6 +119,30 @@ def test_get_mute_state(entries, expected_mute_state):
     Then: The mute state of the response is returned, or the default mute state when it is not present.
     """
     assert get_mute_state(entries) == expected_mute_state
+
+
+@pytest.mark.parametrize(
+    "result, expected_error_message",
+    [
+        ("Finding not found.\n", "Finding not found."),
+        ([{"Type": 4, "ContentsFormat": "text", "Contents": " Finding not found. "}], "Finding not found."),
+        (
+            [{"Type": 4, "Contents": "Finding not found."}, {"Type": 4, "Contents": "Permission denied."}],
+            "Finding not found.\nPermission denied.",
+        ),
+        ({"Type": 4, "Contents": "Finding not found."}, "Finding not found."),
+        ([{"Type": 4, "Contents": ""}], "[{'Type': 4, 'Contents': ''}]"),
+    ],
+)
+def test_get_error_message(result, expected_error_message):
+    """
+    Scenario: The readable error text should be extracted from a failed command result.
+
+    Given: The error returned by the command, either an error message or the raw entry(s).
+    When: get_error_message is called.
+    Then: The extracted error text is returned, falling back to the stringified result when no contents are present.
+    """
+    assert get_error_message(result) == expected_error_message
 
 
 def test_unmute_finding_success(mocker):

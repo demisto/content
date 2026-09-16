@@ -23,7 +23,7 @@ args:
     If not provided, the value of the "GoogleCloudSCC Finding Name" incident field is used.
 outputs:
 - contextPath: GoogleCloudSCC.FindingV2.name
-  description: "'The relative resource name of this finding. Format: organizations/{organization}/sources/{source}/locations/{location}/findings/{finding}.'"
+  description: 'The relative resource name of this finding. Format: organizations/{organization}/sources/{source}/locations/{location}/findings/{finding}.'
   type: String
 - contextPath: GoogleCloudSCC.FindingV2.canonicalName
   description: The canonical name of the finding, always suffixed with the region-agnostic (global) resource path.
@@ -32,7 +32,7 @@ outputs:
   description: The relative resource name of the source the finding belongs to.
   type: String
 - contextPath: GoogleCloudSCC.FindingV2.resourceName
-  description: For findings on Google Cloud resources, the full resource name of the Google Cloud resource this finding is for.
+  description: The full resource name of the Google Cloud resource this finding is for, for findings on Google Cloud resources.
   type: String
 - contextPath: GoogleCloudSCC.FindingV2.state
   description: The state of the finding (ACTIVE or INACTIVE).
@@ -44,19 +44,19 @@ outputs:
   description: The severity of the finding (CRITICAL, HIGH, MEDIUM, LOW).
   type: String
 - contextPath: GoogleCloudSCC.FindingV2.mute
-  description: Indicates the mute state of the finding (MUTED, UNMUTED, UNDEFINED).
+  description: The mute state of the finding (MUTED, UNMUTED, UNDEFINED).
   type: String
 - contextPath: GoogleCloudSCC.FindingV2.muteInitiator
-  description: Records additional information about the mute operation, for example, the mute configuration that muted the finding and the user who muted the finding.
+  description: The additional information about the mute operation, for example, the mute configuration that muted the finding and the user who muted the finding.
   type: String
 - contextPath: GoogleCloudSCC.FindingV2.muteUpdateTime
-  description: The time at which the finding was muted or unmuted.
+  description: The time at which the finding was muted or unmuted, in ISO 8601 format (e.g., 2026-09-15T12:34:56Z).
   type: Date
 - contextPath: GoogleCloudSCC.FindingV2.eventTime
-  description: The time the finding was first detected.
+  description: The time the finding was first detected, in ISO 8601 format (e.g., 2026-09-15T12:34:56Z).
   type: Date
 - contextPath: GoogleCloudSCC.FindingV2.createTime
-  description: The time at which the finding was created in Security Command Center.
+  description: The time at which the finding was created in Security Command Center, in ISO 8601 format (e.g., 2026-09-15T12:34:56Z).
   type: Date
 - contextPath: GoogleCloudSCC.FindingV2.externalUri
   description: The URI that, if available, points to a web page outside of Security Command Center where additional information about the finding can be found.
@@ -67,7 +67,7 @@ dependson:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.12.13.11879924
+dockerimage: demisto/python3:3.12.14.13053055
 runas: DBotWeakRole
 engineinfo: {}
 fromversion: 6.10.0

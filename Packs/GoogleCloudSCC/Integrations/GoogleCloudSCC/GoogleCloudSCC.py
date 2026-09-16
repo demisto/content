@@ -87,7 +87,7 @@ ERROR_MESSAGES: dict[str, str] = {
     "NO_RECORDS_FOUND": "No {} record(s) found for the given argument(s).",
     "MAX_INCIDENT_ERROR": "The parameter Max Incidents must be a positive integer."
     f" Accepted values can be in the range of 1-{MAX_FETCH_VALUE}.",
-    "INVALID_STATE_ERROR": "The state value must be ACTIVE or INACTIVE.",
+    "INVALID_STATE_ERROR": "The state value '{}' is invalid. It must be ACTIVE or INACTIVE.",
     "INVALID_SEVERITY_ERROR": "The severity value must be LOW, MEDIUM, HIGH or CRITICAL.",
     "INVALID_PAGE_SIZE_ERROR": "Page size should be an integer between 1 to 1000.",
     "INVALID_SOURCE_PROPERTIES": "Invalid format provided in sourceProperties. Supported format: key1=value1,key2="
@@ -104,7 +104,7 @@ ERROR_MESSAGES: dict[str, str] = {
     '"projects/[project-number]" or "projects/[first-project-number], '
     'projects/[second-project-number]".',
     "INVALID_MAX_ITERATION_ERROR": f"maxIteration should be an integer between 1 to {MAX_ITERATION}.",
-    "INVALID_MUTE_CONFIG_TYPE_ERROR": "The type value must be STATIC or DYNAMIC.",
+    "INVALID_MUTE_CONFIG_TYPE_ERROR": "The type value '{}' is invalid. It must be STATIC or DYNAMIC.",
     "EXPIRY_TIME_NOT_ALLOWED_ERROR": "The expiryTime argument is only applicable for DYNAMIC mute rules.",
     "INVALID_MUTE_CONFIG_ID_ERROR": "muteConfigId must consist of only lowercase letters, numbers, and hyphens, must"
     " start with a letter, must end with either a letter or a number, and must be 63 characters or less.",
@@ -1046,7 +1046,7 @@ def validate_state_and_severity_list(state_list: list, severity_list: list) -> N
     """
     for state in state_list:
         if state and state.strip().upper() not in STATE_LIST:
-            raise ValueError(ERROR_MESSAGES["INVALID_STATE_ERROR"])
+            raise ValueError(ERROR_MESSAGES["INVALID_STATE_ERROR"].format(state))
 
     # Validate Severity param
     for severity in severity_list:
@@ -1344,7 +1344,7 @@ def prepare_hr_and_ec_for_list_findings_v2(result: dict[str, Any]) -> tuple[str,
         ec_finding_list.append(finding)
         finding_url = GoogleNameParser.get_finding_url(finding.get("name", ""))
         # A finding can be matched by more than one dynamic mute rule, so collect every matching mute config name.
-        dynamic_mute_records = demisto.get(finding, "muteInfo.dynamicMuteRecords", []) or []
+        dynamic_mute_records = demisto.get(finding, "muteInfo.dynamicMuteRecords") or []
         mute_configs = ", ".join(record.get("muteConfig", "") for record in dynamic_mute_records if record.get("muteConfig"))
         hr_finding_list.append(
             {
@@ -1434,7 +1434,7 @@ def get_and_validate_args_finding_state_update(args: dict[str, Any]) -> tuple:
     state = args.get("state", "").upper()
 
     if state and state.strip().upper() not in STATE_LIST:
-        raise ValueError(ERROR_MESSAGES["INVALID_STATE_ERROR"])
+        raise ValueError(ERROR_MESSAGES["INVALID_STATE_ERROR"].format(state))
 
     return name, event_time, state
 
@@ -1457,7 +1457,7 @@ def get_and_validate_args_finding_state_update_v2(args: dict[str, Any]) -> tuple
         raise ValueError(ERROR_MESSAGES["REQUIRED_ARG"].format("state"))
 
     if state not in STATE_LIST:
-        raise ValueError(ERROR_MESSAGES["INVALID_STATE_ERROR"])
+        raise ValueError(ERROR_MESSAGES["INVALID_STATE_ERROR"].format(state))
 
     return name, state
 
@@ -1483,13 +1483,16 @@ def get_and_validate_args_mute_rule_create(args: dict[str, Any]) -> tuple:
     # Validate command args
     validate_with_regex(ERROR_MESSAGES["INVALID_MUTE_CONFIG_ID_ERROR"], MUTE_CONFIG_ID_REGEX, mute_config_id)
     if mute_config_type not in MUTE_CONFIG_TYPE_LIST:
-        raise ValueError(ERROR_MESSAGES["INVALID_MUTE_CONFIG_TYPE_ERROR"])
+        raise ValueError(ERROR_MESSAGES["INVALID_MUTE_CONFIG_TYPE_ERROR"].format(mute_config_type))
 
     expiry_time = args.get("expiryTime")
     if expiry_time:
         if mute_config_type != "DYNAMIC":
             raise ValueError(ERROR_MESSAGES["EXPIRY_TIME_NOT_ALLOWED_ERROR"])
-        expiry_time = arg_to_datetime(expiry_time, arg_name="expiryTime").strftime(ISO_DATE_FORMAT)  # type: ignore[union-attr]
+        expiry_datetime = arg_to_datetime(expiry_time, arg_name="expiryTime")
+        if not expiry_datetime:
+            raise ValueError(ERROR_MESSAGES["INVALID_DATE_TIME"].format("expiryTime"))
+        expiry_time = expiry_datetime.strftime(ISO_DATE_FORMAT)
 
     # An empty location keeps the parent at organizations/{organization_id}, which the API treats as global.
     location = args.get("location")
