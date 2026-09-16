@@ -119,6 +119,22 @@ configuration:
   defaultvalue: 'false'
   additionalinfo: When selected, findings that have been archived in GuardDuty (including those archived by suppression rules) are not fetched.
   section: Collect
+- display: Fetch Events
+  name: isFetchEvents
+  type: 8
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  defaultvalue: '1'
+  section: Collect
+  advanced: true
+  hidden:
+  - xsoar
 description: Amazon Web Services Guard Duty Service (gd) event collector integration for Cortex XSIAM.
 script:
   script: ""
