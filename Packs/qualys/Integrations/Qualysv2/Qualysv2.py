@@ -3047,9 +3047,13 @@ def get_detections_from_hosts(hosts):
         if not isinstance(detections_list, list):  # In case detections_list = {}
             detections_list = [detections_list]
 
+        # Build a lightweight host that excludes DETECTION_LIST *once* per host, so the (potentially large) list of
+        # detections is not deep-copied for every detection. Deep-copying the full host per detection previously copied
+        # all detections N times for a host with N detections (O(N^2) memory/CPU); this keeps it O(N).
+        host_without_detections = {key: value for key, value in host.items() if key != "DETECTION_LIST"}
+
         for detection in detections_list:
-            new_detection = copy.deepcopy(host)
-            del new_detection["DETECTION_LIST"]
+            new_detection = copy.deepcopy(host_without_detections)
             new_detection["DETECTION"] = detection
             fetched_assets.append(new_detection)
             truncate_asset_size(new_detection)

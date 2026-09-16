@@ -351,6 +351,67 @@ def test_get_detections_from_hosts_preserves_existing_last_vm_auth_scan_datetime
     assert assets[0]["LAST_VM_AUTH_SCAN_DATETIME"] == "2020-01-01T00:00:00Z"
 
 
+def test_get_detections_from_hosts_fans_out_multiple_detections():
+    """
+    Given:
+    - A single host containing multiple detections in its DETECTION_LIST.
+    When:
+    - Parsing detections from hosts via get_detections_from_hosts.
+    Then:
+    - Ensure one asset is produced per detection, each carrying the host-level fields, with the specific
+      DETECTION assigned and the DETECTION_LIST key removed.
+    """
+    hosts = [
+        {
+            "ID": "1",
+            "IP": "1.1.1.1",
+            "LAST_VM_SCANNED_DATE": "01-01-2020",
+            "DETECTION_LIST": {"DETECTION": [{"QID": "123"}, {"QID": "456"}, {"QID": "789"}]},
+        }
+    ]
+
+    assets, _ = get_detections_from_hosts(hosts)
+
+    assert len(assets) == 3
+    assert [asset["DETECTION"]["QID"] for asset in assets] == ["123", "456", "789"]
+    for asset in assets:
+        # Host-level fields are carried onto every asset...
+        assert asset["ID"] == "1"
+        assert asset["IP"] == "1.1.1.1"
+        assert asset["LAST_VM_SCANNED_DATE"] == "01-01-2020"
+        # ...and the original DETECTION_LIST container is not present on the flattened asset.
+        assert "DETECTION_LIST" not in asset
+
+
+def test_get_detections_from_hosts_assets_are_independent_copies():
+    """
+    Given:
+    - A single host with multiple detections and a nested host-level field.
+    When:
+    - Parsing detections from hosts via get_detections_from_hosts and then mutating a nested host-level
+      field on one resulting asset.
+    Then:
+    - Ensure sibling assets from the same host are not affected (each asset is an independent deep copy).
+    """
+    hosts = [
+        {
+            "ID": "1",
+            "IP": "1.1.1.1",
+            "CLOUD_TAGS": {"TAG": {"NAME": "env", "VALUE": "prod"}},
+            "DETECTION_LIST": {"DETECTION": [{"QID": "123"}, {"QID": "456"}]},
+        }
+    ]
+
+    assets, _ = get_detections_from_hosts(hosts)
+
+    assert len(assets) == 2
+    # Mutate a nested host-level field on the first asset only.
+    assets[0]["CLOUD_TAGS"]["TAG"]["VALUE"] = "mutated"
+
+    # The sibling asset must retain the original nested value (proves deep, independent copies).
+    assert assets[1]["CLOUD_TAGS"]["TAG"]["VALUE"] == "prod"
+
+
 def test_fetch_vulnerabilities_command_by_date(requests_mock: RequestsMocker, client: Client):
     """
     Given:
