@@ -3012,9 +3012,6 @@ script:
     - contextPath: GCP.GKE.Clusters.instanceGroupUrls
       description: The instanceGroupUrls of the resource.
       type: Unknown
-    - contextPath: GCP.GKE.Clusters.kubeletCertInfo
-      description: Contains expiry information about the kubelet certificate.
-      type: Unknown
     - contextPath: GCP.GKE.Clusters.ipAllocationPolicy
       description: Configuration for cluster IP allocation.
       type: Unknown
@@ -3547,6 +3544,9 @@ script:
     - contextPath: GCP.GKE.NodePools.management.autoUpgrade
       description: Whether node auto-upgrade is enabled for the node pool.
       type: Boolean
+    - contextPath: GCP.GKE.NodePools.kubeletCertInfo
+      description: Contains expiry information about the kubelet certificate.
+      type: Unknown
   - name: gcp-gke-node-pool-get
     description: "Gets the details of a specific node pool in a GKE cluster. Required permissions: container.clusters.get."
     arguments:
