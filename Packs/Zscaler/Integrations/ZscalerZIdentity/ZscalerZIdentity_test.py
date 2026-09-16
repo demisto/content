@@ -1118,3 +1118,56 @@ class TestApiRequest401Retry:
             mock_client.api_request("GET", "/some/endpoint")
 
         mock_set_ctx.assert_not_called()
+
+
+class TestErrorHandler:
+    """Covers the authentication branch of Client._error_handler, which must attach the
+    originating response to the raised DemistoException so that api_request's 401 retry
+    logic can detect it."""
+
+    @staticmethod
+    def _mock_response(status_code: int, text: str = "Unauthorized"):
+        """Build a minimal stand-in for a requests.Response as consumed by _error_handler."""
+        return type("MockResponse", (), {"status_code": status_code, "text": text})()
+
+    @pytest.mark.parametrize("status_code", [401, 403])
+    def test_auth_error_attaches_response_to_exception(self, mock_client, status_code):
+        """
+        Given: The API returns an authentication/authorization failure (401 or 403).
+        When: _error_handler is called with that response.
+        Then: The raised DemistoException carries the originating response as .res,
+              so callers can inspect the status code.
+        """
+        res = self._mock_response(status_code)
+
+        with pytest.raises(DemistoException) as exc_info:
+            mock_client._error_handler(res)
+
+        assert exc_info.value.res is res
+
+    def test_401_from_error_handler_triggers_token_refresh_and_retry(self, mock_client, mocker):
+        """
+        Given: A 401 exception produced by the real _error_handler rather than a
+               hand-built one.
+        When: api_request receives it from the underlying request.
+        Then: The retry logic recognizes the 401, clears the cached token and retries,
+              proving the contract between _error_handler and api_request holds.
+        """
+        with pytest.raises(DemistoException) as exc_info:
+            mock_client._error_handler(self._mock_response(401))
+
+        success_response = {"data": "ok"}
+        mock_do_http = mocker.patch.object(
+            mock_client,
+            "_do_http_request",
+            side_effect=[exc_info.value, success_response],
+        )
+        mock_set_ctx = mocker.patch("ZscalerZIdentity.set_integration_context")
+
+        result = mock_client.api_request("GET", "/some/endpoint")
+
+        assert result == success_response
+        assert mock_do_http.call_count == 2
+        cleared_ctx = mock_set_ctx.call_args[0][0]
+        assert "access_token" not in cleared_ctx
+        assert "token_expires_at" not in cleared_ctx

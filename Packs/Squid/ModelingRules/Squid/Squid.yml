@@ -1,4 +1,5 @@
 fromversion: 8.4.0
+toversion: 8.14.0
 id: Squid_ModelingRule
 name: Squid Modeling Rule
 rules: ''

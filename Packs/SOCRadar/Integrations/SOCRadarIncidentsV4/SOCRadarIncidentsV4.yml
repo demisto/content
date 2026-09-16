@@ -178,6 +178,13 @@ configuration:
   name: incidentType
   type: 13
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 description: SOCRadar Incidents v4 API integration with advanced incident management, status reasons, and compliance tracking. Fetches security incidents from SOCRadar platform with proper deduplication and date handling. Supports filtering by alarm type IDs for granular control.
 display: SOCRadar Incidents v4
 name: SOCRadarIncidentsV4
