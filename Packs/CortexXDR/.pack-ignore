@@ -81,7 +81,7 @@ ignore=RM106,RM108
 ignore=RM108
 
 [file:Cortex_XDR_incident_handling_v3_6_5.yml]
-ignore=PB121
+ignore=PB121,GR107
 
 [file:XCloudResourcesPieWidget.yml]
 ignore=BA124
@@ -173,3 +173,6 @@ ignore=GR107
 
 [file:Test_Playbook_-_Cortex_XDR_Malware_-_Incident_Enrichment.yml]
 ignore=BA130
+
+[file:playbook-Cortex_XDR_-_Identity_Analytics.yml]
+ignore=GR107
