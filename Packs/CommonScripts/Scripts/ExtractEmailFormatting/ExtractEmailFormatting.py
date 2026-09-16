@@ -49,7 +49,7 @@ def extract_email(email_address: str) -> str:
     if "?" in email_address or "%" in email_address:
         # If we find these chars in a string it means the regex caught it as part of a url query and needs pruning.
         # Percent signs are checked too: the indicator regex can capture a fragment starting after
-        # the "?", so a query remnant does not necessarily still contain one (XSUP-76731).
+        # the "?", so a query remnant does not necessarily still contain one.
         email_address = extract_email_from_url_query(email_address)
 
     email_format = re.compile(
@@ -103,7 +103,7 @@ def extract_email_from_url_query(email_address: str) -> str:
 
     # Percent-decode first so the real token boundaries become visible. Encoded body text such as
     # "...unsubscribe.%0D%0A%0D%0A" hides the separators that delimit the address, which made the
-    # match run backwards across the whole encoded run (XSUP-76731). Decoding is done once only:
+    # match run backwards across the whole encoded run. Decoding is done once only:
     # decoding repeatedly would corrupt values that legitimately contain a percent sign.
     decoded = urllib.parse.unquote(email_address)
 
