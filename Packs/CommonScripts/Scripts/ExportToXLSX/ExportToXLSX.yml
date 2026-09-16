@@ -36,7 +36,7 @@ script: '-'
 subtype: python3
 timeout: '0'
 type: python
-dockerimage: demisto/xslxwriter:1.0.0.10120494
+dockerimage: demisto/xslxwriter:1.0.0.12826098
 runas: DBotWeakRole
 tests:
 - No tests (auto formatted)
