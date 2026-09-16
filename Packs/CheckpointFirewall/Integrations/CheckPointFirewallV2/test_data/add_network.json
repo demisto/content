@@ -1,0 +1,37 @@
+{
+  "uid": "net-uid-new-1234",
+  "name": "new-network",
+  "type": "network",
+  "subnet4": "172.16.0.0",
+  "mask-length4": 24,
+  "subnet-mask": "255.255.255.0",
+  "broadcast": "disallow",
+  "domain": {
+    "uid": "domain-uid-5678",
+    "name": "SMC User",
+    "domain-type": "domain"
+  },
+  "nat-settings": {
+    "auto-rule": false
+  },
+  "groups": [],
+  "comments": "",
+  "color": "black",
+  "icon": "NetworkObjects/network",
+  "tags": [],
+  "meta-info": {
+    "lock": "locked by current session",
+    "validation-state": "ok",
+    "last-modify-time": {
+      "posix": 1598381009752,
+      "iso-8601": "2020-08-25T21:43+0300"
+    },
+    "last-modifier": "admin",
+    "creation-time": {
+      "posix": 1598381009752,
+      "iso-8601": "2020-08-25T21:43+0300"
+    },
+    "creator": "admin"
+  },
+  "read-only": false
+}

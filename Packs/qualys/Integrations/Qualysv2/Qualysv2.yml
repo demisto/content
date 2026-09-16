@@ -46,6 +46,16 @@ configuration:
   - xpanse
   supportedModules:
   - xsiam
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  hidden:
+  - xsoar
+  - xpanse
+  supportedModules:
+  - xsiam
 - defaultvalue: 3 days
   section: Collect
   display: Event first fetch time
@@ -84,6 +94,17 @@ configuration:
   - xpanse
   supportedModules:
   - xsiam
+- display: Fetch assets and vulnerabilities
+  name: isFetchAssets
+  type: 8
+  section: Collect
+  required: false
+  hidden:
+  - xsoar
+  - xpanse
+  supportedModules:
+  - xsiam
+  - exposure_management
 - additionalinfo: The fetch interval for assets and vulnerabilities. It is recommended to set it to 24 hours. Interval lower then 1 hour is not supported.
   defaultvalue: 1440
   display: Assets and Vulnerabilities Fetch Interval
@@ -97,6 +118,7 @@ configuration:
   - xpanse
   supportedModules:
   - xsiam
+  - exposure_management
 description: Qualys Vulnerability Management lets you create, run, manage reports and to fetch Activity Logs, Assets and Vulnerabilities, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
 display: Qualys VMDR
 name: QualysV2
@@ -911,7 +933,9 @@ script:
       - '1'
     - description: Specify a positive numeric value to limit the amount of results in the requested list.
       name: limit
-    description: download a list of vulnerabilities from Qualys’ KnowledgeBase.
+    - description: The cloud agent scan type to filter vulnerabilities by. When applied, only Deep Scan QIDs are returned. Possible value - "Deep Scan - Windows".
+      name: cloud_agent_scan_type
+    description: Downloads a list of vulnerabilities from Qualys' KnowledgeBase.
     name: qualys-vulnerability-list
     outputs:
     - contextPath: Qualys.Vulnerability.List.QID
@@ -2880,13 +2904,15 @@ script:
     - description: The CVE identifier (e.g., CVE-2023-12345) used to look up the corresponding Qualys QID.
       name: cve
       required: true
+    - description: The cloud agent scan type to filter vulnerabilities by. When applied, only Deep Scan QIDs are returned. Possible value - "Deep Scan - Windows".
+      name: cloud_agent_scan_type
     description: Retrieves one or more Qualys QIDs (Qualys IDs) associated with a specified CVE.
     name: qualys-get-quid-by-cve
     outputs:
     - contextPath: Qualys.QID
       description: All the Qualys QID (Qualys ID) associated with a specified CVE.
       type: unknown
-  dockerimage: demisto/python3:3.12.13.7444307
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetchevents: true
   isfetchassets: true
   runonce: false
@@ -2896,3 +2922,7 @@ script:
 fromversion: 5.5.0
 tests:
 - QualysVulnerabilityManagement-Test
+supportedModules:
+- agentix
+- xsiam
+- exposure_management

@@ -190,7 +190,7 @@ def set_fields_query(params: dict, endpoint: str) -> str:
     fields_str = "&fields=tags"
     if endpoint == "indicators":
         fields_str += "&fields=threatAssess"
-    if argToBoolean(params.get("createRelationships")):
+    if argToBoolean(params.get("createRelationships") or False):
         fields_str += "&fields=associatedGroups&fields=associatedIndicators"
 
     return fields_str
@@ -587,11 +587,11 @@ def set_tql_query(from_date: str, params: dict, endpoint: str) -> str:
     active_only = ""
     threat_score = ""
     if endpoint == "indicators":
-        active_only = "AND indicatorActive EQ True " if argToBoolean(params.get("indicator_active")) else ""
-        confidence = f'AND confidence GT {params.get("confidence")} ' if int(params.get("confidence")) != 0 else ""  # type: ignore # noqa
+        active_only = "AND indicatorActive EQ True " if argToBoolean(params.get("indicator_active", True)) else ""
+        confidence = f'AND confidence GT {params.get("confidence")} ' if int(params.get("confidence") or 0) != 0 else ""  # type: ignore # noqa
         threat_score = (
             f'AND threatAssessScore GT {params.get("threat_assess_score")} '
-            if int(params.get("threat_assess_score")) != 0  # type: ignore
+            if int(params.get("threat_assess_score") or 0) != 0  # type: ignore
             else ""
         )  # type: ignore
 

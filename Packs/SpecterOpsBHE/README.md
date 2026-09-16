@@ -1,3 +1,7 @@
+**Note: This pack is deprecated. Use the *SpecterOps BloodHound Enterprise* pack instead.**
+
+---
+
 # SpecterOps BloodHound Enterprise (BHE) Content Pack
 
 ## Overview

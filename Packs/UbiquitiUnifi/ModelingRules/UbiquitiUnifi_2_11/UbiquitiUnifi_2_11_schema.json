@@ -1,0 +1,88 @@
+{
+    "ubiquiti_unifi_raw": {
+      "src": {
+        "type": "string",
+        "is_array": false
+      },
+      "dst": {
+        "type": "string",
+        "is_array": false
+      },
+      "UNIFIclientIp": {
+        "type": "string",
+        "is_array": false
+      },
+      "UNIFIcategory": {
+        "type": "string",
+        "is_array": false
+      },
+      "dpt": {
+        "type": "string",
+        "is_array": false
+      },
+      "spt": {
+        "type": "string",
+        "is_array": false
+      },
+      "UNIFIdeviceIp": {
+        "type": "string",
+        "is_array": false
+      },
+      "msg": {
+        "type": "string",
+        "is_array": false
+      },
+      "UNIFIhost": {
+        "type": "string",
+        "is_array": false
+      },
+      "UNIFIrisk": {
+        "type": "string",
+        "is_array": false
+      },
+      "UNIFIsubCategory": {
+        "type": "string",
+        "is_array": false
+      },
+      "UNIFIdeviceMac": {
+        "type": "string",
+        "is_array": false
+      },
+      "UNIFIipsSessionId": {
+        "type": "string",
+        "is_array": false
+      },
+      "UNIFIipsSignature": {
+        "type": "string",
+        "is_array": false
+      },
+      "UNIFIdeviceName": {
+        "type": "string",
+        "is_array": false
+      },
+      "UNIFIdeviceVersion": {
+        "type": "string",
+        "is_array": false
+      },
+      "UNIFInetworkVlan": {
+        "type": "string",
+        "is_array": false
+      },
+      "UNIFIauthMethod": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefName": {
+        "type": "string",
+        "is_array": false
+      },
+      "UNIFIadmin": {
+        "type": "string",
+        "is_array": false
+      },
+      "UNIFIclientMac": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

@@ -2,7 +2,7 @@
     "name": "Cyware Intel Exchange",
     "description": "Cyware Intel Exchange enables security teams to ingest, enrich, analyze, and share threat intelligence in real time.",
     "support": "partner",
-    "currentVersion": "2.4.0",
+    "currentVersion": "2.5.0",
     "author": "Cyware Labs",
     "url": "https://cyware.com/",
     "email": "integrations@cyware.com",
@@ -14,9 +14,12 @@
         "Threat Intelligence Management"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["Cyware"],
     "itemPrefix": ["ctix"],
-    "githubUser": [],
+    "githubUser": [
+        "Prateek-Cyware",
+        "vishal-cyware"
+    ],
     "marketplaces": [
         "xsoar",
         "marketplacev2",

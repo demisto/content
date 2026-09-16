@@ -4,7 +4,7 @@
     "feed": false,
     "id": "CohesityHelios Incident Classifier",
     "keyTypeMap": {
-        "CE01516011": "Cohesity Helios Ransomware Incident"
+        "DataIngestAnomalyAlert": "Cohesity Helios Ransomware Incident"
     },
     "name": "CohesityHelios Incident Classifier",
     "propagationLabels": [
@@ -12,7 +12,7 @@
     ],
     "transformer": {
         "complex": null,
-        "simple": "alertCode"
+        "simple": "alertDocument.alertName"
     },
     "type": "classification",
     "version": -1,

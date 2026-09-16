@@ -155,6 +155,22 @@ CREDENTIALS = {
 }
 
 
+def test_client_init_without_credential_key():
+    """
+    Given:
+        A UCP-reconstructed credentials object that only carries "identifier"/"password"
+        and omits the "credential" key (XSUP-75518).
+    When:
+        The Client is initialized.
+    Then:
+        It does not raise KeyError and falls back to the access-token/refresh-token path.
+    """
+    credentials = {"identifier": "my-access-token", "password": "my-refresh-token"}
+    client = Client(DLP_URL, AUTH_URL, credentials, True, False)
+    assert client.access_token == "my-access-token"
+    assert client.refresh_token == "my-refresh-token"
+
+
 def test_update_incident(requests_mock, mocker):
     incident_id = "abcdefg12345"
     user_id = "someone@somewhere.com"
@@ -218,6 +234,51 @@ def test_get_dlp_report(requests_mock, mocker):
     main()
     results = demisto.results.call_args_list[0][0]
     assert results[0]["Contents"] == {"id": "test"}
+
+
+def test_get_dlp_report_sends_service_name_header(requests_mock, mocker):
+    """
+    Given:
+        - A service_name argument.
+    When:
+        - Running the pan-dlp-get-report command.
+    Then:
+        - Ensure the service-name header is sent, so the report is retrieved from the
+          requested service rather than the prisma-access default.
+    """
+    report_id = 12345
+    requests_mock.get(f"{DLP_URL}public/report/{report_id}?fetchSnippets=true", json={"id": "test"})
+    mocker.patch.object(demisto, "command", return_value="pan-dlp-get-report")
+    args = {"report_id": report_id, "fetch_snippets": "true", "service_name": "prisma-saas"}
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch.object(demisto, "params", return_value={"credentials": CREDENTIALS})
+    mocker.patch.object(demisto, "results")
+
+    main()
+
+    assert requests_mock.last_request.headers["service-name"] == "prisma-saas"
+
+
+def test_get_dlp_report_omits_service_name_header_by_default(requests_mock, mocker):
+    """
+    Given:
+        - No service_name argument.
+    When:
+        - Running the pan-dlp-get-report command.
+    Then:
+        - Ensure no service-name header is sent, leaving existing calls unchanged.
+    """
+    report_id = 12345
+    requests_mock.get(f"{DLP_URL}public/report/{report_id}?fetchSnippets=true", json={"id": "test"})
+    mocker.patch.object(demisto, "command", return_value="pan-dlp-get-report")
+    args = {"report_id": report_id, "fetch_snippets": "true"}
+    mocker.patch.object(demisto, "args", return_value=args)
+    mocker.patch.object(demisto, "params", return_value={"credentials": CREDENTIALS})
+    mocker.patch.object(demisto, "results")
+
+    main()
+
+    assert "service-name" not in requests_mock.last_request.headers
 
 
 def test_parse_dlp_report(mocker):
@@ -326,6 +387,42 @@ def test_refresh_token_with_client_credentials(requests_mock):
     requests_mock.post(AUTH_URL, json={"access_token": "abc"})
     client = Client(DLP_URL, AUTH_URL, credentials, False, False)
     assert client.access_token == "abc"
+
+
+def test_client_init_with_use_client_credentials_param(requests_mock):
+    """
+    Given:
+        A UCP-reconstructed credentials object that only carries "identifier"/"password"
+        (no "credential" key), and the use_client_credentials parameter is enabled.
+    When:
+        The Client is initialized.
+    Then:
+        It uses the client-credentials flow: use_client_credentials is True and an access
+        token is fetched from the auth URL.
+    """
+    credentials = {"identifier": "client-id", "password": "client-secret"}
+    requests_mock.post(AUTH_URL, json={"access_token": "abc"})
+    client = Client(DLP_URL, AUTH_URL, credentials, False, False, use_client_credentials=True)
+    assert client.use_client_credentials is True
+    assert client.access_token == "abc"
+
+
+def test_client_init_without_use_client_credentials_param():
+    """
+    Given:
+        A UCP-reconstructed credentials object that only carries "identifier"/"password"
+        (no "credential" key), and the use_client_credentials parameter is disabled.
+    When:
+        The Client is initialized.
+    Then:
+        It falls back to the access-token/refresh-token flow: use_client_credentials is False
+        and the tokens are read from identifier/password.
+    """
+    credentials = {"identifier": "my-access-token", "password": "my-refresh-token"}
+    client = Client(DLP_URL, AUTH_URL, credentials, True, False, use_client_credentials=False)
+    assert client.use_client_credentials is False
+    assert client.access_token == "my-access-token"
+    assert client.refresh_token == "my-refresh-token"
 
 
 @pytest.mark.parametrize(
@@ -452,11 +549,13 @@ def test_create_incident(incident_type_input, expected_type):
 
 
 @pytest.mark.parametrize(
-    "incident_ids_timestamps, last_run, expected_timestamp, expected_ids",
+    "incident_ids_timestamps, last_run, has_new_incidents, last_queried_end_time, expected_timestamp, expected_ids",
     [
         pytest.param(
             {"id1": 1000, "id2": 2000, "id3": 2000, "id4": 1500},
             {START_TIMESTAMP_KEY: 500, LAST_IDS_TIMESTAMPS_KEY: {"old_id": 500}},
+            True,
+            2000,
             2000,
             {"id2", "id3"},  # Both have timestamp 2000, within buffer (look_back=0 → cutoff = 2000-30 = 1970)
             id="multiple_incidents_different_timestamps",
@@ -464,13 +563,17 @@ def test_create_incident(incident_type_input, expected_type):
         pytest.param(
             {},
             {START_TIMESTAMP_KEY: 1234567890, LAST_IDS_TIMESTAMPS_KEY: {"id1": 1234567890}},
-            1234567890,
-            {"id1"},
-            id="empty_incidents_returns_previous",
+            False,
+            1234567980,  # last_queried_end_time advances by one interval (90s for this test)
+            1234567980,
+            {"id1"},  # last_ids_timestamps preserved from last_run
+            id="no_new_incidents_advances_start_timestamp",
         ),
         pytest.param(
             {"id1": 1000},
             {START_TIMESTAMP_KEY: 500, LAST_IDS_TIMESTAMPS_KEY: {}},
+            True,
+            1000,
             1000,
             {"id1"},
             id="single_incident",
@@ -478,6 +581,8 @@ def test_create_incident(incident_type_input, expected_type):
         pytest.param(
             {"id1": 2000, "id2": 2000 - END_TIME_BUFFER, "id3": 2000 - END_TIME_BUFFER - 1, "id4": 2000 - 15},
             {START_TIMESTAMP_KEY: 500, LAST_IDS_TIMESTAMPS_KEY: {}},
+            True,
+            2000,
             2000,
             {"id1", "id2", "id4"},  # id3 excluded (outside buffer: 2000-30-1=1969 < 1970)
             id="buffer_window_filtering",
@@ -485,26 +590,35 @@ def test_create_incident(incident_type_input, expected_type):
         pytest.param(
             {"id1": 2000, "id2": 1999, "id3": 1998, "id4": 1971, "id5": 1970, "id6": 1969},
             {START_TIMESTAMP_KEY: 500, LAST_IDS_TIMESTAMPS_KEY: {}},
+            True,
+            2000,
             2000,
             {"id1", "id2", "id3", "id4", "id5"},  # id6 excluded (1969 < 1970 which is 2000-30)
             id="exact_buffer_boundary",
         ),
     ],
 )
-def test_compute_next_run(incident_ids_timestamps, last_run, expected_timestamp, expected_ids):
+def test_compute_next_run(
+    incident_ids_timestamps, last_run, has_new_incidents, last_queried_end_time, expected_timestamp, expected_ids
+):
     """
     Given:
         - A dictionary of incident IDs mapped to their committed timestamps.
+        - A boolean indicating whether new incidents were fetched.
+        - The end_time of the last queried interval.
     When:
         - Calling compute_next_run.
     Then:
-        - Ensure it returns the correct timestamp and IDs within the buffer window,
-          stored as a dict in last_ids_timestamps.
+        - If new incidents were fetched: returns the correct timestamp and IDs within the buffer window.
+        - If no new incidents were fetched: advances start_timestamp to last_queried_end_time and
+          preserves last_ids_timestamps from last_run.
     """
-    result = compute_next_run(incident_ids_timestamps, last_run)
+    result = compute_next_run(
+        incident_ids_timestamps, last_run, has_new_incidents=has_new_incidents, last_queried_end_time=last_queried_end_time
+    )
 
     assert result[START_TIMESTAMP_KEY] == expected_timestamp
-    assert set(result[LAST_IDS_TIMESTAMPS_KEY].keys()) == expected_ids
+    assert set(result.get(LAST_IDS_TIMESTAMPS_KEY, {}).keys()) == expected_ids
 
 
 @pytest.mark.parametrize(
@@ -631,6 +745,37 @@ def test_fetch_notifications_lookback(requests_mock, mocker):
     # The very first request must use start_timestamp=expected_effective_start
     first_request_url = requests_mock.request_history[0].url
     assert f"start_timestamp={expected_effective_start}" in first_request_url
+
+
+@freeze_time("2026-04-01 20:25:00 UTC")
+def test_fetch_notifications_advances_start_timestamp_when_no_new_incidents(requests_mock, mocker):
+    """
+    Given:
+        - A last_run with a stale start_timestamp and all API responses returning empty results.
+    When:
+        - Calling fetch_notifications.
+    Then:
+        - Ensure start_timestamp in next_run is advanced to the end_time of the last queried interval,
+          preventing the query window from growing unboundedly on subsequent fetches.
+    """
+    import re
+    from datetime import datetime
+
+    start_timestamp = int(datetime(2026, 4, 1, 20, 23, 0, tzinfo=UTC).timestamp())
+
+    requests_mock.get(re.compile(f"{DLP_URL}public/incident-notifications.*"), json={})
+
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    mocker.patch.object(demisto, "getLastRun", return_value={START_TIMESTAMP_KEY: start_timestamp, LAST_IDS_TIMESTAMPS_KEY: {}})
+    mocker.patch.object(demisto, "setIntegrationContext")
+
+    client = Client(DLP_URL, AUTH_URL, CREDENTIALS, True, False)
+    next_run, incidents = fetch_notifications(client, "us", first_fetch_timestamp=start_timestamp)
+
+    assert incidents == []
+    # start_timestamp must advance beyond the stale value — it should equal the end_time of the
+    # last queried interval (start_timestamp + MAX_API_CALLS_PER_FETCH * 180s), not remain frozen.
+    assert next_run[START_TIMESTAMP_KEY] > start_timestamp
 
 
 @pytest.mark.parametrize(

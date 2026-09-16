@@ -1,0 +1,66 @@
+{
+	"id": "Google Threat Intelligence RS Alert",
+	"version": -1,
+	"vcShouldIgnore": false,
+	"locked": false,
+	"name": "Google Threat Intelligence RS Alert",
+	"prevName": "Google Threat Intelligence RS Alert",
+	"color": "#0171c2",
+	"playbookId": "",
+	"hours": 0,
+	"days": 0,
+	"weeks": 0,
+	"hoursR": 0,
+	"daysR": 0,
+	"weeksR": 0,
+	"system": false,
+	"readonly": false,
+	"default": false,
+	"autorun": false,
+	"disabled": false,
+	"reputationCalc": 0,
+	"onChangeRepAlg": 0,
+	"layout": "Google Threat Intelligence RS Alert",
+	"detached": false,
+	"extractSettings": {
+		"mode": "Specific",
+		"fieldCliNameToExtractSettings": {
+			"gtirsalertaisummary": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": true,
+				"extractIndicatorTypesIDs": []
+			},
+			"gtirsalertdisplayname": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": true,
+				"extractIndicatorTypesIDs": []
+			},
+			"gtirsalertpriorityanalysisreasoning": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": true,
+				"extractIndicatorTypesIDs": []
+			},
+			"gtirsalertrelevancecommonthemes": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": true,
+				"extractIndicatorTypesIDs": []
+			},
+			"gtirsalertrelevancedistinctthemes": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": true,
+				"extractIndicatorTypesIDs": []
+			},
+			"gtirsalertrelevancereasoning": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": true,
+				"extractIndicatorTypesIDs": []
+			},
+			"gtirsalertseverityanalysisreasoning": {
+				"extractAsIsIndicatorTypeId": "",
+				"isExtractingAllIndicatorTypes": true,
+				"extractIndicatorTypesIDs": []
+			}
+		}
+	},
+	"fromVersion": "6.10.0"
+}

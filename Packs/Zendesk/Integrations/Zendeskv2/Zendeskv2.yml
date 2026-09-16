@@ -28,6 +28,9 @@ configuration:
   type: 8
   section: Connect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: 'Selects which direction you want the incidents mirrored. You can mirror **Incoming** only (from Zendesk to Cortex XSOAR), **Outgoing** only (from Cortex XSOAR to Zendesk), or both **Incoming And Outgoing**.'
   defaultvalue: None
   display: Incident Mirroring Direction
@@ -134,6 +137,9 @@ configuration:
   section: Collect
   defaultvalue: '50'
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -146,12 +152,18 @@ configuration:
   type: 19
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   defaultvalue: Zendesk Ticket
   type: 13
   section: Collect
   required: false
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -1599,7 +1611,7 @@ script:
     name: get-modified-remote-data
   - description: Updates local incident changes in the remote incident. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
-  dockerimage: demisto/python3:3.12.11.3982393
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   subtype: python3
   ismappable: true

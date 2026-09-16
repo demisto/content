@@ -65,6 +65,10 @@ ignore=BA101
 [file:playbook-Search_And_Delete_Emails_-_Generic_-_v2.yml]
 ignore=BA101,PB121
 
+# GR107 - This playbook uses deprecated sub-playbooks: O365 - Security And Compliance - Search And Delete, O365 - Security And Compliance - Search, O365 - Security And Compliance - Search Action - Delete, O365 - Security And Compliance - Search Action - Preview. Will be updated in a new version.
+[file:playbook-Search_And_Delete_Emails_-_Generic_-_v2_6_1.yml]
+ignore=GR107
+
 [file:playbook-Send_Investigation_Summary_Reports_Job.yml]
 ignore=PB105
 
@@ -139,3 +143,12 @@ ignore=GR107
 
 [file:playbook-Endpoint_Enrichment_-_Generic_v2.1_6_8.yml]
 ignore=RM116
+
+[file:playbook-Eradication_Plan_-_Delete_File.yml]
+ignore=GR109
+
+[file:playbook-Eradication_Plan_-_Terminate_Process.yml]
+ignore=GR109
+
+[file:playbook-Get_prevalence_for_IOCs.yml]
+ignore=GR109

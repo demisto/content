@@ -1,6 +1,6 @@
 import json
+import pickle as _pickle
 
-import dill as pickle
 import pytest
 from DBotTrainClustering import (
     MESSAGE_CLUSTERING_NOT_VALID,
@@ -259,12 +259,16 @@ class PostProcessing:
 
 
 def executeCommand(command, args):
+    import DBotTrainClustering
+
     match command:
         case "GetIncidentsByQuery":
             return [{"Contents": json.dumps(FETCHED_INCIDENT), "Type": "note"}]
         case "getMLModel":
             model = PostProcessing(datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
-            model_data = base64.b64encode(pickle.dumps(model)).decode("utf-8")  # guardrails-disable-line
+            # Add test module class to allowlist so safe_pickle_loads can deserialize it
+            DBotTrainClustering._ALLOWED_CLASSES.add(("DBotTrainClustering_test", "PostProcessing"))
+            model_data = base64.b64encode(_pickle.dumps(model)).decode("utf-8")  # guardrails-disable-line
             return [
                 {
                     "Contents": {"modelData": model_data},

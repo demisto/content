@@ -201,6 +201,84 @@ def test_extract_text_indicators():
     assert res_indicators == util_load_json("test_data/iocs-res.json")
 
 
+@pytest.mark.parametrize(
+    "cidr, expected_value",
+    [
+        # Two-digit prefix lengths must not be truncated to one digit
+        ("1.1.1.1/12", "1.1.1.1/12"),
+        ("192.168.0.0/16", "192.168.0.0/16"),
+        ("10.0.0.0/24", "10.0.0.0/24"),
+        ("172.16.0.0/32", "172.16.0.0/32"),
+        # Single-digit prefix lengths must still match
+        ("10.0.0.0/8", "10.0.0.0/8"),
+        ("1.1.1.1/1", "1.1.1.1/1"),
+        ("1.1.1.1/2", "1.1.1.1/2"),
+    ],
+)
+def test_ipv4_cidr_regex_full_prefix_length(cidr: str, expected_value: str):
+    """
+    Given:
+     - An IPv4 CIDR string with a multi-digit prefix length (e.g. /12, /16, /24, /32).
+    When:
+     - The ipv4cidrRegex is applied via re.search.
+    Then:
+     - The full CIDR value including the complete prefix length is matched,
+       not a truncated single-digit prefix.
+    """
+    import re
+
+    from FeedGitHub import ipv4cidrRegex
+
+    match = re.search(ipv4cidrRegex, cidr)
+    assert match is not None, f"Expected a match for {cidr!r}"
+    assert match.group(0) == expected_value, f"For input {cidr!r}: expected {expected_value!r} but got {match.group(0)!r}"
+
+
+@pytest.mark.parametrize(
+    "cidr, expected_value",
+    [
+        # Three-digit prefix lengths must not be truncated
+        ("2001:db8::/128", "2001:db8::/128"),
+        ("2001:db8::/112", "2001:db8::/112"),
+        ("::ffff:192.168.1.0/120", "::ffff:192.168.1.0/120"),
+        # Two-digit prefix lengths must not be truncated to one digit
+        ("2001:db8::/64", "2001:db8::/64"),
+        ("2001:db8::/48", "2001:db8::/48"),
+        ("2001:db8::/32", "2001:db8::/32"),
+        ("fe80::/10", "fe80::/10"),
+        # Single-digit prefix lengths must still match
+        ("2001:db8::/8", "2001:db8::/8"),
+        ("2001:db8::/1", "2001:db8::/1"),
+        ("::/0", "::/0"),
+        # Loopback
+        ("::1/128", "::1/128"),
+        # Full address
+        ("2001:0db8:85a3::8a2e:0370:7334/64", "2001:0db8:85a3::8a2e:0370:7334/64"),
+        # Invalid: literal 'd' instead of digit -- must NOT match
+        ("::ffff:1dd.1dd.1dd.1dd/128", None),
+        # Invalid: non-dot separator -- must NOT match
+        ("::ffff:1.1.1_1/128", None),
+    ],
+)
+def test_ipv6_cidr_regex_full_prefix_length(cidr: str, expected_value: str):
+    """
+    Given:
+     - An IPv6 CIDR string with various prefix lengths and formats.
+    When:
+     - The ipv6cidrRegex is applied via re.search.
+    Then:
+     - Valid CIDRs are matched with the complete prefix length.
+     - Malformed strings with literal 'd' digits or non-dot separators are not matched.
+    """
+    import re
+
+    from FeedGitHub import ipv6cidrRegex
+
+    match = re.search(ipv6cidrRegex, cidr)
+    got = match.group(0) if match else None
+    assert got == expected_value, f"For input {cidr!r}: expected {expected_value!r} but got {got!r}"
+
+
 def test_get_stix_indicators():
     """
     Given:
@@ -525,3 +603,149 @@ def test_get_indicators_command_with_tlp_color_red(mocker):
 
     command_res = get_indicators_command(client_mock, params, args)
     assert command_res.outputs[0].get("enrichmentExcluded") is True
+
+
+def test_fetch_indicators_non_incremental_uses_first_fetch_each_cycle(mocker):
+    """
+    Given:
+     - feedIncremental disabled.
+     - A previously stored last_commit (simulating not the first cycle).
+    When:
+     - Calling fetch_indicators.
+    Then:
+     - The base commit SHA is derived from `fetch_since`, NOT from the stored last_commit.
+     - get_commits_between_dates is called with the configured fetch_since window.
+    """
+    import FeedGitHub
+
+    client = mock_client()
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "setLastRun")
+    params = {"fetch_since": "15 days ago", "feedIncremental": "false"}
+
+    commits_mock = mocker.patch.object(
+        client,
+        "get_commits_between_dates",
+        return_value=[
+            "head_sha",
+            "mid_sha",
+            "fresh_base_sha_from_fetch_since",
+        ],
+    )
+    get_indicators_mock = mocker.patch.object(
+        FeedGitHub,
+        "get_indicators",
+        return_value=(util_load_json("test_data/iterator-test.json"), "new_head_sha"),
+    )
+
+    FeedGitHub.fetch_indicators(client, "stored_last_commit_must_be_ignored", params)
+
+    commits_mock.assert_called_once_with("15 days ago", "now")
+    base_sha_arg = get_indicators_mock.call_args.args[2]
+    is_first_fetch_arg = get_indicators_mock.call_args.args[4]
+    assert base_sha_arg == "fresh_base_sha_from_fetch_since"
+    assert is_first_fetch_arg is True
+
+
+def test_fetch_indicators_incremental_uses_last_commit(mocker):
+    """
+    Given:
+     - feedIncremental enabled.
+     - A previously stored last_commit.
+    When:
+     - Calling fetch_indicators.
+    Then:
+     - The base commit SHA is the stored last_commit.
+     - get_commits_between_dates is NOT called.
+    """
+    import FeedGitHub
+
+    client = mock_client()
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "setLastRun")
+    params = {"fetch_since": "15 days ago", "feedIncremental": "true"}
+
+    commits_mock = mocker.patch.object(client, "get_commits_between_dates")
+    get_indicators_mock = mocker.patch.object(
+        FeedGitHub,
+        "get_indicators",
+        return_value=(util_load_json("test_data/iterator-test.json"), "new_head_sha"),
+    )
+
+    FeedGitHub.fetch_indicators(client, "stored_last_commit", params)
+
+    commits_mock.assert_not_called()
+    base_sha_arg = get_indicators_mock.call_args.args[2]
+    is_first_fetch_arg = get_indicators_mock.call_args.args[4]
+    assert base_sha_arg == "stored_last_commit"
+    assert is_first_fetch_arg is False
+
+
+def test_fetch_indicators_incremental_first_run_falls_back_to_fetch_since(mocker):
+    """
+    Given:
+     - feedIncremental enabled.
+     - No stored last_commit (first cycle).
+    When:
+     - Calling fetch_indicators.
+    Then:
+     - Base SHA is derived from fetch_since, is_first_fetch=True.
+    """
+    import FeedGitHub
+
+    client = mock_client()
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "setLastRun")
+    params = {"fetch_since": "15 days ago", "feedIncremental": "true"}
+
+    commits_mock = mocker.patch.object(
+        client,
+        "get_commits_between_dates",
+        return_value=["head_sha", "base_sha"],
+    )
+    get_indicators_mock = mocker.patch.object(
+        FeedGitHub,
+        "get_indicators",
+        return_value=(util_load_json("test_data/iterator-test.json"), "new_head_sha"),
+    )
+
+    FeedGitHub.fetch_indicators(client, None, params)
+
+    commits_mock.assert_called_once_with("15 days ago", "now")
+    base_sha_arg = get_indicators_mock.call_args.args[2]
+    is_first_fetch_arg = get_indicators_mock.call_args.args[4]
+    assert base_sha_arg == "base_sha"
+    assert is_first_fetch_arg is True
+
+
+def test_fetch_indicators_setlastrun_called_in_both_modes(mocker):
+    """
+    Given:
+     - Either incremental or non-incremental mode.
+    When:
+     - fetch_indicators completes with a valid head commit.
+    Then:
+     - setLastRun is called with the new head commit.
+    """
+    import FeedGitHub
+
+    client = mock_client()
+    mocker.patch.object(demisto, "debug")
+    set_last_run_mock = mocker.patch.object(demisto, "setLastRun")
+    mocker.patch.object(
+        client,
+        "get_commits_between_dates",
+        return_value=["head", "base"],
+    )
+    mocker.patch.object(
+        FeedGitHub,
+        "get_indicators",
+        return_value=(util_load_json("test_data/iterator-test.json"), "new_head_sha"),
+    )
+
+    FeedGitHub.fetch_indicators(client, "ignored", {"fetch_since": "15 days ago", "feedIncremental": "false"})
+    FeedGitHub.fetch_indicators(client, None, {"fetch_since": "15 days ago", "feedIncremental": "true"})
+
+    assert set_last_run_mock.call_count == 2
+    for call in set_last_run_mock.call_args_list:
+        assert call.args[0] == {"last_commit": "new_head_sha"}

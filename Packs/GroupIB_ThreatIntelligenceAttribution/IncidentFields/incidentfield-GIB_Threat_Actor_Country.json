@@ -2,7 +2,8 @@
     "associatedToAll": false,
     "associatedTypes": [
         "GIB Cybercriminal Threat",
-        "GIB Nation-State Cybercriminals Threat"
+        "GIB Nation-State Cybercriminals Threat",
+        "GIB Compromised Masked Card"
     ],
     "caseInsensitive": true,
     "cliName": "gibthreatactorcountry",
@@ -24,7 +25,8 @@
     "system": false,
     "systemAssociatedTypes": [
         "GIB Cybercriminal Threat",
-        "GIB Nation-State Cybercriminals Threat"
+        "GIB Nation-State Cybercriminals Threat",
+        "GIB Compromised Masked Card"
     ],
     "threshold": 72,
     "type": "shortText",

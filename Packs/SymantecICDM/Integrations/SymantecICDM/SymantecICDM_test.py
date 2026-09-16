@@ -7,6 +7,7 @@ import json
 import pytest
 from CommonServerPython import *
 from datetime import datetime, timedelta
+from freezegun import freeze_time
 from SymantecICDM import (
     Client,
     icdm_fetch_incidents_command,
@@ -26,7 +27,8 @@ from SymantecICDM import (
 
 BASE_RELIABILITY = DBotScoreReliability.B
 
-DATE_TIME = datetime.now(tz=timezone.utc).replace(second=0, microsecond=0)
+FREEZE_TIME = "2026-04-18T03:00:00Z"
+DATE_TIME = datetime.strptime(FREEZE_TIME, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
 AN_HOUR_AGO = DATE_TIME - timedelta(hours=1)
 TWO_MONTHS_AGO = DATE_TIME - timedelta(days=60)
 
@@ -36,6 +38,7 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+@freeze_time(FREEZE_TIME)
 @pytest.mark.parametrize(
     "value, output",
     [

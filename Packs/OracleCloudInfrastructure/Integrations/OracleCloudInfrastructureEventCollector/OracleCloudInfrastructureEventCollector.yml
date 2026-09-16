@@ -47,6 +47,18 @@ configuration:
   required: false
   type: 0
   section: Connect
+- display: Fetch Events
+  defaultvalue: 'false'
+  name: isFetchEvents
+  type: 8
+  required: false
+  section: Collect
+- display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  section: Collect
+  defaultvalue: '1'
 - display: First fetch time
   additionalinfo: This parameter is relevant for 'Audit' events only.
   defaultvalue: 3 days
@@ -102,7 +114,7 @@ script:
       required: true
     description: Manual command to fetch and display events.
     name: oracle-cloud-infrastructure-get-events
-  dockerimage: demisto/oci:1.0.0.7762963
+  dockerimage: demisto/oci:1.0.0.10133006
   isfetchevents: true
   script: '-'
   subtype: python3

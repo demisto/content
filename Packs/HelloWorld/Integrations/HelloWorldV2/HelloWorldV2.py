@@ -130,6 +130,13 @@ or `CommandResults`. You will use the Command Functions to handle inputs and out
 When calling an API, use methods like `ContentClient.get` and `ContentClient.post` and return the raw API response to
 the calling function (usually a Command function).
 
+NOTE: `resp_type` defaults differ from legacy `_http_request`:
+When using the HTTP verb methods on `ContentClient` (`get`, `post`, `put`, `patch`, `delete`), always pass
+`resp_type="json"` to get a parsed dict response. Unlike the legacy `BaseClient._http_request` (which defaults to
+`resp_type="json"` and returns a parsed dict), the HTTP verb methods default to `resp_type="response"` and return the
+raw HTTP response object. Forgetting to pass `resp_type="json"` is a common source of bugs when migrating from the
+legacy approach. Other supported values are `'json'`, `'text'`, `'content'`, `'response'`, `'xml'`.
+
 Ideally, there should be one client method per API endpoint.
 
 Look at the code and the comments of this specific class to better understand the implementation details.
@@ -140,6 +147,21 @@ Argument Validation Models and Command Functions
 
 For each command, define a Pydantic model that inherits from `ContentBaseModel` to parse, validate, and clean command
 arguments. Then implement the corresponding command function that uses the validated arguments.
+
+NOTE: Pydantic v1 is in use. Due to how Python modules are loaded in the XSOAR runtime,
+`@validator` and `@root_validator` decorators must be declared with `allow_reuse=True`, and the
+decorated function must be a `@classmethod`.
+
+Examples:
+    @validator("argument", pre=True, allow_reuse=True)
+    @classmethod
+    def validate_argument(cls, v):
+        return str(v)
+
+    @root_validator(allow_reuse=True)
+    @classmethod
+    def validate_model(cls, values):
+        return values
 
 Command functions perform the mapping between inputs and outputs to the Client class functions inputs and outputs. As a
 best practice, they should not contain calls to `demisto.args()`, `demisto.results()`, `return_error`, and
@@ -381,6 +403,7 @@ class HelloWorldParams(BaseParams):
         return max_fetch
 
     @validator("url", allow_reuse=True)
+    @classmethod
     def clean_url(cls, v):  # pylint: disable=no-self-argument
         """Remove trailing forward slash from the 'URL' parameter"""
         return v.rstrip("/")
@@ -460,11 +483,20 @@ class HelloWorldClient(ContentClient):
         """
         # INTEGRATION DEVELOPER TIP:
         # For real API calls, use the inherited HTTP verb methods, for example:
-        # - `self.get(endpoint, params)` for GET requests
-        # - `self.post(endpoint, json_body)` for POST requests
-        # Alternatively, call the legacy "_http_request" method:
+        # - `self.get(endpoint, params, resp_type="json")` for GET requests
+        # - `self.post(endpoint, json_body, resp_type="json")` for POST requests
+        #
+        # The HTTP verb methods (`self.get`, `self.post`, `self.put`, `self.patch`, `self.delete`) inherited from
+        # `ContentClient` default to `resp_type="response"`, which returns the RAW response object — NOT a parsed
+        # dict. This differs from the legacy `BaseClient._http_request` method, which defaults to `resp_type="json"`
+        # and returns a parsed dict.
+        #
+        # To receive a parsed JSON/dict response (the most common case), explicitly pass `resp_type="json"`, as shown
+        # in the example below. Other supported values: 'json', 'text', 'content', 'response', 'xml'.
+        #
+        # Alternatively, call the legacy "_http_request" method (returns parsed JSON by default):
         # - `self._http_request("GET", url_suffix=endpoint, params=params)`
-        return self.get(url_suffix=f"/api/endpoint/{item_id}", params=params)
+        return self.get(url_suffix=f"/api/endpoint/{item_id}", params=params, resp_type="json")
 
     def get_ip_reputation(self, ip: str) -> dict[str, Any]:
         """Get IP reputation (dummy response for demonstration purposes).
@@ -513,9 +545,12 @@ class HelloWorldClient(ContentClient):
         # In a real implementation, you would make an HTTP request here using ContentClient:
         # endpoint = "/api/v1/hello"
         # data = {"name": name}
-        # # If API response type is not JSON, specify the suitable type
-        # resp_type = "text"  # Use any of the following: 'json', 'text', 'content', 'response', 'xml'
-        # return self.post(endpoint, json_data=data, resp_type=resp_type)
+        # # The HTTP verb methods (`self.get`, `self.post`, etc.) default to `resp_type="response"` and return the
+        # # RAW response object. The recommended (and most common) value is `resp_type="json"` for a parsed dict.
+        # # Use a different `resp_type` only when the API does NOT return JSON.
+        # # Supported values: 'json' (default recommended), 'text', 'content', 'response', 'xml'.
+        # # Since this hypothetical /hello endpoint returns a plain string, we use 'text' here:
+        # return self.post(endpoint, json_data=data, resp_type="text")
 
         return f"Hello {name}"
 
@@ -541,7 +576,9 @@ class HelloWorldClient(ContentClient):
         #   severity=severity,
         #   start_time=start_time,
         # )
-        # return self.get(endpoint, params=params)
+        # # NOTE: Always pass `resp_type="json"` to get a parsed dict — the HTTP verb methods default to
+        # # `resp_type="response"` (raw response object), unlike the legacy `_http_request` method.
+        # return self.get(endpoint, params=params, resp_type="json")
 
         # Assume API returns results from the last 24 hours if start_time is not specified
         base_time = arg_to_datetime(start_time) or (datetime.now(tz=UTC) - timedelta(hours=24))
@@ -578,7 +615,9 @@ class HelloWorldClient(ContentClient):
         # INTEGRATION DEVELOPER TIP:
         # In a real implementation, you would make an HTTP request here using ContentClient:
         # endpoint = f"/api/v1/alerts/{alert_id}"
-        # return self.get(endpoint)
+        # # NOTE: Always pass `resp_type="json"` to get a parsed dict — the HTTP verb methods default to
+        # # `resp_type="response"` (raw response object), unlike the legacy `_http_request` method.
+        # return self.get(endpoint, resp_type="json")
 
         item = MOCK_ALERT.format(
             id=alert_id,
@@ -604,7 +643,9 @@ class HelloWorldClient(ContentClient):
         # In a real implementation, you would make an HTTP request here using ContentClient:
         # endpoint = f"/api/v1/notes/{alert_id}"
         # data = {"comment": comment}
-        # return self.post(endpoint, json_data=data)
+        # # NOTE: Always pass `resp_type="json"` to get a parsed dict — the HTTP verb methods default to
+        # # `resp_type="response"` (raw response object), unlike the legacy `_http_request` method.
+        # return self.post(endpoint, json_data=data, resp_type="json")
 
         return {"status": "success", "msg": f"Note was created for alert #{alert_id} successfully with comment: {comment}"}
 
@@ -619,7 +660,9 @@ class HelloWorldClient(ContentClient):
         # INTEGRATION DEVELOPER TIP:
         # In a real implementation, you would make an HTTP request here using ContentClient:
         # endpoint = "/api/v1/jobs/config-refresh"
-        # return self.post(endpoint)
+        # # NOTE: Always pass `resp_type="json"` to get a parsed dict — the HTTP verb methods default to
+        # # `resp_type="response"` (raw response object), unlike the legacy `_http_request` method.
+        # return self.post(endpoint, resp_type="json")
         return {"id": "abc-123", "status": "submitted", "type": "HelloWorldRefreshConfig"}
 
     def get_job_status(self, job_id: str) -> dict[str, str]:
@@ -636,7 +679,9 @@ class HelloWorldClient(ContentClient):
         # INTEGRATION DEVELOPER TIP:
         # In a real implementation, you would make an HTTP request here using ContentClient:
         # endpoint = f"/api/v1/jobs/{job_id}/status"
-        # return self.get(endpoint)
+        # # NOTE: Always pass `resp_type="json"` to get a parsed dict — the HTTP verb methods default to
+        # # `resp_type="response"` (raw response object), unlike the legacy `_http_request` method.
+        # return self.get(endpoint, resp_type="json")
         return {"id": job_id, "status": "complete"}
 
     def get_job_result(self, job_id: str) -> dict[str, str]:
@@ -653,7 +698,9 @@ class HelloWorldClient(ContentClient):
         # INTEGRATION DEVELOPER TIP:
         # In a real implementation, you would make an HTTP request here using ContentClient:
         # endpoint = f"/api/v1/jobs/{job_id}/result"
-        # return self.get(endpoint)
+        # # NOTE: Always pass `resp_type="json"` to get a parsed dict — the HTTP verb methods default to
+        # # `resp_type="response"` (raw response object), unlike the legacy `_http_request` method.
+        # return self.get(endpoint, resp_type="json")
         return {"id": job_id, "msg": "The configuration has successfully been updated."}
 
     def get_assets(self, limit: int, id_offset: int = 0) -> dict[str, Any]:
@@ -672,7 +719,9 @@ class HelloWorldClient(ContentClient):
         # In a real implementation, you would make an HTTP request here using ContentClient:
         # endpoint = "/api/v1/assets"
         # params = {"limit": limit, "offset": id_offset}
-        # return self.get(endpoint, params=params)
+        # # NOTE: Always pass `resp_type="json"` to get a parsed dict — the HTTP verb methods default to
+        # # `resp_type="response"` (raw response object), unlike the legacy `_http_request` method.
+        # return self.get(endpoint, params=params, resp_type="json")
 
         mock_assets: list[dict] = []
         asset_types = ["server", "database", "storage", "network"]
@@ -710,7 +759,9 @@ class HelloWorldClient(ContentClient):
         # In a real implementation, you would make an HTTP request here using ContentClient:
         # endpoint = "/api/v1/vulnerabilities"
         # params = {"limit": limit, "offset": id_offset}
-        # return self.get(endpoint, params=params)
+        # # NOTE: Always pass `resp_type="json"` to get a parsed dict — the HTTP verb methods default to
+        # # `resp_type="response"` (raw response object), unlike the legacy `_http_request` method.
+        # return self.get(endpoint, params=params, resp_type="json")
 
         mock_vulns: list[dict] = []
         severities = HelloWorldSeverity.all_values()
@@ -1480,6 +1531,7 @@ class HelloworldAlertListArgs(ContentBaseModel):
     severity: HelloWorldSeverity | None = None
 
     @root_validator(allow_reuse=True)
+    @classmethod
     def check_alert_id_or_severity(cls, values: dict):  # pylint: disable=no-self-argument
         has_alert_id = bool(values.get("alert_id"))
         has_severity = bool(values.get("severity"))
@@ -1538,6 +1590,7 @@ class HelloWorldGetEventsArgs(ContentBaseModel):
     should_push_events: bool = False
 
     @validator("start_time", allow_reuse=True)
+    @classmethod
     def validate_start_time(cls, v) -> str | None:  # pylint: disable=no-self-argument
         """Convert start_time to ISO 8601 timestamp string."""
         if v:
@@ -1545,6 +1598,7 @@ class HelloWorldGetEventsArgs(ContentBaseModel):
         return None
 
     @validator("should_push_events", allow_reuse=True)
+    @classmethod
     def validate_should_push_events(cls, v):  # pylint: disable=no-self-argument
         """Ensure should_push_events is valid for the current tenant."""
         should_push_events = argToBoolean(v)
@@ -1596,6 +1650,7 @@ class HelloworldAlertNoteCreateArgs(ContentBaseModel):
     note_text: str
 
     @validator("alert_id", allow_reuse=True)
+    @classmethod
     def validate_alert_id(cls, v):  # pylint: disable=no-self-argument
         """Ensure alert_id is a valid positive integer."""
         if v is None or v <= 0:

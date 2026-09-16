@@ -1,0 +1,78 @@
+{
+    "description": "Maps incoming NodeZero Weakness fields.",
+    "feed": false,
+    "id": "NodeZero - Incoming Mapper",
+    "mapping": {
+        "NodeZero Weakness": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "dbotMirrorId": {
+                    "simple": "uuid"
+                },
+                "occurred": {
+                    "simple": "created_at"
+                },
+                "severity": {
+                    "complex": {
+                        "accessor": "",
+                        "filters": [],
+                        "root": "severity",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "CRITICAL,HIGH"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "4,3"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "External ID": {
+                    "simple": "vuln_id"
+                },
+                "Source Hostname": {
+                    "simple": "affected_asset_display_name"
+                },
+                "Source IP": {
+                    "simple": "ip"
+                },
+                "NodeZero Weakness Score": {
+                    "simple": "score"
+                },
+                "NodeZero Weakness Category": {
+                    "simple": "vuln_category"
+                },
+                "NodeZero Weakness Proven": {
+                    "simple": "has_proof"
+                },
+                "NodeZero Attack Paths Count": {
+                    "simple": "attack_paths_count"
+                },
+                "NodeZero CISA KEV": {
+                    "simple": "vuln_cisa_kev"
+                },
+                "NodeZero Ransomware Use": {
+                    "simple": "vuln_known_ransomware_campaign_use"
+                },
+                "NodeZero Operation ID": {
+                    "simple": "op_id"
+                }
+            }
+        }
+    },
+    "name": "NodeZero - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.1.0"
+}

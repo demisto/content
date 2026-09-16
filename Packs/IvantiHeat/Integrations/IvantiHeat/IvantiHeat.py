@@ -164,8 +164,27 @@ def upload_attachment_command(client, args):
     entry_id = args.get("entry-id")
     rec_id = args.get("rec-id")
 
+    # Validate all required arguments are present and non-empty
+    for arg_name, arg_value in (("object-type", object_type), ("entry-id", entry_id), ("rec-id", rec_id)):
+        if arg_value is None or (isinstance(arg_value, str) and not arg_value.strip()):
+            raise ValueError(
+                f'Required argument "{arg_name}" is missing or empty. '
+                "Verify the calling automation provides all of: object-type, entry-id, rec-id."
+            )
+
     body = {"ObjectID": rec_id, "ObjectType": f"{object_type}#"}
-    raw_res = client.do_request("POST", "rest/Attachment", data=body, files={"file": get_file(entry_id)})
+
+    demisto.debug(f"[debug] resolving file for {entry_id=}")
+    try:
+        file_tuple = get_file(entry_id)
+    except Exception as exc:
+        raise DemistoException(
+            f'Failed to resolve attachment file for entry-id="{entry_id}". '
+            "Verify the entry ID points to an existing file in the war room. "
+            f"Underlying error: {exc}"
+        ) from exc
+
+    raw_res = client.do_request("POST", "rest/Attachment", data=body, files={"file": file_tuple})
     if raw_res:
         attachment = raw_res[0]
         attachment_id = attachment.get("Message")
