@@ -62,6 +62,10 @@ class URLCheck:
         lines, which downstream turns one indicator into multiple malformed ones.
         Control characters are never legal raw in a URL, so re-encoding them is always safe.
 
+        urllib.parse.quote is used rather than formatting the code point directly, so the
+        non-ASCII C1 controls (U+0080-U+009F) are encoded as their UTF-8 bytes (e.g. "%C2%85")
+        and therefore survive a round trip through urllib.parse.unquote.
+
         Args:
             url: The URL after percent-decoding
 
@@ -69,7 +73,7 @@ class URLCheck:
             The URL with every control character percent-encoded again
         """
 
-        return "".join(f"%{ord(char):02X}" if unicodedata.category(char) == "Cc" else char for char in url)
+        return "".join(urllib.parse.quote(char) if unicodedata.category(char) == "Cc" else char for char in url)
 
     def __init__(self, original_url: str):
         """

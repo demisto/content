@@ -1,3 +1,4 @@
+import unicodedata
 import pytest
 from FormatURLApiModule import *
 
@@ -612,13 +613,15 @@ class TestFormatURL:
     CRLF_INJECTION = [
         (
             "mailto:sender@example.com?subject=Unsubscribe%20A1B2C3D4%2DE5F6%2D7890%2D"
-            "ABCD%2DEF1234567890&body=Please%20don%27t%20change%20the%20email%20content%20and%20send"
-            "%20this%20email%20to%20unsubscribe.%0D%0A%0D%0Arecipient@example.org"
+            + "ABCD%2DEF1234567890&body=Please%20don%27t%20change%20the%20email%20content%20and%20send"
+            + "%20this%20email%20to%20unsubscribe.%0D%0A%0D%0Arecipient@example.org"
         ),
         # The "/" after the host is the formatter's pre-existing normalization, unrelated to this fix.
-        "mailto:sender@example.com/?subject=Unsubscribe%20A1B2C3D4-E5F6-7890-ABCD-EF1234567890"
-        "&body=Please%20don't%20change%20the%20email%20content%20and%20send%20this%20email%20to%20unsubscribe."
-        "%0D%0A%0D%0Arecipient@example.org",
+        (
+            "mailto:sender@example.com/?subject=Unsubscribe%20A1B2C3D4-E5F6-7890-ABCD-EF1234567890"
+            + "&body=Please%20don't%20change%20the%20email%20content%20and%20send%20this%20email%20to%20unsubscribe."
+            + "%0D%0A%0D%0Arecipient@example.org"
+        ),
     ]
 
     @pytest.mark.parametrize(
@@ -655,12 +658,14 @@ class TestFormatURL:
             "https://test.com/path?a=1%0d%0avictim@example.com",
             "https://test.com/path?a=1%0Abreak",
             "https://test.com/path?a=1%09tab",
+            "https://test.com/path?a=1%00null",
+            "https://test.com/path?a=1%7Fdel",
         ],
     )
     def test_control_characters_are_not_decoded(self, url_: str):
         """
         Given:
-        - A URL whose query contains percent-encoded control characters (CRLF, LF, TAB).
+        - A URL whose query contains percent-encoded control characters (CRLF, LF, TAB, NULL, DEL).
 
         When:
         - The URL is formatted.
@@ -672,9 +677,7 @@ class TestFormatURL:
 
         output = URLFormatter(url_).__str__()
 
-        assert "\r" not in output
-        assert "\n" not in output
-        assert "\t" not in output
+        assert not any(unicodedata.category(char) == "Cc" for char in output)
 
     def test_mailto_crlf_is_not_split_into_two_indicators(self):
         """
