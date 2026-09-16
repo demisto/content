@@ -11,6 +11,9 @@ API_LIMIT = 5000
 TOTAL_INDICATOR_LIMIT = 20000
 THREAT_OBJECTS_FETCH_INTERVAL_HOURS = 24
 
+# List of all indicator types
+INDICATOR_TYPES_LIST = ["File", "IP", "URL", "Domain"]
+
 # Feed type option strings, matching the "feed_types" parameter options in the YAML.
 THREAT_OBJECTS_TYPE = "Threat Objects"
 INDICATORS_TYPE = "Indicators"
@@ -1051,7 +1054,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
 
     # Get configuration
     feed_types = argToList(params.get("feed_types"))
-    indicator_types = argToList(params.get("indicator_types"))
+    indicator_types = argToList(params.get("indicator_types")) or INDICATOR_TYPES_LIST
     feed_tags = argToList(params.get("feedTags", []))
     tlp_color = params.get("tlp_color")
 
@@ -1137,7 +1140,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
 
     # Then all configured indicator types together in one combined query, using the
     # remaining budget. On a resumed run only if indicators still had a pending token.
-    should_fetch_indicators = bool(indicator_types) and _should_fetch_indicators(
+    should_fetch_indicators = _should_fetch_indicators(
         INDICATORS_TYPE in feed_types, cycle_in_progress, ind_token
     )
     if should_fetch_indicators and total_fetched < total_limit:
