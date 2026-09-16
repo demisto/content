@@ -59,7 +59,7 @@ class URLCheck:
         Re-encodes control characters (C0, DEL and C1) back to their percent-encoded form.
 
         Decoding sequences such as %0D%0A into literal CRLF splits a single URL into several
-        lines, which downstream turns one indicator into multiple malformed ones (XSUP-76731).
+        lines, which downstream turns one indicator into multiple malformed ones.
         Control characters are never legal raw in a URL, so re-encoding them is always safe.
 
         Args:

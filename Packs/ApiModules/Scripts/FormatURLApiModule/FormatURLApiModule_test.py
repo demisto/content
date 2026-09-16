@@ -607,7 +607,7 @@ class TestFormatURL:
         assert result_part == expected_part
         assert result_brackets == expected_brackets
 
-    # XSUP-76731: a mailto: link whose query contains percent-encoded CRLF (%0D%0A) must keep that
+    # a mailto: link whose query contains percent-encoded CRLF (%0D%0A) must keep that
     # sequence encoded, otherwise the literal newline splits one indicator into several lines.
     CRLF_INJECTION = [
         (
@@ -625,7 +625,7 @@ class TestFormatURL:
         "url_, expected",
         [
             # "%2520" is the correct encoding of the literal text "%20". Decoding more than once
-            # collapsed it to a real space; "%252541" even fabricated an "A" (XSUP-76731).
+            # collapsed it to a real space; "%252541" even fabricated an "A".
             ("https://test.com/?p=%2520", "https://test.com/?p=%20"),
             ("https://test.com/a%252Fb", "https://test.com/a%2Fb"),
             ("https://test.com/?p=%252541", "https://test.com/?p=%2541"),
@@ -667,7 +667,7 @@ class TestFormatURL:
 
         Then:
         - Ensure no literal control character leaks into the formatted output, so a single
-          indicator can never be split into multiple values (XSUP-76731).
+          indicator can never be split into multiple values.
         """
 
         output = URLFormatter(url_).__str__()
