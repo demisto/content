@@ -10,7 +10,6 @@ Validate Cortex ASM-discovered exposures with Tenzai's agentic penetration testi
 
 ## Configure Tenzai in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Tenzai Server URL (e.g., https://api.tenzai.io) | The base URL of the Tenzai API. | True |
