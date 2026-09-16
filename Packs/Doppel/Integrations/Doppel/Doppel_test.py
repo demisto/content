@@ -1429,13 +1429,11 @@ def test_mirroring_attaches_screenshot_when_param_enabled(mocker):
     _mock_screenshot_context(mocker)
     file_entry = {"Type": 3, "File": "TET-1234-screenshot-shot-v1.png"}
     mocker.patch("Doppel.fileResult", return_value=file_entry)
-    mocker.patch.object(demisto, "params", return_value={"attach_screenshots": True})
-
     mock_client = MagicMock()
     mock_client.get_alert.return_value = {"queue_state": "archived", "screenshot_url": SIGNED_URL_V1, "audit_logs": []}
     mock_client.download_screenshot.return_value = b"png-bytes"
 
-    _, entries = _get_remote_updated_incident_data_with_entry(mock_client, "TET-1234", "2025-01-19T08:44:52Z")
+    _, entries = _get_remote_updated_incident_data_with_entry(mock_client, "TET-1234", "2025-01-19T08:44:52Z", attach_screenshots=True)
 
     assert file_entry in entries
 
@@ -1443,8 +1441,6 @@ def test_mirroring_attaches_screenshot_when_param_enabled(mocker):
 def test_mirroring_skips_screenshot_when_param_disabled(mocker):
     """Default behavior: no screenshot download during mirroring."""
     from Doppel import _get_remote_updated_incident_data_with_entry
-
-    mocker.patch.object(demisto, "params", return_value={})
 
     mock_client = MagicMock()
     mock_client.get_alert.return_value = {"queue_state": "archived", "screenshot_url": SIGNED_URL_V1, "audit_logs": []}
@@ -1461,12 +1457,11 @@ def test_mirroring_skips_unchanged_screenshot_version(mocker):
 
     _mock_screenshot_context(mocker, {"TET-1234": _screenshot_blob_path(SIGNED_URL_V1)})
     file_result = mocker.patch("Doppel.fileResult")
-    mocker.patch.object(demisto, "params", return_value={"attach_screenshots": True})
 
     mock_client = MagicMock()
     mock_client.get_alert.return_value = {"queue_state": "archived", "screenshot_url": SIGNED_URL_V1_RESIGNED, "audit_logs": []}
 
-    _, entries = _get_remote_updated_incident_data_with_entry(mock_client, "TET-1234", "2025-01-19T08:44:52Z")
+    _, entries = _get_remote_updated_incident_data_with_entry(mock_client, "TET-1234", "2025-01-19T08:44:52Z", attach_screenshots=True)
 
     mock_client.download_screenshot.assert_not_called()
     file_result.assert_not_called()
@@ -1478,16 +1473,24 @@ def test_mirroring_screenshot_failure_does_not_block_sync(mocker):
     from Doppel import _get_remote_updated_incident_data_with_entry
 
     _mock_screenshot_context(mocker)
-    mocker.patch.object(demisto, "params", return_value={"attach_screenshots": True})
 
     mock_client = MagicMock()
     mock_client.get_alert.return_value = {"queue_state": "archived", "screenshot_url": SIGNED_URL_V1, "audit_logs": []}
     mock_client.download_screenshot.side_effect = Exception("GCS unreachable")
 
-    updated_alert, entries = _get_remote_updated_incident_data_with_entry(mock_client, "TET-1234", "2025-01-19T08:44:52Z")
+    updated_alert, entries = _get_remote_updated_incident_data_with_entry(mock_client, "TET-1234", "2025-01-19T08:44:52Z", attach_screenshots=True)
 
     assert updated_alert is not None
     assert entries == []
+
+
+def test_download_screenshot_rejects_non_https():
+    """The screenshot downloader refuses cleartext URLs outright."""
+    from CommonServerPython import DemistoException
+
+    client = Client(base_url="https://api.doppel.com/v1", api_key="test-api-key", verify=True)
+    with pytest.raises(DemistoException, match="non-HTTPS"):
+        client.download_screenshot("http://storage.googleapis.com/screenshots-bucket/TET-1234/shot-v1.png")
 
 
 def test_track_screenshot_version_prunes_oldest(mocker):

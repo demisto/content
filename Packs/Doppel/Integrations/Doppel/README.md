@@ -32,7 +32,7 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 | First fetch | First fetch timestamp \(&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days\). | False |
 | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
 | Number of incidents for each fetch. | Due to API limitations, the maximum is 100. | False |
-| Attach alert screenshots to incidents | When checked, incoming mirroring downloads the alert screenshot and attaches it to the incident as a War Room file entry whenever the screenshot version changes. Screenshots are stored in your Cortex XSOAR instance, so consider storage usage on high-volume tenants. The ***doppel-get-alert-screenshot*** command works regardless of this setting. | False |
+| Attach alert screenshots to incidents | Whether incoming mirroring downloads the alert screenshot and attaches it to the incident as a War Room file entry whenever the screenshot version changes. Screenshots are stored in your Cortex instance, so consider storage usage on high-volume tenants. The ***doppel-get-alert-screenshot*** command works regardless of this setting. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
@@ -340,7 +340,7 @@ Create an alert for the provided value to abuse box. Will fail if the alert valu
 
 ***
 
-Fetch the alert's current screenshot from Doppel and attach it to the incident as a War Room file entry. The image is downloaded immediately after the URL is signed and stored durably in Cortex XSOAR, so the signed URL's one-hour expiry does not matter. A file is attached only when the screenshot version changed since the last attachment; otherwise the command reports that the attached screenshot is already current.
+Fetch the alert's current screenshot from Doppel and attach it to the incident as a War Room file entry. The image is downloaded immediately after the URL is signed and stored durably in Cortex, so the signed URL's one-hour expiry does not matter. A file is attached only when the screenshot version changed since the last attachment; otherwise the command reports that the attached screenshot is already current.
 
 #### Base Command
 
@@ -351,7 +351,7 @@ Fetch the alert's current screenshot from Doppel and attach it to the incident a
 | **Argument Name** | **Description** | **Required** |  
 | --- | --- | --- |  
 | id | The Doppel alert ID to fetch the screenshot for. | Required |  
-| force | Re-download and attach the screenshot even when the attached version is already current. Possible values are: true, false. Default is false. | Optional |  
+| force | Whether to re-download and attach the screenshot even when the attached version is already current. Possible values are: true, false. Default is false. | Optional |  
 
 #### Context Output
 

@@ -269,6 +269,8 @@ class Client(BaseClient):
         :return: The raw image bytes.
         :rtype: ``bytes``
         """
+        if urlsplit(signed_url).scheme != "https":
+            raise DemistoException(f"Refusing to download screenshot over a non-HTTPS URL: {signed_url}")
         return super()._http_request(
             method="GET",
             full_url=signed_url,
@@ -511,7 +513,9 @@ def _attach_screenshot_if_new(
     return file_entry, blob_path, f"Attached screenshot version {version} for alert {alert_id}."
 
 
-def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id: str, last_update_str: str):
+def _get_remote_updated_incident_data_with_entry(
+    client: Client, doppel_alert_id: str, last_update_str: str, attach_screenshots: bool = False
+):
     """
     Retrieves updated incident data from the remote system based on the given alert ID and last update timestamp.
 
@@ -571,7 +575,7 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
 
     # Opt-in: attach the alert screenshot as a durable file entry when its version changed.
     # A failed download must never block the field sync itself.
-    if argToBoolean(demisto.params().get("attach_screenshots", False)):
+    if attach_screenshots:
         try:
             screenshot_entry, _, message = _attach_screenshot_if_new(
                 client, doppel_alert_id, updated_doppel_alert.get("screenshot_url")
@@ -1123,14 +1127,14 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
         return GetModifiedRemoteDataResponse([])
 
 
-def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDataResponse:
+def get_remote_data_command(client: Client, args: dict[str, Any], attach_screenshots: bool = False) -> GetRemoteDataResponse:
     try:
         remote_updated_incident_data: dict[str, Any] = {}
         mirrored_object: dict[str, Any] = {}
         demisto.debug(f'Calling the "get-remote-data" for {args["id"]}')
         parsed_args = GetRemoteDataArgs(args)
         remote_updated_incident_data, parsed_entries = _get_remote_updated_incident_data_with_entry(
-            client, parsed_args.remote_incident_id, parsed_args.last_update
+            client, parsed_args.remote_incident_id, parsed_args.last_update, attach_screenshots=attach_screenshots
         )
         if remote_updated_incident_data:
             demisto.debug(f'Found updates in the alert with id: {args["id"]}')
@@ -1296,11 +1300,14 @@ def main() -> None:
     base_url = urljoin(server_url, f"/{api_version}")
     token_url = urljoin(server_url, OAUTH_TOKEN_PATH)
 
+    # Read once here and pass down: functions below must not reach for demisto.params() themselves.
+    attach_screenshots: bool = argToBoolean(params.get("attach_screenshots", False))
+
     # Explicitly define the type for the command function dictionary
     supported_commands: dict[str, Callable[[Client, dict[str, Any]], Any]] = {
         "fetch-incidents": fetch_incidents_command,
         "get-modified-remote-data": get_modified_remote_data_command,
-        "get-remote-data": get_remote_data_command,
+        "get-remote-data": lambda client, args: get_remote_data_command(client, args, attach_screenshots=attach_screenshots),
         "update-remote-system": update_remote_system_command,
         "get-mapping-fields": get_mapping_fields_command,
         "doppel-get-alert": doppel_get_alert_command,
