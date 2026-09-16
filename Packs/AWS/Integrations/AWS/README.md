@@ -2225,10 +2225,10 @@ Retrieves settings for a specific trail or returns information about all trails 
 | AWS.CloudTrail.Trails.LogFileValidationEnabled | boolean | Whether log file validation is enabled. |
 | AWS.CloudTrail.Trails.CloudWatchLogsLogGroupArn | string | The ARN of the CloudWatch log group to which CloudTrail logs are delivered. |
 | AWS.CloudTrail.Trails.CloudWatchLogsRoleArn | string | The role assumed by CloudTrail to write logs to the CloudWatch log group. |
-| AWS.CloudTrail.KmsKeyId | string | The KMS key ID that encrypts logs delivered by CloudTrail. |
-| AWS.CloudTrail.HasCustomEventSelectors | boolean | Specifies if the trail has custom event selectors. |
-| AWS.CloudTrail.HasInsightSelectors | boolean | Specifies whether a trail has insight types specified in an InsightSelector list. |
-| AWS.CloudTrail.IsOrganizationTrail | boolean | Specifies whether the trail is an organization trail. |
+| AWS.CloudTrail.Trails.KmsKeyId | string | The KMS key ID that encrypts logs delivered by CloudTrail. |
+| AWS.CloudTrail.Trails.HasCustomEventSelectors | boolean | Specifies if the trail has custom event selectors. |
+| AWS.CloudTrail.Trails.HasInsightSelectors | boolean | Specifies whether a trail has insight types specified in an InsightSelector list. |
+| AWS.CloudTrail.Trails.IsOrganizationTrail | boolean | Specifies whether the trail is an organization trail. |
 
 ### aws-s3-bucket-policy-delete
 

@@ -26,17 +26,26 @@ configuration:
   type: 8
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incidents Fetch Interval
   name: incidentFetchInterval
   defaultvalue: "1"
   type: 19
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - additionalinfo: 'Selects which direction you want the incidents mirrored. You can mirror Incoming only (from SaaS Security to Cortex XSOAR), **Outgoing** only (from Cortex XSOAR to SaaS Security), or both **Incoming And Outgoing**.'
   defaultvalue: None
   display: Incident Mirroring Direction
@@ -59,6 +68,9 @@ configuration:
   required: true
   additionalinfo: "Important: The limit value can range from 10 to 200 and must be in multiples of 10."
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: First fetch timestamp (<number> <time unit>. For example, 12 hours, 7 days)
   name: first_fetch
   defaultvalue: 3 days
