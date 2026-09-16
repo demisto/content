@@ -110,12 +110,12 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Incident.alerts
+                root: PaloAltoNetworksXDR.Case.Issues
                 filters:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                        simple: PaloAltoNetworksXDR.Case.Issues.issue_id
                       iscontext: true
                     right:
                       value:
@@ -1078,7 +1078,7 @@ tasks:
           left:
             value:
               complex:
-                root: PaloAltoNetworksXDR.Incident.alerts
+                root: PaloAltoNetworksXDR.Case.Issues
                 accessor: tags
             iscontext: true
           right:

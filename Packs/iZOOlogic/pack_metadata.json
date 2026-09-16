@@ -10,8 +10,14 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "Threat Intelligence",
+        "Malware"
+    ],
+    "useCases": [
+        "Phishing",
+        "Threat Intelligence Management"
+    ],
     "keywords": [
         "iZOOlogic",
         "izoologic",
