@@ -14,13 +14,25 @@ For more details about the authentication used in this integration, see [Microso
 
 When using the `Authorization Code flow` for this integration, you should log in as an administrator or a user with administrative privileges (`Security Reader` or `Security Administrator`) after running the ***msg-generate-login-url*** command and the login window appears. For more information, see [here](https://learn.microsoft.com/en-us/graph/security-authorization).
 
+## Fetch Incidents and Alerts
+
+Use the **Fetch incidents type** parameter to control what this integration ingests. You can select **Alerts**, **Incidents**, or both:
+
+* **Alerts** - Each Microsoft Graph Security alert is fetched on its own.
+* **Incidents** - Each Microsoft Graph Security incident is fetched on its own, with all of its associated alerts embedded within it (retrieved via `$expand=alerts`) and stored as raw JSON. This gives you one grouped incident that already contains its underlying alerts, instead of many separate alert incidents.
+
+You can narrow what is fetched using the **Alerts Filter** and **Incidents Filter** parameters. These accept an OData `$filter` expression, for example `severity eq 'medium' and status eq 'active'`. For the supported syntax and operators, see [Microsoft query parameters](https://learn.microsoft.com/en-us/graph/query-parameters?tabs=http).
+
 ## Important Notes
 
-* Due to API limitations, the ***message-search-alerts*** command does not filter Office 365 provider alerts.\
+* Due to API limitations, the ***msg-search-alerts*** command does not filter Office 365 provider alerts.\
 For more information, see: https://github.com/microsoftgraph/security-api-solutions/issues/56.
-* The following properties are supported as filters for the *Fetched incidents filter* parameter and *filter* arguments: assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. See [Microsoft optional query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).
-* The header *include-unknown-enum-members* is used in the fetch-incidents functionality. It ensures that fields with unknown values are correctly mapped to the appropriate service. [Learn More](https://learn.microsoft.com/en-us/graph/api/resources/security-alert?view=graph-rest-1.0#:~:text=microsoftThreatIntelligence.%20Use%20the%20Prefer%3A-,include%2Dunknown%2Denum%2Dmembers,-request%20header%20to%20get%20the).
-* When using Threat Assessment, only the following properties are supported as filters for *filter* parameter: expectedAssessment, ContentType ,status and requestSource.
+* The following properties are supported as filters:
+  * *Alerts Filter* parameter (and alert *filter* arguments): assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. See [Microsoft optional alert query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).
+  * *Incidents Filter* parameter: assignedTo, classification, createdDateTime, determination, lastUpdateDateTime, severity, and status. See [Microsoft optional incident query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-incidents?view=graph-rest-1.0&tabs=http#optional-query-parameters).
+  * The filter should be provided as an OData `$filter` expression, for example `severity eq 'medium' and status eq 'active'`. For the general syntax and operators, see [Microsoft query parameters](https://learn.microsoft.com/en-us/graph/query-parameters?tabs=http).
+* The header *include-unknown-enum-members* is used when fetching alerts. It ensures that fields with unknown values are correctly mapped to the appropriate service. [Learn More](https://learn.microsoft.com/en-us/graph/api/resources/security-alert?view=graph-rest-1.0#:~:text=microsoftThreatIntelligence.%20Use%20the%20Prefer%3A-,include%2Dunknown%2Denum%2Dmembers,-request%20header%20to%20get%20the).
+* When using Threat Assessment, only the following properties are supported as filters for the *filter* parameter: expectedAssessment, ContentType, status and requestSource.
 * When using Threat Assessment for information protection, the following limits apply to any request:
   * For email, the resource is a unique network message ID/recipient pair. For example, submitting an email with the same message ID sent to the same person multiple times in a 15 minutes period will trigger the limit per resource limits listed in the following table. However, you can submit up to 150 unique emails every 15 minutes (tenant limit).
 
@@ -31,11 +43,11 @@ For more information, see: https://github.com/microsoftgraph/security-api-soluti
 ### Required Permissions
 
 1. User.Read.All - Application (Only required if using the deprecated commands: `msg-get-user` and `msg-get-users`)
-2. SecurityIncident.Read.All - Delegated or Application (required for the command `msg-list-security-incident`)
-3. SecurityIncident.ReadWrite.All - Delegated or Application (required for the command `msg-update-security-incident`)
+2. SecurityIncident.Read.All - Delegated or Application (required for the command `msg-list-security-incident` and Fetch Incidents)
+3. SecurityIncident.ReadWrite.All - Delegated or Application (required for the command `msg-update-security-incident` and Fetch Incidents)
 4. ThreatHunting.Read.All - Delegated or Application (required for the command `msg-advanced-hunting`)
 
-**Alerts v2**:
+**Alerts**:
 
 1. SecurityAlert.Read.All - Application (required for the commands: `msg-search-alerts` and `msg-get-alert-details`)
 2. SecurityAlert.ReadWrite.All - Application (required for updating alerts with the commands: `msg-update-alert` and `msg-create-alert-comment`)
@@ -78,10 +90,12 @@ More information about defining this permission can be found [here](https://lear
     | Fetch incidents | Whether to fetch incidents. | False |
     | Incident type | The incident type to apply. | False |
     | First fetch timestamp (`<number> <time unit>`, e.g., 12 hours, 7 days) | `<number> <time unit>`, for example 1 hour, 30 minutes. | False |
-    | Max incidents per fetch | The maximum number of incidents to fetch per iteration. | False |
-    | Fetch incidents of the given service sources only. | Multiple serviceSource can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftCloudAppSecurity". If empty, incidents of all service sources will be fetched. | False |
-    | Fetched incidents filter | Use this field to filter fetched incidents according to any of the alert properties. Overrides the service sources list, if given. Filter should be in the format "\{property\} eq '\{property-value\}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'". | False |
-    | Microsoft 365 Defender context | Check to save the hunt query result to also in the Microsoft 365 Defender context path. | False |
+    | Fetch limit per type | The maximum number of items to fetch per type. Applies to both alerts and incidents. Note that when fetching incidents, no more than 50 can be fetched per cycle, due to a Microsoft limitation. | False |
+    | Fetch incidents type | Select which record types to fetch. You can select Alerts, Incidents, or both. | False |
+    | Alerts Service Sources | Relevant only when fetching Alerts (incidents have no service source). Multiple `serviceSource` values can be provided, separated by commas, for example "microsoftDefenderForEndpoint,microsoftCloudAppSecurity". If empty, alerts of all service sources will be fetched. | False |
+    | Alerts Filter | Use this field to filter fetched alerts according to their properties. Applies only when fetching Alerts. Overrides the service sources list, if given. Filter should be in the format "\{property\} eq '\{property-value\}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'". | False |
+    | Incidents Filter | Use this field to filter fetched incidents according to their properties. Applies only when fetching Incidents. Filter should be in the format "\{property\} eq '\{property-value\}'". Multiple filters can be applied separated with " and ", for example "severity eq 'high' and status eq 'active'". | False |
+    | Microsoft 365 Defender context | When selected, the hunting query result is also saved to the Microsoft 365 Defender context path. Relevant only for the msg-advanced-hunting command. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -2231,6 +2245,7 @@ Get a list of incident objects that Microsoft 365 Defender created to track atta
 | severity | Indicates the possible impact on assets. The higher the severity, the greater the impact. Typically higher severity items require the most immediate attention. Possible values are: unknown, informational, low, medium, high, unknownFutureValue. | Optional |
 | classification | The specification for the incident. | Optional |
 | odata | Filter incidents using 'odata' query. | Optional |
+| extra_data | Whether to include each incident's related alerts in the response. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 

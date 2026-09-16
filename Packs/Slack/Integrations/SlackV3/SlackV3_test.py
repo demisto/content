@@ -5922,6 +5922,45 @@ async def test_post_agent_response_sync_with_invalid_blocks_fallback(mocker):
     assert second_call[0][1] == "This is the fallback message"
 
 
+@pytest.mark.asyncio
+async def test_post_agent_response_sync_with_invalid_attachments_fallback(mocker):
+    """
+    Given:
+        Invalid attachments (e.g. plan/step messages) that cause an
+        invalid_attachments SlackApiError.
+    When:
+        Posting agent response.
+    Then:
+        Falls back to sending a plain text message instead of losing it entirely.
+    """
+    import SlackV3
+    from slack_sdk.errors import SlackApiError
+
+    # First call fails with invalid_attachments, second call succeeds.
+    mocker.patch.object(
+        SlackV3,
+        "send_message_to_destinations",
+        side_effect=[SlackApiError("invalid_attachments", {"error": "invalid_attachments"}), {"ts": "1234567890.123456"}],
+    )
+    mocker.patch.object(demisto, "error")
+
+    handler = SlackV3.slack_assistant_handler
+    result = handler.post_agent_response(
+        channel_id="C123",
+        thread_id="thread123",
+        blocks=[],
+        attachments=[{"invalid": "attachment"}],
+        agent_name="Test Agent",
+        fallback_text="This is the fallback message",
+    )
+
+    assert result == {"ts": "1234567890.123456"}
+    assert SlackV3.send_message_to_destinations.call_count == 2
+    # Second call should use fallback_text
+    second_call = SlackV3.send_message_to_destinations.call_args_list[1]
+    assert second_call[0][1] == "This is the fallback message"
+
+
 def test_send_agent_response_adds_user_mention_for_model_type(mocker):
     """
     Given:

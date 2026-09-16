@@ -5920,18 +5920,6 @@
             ]
         },
         {
-            "playbookID": "IPEnrichment-Test",
-            "integrations": [
-                "VirusTotal (API v3)",
-                "Palo Alto Networks Threat Vault v2",
-                "Cortex XDR - IR"
-            ],
-            "instance_names": [
-                "virus_total_v3"
-            ],
-            "fromversion": "8.0.0"
-        },
-        {
             "playbookID": "GetEndpointData-Test",
             "integrations": ["Active Directory Query v2", "CrowdstrikeFalcon", "FireEyeHX v2", "Cortex XDR - IR"],
             "instance_names": [
@@ -5950,6 +5938,7 @@
         }
     ],
     "skipped_tests": {
+        "Test XDR Playbook general commands": "xdr-get-endpoint-device-control-violations fails because no device-control violations exist on the XDR lab tenants — CRTX-261310",
         "Test - Netcraft": "Netcraft tenant is out of takedown credits, causing the test playbook to fail.",
         "Tanium Threat Response V2 Test": "The creds were expired, opened a ticket CRTX-155635",
         "ExabeamDataLake-test": "The credentials were expired, can't restore CRTX-149225",

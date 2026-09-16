@@ -131,64 +131,64 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 /Packs/MicrosoftGraphFiles @Shellyber @noydavidi
 
 
-/Packs/AWS @Moish-Gilboa
-/Packs/AWS-AccessAnalyzer @Moish-Gilboa
-/Packs/AWS-ACM @Moish-Gilboa
-/Packs/AWS-Athena @Moish-Gilboa
-/Packs/AWS-CloudTrail @Moish-Gilboa
-/Packs/AWS-CloudWatchLogs @Moish-Gilboa
-/Packs/AWS-EC2 @Moish-Gilboa
-/Packs/AWS-EKS @Moish-Gilboa
-/Packs/AWS-Enrichment-Remediation @Moish-Gilboa
-/Packs/AWS-GuardDuty @Moish-Gilboa
-/Packs/AWS-IAM @Moish-Gilboa
-/Packs/AWS-IAMIdentityCenter @Moish-Gilboa
-/Packs/AWS-ILM @Moish-Gilboa
-/Packs/AWS-Lambda @Moish-Gilboa
-/Packs/AWS-NetworkFirewall @Moish-Gilboa
-/Packs/AWS-Organizations @Moish-Gilboa
-/Packs/AWS-Route53 @Moish-Gilboa
-/Packs/AWS-S3 @Moish-Gilboa
-/Packs/Aws-SecretsManager @Moish-Gilboa
-/Packs/AWS-SecurityHub @Moish-Gilboa
-/Packs/AWS-SecurityLake @Moish-Gilboa
-/Packs/AWS-SNS @Moish-Gilboa
-/Packs/AWS-SNS-Listener @Moish-Gilboa
-/Packs/AWS-SQS @Moish-Gilboa
-/Packs/AWS_DynamoDB @Moish-Gilboa
-/Packs/AWS_ELB @Moish-Gilboa
-/Packs/AWS_Sagemaker @Moish-Gilboa
-/Packs/AWS_SystemManager @Moish-Gilboa
-/Packs/AWS_WAF @Moish-Gilboa
-/Packs/GoogleCloudCompute @Moish-Gilboa
-/Packs/GoogleCloudFunctions @Moish-Gilboa
-/Packs/GoogleCloudLogging @Moish-Gilboa
-/Packs/GoogleCloudSCC @Moish-Gilboa
-/Packs/GoogleCloudStorage @Moish-Gilboa
+/Packs/AWS @Moish-Gilboa @RotemAmit
+/Packs/AWS-AccessAnalyzer @Moish-Gilboa @RotemAmit
+/Packs/AWS-ACM @Moish-Gilboa @RotemAmit
+/Packs/AWS-Athena @Moish-Gilboa @RotemAmit
+/Packs/AWS-CloudTrail @Moish-Gilboa @RotemAmit
+/Packs/AWS-CloudWatchLogs @Moish-Gilboa @RotemAmit
+/Packs/AWS-EC2 @Moish-Gilboa @RotemAmit
+/Packs/AWS-EKS @Moish-Gilboa @RotemAmit
+/Packs/AWS-Enrichment-Remediation @Moish-Gilboa @RotemAmit
+/Packs/AWS-GuardDuty @Moish-Gilboa @RotemAmit
+/Packs/AWS-IAM @Moish-Gilboa @RotemAmit
+/Packs/AWS-IAMIdentityCenter @Moish-Gilboa @RotemAmit
+/Packs/AWS-ILM @Moish-Gilboa @RotemAmit
+/Packs/AWS-Lambda @Moish-Gilboa @RotemAmit
+/Packs/AWS-NetworkFirewall @Moish-Gilboa @RotemAmit
+/Packs/AWS-Organizations @Moish-Gilboa @RotemAmit
+/Packs/AWS-Route53 @Moish-Gilboa @RotemAmit
+/Packs/AWS-S3 @Moish-Gilboa @RotemAmit
+/Packs/Aws-SecretsManager @Moish-Gilboa @RotemAmit
+/Packs/AWS-SecurityHub @Moish-Gilboa @RotemAmit
+/Packs/AWS-SecurityLake @Moish-Gilboa @RotemAmit
+/Packs/AWS-SNS @Moish-Gilboa @RotemAmit
+/Packs/AWS-SNS-Listener @Moish-Gilboa @RotemAmit
+/Packs/AWS-SQS @Moish-Gilboa @RotemAmit
+/Packs/AWS_DynamoDB @Moish-Gilboa @RotemAmit
+/Packs/AWS_ELB @Moish-Gilboa @RotemAmit
+/Packs/AWS_Sagemaker @Moish-Gilboa @RotemAmit
+/Packs/AWS_SystemManager @Moish-Gilboa @RotemAmit
+/Packs/AWS_WAF @Moish-Gilboa @RotemAmit
+/Packs/GoogleCloudCompute @Moish-Gilboa @RotemAmit
+/Packs/GoogleCloudFunctions @Moish-Gilboa @RotemAmit
+/Packs/GoogleCloudLogging @Moish-Gilboa @RotemAmit
+/Packs/GoogleCloudSCC @Moish-Gilboa @RotemAmit
+/Packs/GoogleCloudStorage @Moish-Gilboa @RotemAmit
 /Packs/GoogleCloudTranslate @Moish-Gilboa
 /Packs/OracleCloudInfrastructure @Moish-Gilboa
 /Packs/OracleCloudInfrastructureFeed @Moish-Gilboa
-/Packs/Azure @Moish-Gilboa
-/Packs/AzureCompute @Moish-Gilboa
-/Packs/AzureDataExplorer @Moish-Gilboa
-/Packs/AzureFirewall @Moish-Gilboa
-/Packs/AzureKeyVault @Moish-Gilboa
-/Packs/AzureKubernetesServices @Moish-Gilboa
-/Packs/AzureLogAnalytics @Moish-Gilboa
-/Packs/AzureNetworkSecurityGroups @Moish-Gilboa
-/Packs/AzureResourceGraph @Moish-Gilboa
-/Packs/AzureSQLManagement @Moish-Gilboa
-/Packs/AzureStorage @Moish-Gilboa
-/Packs/AzureStorageContainer @Moish-Gilboa
-/Packs/AzureStorageFileShare @Moish-Gilboa
-/Packs/AzureStorageQueue @Moish-Gilboa
-/Packs/AzureStorageTable @Moish-Gilboa
-/Packs/AzureWAF @Moish-Gilboa
+/Packs/Azure @Moish-Gilboa @RotemAmit
+/Packs/AzureCompute @Moish-Gilboa @RotemAmit
+/Packs/AzureDataExplorer @Moish-Gilboa @RotemAmit
+/Packs/AzureFirewall @Moish-Gilboa @RotemAmit
+/Packs/AzureKeyVault @Moish-Gilboa @RotemAmit
+/Packs/AzureKubernetesServices @Moish-Gilboa @RotemAmit
+/Packs/AzureLogAnalytics @Moish-Gilboa @RotemAmit
+/Packs/AzureNetworkSecurityGroups @Moish-Gilboa @RotemAmit
+/Packs/AzureResourceGraph @Moish-Gilboa @RotemAmit
+/Packs/AzureSQLManagement @Moish-Gilboa @RotemAmit
+/Packs/AzureStorage @Moish-Gilboa @RotemAmit
+/Packs/AzureStorageContainer @Moish-Gilboa @RotemAmit
+/Packs/AzureStorageFileShare @Moish-Gilboa @RotemAmit
+/Packs/AzureStorageQueue @Moish-Gilboa @RotemAmit
+/Packs/AzureStorageTable @Moish-Gilboa @RotemAmit
+/Packs/AzureWAF @Moish-Gilboa @RotemAmit
 /Packs/AnsibleAzure @Moish-Gilboa
 /Packs/MicrosoftECM @Moish-Gilboa
 /Packs/MicrosoftGraphDeviceManagement @Moish-Gilboa
 /Packs/MicrosoftIntune @Moish-Gilboa
-/Packs/AzureSecurityCenter @Moish-Gilboa
+/Packs/AzureSecurityCenter @Moish-Gilboa @RotemAmit
 
 # Event Collectors
 /Packs/AbnormalSecurity/Integrations/AbnormalSecurityEventCollector/ @JasBeilin
