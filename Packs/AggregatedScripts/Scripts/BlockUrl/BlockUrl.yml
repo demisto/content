@@ -49,7 +49,6 @@ comment: The script blocks a list of URLs in supported integrations.
 commonfields:
   id: block-url
   version: -1
-enabled: false
 name: block-url
 outputs:
 - contextPath: BlockURLResults.URL
