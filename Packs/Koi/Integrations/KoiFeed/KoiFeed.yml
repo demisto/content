@@ -49,7 +49,7 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  additionalinfo: Indicators from this integration instance will be marked with this reputation.
+  additionalinfo: The reputation to apply to indicators from this integration instance.
   section: Collect
   required: false
 - name: feedReliability
@@ -63,7 +63,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  additionalinfo: Reliability of the source providing the intelligence data.
+  additionalinfo: The reliability of the source providing the intelligence data.
   section: Collect
   required: true
 - name: feedExpirationPolicy
@@ -93,13 +93,13 @@ configuration:
   display: Bypass exclusion list
   type: 8
   defaultvalue: 'false'
-  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed.
+  additionalinfo: Whether to ignore the exclusion list for indicators from this feed.
   section: Collect
   required: false
 - name: feedTags
   display: Tags
   type: 0
-  additionalinfo: Supports CSV values.
+  additionalinfo: A comma-separated list of tags to apply to the fetched indicators.
   section: Collect
   required: false
 - name: tlp_color
@@ -144,17 +144,18 @@ configuration:
   display: Minimum Risk Score
   type: 0
   defaultvalue: '0'
-  additionalinfo: 'Only fetch indicators with a risk score at or above this value (0-10). Default: 0 (all items).'
+  additionalinfo: 'The minimum risk score (0-10) for indicators to fetch.'
   section: Collect
   required: false
 - name: createRelationships
   display: Create relationships
   type: 8
   defaultvalue: 'true'
-  additionalinfo: Create relationships between Koi Software Item indicators and related CVEs or file hashes.
+  additionalinfo: Whether to create relationships between Koi Software Item indicators and related CVEs or file hashes.
   section: Collect
   required: false
 description: Fetches Koi (Agentic Endpoint Security) inventory items as indicators into TIM. Creates "Koi Software Item" indicators with DBot scoring based on risk assessment, links file hashes and CVEs via relationships.
+supportlevelheader: xsoar
 script:
   commands:
   - name: koi-feed-get-indicators
@@ -163,6 +164,10 @@ script:
     - name: limit
       description: The maximum number of indicators to return.
       defaultValue: '50'
+    - name: page
+      description: The page number for pagination (1-based).
+    - name: page_size
+      description: The number of results per page (max 500).
     - name: marketplace
       description: The marketplace to filter by.
       auto: PREDEFINED

@@ -5,6 +5,7 @@ from typing import Any
 import demistomock as demisto
 from CommonServerPython import *  # noqa
 from CommonServerUserPython import *  # noqa
+from ContentClientApiModule import *  # noqa
 
 INTEGRATION_NAME = "KOI Feed"
 MAX_PAGE_SIZE = 500
@@ -131,6 +132,7 @@ def _build_indicator_from_item(item: dict[str, Any], tags: list[str], tlp_color:
     indicator: dict[str, Any] = {
         "value": value,
         "type": INDICATOR_TYPE,
+        "service": INTEGRATION_NAME,
         "rawJSON": item,
         "score": dbot_score,
         "fields": fields,
@@ -165,6 +167,7 @@ def _build_cve_indicators_from_item(item: dict[str, Any], tags: list[str], tlp_c
             cves.append({
                 "value": cve_id,
                 "type": FeedIndicatorType.CVE,
+                "service": INTEGRATION_NAME,
                 "rawJSON": item,
                 "fields": fields,
                 "score": Common.DBotScore.SUSPICIOUS,
@@ -216,6 +219,10 @@ def fetch_indicators_command(client: Client, params: dict[str, Any]) -> None:
 
 def get_indicators_command(client: Client, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
     limit = arg_to_number(args.get("limit")) or 50
+    limit = max(1, min(limit, 5000))
+    page = arg_to_number(args.get("page")) or 1
+    page_size = arg_to_number(args.get("page_size")) or min(limit, MAX_PAGE_SIZE)
+    page_size = max(1, min(page_size, MAX_PAGE_SIZE))
     marketplace = args.get("marketplace")
     min_risk_score = arg_to_number(args.get("min_risk_score")) or 0
     tags = argToList(params.get("feedTags"))
@@ -224,9 +231,9 @@ def get_indicators_command(client: Client, args: dict[str, Any], params: dict[st
     reliability = params.get("feedReliability", "B - Usually reliable")
 
     all_indicators: list[dict[str, Any]] = []
-    page = 1
+    current_page = page
     while len(all_indicators) < limit:
-        response = client.get_inventory(page=page, page_size=min(limit, MAX_PAGE_SIZE), marketplace=marketplace)
+        response = client.get_inventory(page=current_page, page_size=page_size, marketplace=marketplace)
         items = response.get("items", [])
         if not items:
             break
@@ -239,9 +246,17 @@ def get_indicators_command(client: Client, args: dict[str, Any], params: dict[st
                 continue
             all_indicators.append(_build_indicator_from_item(item, tags, tlp_color, create_relationships, reliability))
 
-        if len(items) < min(limit, MAX_PAGE_SIZE):
+        if len(items) < page_size:
             break
-        page += 1
+        current_page += 1
+
+    if not all_indicators:
+        return CommandResults(
+            readable_output=f"No indicators found in {INTEGRATION_NAME}.",
+            outputs_prefix="KoiFeed.Indicator",
+            outputs=all_indicators,
+            raw_response=all_indicators,
+        )
 
     display_rows = []
     for ind in all_indicators:
