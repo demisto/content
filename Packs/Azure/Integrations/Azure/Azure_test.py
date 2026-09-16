@@ -8075,6 +8075,29 @@ def test_firewall_policy_list_command_falsy_limit_falls_back_to_default(mocker):
     assert result.outputs["Azure.Firewall.Policies(val.id && val.id == obj.id)"] == [{"id": "policy-1", "name": "policy1"}]
 
 
+def test_firewall_policy_list_command_negative_limit_raises(mocker):
+    """
+    Given:
+        - An AzureClient returning firewall policies, and a negative limit.
+    When:
+        - firewall_policy_list_command is called.
+    Then:
+        - A DemistoException is raised, rather than slicing policies off the end of the list and
+          silently returning incorrect results.
+    """
+    from Azure import firewall_policy_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_list.return_value = {
+        "value": [{"id": "policy-1", "name": "policy1"}, {"id": "policy-2", "name": "policy2"}]
+    }
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    with pytest.raises(DemistoException, match="The 'limit' argument must be a non-negative number"):
+        firewall_policy_list_command(client, params, {"limit": "-1"})
+
+
 def test_firewall_policy_attach_command_success(mocker):
     """
     Given:

@@ -2819,7 +2819,7 @@ class AzureClient:
 
     def firewall_policy_create_or_update(
         self, subscription_id: str, resource_group_name: str, policy_name: str, policy_data: dict
-    ):
+    ) -> dict:
         """
         Create or update a firewall policy.
 
@@ -2856,7 +2856,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def firewall_policy_get(self, subscription_id: str, resource_group_name: str, policy_name: str):
+    def firewall_policy_get(self, subscription_id: str, resource_group_name: str, policy_name: str) -> dict:
         """
         Get a firewall policy.
 
@@ -2887,7 +2887,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def firewall_policy_delete(self, subscription_id: str, resource_group_name: str, policy_name: str):
+    def firewall_policy_delete(self, subscription_id: str, resource_group_name: str, policy_name: str) -> requests.Response:
         """
         Delete a firewall policy.
 
@@ -2923,7 +2923,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def firewall_policy_list(self, subscription_id: str, resource_group_name: str, next_token: str = ""):
+    def firewall_policy_list(self, subscription_id: str, resource_group_name: str, next_token: str = "") -> dict:
         """
         List the firewall policies in a resource group.
 
@@ -2960,7 +2960,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def firewall_get(self, subscription_id: str, resource_group_name: str, firewall_name: str):
+    def firewall_get(self, subscription_id: str, resource_group_name: str, firewall_name: str) -> dict:
         """
         Get an Azure firewall.
 
@@ -2991,7 +2991,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def firewall_update(self, subscription_id: str, resource_group_name: str, firewall_name: str, firewall_data: dict):
+    def firewall_update(self, subscription_id: str, resource_group_name: str, firewall_name: str, firewall_data: dict) -> dict:
         """
         Create or update an Azure firewall.
 
@@ -5920,7 +5920,12 @@ def firewall_policy_list_command(client: AzureClient, params: dict[str, Any], ar
     """
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-    limit = arg_to_number(args.get("limit")) or arg_to_number(DEFAULT_LIMIT)
+    requested_limit = arg_to_number(args.get("limit"))
+    if requested_limit is not None and requested_limit < 0:
+        raise DemistoException(f"The 'limit' argument must be a non-negative number, got {requested_limit}.")
+    # A falsy limit (0 or not provided) falls back to the default, so the command cannot silently
+    # report "no policies found" for a resource group that does have policies.
+    limit = requested_limit or arg_to_number(DEFAULT_LIMIT)
     next_token = args.get("next_token", "")
     demisto.debug(f"[Azure] Listing firewall policies with {limit=} and {bool(next_token)=}")
 
