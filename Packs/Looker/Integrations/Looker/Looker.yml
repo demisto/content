@@ -194,3 +194,4 @@ script:
 tests:
 - Test-Looker
 fromversion: 5.0.0
+excludefromtightlycoupled: true
