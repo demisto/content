@@ -1,11 +1,14 @@
+import time
 from datetime import datetime
 from unittest.mock import patch
 
+import httpx
 import pytest
 
 import demistomock as demisto
 from CommonServerPython import DemistoException
 from GenericAPIEventCollector import (
+    AuthorizationCodeHandler,
     Client,
     PaginationLogic,
     RequestData,
@@ -31,7 +34,7 @@ from GenericAPIEventCollector import (
     is_microseconds,
     convert_epoch_to_timestamp,
 )
-from ContentClientApiModule import OAuth2ClientCredentialsHandler
+from ContentClientApiModule import ContentClientAuthenticationError, OAuth2ClientCredentialsHandler
 
 
 def test_datetime_to_timestamp_format():
@@ -1048,3 +1051,383 @@ def test_authorization_code_handler_prefers_stored_refresh_token(mocker):
     }
     handler = get_oauth2_auth_handler(params)
     assert handler.auth_params == {"grant_type": "refresh_token", "refresh_token": "stored-refresh"}
+
+
+# region AuthorizationCodeHandler
+
+
+def build_authorization_code_handler(mocker, context: dict | None = None) -> AuthorizationCodeHandler:
+    """Builds a handler with a controlled integration context.
+
+    The integration context is process-global in demistomock, so every test that touches it
+    seeds its own value rather than relying on leftovers from a previously run test.
+    """
+    store: dict = dict(context or {})
+    mocker.patch.object(demisto, "getIntegrationContext", side_effect=lambda: dict(store))
+    mocker.patch.object(demisto, "setIntegrationContext", side_effect=store.update)
+    return AuthorizationCodeHandler(
+        authorization_code="the-auth-code",
+        redirect_uri="https://redirect.example.com/callback",
+        token_url="https://auth.example.com/oauth/token",
+        client_id="my-client-id",
+        client_secret="my-secret",
+        scope="events:read offline_access",
+    )
+
+
+def make_token_client_factory(mocker, responses: list):
+    """Patches httpx.AsyncClient so token POSTs are served from ``responses`` in order.
+
+    Each entry is either an ``httpx.Response`` to return or an exception instance to raise,
+    which lets a single test drive the "first call fails, second succeeds" fallback path.
+    Returns a dict recording every POST body, so the grant actually sent can be asserted.
+    """
+    recorded: dict = {"posts": []}
+    remaining = list(responses)
+
+    async def fake_post(self, url, data=None, **kwargs):
+        recorded["posts"].append({"url": url, "data": data})
+        outcome = remaining.pop(0)
+        if isinstance(outcome, Exception):
+            raise outcome
+        # raise_for_status() requires a request on the response; a bare httpx.Response has
+        # none, so bind the one that would have produced it.
+        outcome.request = httpx.Request("POST", url, data=data)
+        return outcome
+
+    mocker.patch.object(httpx.AsyncClient, "post", new=fake_post)
+    return recorded
+
+
+class _FakeClient:
+    """Stands in for ContentClient: _refresh_token only reads ``_verify`` off it."""
+
+    _verify = False
+
+
+async def test_refresh_token_stores_rotated_refresh_token_and_sets_expiry(mocker):
+    """
+    Given: an IdP that returns a new access token and a rotated refresh token.
+    When: _refresh_token is awaited.
+    Then: the access token is applied, the rotated refresh token is persisted to the
+          integration context, and the grant switches to refresh_token for the next call.
+    """
+    mocker.patch.object(demisto, "debug")
+    mock_add_sensitive = mocker.patch("GenericAPIEventCollector.add_sensitive_log_strs")
+    handler = build_authorization_code_handler(mocker)
+    make_token_client_factory(
+        mocker,
+        [httpx.Response(200, json={"access_token": "new-access", "refresh_token": "rotated-refresh", "expires_in": 120})],
+    )
+
+    await handler._refresh_token(_FakeClient())
+
+    assert handler._access_token == "new-access"
+    assert handler._stored_refresh_token == "rotated-refresh"
+    # The next acquisition must not replay the single-use authorization code.
+    assert handler.auth_params == {"grant_type": "refresh_token", "refresh_token": "rotated-refresh"}
+    # Both the access token and the rotated refresh token must be masked in the logs.
+    masked = [call.args[0] for call in mock_add_sensitive.call_args_list]
+    assert "new-access" in masked
+    assert "rotated-refresh" in masked
+
+
+async def test_refresh_token_expiry_uses_the_same_clock_as_the_base_class(mocker):
+    """
+    Given: a token response with an expires_in of 120 seconds.
+    When: _refresh_token is awaited.
+    Then: _expires_at is derived from the monotonic clock the base class compares against.
+
+    The base class checks ``_now() >= self._expires_at - 60``, and ``_now()`` is
+    time.monotonic(). Writing a wall-clock value here would mix clocks and the token would
+    never be seen as expired, so collection would keep sending a dead bearer token.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("GenericAPIEventCollector.add_sensitive_log_strs")
+    handler = build_authorization_code_handler(mocker)
+    make_token_client_factory(
+        mocker,
+        [httpx.Response(200, json={"access_token": "new-access", "refresh_token": "r", "expires_in": 120})],
+    )
+
+    before = time.monotonic()
+    await handler._refresh_token(_FakeClient())
+    after = time.monotonic()
+
+    assert before + 120 <= handler._expires_at <= after + 120
+    assert not handler._should_refresh()
+
+
+async def test_refresh_token_falls_back_to_authorization_code_when_refresh_token_rejected(mocker):
+    """
+    Given: a stored refresh token that the IdP rejects with an HTTP 400.
+    When: _refresh_token is awaited.
+    Then: the authorization code is redeemed as a one-time fallback and succeeds.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("GenericAPIEventCollector.add_sensitive_log_strs")
+    handler = build_authorization_code_handler(mocker, {"oauth2_refresh_token": "stale-refresh"})
+    assert handler.auth_params["grant_type"] == "refresh_token"
+
+    rejection = httpx.HTTPStatusError(
+        "invalid_grant",
+        request=httpx.Request("POST", "https://auth.example.com/oauth/token"),
+        response=httpx.Response(400, json={"error": "invalid_grant"}),
+    )
+    recorded = make_token_client_factory(
+        mocker,
+        [rejection, httpx.Response(200, json={"access_token": "new-access", "refresh_token": "fresh-refresh"})],
+    )
+
+    await handler._refresh_token(_FakeClient())
+
+    assert handler._access_token == "new-access"
+    assert len(recorded["posts"]) == 2
+    assert recorded["posts"][0]["data"]["grant_type"] == "refresh_token"
+    # The fallback redeems the configured authorization code exactly once.
+    assert recorded["posts"][1]["data"]["grant_type"] == "authorization_code"
+    assert recorded["posts"][1]["data"]["code"] == "the-auth-code"
+
+
+@pytest.mark.xfail(
+    strict=True,
+    reason=(
+        "Known defect: _request_token wraps every exception - including httpx.TimeoutException - "
+        "into ContentClientAuthenticationError, so _refresh_token cannot distinguish 'the IdP "
+        "rejected the refresh token' from 'the network blipped' and redeems the single-use "
+        "authorization code on a transient fault. Narrow the fallback to httpx.HTTPStatusError "
+        "causes; this test then passes and the marker should be removed."
+    ),
+)
+async def test_refresh_token_does_not_burn_the_authorization_code_on_a_timeout(mocker):
+    """
+    Given: a stored refresh token and a transient network timeout during the token request.
+    When: _refresh_token is awaited.
+    Then: the error propagates and the single-use authorization code is NOT replayed.
+
+    An authorization code can be redeemed once. Treating a timeout as "refresh token
+    rejected" would burn the code on a transient fault and permanently lock the instance out,
+    since both the stale refresh token and the redeemed code would then be dead.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("GenericAPIEventCollector.add_sensitive_log_strs")
+    handler = build_authorization_code_handler(mocker, {"oauth2_refresh_token": "stored-refresh"})
+    recorded = make_token_client_factory(mocker, [httpx.TimeoutException("connection timed out")])
+
+    with pytest.raises(ContentClientAuthenticationError):
+        await handler._refresh_token(_FakeClient())
+
+    assert len(recorded["posts"]) == 1, "a timeout must not trigger the authorization-code fallback"
+    assert recorded["posts"][0]["data"]["grant_type"] == "refresh_token"
+    assert handler._stored_refresh_token == "stored-refresh"
+
+
+async def test_refresh_token_raises_when_the_response_has_no_access_token(mocker):
+    """
+    Given: an IdP that returns HTTP 200 with a body that omits access_token.
+    When: _refresh_token is awaited.
+    Then: a ContentClientAuthenticationError is raised rather than a None bearer token
+          being silently attached to every subsequent request.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("GenericAPIEventCollector.add_sensitive_log_strs")
+    handler = build_authorization_code_handler(mocker)
+    make_token_client_factory(mocker, [httpx.Response(200, json={"token_type": "Bearer"})])
+
+    with pytest.raises(ContentClientAuthenticationError, match="No access_token in response"):
+        await handler._refresh_token(_FakeClient())
+
+    assert handler._access_token is None
+
+
+@pytest.mark.xfail(
+    strict=True,
+    reason=(
+        "Known gap: when the IdP returns no refresh_token, _store_refresh_token silently "
+        "returns and the handler stays on the authorization_code grant, so the next expiry "
+        "replays an already-redeemed code and fails with an opaque error an hour later. "
+        "generate_login_url_command warns about the missing offline_access scope up front, but "
+        "nothing detects it at runtime. Emit a demisto.error here; this test then passes and "
+        "the marker should be removed."
+    ),
+)
+async def test_refresh_token_warns_when_the_idp_returns_no_refresh_token(mocker):
+    """
+    Given: an authorization-code redemption that returns no refresh token (a missing
+           offline_access scope is the usual cause).
+    When: _refresh_token is awaited.
+    Then: the problem is reported immediately instead of surfacing an hour later as an
+          opaque auth failure when the access token expires.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("GenericAPIEventCollector.add_sensitive_log_strs")
+    mock_error = mocker.patch.object(demisto, "error")
+    handler = build_authorization_code_handler(mocker)
+    make_token_client_factory(mocker, [httpx.Response(200, json={"access_token": "only-access", "expires_in": 3600})])
+
+    await handler._refresh_token(_FakeClient())
+
+    assert handler._stored_refresh_token is None
+    assert mock_error.called, "a missing refresh token must be reported when it happens"
+    assert "offline_access" in " ".join(str(call.args[0]) for call in mock_error.call_args_list)
+
+
+def test_store_refresh_token_persists_masks_and_short_circuits(mocker):
+    """
+    Given: a handler with no stored refresh token.
+    When: _store_refresh_token is called with a new value, then the same value, then an
+          empty value.
+    Then: only the genuinely new value is written to the integration context and masked.
+    """
+    mocker.patch.object(demisto, "debug")
+    mock_add_sensitive = mocker.patch("GenericAPIEventCollector.add_sensitive_log_strs")
+    handler = build_authorization_code_handler(mocker)
+    mock_set_context = mocker.patch("GenericAPIEventCollector.set_integration_context")
+
+    handler._store_refresh_token("brand-new")
+    assert mock_set_context.call_count == 1
+    assert mock_set_context.call_args.args[0]["oauth2_refresh_token"] == "brand-new"
+    mock_add_sensitive.assert_called_with("brand-new")
+
+    # An unchanged token must not churn the context.
+    handler._store_refresh_token("brand-new")
+    assert mock_set_context.call_count == 1
+
+    # An empty token must never overwrite a good one.
+    handler._store_refresh_token("")
+    assert mock_set_context.call_count == 1
+    assert handler._stored_refresh_token == "brand-new"
+
+
+def test_store_refresh_token_preserves_other_integration_context_keys(mocker):
+    """
+    Given: an integration context that already holds unrelated state.
+    When: a rotated refresh token is persisted.
+    Then: the unrelated keys survive, so the handler does not clobber other state.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch("GenericAPIEventCollector.add_sensitive_log_strs")
+    handler = build_authorization_code_handler(mocker, {"unrelated_key": "keep-me"})
+    mock_set_context = mocker.patch("GenericAPIEventCollector.set_integration_context")
+
+    handler._store_refresh_token("rotated")
+
+    written = mock_set_context.call_args.args[0]
+    assert written["oauth2_refresh_token"] == "rotated"
+    assert written["unrelated_key"] == "keep-me"
+
+
+def test_authorization_code_handler_uses_code_grant_when_context_is_empty(mocker):
+    """
+    Given: an empty integration context (a first-ever run).
+    When: the handler is built.
+    Then: the authorization_code grant carries both the code and the redirect uri, which
+          the IdP requires to match the one used to obtain the code.
+    """
+    mocker.patch.object(demisto, "debug")
+    handler = build_authorization_code_handler(mocker)
+
+    assert handler.auth_params == {
+        "grant_type": "authorization_code",
+        "code": "the-auth-code",
+        "redirect_uri": "https://redirect.example.com/callback",
+    }
+    assert handler.name == "oauth2_authorization_code"
+
+
+async def test_request_token_wraps_http_errors_with_status_and_body(mocker):
+    """
+    Given: an IdP that rejects the token request with an HTTP 401.
+    When: _request_token is awaited.
+    Then: the failure is wrapped in ContentClientAuthenticationError carrying the status
+          code and body, so the cause is diagnosable from the war room.
+    """
+    mocker.patch.object(demisto, "debug")
+    handler = build_authorization_code_handler(mocker)
+    make_token_client_factory(
+        mocker,
+        [
+            httpx.HTTPStatusError(
+                "unauthorized",
+                request=httpx.Request("POST", "https://auth.example.com/oauth/token"),
+                response=httpx.Response(401, text="invalid_client"),
+            )
+        ],
+    )
+
+    with pytest.raises(ContentClientAuthenticationError) as exc_info:
+        await handler._request_token(_FakeClient(), {"grant_type": "refresh_token"})
+
+    assert "401" in str(exc_info.value)
+    assert "invalid_client" in str(exc_info.value)
+
+
+async def test_request_token_includes_credentials_and_scope_in_the_body(mocker):
+    """
+    Given: a handler configured with a scope.
+    When: _request_token is awaited.
+    Then: the POST body carries the client credentials, the grant, and the scope.
+    """
+    mocker.patch.object(demisto, "debug")
+    handler = build_authorization_code_handler(mocker)
+    recorded = make_token_client_factory(mocker, [httpx.Response(200, json={"access_token": "a"})])
+
+    await handler._request_token(_FakeClient(), {"grant_type": "refresh_token", "refresh_token": "r"})
+
+    body = recorded["posts"][0]["data"]
+    assert body["client_id"] == "my-client-id"
+    assert body["client_secret"] == "my-secret"
+    assert body["grant_type"] == "refresh_token"
+    assert body["scope"] == "events:read offline_access"
+
+
+async def test_request_token_omits_scope_when_not_configured(mocker):
+    """
+    Given: a handler with no scope configured.
+    When: _request_token is awaited.
+    Then: no scope key is sent, since some IdPs reject an empty scope parameter.
+    """
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "getIntegrationContext", return_value={})
+    handler = AuthorizationCodeHandler(
+        authorization_code="the-auth-code",
+        redirect_uri="https://redirect.example.com/callback",
+        token_url="https://auth.example.com/oauth/token",
+        client_id="my-client-id",
+        client_secret="my-secret",
+        scope=None,
+    )
+    recorded = make_token_client_factory(mocker, [httpx.Response(200, json={"access_token": "a"})])
+
+    await handler._request_token(_FakeClient(), {"grant_type": "refresh_token", "refresh_token": "r"})
+
+    assert "scope" not in recorded["posts"][0]["data"]
+
+
+# endregion
+
+
+@pytest.mark.parametrize(
+    "token_url, expected",
+    [
+        # A bare domain has no path segment to swap.
+        ("https://auth.example.com", "https://auth.example.com/authorize"),
+        ("https://auth.example.com/", "https://auth.example.com/authorize"),
+        # A trailing slash must not produce a doubled or empty final segment.
+        (
+            "https://login.microsoftonline.com/tid/oauth2/v2.0/token/",
+            "https://login.microsoftonline.com/tid/oauth2/v2.0/authorize",
+        ),
+        # Auth0 keeps /authorize at the root rather than beside the token endpoint.
+        ("https://my-tenant.us.auth0.com/oauth/token/", "https://my-tenant.us.auth0.com/authorize"),
+        # Query strings and fragments on the token URL must not leak into the authorize URL.
+        ("https://auth.example.com/oauth2/token?foo=bar", "https://auth.example.com/oauth2/authorize"),
+    ],
+)
+def test_derive_authorize_url_edge_cases(token_url, expected):
+    """
+    Given: token endpoint URLs with no path, a trailing slash, or a query string.
+    When: derive_authorize_url is called.
+    Then: a well-formed authorize URL is produced without empty or doubled path segments.
+    """
+    assert derive_authorize_url(token_url) == expected
