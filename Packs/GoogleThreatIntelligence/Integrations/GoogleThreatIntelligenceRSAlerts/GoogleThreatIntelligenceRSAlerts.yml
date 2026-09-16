@@ -40,6 +40,16 @@ configuration:
   supportedModules:
   - xsiam
   - agentix
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  type: 19
+  required: false
+  defaultvalue: '1'
+  advanced: true
+  section: Collect
+  supportedModules:
+  - xsiam
+  - agentix
 - display: Incident type
   name: incidentType
   defaultvalue: Google Threat Intelligence RS Alert

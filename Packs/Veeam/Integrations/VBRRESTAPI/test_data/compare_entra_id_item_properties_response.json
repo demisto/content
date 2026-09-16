@@ -1,0 +1,32 @@
+{
+  "existsInOldRestorePoint": true,
+  "existsInNewRestorePoint": true,
+  "properties": [
+    {
+      "propertyName": "displayName",
+      "oldValue": "Test User",
+      "newValue": "Test User Updated",
+      "readOnly": false
+    },
+    {
+      "propertyName": "jobTitle",
+      "oldValue": "Manager",
+      "newValue": "Senior Manager",
+      "readOnly": false
+    }
+  ],
+  "references": [
+    {
+      "referenceType": "memberOf",
+      "referenceTypeDisplayName": "Member Of",
+      "values": [
+        {
+          "oldValue": "Marketing",
+          "newValue": "Marketing",
+          "changed": false
+        }
+      ]
+    }
+  ],
+  "cacheTimestamp": "2024-10-24T22:01:49.87691+02:00"
+}

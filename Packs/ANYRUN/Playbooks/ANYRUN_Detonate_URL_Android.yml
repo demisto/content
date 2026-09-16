@@ -56,8 +56,6 @@ tasks:
     scriptarguments:
       env_locale:
         simple: ${inputs.env_locale}
-      obj_ext_browser:
-        simple: ${inputs.obj_ext_browser}
       obj_url:
         simple: ${inputs.obj_url}
       opt_network_connect:
@@ -523,15 +521,9 @@ inputs:
   playbookInputQuery:
 - key: opt_timeout
   value:
-    simple: "60"
+    simple: "120"
   required: false
   description: 'Timeout option. Size range: 10-660.'
-  playbookInputQuery:
-- key: obj_ext_browser
-  value:
-    simple: Google Chrome
-  required: false
-  description: 'Browser name. Supports: Google Chrome, Mozilla Firefox'
   playbookInputQuery:
 inputSections:
 - inputs:
@@ -553,10 +545,6 @@ inputSections:
   - opt_privacy_type
   - opt_timeout
   name: Options
-  description: ""
-- inputs:
-  - obj_ext_browser
-  name: Object
   description: ""
 outputSections:
 - outputs: []
