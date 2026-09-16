@@ -4,6 +4,9 @@ commonfields:
 name: ArcSight Logger
 display: ArcSight Logger
 category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
 provider: OpenText
 description: ArcSight events logger.
 configuration:
@@ -12,55 +15,73 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+  section: Connect
 - display: Port
   name: port
   defaultvalue: "9000"
   type: 0
   required: true
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  advanced: true
+  section: Collect
 - display: Events query
   name: eventsQuery
   defaultvalue: ""
   type: 0
   required: false
+  section: Collect
 - display: Fields
   name: fields
   defaultvalue: ""
   type: 0
   additionalinfo: Fields to be fetched. The Fields specify columns that you can see in the arcsight logger interface. The fields that you select will be fetched as data.
   required: false
+  section: Collect
 - display: Aggregate events into one incident
   name: aggregate
   defaultvalue: "false"
   type: 8
   additionalinfo: By enabling this you take all the events that happened in the last minute and aggregate them into one Events key. This will result in having all the data for the last minute fetched into one incident.
   required: false
+  section: Collect
 - display: Fetch limit
   name: fetchlimit
   defaultvalue: "100"
   type: 0
   additionalinfo: This parameter limits the maximum number of events that can be fetched at once. In case the aggregate parameter is checked this parameter will limit the number of events in the aggregated Events key.
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Credentials
   name: credentials
   defaultvalue: ""
   type: 9
   required: false
+  section: Connect
 script:
   script: ''
   type: javascript

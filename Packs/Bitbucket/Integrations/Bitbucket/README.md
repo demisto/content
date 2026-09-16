@@ -1,5 +1,37 @@
 Bitbucket Cloud is a Git-based code and CI/CD tool optimized for teams using Jira.
-This integration was integrated and tested with version 7.21.0 of Bitbucket
+This integration was integrated and tested with version 7.21.0 of Bitbucket.
+
+## Deprecation Notes
+
+According to the Bitbucket [announcement](https://community.atlassian.com/forums/Bitbucket-articles/Announcing-sunset-of-Bitbucket-Issues-and-Wikis/ba-p/3193882) from February 18, 2026, regarding the sunset of Bitbucket Issues, all issue-related commands have been deprecated. It is recommended to use the equivalent commands in the **Atlassian Jira v3** integration instead.
+
+Bitbucket Cloud has deprecated app passwords (from **June 9, 2026**) in favor of scoped API tokens. For more information, see the [Bitbucket Cloud documentation](https://developer.atlassian.com/cloud/bitbucket/rest/intro/#app-passwords).
+
+### Authenticate with an API Token
+
+1. Go to **Atlassian account settings** -> **Security** -> **API tokens** (https://id.atlassian.com/manage-profile/security/api-tokens).
+
+2. **Create an API token with scopes**.
+
+3. In the integration instance settings, configure:
+
+   * **User Name** = your **Atlassian account email address**.
+
+   * **API Token** = the token you copied.
+
+### Authenticate with OAuth 2.0 Client Credentials
+
+Create an **OAuth consumer** in the Bitbucket workspace and enable the client-credentials grant:
+
+1. In Bitbucket Cloud, go to **Workspace settings** -> under **Apps and features** select **OAuth clients**.
+
+2. Select the required **Permissions/scopes** (e.g., read access to Account, Repositories, Projects, Pull requests, and Issues, matching the commands you intend to run).
+
+3. In the integration instance settings, configure:
+
+   * **Client ID** = the consumer **Key**.
+
+   * **Client Secret** = the consumer **Secret**.
 
 ## Configure Bitbucket on Cortex XSOAR
 
@@ -7,15 +39,17 @@ This integration was integrated and tested with version 7.21.0 of Bitbucket
 2. Search for Bitbucket.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Workspace | True |
-    | Server URL | True |
-    | User Name | True |
-    | App Password | True |
-    | Repository | False |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Workspace | The Bitbucket workspace slug or UUID to connect to. | True |
+| Server URL | The base URL of the Bitbucket API. | True |
+| User Name | The User Name is your Atlassian account email address, and the API Token is a scoped API token created at https://id.atlassian.com/manage-profile/security/api-tokens. | False |
+| API Token |  | False |
+| Client ID | The Client ID and Client Secret are the key and secret of an OAuth consumer created in the Bitbucket workspace settings \(Apps and features -&amp;gt; OAuth clients\). | False |
+| Client Secret |  | False |
+| Repository | The default Bitbucket repository slug to use for commands. | False |
+| Trust any certificate (not secure) | Whether to trust any TLS certificate when connecting to the server. | False |
+| Use system proxy settings | Whether to use the system proxy settings when connecting to the server. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -1261,7 +1295,7 @@ Returns the content of the given file, along with the option to download it.
 ### bitbucket-issue-create
 
 ***
-Creates an issue in Bitbucket.
+Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-create-issue*** command in the Atlassian Jira v3 integration instead. Creates an issue in Bitbucket.
 
 ##### Required Permissions
 
@@ -1409,7 +1443,7 @@ In order to perform this command, please create an issue tracker by clicking on 
 ### bitbucket-issue-list
 
 ***
-If an issue_id is given, returns the information about it. Otherwise, returns a list of all the issues, according to the limit parameter.
+Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-get-issue*** command (for a single issue) or the ***jira-issue-query*** command (to list issues using JQL) in the Atlassian Jira v3 integration instead. If an issue_id is given, returns the information about it. Otherwise, returns a list of all the issues, according to the limit parameter.
 
 #### Base Command
 
@@ -1649,7 +1683,7 @@ If an issue_id is given, returns the information about it. Otherwise, returns a 
 ### bitbucket-issue-update
 
 ***
-Updates an issue in Bitbucket.
+Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-edit-issue*** command in the Atlassian Jira v3 integration instead. Updates an issue in Bitbucket.
 
 ##### Required Permissions
 
@@ -2897,7 +2931,7 @@ Returns a list of the pull requests. If a state is provided than the list will c
 ### bitbucket-issue-comment-create
 
 ***
-Creates a comment on an issue in Bitbucket.
+Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-issue-add-comment*** command in the Atlassian Jira v3 integration instead. Creates a comment on an issue in Bitbucket.
 
 #### Base Command
 
@@ -3026,7 +3060,7 @@ Creates a comment on an issue in Bitbucket.
 ### bitbucket-issue-comment-delete
 
 ***
-Deletes a comment on an issue in Bitbucket.
+Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-issue-delete-comment*** command in the Atlassian Jira v3 integration instead. Deletes a comment on an issue in Bitbucket.
 
 #### Base Command
 
@@ -3051,7 +3085,7 @@ There is no context output for this command.
 ### bitbucket-issue-comment-list
 
 ***
-Returns a list of comments on a specific issue. If a comment_id is given it will return information only about the specific comment.
+Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-get-comments*** command in the Atlassian Jira v3 integration instead. Returns a list of comments on a specific issue. If a comment_id is given it will return information only about the specific comment.
 
 #### Base Command
 
@@ -3254,7 +3288,7 @@ Returns a list of comments on a specific issue. If a comment_id is given it will
 ### bitbucket-issue-comment-update
 
 ***
-Updates a specific comment on a given issue.
+Deprecated. Issues are fully removed from Bitbucket Cloud by Atlassian as of Mid-August 2026. Use the ***jira-issue-edit-comment*** command in the Atlassian Jira v3 integration instead. Updates a specific comment on a given issue.
 
 #### Base Command
 
