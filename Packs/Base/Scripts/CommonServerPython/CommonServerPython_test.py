@@ -12874,13 +12874,19 @@ class TestUcpCapabilityReconciliation:
         """A metadata failure degrades to the command mapping instead of propagating."""
         mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
         mocker.patch.object(demisto, 'unifiedConnectorMetadata', side_effect=Exception('boom'))
+        error_mock = mocker.patch.object(demisto, 'error')
         assert CommonServerPython.resolve_ucp_capability() == 'fetch-issues'
+        assert error_mock.call_count == 1
+        assert 'could not read profiles' in error_mock.call_args[0][0]
 
     def test_resolve_capability_metadata_attribute_error_falls_back(self, mocker, ucp_env):
         """Servers without unifiedConnectorMetadata() keep the legacy mapping."""
         mocker.patch.object(demisto, 'command', return_value='test-module')
         mocker.patch.object(demisto, 'unifiedConnectorMetadata', side_effect=AttributeError)
+        error_mock = mocker.patch.object(demisto, 'error')
         assert CommonServerPython.resolve_ucp_capability() == 'automation-and-remediation'
+        assert error_mock.call_count == 1
+        assert 'could not read profiles' in error_mock.call_args[0][0]
 
     def testget_configured_ucp_capabilities_returns_declared_order(self, mocker, ucp_env,
                                                              ucp_metadata_multi_no_automation):
