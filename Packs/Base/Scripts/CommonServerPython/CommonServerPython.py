@@ -14385,33 +14385,34 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     return
 
 
-def send_assets_to_xsiam(assets, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
+def send_assets_and_vulnerabilities_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                          chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
                          add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False,
                          client_class=None, use_streaming_send=True):
     """
-    Send the fetched assets into the XDR data-collector private api.
+    Send fetched assets and/or vulnerabilities into the XDR data-collector private api.
 
-    This is the assets analog of ``send_events_to_xsiam``. It delegates to ``send_data_to_xsiam`` with
-    ``data_type="assets"`` so the assets snapshot headers (``snapshot-id`` and ``total-items-count``) and
-    sealing behavior are preserved. To reduce peak memory in the ``fetch-assets`` flow, this function
-    defaults ``use_streaming_send`` to ``True`` (serialize+gzip one asset at a time, freeing each as it
-    goes). The bytes sent to XSIAM are equivalent to the legacy (non-streaming) path.
+    This is the assets/vulnerabilities analog of ``send_events_to_xsiam``. It delegates to
+    ``send_data_to_xsiam`` with ``data_type="assets"`` so the snapshot headers (``snapshot-id`` and
+    ``total-items-count``) and sealing behavior are preserved (vulnerabilities are sent as an assets-type
+    snapshot as well). To reduce peak memory in the ``fetch-assets`` flow, this function defaults
+    ``use_streaming_send`` to ``True`` (serialize+gzip one item at a time, freeing each as it goes). The
+    bytes sent to XSIAM are equivalent to the legacy (non-streaming) path.
 
-    :type assets: ``Union[str, list]``
-    :param assets: The assets to send to XSIAM server. Should be of the following:
-        1. List of strings or dicts where each string or dict represents an asset.
-        2. String containing raw assets separated by a new line.
+    :type data: ``Union[str, list]``
+    :param data: The assets or vulnerabilities to send to XSIAM server. Should be of the following:
+        1. List of strings or dicts where each string or dict represents an asset or vulnerability.
+        2. String containing raw records separated by a new line.
 
     :type vendor: ``str``
-    :param vendor: The vendor corresponding to the integration that originated the assets.
+    :param vendor: The vendor corresponding to the integration that originated the data.
 
     :type product: ``str``
-    :param product: The product corresponding to the integration that originated the assets.
+    :param product: The product corresponding to the integration that originated the data.
 
     :type data_format: ``str``
-    :param data_format: Should only be filled in case the 'assets' parameter contains a string of raw
-        assets in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
+    :param data_format: Should only be filled in case the 'data' parameter contains a string of raw
+        records in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
 
     :type url_key: ``str``
     :param url_key: The param dict key where the integration url is located at. the default is 'url'.
@@ -14455,7 +14456,7 @@ def send_assets_to_xsiam(assets, vendor, product, data_format=None, url_key='url
     :rtype: ``List[Future]`` or ``None``
     """
     return send_data_to_xsiam(
-        assets,
+        data,
         vendor,
         product,
         data_format,

@@ -10161,17 +10161,17 @@ class TestSendEventsToXSIAMTest:
         assert len(streaming_lines) == 2
         assert all('blob' not in line for line in streaming_lines)
 
-    def test_send_assets_to_xsiam_defaults_to_streaming(self, mocker):
+    def test_send_assets_and_vulnerabilities_to_xsiam_defaults_to_streaming(self, mocker):
         """
         Given: a list of dict assets.
-        When:  calling send_assets_to_xsiam with default arguments (use_streaming_send defaults to True).
+        When:  calling send_assets_and_vulnerabilities_to_xsiam with default arguments (use_streaming_send defaults to True).
         Then:  the assets are sent via the streaming path (serialize+free one at a time), the assets snapshot
                headers (collector-type/snapshot-id/total-items-count) are preserved, and the same set of
                serialized assets is delivered as the legacy path would deliver.
         """
         if not IS_PY3:
             return
-        from CommonServerPython import BaseClient, send_assets_to_xsiam
+        from CommonServerPython import BaseClient, send_assets_and_vulnerabilities_to_xsiam
         from requests import Response
 
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
@@ -10186,7 +10186,7 @@ class TestSendEventsToXSIAMTest:
         assets = [{'id': i, 'name': 'asset number {}'.format(i)} for i in range(10)]
 
         http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
-        send_assets_to_xsiam(assets=list(assets), vendor='some vendor', product='some product')
+        send_assets_and_vulnerabilities_to_xsiam(data=list(assets), vendor='some vendor', product='some product')
 
         # The assets snapshot headers must be preserved (send goes through the assets data_type path).
         headers = http_mock.call_args[1]['headers']
@@ -10202,16 +10202,16 @@ class TestSendEventsToXSIAMTest:
         assert sorted(streaming_lines) == sorted(expected_lines)
         demisto.updateModuleHealth.assert_called_with({'assetsPulled': len(assets)})
 
-    def test_send_assets_to_xsiam_non_streaming_preserves_headers(self, mocker):
+    def test_send_assets_and_vulnerabilities_to_xsiam_non_streaming_preserves_headers(self, mocker):
         """
         Given: a list of dict assets.
-        When:  calling send_assets_to_xsiam with use_streaming_send=False (opt out of streaming).
+        When:  calling send_assets_and_vulnerabilities_to_xsiam with use_streaming_send=False (opt out of streaming).
         Then:  the legacy (chunked) path is used, the assets snapshot headers are still preserved, and the
                same set of serialized assets is delivered.
         """
         if not IS_PY3:
             return
-        from CommonServerPython import BaseClient, send_assets_to_xsiam
+        from CommonServerPython import BaseClient, send_assets_and_vulnerabilities_to_xsiam
         from requests import Response
 
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
@@ -10225,7 +10225,7 @@ class TestSendEventsToXSIAMTest:
 
         assets = [{'id': i} for i in range(5)]
         http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
-        send_assets_to_xsiam(assets=list(assets), vendor='v', product='p', use_streaming_send=False)
+        send_assets_and_vulnerabilities_to_xsiam(data=list(assets), vendor='v', product='p', use_streaming_send=False)
 
         headers = http_mock.call_args[1]['headers']
         assert headers['collector-type'] == 'assets'
@@ -10237,15 +10237,15 @@ class TestSendEventsToXSIAMTest:
             lines.extend(gzip.decompress(call[1]['data']).decode('utf-8').split('\n'))
         assert sorted(lines) == sorted(json.dumps(a) for a in assets)
 
-    def test_send_assets_to_xsiam_custom_snapshot_id_and_items_count(self, mocker):
+    def test_send_assets_and_vulnerabilities_to_xsiam_custom_snapshot_id_and_items_count(self, mocker):
         """
         Given: a list of assets with a custom snapshot_id and items_count.
-        When:  calling send_assets_to_xsiam.
+        When:  calling send_assets_and_vulnerabilities_to_xsiam.
         Then:  the custom snapshot_id and items_count are used in the request headers.
         """
         if not IS_PY3:
             return
-        from CommonServerPython import BaseClient, send_assets_to_xsiam
+        from CommonServerPython import BaseClient, send_assets_and_vulnerabilities_to_xsiam
         from requests import Response
 
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
@@ -10258,44 +10258,45 @@ class TestSendEventsToXSIAMTest:
         api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
 
         http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
-        send_assets_to_xsiam(assets=[{'id': 1}], vendor='v', product='p',
+        send_assets_and_vulnerabilities_to_xsiam(data=[{'id': 1}], vendor='v', product='p',
                              snapshot_id='999', items_count=42)
 
         headers = http_mock.call_args[1]['headers']
         assert headers['snapshot-id'] == '999'
         assert headers['total-items-count'] == '42'
 
-    def test_send_assets_to_xsiam_empty(self, mocker):
+    def test_send_assets_and_vulnerabilities_to_xsiam_empty(self, mocker):
         """
         Given: an empty list of assets.
-        When:  calling send_assets_to_xsiam.
+        When:  calling send_assets_and_vulnerabilities_to_xsiam.
         Then:  no HTTP call is made and the health module reports 0 assets.
         """
         if not IS_PY3:
             return
-        from CommonServerPython import BaseClient, send_assets_to_xsiam
+        from CommonServerPython import BaseClient, send_assets_and_vulnerabilities_to_xsiam
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
         update_health_mock = mocker.patch.object(demisto, 'updateModuleHealth')
         mocker.patch.object(demisto, 'params', return_value={'url': 'some-url'})
         http_mock = mocker.patch.object(BaseClient, '_http_request')
 
-        send_assets_to_xsiam(assets=[], vendor='v', product='p')
+        send_assets_and_vulnerabilities_to_xsiam(data=[], vendor='v', product='p')
 
         assert http_mock.call_count == 0
         update_health_mock.assert_called_with({'assetsPulled': 0})
 
-    def test_send_assets_to_xsiam_multiple_threads_disables_streaming(self, mocker):
+    def test_send_assets_and_vulnerabilities_to_xsiam_multiple_threads_disables_streaming(self, mocker):
         """
         Given: a list of dict assets.
-        When:  calling send_assets_to_xsiam with multiple_threads=True (while use_streaming_send defaults to True).
+        When:  calling send_assets_and_vulnerabilities_to_xsiam with multiple_threads=True (while use_streaming_send
+               defaults to True).
         Then:  the streaming send path is NOT used - streaming is mutually exclusive with multiple_threads
                (see send_data_to_xsiam: streaming_send requires 'not multiple_threads'). Instead the legacy
                threaded path runs and returns a list of futures. This documents that multiple_threads silently
-               disables the memory-efficient streaming that send_assets_to_xsiam otherwise provides.
+               disables the memory-efficient streaming that send_assets_and_vulnerabilities_to_xsiam otherwise provides.
         """
         if not IS_PY3:
             return
-        from CommonServerPython import BaseClient, send_assets_to_xsiam
+        from CommonServerPython import BaseClient, send_assets_and_vulnerabilities_to_xsiam
         from requests import Response
 
         mocker.patch.object(demisto, 'getLicenseCustomField', side_effect=self.get_license_custom_field_mock)
@@ -10311,7 +10312,7 @@ class TestSendEventsToXSIAMTest:
         api_response._content = json.dumps({'error': 'false'}).encode('utf-8')
         http_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
 
-        futures = send_assets_to_xsiam(assets=[{'id': 1}, {'id': 2}], vendor='v', product='p',
+        futures = send_assets_and_vulnerabilities_to_xsiam(data=[{'id': 1}, {'id': 2}], vendor='v', product='p',
                                        multiple_threads=True)
 
         # multiple_threads path returns a list of futures ...
@@ -10333,15 +10334,15 @@ class TestSendEventsToXSIAMTest:
         sent_blobs = [gzip.decompress(call[1]['data']).decode('utf-8') for call in http_mock.call_args_list]
         assert any('\n' in blob for blob in sent_blobs)
 
-    def test_send_assets_to_xsiam_custom_client_class(self, mocker):
+    def test_send_assets_and_vulnerabilities_to_xsiam_custom_client_class(self, mocker):
         """
         Given: a custom client class.
-        When:  calling send_assets_to_xsiam with client_class set.
+        When:  calling send_assets_and_vulnerabilities_to_xsiam with client_class set.
         Then:  the custom client class is instantiated and used to perform the send.
         """
         if not IS_PY3:
             return
-        from CommonServerPython import BaseClient, send_assets_to_xsiam
+        from CommonServerPython import BaseClient, send_assets_and_vulnerabilities_to_xsiam
         from requests import Response
 
         class MyClient(BaseClient):
@@ -10358,7 +10359,7 @@ class TestSendEventsToXSIAMTest:
 
         init_spy = mocker.spy(MyClient, '__init__')
         mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
-        send_assets_to_xsiam(assets=[{'id': 1}], vendor='v', product='p', client_class=MyClient)
+        send_assets_and_vulnerabilities_to_xsiam(data=[{'id': 1}], vendor='v', product='p', client_class=MyClient)
         assert init_spy.call_count == 1
 
     def test_stream_json_items_top_level_array(self, mocker):
