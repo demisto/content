@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import io
 import json
+import time
 import requests
 import traceback
 from datetime import datetime
@@ -80,6 +81,10 @@ UAM_ANALYST_VERDICT = {
 UAM_ANALYST_VERDICT_INCOMING = {v: k for k, v in UAM_ANALYST_VERDICT.items()}
 
 UAM_SEVERITY_MAPPING = {"CRITICAL": 4, "HIGH": 3, "MEDIUM": 2, "LOW": 1, "INFO": 0.5}
+
+# Delay the UAM fetch window by this amount to allow S1 indexing to complete before querying.
+# UAM team confirmed alert indexing takes "a few seconds to a minute" after creation.
+UAM_FETCH_DELAY_MS = 5 * 60 * 1000  # 5 minutes in milliseconds
 
 """ HELPER FUNCTIONS """
 
@@ -630,6 +635,110 @@ class Client(BaseClient):
         )
         return self._http_request(method="GET", url_suffix="unified-exclusions", params=params)
 
+    def get_alert_with_raw_indicators_graphql_req(self, alert_id: str) -> dict:
+        graphql_endpoint = "unifiedalerts/graphql"
+
+        demisto.debug(f"Fetching alert with raw indicators, alert_id: {alert_id}")
+
+        query = f"""
+            query AlertWithRawIndicators {{
+                alertWithRawIndicators(id: "{alert_id}") {{
+                    hasNextPage
+                    rawIndicators
+                    eventSearchParams {{
+                        accountId
+                        startTime
+                        endTime
+                        filter
+                        type
+                    }}
+                    alert {{
+                        id
+                        name
+                        severity
+                        classification
+                        description
+                        status
+                        analystVerdict
+                        confidenceLevel
+                        primaryIndicatorType
+                        rawData
+                        result
+                        storylineId
+                        attackSurfaces
+                        createdAt
+                        detectedAt
+                        firstSeenAt
+                        lastSeenAt
+                        updatedAt
+                        externalId
+                        indicators {{
+                            id
+                            type
+                            severity
+                            primary
+                            eventTime
+                            attacks {{
+                                tactic {{
+                                    name
+                                    uid
+                                }}
+                                technique {{
+                                    name
+                                    uid
+                                }}
+                            }}
+                        }}
+                        asset {{
+                            id
+                            name
+                            osType
+                            osVersion
+                            agentUuid
+                            agentVersion
+                            lastLoggedInUser
+                            status
+                        }}
+                        detectionSource {{
+                            product
+                            vendor
+                        }}
+                        process {{
+                            cmdLine
+                            username
+                            file {{
+                                name
+                                path
+                                sha1
+                                sha256
+                            }}
+                        }}
+                        observables {{
+                            name
+                            type
+                            value
+                        }}
+                        detectionTime {{
+                            scope {{
+                                accountId
+                                accountName
+                                siteId
+                                siteName
+                                groupId
+                                groupName
+                            }}
+                        }}
+                    }}
+                }}
+            }}
+        """
+        response = self._http_request(
+            method="POST",
+            url_suffix=graphql_endpoint,
+            json_data={"query": query},
+        )
+        return response.get("data", {}).get("alertWithRawIndicators", {})
+
     def create_unified_exclusion_request(
         self,
         exclusion_name: str,
@@ -1069,7 +1178,9 @@ class Client(BaseClient):
         pagination = response.get("pagination")
         return alerts, pagination
 
-    def get_uam_alerts_graphql_req(self, timestamp, view_type, limit, cursor=None, filter_by_updated_at=False):
+    def get_uam_alerts_graphql_req(
+        self, timestamp, view_type, limit, cursor=None, filter_by_updated_at=False, end_timestamp=None
+    ):
         graphql_endpoint = "unifiedalerts/graphql"
 
         after_clause = f'after: "{cursor}"' if cursor else "after: null"
@@ -1080,7 +1191,12 @@ class Client(BaseClient):
         sort_field = "updatedAt" if filter_by_updated_at else "createdAt"
         use_case = "mirroring (updatedAt)" if filter_by_updated_at else "polling (createdAt)"
 
-        demisto.debug(f"Fetching UAM alerts for {use_case}, timestamp: {timestamp}")
+        if end_timestamp:
+            date_time_range = f"{{ start: {timestamp} end: {end_timestamp} }}"
+        else:
+            date_time_range = f"{{ start: {timestamp} }}"
+
+        demisto.debug(f"Fetching UAM alerts for {use_case}, from: {timestamp}, to: {end_timestamp or 'now'}")
 
         query = f"""
             query Alerts {{
@@ -1092,9 +1208,7 @@ class Client(BaseClient):
                 filters: [
                 {{
                     fieldId: "{filter_field}"
-                    dateTimeRange: {{
-                    start: {timestamp}
-                    }}
+                    dateTimeRange: {date_time_range}
                 }}
                 ]
             ) {{
@@ -5995,19 +6109,30 @@ def fetch_uam_alerts(client: Client, args):
     """
     Fetch UAM alerts for polling/incident creation using createdAt filtering.
     This ensures new alerts are discovered during regular polling cycles.
+
+    The query window ends at (now - UAM_FETCH_DELAY_MS) so that alerts have
+    enough time to be indexed by SentinelOne before we query them.
     """
     incidents = []
-    uam_current_fetch = args.get("uam_current_fetch")
+    uam_last_fetch = args.get("uam_last_fetch")
+    uam_query_to = args.get("uam_query_to")
 
     fetch_limit = args.get("fetch_limit")
     view_type = args.get("fetch_uam_alert_type")
 
     if not view_type:
-        return [], uam_current_fetch
+        return [], uam_last_fetch
 
-    # Use createdAt filtering for polling - catches new alerts only
+    if uam_query_to <= uam_last_fetch:
+        # Window end is before window start — first_fetch_time is too recent.
+        # Wait until now-5min has passed first_fetch_time before querying.
+        demisto.debug(f"UAM fetch skipped: uam_query_to ({uam_query_to}) <= uam_last_fetch ({uam_last_fetch})")
+        return [], uam_last_fetch
+
+    # Use createdAt filtering for polling with a shifted end time to avoid missing
+    # alerts that have not yet been indexed at query time.
     uam_alerts, page_info = client.get_uam_alerts_graphql_req(
-        args.get("uam_last_fetch"), view_type, fetch_limit, filter_by_updated_at=False
+        uam_last_fetch, view_type, fetch_limit, filter_by_updated_at=False, end_timestamp=uam_query_to
     )
 
     for alert in uam_alerts:
@@ -6015,13 +6140,93 @@ def fetch_uam_alerts(client: Client, args):
         incident = to_incident("UAM Alert", alert)
         date_occurred_dt = parse(incident["occurred"])
         incident_date = int(date_occurred_dt.timestamp() * 1000)
-        if incident_date > args.get("uam_last_fetch"):
+        if incident_date > uam_last_fetch:
             incidents.append(incident)
 
-        if incident_date > uam_current_fetch:
-            uam_current_fetch = incident_date
+    # Always advance to the end of the queried window, even if no alerts were found,
+    # so the next fetch starts from here and does not re-query the same window.
+    return incidents, uam_query_to
 
-    return incidents, uam_current_fetch
+
+def get_alert_with_raw_indicators_command(client: Client, args: dict) -> CommandResults:
+    alert_id = args["alert_id"]
+    result = client.get_alert_with_raw_indicators_graphql_req(alert_id)
+
+    alert = result.get("alert", {})
+    raw_indicators = result.get("rawIndicators", [])
+    event_search_params = result.get("eventSearchParams", {})
+
+    indicators = [
+        {
+            "ID": ind.get("id"),
+            "Type": ind.get("type"),
+            "Severity": ind.get("severity"),
+            "Primary": ind.get("primary"),
+            "EventTime": ind.get("eventTime"),
+            "Attacks": ind.get("attacks"),
+        }
+        for ind in alert.get("indicators", [])
+    ]
+
+    context_entry = {
+        "ID": alert.get("id"),
+        "Name": alert.get("name"),
+        "Severity": alert.get("severity"),
+        "Classification": alert.get("classification"),
+        "Description": alert.get("description"),
+        "Status": alert.get("status"),
+        "AnalystVerdict": alert.get("analystVerdict"),
+        "ConfidenceLevel": alert.get("confidenceLevel"),
+        "PrimaryIndicatorType": alert.get("primaryIndicatorType"),
+        "Result": alert.get("result"),
+        "StorylineId": alert.get("storylineId"),
+        "AttackSurfaces": alert.get("attackSurfaces"),
+        "CreatedAt": alert.get("createdAt"),
+        "DetectedAt": alert.get("detectedAt"),
+        "FirstSeenAt": alert.get("firstSeenAt"),
+        "LastSeenAt": alert.get("lastSeenAt"),
+        "UpdatedAt": alert.get("updatedAt"),
+        "ExternalId": alert.get("externalId"),
+        "Indicators": indicators,
+        "RawIndicators": raw_indicators,
+        "RawData": alert.get("rawData"),
+        "EventSearchParams": event_search_params,
+        "Asset": alert.get("asset"),
+        "DetectionSource": alert.get("detectionSource"),
+        "Process": alert.get("process"),
+        "Observables": alert.get("observables"),
+        "DetectionTime": alert.get("detectionTime"),
+    }
+
+    alert_summary = {k: v for k, v in context_entry.items() if k not in (
+        "Indicators", "RawIndicators", "RawData", "EventSearchParams",
+        "Asset", "DetectionSource", "Process", "Observables", "DetectionTime", "Description",
+    )}
+
+    readable = tableToMarkdown(
+        "SentinelOne - Alert With Raw Indicators",
+        alert_summary,
+        removeNull=True,
+    )
+    readable += tableToMarkdown(
+        "Indicators",
+        [{k: v for k, v in ind.items() if k != "Attacks"} for ind in indicators],
+        removeNull=True,
+    )
+    readable += tableToMarkdown(
+        "Event Search Parameters",
+        [event_search_params],
+        removeNull=True,
+    )
+    readable += f"\n**Raw Indicators:** {len(raw_indicators)} event(s) returned."
+
+    return CommandResults(
+        readable_output=readable,
+        outputs_prefix="SentinelOne.AlertWithRawIndicators",
+        outputs_key_field="ID",
+        outputs=context_entry,
+        raw_response=result,
+    )
 
 
 def fetch_handler(client: Client, args):
@@ -6059,8 +6264,12 @@ def fetch_handler(client: Client, args):
     uam_current_fetch = uam_last_fetch
     last_fetch_date_string = timestamp_to_datestring(last_fetch, "%Y-%m-%dT%H:%M:%S.%fZ")
 
+    # Shift UAM query window into the past so alerts have time to be indexed by S1 before we query.
+    uam_query_to = int(time.time() * 1000) - UAM_FETCH_DELAY_MS
+
     args["last_fetch"] = last_fetch
     args["uam_last_fetch"] = uam_last_fetch
+    args["uam_query_to"] = uam_query_to
     args["last_fetch_date_string"] = last_fetch_date_string
     args["current_fetch"] = current_fetch
     args["uam_current_fetch"] = uam_current_fetch
@@ -6286,6 +6495,7 @@ def main():
             "sentinelone-get-unified-exclusions": get_unified_exclusions_command,
             "sentinelone-create-unified-exclusion": create_unified_exclusion_command,
             "sentinelone-delete-unified-exclusions": delete_unified_exclusion_command,
+            "sentinelone-get-alert-with-raw-indicators": get_alert_with_raw_indicators_command,
         },
         "commands_with_params": {
             "get-remote-data": get_remote_data_command,

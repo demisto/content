@@ -614,6 +614,82 @@ script:
       description: Number of exclusion items successfully deleted.
       type: number
   - arguments:
+    - description: The alert ID to retrieve raw indicators for.
+      name: alert_id
+      required: true
+    description: Retrieves a UAM alert enriched with raw SDL event indicators using the v2.1 unifiedalerts GraphQL endpoint.
+    name: sentinelone-get-alert-with-raw-indicators
+    outputs:
+    - contextPath: SentinelOne.AlertWithRawIndicators.ID
+      description: The alert ID.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Name
+      description: The alert name.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Severity
+      description: The alert severity.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Classification
+      description: The alert classification.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Status
+      description: The alert status.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.AnalystVerdict
+      description: The analyst verdict for the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.ConfidenceLevel
+      description: The confidence level of the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.PrimaryIndicatorType
+      description: The primary indicator type of the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Result
+      description: The mitigation result of the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.StorylineId
+      description: The storyline ID associated with the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.AttackSurfaces
+      description: The attack surfaces of the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.CreatedAt
+      description: Timestamp when the alert was created.
+      type: date
+    - contextPath: SentinelOne.AlertWithRawIndicators.DetectedAt
+      description: Timestamp when the alert was detected.
+      type: date
+    - contextPath: SentinelOne.AlertWithRawIndicators.ExternalId
+      description: The external ID of the alert.
+      type: string
+    - contextPath: SentinelOne.AlertWithRawIndicators.Indicators
+      description: List of structured indicators associated with the alert.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.RawIndicators
+      description: List of raw SDL telemetry events that triggered the alert indicators.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.RawData
+      description: Full OCSF-formatted raw data object for the alert.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.EventSearchParams
+      description: Pre-built Power Query search parameters for Deep Visibility investigation.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.Asset
+      description: Asset information for the endpoint associated with the alert.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.DetectionSource
+      description: Detection source product and vendor information.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.Process
+      description: Process information associated with the alert.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.Observables
+      description: Observable indicators such as process name or IP associated with the alert.
+      type: unknown
+    - contextPath: SentinelOne.AlertWithRawIndicators.DetectionTime
+      description: Scope information at the time of detection.
+      type: unknown
+  - arguments:
     - description: The content hash.
       name: hash
       required: true

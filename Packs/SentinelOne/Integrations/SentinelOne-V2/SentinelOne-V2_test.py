@@ -189,6 +189,59 @@ def test_fetch_uam_alerts(mocker, requests_mock):
     assert custom_fields["sentinelonesitename"] == "Default site"
 
 
+def test_fetch_uam_alerts_shifted_window(mocker, requests_mock):
+    """
+    When:
+        fetch-incidents is called with fetch_uam_alert_type configured.
+    Then:
+        The GraphQL query must include both start and end timestamps, with end = now - 5 minutes,
+        so that alerts have time to be indexed by SentinelOne before being queried (Geopost fix).
+        uam_time in lastRun must advance to the window end (uam_query_to), not the last alert's createdAt.
+    """
+    import time as time_module
+
+    mock_graphql_response = util_load_json("test_data/uam_alerts_raw.json")
+    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/unifiedalerts/graphql", json=mock_graphql_response)
+
+    uam_last_fetch = 1735041600000  # window start stored in lastRun
+    now_ms = int(time_module.time() * 1000)
+    expected_query_to = now_ms - sentinelone_v2.UAM_FETCH_DELAY_MS  # now - 5 min
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={
+            "token": "token",
+            "url": "https://usea1.sentinelone.net",
+            "api_version": "2.1",
+            "fetch_type": "None",
+            "fetch_uam_alert_type": "all",
+            "fetch_limit": "10",
+        },
+    )
+    mocker.patch.object(demisto, "getLastRun", return_value={"uam_time": uam_last_fetch})
+    mocker.patch.object(demisto, "command", return_value="fetch-incidents")
+    mocker.patch.object(demisto, "incidents")
+    mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
+
+    main()
+
+    sent_query = requests_mock.last_request.json()["query"]
+
+    # Query must contain the window start
+    assert str(uam_last_fetch) in sent_query, "GQL query must include the start timestamp"
+
+    # Query must contain an end timestamp (shifted window)
+    assert "end:" in sent_query, "GQL query must include an end timestamp for the shifted window"
+
+    # uam_time saved to lastRun must be the window end (uam_query_to), not the last alert's createdAt
+    saved_uam_time = mock_set_last_run.call_args[0][0]["uam_time"]
+    tolerance_ms = 5000  # 5 seconds to account for test execution time
+    assert abs(saved_uam_time - expected_query_to) < tolerance_ms, (
+        f"uam_time ({saved_uam_time}) must be close to now-5min ({expected_query_to}), not the last alert's createdAt"
+    )
+
+
 def test_fetch_file(mocker, requests_mock):
     """
     When:
@@ -2763,3 +2816,52 @@ def test_get_activities_multiple_types_single_param(mocker, requests_mock):
     assert sent_qs.get("activitytypes") == [
         "6,7"
     ], "activityTypes must be sent as a single comma-separated value, not repeated params"
+
+
+def test_get_alert_with_raw_indicators(mocker, requests_mock):
+    """
+    When:
+        sentinelone-get-alert-with-raw-indicators command is called with a valid alert ID
+    Returns:
+        Alert context with structured indicators, raw SDL indicators, and event search params.
+    """
+    raw_response = util_load_json("test_data/get_alert_with_raw_indicators_raw_response.json")
+    requests_mock.post(
+        "https://usea1.sentinelone.net/web/api/v2.1/unifiedalerts/graphql",
+        json=raw_response,
+    )
+
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"token": "token", "url": "https://usea1.sentinelone.net", "api_version": "2.1"},
+    )
+    mocker.patch.object(demisto, "command", return_value="sentinelone-get-alert-with-raw-indicators")
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"alert_id": "aaaaaaaa-bbbb-cccc-dddd-ffffffffffff"},
+    )
+
+    mock_return_results = mocker.patch.object(sentinelone_v2, "return_results")
+
+    main()
+
+    call = mock_return_results.call_args_list
+    outputs = call[0].args[0].outputs
+
+    assert outputs["ID"] == "aaaaaaaa-bbbb-cccc-dddd-ffffffffffff"
+    assert outputs["Name"] == "testd - Execution of a mounted binary in a container detected"
+    assert outputs["Severity"] == "CRITICAL"
+    assert outputs["Status"] == "NEW"
+    assert outputs["StorylineId"] == "aaaaaaaa-bbbb-cccc-dddd-111111111111"
+    assert len(outputs["Indicators"]) == 2
+    assert outputs["Indicators"][0]["ID"] == "2370"
+    assert outputs["Indicators"][1]["Attacks"][0]["tactic"]["uid"] == "TA0004"
+    assert len(outputs["RawIndicators"]) == 2
+    assert outputs["RawIndicators"][0]["indicator.name"] == "TrustedBinaryUtilityModified"
+    assert outputs["EventSearchParams"]["type"] == "LOG"
+    assert outputs["Asset"]["osType"] == "LINUX"
+    assert outputs["Process"]["cmdLine"] == "testd --host=unix:///var/run/test.sock"
+    assert requests_mock.last_request.method == "POST"
+    assert "alertWithRawIndicators" in requests_mock.last_request.json()["query"]
