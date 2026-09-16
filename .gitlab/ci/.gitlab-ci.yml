@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "deploy-connectus-managed-packs"
+  CURRENT_BRANCH_NAME: "dev-force-update-connectus"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "deploy-connectus-managed-packs"
+    ref: "dev-force-update-connectus"
     project: "${CI_PROJECT_NAMESPACE}/infra"
