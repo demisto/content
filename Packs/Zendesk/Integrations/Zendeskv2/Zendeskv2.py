@@ -437,13 +437,21 @@ class ZendeskClient(BaseClient):
             }
             if created_after:
                 # The API requires filter[created_at] twice (start AND end); default end to "now".
+                # NOTE: the custom _http_request serializer turns a list value into repeated
+                # "<key>[]=..." params, so the key here must be "filter[created_at]" (WITHOUT a
+                # trailing "[]") to produce "filter[created_at][]=start&filter[created_at][]=end".
+                # Using "filter[created_at][]" here would wrongly emit "filter[created_at][][]=...".
                 end_time = created_before or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-                request_params["filter[created_at][]"] = [created_after, end_time]
+                request_params["filter[created_at]"] = [created_after, end_time]
 
             demisto.debug(f"[Audit Logs] Initial request | From: {created_after} | To: {created_before or 'Now'}")
             response = self._http_request("GET", url_suffix="audit_logs", params=request_params)
 
-        audit_logs = response.get("audit_logs", [])
+        if not isinstance(response, dict):
+            demisto.debug(f"[Audit Logs] Unexpected response type: {type(response).__name__}. Treating as empty.")
+            return [], None
+
+        audit_logs = response.get("audit_logs") or []
         next_page_url = dict_safe_get(response, ["links", "next"])
 
         # Check if there are more pages
@@ -1424,12 +1432,21 @@ def get_audit_logs_with_pagination(
         events.extend(page_events)
         demisto.debug(f"[Pagination Loop] Page {page_count}: +{len(page_events)} events. Total accumulated: {len(events)}")
 
+        if len(page_events) < AUDIT_LOG_PAGE_SIZE:
+            demisto.debug(f"[Pagination Loop] Page {page_count}: Partial page. Stopping.")
+            remaining_next_url = None
+            break
+
         if not remaining_next_url:
             demisto.debug("[Pagination Loop] No next page URL. Stopping.")
             break
 
         if page_count >= MAX_AUDIT_LOG_PAGES:
             demisto.debug(f"[Pagination Loop] Max pages reached ({MAX_AUDIT_LOG_PAGES}). Stopping.")
+            break
+
+        if len(events) >= max_events:
+            demisto.debug(f"[Pagination Loop] Event limit reached ({len(events)} >= {max_events}). Stopping.")
             break
 
     if not events:
@@ -1489,11 +1506,15 @@ def get_audit_logs_command(client: "ZendeskClient", args: dict[str, Any]) -> Com
     )
 
 
-def fetch_events_command(client: "ZendeskClient") -> None:
+def fetch_events_command(client: "ZendeskClient") -> tuple[list[dict[str, Any]], dict[str, Any]]:
     """Scheduled command to fetch audit log events for XSIAM.
 
     Implements deduplication by created_at time and event IDs.
     Uses cursor-based pagination with next_url persistence across runs.
+
+    Returns the events to send and the new last-run state. The caller (main) is
+    responsible for the single send_events_to_xsiam call and the setLastRun write,
+    so events are pushed exactly once per fetch cycle.
     """
     demisto.debug("[Fetch Events] Starting fetch-events command")
     params = demisto.params()
@@ -1528,18 +1549,14 @@ def fetch_events_command(client: "ZendeskClient") -> None:
     )
 
     if not events:
-        demisto.debug("[Fetch Events] No events found.")
-        return
+        demisto.debug("[Fetch Events] No events found. Preserving last run.")
+        return [], last_run
 
     # Always deduplicate against the IDs already sent on the previous run. This is required both
     # when re-querying from the same timestamp and when resuming a cursor, since a sliced page can
     # cause the following run to re-see boundary events.
     new_events = deduplicate_events(events, last_fetched_ids)
-
-    if new_events:
-        add_time_to_events(new_events)
-        send_events_to_xsiam(events=new_events, vendor=VENDOR, product=PRODUCT)
-        demisto.debug(f"[Fetch Events] Pushed {len(new_events)} events to XSIAM")
+    add_time_to_events(new_events)
 
     # Build new last run state - preserve existing incident fetch state
     new_last_run = {k: v for k, v in last_run.items() if not k.startswith("events_")}
@@ -1573,7 +1590,7 @@ def fetch_events_command(client: "ZendeskClient") -> None:
             new_last_run["events_last_fetch"] = last_fetch_timestamp
             new_last_run["events_last_fetched_ids"] = last_fetched_ids
 
-    demisto.setLastRun(new_last_run)
+    return new_events, new_last_run
 
 
 # endregion
@@ -1633,7 +1650,11 @@ def main():  # pragma: no cover
         if command == "fetch-incidents":
             client.fetch_incidents(params, **args)
         elif command == "fetch-events":
-            fetch_events_command(client)
+            events, new_last_run = fetch_events_command(client)
+            if events:
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+                demisto.debug(f"[Fetch Events] Pushed {len(events)} events to XSIAM")
+            demisto.setLastRun(new_last_run)
         elif command == "zendesk-get-audit-logs":
             return_results(get_audit_logs_command(client, args))
         elif command in commands:

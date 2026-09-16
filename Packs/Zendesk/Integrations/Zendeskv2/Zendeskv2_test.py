@@ -1309,21 +1309,27 @@ class TestGetAuditLogsWithPagination:
         assert next_url is None
 
     def test_multiple_pages(self, zendesk_client, mocker):
-        """Tests fetching audit logs across multiple pages."""
+        """Tests fetching audit logs across multiple pages.
+
+        Page 1 must return a full page (AUDIT_LOG_PAGE_SIZE events) so the loop does not stop
+        early on the partial-page condition; the remaining events arrive on page 2.
+        """
+        full_first_page = [{"id": i, "created_at": f"2024-01-01T00:{i:02d}:00Z"} for i in range(Zendeskv2.AUDIT_LOG_PAGE_SIZE)]
+        second_page = [{"id": 9001, "created_at": "2024-01-01T02:00:00Z"}]
         mocker.patch.object(
             zendesk_client,
             "get_audit_logs",
             side_effect=[
-                (MOCK_AUDIT_LOGS[:2], "https://test.zendesk.com/api/v2/audit_logs?page[after]=cursor1"),
-                (MOCK_AUDIT_LOGS[2:], None),
+                (full_first_page, "https://test.zendesk.com/api/v2/audit_logs?page[after]=cursor1"),
+                (second_page, None),
             ],
         )
 
         events, next_url = Zendeskv2.get_audit_logs_with_pagination(
-            zendesk_client, created_after="2024-01-01T00:00:00Z", max_events=10
+            zendesk_client, created_after="2024-01-01T00:00:00Z", max_events=1000
         )
 
-        assert len(events) == 3
+        assert len(events) == Zendeskv2.AUDIT_LOG_PAGE_SIZE + 1
         assert next_url is None
 
     def test_respects_max_events(self, zendesk_client, mocker):
@@ -1426,29 +1432,26 @@ class TestGetAuditLogsCommand:
 
 
 class TestFetchEventsCommand:
+    """fetch_events_command returns (events_to_send, new_last_run); the caller (main) is
+    responsible for the single send_events_to_xsiam call and the setLastRun write."""
+
     def test_first_run(self, zendesk_client, mocker):
         """Tests fetch_events_command on first run."""
         mocker.patch.object(demisto, "params", return_value={"first_fetch": "3 days", "max_events_fetch": "1000"})
         mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-        mock_send = mocker.patch("Zendeskv2.send_events_to_xsiam")
         mocker.patch.object(
             Zendeskv2,
             "get_audit_logs_with_pagination",
             return_value=(MOCK_AUDIT_LOGS, None),
         )
 
-        Zendeskv2.fetch_events_command(zendesk_client)
+        events, last_run = Zendeskv2.fetch_events_command(zendesk_client)
 
-        mock_send.assert_called_once()
-        sent_events = mock_send.call_args[1]["events"]
-        assert len(sent_events) == 3
+        assert len(events) == 3
         # Verify _time was added
-        assert all("_time" in e for e in sent_events)
+        assert all("_time" in e for e in events)
 
         # Verify last run was updated
-        mock_set_last_run.assert_called_once()
-        last_run = mock_set_last_run.call_args[0][0]
         assert last_run["events_last_fetch"] == "2024-01-01T12:00:00Z"
         assert last_run["events_last_fetched_ids"] == [1003]
 
@@ -1463,21 +1466,17 @@ class TestFetchEventsCommand:
                 "events_last_fetched_ids": [1001],
             },
         )
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-        mock_send = mocker.patch("Zendeskv2.send_events_to_xsiam")
         mocker.patch.object(
             Zendeskv2,
             "get_audit_logs_with_pagination",
             return_value=(MOCK_AUDIT_LOGS, None),
         )
 
-        Zendeskv2.fetch_events_command(zendesk_client)
+        events, _ = Zendeskv2.fetch_events_command(zendesk_client)
 
-        mock_send.assert_called_once()
-        sent_events = mock_send.call_args[1]["events"]
         # Event 1001 should be deduplicated
-        assert len(sent_events) == 2
-        assert all(e["id"] != 1001 for e in sent_events)
+        assert len(events) == 2
+        assert all(e["id"] != 1001 for e in events)
 
     def test_with_next_url_continuation(self, zendesk_client, mocker):
         """Tests fetch_events_command continuing from a next_url."""
@@ -1491,23 +1490,18 @@ class TestFetchEventsCommand:
                 "events_next_url": "https://test.zendesk.com/api/v2/audit_logs?page[after]=cursor1",
             },
         )
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-        mock_send = mocker.patch("Zendeskv2.send_events_to_xsiam")
         mocker.patch.object(
             Zendeskv2,
             "get_audit_logs_with_pagination",
             return_value=(MOCK_AUDIT_LOGS, None),
         )
 
-        Zendeskv2.fetch_events_command(zendesk_client)
+        events, last_run = Zendeskv2.fetch_events_command(zendesk_client)
 
-        mock_send.assert_called_once()
-        sent_events = mock_send.call_args[1]["events"]
         # No previous IDs to dedup against here, so all 3 events are sent.
-        assert len(sent_events) == 3
+        assert len(events) == 3
 
         # Verify next_url is cleared and HWM is updated
-        last_run = mock_set_last_run.call_args[0][0]
         assert "events_next_url" not in last_run
         assert last_run["events_last_fetch"] == "2024-01-01T12:00:00Z"
 
@@ -1523,28 +1517,22 @@ class TestFetchEventsCommand:
                 "events_next_url": "https://test.zendesk.com/api/v2/audit_logs?page[after]=cursor1",
             },
         )
-        mocker.patch.object(demisto, "setLastRun")
-        mock_send = mocker.patch("Zendeskv2.send_events_to_xsiam")
         mocker.patch.object(
             Zendeskv2,
             "get_audit_logs_with_pagination",
             return_value=(MOCK_AUDIT_LOGS, None),
         )
 
-        Zendeskv2.fetch_events_command(zendesk_client)
+        events, _ = Zendeskv2.fetch_events_command(zendesk_client)
 
-        mock_send.assert_called_once()
-        sent_events = mock_send.call_args[1]["events"]
         # Event 1001 was already sent last run and must be deduplicated even on cursor continuation.
-        assert len(sent_events) == 2
-        assert all(e["id"] != 1001 for e in sent_events)
+        assert len(events) == 2
+        assert all(e["id"] != 1001 for e in events)
 
     def test_saves_next_url_when_more_pages(self, zendesk_client, mocker):
         """Tests that next_url is saved when there are more pages."""
         mocker.patch.object(demisto, "params", return_value={"first_fetch": "3 days", "max_events_fetch": "1000"})
         mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-        mock_send = mocker.patch("Zendeskv2.send_events_to_xsiam")
         next_url = "https://test.zendesk.com/api/v2/audit_logs?page[after]=cursor2"
         mocker.patch.object(
             Zendeskv2,
@@ -1552,9 +1540,8 @@ class TestFetchEventsCommand:
             return_value=(MOCK_AUDIT_LOGS, next_url),
         )
 
-        Zendeskv2.fetch_events_command(zendesk_client)
+        _, last_run = Zendeskv2.fetch_events_command(zendesk_client)
 
-        last_run = mock_set_last_run.call_args[0][0]
         assert last_run["events_next_url"] == next_url
 
     def test_merges_boundary_ids_when_hwm_unchanged(self, zendesk_client, mocker):
@@ -1568,8 +1555,6 @@ class TestFetchEventsCommand:
                 "events_last_fetched_ids": [1003],
             },
         )
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-        mocker.patch("Zendeskv2.send_events_to_xsiam")
         # 1003 was already sent (same timestamp); 1004 is new at the same timestamp.
         events = [
             {"id": 1003, "created_at": "2024-01-01T12:00:00Z"},
@@ -1577,29 +1562,27 @@ class TestFetchEventsCommand:
         ]
         mocker.patch.object(Zendeskv2, "get_audit_logs_with_pagination", return_value=(events, None))
 
-        Zendeskv2.fetch_events_command(zendesk_client)
+        _, last_run = Zendeskv2.fetch_events_command(zendesk_client)
 
-        last_run = mock_set_last_run.call_args[0][0]
         assert last_run["events_last_fetch"] == "2024-01-01T12:00:00Z"
         # Both the previously-seen and the newly-seen IDs at the boundary timestamp are kept.
         assert set(last_run["events_last_fetched_ids"]) == {1003, 1004}
 
     def test_no_events_found(self, zendesk_client, mocker):
-        """Tests fetch_events_command when no events are found."""
+        """Tests fetch_events_command when no events are found - preserves last run, sends nothing."""
         mocker.patch.object(demisto, "params", return_value={"first_fetch": "3 days", "max_events_fetch": "1000"})
-        mocker.patch.object(demisto, "getLastRun", return_value={})
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-        mock_send = mocker.patch("Zendeskv2.send_events_to_xsiam")
+        existing_last_run = {"fetched_tickets": [1]}
+        mocker.patch.object(demisto, "getLastRun", return_value=existing_last_run)
         mocker.patch.object(
             Zendeskv2,
             "get_audit_logs_with_pagination",
             return_value=([], None),
         )
 
-        Zendeskv2.fetch_events_command(zendesk_client)
+        events, last_run = Zendeskv2.fetch_events_command(zendesk_client)
 
-        mock_send.assert_not_called()
-        mock_set_last_run.assert_not_called()
+        assert events == []
+        assert last_run == existing_last_run
 
     def test_preserves_incident_fetch_state(self, zendesk_client, mocker):
         """Tests that fetch_events_command preserves existing incident fetch state."""
@@ -1614,17 +1597,14 @@ class TestFetchEventsCommand:
                 "fetch_time": "2024-01-01T00:00:00Z",
             },
         )
-        mock_set_last_run = mocker.patch.object(demisto, "setLastRun")
-        mocker.patch("Zendeskv2.send_events_to_xsiam")
         mocker.patch.object(
             Zendeskv2,
             "get_audit_logs_with_pagination",
             return_value=(MOCK_AUDIT_LOGS, None),
         )
 
-        Zendeskv2.fetch_events_command(zendesk_client)
+        _, last_run = Zendeskv2.fetch_events_command(zendesk_client)
 
-        last_run = mock_set_last_run.call_args[0][0]
         # Incident fetch state should be preserved
         assert last_run["fetched_tickets"] == [10, 20]
         assert last_run["fetch_time"] == "2024-01-01T00:00:00Z"
