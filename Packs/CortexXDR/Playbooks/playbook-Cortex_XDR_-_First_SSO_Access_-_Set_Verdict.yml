@@ -369,7 +369,7 @@ tasks:
         simple: VerdictResult
       values:
         complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
+          root: PaloAltoNetworksXDR.Case.Issues
           accessor: name
           transformers:
           - operator: If-Then-Else
@@ -451,7 +451,7 @@ tasks:
         simple: VerdictResult
       values:
         complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
+          root: PaloAltoNetworksXDR.Case.Issues
           accessor: name
           transformers:
           - operator: If-Then-Else
@@ -512,7 +512,7 @@ tasks:
         simple: VerdictResult
       values:
         complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
+          root: PaloAltoNetworksXDR.Case.Issues
           accessor: name
           transformers:
           - operator: If-Then-Else
@@ -575,7 +575,7 @@ tasks:
         simple: VerdictResult
       values:
         complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
+          root: PaloAltoNetworksXDR.Case.Issues
           accessor: name
           transformers:
           - operator: If-Then-Else
@@ -638,7 +638,7 @@ tasks:
         simple: VerdictResult
       values:
         complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
+          root: PaloAltoNetworksXDR.Case.Issues
           accessor: name
           transformers:
           - operator: If-Then-Else
@@ -701,7 +701,7 @@ tasks:
         simple: VerdictResult
       values:
         complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
+          root: PaloAltoNetworksXDR.Case.Issues
           accessor: name
           transformers:
           - operator: If-Then-Else
@@ -761,7 +761,7 @@ tasks:
         simple: VerdictResult
       values:
         complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
+          root: PaloAltoNetworksXDR.Case.Issues
           accessor: name
           transformers:
           - operator: If-Then-Else
@@ -824,7 +824,7 @@ tasks:
         simple: VerdictResult
       values:
         complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
+          root: PaloAltoNetworksXDR.Case.Issues
           accessor: name
           transformers:
           - operator: If-Then-Else

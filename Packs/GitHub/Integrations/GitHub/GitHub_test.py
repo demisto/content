@@ -618,6 +618,98 @@ def test_http_request():
     assert not mock_req.last_request.text
 
 
+@pytest.mark.parametrize(
+    "response_json, expected_error_message",
+    [
+        pytest.param(
+            {"message": "Validation Failed", "errors": ["Custom string error"]},
+            "Error: Custom string error. Validation Failed",
+            id="errors_is_a_list_of_strings",
+        ),
+        pytest.param(
+            {"message": "Validation Failed", "errors": "Custom string error"},
+            "Error in API call to the GitHub Integration [422] - Unprocessable Entity. Validation Failed",
+            id="errors_is_a_string",
+        ),
+        pytest.param(
+            {"message": "Validation Failed", "errors": []},
+            "Error in API call to the GitHub Integration [422] - Unprocessable Entity. Validation Failed",
+            id="errors_is_an_empty_list",
+        ),
+        pytest.param(
+            {"message": "Validation Failed", "errors": [{"code": "unrecognized_code", "field": "title"}]},
+            "Error in API call to the GitHub Integration [422] - Unprocessable Entity. Validation Failed",
+            id="errors_is_a_list_of_dicts_with_an_unrecognized_code",
+        ),
+        pytest.param(
+            {
+                "message": "Validation Failed",
+                "errors": [{"code": "missing_field", "field": "title"}],
+                "documentation_url": "https://docs.github.com",
+            },
+            'Error: the field: "title" requires a value. Validation Failed see: https://docs.github.com',
+            id="errors_is_a_list_of_dicts_with_a_missing_field_code",
+        ),
+        pytest.param(
+            {"message": "Validation Failed", "errors": [{"code": "invalid", "field": "q", "message": "invalid query"}]},
+            "Error: invalid query - invalid query. Validation Failed",
+            id="errors_is_a_list_of_dicts_with_an_invalid_query_code",
+        ),
+        pytest.param(
+            {"message": "Validation Failed", "errors": [{"code": "missing", "resource": "Issue"}]},
+            "Error: Issue does not exist. Validation Failed",
+            id="errors_is_a_list_of_dicts_with_a_missing_resource_code",
+        ),
+    ],
+)
+def test_http_request_error_handling(response_json, expected_error_message):
+    """
+    Given:
+      - An error response (status code >= 400) from the GitHub API, where the 'errors' field is either
+        a list of strings, a plain string, an empty list, or a list of error objects.
+    When:
+      - Calling the 'http_request' function.
+    Then:
+      - Ensure a DemistoException with the expected message is raised, and that non-dict 'errors' values
+        do not raise an AttributeError (calling '.get()' on a str).
+    """
+    GitHub.BASE_URL = REGULAR_BASE_URL
+    GitHub.USE_SSL = ""
+    GitHub.HEADERS = {}
+
+    with (
+        requests_mock.Mocker() as m,
+        pytest.raises(DemistoException) as exception_info,
+    ):
+        m.get(f"{REGULAR_BASE_URL}/test", json=response_json, status_code=422, reason="Unprocessable Entity")
+        http_request("GET", "/test")
+
+    assert str(exception_info.value) == expected_error_message
+
+
+def test_http_request_error_handling_non_json_response():
+    """
+    Given:
+      - An error response (status code >= 400) from the GitHub API with a body that is not valid JSON.
+    When:
+      - Calling the 'http_request' function.
+    Then:
+      - Ensure a DemistoException with the generic error message is raised.
+    """
+    GitHub.BASE_URL = REGULAR_BASE_URL
+    GitHub.USE_SSL = ""
+    GitHub.HEADERS = {}
+
+    with (
+        requests_mock.Mocker() as m,
+        pytest.raises(DemistoException) as exception_info,
+    ):
+        m.get(f"{REGULAR_BASE_URL}/test", text="<html>Bad Gateway</html>", status_code=502, reason="Bad Gateway")
+        http_request("GET", "/test")
+
+    assert str(exception_info.value) == "Error in API call to GitHub Integration [502] - Bad Gateway"
+
+
 def test_github_revoke_credentials_success(mocker):
     """
     Given:

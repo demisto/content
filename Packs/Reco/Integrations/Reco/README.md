@@ -990,3 +990,13 @@ List integrated app instances (app portfolio). Only returns instances with an ac
 | Reco.AppInstances.isUsingAi | Boolean | Whether AI features are used |
 | Reco.AppInstances.saasToSaasCount | Number | SaaS-to-SaaS grant count |
 | Reco.AppInstances.filesCount | Number | File count |
+
+<~PLATFORM>
+
+## License Requirements
+
+The following configuration parameters require one of these licenses: **Cortex XSIAM** or **Agentix**:
+
+- Fetch incidents
+
+</~PLATFORM>
