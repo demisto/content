@@ -514,6 +514,104 @@ class Client(BaseClient):
 
         return self._http_request(method="DELETE", url_suffix=url_suffix, resp_type="response", return_empty_response=True)
 
+    def cloudflare_waf_ruleset_rule_create_request(
+        self,
+        ruleset_id: str,
+        rule: dict[str, Any],
+        zone_id: str = None,
+        account_id: str = None,
+        dry_run: bool = None,
+    ) -> dict[str, Any]:
+        """Create a new rule in a ruleset.
+
+        Args:
+            ruleset_id (str): The ruleset identifier.
+            rule (dict): The single rule object to add. This is the request body.
+            zone_id (str, optional): Zone identifier. If provided, creates a zone-level ruleset rule.
+                If not provided, creates an account-level ruleset rule.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+            dry_run (bool, optional): If True, validates the rule without applying it.
+
+        Returns:
+            dict: API response from Cloudflare (the full parent ruleset).
+        """
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/{ruleset_id}/rules"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/{ruleset_id}/rules"
+
+        params = {"dry_run": "true"} if dry_run else None
+
+        return self._http_request(method="POST", url_suffix=url_suffix, json_data=rule, params=params)
+
+    def cloudflare_waf_ruleset_rule_update_request(
+        self,
+        ruleset_id: str,
+        rule_id: str,
+        rule: dict[str, Any],
+        zone_id: str = None,
+        account_id: str = None,
+        dry_run: bool = None,
+    ) -> dict[str, Any]:
+        """Update an existing rule in a ruleset. Replaces the whole rule.
+
+        Args:
+            ruleset_id (str): The ruleset identifier.
+            rule_id (str): The rule identifier.
+            rule (dict): The full rule object. This is the request body.
+            zone_id (str, optional): Zone identifier. If provided, updates a zone-level ruleset rule.
+                If not provided, updates an account-level ruleset rule.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+            dry_run (bool, optional): If True, validates the rule without applying it.
+
+        Returns:
+            dict: API response from Cloudflare (the full parent ruleset).
+        """
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/{ruleset_id}/rules/{rule_id}"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/{ruleset_id}/rules/{rule_id}"
+
+        params = {"dry_run": "true"} if dry_run else None
+
+        return self._http_request(method="PATCH", url_suffix=url_suffix, json_data=rule, params=params)
+
+    def cloudflare_waf_ruleset_rule_delete_request(
+        self,
+        ruleset_id: str,
+        rule_id: str,
+        zone_id: str = None,
+        account_id: str = None,
+        dry_run: bool = None,
+    ) -> dict[str, Any]:
+        """Delete a rule from a ruleset.
+
+        Args:
+            ruleset_id (str): The ruleset identifier.
+            rule_id (str): The rule identifier.
+            zone_id (str, optional): Zone identifier. If provided, deletes a zone-level ruleset rule.
+                If not provided, deletes an account-level ruleset rule.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+            dry_run (bool, optional): If True, validates the deletion without applying it.
+
+        Returns:
+            dict: API response from Cloudflare.
+        """
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/{ruleset_id}/rules/{rule_id}"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/{ruleset_id}/rules/{rule_id}"
+
+        params = {"dry_run": "true"} if dry_run else None
+
+        return self._http_request(
+            method="DELETE",
+            url_suffix=url_suffix,
+            params=params,
+            resp_type="response",
+            return_empty_response=True,
+        )
+
 
 def validate_pagination_arguments(page: int = None, page_size: int = None, limit: int = None):
     """Validate pagination arguments according to their default.
@@ -1526,6 +1624,173 @@ def cloudflare_waf_ruleset_delete_command(client: Client, args: dict[str, Any]) 
     return CommandResults(readable_output=f"Ruleset {ruleset_id} was successfully deleted.")
 
 
+def _ruleset_rule_readable_output(name: str, result: dict[str, Any]) -> str:
+    """Build the readable output for a ruleset-rule command from the full parent ruleset.
+
+    Args:
+        name (str): The header table name.
+        result (dict): The full parent ruleset returned by the API.
+
+    Returns:
+        str: The markdown readable output (ruleset header table plus rules table).
+    """
+    ruleset = {
+        "id": result.get("id"),
+        "name": result.get("name"),
+        "kind": result.get("kind"),
+        "phase": result.get("phase"),
+        "description": result.get("description"),
+        "version": result.get("version"),
+        "last_updated": result.get("last_updated"),
+    }
+
+    rules = result.get("rules", [])
+
+    readable_output = tableToMarkdown(
+        name=name,
+        t=ruleset,
+        headers=["id", "name", "kind", "phase", "description", "version", "last_updated"],
+        headerTransform=string_to_table_header,
+    )
+
+    if rules:
+        readable_output += "\n" + tableToMarkdown(
+            name="Ruleset rules",
+            t=rules,
+            headers=["id", "action", "expression", "description", "enabled", "version", "ref"],
+            headerTransform=string_to_table_header,
+        )
+
+    return readable_output
+
+
+def cloudflare_waf_ruleset_rule_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Create a new rule in a ruleset at the account or zone level.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    ruleset_id = args.get("ruleset_id")
+    if not ruleset_id:
+        raise ValueError("ruleset_id is required.")
+    rule_json = args.get("rule")
+    if not rule_json:
+        raise ValueError("rule is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+    dry_run = arg_to_boolean(args.get("dry_run"))  # type: ignore[arg-type]
+
+    try:
+        rule = json.loads(rule_json)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Failed to parse rule JSON: {e}")
+
+    response = client.cloudflare_waf_ruleset_rule_create_request(
+        ruleset_id=ruleset_id,
+        rule=rule,
+        zone_id=zone_id,
+        account_id=account_id,
+        dry_run=dry_run,
+    )
+
+    output = response.get("result", {})
+
+    readable_output = _ruleset_rule_readable_output("Ruleset details", output)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CloudflareWAF.Ruleset",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
+def cloudflare_waf_ruleset_rule_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Update an existing rule in a ruleset. Replaces the whole rule.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    ruleset_id = args.get("ruleset_id")
+    if not ruleset_id:
+        raise ValueError("ruleset_id is required.")
+    rule_id = args.get("rule_id")
+    if not rule_id:
+        raise ValueError("rule_id is required.")
+    rule_json = args.get("rule")
+    if not rule_json:
+        raise ValueError("rule is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+    dry_run = arg_to_boolean(args.get("dry_run"))  # type: ignore[arg-type]
+
+    try:
+        rule = json.loads(rule_json)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Failed to parse rule JSON: {e}")
+
+    response = client.cloudflare_waf_ruleset_rule_update_request(
+        ruleset_id=ruleset_id,
+        rule_id=rule_id,
+        rule=rule,
+        zone_id=zone_id,
+        account_id=account_id,
+        dry_run=dry_run,
+    )
+
+    output = response.get("result", {})
+
+    readable_output = _ruleset_rule_readable_output("Ruleset details", output)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CloudflareWAF.Ruleset",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
+def cloudflare_waf_ruleset_rule_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Delete a rule from a ruleset.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: readable outputs for XSOAR.
+    """
+    ruleset_id = args.get("ruleset_id")
+    if not ruleset_id:
+        raise ValueError("ruleset_id is required.")
+    rule_id = args.get("rule_id")
+    if not rule_id:
+        raise ValueError("rule_id is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+    dry_run = arg_to_boolean(args.get("dry_run"))  # type: ignore[arg-type]
+
+    client.cloudflare_waf_ruleset_rule_delete_request(
+        ruleset_id=ruleset_id,
+        rule_id=rule_id,
+        zone_id=zone_id,
+        account_id=account_id,
+        dry_run=dry_run,
+    )
+
+    return CommandResults(readable_output=f"Rule {rule_id} was successfully deleted from ruleset {ruleset_id}.")
+
+
 def test_module(client: Client):
     try:
         client.cloudflare_waf_zone_list_request()
@@ -1664,6 +1929,9 @@ def main() -> None:
         "cloudflare-waf-ruleset-create": cloudflare_waf_ruleset_create_command,
         "cloudflare-waf-ruleset-update": cloudflare_waf_ruleset_update_command,
         "cloudflare-waf-ruleset-delete": cloudflare_waf_ruleset_delete_command,
+        "cloudflare-waf-ruleset-rule-create": cloudflare_waf_ruleset_rule_create_command,
+        "cloudflare-waf-ruleset-rule-update": cloudflare_waf_ruleset_rule_update_command,
+        "cloudflare-waf-ruleset-rule-delete": cloudflare_waf_ruleset_rule_delete_command,
     }
     try:
         credentials = get_headers(params)
