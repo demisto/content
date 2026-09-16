@@ -1,2 +1,5 @@
 [file:AWS.yml]
 ignore=BA127,ST111,BA129
+
+[file:pack_metadata.json]
+ignore=RN105
