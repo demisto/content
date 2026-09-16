@@ -64,7 +64,6 @@ configuration:
   - Good
   - Suspicious
   - Bad
-  defaultvalue: None
   required: false
   section: Collect
   advanced: true
