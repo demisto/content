@@ -103,6 +103,12 @@ def test_normalize_url_accepts(raw_url, expected):
         ("example.com,other.example.com", "comma"),
         ("example .com", "whitespace"),
         ("ftp://example.com", "scheme is not supported"),
+        ("exa<mple.com", "not supported"),
+        ("exa>mple.com", "not supported"),
+        ("exa&mple.com", "not supported"),
+        ('exa"mple.com', "not supported"),
+        ("exa'mple.com", "not supported"),
+        ("example.com/<script>", "not supported"),
     ],
 )
 def test_normalize_url_rejects(raw_url, expected_message_part):

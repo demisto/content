@@ -24,6 +24,8 @@ DIRTY_OBJECT_ERROR = "Please commit the instance prior to editing"
 URL_LIST_TYPE = "URL List"
 MAX_URL_LENGTH = 255
 
+XML_SPECIAL_CHARS = {"<", ">", "&", '"', "'"}
+
 # The description stamped on every object this script creates, so an operator can tell them apart
 # from user-managed objects.
 OBJECT_DESCRIPTION = "Created by the Cortex block-url script."
@@ -99,6 +101,11 @@ def normalize_url(raw_url: str) -> tuple[str, str]:
         return "", "URL scheme is not supported. Only the http and https schemes are supported."
     if "*" in url:
         return "", "Wildcards are not supported and will not be passed to PAN-OS."
+    if xml_special := set(url) & XML_SPECIAL_CHARS:
+        return "", (
+            f"URL contains the character(s) {', '.join(sorted(xml_special))}, which are not supported by "
+            "PAN-OS custom URL categories."
+        )
     url = url.rstrip("/")
     if not url:
         return "", "URL is empty."
