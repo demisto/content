@@ -2963,7 +2963,7 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
 
     Args:
         creds (Credentials): GCP credentials.
-        args (dict[str, Any]): Must include 'project_id', 'region', 'resource_name' and one security flag.
+        args (dict[str, Any]): Must include 'project_id', 'region', 'resource_name' and optional security flags.
             - enable_intra_node_visibility: Whether to enable intra-node visibility.
             - enable_master_authorized_networks: Whether to enable master authorized networks (required if cidrs provided).
             - cidrs: Comma-separated list of CIDR blocks (e.g. "192.168.0.0/24,10.0.0.0/32").
