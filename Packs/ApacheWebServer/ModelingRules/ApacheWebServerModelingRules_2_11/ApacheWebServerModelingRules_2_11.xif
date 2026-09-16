@@ -27,6 +27,7 @@ filter _raw_log contains "[info]" or _raw_log contains "[alert]" or _raw_log con
     xdm.source.ipv4 = sourceipv4,
     xdm.source.ipv6 = sourceipv6,
     xdm.source.user.identifier = error_status_code,
+    xdm.source.identity.identifier = error_status_code,
     xdm.target.resource.id = Source_code_file_line,
     xdm.event.description = message,
     xdm.target.module.path = uri,
@@ -58,6 +59,7 @@ filter _raw_log contains "\"ACL" or _raw_log contains "\"BASELINE_CONTROL" or _r
     event_description = arrayindex(regextract(_raw_log ,"\[\d{2}\/\S{3}\/\d{4}[\s\S]\d{2}:\d{2}:\d{2}\s+[+|-]\d{4}\]\s(.*)"),0)
 | alter 
     xdm.source.user.username = if(Username = "-", null, Username),
+    xdm.source.identity.username = if(Username = "-", null, Username),
     xdm.network.http.url = http_url,
     xdm.network.http.referrer = Referrer,
     xdm.target.sent_bytes = to_number(bytes_size),
