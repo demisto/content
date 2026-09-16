@@ -441,8 +441,7 @@ def _reopen_entry_if_revived(updated_doppel_alert: dict, audit_logs: Any, last_u
             continue
         if log_time and log_time > last_update:
             demisto.debug(
-                f"Doppel - Alert moved into active queue {queue_state!r} at {audit_log.get('timestamp')}; "
-                f"sending reopen entry."
+                f"Doppel - Alert moved into active queue {queue_state!r} at {audit_log.get('timestamp')}; sending reopen entry."
             )
             return {"Type": EntryType.NOTE, "Contents": {"dbotIncidentReopen": True}, "ContentsFormat": EntryFormat.JSON}
     return None
@@ -1137,7 +1136,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], attach_screens
             client, parsed_args.remote_incident_id, parsed_args.last_update, attach_screenshots=attach_screenshots
         )
         if remote_updated_incident_data:
-            demisto.debug(f'Found updates in the alert with id: {args["id"]}')
+            demisto.debug(f"Found updates in the alert with id: {args['id']}")
             return GetRemoteDataResponse(remote_updated_incident_data, parsed_entries)
         else:
             demisto.debug(f"Nothing new in the incident {parsed_args.remote_incident_id}")

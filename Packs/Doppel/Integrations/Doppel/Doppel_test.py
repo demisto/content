@@ -1433,7 +1433,9 @@ def test_mirroring_attaches_screenshot_when_param_enabled(mocker):
     mock_client.get_alert.return_value = {"queue_state": "archived", "screenshot_url": SIGNED_URL_V1, "audit_logs": []}
     mock_client.download_screenshot.return_value = b"png-bytes"
 
-    _, entries = _get_remote_updated_incident_data_with_entry(mock_client, "TET-1234", "2025-01-19T08:44:52Z", attach_screenshots=True)
+    _, entries = _get_remote_updated_incident_data_with_entry(
+        mock_client, "TET-1234", "2025-01-19T08:44:52Z", attach_screenshots=True
+    )
 
     assert file_entry in entries
 
@@ -1461,7 +1463,9 @@ def test_mirroring_skips_unchanged_screenshot_version(mocker):
     mock_client = MagicMock()
     mock_client.get_alert.return_value = {"queue_state": "archived", "screenshot_url": SIGNED_URL_V1_RESIGNED, "audit_logs": []}
 
-    _, entries = _get_remote_updated_incident_data_with_entry(mock_client, "TET-1234", "2025-01-19T08:44:52Z", attach_screenshots=True)
+    _, entries = _get_remote_updated_incident_data_with_entry(
+        mock_client, "TET-1234", "2025-01-19T08:44:52Z", attach_screenshots=True
+    )
 
     mock_client.download_screenshot.assert_not_called()
     file_result.assert_not_called()
@@ -1478,7 +1482,9 @@ def test_mirroring_screenshot_failure_does_not_block_sync(mocker):
     mock_client.get_alert.return_value = {"queue_state": "archived", "screenshot_url": SIGNED_URL_V1, "audit_logs": []}
     mock_client.download_screenshot.side_effect = Exception("GCS unreachable")
 
-    updated_alert, entries = _get_remote_updated_incident_data_with_entry(mock_client, "TET-1234", "2025-01-19T08:44:52Z", attach_screenshots=True)
+    updated_alert, entries = _get_remote_updated_incident_data_with_entry(
+        mock_client, "TET-1234", "2025-01-19T08:44:52Z", attach_screenshots=True
+    )
 
     assert updated_alert is not None
     assert entries == []
