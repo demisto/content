@@ -20,17 +20,17 @@ Unit 42 Feed integration provides threat intelligence from Palo Alto Networks Un
 
 ## How Fetching Works
 
-The integration fetches indicators and threat objects on a single shared budget per fetch. The total number of items fetched in a run is capped at **20,000** (across both threat objects and indicators combined).
+The integration fetches indicators and threat objects on a single shared limit per fetch. The total number of items fetched in a run is capped at **20,000** (across both threat objects and indicators combined).
 
 Fetch order within a run:
 
-1. **Threat Objects** are fetched first, consuming from the shared budget.
-2. **Indicators** (all configured indicator types, queried together) are then fetched with whatever budget remains.
+1. **Threat Objects** are fetched first, consuming from the shared limit.
+2. **Indicators** (all configured indicator types, queried together) are then fetched with whatever quota remains.
 
-### Fetch Cadence
+### Fetch Frequency
 
 - **Indicators** are fetched every hour.
-- **Threat Objects** are fetched at most once every 24 hours. If a threat objects fetch is interrupted (more data is available than the budget allows), it resumes on the next run without waiting for the 24-hour window, until it completes.
+- **Threat Objects** are fetched at most once every 24 hours. If a threat objects fetch is interrupted (more data is available than the limit allows), it resumes on the next run without waiting for the 24-hour window, until it completes.
 
 ### Incremental Fetch
 
