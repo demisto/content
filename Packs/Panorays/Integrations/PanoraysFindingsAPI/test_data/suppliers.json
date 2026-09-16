@@ -1,0 +1,29 @@
+{
+    "data": [
+        {
+            "id": "sup-1",
+            "name": "Acme Logistics",
+            "primary_domain": "acme-logistics.example",
+            "business_impact": 4,
+            "combined_score": 42,
+            "posture_score": 38,
+            "risk": 3,
+            "tags": [
+                "critical-vendor",
+                "logistics"
+            ]
+        },
+        {
+            "id": "sup-2",
+            "name": "Globex Cloud",
+            "primary_domain": "globex.example",
+            "business_impact": 2,
+            "combined_score": 71,
+            "posture_score": 74,
+            "risk": 1,
+            "tags": []
+        }
+    ],
+    "has_next": false,
+    "has_previous": false
+}
