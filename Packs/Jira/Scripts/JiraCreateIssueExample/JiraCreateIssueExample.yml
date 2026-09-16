@@ -8,9 +8,9 @@ subtype: python3
 tags:
 - jira
 - example
-comment: |
-  This script is used to simplify the process of creating a new Issue in Jira. 
-  You can specify custom fields using the `customFields` argument.
+comment: 'Deprecated. Use the *jira-create-issue* command directly instead, which
+  supports all fields including custom fields via the *issue_json* argument.'
+deprecated: true
 enabled: true
 args:
 - name: summary
