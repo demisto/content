@@ -1,5 +1,5 @@
 import re
-from unittest.mock import Mock
+from unittest.mock import Mock, PropertyMock
 import Qualysv2
 import pytest
 import requests
@@ -2301,3 +2301,9 @@ class TestConcurrencyLimitRetry:
 
         # None response -> False
         assert Client._is_concurrency_limit_error(None) is False
+
+        # 409 but response body access/parse fails (e.g. missing/broken text attribute) -> False (fail-safe)
+        resp_no_text = Mock()
+        resp_no_text.status_code = Qualysv2.RATE_LIMIT_STATUS_CODE
+        type(resp_no_text).text = PropertyMock(side_effect=AttributeError("no text attribute"))
+        assert Client._is_concurrency_limit_error(resp_no_text) is False

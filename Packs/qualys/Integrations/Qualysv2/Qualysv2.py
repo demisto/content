@@ -47,7 +47,7 @@ RATE_LIMIT_DEFAULT_WAIT_SEC = 30
 # so we back off by a fixed interval to let the previous instance finish before retrying.
 CONCURRENCY_LIMIT_ERROR_CODE = "1960"
 CONCURRENCY_LIMIT_WAIT_SEC = 60
-CONCURRENCY_LIMIT_MAX_RETRIES = 5
+CONCURRENCY_LIMIT_MAX_RETRIES = 2
 
 ASSETS_DATE_FORMAT = "%Y-%m-%d"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
@@ -1794,7 +1794,7 @@ class Client(BaseClient):
                 raise
             demisto.debug(
                 f"Qualys concurrency limit (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}) still active after retries. "
-                "Trying again in the next fetch with a reduced limit."
+                f"Trying again in the next fetch with a reduced limit. Error: {str(e)}\n{traceback.format_exc()}"
             )
             set_new_limit = True
             response = ""
@@ -1836,21 +1836,34 @@ class Client(BaseClient):
                     raise
                 demisto.debug(
                     f"Hit Qualys concurrency limit (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}). "
-                    f"Waiting {CONCURRENCY_LIMIT_WAIT_SEC}s before retry {attempt + 1}/{CONCURRENCY_LIMIT_MAX_RETRIES}."
+                    f"Waiting {CONCURRENCY_LIMIT_WAIT_SEC}s before retry {attempt + 1}/{CONCURRENCY_LIMIT_MAX_RETRIES}. "
+                    f"Error: {str(e)}\n{traceback.format_exc()}"
                 )
                 time.sleep(CONCURRENCY_LIMIT_WAIT_SEC)  # pylint: disable=E9003
         # Unreachable: the loop either returns or raises, but keeps type checkers satisfied.
         raise DemistoException(f"Qualys concurrency limit (Error Code {CONCURRENCY_LIMIT_ERROR_CODE}) not resolved.")
 
     @staticmethod
-    def _is_concurrency_limit_error(response) -> bool:
+    def _is_concurrency_limit_error(response: Optional[requests.Response]) -> bool:
         """Return True if the response is a Qualys concurrency-limit error (HTTP 409, Error Code 1960)."""
-        if getattr(response, "status_code", None) != RATE_LIMIT_STATUS_CODE:
+        if response is None:
+            demisto.debug("No response object available; cannot be a concurrency-limit error.")
+            return False
+        status_code = response.status_code
+        if status_code != RATE_LIMIT_STATUS_CODE:
+            demisto.debug(f"Response status code {status_code} is not a concurrency-limit status ({RATE_LIMIT_STATUS_CODE}).")
             return False
         try:
             simple_response = get_simple_response_from_raw(parse_raw_response(response.text))
-            return bool(simple_response) and simple_response.get("CODE") == CONCURRENCY_LIMIT_ERROR_CODE
-        except Exception:
+            error_code = simple_response.get("CODE") if simple_response else None
+            is_concurrency_limit = bool(simple_response) and error_code == CONCURRENCY_LIMIT_ERROR_CODE
+            demisto.debug(
+                f"Checked response for concurrency limit: status_code={status_code}, error_code={error_code}, "
+                f"is_concurrency_limit={is_concurrency_limit}."
+            )
+            return is_concurrency_limit
+        except Exception as e:
+            demisto.debug(f"Failed to parse response while checking for concurrency limit: {str(e)}\n{traceback.format_exc()}")
             return False
 
     def get_vulnerabilities(self, since_datetime: str | None = None, detection_qids: str | None = None) -> str:
