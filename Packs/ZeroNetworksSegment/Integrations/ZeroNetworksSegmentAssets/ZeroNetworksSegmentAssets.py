@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
-from typing import Any, Optional
+from typing import Any
 
 import urllib3
 
@@ -161,7 +161,7 @@ class Client(BaseClient):
         """Retrieve a page of assets. Used by the connectivity test as the cheapest authenticated call."""
         return self._http_request("GET", "/assets", params={"_limit": limit})
 
-    def search_asset_id(self, fqdn: str) -> Optional[str]:
+    def search_asset_id(self, fqdn: str) -> str | None:
         """
         Look up an asset ID by fully qualified domain name.
 
@@ -196,14 +196,14 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def enum_label(mapping: dict[int, str], value: Any) -> Optional[str]:
+def enum_label(mapping: dict[int, str], value: Any) -> str | None:
     """Translate a Zero Networks numeric enum into its display name."""
     if value is None:
         return None
     return mapping.get(value, f"Unknown ({value})")
 
 
-def epoch_to_date_string(value: Any) -> Optional[str]:
+def epoch_to_date_string(value: Any) -> str | None:
     """Convert a Zero Networks epoch-milliseconds timestamp into an ISO 8601 string."""
     if not value:
         return None
@@ -241,7 +241,7 @@ def asset_to_context(asset: dict[str, Any]) -> dict[str, Any]:
     )
 
 
-def resolve_asset_id(client: Client, args: dict[str, Any]) -> tuple[str, Optional[str]]:
+def resolve_asset_id(client: Client, args: dict[str, Any]) -> tuple[str, str | None]:
     """
     Resolve the asset to act on from either an explicit asset ID or an FQDN.
 
@@ -279,7 +279,7 @@ def test_module(client: Client) -> str:
 
 def asset_search_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Search for an asset by FQDN and return its properties."""
-    fqdn = args["fqdn"]
+    fqdn = args.get("fqdn")
     asset_id = client.search_asset_id(fqdn)
 
     if not asset_id:
