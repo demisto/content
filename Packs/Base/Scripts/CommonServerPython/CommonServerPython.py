@@ -66,6 +66,10 @@ MAX_ERROR_MESSAGE_LENGTH = 50000
 # to a CortexExternalApiError message (avoids dumping huge payloads).
 MAX_API_RESPONSE_BODY_LENGTH = 500
 NUM_OF_WORKERS = 20
+# Max compressed chunks in flight at once on the streaming + multiple_threads path (bounds peak memory).
+# With streaming + multiple_threads, peak resident compressed chunks is N+1 (N in flight + 1 being built);
+# it does NOT scale with the total number of events, unlike the non-streaming multiple_threads path.
+MAX_INFLIGHT_CHUNKS = NUM_OF_WORKERS
 HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
 JSON_SEPARATORS = (",", ":")  # To get the most compact JSON representation, we should specify (',', ':') to eliminate whitespace.
 DEFAULT_INSIGHT_CACHE_SIZE = 3072
@@ -13946,12 +13950,16 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     :type use_streaming_send: ``bool``
     :param use_streaming_send: Feature flag (default False). When True, serializes and gzips the data one item at a time
         (streaming) instead of building full copies of the whole batch, keeping peak memory ~flat; the bytes sent to
-        XSIAM are equivalent to the legacy path. Ignored when multiple_threads=True or when data is already a raw string.
+        XSIAM are equivalent to the legacy path. When combined with multiple_threads=True, each finished compressed
+        chunk is POSTed on a bounded thread pool so uploads overlap while chunk building stays streaming.
+        Ignored when data is already a raw string.
 
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
     for future in concurrent.futures.as_completed(futures):
         data_size += future.result()
+    On a mid-stream failure (streaming + multiple_threads), the raised exception carries the already-submitted
+    futures on a ``submitted_futures`` attribute so the caller can still count events already sent.
     :rtype: ``List[Future]`` or ``None``
     """
     return send_data_to_xsiam(
@@ -14135,12 +14143,16 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     :type use_streaming_send: ``bool``
     :param use_streaming_send: Feature flag (default False). When True, serializes and gzips the data one item at a time
         (streaming) instead of building full copies of the whole batch, keeping peak memory ~flat; the bytes sent to
-        XSIAM are equivalent to the legacy path. Ignored when multiple_threads=True or when data is already a raw string.
+        XSIAM are equivalent to the legacy path. When combined with multiple_threads=True, each finished compressed
+        chunk is POSTed on a bounded thread pool so uploads overlap while chunk building stays streaming.
+        Ignored when data is already a raw string.
 
     :return: Either None if running in a single thread or a list of future objects if running in multiple threads.
     In case of running with multiple threads, the list of futures will hold the number of events sent and can be accessed by:
     for future in concurrent.futures.as_completed(futures):
         data_size += future.result()
+    On a mid-stream failure (streaming + multiple_threads), the raised exception carries the already-submitted
+    futures on a ``submitted_futures`` attribute so the caller can still count events already sent.
     :rtype: ``List[Future]`` or ``None```
     """
     data_size = 0
@@ -14161,8 +14173,8 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
         return
 
-    # Feature flag (CIAC-16981): stream-serialize one item at a time (list-of-items, single-thread path only).
-    streaming_send = bool(use_streaming_send) and isinstance(data, list) and not multiple_threads
+    # Stream-serialize one item at a time; honored for both single-thread and multi-thread list sends.
+    streaming_send = bool(use_streaming_send) and isinstance(data, list)
     # Decide JSON-encoding once on the first item, like the legacy list path, so the payload is identical.
     streaming_items_are_json = streaming_send and bool(data) and isinstance(data[0], dict)
     if streaming_items_are_json:
@@ -14218,9 +14230,9 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         try:
             response = res.json()
             error = res.reason
-            if response.get('error').lower() == 'false':
-                xsiam_server_err_msg = response.get('error')
-                error += ": " + xsiam_server_err_msg
+            xsiam_server_err_msg = response.get('error')
+            if xsiam_server_err_msg and str(xsiam_server_err_msg).lower() != 'false':
+                error += ": " + str(xsiam_server_err_msg)
 
         except ValueError:
             if res.text:
@@ -14246,50 +14258,93 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         # Streaming path: serialize+gzip one event at a time, freeing each as we go, so peak
         # memory stays ~flat. At the target chunk size we close the stream, POST it, and open a fresh one.
         target_chunk_size = min(chunk_size, XSIAM_EVENT_CHUNK_SIZE_LIMIT)
-        demisto.info("Sending events to xsiam with a single thread (streaming, free-as-you-go).")
 
-        def _post_zipped(zipped_data):
+        def _send_and_count(zipped_data, item_count):  # type: (bytes, int) -> int
+            """POST one gzipped chunk and return the number of items it held (for the health count)."""
             xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
                                         error_msg=header_msg, headers=headers,
                                         num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                         zipped_data=zipped_data, is_json_response=True, data_type=data_type)
+            return item_count
 
-        buf = _io.BytesIO()
-        gz = gzip.GzipFile(fileobj=buf, mode='wb')
-        chunk_uncompressed = 0  # uncompressed bytes written into the current gzip stream
-        chunk_items = 0         # items written into the current gzip stream
+        # When multiple_threads is requested, POST each finished compressed chunk on a bounded thread pool so
+        # uploads overlap while chunk building stays streaming; at most MAX_INFLIGHT_CHUNKS chunks in flight.
+        executor = None
+        all_futures = []  # type: list  # every submitted future - returned to the caller to tally counts
+        inflight = set()  # type: set  # subset not yet collected (bounds peak memory)
+        mode_desc = "multiple threads" if multiple_threads else "a single thread"
+        demisto.info("Sending events to xsiam with {} (streaming, free-as-you-go).".format(mode_desc))
+        if multiple_threads:
+            support_multithreading()
+            executor = concurrent.futures.ThreadPoolExecutor(max_workers=NUM_OF_WORKERS)
 
-        for index in range(len(data)):
-            serialized = json.dumps(data[index]) if streaming_items_are_json else data[index]
-            data[index] = None  # free the source item as soon as it is serialized (keeps peak ~one event)
+        def _dispatch(zipped_data, item_count):  # type: (bytes, int) -> int
+            """Send one compressed chunk: inline when single-thread, or submit to the bounded pool when threaded."""
+            if executor is None:
+                return _send_and_count(zipped_data, item_count)
+            # Block once the in-flight set is full so we never hold more than MAX_INFLIGHT_CHUNKS chunks;
+            # completed futures stay in all_futures (payload already sent) for the caller's count.
+            while len(inflight) >= MAX_INFLIGHT_CHUNKS:
+                done, _ = concurrent.futures.wait(inflight, return_when=concurrent.futures.FIRST_COMPLETED)
+                for finished in done:
+                    finished.result()  # surface any send error early
+                    inflight.discard(finished)
+            future = executor.submit(_send_and_count, zipped_data, item_count)
+            all_futures.append(future)
+            inflight.add(future)
+            return 0  # threaded: the caller tallies the count from the returned futures
 
-            # Match legacy split_data_to_chunks: skip and log any single entry larger than the allowed size,
-            # measuring with sys.getsizeof on the serialized string exactly as the legacy path does.
-            entry_size = sys.getsizeof(serialized)
-            if entry_size >= MAX_ALLOWED_ENTRY_SIZE:
-                demisto.error("entry size {size} is larger than the maximum allowed entry size {max_size}, "
-                              "skipping this entry".format(size=entry_size, max_size=MAX_ALLOWED_ENTRY_SIZE))
-                continue
+        try:
+            buf = _io.BytesIO()
+            gz = gzip.GzipFile(fileobj=buf, mode='wb')
+            chunk_uncompressed = 0  # uncompressed bytes written into the current gzip stream
+            chunk_items = 0         # items written into the current gzip stream
 
-            line = serialized.encode('utf-8')
-            gz.write((b'\n' if chunk_items else b'') + line)  # newline-separate items, like legacy '\n'.join(...)
-            chunk_uncompressed += len(line) + (1 if chunk_items else 0)
-            chunk_items += 1
+            for index in range(len(data)):
+                serialized = json.dumps(data[index]) if streaming_items_are_json else data[index]
+                data[index] = None  # free the source item as soon as it is serialized (keeps peak ~one event)
 
-            if chunk_uncompressed >= target_chunk_size:
-                gz.close()
-                _post_zipped(buf.getvalue())
-                data_size += chunk_items
-                buf = _io.BytesIO()
-                gz = gzip.GzipFile(fileobj=buf, mode='wb')
-                chunk_uncompressed = 0
-                chunk_items = 0
+                # Match legacy split_data_to_chunks: skip and log any single entry larger than the allowed size,
+                # measuring with sys.getsizeof on the serialized string exactly as the legacy path does.
+                entry_size = sys.getsizeof(serialized)
+                if entry_size >= MAX_ALLOWED_ENTRY_SIZE:
+                    demisto.error("entry size {size} is larger than the maximum allowed entry size {max_size}, "
+                                  "skipping this entry".format(size=entry_size, max_size=MAX_ALLOWED_ENTRY_SIZE))
+                    continue
 
-        # flush the final (partial) chunk
-        gz.close()
-        if chunk_items:
-            _post_zipped(buf.getvalue())
-            data_size += chunk_items
+                line = serialized.encode('utf-8')
+                gz.write((b'\n' if chunk_items else b'') + line)  # newline-separate items, like legacy '\n'.join(...)
+                chunk_uncompressed += len(line) + (1 if chunk_items else 0)
+                chunk_items += 1
+
+                if chunk_uncompressed >= target_chunk_size:
+                    gz.close()
+                    data_size += _dispatch(buf.getvalue(), chunk_items)
+                    buf = _io.BytesIO()
+                    gz = gzip.GzipFile(fileobj=buf, mode='wb')
+                    chunk_uncompressed = 0
+                    chunk_items = 0
+
+            # flush the final (partial) chunk
+            gz.close()
+            if chunk_items:
+                data_size += _dispatch(buf.getvalue(), chunk_items)
+        except Exception as exc:
+            # shutdown(wait=False) alone does not cancel queued tasks; cancel_futures does (Python 3.9+).
+            if executor is not None:
+                try:
+                    executor.shutdown(wait=False, cancel_futures=True)
+                except TypeError:  # Python < 3.9
+                    executor.shutdown(wait=False)
+                # Expose already-submitted futures so the caller can still count chunks already sent to XSIAM.
+                exc.submitted_futures = all_futures  # type: ignore[attr-defined]
+            raise
+
+        if multiple_threads:
+            # Preserve the multiple_threads contract: hand the caller the futures (each resolves to the number
+            # of events its chunk sent) and let the caller await them + call updateModuleHealth itself.
+            demisto.info('Finished submitting {} Futures.'.format(len(all_futures)))
+            return all_futures
 
         if should_update_health_module:
             demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
@@ -14330,33 +14385,34 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     return
 
 
-def send_assets_to_xsiam(assets, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
+def send_assets_and_vulnerabilities_to_xsiam(data, vendor, product, data_format=None, url_key='url', num_of_attempts=3,
                          chunk_size=XSIAM_EVENT_CHUNK_SIZE, should_update_health_module=True,
                          add_proxy_to_request=False, snapshot_id='', items_count=None, multiple_threads=False,
                          client_class=None, use_streaming_send=True):
     """
-    Send the fetched assets into the XDR data-collector private api.
+    Send fetched assets and/or vulnerabilities into the XDR data-collector private api.
 
-    This is the assets analog of ``send_events_to_xsiam``. It delegates to ``send_data_to_xsiam`` with
-    ``data_type="assets"`` so the assets snapshot headers (``snapshot-id`` and ``total-items-count``) and
-    sealing behavior are preserved. To reduce peak memory in the ``fetch-assets`` flow, this function
-    defaults ``use_streaming_send`` to ``True`` (serialize+gzip one asset at a time, freeing each as it
-    goes). The bytes sent to XSIAM are equivalent to the legacy (non-streaming) path.
+    This is the assets/vulnerabilities analog of ``send_events_to_xsiam``. It delegates to
+    ``send_data_to_xsiam`` with ``data_type="assets"`` so the snapshot headers (``snapshot-id`` and
+    ``total-items-count``) and sealing behavior are preserved (vulnerabilities are sent as an assets-type
+    snapshot as well). To reduce peak memory in the ``fetch-assets`` flow, this function defaults
+    ``use_streaming_send`` to ``True`` (serialize+gzip one item at a time, freeing each as it goes). The
+    bytes sent to XSIAM are equivalent to the legacy (non-streaming) path.
 
-    :type assets: ``Union[str, list]``
-    :param assets: The assets to send to XSIAM server. Should be of the following:
-        1. List of strings or dicts where each string or dict represents an asset.
-        2. String containing raw assets separated by a new line.
+    :type data: ``Union[str, list]``
+    :param data: The assets or vulnerabilities to send to XSIAM server. Should be of the following:
+        1. List of strings or dicts where each string or dict represents an asset or vulnerability.
+        2. String containing raw records separated by a new line.
 
     :type vendor: ``str``
-    :param vendor: The vendor corresponding to the integration that originated the assets.
+    :param vendor: The vendor corresponding to the integration that originated the data.
 
     :type product: ``str``
-    :param product: The product corresponding to the integration that originated the assets.
+    :param product: The product corresponding to the integration that originated the data.
 
     :type data_format: ``str``
-    :param data_format: Should only be filled in case the 'assets' parameter contains a string of raw
-        assets in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
+    :param data_format: Should only be filled in case the 'data' parameter contains a string of raw
+        records in the format of 'leef' or 'cef'. In other cases the data_format will be set automatically.
 
     :type url_key: ``str``
     :param url_key: The param dict key where the integration url is located at. the default is 'url'.
@@ -14400,7 +14456,7 @@ def send_assets_to_xsiam(assets, vendor, product, data_format=None, url_key='url
     :rtype: ``List[Future]`` or ``None``
     """
     return send_data_to_xsiam(
-        assets,
+        data,
         vendor,
         product,
         data_format,
@@ -15409,17 +15465,53 @@ def is_ucp_enabled():
         return False
 
 
+def _ucp_auth_is_passthrough():
+    # type: () -> bool
+    """Check whether the integration -- not ``BaseClient`` -- applies the credential.
+
+    ``BaseClient._apply_ucp_credentials()`` dispatches on three credential
+    families only (``oauth2*``, ``api_key``, ``plain``); a ``passthrough``
+    profile matches none of them and would reach its bare ``raise
+    UcpException()``. Such a profile is therefore always self-managed: either
+    the integration applies the credential itself, or it needs no credential at
+    all (e.g. licence-derived auth), so the dispatcher must stay out of the way.
+
+    Note this deliberately does not consider ``interpolation_mapping``: a
+    profile that carries one has already interpolated, which sets
+    ``_UCP_AUTH_PARAMS_INJECTED`` and is handled by that flag instead.
+
+    :return: ``True`` if the dispatcher must not apply UCP credentials.
+    :rtype: ``bool``
+    """
+    try:
+        connector_metadata = demisto.unifiedConnectorMetadata() or {}
+        profiles = _select_ucp_profiles(
+            connector_metadata.get('connectionProfiles') or [], resolve_ucp_capability())
+        return any(p.get('type') == 'passthrough' for p in profiles)
+    except Exception as e:
+        demisto.debug(
+            '[UCP][CommonServerPython.py] _ucp_auth_is_passthrough: could not resolve profiles ({}).'.format(e))
+        return False
+
+
 def should_use_ucp_auth():
     # type: () -> bool
     """Determine whether UCP credentials should be used for authentication.
 
-    Returns ``True`` when UCP is enabled **and** credentials have not already
-    been pre-injected into ``demisto.params()`` via ``interpolate_ucp_params()``.
+    Returns ``True`` when UCP is enabled, credentials have not already been
+    pre-injected into ``demisto.params()`` via ``interpolate_ucp_params()``,
+    **and** the selected profile is one the ``BaseClient`` dispatcher can
+    actually apply.
+
+    The last condition is what keeps a ``passthrough`` profile carrying no
+    ``interpolation_mapping`` -- an integration with no credentials, or one
+    deriving them from the licence -- from reaching a dispatcher that has no
+    branch for it and raising ``UcpException``.
 
     :return: ``True`` if per-request UCP credential injection should be used.
     :rtype: ``bool``
     """
-    return is_ucp_enabled() and not _UCP_AUTH_PARAMS_INJECTED
+    return is_ucp_enabled() and not _UCP_AUTH_PARAMS_INJECTED and not _ucp_auth_is_passthrough()
 
 
 def resolve_ucp_capability(command=None):
@@ -15813,3 +15905,4 @@ from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 ###########################################
 register_module_line('CommonServerPython', 'end', __line__())
 register_module_line('CustomScriptIntegration', 'start', __line__())
+
