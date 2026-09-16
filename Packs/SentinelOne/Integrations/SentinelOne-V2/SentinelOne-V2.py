@@ -6198,10 +6198,23 @@ def get_alert_with_raw_indicators_command(client: Client, args: dict) -> Command
         "DetectionTime": alert.get("detectionTime"),
     }
 
-    alert_summary = {k: v for k, v in context_entry.items() if k not in (
-        "Indicators", "RawIndicators", "RawData", "EventSearchParams",
-        "Asset", "DetectionSource", "Process", "Observables", "DetectionTime", "Description",
-    )}
+    alert_summary = {
+        k: v
+        for k, v in context_entry.items()
+        if k
+        not in (
+            "Indicators",
+            "RawIndicators",
+            "RawData",
+            "EventSearchParams",
+            "Asset",
+            "DetectionSource",
+            "Process",
+            "Observables",
+            "DetectionTime",
+            "Description",
+        )
+    }
 
     readable = tableToMarkdown(
         "SentinelOne - Alert With Raw Indicators",

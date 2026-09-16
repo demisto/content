@@ -237,9 +237,9 @@ def test_fetch_uam_alerts_shifted_window(mocker, requests_mock):
     # uam_time saved to lastRun must be the window end (uam_query_to), not the last alert's createdAt
     saved_uam_time = mock_set_last_run.call_args[0][0]["uam_time"]
     tolerance_ms = 5000  # 5 seconds to account for test execution time
-    assert abs(saved_uam_time - expected_query_to) < tolerance_ms, (
-        f"uam_time ({saved_uam_time}) must be close to now-5min ({expected_query_to}), not the last alert's createdAt"
-    )
+    assert (
+        abs(saved_uam_time - expected_query_to) < tolerance_ms
+    ), f"uam_time ({saved_uam_time}) must be close to now-5min ({expected_query_to}), not the last alert's createdAt"
 
 
 def test_fetch_file(mocker, requests_mock):
