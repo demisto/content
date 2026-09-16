@@ -5664,7 +5664,8 @@ def build_firewall_policy_readable_data(policies: list[dict]) -> list[dict]:
     """
     readable_data = []
     for policy in policies:
-        properties = policy.get("properties", {})
+        # The API can return an explicit null for these fields, so a `get` default is not enough.
+        properties = policy.get("properties") or {}
         readable_data.append(
             {
                 "name": policy.get("name"),
@@ -5673,8 +5674,8 @@ def build_firewall_policy_readable_data(policies: list[dict]) -> list[dict]:
                 "tier": dict_safe_get(properties, ["sku", "tier"]),
                 "threatIntelMode": properties.get("threatIntelMode"),
                 "basePolicy": dict_safe_get(properties, ["basePolicy", "id"]),
-                "firewalls": [firewall.get("id") for firewall in properties.get("firewalls", [])],
-                "childPolicies": [child_policy.get("id") for child_policy in properties.get("childPolicies", [])],
+                "firewalls": [firewall.get("id") for firewall in properties.get("firewalls") or []],
+                "childPolicies": [child_policy.get("id") for child_policy in properties.get("childPolicies") or []],
                 "provisioningState": properties.get("provisioningState"),
             }
         )
@@ -5691,7 +5692,7 @@ def build_firewall_readable_data(firewall: dict) -> list[dict]:
     Returns:
         list[dict]: A single row holding the fields presented in the war room table.
     """
-    properties = firewall.get("properties", {})
+    properties = firewall.get("properties") or {}
     return [
         {
             "name": firewall.get("name"),
@@ -5784,7 +5785,8 @@ def firewall_policy_update_command(client: AzureClient, params: dict[str, Any], 
     policy_data = client.firewall_policy_get(
         subscription_id=subscription_id, resource_group_name=resource_group_name, policy_name=policy_name
     )
-    properties = policy_data.setdefault("properties", {})
+    properties = policy_data.get("properties") or {}
+    policy_data["properties"] = properties
 
     updated_properties = remove_empty_elements(
         {
@@ -5804,7 +5806,9 @@ def firewall_policy_update_command(client: AzureClient, params: dict[str, Any], 
     # the existing DNS servers when only enable_proxy is updated.
     for field_name, value in updated_properties.items():
         if isinstance(value, dict):
-            properties.setdefault(field_name, {}).update(value)
+            existing_value = properties.get(field_name) or {}
+            existing_value.update(value)
+            properties[field_name] = existing_value
         else:
             properties[field_name] = value
 
@@ -5921,18 +5925,26 @@ def firewall_policy_list_command(client: AzureClient, params: dict[str, Any], ar
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     requested_limit = arg_to_number(args.get("limit"))
-    if requested_limit is not None and requested_limit < 0:
-        raise DemistoException(f"The 'limit' argument must be a non-negative number, got {requested_limit}.")
-    # A falsy limit (0 or not provided) falls back to the default, so the command cannot silently
-    # report "no policies found" for a resource group that does have policies.
-    limit = requested_limit or arg_to_number(DEFAULT_LIMIT)
+    if requested_limit is not None and requested_limit <= 0:
+        raise DemistoException(f"The 'limit' argument must be a positive number, got {requested_limit}.")
+    limit = requested_limit or int(DEFAULT_LIMIT)
     next_token = args.get("next_token", "")
     demisto.debug(f"[Azure] Listing firewall policies with {limit=} and {bool(next_token)=}")
 
-    response = client.firewall_policy_list(
-        subscription_id=subscription_id, resource_group_name=resource_group_name, next_token=next_token
-    )
-    policies = response.get("value", [])[:limit]
+    # The Azure API does not support a page size parameter, so pages are fetched internally until `limit`
+    # policies are collected or there are no more pages.
+    policies: list[dict] = []
+    response: dict = {}
+    while len(policies) < limit:
+        response = client.firewall_policy_list(
+            subscription_id=subscription_id, resource_group_name=resource_group_name, next_token=next_token
+        )
+        policies.extend(response.get("value") or [])
+        next_token = response.get("nextLink") or ""
+        demisto.debug(f"[Azure] Collected {len(policies)} firewall policies so far, {bool(next_token)=}")
+        if not next_token:
+            break
+    policies = policies[:limit]
 
     if not policies:
         return CommandResults(readable_output=f"No firewall policies were found in resource group '{resource_group_name}'.")
@@ -5940,7 +5952,7 @@ def firewall_policy_list_command(client: AzureClient, params: dict[str, Any], ar
     # The token is always written, as null on the last page, so a stale token is cleared from the context.
     outputs = {
         "Azure.Firewall.Policies(val.id && val.id == obj.id)": policies,
-        "Azure.Firewall(true)": {"PoliciesNextToken": response.get("nextLink")},
+        "Azure.Firewall(true)": {"PoliciesNextToken": next_token or None},
     }
 
     readable_output = tableToMarkdown(
@@ -5949,6 +5961,7 @@ def firewall_policy_list_command(client: AzureClient, params: dict[str, Any], ar
         headers=["name", "id", "location", "tier", "threatIntelMode", "basePolicy", "firewalls", "provisioningState"],
         removeNull=True,
         headerTransform=pascalToSpace,
+        metadata=f"PoliciesNextToken: {next_token}" if next_token else "",
     )
 
     return CommandResults(
@@ -5978,7 +5991,9 @@ def firewall_policy_attach_command(client: AzureClient, params: dict[str, Any], 
     firewall_data = client.firewall_get(
         subscription_id=subscription_id, resource_group_name=resource_group_name, firewall_name=firewall_name
     )
-    firewall_data.setdefault("properties", {})["firewallPolicy"] = {"id": policy_id}
+    firewall_properties = firewall_data.get("properties") or {}
+    firewall_properties["firewallPolicy"] = {"id": policy_id}
+    firewall_data["properties"] = firewall_properties
     demisto.debug(f"[Azure] Attaching firewall policy {policy_id} to firewall {firewall_name}")
 
     response = client.firewall_update(
@@ -6025,7 +6040,7 @@ def firewall_policy_detach_command(client: AzureClient, params: dict[str, Any], 
     firewall_data = client.firewall_get(
         subscription_id=subscription_id, resource_group_name=resource_group_name, firewall_name=firewall_name
     )
-    firewall_data.get("properties", {}).pop("firewallPolicy", None)
+    (firewall_data.get("properties") or {}).pop("firewallPolicy", None)
     demisto.debug(f"[Azure] Detaching the firewall policy from firewall {firewall_name}")
 
     response = client.firewall_update(

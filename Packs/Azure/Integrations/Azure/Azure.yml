@@ -11103,7 +11103,7 @@ script:
         type: String
       - contextPath: Azure.Firewall.Policies.tags
         description: The firewall policy resource tags.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.provisioningState
         description: The provisioning state of the firewall policy resource. Possible values are Succeeded, Updating, Deleting, or Failed.
         type: String
@@ -11112,25 +11112,25 @@ script:
         type: String
       - contextPath: Azure.Firewall.Policies.properties.threatIntelWhitelist
         description: The threat intelligence allow list object, containing the ipAddresses and fqdns fields.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.dnsSettings
         description: The DNS settings object, containing the servers, enableProxy, and requireProxyForNetworkRules fields.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.sku
         description: The SKU object of the firewall policy, containing the tier field.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.basePolicy
         description: The parent firewall policy object from which rules are inherited, containing the id field.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.firewalls
         description: The list of references to the Azure firewalls that the firewall policy is associated with.
-        type: Array
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.childPolicies
         description: The list of references to the child firewall policies.
-        type: Array
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.ruleCollectionGroups
         description: The list of references to the rule collection groups of the firewall policy.
-        type: Array
+        type: Unknown
 # azure-firewall-policy-update
   - name: azure-firewall-policy-update
     description: "Updates a firewall policy. Only the provided arguments are updated. Required permissions: Microsoft.Network/firewallPolicies/read, Microsoft.Network/firewallPolicies/write."
@@ -11187,7 +11187,7 @@ script:
         type: String
       - contextPath: Azure.Firewall.Policies.tags
         description: The firewall policy resource tags.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.provisioningState
         description: The provisioning state of the firewall policy resource. Possible values are Succeeded, Updating, Deleting, or Failed.
         type: String
@@ -11196,25 +11196,25 @@ script:
         type: String
       - contextPath: Azure.Firewall.Policies.properties.threatIntelWhitelist
         description: The threat intelligence allow list object, containing the ipAddresses and fqdns fields.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.dnsSettings
         description: The DNS settings object, containing the servers, enableProxy, and requireProxyForNetworkRules fields.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.sku
         description: The SKU object of the firewall policy, containing the tier field.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.basePolicy
         description: The parent firewall policy object from which rules are inherited, containing the id field.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.firewalls
         description: The list of references to the Azure firewalls that the firewall policy is associated with.
-        type: Array
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.childPolicies
         description: The list of references to the child firewall policies.
-        type: Array
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.ruleCollectionGroups
         description: The list of references to the rule collection groups of the firewall policy.
-        type: Array
+        type: Unknown
 # azure-firewall-policy-get
   - name: azure-firewall-policy-get
     description: "Retrieves a firewall policy. Required permission: Microsoft.Network/firewallPolicies/read."
@@ -11247,7 +11247,7 @@ script:
         type: String
       - contextPath: Azure.Firewall.Policies.tags
         description: The firewall policy resource tags.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.provisioningState
         description: The provisioning state of the firewall policy resource. Possible values are Succeeded, Updating, Deleting, or Failed.
         type: String
@@ -11256,25 +11256,25 @@ script:
         type: String
       - contextPath: Azure.Firewall.Policies.properties.threatIntelWhitelist
         description: The threat intelligence allow list object, containing the ipAddresses and fqdns fields.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.dnsSettings
         description: The DNS settings object, containing the servers, enableProxy, and requireProxyForNetworkRules fields.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.sku
         description: The SKU object of the firewall policy, containing the tier field.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.basePolicy
         description: The parent firewall policy object from which rules are inherited, containing the id field.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.firewalls
         description: The list of references to the Azure firewalls that the firewall policy is associated with.
-        type: Array
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.childPolicies
         description: The list of references to the child firewall policies.
-        type: Array
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.ruleCollectionGroups
         description: The list of references to the rule collection groups of the firewall policy.
-        type: Array
+        type: Unknown
 # azure-firewall-policy-delete
   - name: azure-firewall-policy-delete
     description: "Deletes a firewall policy resource. Required permission: Microsoft.Network/firewallPolicies/delete."
@@ -11302,7 +11302,7 @@ script:
         description: The name of the resource group.
         required: true
       - name: limit
-        description: The maximum number of firewall policies to return from the retrieved page of results.
+        description: The maximum number of firewall policies to return. Pages are retrieved internally until this number of policies is collected or there are no more results.
         required: false
         defaultValue: '50'
       - name: next_token
@@ -11326,7 +11326,7 @@ script:
         type: String
       - contextPath: Azure.Firewall.Policies.tags
         description: The firewall policy resource tags.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.provisioningState
         description: The provisioning state of the firewall policy resource. Possible values are Succeeded, Updating, Deleting, or Failed.
         type: String
@@ -11335,25 +11335,25 @@ script:
         type: String
       - contextPath: Azure.Firewall.Policies.properties.threatIntelWhitelist
         description: The threat intelligence allow list object, containing the ipAddresses and fqdns fields.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.dnsSettings
         description: The DNS settings object, containing the servers, enableProxy, and requireProxyForNetworkRules fields.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.sku
         description: The SKU object of the firewall policy, containing the tier field.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.basePolicy
         description: The parent firewall policy object from which rules are inherited, containing the id field.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.firewalls
         description: The list of references to the Azure firewalls that the firewall policy is associated with.
-        type: Array
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.childPolicies
         description: The list of references to the child firewall policies.
-        type: Array
+        type: Unknown
       - contextPath: Azure.Firewall.Policies.properties.ruleCollectionGroups
         description: The list of references to the rule collection groups of the firewall policy.
-        type: Array
+        type: Unknown
       - contextPath: Azure.Firewall.PoliciesNextToken
         description: The URI to fetch the next page of firewall policies. Run the same command with the next_token argument to get the next page of firewall policies.
         type: String
@@ -11392,10 +11392,10 @@ script:
         type: String
       - contextPath: Azure.Firewall.Firewalls.tags
         description: The firewall resource tags.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Firewalls.zones
         description: The list of availability zones denoting where the resource needs to come from.
-        type: Array
+        type: Unknown
       - contextPath: Azure.Firewall.Firewalls.properties.provisioningState
         description: The provisioning state of the firewall resource. Possible values are Succeeded, Updating, Deleting, or Failed.
         type: String
@@ -11404,19 +11404,19 @@ script:
         type: String
       - contextPath: Azure.Firewall.Firewalls.properties.firewallPolicy
         description: The firewall policy object associated with the firewall, containing the id field.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Firewalls.properties.sku
         description: The SKU object of the firewall, containing the name and tier fields.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Firewalls.properties.ipConfigurations
         description: The IP configurations of the firewall resource.
-        type: Array
+        type: Unknown
       - contextPath: Azure.Firewall.Firewalls.properties.hubIPAddresses
         description: The IP addresses associated with the firewall resource.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Firewalls.properties.virtualHub
         description: The virtual hub object to which the firewall belongs, containing the id field.
-        type: Dictionary
+        type: Unknown
 # azure-firewall-policy-detach
   - name: azure-firewall-policy-detach
     description: "Detaches the firewall policy from a firewall. The command detaches the policy from the firewall, but does not delete the policy. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/azureFirewalls/write."
@@ -11449,10 +11449,10 @@ script:
         type: String
       - contextPath: Azure.Firewall.Firewalls.tags
         description: The firewall resource tags.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Firewalls.zones
         description: The list of availability zones denoting where the resource needs to come from.
-        type: Array
+        type: Unknown
       - contextPath: Azure.Firewall.Firewalls.properties.provisioningState
         description: The provisioning state of the firewall resource. Possible values are Succeeded, Updating, Deleting, or Failed.
         type: String
@@ -11461,19 +11461,19 @@ script:
         type: String
       - contextPath: Azure.Firewall.Firewalls.properties.firewallPolicy
         description: The firewall policy object associated with the firewall, containing the id field.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Firewalls.properties.sku
         description: The SKU object of the firewall, containing the name and tier fields.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Firewalls.properties.ipConfigurations
         description: The IP configurations of the firewall resource.
-        type: Array
+        type: Unknown
       - contextPath: Azure.Firewall.Firewalls.properties.hubIPAddresses
         description: The IP addresses associated with the firewall resource.
-        type: Dictionary
+        type: Unknown
       - contextPath: Azure.Firewall.Firewalls.properties.virtualHub
         description: The virtual hub object to which the firewall belongs, containing the id field.
-        type: Dictionary
+        type: Unknown
   isfetch: false
   runonce: false
   script: '-'

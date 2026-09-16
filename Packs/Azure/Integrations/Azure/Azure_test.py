@@ -7967,7 +7967,7 @@ def test_firewall_policy_list_command_success(mocker):
 
     params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
 
-    result = firewall_policy_list_command(client, params, {})
+    result = firewall_policy_list_command(client, params, {"limit": "1"})
 
     assert result.outputs == {
         "Azure.Firewall.Policies(val.id && val.id == obj.id)": [
@@ -7975,6 +7975,7 @@ def test_firewall_policy_list_command_success(mocker):
         ],
         "Azure.Firewall(true)": {"PoliciesNextToken": "next_token_value"},
     }
+    assert "PoliciesNextToken: next_token_value" in result.readable_output
     client.firewall_policy_list.assert_called_once_with(subscription_id="sub1", resource_group_name="rg1", next_token="")
 
 
@@ -7991,7 +7992,7 @@ def test_firewall_policy_list_command_no_policies(mocker):
     from Azure import firewall_policy_list_command
 
     client = mocker.MagicMock()
-    client.firewall_policy_list.return_value = {"value": []}
+    client.firewall_policy_list.return_value = {"value": [], "nextLink": None}
 
     params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
 
@@ -8052,16 +8053,77 @@ def test_firewall_policy_list_command_limit_and_next_token(mocker):
     assert result.outputs["Azure.Firewall.Policies(val.id && val.id == obj.id)"] == [{"id": "policy-1", "name": "policy1"}]
 
 
-def test_firewall_policy_list_command_falsy_limit_falls_back_to_default(mocker):
+def test_firewall_policy_list_command_iterates_pages_until_limit(mocker):
     """
     Given:
-        - An AzureClient returning firewall policies, and a limit of 0, which is falsy but is
-          not a missing argument.
+        - An AzureClient whose firewall_policy_list returns one policy per page, and the
+          requested limit spans more than a single page.
+    When:
+        - firewall_policy_list_command is called with a limit of 2.
+    Then:
+        - The command iterates the pages internally, forwarding the nextLink of each page, and
+          returns the collected policies with the token of the last retrieved page.
+    """
+    from Azure import firewall_policy_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_list.side_effect = [
+        {"value": [{"id": "policy-1", "name": "policy1"}], "nextLink": "page_2_token"},
+        {"value": [{"id": "policy-2", "name": "policy2"}], "nextLink": "page_3_token"},
+    ]
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_list_command(client, params, {"limit": "2"})
+
+    assert client.firewall_policy_list.call_args_list == [
+        mocker.call(subscription_id="sub1", resource_group_name="rg1", next_token=""),
+        mocker.call(subscription_id="sub1", resource_group_name="rg1", next_token="page_2_token"),
+    ]
+    assert result.outputs["Azure.Firewall.Policies(val.id && val.id == obj.id)"] == [
+        {"id": "policy-1", "name": "policy1"},
+        {"id": "policy-2", "name": "policy2"},
+    ]
+    assert result.outputs["Azure.Firewall(true)"] == {"PoliciesNextToken": "page_3_token"}
+    assert "PoliciesNextToken: page_3_token" in result.readable_output
+
+
+def test_firewall_policy_list_command_stops_when_pages_are_exhausted(mocker):
+    """
+    Given:
+        - An AzureClient whose firewall_policy_list returns fewer policies than the requested
+          limit and no nextLink on the last page.
+    When:
+        - firewall_policy_list_command is called with a limit larger than the number of policies.
+    Then:
+        - The iteration stops on the last page instead of requesting more pages, and the readable
+          output does not advertise a next token.
+    """
+    from Azure import firewall_policy_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_list.side_effect = [
+        {"value": [{"id": "policy-1", "name": "policy1"}], "nextLink": "page_2_token"},
+        {"value": [{"id": "policy-2", "name": "policy2"}]},
+    ]
+
+    params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
+
+    result = firewall_policy_list_command(client, params, {"limit": "10"})
+
+    assert client.firewall_policy_list.call_count == 2
+    assert result.outputs["Azure.Firewall(true)"] == {"PoliciesNextToken": None}
+    assert "PoliciesNextToken" not in result.readable_output
+
+
+def test_firewall_policy_list_command_zero_limit_raises(mocker):
+    """
+    Given:
+        - An AzureClient returning firewall policies, and a limit of 0.
     When:
         - firewall_policy_list_command is called.
     Then:
-        - The default limit is applied rather than 0, so the command cannot silently report
-          "no policies found" for a resource group that does have policies.
+        - A DemistoException is raised, as a limit of 0 can never return results.
     """
     from Azure import firewall_policy_list_command
 
@@ -8070,9 +8132,8 @@ def test_firewall_policy_list_command_falsy_limit_falls_back_to_default(mocker):
 
     params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
 
-    result = firewall_policy_list_command(client, params, {"limit": "0"})
-
-    assert result.outputs["Azure.Firewall.Policies(val.id && val.id == obj.id)"] == [{"id": "policy-1", "name": "policy1"}]
+    with pytest.raises(DemistoException, match="The 'limit' argument must be a positive number"):
+        firewall_policy_list_command(client, params, {"limit": "0"})
 
 
 def test_firewall_policy_list_command_negative_limit_raises(mocker):
@@ -8094,7 +8155,7 @@ def test_firewall_policy_list_command_negative_limit_raises(mocker):
 
     params = {"subscription_id": "sub1", "resource_group_name": "rg1"}
 
-    with pytest.raises(DemistoException, match="The 'limit' argument must be a non-negative number"):
+    with pytest.raises(DemistoException, match="The 'limit' argument must be a positive number"):
         firewall_policy_list_command(client, params, {"limit": "-1"})
 
 
