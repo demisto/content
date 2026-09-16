@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: MongoDBAtlas_ModelingRule
-name: MongoDBAtlas Modeling Rule
-rules: ''
-schema: ''
-tags: ''
-supportedModules:
-- xsiam

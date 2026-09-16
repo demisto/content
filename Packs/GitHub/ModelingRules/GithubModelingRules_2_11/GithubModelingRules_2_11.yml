@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: GitHub_ModelingRule
-name: GitHub Modeling Rule
-rules: ''
-schema: ''
-supportedModules:
-- xsiam
-tags: github
