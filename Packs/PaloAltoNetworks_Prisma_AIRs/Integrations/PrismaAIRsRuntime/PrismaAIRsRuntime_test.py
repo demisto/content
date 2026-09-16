@@ -54,7 +54,7 @@ from PrismaAIRsRuntime import (
 
 @pytest.fixture
 def mock_client() -> Client:
-    """Create a mock Prisma AIRs client for testing.
+    """Create a mock Prisma AIRS client for testing.
 
     Returns:
         Client: Mock client instance.
