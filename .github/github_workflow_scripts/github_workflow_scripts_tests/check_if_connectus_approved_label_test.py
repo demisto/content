@@ -16,6 +16,7 @@ XSOAR_METADATA = json.dumps({"name": "MyPack", "support": "xsoar"})
 PARTNER_METADATA = json.dumps({"name": "MyPack", "support": "partner"})
 
 INTEGRATION_YML = "Packs/MyPack/Integrations/MyIntegration/MyIntegration.yml"
+OLD_INTEGRATION_YML = "Packs/MyPack/Integrations/OldIntegration/OldIntegration.yml"
 PACK_METADATA = "Packs/MyPack/pack_metadata.json"
 
 
@@ -42,9 +43,13 @@ TWO_PARAMS = ONE_PARAM + "- display: API Key\n  name: apikey\n  type: 4\n  requi
 
 
 class _MockFile:
-    def __init__(self, filename: str, status: str = "modified"):
+    def __init__(self, filename: str, status: str = "modified", previous_filename: str | None = None):
         self.filename = filename
         self.status = status
+        # PyGithub only exposes `previous_filename` on renamed/copied entries, so
+        # the attribute is left off entirely when no rename source is supplied.
+        if previous_filename is not None:
+            self.previous_filename = previous_filename
 
 
 class _MockLabel:
@@ -82,13 +87,33 @@ class _MockPullRequest:
     BASE_SHA = "base-sha"
     HEAD_SHA = "head-sha"
 
-    def __init__(self, number: int = 42, files=None, labels=None, contents=None, files_raise: bool = False):
+    def __init__(
+        self,
+        number: int = 42,
+        files=None,
+        labels=None,
+        contents=None,
+        files_raise: bool = False,
+        head_contents=None,
+        head_repo_deleted: bool = False,
+    ):
+        """
+        `contents` populates the base repo. `head_contents`, when given, puts the
+        head content in a *separate* repo reachable only via ``pr.head.repo``,
+        which is how GitHub models a PR opened from a fork. When it is omitted
+        both refs are served by the base repo (same-repo PR).
+        """
         self.number = number
         self._files = files or []
         self._files_raise = files_raise
         self.labels = labels or []
         self.base = _MockRef(self.BASE_SHA, _MockRepo(contents))
-        self.head = _MockRef(self.HEAD_SHA)
+        if head_repo_deleted:
+            # GitHub reports head.repo as None once the source fork is deleted.
+            self.head = _MockRef(self.HEAD_SHA, None)
+        else:
+            head_repo = _MockRepo(head_contents) if head_contents is not None else self.base.repo
+            self.head = _MockRef(self.HEAD_SHA, head_repo)
 
     def get_files(self):
         if self._files_raise:
@@ -359,16 +384,18 @@ def test_unchanged_configuration_is_ignored():
     assert check_pr_contains_connectus_changes(pr) == []
 
 
-def test_missing_base_version_is_handled_gracefully():
+def test_undecidable_diff_requires_the_label():
     """
     Given:
-        - A PR whose modified integration YML cannot be fetched at the base ref.
+        - A PR whose modified integration YML cannot be fetched at the base ref,
+          leaving the configuration comparison undecidable.
 
     When:
         - Running check_pr_contains_connectus_changes.
 
     Then:
-        - The file is skipped without raising, and no reason is recorded.
+        - The change is flagged: an unverifiable configuration edit must not slip
+          through unapproved just because the API call failed.
     """
     from github_workflow_scripts.check_if_connectus_approved_label_exists import check_pr_contains_connectus_changes
 
@@ -377,7 +404,9 @@ def test_missing_base_version_is_handled_gracefully():
         contents=_contents(head_yml=integration_yml(TWO_PARAMS)),  # no base entry
     )
 
-    assert check_pr_contains_connectus_changes(pr) == []
+    reasons = check_pr_contains_connectus_changes(pr)
+    assert len(reasons) == 1
+    assert "Modified 'configuration'" in reasons[0]
 
 
 def test_unparsable_yml_is_handled_gracefully():
@@ -407,7 +436,7 @@ def test_unparsable_yml_is_handled_gracefully():
     assert "Modified 'configuration'" in reasons[0]
 
 
-def test_unreadable_pack_metadata_is_treated_as_not_xsoar():
+def test_unreadable_pack_metadata_is_treated_as_xsoar():
     """
     Given:
         - A PR adding an integration whose pack_metadata.json cannot be read.
@@ -416,7 +445,8 @@ def test_unreadable_pack_metadata_is_treated_as_not_xsoar():
         - Running check_pr_contains_connectus_changes.
 
     Then:
-        - The pack is treated as not XSOAR-supported and no reason is recorded.
+        - The pack is assumed XSOAR-supported and the addition is flagged: we
+          cannot rule the pack out, so we fail safe rather than fail open.
     """
     from github_workflow_scripts.check_if_connectus_approved_label_exists import check_pr_contains_connectus_changes
 
@@ -425,7 +455,173 @@ def test_unreadable_pack_metadata_is_treated_as_not_xsoar():
         contents={},  # no metadata available at any ref
     )
 
+    reasons = check_pr_contains_connectus_changes(pr)
+    assert len(reasons) == 1
+    assert "New XSOAR-supported integration added" in reasons[0]
+
+
+def test_malformed_pack_metadata_is_treated_as_xsoar():
+    """
+    Given:
+        - A PR adding an integration whose pack_metadata.json is not valid JSON.
+
+    When:
+        - Running check_pr_contains_connectus_changes.
+
+    Then:
+        - The pack is assumed XSOAR-supported and the addition is flagged.
+    """
+    from github_workflow_scripts.check_if_connectus_approved_label_exists import check_pr_contains_connectus_changes
+
+    pr = _MockPullRequest(
+        files=[_MockFile(INTEGRATION_YML, status="added")],
+        contents=_contents(head_yml=integration_yml(ONE_PARAM), metadata='{"support": "xsoar"'),
+    )
+
+    reasons = check_pr_contains_connectus_changes(pr)
+    assert len(reasons) == 1
+    assert "New XSOAR-supported integration added" in reasons[0]
+
+
+# ---------------------------------------------------------------------------
+# Renamed / copied files
+# ---------------------------------------------------------------------------
+
+
+def _rename_contents(base_yml: str, head_yml: str, base_path: str = OLD_INTEGRATION_YML) -> dict:
+    """Build the content map for a rename: base content lives at the pre-rename path."""
+    return {
+        (PACK_METADATA, _MockPullRequest.HEAD_SHA): XSOAR_METADATA,
+        (base_path, _MockPullRequest.BASE_SHA): base_yml,
+        (INTEGRATION_YML, _MockPullRequest.HEAD_SHA): head_yml,
+    }
+
+
+def test_pure_rename_is_not_flagged():
+    """
+    Given:
+        - A PR that renames an integration YML without touching its
+          'configuration' block.
+
+    When:
+        - Running check_pr_contains_connectus_changes.
+
+    Then:
+        - No reason is recorded: a move is not a configuration change.
+    """
+    from github_workflow_scripts.check_if_connectus_approved_label_exists import check_pr_contains_connectus_changes
+
+    pr = _MockPullRequest(
+        files=[_MockFile(INTEGRATION_YML, status="renamed", previous_filename=OLD_INTEGRATION_YML)],
+        contents=_rename_contents(integration_yml(ONE_PARAM), integration_yml(ONE_PARAM)),
+    )
+
     assert check_pr_contains_connectus_changes(pr) == []
+
+
+def test_rename_with_configuration_change_is_flagged():
+    """
+    Given:
+        - A PR that renames an integration YML and also adds a configuration param.
+
+    When:
+        - Running check_pr_contains_connectus_changes.
+
+    Then:
+        - The change is flagged and the reason names both the new and old paths.
+    """
+    from github_workflow_scripts.check_if_connectus_approved_label_exists import check_pr_contains_connectus_changes
+
+    pr = _MockPullRequest(
+        files=[_MockFile(INTEGRATION_YML, status="renamed", previous_filename=OLD_INTEGRATION_YML)],
+        contents=_rename_contents(integration_yml(ONE_PARAM), integration_yml(TWO_PARAMS)),
+    )
+
+    reasons = check_pr_contains_connectus_changes(pr)
+    assert len(reasons) == 1
+    assert "Modified 'configuration'" in reasons[0]
+    assert INTEGRATION_YML in reasons[0]
+    assert OLD_INTEGRATION_YML in reasons[0]
+
+
+def test_rename_from_non_integration_path_is_flagged_as_new():
+    """
+    Given:
+        - A PR that renames a non-integration file into the integration YML path,
+          so the integration definition appears there for the first time.
+
+    When:
+        - Running check_pr_contains_connectus_changes.
+
+    Then:
+        - It is flagged as a new integration rather than compared as a rename.
+    """
+    from github_workflow_scripts.check_if_connectus_approved_label_exists import check_pr_contains_connectus_changes
+
+    pr = _MockPullRequest(
+        files=[
+            _MockFile(
+                INTEGRATION_YML,
+                status="renamed",
+                previous_filename="Packs/MyPack/Integrations/MyIntegration/draft.yml",
+            )
+        ],
+        contents=_contents(head_yml=integration_yml(ONE_PARAM)),
+    )
+
+    reasons = check_pr_contains_connectus_changes(pr)
+    assert len(reasons) == 1
+    assert "New XSOAR-supported integration added" in reasons[0]
+
+
+def test_rename_without_previous_filename_is_flagged_as_new():
+    """
+    Given:
+        - A renamed integration YML for which GitHub reported no previous_filename.
+
+    When:
+        - Running check_pr_contains_connectus_changes.
+
+    Then:
+        - It is flagged as new rather than raising an AttributeError.
+    """
+    from github_workflow_scripts.check_if_connectus_approved_label_exists import check_pr_contains_connectus_changes
+
+    pr = _MockPullRequest(
+        files=[_MockFile(INTEGRATION_YML, status="renamed")],  # no previous_filename attribute
+        contents=_contents(head_yml=integration_yml(ONE_PARAM)),
+    )
+
+    reasons = check_pr_contains_connectus_changes(pr)
+    assert len(reasons) == 1
+    assert "New XSOAR-supported integration added" in reasons[0]
+
+
+def test_changed_status_is_compared_like_modified():
+    """
+    Given:
+        - A PR whose integration YML carries GitHub's rarer 'changed' status and
+          whose configuration block was edited.
+
+    When:
+        - Running check_pr_contains_connectus_changes.
+
+    Then:
+        - It is compared exactly like a 'modified' file and flagged.
+    """
+    from github_workflow_scripts.check_if_connectus_approved_label_exists import check_pr_contains_connectus_changes
+
+    pr = _MockPullRequest(
+        files=[_MockFile(INTEGRATION_YML, status="changed")],
+        contents=_contents(
+            base_yml=integration_yml(ONE_PARAM),
+            head_yml=integration_yml(TWO_PARAMS),
+        ),
+    )
+
+    reasons = check_pr_contains_connectus_changes(pr)
+    assert len(reasons) == 1
+    assert "Modified 'configuration'" in reasons[0]
 
 
 def test_pack_support_lookup_is_cached():
