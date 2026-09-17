@@ -30,15 +30,15 @@ def test_cvss_color(cvss, color):
         ),
         (
             {"args": {"indicator": {"CustomFields": {"cvssscore": ""}}}, "context": {"User": {"theme": "dark"}}},
-            "# <-:->{{color:#FFFFFF}}(**N\\A**)",
+            "# <-:->{{color:#FFFFFF}}(**N/A**)",
         ),
         (
             {"args": {"indicator": {"CustomFields": {"cvssscore": ""}}}, "context": {"User": {"theme": "light"}}},
-            "# <-:->{{color:#000000}}(**N\\A**)",
+            "# <-:->{{color:#000000}}(**N/A**)",
         ),
         (
             {"args": {"indicator": {"CustomFields": {"cvssscore": None}}}, "context": {"User": {"theme": "light"}}},
-            "# <-:->{{color:#000000}}(**N\\A**)",
+            "# <-:->{{color:#000000}}(**N/A**)",
         ),
         (
             {"args": {"indicator": {"CustomFields": {"cvssscore": 7.1}}}, "context": {"User": {"theme": "light"}}},

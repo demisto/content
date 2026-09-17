@@ -1,0 +1,275 @@
+{
+    "events": [
+        {
+            "category": "dummy_category_1",
+            "type": "account",
+            "threat": 10,
+            "d_type_vname": "Dummy Detection One",
+            "triaged": false,
+            "detail": {
+                "event_name": "DummyEventOne",
+                "event_id": "111111",
+                "account_id": "111111111111",
+                "src_external_host": "10.0.0.10",
+                "assumed_role": "DummyRoleOne",
+                "access_key_id": "DUMMYKEYONE",
+                "aws_region": "us-dummy-1",
+                "request_parameters": "{\"param\":\"value1\"}",
+                "response_elements": "{\"result\":\"ok\"}",
+                "error_code": null,
+                "error_message": null,
+                "role_sequence": [
+                    "AWS:111111111111",
+                    "DummyRoleOne"
+                ],
+                "user_agent": "dummy-agent/1.0",
+                "identity_type": "Dummy Identity One",
+                "last_timestamp": "2025-01-01T00:00:00Z",
+                "src_account": {
+                    "name": "AWS:111111111111",
+                    "id": 11,
+                    "urgency_score": 50,
+                    "importance": "Low",
+                    "url": "https://dummy.url/accounts/11"
+                },
+                "src_host": null,
+                "dst_domain": {
+                    "domain": "dummy-one.com"
+                },
+                "dst_account": {
+                    "name": "AWS:222222222222",
+                    "id": 22,
+                    "urgency_score": 10,
+                    "importance": "Low",
+                    "url": "https://dummy.url/accounts/22"
+                },
+                "dst_host": null,
+                "account_name": "AWS:111111111111"
+            },
+            "detection_id": 11111,
+            "entity_id": 11,
+            "url": "https://dummy.url/entities/11",
+            "detection_href": "https://dummy.url/detections/11111",
+            "id": 111111,
+            "detection_type": "Dummy Detection One",
+            "certainty": 20,
+            "mitre": [
+                "T0001",
+                "T0002"
+            ],
+            "event_timestamp": "2025-01-01T01:00:00Z",
+            "entity_uid": "dummy-entity-uid-1",
+            "entity_name": "dummy-entity-one",
+            "severity": 4,
+            "src_account": {
+                "name": "AWS:111111111111",
+                "id": 11,
+                "urgency_score": 50,
+                "importance": "Low",
+                "url": "https://dummy.url/accounts/11"
+            },
+            "src_external_host": "10.0.0.10",
+            "dst_account": {
+                "name": "AWS:222222222222",
+                "id": 22,
+                "urgency_score": 10,
+                "importance": "Low",
+                "url": "https://dummy.url/accounts/22"
+            },
+            "dst_host": null,
+            "dst_domain": {
+                "domain": "dummy-one.com"
+            },
+            "summary": {
+                "ips": [
+                    "1.1.1.1",
+                    "2.2.2.2"
+                ],
+                "domains": [
+                    "dummy-one.com"
+                ],
+                "hosts": [
+                    "dummy-host-one"
+                ],
+                "accounts": [
+                    "AWS:111111111111"
+                ],
+                "ports": [
+                    80
+                ],
+                "external_targets": [
+                    "external-dummy-one.com"
+                ],
+                "dns": [
+                    "dns.dummy-one.com"
+                ],
+                "protocols": [
+                    "TCP"
+                ]
+            },
+            "filters": {
+                "triaged": true,
+                "filtered_by_user": false,
+                "filtered_by_ai": true,
+                "filtered_by_rule": false,
+                "is_custom_model": false
+            },
+            "data_source": {
+                "type": "dummy_source",
+                "sensor_name": "Dummy-Sensor-One",
+                "sensor_id": "dummy-sensor-1"
+            },
+            "unresolved_priority": false,
+            "status": "open",
+            "change_type": "append",
+            "is_prioritized": false,
+            "assignment": {
+                "id": 1,
+                "date_assigned": "2025-01-01T02:00:00Z",
+                "date_resolved": null,
+                "assigned_to": {
+                    "username": "dummy_user_one"
+                },
+                "resolved_by": null,
+                "assigned_by": {
+                    "username": "dummy_admin_one"
+                },
+                "outcome": null
+            },
+            "reason": "Dummy reason one"
+        },
+        {
+            "category": "dummy_category_2",
+            "type": "host",
+            "threat": 20,
+            "d_type_vname": "Dummy Detection Two",
+            "triaged": false,
+            "detail": {
+                "event_name": "DummyEventTwo",
+                "event_id": "22222222-2222-2222-2222-222222222222",
+                "account_id": "333333333333",
+                "src_external_host": null,
+                "assumed_role": "DummyRoleTwo",
+                "access_key_id": "DUMMYKEYTWO",
+                "aws_region": "eu-dummy-1",
+                "request_parameters": "{\"param\":\"value2\"}",
+                "response_elements": null,
+                "error_code": "DummyError",
+                "error_message": "Dummy error message",
+                "role_sequence": [
+                    "AWS:333333333333",
+                    "DummyRoleTwo"
+                ],
+                "user_agent": "dummy-cli/2.0",
+                "identity_type": "Dummy Identity Two",
+                "last_timestamp": "2025-01-01T03:00:00Z",
+                "src_account": null,
+                "src_host": {
+                    "name": "dummy-host-two",
+                    "id": 444,
+                    "urgency_score": 80,
+                    "importance": "Medium",
+                    "url": "https://dummy.url/hosts/444"
+                },
+                "dst_domain": {
+                    "domain": "dummy-two.com"
+                },
+                "dst_account": {
+                    "name": "AWS:444444444444",
+                    "id": 44,
+                    "urgency_score": 40,
+                    "importance": "High",
+                    "url": "https://dummy.url/accounts/44"
+                },
+                "dst_host": {
+                    "name": "dummy-dst-host-two",
+                    "id": 444,
+                    "urgency_score": 50,
+                    "importance": "High",
+                    "url": "https://dummy.url/hosts/444"
+                },
+                "account_name": "AWS:333333333333"
+            },
+            "detection_id": 22222,
+            "entity_id": 444,
+            "url": "https://dummy.url/hosts/444",
+            "detection_href": "https://dummy.url/detections/22222",
+            "id": 222222,
+            "detection_type": "Dummy Detection Two",
+            "certainty": 60,
+            "mitre": [
+                "T0100"
+            ],
+            "event_timestamp": "2025-01-01T04:00:00Z",
+            "entity_uid": "dummy-entity-uid-2",
+            "entity_name": "dummy-entity-two",
+            "severity": 8,
+            "src_account": null,
+            "src_host": {
+                "name": "dummy-host-two",
+                "id": 444,
+                "urgency_score": 80,
+                "importance": "Medium",
+                "url": "https://dummy.url/hosts/444"
+            },
+            "src_external_host": null,
+            "dst_account": null,
+            "dst_host": {
+                "name": "dummy-dst-host-two",
+                "id": 444,
+                "urgency_score": 50,
+                "importance": "High",
+                "url": "https://dummy.url/hosts/444"
+            },
+            "dst_domain": {
+                "domain": "dummy-two.com"
+            },
+            "summary": {
+                "ips": [
+                    "3.3.3.3"
+                ],
+                "domains": [
+                    "dummy-two.com"
+                ],
+                "hosts": [
+                    "dummy-host-two"
+                ],
+                "accounts": [
+                    "AWS:333333333333"
+                ],
+                "ports": [
+                    22
+                ],
+                "external_targets": [
+                    "external-dummy-two.com"
+                ],
+                "dns": [
+                    "dns.dummy-two.com"
+                ],
+                "protocols": [
+                    "SSH"
+                ]
+            },
+            "filters": {
+                "triaged": false,
+                "filtered_by_user": true,
+                "filtered_by_ai": false,
+                "filtered_by_rule": true,
+                "is_custom_model": true
+            },
+            "data_source": {
+                "type": "dummy_network",
+                "sensor_name": "Dummy-Sensor-Two",
+                "sensor_id": "dummy-sensor-2"
+            },
+            "unresolved_priority": true,
+            "status": "escalated",
+            "change_type": "new",
+            "is_prioritized": true,
+            "assignment": null,
+            "reason": null
+        }
+    ],
+    "next_checkpoint": 200002,
+    "remaining_count": 150
+}

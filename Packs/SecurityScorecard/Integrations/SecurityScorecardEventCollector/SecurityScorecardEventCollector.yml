@@ -1,0 +1,139 @@
+name: SecurityScorecardEventCollector
+display: SecurityScorecard Event Collector
+commonfields:
+  id: SecurityScorecardEventCollector
+  version: -1
+category: Data Enrichment & Threat Intelligence
+provider: SecurityScorecard
+description: This integration collects history events from SecurityScorecard for Cortex XSIAM.  
+sectionorder:
+- Connect
+- Collect
+configuration:
+- name: url
+  display: Server URL
+  required: true
+  defaultvalue: https://api.securityscorecard.io
+  type: 0
+  section: Connect
+  additionalinfo: The SecurityScorecard API base URL.
+- name: api_token
+  required: true
+  type: 9
+  section: Connect
+  hiddenusername: true
+  displaypassword: API Token
+  additionalinfo: The API token for authenticating with SecurityScorecard.
+- name: scorecard_identifier
+  display: Scorecard Identifier
+  required: true
+  type: 0
+  section: Connect
+  additionalinfo: 'The domain identifier for the scorecard (e.g., google.com).'
+- name: isFetchEvents
+  display: Fetch Events
+  type: 8
+  required: false
+  section: Collect
+- name: max_fetch
+  display: Maximum number of events per fetch
+  required: false
+  type: 0
+  section: Collect
+  defaultvalue: '1000'
+  additionalinfo: The maximum number of events to fetch per cycle.
+- name: insecure
+  display: Trust any certificate (not secure)
+  required: false
+  type: 8
+  defaultvalue: 'false'
+  section: Connect
+  advanced: true
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  defaultvalue: 'false'
+  type: 8
+  section: Connect
+  advanced: true
+script:
+  commands:
+  - name: securityscorecard-get-events
+    description: |-
+      Retrieves history events from SecurityScorecard. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.  
+    deprecated: false
+    arguments:
+    - name: start_time
+      description: >-
+        The start time to fetch events from.
+        Supports relative time (e.g., "3 days ago", "1 week")
+        or specific absolute dates (ISO 8601 format, e.g., "2024-12-01T00:00:00.000Z").
+      defaultValue: '3 days ago'
+    - name: end_time
+      description: >-
+        The end time to fetch events until.
+        Supports relative time (e.g., "now", "1 hour ago")
+        or specific absolute dates (ISO 8601 format, e.g., "2024-12-01T00:00:00.000Z").
+    - name: event_type
+      description: >-
+        The event types to be fetched. (e.g., "issues").
+        If not specified, all event types are returned.
+    - name: limit
+      description: The maximum number of events to retrieve.
+      defaultValue: '1000'
+    - name: should_push_events
+      description: Set to true to push events to XSIAM (use with caution to avoid duplicates).
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: SecurityScorecard.Event.id
+      description: The unique identifier of the event.
+      type: Number
+    - contextPath: SecurityScorecard.Event.date
+      description: The timestamp of the event.
+      type: Date
+    - contextPath: SecurityScorecard.Event.event_type
+      description: The type of the event.
+      type: String
+    - contextPath: SecurityScorecard.Event.factor
+      description: The security factor associated with the event.
+      type: String
+    - contextPath: SecurityScorecard.Event.severity
+      description: The severity level of the event.
+      type: String
+    - contextPath: SecurityScorecard.Event.issue_type
+      description: The type of issue.
+      type: String
+    - contextPath: SecurityScorecard.Event.group_status
+      description: The status of the issue group (active/resolved).
+      type: String
+    - contextPath: SecurityScorecard.Event.issue_count
+      description: The number of issues in the event.
+      type: Number
+    - contextPath: SecurityScorecard.Event.total_score_impact
+      description: The total score impact of the event.
+      type: Number
+    - contextPath: SecurityScorecard.Event.detail_url
+      description: URL for detailed event information.
+      type: String
+    - contextPath: SecurityScorecard.Event.detail_url_response
+      description: Response from the detail URL API call.
+      type: Unknown
+  isfetchevents: true
+  runonce: false
+  script: ''
+  type: python
+  subtype: python3
+  dockerimage: demisto/fastapi:0.125.0.10158186
+fromversion: 8.11.0
+marketplaces:
+- marketplacev2
+- platform
+supportedModules:
+- xsiam
+tests:
+- No tests (auto formatted)
+supportlevelheader: xsoar

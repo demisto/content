@@ -41,11 +41,27 @@ configuration:
   type: 8
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
 - display: Incident type
   name: incidentType
   type: 13
   required: false
   section: Collect
+  supportedModules:
+  - agentix
+  - xsiam
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
+  supportedModules:
+  - agentix
+  - xsiam
 description: Protect your cloud assets and private network.
 display: Cisco Secure Cloud Analytics (Stealthwatch Cloud)
 name: Stealthwatch Cloud
@@ -333,7 +349,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.12.7090913
+  dockerimage: demisto/python3:3.12.13.10325753
 tests:
 - No test
 fromversion: 5.0.0

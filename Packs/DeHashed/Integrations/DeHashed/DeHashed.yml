@@ -216,7 +216,7 @@ script:
       description: Reliability of the source providing the intelligence data.
       type: String
 
-  dockerimage: demisto/fastapi:0.125.0.8198656
+  dockerimage: demisto/fastapi:0.125.0.10158186
   runonce: false
   script: '-'
   subtype: python3

@@ -1,5 +1,5 @@
 [file:MicrosoftGraphMail.yml]
-ignore=IN126,DS107
+ignore=IN126,DS107,BA129
 
 [file:README.md]
 ignore=RM106

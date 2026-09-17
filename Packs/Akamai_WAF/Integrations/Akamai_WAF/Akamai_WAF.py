@@ -502,24 +502,42 @@ class Client(BaseClient):
         )
 
     def add_client_list_entry(
-        self, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: str = None
+        self,
+        list_id: str,
+        value: str,
+        description: str = None,
+        expiration_date: str = None,
+        tags: str = None,
     ) -> dict:
         """
-        Add an entry to a client list.
+        Add one or more entries to a client list.
         Args:
             list_id: The ID of the client list.
-            value: The value for the new entry.
-            description: A description for the new entry.
-            expiration_date: The expiration date for the new entry.
-            tags: A list of tags for the new entry.
+            value: A comma-separated list of values to add.
+            description: A description for the new entries. Applied to all entries.
+            expiration_date: The expiration date for the new entries. Applied to all entries.
+            tags: A comma-separated list of tags for the new entries. Applied to all entries.
         Returns:
             Json response as dictionary
         """
-        tags = tags.split(",") if tags else []
+        tags_list = argToList(tags)
         exp_iso = normalize_to_iso8601(expiration_date) if expiration_date else None
-        entry = {"value": value, "description": description, "expirationDate": exp_iso, "tags": tags}
-        body = {"append": [entry]}
-        return self._http_request(method="POST", url_suffix=f"/client-list/v1/lists/{list_id}/items", json_data=body)
+        values = argToList(value)
+        append = [
+            {
+                "value": v,
+                "description": description,
+                "expirationDate": exp_iso,
+                "tags": tags_list,
+            }
+            for v in values
+        ]
+        body = {"append": append}
+        return self._http_request(
+            method="POST",
+            url_suffix=f"/client-list/v1/lists/{list_id}/items",
+            json_data=body,
+        )
 
     def remove_client_list_entry(self, list_id: str, value: str) -> dict:
         """
@@ -3636,17 +3654,24 @@ def get_client_list_command(
     raw_response = client.get_client_list(
         client_list_id, name, include_items, include_deprecated, search, type_list, include_network_list, page, page_size, limit
     )
+    # The API returns lists in "content" key when no client_list_id is provided,
+    # but returns a single list object when a client_list_id is specified.
+    # Normalize both responses to a list for the table builder below.
+    client_lists = raw_response.get("content", [raw_response]) if isinstance(raw_response, dict) else [raw_response]
     hr = tableToMarkdown(
         "Akamai WAF Client List",
-        {
-            "Name": raw_response.get("name", ""),
-            "List ID": raw_response.get("listId", ""),
-            "Type": raw_response.get("type", ""),
-            "Staging Activation Status": raw_response.get("stagingActivationStatus", ""),
-            "Production Activation Status": raw_response.get("productionActivationStatus", ""),
-            "Notes": raw_response.get("notes", ""),
-            "Tags": raw_response.get("tags", []),
-        },
+        [
+            {
+                "Name": client_list.get("name", ""),
+                "List ID": client_list.get("listId", ""),
+                "Type": client_list.get("type", ""),
+                "Staging Activation Status": client_list.get("stagingActivationStatus", ""),
+                "Production Activation Status": client_list.get("productionActivationStatus", ""),
+                "Notes": client_list.get("notes", ""),
+                "Tags": client_list.get("tags", []),
+            }
+            for client_list in client_lists
+        ],
     )
     context_entry = {f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response}
     return hr, context_entry, raw_response
@@ -3789,22 +3814,33 @@ def activate_client_list_command(
 
 @logger
 def add_client_list_entry_command(
-    client: Client, list_id: str, value: str, description: str = None, expiration_date: str = None, tags: str = None
+    client: Client,
+    list_id: str,
+    value: str,
+    description: str = None,
+    expiration_date: str = None,
+    tags: str = None,
 ) -> tuple[str, dict, dict]:
     """
-    Adds an entry to a client list.
+    Adds one or more entries to a client list.
     Args:
         client: Akamai WAF client
         list_id: The ID of the client list.
-        value: The value for the new entry.
-        description: A description for the new entry.
-        expiration_date: The expiration date for the new entry.
-        tags: A list of tags for the new entry.
+        value: A comma-separated list of values to add.
+        description: A description for the new entries. Applied to all entries.
+        expiration_date: The expiration date for the new entries. Applied to all entries.
+        tags: A comma-separated list of tags for the new entries. Applied to all entries.
     Returns:
         Human readable, context entry, raw response
     """
+    values = argToList(value)
+    if not values:
+        raise ValueError("At least one value must be provided.")
     raw_response = client.add_client_list_entry(list_id, value, description, expiration_date, tags)
-    human_readable = f"Entry '{value}' added successfully to Akamai WAF Client List {list_id}."
+    if len(values) == 1:
+        human_readable = f"Entry '{values[0]}' added successfully to Akamai WAF Client List {list_id}."
+    else:
+        human_readable = f"Entries '{', '.join(values)}' added successfully to Akamai WAF Client List {list_id}."
     return human_readable, {}, raw_response
 
 
@@ -7405,7 +7441,7 @@ def generic_api_call_command(
 def main():
     params = demisto.params()
     verify_ssl = not params.get("insecure", False)
-    proxy = params.get("proxy")
+    proxy = params.get("proxy", False)
     client_token = params.get("credentials_client_token", {}).get("password") or params.get("clientToken")
     access_token = params.get("credentials_access_token", {}).get("password") or params.get("accessToken")
     client_secret = params.get("credentials_client_secret", {}).get("password") or params.get("clientSecret")

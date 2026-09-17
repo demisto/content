@@ -1,0 +1,68 @@
+{
+    "cisco_secure_endpoint_raw": {
+        "computer": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "int",
+            "is_array": false
+        },
+        "event_type": {
+            "type": "string",
+            "is_array": false
+        },
+        "file": {
+            "type": "string",
+            "is_array": false
+        },
+        "detection_id": {
+            "type": "string",
+            "is_array": false
+        },
+        "severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "detection": {
+            "type": "string",
+            "is_array": false
+        },
+        "connector_guid": {
+            "type": "string",
+            "is_array": false
+        },
+        "tactics": {
+            "type": "string",
+            "is_array": false
+        },
+        "techniques": {
+            "type": "string",
+            "is_array": false
+        },
+        "cloud_ioc": {
+            "type": "string",
+            "is_array": false
+        },
+        "command_line": {
+            "type": "string",
+            "is_array": false
+        },
+        "vulnerabilities": {
+            "type": "string",
+            "is_array": false
+        },
+        "error": {
+            "type": "string",
+            "is_array": false
+        },
+        "threat_hunting": {
+            "type": "string",
+            "is_array": false
+        },
+        "network_info": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

@@ -2,6 +2,7 @@ import copy
 import json
 import secrets
 import string
+import traceback
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -474,7 +475,29 @@ def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
         )
 
 
-def add_playbook_metadata(data: dict, command: str):
+def get_source_override(args: Optional[dict], key: str) -> str:
+    """Get a non-empty source override value from the command arguments.
+
+    Args:
+        args (Optional[dict]): The command arguments.
+        key (str): The argument name to read ('source_id' or 'source_name').
+
+    Returns:
+        str: The stripped argument value, or an empty string if it was not provided or is blank.
+    """
+    if not args:
+        return ""
+    return str(args.get(key) or "").strip()
+
+
+def add_playbook_metadata(data: dict, command: str, args: Optional[dict] = None) -> None:
+    """Add the playbook metadata to the request data.
+
+    Args:
+        data (dict): The request data to enrich.
+        command (str): The name of the command being executed.
+        args (Optional[dict]): The command arguments, used to read the source overrides.
+    """
     ctx_output: dict = demisto.callingContext or {}
 
     context = ctx_output.get("context") or {}
@@ -487,6 +510,10 @@ def add_playbook_metadata(data: dict, command: str):
     task_name = entry_task.get("taskName", "")
     task_id = entry_task.get("taskId", "")
     brand = ctx_output.get("context", {}).get("IntegrationBrand", "")
+
+    playbook_id = get_source_override(args, "source_id") or playbook_id
+    playbook_name = get_source_override(args, "source_name") or playbook_name
+
     playbook_metadata = {
         "playbook_name": playbook_name,
         "playbook_id": playbook_id,
@@ -525,9 +552,10 @@ def start_xql_query(client: CoreClient, args: Dict[str, Any]) -> str:
     }
 
     try:
-        add_playbook_metadata(data, "start_xql_query")
+        add_playbook_metadata(data, "start_xql_query", args)
     except Exception as e:
         demisto.error(f"Error adding playbook metadata: {str(e)}")
+        demisto.debug(traceback.format_exc())
 
     time_frame = args.get("time_frame")
     if time_frame:
@@ -815,6 +843,7 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
     max_fields = arg_to_number(args.get("max_fields", 20))
     if max_fields is None:
         raise DemistoException("Please provide a valid number for max_fields argument.")
+
     outputs, file_data = get_xql_query_results(client, args)  # get query results with query_id
     outputs.update({"query_name": args.get("query_name", "")})
     outputs_prefix = get_outputs_prefix(command_name)
@@ -845,6 +874,19 @@ def get_xql_query_results_polling_command(client: CoreClient, args: dict) -> Uni
         command_results.scheduled_command = scheduled_command
         command_results.readable_output = "Query is still running, it may take a little while..."
         return command_results
+
+    # If the query failed, raise an error with the details from the API response.
+    if outputs.get("status") == "FAIL":
+        raw_error = outputs.get("error") or outputs.get("error_message") or "Unknown error"
+        # The 'error' field from the API can be a dict (e.g. {"<id>": "ERR_...", "validation_message": "..."})
+        if isinstance(raw_error, dict):
+            error_parts = [f"{k}: {v}" for k, v in raw_error.items()]
+            error_message = "; ".join(error_parts)
+        else:
+            error_message = str(raw_error)
+        query_id = args.get("query_id", "unknown")
+        demisto.debug(f"Query {query_id} failed with error: {error_message}")
+        raise DemistoException(f"XQL query '{args.get('query_name', query_id)}' failed with status FAIL. Error: {error_message}")
 
     demisto.debug(f"Returned status '{outputs.get('status')}' for {args.get('query_id', '')}.")
     results_to_format = outputs.pop("results")

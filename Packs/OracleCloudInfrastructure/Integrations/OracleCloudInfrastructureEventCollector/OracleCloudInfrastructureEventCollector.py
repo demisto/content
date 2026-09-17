@@ -266,7 +266,13 @@ def audit_log_api_request(client: Client, start_time: str, next_page: str | None
     params = {"compartmentId": client.compartment_id, "startTime": start_time, "endTime": datetime.now().strftime(DATE_FORMAT)}
     if next_page:
         params["opc-next-page"] = next_page
-    return client._http_request(method="GET", params=params, resp_type="response")
+    demisto.debug(f"[API] Requesting OCI audit events. compartmentId={client.compartment_id} url={client.base_url} {params=}")
+    try:
+        return client._http_request(method="GET", params=params, resp_type="response")
+    except Exception as e:
+        raise DemistoException(
+            f"OCI audit events request failed for compartmentId={client.compartment_id} at {client.base_url}: {e}"
+        ) from e
 
 
 def searchlogs_api_request(
@@ -292,7 +298,10 @@ def searchlogs_api_request(
         params["page"] = next_page
 
     demisto.debug(f"Sending http request to get search log events with {body=} {params=}")
-    return client._http_request(method="POST", full_url=url, params=params, json_data=body, resp_type="response")
+    try:
+        return client._http_request(method="POST", full_url=url, params=params, json_data=body, resp_type="response")
+    except Exception as e:
+        raise DemistoException(f"OCI search log events request failed at {url}: {e}") from e
 
 
 def add_millisecond_to_timestamp(timestamp: str) -> str:
@@ -433,6 +442,12 @@ def get_events(
     Returns:
         tuple[list[dict[str, Any]], str]: A tuple of the events list and the last event time for next fetch cycle.
     """
+
+    # Initialize before the try so the except handler can safely reference them
+    # even if the first API call fails.
+    events: list[dict[str, Any]] = []
+    last_event_time = first_fetch_time.strftime(DATE_FORMAT)
+
     try:
         response = audit_log_api_request(client=client, start_time=first_fetch_time.strftime(DATE_FORMAT))
         events = json.loads(response.content)
@@ -445,21 +460,21 @@ def get_events(
 
         # pagination handling
         while len(events) < max_fetch and (next_page := response.headers._store.get("opc-next-page")):  # type: ignore
-            current_start_time = add_millisecond_to_timestamp(events[-1].get("eventTime"))
+            current_start_time = add_millisecond_to_timestamp(events[-1].get("eventTime"))  # type: ignore[arg-type]
             response = audit_log_api_request(client=client, start_time=current_start_time, next_page=next_page[1])
             events.extend(json.loads(response.content))
 
         last_event_time = get_last_event_time(events, first_fetch_time)
         events = add_time_key_to_events(events)
 
-    # handle the case where an error occurred while fetching events,
+    # Handle the case where an error occurred while fetching events,
     # and there are currently available events that can and need to be sent to XSIAM.
     except Exception as e:
         if events and push_events_on_error:
             last_event_time = get_last_event_time(events, first_fetch_time)
             events = add_time_key_to_events(events)
             handle_fetched_events(events, last_event_time)
-            raise DemistoException(f"Error while fetching events: {e}") from e
+        raise DemistoException(f"Error while fetching events: {e}") from e
 
     demisto.info(f"OCI: {len(events)} Events fetched from start time: {first_fetch_time}.")
     return events, last_event_time
@@ -509,10 +524,7 @@ def test_module(client: Client, search_log_query: str, event_types_to_fetch: lis
             client._http_request(method="GET", params=params)
 
         except Exception as e:
-            if "failed" in str(e):
-                return "Authorization Error: make sure OCI parameters are correctly set"
-            else:
-                raise DemistoException(f"Error while testing: {e}") from e
+            raise DemistoException(f"Error while testing: {e}") from e
 
     if "Search Logs" in event_types_to_fetch:
         try:
@@ -525,10 +537,7 @@ def test_module(client: Client, search_log_query: str, event_types_to_fetch: lis
             )
 
         except Exception as e:
-            if "failed" in str(e):
-                return "Authorization Error: make sure OCI parameters are correctly set"
-            else:
-                raise DemistoException(f"Error while testing: {e}") from e
+            raise DemistoException(f"Error while testing: {e}") from e
 
     return "ok"
 

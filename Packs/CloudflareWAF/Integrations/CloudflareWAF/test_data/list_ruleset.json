@@ -1,0 +1,25 @@
+{
+    "result": [
+        {
+            "id": "ruleset_id_1",
+            "name": "Cloudflare Managed Ruleset",
+            "kind": "managed",
+            "phase": "http_request_firewall_managed",
+            "description": "Managed ruleset created by Cloudflare",
+            "version": "1",
+            "last_updated": "2023-01-15T10:00:00Z"
+        },
+        {
+            "id": "ruleset_id_2",
+            "name": "Custom Ruleset",
+            "kind": "custom",
+            "phase": "http_request_firewall_custom",
+            "description": "Custom firewall ruleset",
+            "version": "3",
+            "last_updated": "2023-02-20T14:30:00Z"
+        }
+    ],
+    "success": true,
+    "errors": [],
+    "messages": []
+}

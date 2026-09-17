@@ -1,0 +1,21 @@
+{
+    "meta": {
+        "count": 2
+    },
+    "data": [
+        {
+            "name": "G1",
+            "rules_and_actions": "if (recv-listener == \"InboundMail1\") OR (recv-int ==\"notmain1\") { alt-src-host (\"outbound1\"); skip-filters(); } else { skip-filters(); }",
+            "valid": "true",
+            "active": "true",
+            "order": 1
+        },
+        {
+            "name": "G2",
+            "rules_and_actions": "if (recv-listener == \"InboundMail2\") OR (recv-int ==\"notmain2\") { alt-src-host (\"outbound2\"); skip-filters(); } else { skip-filters(); }",
+            "valid": "true",
+            "active": "true",
+            "order": 2
+        }
+    ]
+}

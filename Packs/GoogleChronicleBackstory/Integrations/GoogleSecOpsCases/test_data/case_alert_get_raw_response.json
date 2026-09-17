@@ -1,0 +1,67 @@
+{
+    "name": "projects/chronicle-mock-proj/locations/us/instances/00000000-0000-0000-0000-000000000001/cases/1001/caseAlerts/1000001",
+    "identifier": "TEST ALERT_00000000-0000-0000-0000-000000000010",
+    "caseId": 1001,
+    "createTime": "1778778979232",
+    "updateTime": "1779426987796",
+    "ruleGenerator": "Test-Alert-Rule-01",
+    "sourceGroupingIdentifier": "0.0.0.1",
+    "product": "Test Product",
+    "displayName": "TEST ALERT",
+    "vendor": "Test Vendor",
+    "environment": "Default Environment",
+    "ticketId": "0.0.0.1_2026-05-10 08:00:00",
+    "sourceSystemName": "Test Source System",
+    "closureDetails": {
+        "reason": "NOT_MALICIOUS",
+        "comment": "Testing",
+        "rootCause": "False positive from detection rule",
+        "closingTimeMs": "1779447705049"
+    },
+    "sla": {
+        "expirationTime": "1780832620238",
+        "expirationStatus": "OPEN_SLA"
+    },
+    "priority": "HIGH",
+    "sourceIdentifier": "Test Source Identifier_00000000-0000-0000-0000-000000000011",
+    "additionalProperties": "{\"Name\":\"TEST ALERT\",\"Type\":\"ALERT\",\"EndTime\":\"1779426987796\",\"Alert_Id\":\"0.0.0.1_2026-05-10 08:00:00\",\"TicketId\":\"0.0.0.1_2026-05-10 08:00:00\",\"DisplayId\":\"0.0.0.1_2026-05-10 08:00:00\",\"StartTime\":\"1778778979232\",\"IsArtifact\":\"False\",\"IsEnriched\":\"False\",\"IsTestCase\":\"False\",\"Description\":\"Test alert description.\",\"Environment\":\"Default Environment\",\"IsSuspicious\":\"False\",\"IsVulnerable\":\"False\",\"DataAccessScope\":null,\"IsInternalAsset\":\"False\",\"IsSkipPlaybooks\":null,\"AlertBaseEventIds\":\"00000000-0000-0000-0000-000000000012\",\"EstimatedStartTime\":\"1778778979232\"}",
+    "status": "OPEN",
+    "startTime": "1778778979232",
+    "endTime": "1779426987796",
+    "playbookStatus": "COMPLETED",
+    "attachedPlaybookName": "Test Playbook",
+    "alertGroupIdentifier": "TEST ALERT_00000000-0000-0000-0000-000000000010",
+    "eventCount": 5,
+    "playbookRunCount": 1,
+    "siemAlertId": "0.0.0.1_2026-05-10 08:00:00",
+    "sourceUrl": "http://demo.com/alerts/1000001",
+    "tags": [
+        {
+            "tag": "demo_1"
+        },
+        {
+            "tag": "demo_2"
+        }
+    ],
+    "involvedRelations": [
+        {
+            "identifier": "00000000-0000-0000-0000-000000000020",
+            "alertIdentifier": "TEST ALERT_00000000-0000-0000-0000-000000000010",
+            "caseId": 1001,
+            "relationType": "ALERT",
+            "from": {
+                "identifier": "0.0.0.1",
+                "type": "ADDRESS"
+            },
+            "to": {
+                "identifier": "test-host-01",
+                "type": "HOSTNAME"
+            },
+            "deviceProduct": "Test Product",
+            "deviceVendor": "Test Vendor",
+            "categoryOutcome": "Blocked",
+            "destinationPort": "443",
+            "eventClassId": "Test Event Class"
+        }
+    ]
+}

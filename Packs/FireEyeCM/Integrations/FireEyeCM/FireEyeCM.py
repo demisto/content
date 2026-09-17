@@ -406,7 +406,7 @@ def main() -> None:
     # there is also a v1.2.0 which holds different paths and params, we support only the newest API version
     base_url = urljoin(params.get("url"), "/wsapis/v2.0.0/")
     verify = not argToBoolean(params.get("insecure", "false"))
-    proxy = argToBoolean(params.get("proxy"))
+    proxy = argToBoolean(params.get("proxy", "false"))
 
     # fetch params
     max_fetch = int(params.get("max_fetch", "50"))

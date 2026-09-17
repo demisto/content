@@ -1,9 +1,12 @@
+import errno
 import glob
 import hashlib
 import ipaddress
 import os
 import re
+import socket
 import tempfile
+import uuid
 import zipfile
 from base64 import b64decode
 from collections.abc import Callable, Iterable
@@ -370,7 +373,22 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
     headers_was_written = False
     files_by_category = {}  # type:Dict
     ioc_counter = 0
+    # While iterating over a large number of indicators, the main thread can hold the stdout lock longer than
+    # the default 60s timeout, causing the heartbeat thread to fail with "Timeout acquiring stdout lock".
+    # Instead of disabling the heartbeat thread (which can make the server consider the container unresponsive),
+    # we temporarily raise the stdout lock timeout to 10 minutes so the heartbeat keeps running safely, and
+    # restore the original value afterwards. This attribute is dynamically injected by the server runtime; when
+    # it is not present (e.g. older servers or unit tests) we skip the tweak entirely so this stays a true no-op.
+    # It is not part of the demistomock type stub, so mypy's attr-defined check is suppressed on the assignments.
+    stdout_lock_timeout_supported = hasattr(demisto, "_stdout_lock_timeout")
+    original_stdout_lock_timeout = getattr(demisto, "_stdout_lock_timeout", 60)
     try:
+        if stdout_lock_timeout_supported:
+            demisto._stdout_lock_timeout = 600  # type: ignore[attr-defined]  # 10 minutes
+            demisto.debug(
+                f"Temporarily set demisto._stdout_lock_timeout to 600 seconds "
+                f"(was {original_stdout_lock_timeout}) for the indicators iteration."
+            )
         for ioc_res in indicator_searcher:
             fetched_iocs = ioc_res.get("iocs") or []
             for ioc in fetched_iocs:
@@ -407,6 +425,10 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
             # NG + XSIAM can recover from a shutdown
             if version.get("platform") == "x2" or is_demisto_version_ge("8") or version.get("platform") == "unified_platform":
                 raise SystemExit("Encountered issue in Elastic Search query. Restarting container and trying again.")
+    finally:
+        if stdout_lock_timeout_supported:
+            demisto._stdout_lock_timeout = original_stdout_lock_timeout  # type: ignore[attr-defined]
+            demisto.debug(f"Restored demisto._stdout_lock_timeout to {original_stdout_lock_timeout} seconds.")
     demisto.debug(f"Completed IOC search & format, found {ioc_counter} IOCs.")
     if request_args.out_format == FORMAT_JSON:
         f.write("]")
@@ -1168,24 +1190,43 @@ def prepare_response_data(data: str, prepend_str: str, append_str: str) -> str:
     return data
 
 
+def get_request_id() -> str:
+    """Return the per-request correlation id for log lines.
+
+    Reuses the ``X-Request-ID`` header that nginx forwards (the SAME id appears in
+    the nginx access log and the WSGI ``wsgi request:``/``wsgi access:`` lines), so
+    a single id can be grepped across NGINX -> WSGI -> EDL. Falls back to a fresh
+    short uuid if the header is missing (e.g. a direct hit that bypassed nginx).
+    """
+    try:
+        forwarded = request.headers.get("X-Request-ID")
+    except RuntimeError:
+        # No active Flask request context (e.g. called outside a route).
+        demisto.debug("get_request_id called without an active Flask request context; generating a fresh id.")
+        forwarded = None
+    return forwarded if forwarded else uuid.uuid4().hex[:12]
+
+
 @APP.route("/", methods=["GET"])
 def route_edl() -> Response:
     """
     Main handler for values saved in the integration context
     """
     params = demisto.params()
+    rid = get_request_id()
     cache_refresh_rate: str = params.get("cache_refresh_rate")
-    if EXTENSIVE_LOGGING:
-        demisto.debug("edl: Starting EDL route handler")
+    start = datetime.now(timezone.utc)
+    demisto.info(f"edl: rid={rid} route=/ start handling request")
     auth_resp = authenticate_app(params, request.headers)
     if auth_resp:
+        demisto.info(f"edl: rid={rid} authentication failed; returning auth response")
         return auth_resp
     if EXTENSIVE_LOGGING:
-        demisto.debug("edl: authentication successful")
+        demisto.debug(f"edl: rid={rid} authentication successful")
     request_args = get_request_args(request.args, params)
     on_demand = params.get("on_demand")
     if EXTENSIVE_LOGGING:
-        demisto.debug(f"{'Using' if on_demand else 'Not using'} on-demand cache to serve EDL.")
+        demisto.debug(f"edl: rid={rid} {'Using' if on_demand else 'Not using'} on-demand cache to serve EDL.")
 
     created = datetime.now(timezone.utc)
     if on_demand:
@@ -1210,7 +1251,7 @@ def route_edl() -> Response:
             data=edl_data, append_str=params.get("append_string"), prepend_str=params.get("prepend_string")
         )
     if EXTENSIVE_LOGGING:
-        demisto.debug(f"Final EDL size: {len(edl_data)} characters, {edl_size} lines")
+        demisto.debug(f"edl: rid={rid} Final EDL size: {len(edl_data)} characters, {edl_size} lines")
 
     mimetype = get_outbound_mimetype(request_args)
     max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
@@ -1221,14 +1262,26 @@ def route_edl() -> Response:
         ("X-EDL-Size", str(edl_size)),
         ("X-EDL-Origin-Size", original_indicators_count),
         ("ETag", etag),
+        # Echo the correlation id back so the client and nginx ($sent_http_x_request_id)
+        # observe the same id that EDL/WSGI logged.
+        ("X-Request-ID", rid),
     ]  # type: ignore[assignment]
 
-    demisto.debug(f'edl: Returning response with the following headers:\n{[f"{header[0]}: {header[1]}" for header in headers]}')
+    demisto.debug(
+        f'edl: rid={rid} Returning response with the following headers:\n'
+        f'{[f"{header[0]}: {header[1]}" for header in headers]}'
+    )
 
     resp = Response(edl_data, status=200, mimetype=mimetype, headers=headers)
     resp.cache_control.max_age = max_age
     # number of seconds we are willing to serve stale content when there is an error
     resp.cache_control["stale-if-error"] = "600"
+
+    total_time = (datetime.now(timezone.utc) - start).total_seconds()
+    demisto.info(
+        f"edl: rid={rid} route=/ done status=200 edl_size={edl_size} "
+        f"chars={len(edl_data)} query_time_secs={query_time:.3f} total_secs={total_time:.3f}"
+    )
 
     return resp
 
@@ -1242,14 +1295,15 @@ def log_download() -> Response:
         Response: A Flask Response object that sends a ZIP file containing the full log.
     """
     params = demisto.params()
-    demisto.debug("edl: Starting EDL route/log_download handler")
+    rid = get_request_id()
+    demisto.debug(f"edl: rid={rid} Starting EDL route/log_download handler")
     auth_resp = authenticate_app(params, request.headers)
     if EXTENSIVE_LOGGING:
-        demisto.debug("edl: authentication successful")
+        demisto.debug(f"edl: rid={rid} authentication successful")
     if auth_resp:
         return auth_resp
 
-    demisto.debug("edl: Getting log file to show")
+    demisto.debug(f"edl: rid={rid} Getting log file to show")
 
     created = datetime.now(timezone.utc)
 
@@ -1273,12 +1327,13 @@ def route_edl_log() -> Response:
             - A ZIP file download containing the log, if the log is too large to display.
     """
     params = demisto.params()
+    rid = get_request_id()
 
     cache_refresh_rate: str = params.get("cache_refresh_rate")
-    demisto.debug("edl: Starting EDL route/log handler")
+    demisto.debug(f"edl: rid={rid} Starting EDL route/log handler")
     auth_resp = authenticate_app(params, request.headers)
     if EXTENSIVE_LOGGING:
-        demisto.debug("edl: authentication successful")
+        demisto.debug(f"edl: rid={rid} authentication successful")
     if auth_resp:
         return auth_resp
 
@@ -1459,14 +1514,98 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
 """ COMMAND FUNCTIONS """
 
 
-def test_module(_: dict, params: dict):
+def is_port_in_use(port: int, host: str = "127.0.0.1") -> bool:
+    """Check whether a TCP port is already bound (i.e. in use) on the given host.
+
+    We try to bind to the port ourselves: if the bind fails with an "address already
+    in use" error, the port is taken. Any other outcome is treated as "free" so we
+    don't wrongly block the test on transient socket errors.
+
+    Args:
+        port (int): The TCP port to check.
+        host (str): The host/interface to check the port on. Defaults to "127.0.0.1".
+
+    Returns:
+        bool: True if the port is already in use, False otherwise.
     """
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        try:
+            sock.bind((host, port))
+            return False
+        except OSError as err:
+            if err.errno in (errno.EADDRINUSE, errno.EADDRNOTAVAIL):
+                demisto.debug(f"edl: port {port} on {host} is already in use ({err}).")
+                return True
+            # Any other error - assume the port is not blocking us.
+            demisto.debug(f"edl: unexpected error while checking port {port} on {host}: {err}. Treating as free.")
+            return False
+
+
+def is_our_edl_instance_running(nginx_port: int, params: dict) -> bool:
+    """Verify that the process already holding the EDL ports is a healthy, running EDL instance.
+
+    Each long-running integration instance runs in its own dedicated, persistent container, so
+    within this container the only process that can be holding these ports is this instance's own
+    long-running server.
+    When the ports are already bound we therefore only need to confirm that server is healthy
+    (rather than re-binding the ports, which would fail). We validate it by:
+        1. Connectivity + the nginx health endpoint (/nginx-test) returning the expected
+           "Welcome to nginx" response (nginx is up and its config is serving correctly).
+        2. The EDL route ("/") being reachable (any HTTP status, including 401 when
+           credentials are configured, proves our EDL app is answering behind nginx).
+
+    Note:
+        Only the nginx_port is health-checked directly. Because a live EDL instance binds
+        both nginx_port and the WSGI server_port (nginx_port + 1) together, a healthy nginx
+        answering here implies our own instance owns the paired WSGI port as well; the
+        container-isolation invariant (one instance per container) guarantees no foreign
+        process could be holding only the WSGI port.
+
+        test_nginx_web_server retries internally (see NGINX_MAX_POLLING_TRIES) to avoid a
+        false negative from a momentarily busy nginx.
+
+    Args:
+        nginx_port (int): The nginx listen port of the running instance.
+        params (dict): The integration parameters (used to determine http/https).
+
+    Returns:
+        bool: True if a healthy EDL instance is answering on the ports, False otherwise.
+    """
+    protocol = "https" if params.get("key") else "http"
+    base_url = f"{protocol}://localhost:{nginx_port}"
+    no_proxy = {"http": "", "https": ""}
+
+    # 1. nginx health endpoint - confirms nginx is up and its config is serving correctly.
+    #    test_nginx_web_server polls with retries, so a transient hiccup won't fail us.
+    try:
+        test_nginx_web_server(nginx_port, params=params)
+    except Exception as ex:
+        demisto.debug(f"edl: connectivity/nginx health check against port {nginx_port} failed: {ex}.")
+        return False
+
+    # 2. EDL route - confirms our Flask EDL app is answering behind nginx.
+    #    Any HTTP response (including 401 when authentication is enforced) proves it is our app.
+    try:
+        edl_resp = requests.get(base_url, verify=False, proxies=no_proxy, timeout=10)  # guardrails-disable-line # nosec
+        demisto.debug(f"edl: EDL route on port {nginx_port} responded with status {edl_resp.status_code}.")
+    except Exception as ex:
+        demisto.debug(f"edl: EDL route check against port {nginx_port} failed: {ex}.")
+        return False
+
+    demisto.debug(f"edl: detected an existing healthy EDL instance on port {nginx_port}.")
+    return True
+
+
+def validate_test_module_params(params: dict) -> None:
+    """Validate the integration configuration parameters used by test-module.
+
     Validates:
         1. Valid port.
-        2. Valid cache_refresh_rate
+        2. Valid cache_refresh_rate (when not running on-demand).
+
+    Args:
+        params (dict): The integration parameters.
     """
-    if not params.get("longRunningPort"):
-        params["longRunningPort"] = "1111"
     get_params_port(params)
     on_demand = params.get("on_demand", None)
     if not on_demand:
@@ -1482,8 +1621,60 @@ def test_module(_: dict, params: dict):
         if range_split[1] not in ["minute", "minutes", "hour", "hours", "day", "days", "month", "months", "year", "years"]:
             raise ValueError("Invalid time unit for the Refresh Rate. Must be minutes, hours, days, months, or years.")
         parse_date_range(cache_refresh_rate, to_timestamp=True)
-    run_long_running(params, is_test=True)
-    return "ok", {}, {}
+
+
+def test_module(_: dict, params: dict) -> tuple[str, dict, dict]:
+    """
+    Validates the integration configuration and, if a long-running instance is already up,
+    verifies it is a healthy EDL instance instead of failing on the already-bound ports.
+
+    Each long-running integration instance runs in its own dedicated, persistent container, so
+    within this container the only process that could be holding the EDL ports is this instance's
+    own long-running server.
+
+    Flow:
+        1. Validate configuration params (port, cache_refresh_rate).
+        2. If the EDL ports are free - run the regular nginx/WSGI test.
+        3. If the ports are already in use:
+            a. If a healthy EDL instance is answering (connectivity + nginx health are OK) -
+               the test passes (we must not re-bind the ports of a live instance).
+            b. Otherwise - raise an exception: the ports are used by a different process.
+    """
+    if not params.get("longRunningPort"):
+        params["longRunningPort"] = "1111"
+
+    validate_test_module_params(params)
+
+    nginx_port = get_params_port(params)
+    server_port = nginx_port + 1
+
+    nginx_port_in_use = is_port_in_use(nginx_port)
+    server_port_in_use = is_port_in_use(server_port)
+
+    if not nginx_port_in_use and not server_port_in_use:
+        # Ports are free - safe to run the full nginx/WSGI test.
+        demisto.debug(f"edl: ports {nginx_port} and {server_port} are free. Running the standard test.")
+        run_long_running(params, is_test=True)
+        return "ok", {}, {}
+
+    # At least one of the ports is in use - determine whether a healthy EDL instance owns it.
+    demisto.debug(
+        f"edl: ports in use (nginx {nginx_port}={nginx_port_in_use}, wsgi {server_port}={server_port_in_use}). "
+        "Checking whether a healthy EDL instance is already running."
+    )
+    if is_our_edl_instance_running(nginx_port, params):
+        demisto.debug(
+            "edl: an existing EDL instance is already running and serving on the configured ports. "
+            "Connectivity and nginx configuration were verified successfully."
+        )
+        return "ok", {}, {}
+
+    raise DemistoException(
+        f"Ports {nginx_port} and/or {server_port} are already in use, but a healthy EDL instance "
+        "could not be verified on them. This usually means a different process is holding the ports "
+        "(or the existing EDL instance is not responding). Please free the ports or configure a "
+        "different Listen Port and test again."
+    )
 
 
 @debug_function

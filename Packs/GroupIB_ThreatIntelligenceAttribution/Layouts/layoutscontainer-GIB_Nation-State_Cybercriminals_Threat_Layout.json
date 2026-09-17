@@ -49,7 +49,7 @@
                                 "fieldId": "sourcebrand",
                                 "height": 22,
                                 "id": "incident-sourceBrand-field",
-                                "index": 4,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -58,7 +58,7 @@
                                 "fieldId": "sourceinstance",
                                 "height": 22,
                                 "id": "incident-sourceInstance-field",
-                                "index": 5,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -67,7 +67,7 @@
                                 "fieldId": "playbookid",
                                 "height": 22,
                                 "id": "incident-playbookId-field",
-                                "index": 6,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -464,6 +464,15 @@
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gibtlp",
+                                "height": 22,
+                                "id": "c394bec0-ed2a-11f0-9509-45873decf476",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -593,6 +602,15 @@
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "gibtlp",
+                                "height": 22,
+                                "id": "84452a20-ed2a-11f0-9509-45873decf476",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
@@ -637,7 +655,6 @@
     "group": "incident",
     "id": "GIB Nation-State Cybercriminals Threat Layout",
     "name": "GIB Nation-State Cybercriminals Threat Layout",
-    "system": false,
     "version": -1,
     "fromVersion": "6.10.0"
 }

@@ -2,6 +2,7 @@
   "sessionId": "sessionid-abc-1",
   "tenantId": "sometenantid",
   "actorId": "someactorid",
+  "actorName": "someactor@domain.com",
   "beginTime": 1726082760680,
   "endTime": 1726082762722,
   "firstObserved": 1726083300017,
@@ -31,6 +32,7 @@
     {
       "alertId": "alert-id-abc-123",
       "ruleId": "rule-id-abc-123",
+      "ruleName": "example rule name",
       "lessonId": null
     }
   ],
