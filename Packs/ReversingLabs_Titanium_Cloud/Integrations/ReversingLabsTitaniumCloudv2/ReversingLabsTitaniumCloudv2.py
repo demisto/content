@@ -114,6 +114,7 @@ def normalize_url(url: str):
     url = url.replace(" ", "%20")
     return url
 
+
 def file_command():
     mwp = FileReputation(
         host=TICLOUD_URL, username=USERNAME, password=PASSWORD, user_agent=USER_AGENT, proxies=PROXIES, verify=VERIFY_CERTS
