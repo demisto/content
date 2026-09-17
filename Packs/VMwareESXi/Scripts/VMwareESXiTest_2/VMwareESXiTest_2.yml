@@ -1,0 +1,22 @@
+comment: VMware ESXi test script (harness_v2).
+commonfields:
+  id: VMwareESXiTest
+  version: -1
+name: VMwareESXiTest
+script: '-'
+subtype: python3
+system: false
+tags: []
+timeout: '0'
+type: python
+dockerimage: demisto/python3:3.12.13.10116658
+marketplaces:
+- xsoar
+- marketplacev2
+- platform
+supportedModules:
+- xsiam
+supportedFeatures:
+- harness_v2
+tests:
+- No tests (auto formatted)
