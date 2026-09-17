@@ -1,5 +1,5 @@
 from itertools import chain
-from aiohttp import ClientResponseError
+from aiohttp import ClientResponseError, ClientPayloadError
 import asyncio
 import aiohttp
 import traceback
@@ -18,6 +18,11 @@ MAX_EVENTS_PAGE_SIZE = 10000
 MAX_RETRY = 3
 NETSKOPE_SEMAPHORE_COUNT = 4
 MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE = 10
+# Minimum page size to shrink to when the server keeps truncating the response payload
+MIN_EVENTS_PAGE_SIZE = 100
+# Base backoff (in seconds) used between retries after a truncated/incomplete response payload.
+# The wait grows exponentially: PAYLOAD_ERROR_BACKOFF_SECONDS * (2 ** (retry - 1)), e.g. 1s, 2s, 4s.
+PAYLOAD_ERROR_BACKOFF_SECONDS = 1
 
 # Netskope response constants
 RATE_LIMIT_REMAINING = "ratelimit-remaining"  # Rate limit remaining
@@ -444,6 +449,9 @@ async def fetch_and_send_events_async(
     async def _handle_page(params):
         async def _fetch_page():
             retry_count = 0
+            # separate counter for truncated/incomplete response payload errors, so it
+            # does not interfere with the rate-limit (429) retry semantics
+            payload_error_retry_count = 0
             while retry_count < MAX_RETRY:
                 try:
                     if retry_count > 0:
@@ -459,6 +467,30 @@ async def fetch_and_send_events_async(
                         retry_count += 1
                     else:
                         raise e
+                except ClientPayloadError as e:
+                    # The server (or a proxy in between) announced a body length via
+                    # Content-Length / Transfer-Encoding but closed the connection before
+                    # sending all the bytes (e.g. TransferEncodingError). This is transient,
+                    # so retry with a backoff while shrinking the page size to reduce the
+                    # payload that must be streamed before the connection is torn down.
+                    if payload_error_retry_count >= MAX_RETRY:
+                        demisto.debug(
+                            f"[Fetch] Incomplete response payload for {type=} {params=} persisted after "
+                            f"{payload_error_retry_count=} retries (>= {MAX_RETRY=}), giving up"
+                        )
+                        raise e
+                    current_limit = int(params.get("limit", MAX_EVENTS_PAGE_SIZE))
+                    new_limit = max(MIN_EVENTS_PAGE_SIZE, current_limit // 2)
+                    params["limit"] = new_limit
+                    payload_error_retry_count += 1
+                    # Exponential backoff: PAYLOAD_ERROR_BACKOFF_SECONDS * (2 ** (retry - 1)), e.g. 1s, 2s, 4s
+                    backoff = PAYLOAD_ERROR_BACKOFF_SECONDS * (2 ** (payload_error_retry_count - 1))
+                    demisto.debug(
+                        f"[Fetch] Incomplete response payload for {type=} ({str(e)}). "
+                        f"Retrying ({payload_error_retry_count}/{MAX_RETRY}) after {backoff}s "
+                        f"with reduced page size {current_limit} -> {new_limit}"
+                    )
+                    await asyncio.sleep(backoff)
             # Exhausted retries on a 429 - raise so the page is recorded as a failure (and retried
             # next cycle).
             raise DemistoException(f"Rate limit (429) for {type=} not resolved after {MAX_RETRY=} retries")
