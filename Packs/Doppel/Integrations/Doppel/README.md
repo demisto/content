@@ -2,6 +2,13 @@
 
 Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively. The Cortex XSOAR pack for Doppel mirrors the alerts created by Doppel as Cortex XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.
 
+## Authentication: API V1 vs V2
+
+- **V1 (API Key)** — the default. Requests are authenticated with the static **API Key** header. Existing instances keep working unchanged after upgrading the pack.
+- **V2 (OAuth 2.0 Client Credentials)** — recommended. The integration exchanges the **Client ID** and **Client Secret** for a short-lived access token (valid 24 hours), caches it, and refreshes it automatically before expiry. New Doppel API capabilities are added to V2 only.
+
+**Note:** Doppel limits the number of successful token requests per Client ID per hour. The integration's built-in token caching stays well within this limit, but if the same Client ID is shared with other tools that request tokens aggressively, token requests may be throttled. Prefer a dedicated OAuth client for this integration (each Doppel organization can create up to 10).
+
 ## Configure Doppel on Cortex XSOAR
 
 1. Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
@@ -11,9 +18,11 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Doppel Tenant URL | The Doppel server URL that will be used for calling the APIs. | True |
-| API Key | The API Key to use for connection with Doppel. | True |
-| User API Key | The User API Key \(Optional\) to use for connection with Doppel. | False |
-| Organization Code | Optional organization identifier used when your Doppel environment is organization-scoped. If required by the Doppel API, include the organization code provided by your Doppel administrator. | False |
+| API Version | The Doppel API version to use. V1 authenticates with a static API Key; V2 authenticates with OAuth 2.0 client credentials \(Client ID and Client Secret\). New Doppel API capabilities are added to V2 only, so V2 is recommended. | True |
+| API Key \(V1\) | The API Key to use for connection with Doppel. Required when API Version is V1. | False |
+| User API Key \(V1\) | The User API Key \(Optional\) to use for connection with Doppel. Applies to API Version V1 only. | False |
+| Organization Code \(V1\) | Optional organization identifier used when your Doppel environment is organization-scoped. Applies to API Version V1 only; V2 scopes requests to your organization automatically. | False |
+| Client ID \(V2\) / Client Secret \(V2\) | The OAuth 2.0 client credentials to use for connection with Doppel. Required when API Version is V2. An organization admin can create these from the **Version 2** tab on the **API Settings** page in Doppel Vision. | False |
 | Trust Any Certificate (not secure) | When checked, SSL certificate verification is disabled. Use this only when the Doppel endpoint uses a self-signed or untrusted certificate. | False |
 | Use System Proxy Settings | When checked, the integration uses the system proxy defined in the XSOAR engine configuration (d1.conf). This is required if the engine routes outbound traffic through a local or organizational proxy. | False |
 | Fetch incidents |  | False |
@@ -345,9 +354,11 @@ Retrieves a list of alerts. The result can be filtered by provided parameters.
 | product | Product category the report belongs to. Possible values: domains, social_media, mobile_apps, ecommerce, crypto, email, paid_ads, telco, darkweb. | Optional |  
 | created_before | Filter alerts created before a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
 | created_after | Filter alerts created after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
+| last_activity_timestamp | The filter for alerts whose last activity (creation or any update) occurred at or after a specific time. Use the ISO 8601 format, such as 2020-01-01T00:11:22Z. For durations, enter values like '12 hours' or '7 days'. | Optional |  
 | sort_type | The field to sort the reports by. Defaults to date_sourced. Possible values: date_sourced, date_last_actioned. | Optional |  
 | sort_order | The order to sort the reports by. Defaults to desc. Possible values: asc, desc. | Optional |  
 | page | Page number for pagination; defaults to 0. | Optional |  
+| page_size | The number of alerts to return per page. The maximum supported by the Doppel API is 200. | Optional |  
 | tags | List of tags to filter alerts. | Optional |  
 
 #### Context Output
@@ -534,6 +545,7 @@ There is no context output for this command.
 When incidents are mirrored into Cortex XSOAR from Doppel:
 
 1. Any changes in Doppel alerts (mirroring incoming fields) will be reflected in Cortex XSOAR incidents.
+2. When Doppel revives an alert — moves it back into an active queue such as Doppel Review or Actioned, for example when a taken-down domain comes back online — a closed Cortex incident is automatically reopened so the revival is not missed. The reopening process only occurs on a queue transition that occurred after the incident's last sync, so incidents closed by an analyst are not reopened by unrelated alert activity.
 
 **Supported Fields**
 

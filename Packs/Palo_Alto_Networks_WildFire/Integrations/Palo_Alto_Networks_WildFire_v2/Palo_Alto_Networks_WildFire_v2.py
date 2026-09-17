@@ -24,6 +24,10 @@ FILE_TYPE_SUPPRESS_ERROR = PARAMS.get("suppress_file_type_error")
 RELIABILITY = PARAMS.get("integrationReliability", DBotScoreReliability.B) or DBotScoreReliability.B
 CREATE_RELATIONSHIPS = argToBoolean(PARAMS.get("create_relationships", "true"))
 DEFAULT_HEADERS = {"Content-Type": "application/x-www-form-urlencoded"}
+# Values that mean "nothing was configured" but arrive as a non-empty string.
+# UCP can deliver a blank optional secret as the literal "null" (a JSON null that was
+# stringified upstream) and Go renders a nil as "<nil>". These are not credentials.
+NON_TOKEN_SENTINELS = frozenset({"null", "none", "nil", "undefined", "<nil>"})
 WILDFIRE_REPORT_DT_FILE = (
     "WildFire.Report(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5 || val.URL && val.URL == obj.URL)"
 )
@@ -1506,6 +1510,44 @@ def get_agent(api_key_source: str, token: str) -> str:
     return ""
 
 
+def clean_token(value: Any) -> str:
+    """
+    Normalize a configured secret into a usable token string.
+
+    A blank optional secret can reach the integration as None, an empty/whitespace-only
+    string, a mask placeholder made only of asterisks (for example "****"), or a
+    stringified null such as "null" or "<nil>". All of these mean "no token was
+    configured" and must not be treated as a real API key.
+
+    Args:
+        value: The raw value read from the instance configuration.
+
+    Returns:
+        The stripped token, or an empty string when no real token was configured.
+    """
+    stripped = (value or "").strip()
+    if not stripped or set(stripped) == {"*"} or stripped.lower() in NON_TOKEN_SENTINELS:
+        return ""
+    return stripped
+
+
+def resolve_token(params: dict) -> str:
+    """
+    Resolve the API token from the instance configuration.
+
+    The token may be configured either in the legacy 'token' parameter or in the
+    'credentials' password field. Mask placeholders and blank values in either
+    location are ignored so that the caller can fall back to the TIM license token.
+
+    Args:
+        params: The integration instance parameters.
+
+    Returns:
+        The resolved token, or an empty string when none is configured.
+    """
+    return clean_token(params.get("token")) or clean_token((params.get("credentials") or {}).get("password"))
+
+
 def set_http_params(token, agent_value):
     global AGENT_VALUE
     global BODY_DICT
@@ -1528,7 +1570,7 @@ def main():  # pragma: no cover
     demisto.info(f"command is {command}")
 
     try:
-        token = params.get("token") or (params.get("credentials") or {}).get("password")
+        token = resolve_token(params)
         # get the source of the credentials to ensure the correct agent is set for all API calls
         # other = ngfw or wf api based keys that are 32 chars long and require no agent
         # pcc and prismaaccessapi are 64 char long and require the correct agent= value in the api call
