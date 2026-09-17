@@ -1010,8 +1010,113 @@ def test_search_events_outbound_http_log(mocker):
     client.search_events(from_time="2023-01-01 00:00:00", log_type=LogType.OUTBOUND_HTTP_LOG, limit=10, offset=0)
 
     called_kwargs = mock_http_request.call_args.kwargs
-    assert called_kwargs["params"]["sysparm_query"] == "ORDERBYDESCsys_created_on^sys_created_on>2023-01-01 00:00:00"
+    # Outbound HTTP logs must be queried in ascending order (oldest first), consistent with the other
+    # log types and with the dedup/last-run logic that treats the last returned event as the newest.
+    assert called_kwargs["params"]["sysparm_query"] == "ORDERBYsys_created_on^sys_created_on>2023-01-01 00:00:00"
     assert called_kwargs["params"]["sysparm_display_value"] == "false"
+
+
+def test_fetch_events_outbound_http_advances_time_and_dedups_across_runs(mocker):
+    """
+    Regression test for XSUP duplicate outbound_http events (descending-order bug).
+
+    Given:
+        - The OUTBOUND_HTTP_LOG stream returning a batch of events.
+    When:
+        - fetch_events_command runs twice against the same underlying window,
+          exactly as the API would return them for the configured sort order.
+    Then:
+        - After the first run, last_fetch_time_outbound_http advances to the NEWEST event's
+          sys_created_on (not the oldest).
+        - The second run (which re-queries from the advanced timestamp) returns no duplicate
+          events.
+    """
+    client = Client(
+        use_oauth=False,
+        username="test",
+        password="test",
+        client_id="",
+        client_secret="",
+        server_url="https://test.com",
+        verify=False,
+        proxy=False,
+        api_version=None,
+        fetch_limit_audit=10,
+        fetch_limit_syslog=10,
+        fetch_limit_case=10,
+        fetch_limit_outbound_http=10,
+    )
+
+    # Events as they exist on the instance (chronological). The real API call is mocked, but we
+    # return the batch sorted by sys_created_on ascending to mirror the ascending ORDERBY query the
+    # fix introduces, so this test locks in the correct end-to-end behavior.
+    all_events = [
+        {"sys_id": "o1", "sys_created_on": "2026-09-17 10:00:00", "sys_updated_on": "2026-09-17 10:00:00"},
+        {"sys_id": "o2", "sys_created_on": "2026-09-17 10:01:00", "sys_updated_on": "2026-09-17 10:01:00"},
+        {"sys_id": "o3", "sys_created_on": "2026-09-17 10:02:00", "sys_updated_on": "2026-09-17 10:02:00"},
+    ]
+
+    def fake_search(from_time, log_type, limit=None, offset=0):
+        # Return only events newer-or-equal to from_time, ascending — matching the query.
+        result = [e for e in all_events if e["sys_created_on"] >= from_time]
+        return copy.deepcopy(sorted(result, key=lambda e: e["sys_created_on"]))
+
+    mocker.patch.object(client, "search_events", side_effect=fake_search)
+
+    # ---- First run: starting window at the oldest event's time ----
+    initial_last_run = {LogType.OUTBOUND_HTTP_LOG.last_fetch_time_key: "2026-09-17 10:00:00"}
+    collected_first, last_run_after_first = fetch_events_command(client, initial_last_run, [LogType.OUTBOUND_HTTP_LOG])
+
+    # last_fetch_time must advance to the NEWEST event, not the oldest.
+    assert last_run_after_first[LogType.OUTBOUND_HTTP_LOG.last_fetch_time_key] == "2026-09-17 10:02:00"
+    collected_ids_first = {e["sys_id"] for e in collected_first}
+    assert collected_ids_first == {"o1", "o2", "o3"}
+
+    # ---- Second run: uses the advanced last_run; must not re-emit the same events ----
+    collected_second, _ = fetch_events_command(client, last_run_after_first, [LogType.OUTBOUND_HTTP_LOG])
+    assert collected_second == []
+
+
+@pytest.mark.parametrize(
+    "log_type",
+    [LogType.AUDIT, LogType.SYSLOG_TRANSACTIONS, LogType.CASE],
+)
+def test_search_events_standard_log_types_query_unchanged(mocker, log_type):
+    """
+    Isolation guard for the outbound_http ordering fix.
+
+    Given:
+        - A non-outbound-http log type (Audit / Syslog transactions / Case).
+    When:
+        - Calling search_events.
+    Then:
+        - The query still uses ascending ORDERBYsys_created_on (unchanged by the outbound_http fix).
+        - The outbound-http-only 'sysparm_display_value' parameter is NOT added for these types.
+    """
+    client = Client(
+        use_oauth=False,
+        username="test",
+        password="test",
+        client_id="",
+        client_secret="",
+        server_url="https://test.com",
+        verify=False,
+        proxy=False,
+        api_version=None,
+        fetch_limit_audit=10,
+        fetch_limit_syslog=10,
+        fetch_limit_case=10,
+        fetch_limit_outbound_http=10,
+    )
+
+    mock_http_request = mocker.patch.object(client.sn_client, "http_request", return_value={"result": []})
+
+    client.search_events(from_time="2025-01-01 00:00:00", log_type=log_type, limit=10, offset=0)
+
+    called_kwargs = mock_http_request.call_args.kwargs
+    assert called_kwargs["params"]["sysparm_query"] == "ORDERBYsys_created_on^sys_created_on>2025-01-01 00:00:00"
+    # sysparm_display_value is specific to OUTBOUND_HTTP_LOG and must not leak into other types.
+    assert "sysparm_display_value" not in called_kwargs["params"]
 
 
 # ------------------ Test get_from_date ----------------------- #
