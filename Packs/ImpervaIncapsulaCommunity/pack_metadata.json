@@ -1,0 +1,35 @@
+{
+    "name": "Imperva Incapsula (Community)",
+    "description": "Community-maintained, agentless Cloud-to-Cloud Event Collector that pulls Imperva Cloud WAF (Incapsula) logs directly from the Imperva Log Integration API and ingests them into Cortex XSIAM. This pack is not developed, reviewed, or supported by Imperva or Palo Alto Networks.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Community Contributor",
+    "url": "https://github.com/mr2tone/content",
+    "email": "pisit_tansri@hotmail.com",
+    "created": "2026-08-28T00:00:00Z",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "Data Source",
+        "Community"
+    ],
+    "useCases": [],
+    "keywords": [
+        "Imperva",
+        "Incapsula",
+        "Cloud WAF",
+        "Event Collector",
+        "SIEM"
+    ],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "xsiam"
+    ],
+    "defaultDataSource": "Imperva Incapsula Community Event Collector",
+    "dependencies": {},
+    "displayedImages": []
+}
