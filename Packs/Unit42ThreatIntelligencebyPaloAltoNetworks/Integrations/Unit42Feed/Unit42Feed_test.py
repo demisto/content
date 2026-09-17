@@ -1866,7 +1866,7 @@ def test_fetch_indicators_stores_pending_when_limit_hit(client, mocker):
     assert next_run == {
         "start_time": "2023-06-01T12:00:00Z",
         "cycle_start_time": "2023-06-02T12:00:00Z",
-        "pending": {"indicators": "page2"},
+        "page_tokens": {"indicators": "page2"},
     }
     assert "last_successful_run" not in next_run
 
@@ -1898,7 +1898,7 @@ def test_fetch_indicators_resumes_pending(client, mocker):
         return_value={
             "start_time": "2023-06-01T12:00:00Z",
             "cycle_start_time": "2023-06-02T12:00:00Z",
-            "pending": {"indicators": "page2"},
+            "page_tokens": {"indicators": "page2"},
         },
     )
 
@@ -1942,7 +1942,7 @@ def test_fetch_indicators_pending_without_start_time(client, mocker):
 
     mock_response = {"data": [], "metadata": {}}
     mock_get_indicators = mocker.patch.object(client, "get_indicators", return_value=mock_response)
-    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={"pending": {"indicators": "page2"}})
+    mocker.patch("Unit42Feed.demisto.getLastRun", return_value={"page_tokens": {"indicators": "page2"}})
 
     params = {"feed_types": ["Indicators"], "indicator_types": ["IP"], "feedTags": [], "tlp_color": None}
 
@@ -1979,7 +1979,7 @@ def test_fetch_indicators_stores_pending_threat_objects(client, mocker):
     current_time = datetime(2023, 6, 2, 12, 0, 0)
     _, next_run = fetch_indicators(client, params, current_time)
 
-    assert next_run["pending"] == {"threat_objects": "page2"}
+    assert next_run["page_tokens"] == {"threat_objects": "page2"}
 
 
 def test_fetch_indicators_threat_objects_consume_budget_indicators_resumed_next_run(client, mocker):
@@ -2025,8 +2025,8 @@ def test_fetch_indicators_threat_objects_consume_budget_indicators_resumed_next_
 
     assert total_run1 == 100  # full threat objects page pushed, exhausting the budget
     mock_get_indicators.assert_not_called()  # no budget left for indicators
-    assert next_run_1["pending"] == {"threat_objects": "to_page2"}
-    assert "indicators" not in next_run_1["pending"]
+    assert next_run_1["page_tokens"] == {"threat_objects": "to_page2"}
+    assert "indicators" not in next_run_1["page_tokens"]
     assert "last_successful_run" not in next_run_1
 
     # --- Run 2: only threat objects (which had a token) resume; indicators still skipped ---
@@ -2071,7 +2071,7 @@ def test_fetch_indicators_initializes_cycle_start_time_on_first_pending_run(clie
 
     assert next_run["cycle_start_time"] == current_time.strftime(DATE_FORMAT)
     assert next_run["start_time"] == "2023-06-01T12:00:00Z"
-    assert next_run["pending"] == {"indicators": "page2"}
+    assert next_run["page_tokens"] == {"indicators": "page2"}
     assert "last_successful_run" not in next_run
 
 
@@ -2114,7 +2114,7 @@ def test_fetch_indicators_carries_cycle_start_time_across_multiple_resumed_runs(
 
         assert next_run["cycle_start_time"] == expected_cycle_start_time
         assert next_run["start_time"] == "2023-06-01T12:00:00Z"
-        assert next_run["pending"] == {"indicators": "page2"}
+        assert next_run["page_tokens"] == {"indicators": "page2"}
         assert "last_successful_run" not in next_run
 
 
@@ -2145,7 +2145,7 @@ def test_fetch_indicators_stores_original_cycle_start_time_when_pending_exhauste
         return_value={
             "start_time": "2023-06-01T12:00:00Z",
             "cycle_start_time": "2023-06-02T12:00:00Z",
-            "pending": {"indicators": "page2"},
+            "page_tokens": {"indicators": "page2"},
         },
     )
 
@@ -2190,7 +2190,7 @@ def test_fetch_indicators_upgrade_path_last_run_without_cycle_start_time(client,
     assert mock_get_indicators.call_args[1]["start_time"] == "2023-06-01T12:00:00Z"
     assert next_run["start_time"] == "2023-06-01T12:00:00Z"
     assert next_run["cycle_start_time"] == current_time.strftime(DATE_FORMAT)
-    assert next_run["pending"] == {"indicators": "page2"}
+    assert next_run["page_tokens"] == {"indicators": "page2"}
 
 
 def test_fetch_indicators_upgrade_path_no_pending_units(client, mocker):
@@ -2260,7 +2260,7 @@ def test_fetch_indicators_normal_run_stores_current_time_as_last_successful_run(
     _, next_run = fetch_indicators(client, params, current_time)
 
     assert next_run == {"last_successful_run": current_time.strftime(DATE_FORMAT)}
-    assert "pending" not in next_run
+    assert "page_tokens" not in next_run
     assert "cycle_start_time" not in next_run
 
 
@@ -2326,7 +2326,7 @@ def test_fetch_indicators_resume_across_runs_skips_no_indicators(client, mocker)
     # The full 100-item page A was pushed (overshoot), not truncated to 50.
     assert total_run1 == 100
     assert len(run1_values) == 100
-    assert next_run_1.get("pending") == {"indicators": "tokenB"}
+    assert next_run_1.get("page_tokens") == {"indicators": "tokenB"}
     # Run 1 started the cycle: it queried with no resume token.
     assert mock_get_indicators.call_args_list[0][1]["next_page_token"] is None
 
@@ -2340,7 +2340,7 @@ def test_fetch_indicators_resume_across_runs_skips_no_indicators(client, mocker)
     assert len(run2_values) == 100
     # Run 2 resumed from the token page A returned, and produced the next token.
     assert mock_get_indicators.call_args_list[1][1]["next_page_token"] == "tokenB"
-    assert next_run_2.get("pending") == {"indicators": "tokenC"}
+    assert next_run_2.get("page_tokens") == {"indicators": "tokenC"}
 
     # --- Run 3: resume from "tokenC", page C ends the cycle (null token) ---
     mocker.patch("Unit42Feed.demisto.getLastRun", return_value=next_run_2)
@@ -2353,7 +2353,7 @@ def test_fetch_indicators_resume_across_runs_skips_no_indicators(client, mocker)
     # Run 3 resumed from the token page B returned.
     assert mock_get_indicators.call_args_list[2][1]["next_page_token"] == "tokenC"
     # Cycle completed: next run is a last_successful_run shape with nothing left pending.
-    assert "pending" not in next_run_3
+    assert "page_tokens" not in next_run_3
     assert next_run_3 == {"last_successful_run": current_time.strftime(DATE_FORMAT)}
 
     # --- The crucial anti-regression property: exact coverage, no gap, no duplicate ---
@@ -2545,7 +2545,7 @@ def test_fetch_indicators_threat_objects_pending_resumes_ignoring_24h_gate(clien
         return_value={
             "start_time": "2023-06-01T12:00:00Z",
             "cycle_start_time": "2023-06-02T12:00:00Z",
-            "pending": {"threat_objects": "to2"},
+            "page_tokens": {"threat_objects": "to2"},
             "last_threat_objects_fetch": recent_to_fetch,
         },
     )
@@ -2566,7 +2566,7 @@ def test_fetch_indicators_threat_objects_pending_resumes_ignoring_24h_gate(clien
     mock_get_indicators.assert_not_called()
     # Threat objects completed this run, so the window resets to the current time and the
     # cycle completes (no pending left).
-    assert "pending" not in next_run
+    assert "page_tokens" not in next_run
     assert next_run["last_threat_objects_fetch"] == current_time.strftime(DATE_FORMAT)
 
 
@@ -2606,7 +2606,7 @@ def test_fetch_indicators_threat_objects_incomplete_does_not_reset_window(client
     _, next_run = fetch_indicators(client, params, current_time)
 
     # The interrupted fetch stores its resume token.
-    assert next_run["pending"] == {"threat_objects": "to_page2"}
+    assert next_run["page_tokens"] == {"threat_objects": "to_page2"}
     # The window does NOT reset on an incomplete fetch, and it was never previously set,
     # so the key is absent from the next run.
     assert "last_threat_objects_fetch" not in next_run
