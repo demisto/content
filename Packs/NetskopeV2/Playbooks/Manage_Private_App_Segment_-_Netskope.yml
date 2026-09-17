@@ -81,7 +81,7 @@ tasks:
       brand: ""
     nexttasks:
       "#default#":
-      - "71"
+      - "4"
       "yes":
       - "50"
     separatecontext: false
@@ -205,7 +205,7 @@ tasks:
       brand: ""
     nexttasks:
       "#default#":
-      - "4"
+      - "71"
       create:
       - "40"
       delete:
@@ -477,7 +477,7 @@ tasks:
       brand: ""
     nexttasks:
       "#default#":
-      - "4"
+      - "71"
       delete:
       - "23"
       modify:
@@ -849,7 +849,7 @@ view: |-
       "31_4_#default#": 0.47,
       "32_70_modify": 0.4,
       "32_23_delete": 0.6,
-      "32_4_#default#": 0.3,
+      "32_71_#default#": 0.3,
       "41_21_yes": 0.53,
       "41_4_#default#": 0.47,
       "43_30_yes": 0.53,
