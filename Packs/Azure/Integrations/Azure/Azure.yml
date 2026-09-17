@@ -104,7 +104,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Cloud integrations are installed from the **Data Sources** page. To configure a cloud integration, go to Settings > Data Sources and click "Add Data Source", select Azure, then in Advanced Settings > Security Capabilities, enable "Automation".
+description: Cloud integrations are installed from the **Data Sources** page. To install and configure a cloud integration, go to Settings > Data Sources and click "Add Data Source", select Azure, then in Advanced Settings > Security Capabilities, enable "Automation".
 display: Azure
 name: Azure
 script:

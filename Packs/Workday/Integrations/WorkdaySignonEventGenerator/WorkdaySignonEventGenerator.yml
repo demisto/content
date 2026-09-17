@@ -30,3 +30,4 @@ fromversion: 6.8.0
 toversion: 7.9.9
 tests:
 - No tests (auto formatted)
+excludefromtightlycoupled: true

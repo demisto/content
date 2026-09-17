@@ -35,7 +35,7 @@ configuration:
   advanced: true
 category: Cloud Services
 provider: Google
-description: "Manage and secure Google Cloud Platform resources. On Cortex Platform, authentication is handled automatically via the cloud connector. For Cortex XSOAR and Cortex XSIAM (version < 3.0), configure a GCP Service Account private key JSON and a default GCP Project ID."
+description: "Manage and secure Google Cloud Platform resources. On Cortex Platform,  authentication is handled automatically via the cloud connector. For Cortex XSOAR and Cortex XSIAM (version < 3.0), configure a GCP Service Account private key JSON and a default GCP Project ID."
 script:
   commands:
   - name: gcp-compute-firewall-patch
