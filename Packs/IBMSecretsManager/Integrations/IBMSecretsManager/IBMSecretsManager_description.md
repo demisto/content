@@ -1,6 +1,6 @@
 ## IBM Secrets Manager
 
-Collect IBM Secrets Manager audit / Activity Tracker events (via IBM Cloud Logs) into Cortex XSIAM.
+Collect IBM Secrets Manager audit / Activity Tracker events (via IBM Cloud Logs) into Cortex.
 
 ### Prerequisites
 

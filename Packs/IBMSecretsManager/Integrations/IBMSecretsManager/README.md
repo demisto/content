@@ -1,4 +1,4 @@
-IBM Secrets Manager is a centralized service to store, manage, and automate the lifecycle of secrets (API keys, passwords, TLS certificates, and arbitrary data), powered by HashiCorp Vault. This integration collects IBM Secrets Manager audit / Activity Tracker events (via IBM Cloud Logs) into Cortex XSIAM.
+IBM Secrets Manager is a centralized service to store, manage, and automate the lifecycle of secrets (API keys, passwords, TLS certificates, and arbitrary data), powered by HashiCorp Vault. This integration collects IBM Secrets Manager audit / Activity Tracker events (via IBM Cloud Logs) into Cortex.
 
 This integration was integrated and tested with the IBM Cloud Logs query API (v1).
 
@@ -32,7 +32,7 @@ Manual command to fetch events from IBM Secrets Manager and display them. Used m
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the fetched events are sent to Cortex XSIAM. If false, only displayed. Possible values are: true, false. Default is false. | Optional |
+| should_push_events | If true, the fetched events are sent to Cortex. If false, only displayed. Possible values are: true, false. Default is false. | Optional |
 | limit | The maximum number of events to return. Default is 50. | Optional |
 
 #### Context Output

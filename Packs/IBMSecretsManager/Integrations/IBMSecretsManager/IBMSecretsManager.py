@@ -333,7 +333,7 @@ def main() -> None:  # pragma: no cover
             last_run = demisto.getLastRun()
             events, new_last_run = fetch_events(client, query=DEFAULT_QUERY, max_events=max_events, last_run=last_run)
             if events:
-                demisto.debug(f"Sending {len(events)} events to Cortex XSIAM.")
+                demisto.debug(f"Sending {len(events)} events to Cortex.")
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(new_last_run)
             demisto.debug(f"Successfully saved last_run={new_last_run}")
