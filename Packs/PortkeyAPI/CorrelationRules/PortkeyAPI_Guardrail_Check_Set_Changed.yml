@@ -1,0 +1,59 @@
+name: Portkey - Guardrail Check Set Changed - by GoCortexIO
+description: Reports a guardrail whose number of configured checks varied within the window. This pack already reports who changed a config; it could not report what changed, so a guardrail being loosened was indistinguishable from one being tightened. The check count is the part of that answer the audit record can supply.
+severity: SEV_040_HIGH
+xql_query: |-
+  // PROVENANCE
+  //   Pattern:   an inline control being edited. A guardrail losing a check is a reduction in
+  //              what is inspected on every request that config serves.
+  //   Basis:     the audit request body, which carries the whole checks array on a guardrail
+  //              write. The model carries its LENGTH rather than its contents: the contents
+  //              are partly redacted by the vendor, and the count is what can be compared.
+  //   ATT&CK:    T1562
+  //   Threshold: none.
+  //   Direction is NOT asserted, for the reason given in the key protection rule. Both a
+  //              tightening and a loosening are worth seeing, and the aggregate cannot order
+  //              them.
+  //   API keys are EXCLUDED by URL: the same field carries a scope list for a key, and
+  //              comparing a scope count against a check count would compare unlike things.
+  datamodel dataset = portkey_audit_raw
+  | filter xdm.network.http.url contains "/guardrails"
+        and xdm.target.resource.value contains "checks:"
+  | alter guardrail_ref = coalesce(xdm.target.resource.name, xdm.target.resource.id),
+          check_count = to_integer(arrayindex(regextract(to_string(xdm.target.resource.value), "checks:([0-9]+)"), 0))
+  | comp min(check_count) as fewest_checks,
+         max(check_count) as most_checks,
+         count() as guardrail_writes,
+         values(xdm.source.user.identifier) as actors,
+         min(_time) as first_seen,
+         max(_time) as last_seen
+      by guardrail_ref, xdm.event.type
+  | filter most_checks != fewest_checks
+  | sort desc guardrail_writes
+  | fields guardrail_ref, xdm.event.type, fewest_checks, most_checks, guardrail_writes, actors, first_seen, last_seen
+alert_name: Portkey - guardrail $guardrail_ref check count changed, $fewest_checks to $most_checks
+alert_category: User Defined
+user_defined_category: xdm.event.type
+alert_description: Guardrail $guardrail_ref was written $guardrail_writes time(s) by $actors, holding as few as $fewest_checks and as many as $most_checks checks within the window. A guardrail with fewer checks inspects less of every request routed through the configs that use it.
+alert_domain: DOMAIN_SECURITY
+mitre_defs:
+  TA0005 - Defense Evasion:
+  - T1562 - Impair Defenses
+suppression_fields:
+- guardrail_ref
+- most_checks
+global_rule_id: caf2d57f-b997-46ad-80a6-eaddb7eedd6a
+is_enabled: true
+alert_type: null
+alert_fields: {}
+execution_mode: SCHEDULED
+search_window: 26 hours
+timezone: Australia/Melbourne
+crontab: '43 * * * *'
+suppression_enabled: true
+suppression_duration: 24 hours
+dataset: alerts
+investigation_query_link: dataset = portkey_audit_raw | filter uri contains "/guardrails"
+drilldown_query_timeframe: ALERT
+mapping_strategy: AUTO
+action: ALERTS
+fromversion: 8.4.0
