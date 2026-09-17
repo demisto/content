@@ -240,7 +240,7 @@ tasks:
       '#default#':
       - "7"
       "yes":
-      - "1"
+      - "10"
     scriptarguments:
       brandname:
         simple: Tenzai
@@ -295,6 +295,109 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 3f1c0a10-0000-4000-8000-000000000010
+    type: condition
+    task:
+      id: 3f1c0a10-0000-4000-8000-000000000010
+      version: -1
+      name: Is analyst approval required?
+      description: Branches on the RequireAnalystApproval input. When false, the playbook starts Tenzai validation immediately; when true, it waits for an analyst to approve active testing.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "1"
+      "Approval required":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "Approval required"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.RequireAnalystApproval
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 285
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 3f1c0a10-0000-4000-8000-000000000011
+    type: condition
+    task:
+      id: 3f1c0a10-0000-4000-8000-000000000011
+      version: -1
+      name: Approve Tenzai active testing?
+      description: |-
+        Manual approval gate. Tenzai validation runs ACTIVE penetration testing against the live production
+        asset and consumes Tenzai credits. ASM attribution can occasionally be wrong, so an analyst must
+        confirm the target and the exposure before testing starts. Approve to start validation, or Reject to
+        end without testing.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "Approve":
+      - "1"
+      "Reject":
+      - "7"
+    separatecontext: false
+    message:
+      to:
+      subject:
+      body:
+        simple: |-
+          Approve Tenzai active penetration testing against this asset?
+
+          This starts ACTIVE testing against the live production asset and consumes Tenzai credits. Confirm the target and exposure are correct (ASM attribution can occasionally be wrong) before approving.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
@@ -308,6 +411,12 @@ view: |-
     }
   }
 inputs:
+- key: RequireAnalystApproval
+  value:
+    simple: "true"
+  required: false
+  description: When true (default), the playbook pauses for an analyst to approve before Tenzai starts active testing, because validation runs live penetration testing against the production asset and consumes Tenzai credits. Set to false to start validation automatically without approval.
+  playbookInputQuery:
 - key: PollingInterval
   value:
     simple: "60"

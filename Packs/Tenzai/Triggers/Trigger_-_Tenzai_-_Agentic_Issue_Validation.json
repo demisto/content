@@ -2,8 +2,8 @@
     "trigger_id": "3468bd4543c0fb9f0883702500781cda",
     "trigger_name": "Tenzai - Agentic Issue Validation",
     "playbook_id": "Tenzai Agentic Issue Validation",
-    "suggestion_reason": "Validate exploitability of High/Critical ASM-discovered exposures with Tenzai agentic testing.",
-    "description": "Runs the Tenzai Agentic Issue Validation playbook on High/Critical ASM-discovered vulnerability/configuration exposures that have not yet been validated by Tenzai.",
+    "suggestion_reason": "Validate exploitability of High/Critical ASM-discovered exposures with Tenzai agentic testing. Warning: enabling this trigger runs active penetration testing against the live production asset and consumes Tenzai credits; keep the playbook's RequireAnalystApproval input set to true so an analyst approves each run.",
+    "description": "Runs the Tenzai Agentic Issue Validation playbook on High/Critical ASM-discovered vulnerability/configuration exposures (VULNERABILITY or CONFIGURATION category, HIGH/CRITICAL severity, DOMAIN_POSTURE domain, finding source CORTEX_ATTACK_SURFACE_MANAGEMENT). Warning: when enabled, each matching alert triggers ACTIVE penetration testing against the live production asset and consumes Tenzai credits. Because ASM attribution can occasionally be wrong, the playbook gates on analyst approval by default (RequireAnalystApproval). The filter does not exclude already-validated exposures, so re-triggering is possible; disable the trigger or run validation ad-hoc from the Validate button if you do not want automatic testing.",
     "alerts_filter": {
         "filter": {
             "AND": [
