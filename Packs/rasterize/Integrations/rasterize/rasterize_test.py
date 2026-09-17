@@ -1921,6 +1921,81 @@ def test_wait_for_page_load_timeout(mocker):
     assert "Page.stopLoading" in stopped
 
 
+def test_wait_for_page_load_normal_completion_no_freeze_on_load(mocker):
+    """
+    Given: A cgroup limit exists, the page finishes loading, and the caller passed
+           freeze_on_load=False (text extraction, which still needs a live JS context).
+    When: Calling wait_for_page_load_with_memory_guard.
+    Then: The tab is NOT frozen on the normal-completion path and True is still returned.
+
+    Regression test for XSUP-76577: the unconditional post-load freeze disabled script
+    execution and purged the V8 heap, so the Runtime.evaluate used by rasterize-extract
+    failed with "Cannot find default execution context".
+    """
+    mocker.patch.object(rasterize, "get_container_available_memory_bytes", return_value=10 * 1024 * 1024 * 1024)
+    freeze = mocker.patch.object(rasterize, "_freeze_tab_for_screenshot")
+    event = threading.Event()
+    event.set()
+    tab = mocker.MagicMock()
+
+    result = rasterize.wait_for_page_load_with_memory_guard(
+        tab_ready_event=event, navigation_timeout=5, tab_id="tab_id", path="path", tab=tab, freeze_on_load=False
+    )
+
+    assert result is True
+    freeze.assert_not_called()
+
+
+def test_wait_for_page_load_memory_pressure_freezes_even_when_freeze_on_load_false(mocker):
+    """
+    Given: A caller passed freeze_on_load=False, the page does not finish loading, and
+           available memory drops below the tolerance.
+    When: Calling wait_for_page_load_with_memory_guard.
+    Then: The tab is still frozen and False is returned - freeze_on_load only suppresses the
+          post-load freeze, never the OOM protection.
+    """
+    mocker.patch.object(rasterize, "get_container_available_memory_bytes", return_value=10 * 1024 * 1024)
+    freeze = mocker.patch.object(rasterize, "_freeze_tab_for_screenshot")
+    mocker.patch.object(rasterize.time, "sleep")
+    event = threading.Event()  # never set
+    tab = mocker.MagicMock()
+
+    result = rasterize.wait_for_page_load_with_memory_guard(
+        tab_ready_event=event,
+        navigation_timeout=5,
+        tolerance_bytes=650 * 1024 * 1024,
+        poll_interval=0.01,
+        tab_id="tab_id",
+        path="path",
+        tab=tab,
+        freeze_on_load=False,
+    )
+
+    assert result is False
+    assert event.is_set()
+    freeze.assert_called_once_with(tab, "tab_id", "path")
+
+
+def test_wait_for_page_load_freeze_on_load_defaults_to_true(mocker):
+    """
+    Given: A caller that does not pass freeze_on_load (screenshot/PDF captures).
+    When: Calling wait_for_page_load_with_memory_guard and the page finishes loading.
+    Then: The tab is frozen, preserving the existing memory-capping behavior for captures.
+    """
+    mocker.patch.object(rasterize, "get_container_available_memory_bytes", return_value=10 * 1024 * 1024 * 1024)
+    freeze = mocker.patch.object(rasterize, "_freeze_tab_for_screenshot")
+    event = threading.Event()
+    event.set()
+    tab = mocker.MagicMock()
+
+    result = rasterize.wait_for_page_load_with_memory_guard(
+        tab_ready_event=event, navigation_timeout=5, tab_id="tab_id", path="path", tab=tab
+    )
+
+    assert result is True
+    freeze.assert_called_once_with(tab, "tab_id", "path")
+
+
 # endregion
 
 
