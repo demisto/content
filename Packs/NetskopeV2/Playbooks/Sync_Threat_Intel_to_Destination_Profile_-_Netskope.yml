@@ -1,0 +1,711 @@
+id: Sync Threat Intel to Destination Profile - Netskope
+version: -1
+name: Sync Threat Intel to Destination Profile - Netskope
+description: |-
+  Synchronizes bounded Cortex XSOAR Threat Intel indicators to a Netskope Destination Profile.
+  The profile name is required. Match type and indicator types have editable playbook defaults,
+  and each input is validated independently before any Netskope command runs.
+
+  Existing profiles are updated in batches of at most 10 values. New profiles are created as
+  pending changes. Set Deploy to true to apply pending changes; it defaults to false so scheduled
+  jobs cannot enforce changes without explicit authorization. The default indicator query selects
+  active indicators with a Bad reputation and can be further restricted with tags.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8deef1aa-a343-4329-8636-dc321d937642
+    type: start
+    task:
+      id: 8deef1aa-a343-4329-8636-dc321d937642
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "13":
+    id: "13"
+    taskid: 087611a4-0f30-42a0-bcc2-185d30653572
+    type: condition
+    task:
+      id: 087611a4-0f30-42a0-bcc2-185d30653572
+      version: -1
+      name: Was ProfileName provided?
+      description: Stop safely if the required destination profile name is empty.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ProfileName
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "16":
+    id: "16"
+    taskid: d9ea88bd-8db6-44bb-8153-acde42479768
+    type: condition
+    task:
+      id: d9ea88bd-8db6-44bb-8153-acde42479768
+      version: -1
+      name: Was MatchType provided?
+      description: Stop safely if the match type is empty.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.MatchType
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "17":
+    id: "17"
+    taskid: e60eef06-f35c-465f-9c42-7e64b1785694
+    type: condition
+    task:
+      id: e60eef06-f35c-465f-9c42-7e64b1785694
+      version: -1
+      name: Were IndicatorTypes provided?
+      description: Stop safely if the indicator types are empty.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.IndicatorTypes
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "2":
+    id: "2"
+    taskid: 567f2a54-652c-4a1f-b202-79fb0fe1d297
+    type: condition
+    task:
+      id: 567f2a54-652c-4a1f-b202-79fb0fe1d297
+      version: -1
+      name: Is Netskope enabled?
+      description: Verify that a valid, active Netskope integration instance is enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: match
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Netskope
+                    ignorecase: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Active
+                    ignorecase: true
+                accessor: brand
+            iscontext: true
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "4":
+    id: "4"
+    taskid: dee1c88e-35d5-40d4-8969-71c36c80f46a
+    type: title
+    task:
+      id: dee1c88e-35d5-40d4-8969-71c36c80f46a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "#none#":
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "15":
+    id: "15"
+    taskid: cf120fd0-9d0f-4b89-8896-b41bbf934b65
+    type: regular
+    task:
+      id: cf120fd0-9d0f-4b89-8896-b41bbf934b65
+      version: -1
+      name: Close Investigation
+      description: Close this run's incident so the recurring Job isn't blocked from firing again - Jobs typically won't start a new run while the previous job-created incident is still open.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeReason:
+        complex:
+          root: inputs.CloseReason
+      closeNotes:
+        complex:
+          root: inputs.CloseNotes
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "7":
+    id: "7"
+    taskid: 084c42ac-f9ce-473b-a43d-6d1e8a3166ac
+    type: regular
+    task:
+      id: 084c42ac-f9ce-473b-a43d-6d1e8a3166ac
+      version: -1
+      name: Find Destination Profile by Name
+      description: Look up the destination profile's ID and current values by its exact name.
+      script: "|||netskopev2-list-destination-profiles"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "8"
+    scriptarguments:
+      name:
+        complex:
+          root: inputs.ProfileName
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 3dc7d8f1-f767-4ccb-b69c-f8b98f25caa3
+    type: condition
+    task:
+      id: 3dc7d8f1-f767-4ccb-b69c-f8b98f25caa3
+      version: -1
+      name: Was a matching profile found?
+      description: Check whether the name lookup found an existing destination profile.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "10"
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Netskope.DestinationProfile.id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 7aa11aa5-4e1e-4242-82f5-1e67ec5f85a9
+    type: regular
+    task:
+      id: 7aa11aa5-4e1e-4242-82f5-1e67ec5f85a9
+      version: -1
+      name: Sync New Indicators to Existing Profile
+      description: Search bounded Cortex XSOAR indicators, skip existing values, append new values in batches of at most 10, and deploy only when explicitly enabled.
+      scriptName: NetskopeIndicatorSync
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "4"
+    scriptarguments:
+      profile_id:
+        complex:
+          root: Netskope.DestinationProfile.id
+      tags:
+        complex:
+          root: inputs.Tags
+      skip_tags:
+        complex:
+          root: inputs.SkipTags
+      indicator_types:
+        complex:
+          root: inputs.IndicatorTypes
+      indicator_query:
+        complex:
+          root: inputs.IndicatorQuery
+      existing_values:
+        complex:
+          root: Netskope.DestinationProfile.values
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ","
+      max_indicators:
+        complex:
+          root: inputs.MaxIndicators
+      change_note:
+        complex:
+          root: inputs.ChangeNote
+      deploy:
+        complex:
+          root: inputs.Deploy
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "10":
+    id: "10"
+    taskid: 289fa65a-c826-474b-903a-ffdb3e15f71d
+    type: regular
+    task:
+      id: 289fa65a-c826-474b-903a-ffdb3e15f71d
+      version: -1
+      name: Prepare New Values for New Profile
+      description: No profile with that name exists yet - search Cortex XSOAR indicators of the selected types and prepare the new-value list, without appending/deploying anything yet.
+      scriptName: NetskopeIndicatorSync
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "11"
+    scriptarguments:
+      tags:
+        complex:
+          root: inputs.Tags
+      skip_tags:
+        complex:
+          root: inputs.SkipTags
+      indicator_types:
+        complex:
+          root: inputs.IndicatorTypes
+      indicator_query:
+        complex:
+          root: inputs.IndicatorQuery
+      max_indicators:
+        complex:
+          root: inputs.MaxIndicators
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 537c8004-336e-468f-b3f3-9656da4ca03d
+    type: condition
+    task:
+      id: 537c8004-336e-468f-b3f3-9656da4ca03d
+      version: -1
+      name: Are there new values to create with?
+      description: Skip creating an empty profile if the query found nothing new.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Netskope.Sync.AllNewValues
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "12":
+    id: "12"
+    taskid: 6e754da1-e17a-4c43-8f6c-ed45f1986eb4
+    type: regular
+    task:
+      id: 6e754da1-e17a-4c43-8f6c-ed45f1986eb4
+      version: -1
+      name: Create Destination Profile
+      description: Create the profile as a pending change with the selected match type and the newly found values.
+      script: "|||netskopev2-create-destination-profile"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "18"
+    scriptarguments:
+      name:
+        complex:
+          root: inputs.ProfileName
+      type:
+        complex:
+          root: inputs.MatchType
+      values:
+        complex:
+          root: Netskope.Sync.AllNewValues
+      interactive:
+        simple: "true"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "18":
+    id: "18"
+    taskid: 76e28337-795d-4ad7-837e-812e19f69fdc
+    type: condition
+    task:
+      id: 76e28337-795d-4ad7-837e-812e19f69fdc
+      version: -1
+      name: Deploy the new profile?
+      description: Apply the pending profile only when Deploy is explicitly enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Deploy
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "19":
+    id: "19"
+    taskid: 04693d11-2a1c-4dd8-b778-f33a6083ae38
+    type: regular
+    task:
+      id: 04693d11-2a1c-4dd8-b778-f33a6083ae38
+      version: -1
+      name: Deploy New Destination Profile
+      description: Deploy the newly created pending destination profile.
+      script: "|||netskopev2-deploy-destination-profiles"
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "4"
+    scriptarguments:
+      ids:
+        complex:
+          root: Netskope.DestinationProfile.id
+      change_note:
+        complex:
+          root: inputs.ChangeNote
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 770,
+          "y": 1760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_16_yes": 0.53,
+      "13_4_#default#": 0.47,
+      "16_17_yes": 0.53,
+      "16_4_#default#": 0.47,
+      "17_2_yes": 0.53,
+      "17_4_#default#": 0.47,
+      "2_7_yes": 0.53,
+      "2_4_#default#": 0.47,
+      "8_9_yes": 0.53,
+      "8_10_#default#": 0.47,
+      "11_12_yes": 0.53,
+      "11_4_#default#": 0.47
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2320,
+        "width": 1140,
+        "x": 130,
+        "y": -70
+      }
+    }
+  }
+inputs:
+- key: ProfileName
+  value: {}
+  required: true
+  description: Name of the Netskope Destination Profile to sync indicators into. No tenant-specific fallback is used.
+  playbookInputQuery:
+- key: MatchType
+  value:
+    simple: regex
+  required: false
+  description: Match type to use only when creating a profile. One of sensitive, insensitive, or regex. Defaults to regex.
+  playbookInputQuery:
+- key: IndicatorTypes
+  value:
+    simple: Domain,URL,IP,CIDR
+  required: false
+  description: Comma-separated Cortex XSOAR indicator types to sync. One or more of Domain, URL, IP, and CIDR.
+  playbookInputQuery:
+- key: Tags
+  value: {}
+  required: false
+  description: Optional comma-separated indicator tags to further restrict which indicators are pulled (e.g. "netskope-block"). Leave empty to consider all indicators regardless of tag.
+  playbookInputQuery:
+- key: SkipTags
+  value: {}
+  required: false
+  description: Optional comma-separated indicator tags to exclude - any indicator carrying one of these tags is skipped even if it matches Tags. Leave empty to not exclude by tag.
+  playbookInputQuery:
+- key: MaxIndicators
+  value: {}
+  required: false
+  description: Maximum number of indicators to pull from Cortex XSOAR per run (default 500 if left empty). Bounds how much work a single scheduled run does.
+  playbookInputQuery:
+- key: IndicatorQuery
+  value:
+    simple: reputation:Bad and expirationStatus:active
+  required: false
+  description: Additional Cortex XSOAR indicator query. The default limits synchronization to active indicators with a Bad reputation.
+  playbookInputQuery:
+- key: Deploy
+  value:
+    simple: "false"
+  required: false
+  description: Whether to deploy pending Destination Profile changes. Defaults to false.
+  playbookInputQuery:
+- key: ChangeNote
+  value:
+    simple: Threat Intel synchronization from Cortex XSOAR
+  required: false
+  description: Change note recorded when Deploy is true.
+  playbookInputQuery:
+- key: CloseReason
+  value:
+    simple: Other
+  required: false
+  description: Close reason used for the recurring job incident.
+  playbookInputQuery:
+- key: CloseNotes
+  value:
+    simple: Netskope Threat Intel synchronization completed.
+  required: false
+  description: Close notes used for the recurring job incident.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
+issilent: false

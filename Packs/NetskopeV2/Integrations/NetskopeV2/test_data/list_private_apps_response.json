@@ -1,0 +1,30 @@
+{
+    "data": {
+        "private_apps": [
+            {
+                "app_id": 2,
+                "app_name": "[test server]",
+                "clientless_access": false,
+                "host": "172.31.34.5",
+                "modified_by": "user@netskope.com",
+                "modify_time": "2023-11-30 23:08:48",
+                "policies": ["PrivateApps"],
+                "private_app_protocol": "http",
+                "protocols": [
+                    {"id": 7, "port": "443", "service_id": 1, "transport": "tcp"},
+                    {"id": 8, "port": "22", "service_id": 1, "transport": "tcp"}
+                ],
+                "public_host": "",
+                "reachability": {"error_code": 0, "error_string": "", "reachable": true},
+                "service_publisher_assignments": [
+                    {"publisher_id": 15, "publisher_name": "AWS-NPA", "service_id": 2}
+                ],
+                "tags": [],
+                "trust_self_signed_certs": true,
+                "use_publisher_dns": false
+            }
+        ]
+    },
+    "status": "success",
+    "total": 1
+}
