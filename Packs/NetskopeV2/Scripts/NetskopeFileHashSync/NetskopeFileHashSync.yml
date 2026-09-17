@@ -1,6 +1,11 @@
 args:
 - description: The optional comma-separated indicator tags to further restrict the search (e.g. "malware"). If omitted, all File-type indicators are considered.
   name: tags
+- description: The optional comma-separated indicator tags to exclude. Any indicator carrying one of these tags is skipped.
+  name: skip_tags
+- defaultValue: reputation:Bad and expirationStatus:active
+  description: An additional Cortex XSOAR indicator query used to bound the sync. The default selects active indicators with a Bad reputation.
+  name: indicator_query
 - description: The comma-separated list of hashes already tracked for this Netskope file hash list (from the NetskopeGetXsoarListContent script's output) - used to compute what's genuinely new and to build the full merged replace-set.
   name: existing_hashes
 - defaultValue: '500'

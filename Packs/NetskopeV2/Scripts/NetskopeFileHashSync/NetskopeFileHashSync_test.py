@@ -85,7 +85,14 @@ def test_build_query_includes_file_types_and_tags():
         - The query includes the File/File MD5/File SHA-256 types and the tags filter.
     """
     query = build_query(["malware"])
-    assert query == 'type:(File "File MD5" "File SHA-256") and tags:(malware)'
+    assert query == (
+        'type:(File "File MD5" "File SHA-256") and tags:(malware) ' "and (reputation:Bad and expirationStatus:active)"
+    )
+
+
+def test_build_query_includes_skip_tags_and_explicit_query():
+    query = build_query([], ["allow"], "sourceBrands:UnitTest")
+    assert query == 'type:(File "File MD5" "File SHA-256") and -tags:(allow) and (sourceBrands:UnitTest)'
 
 
 def test_main_computes_new_and_merged_hashes(mocker):

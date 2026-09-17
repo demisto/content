@@ -431,6 +431,7 @@ Lists and filters destination profiles.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| name | The exact profile name to find. The comparison is performed locally without interpolating the value into a filter expression. Cannot be used with filter. | Optional |
 | fields | The comma-separated list of fields to return. The id field is always returned. | Optional |
 | page | The page number to return. Must be used with page_size. | Optional |
 | page_size | The number of items per page, from 1 through 100. | Optional |
@@ -459,7 +460,7 @@ Lists and filters destination profiles.
 #### Command Example
 
 ```
-!netskopev2-list-destination-profiles
+!netskopev2-list-destination-profiles name="Sample Destination Profile"
 ```
 
 #### Human Readable Output
@@ -900,6 +901,7 @@ Lists and filters network profiles.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| name | The exact profile name to find. The comparison is performed locally without interpolating the value into a filter expression. Cannot be used with filter. | Optional |
 | fields | The comma-separated list of fields to return. The id field is always returned. | Optional |
 | page | The page number to return. Must be used with page_size. | Optional |
 | page_size | The number of items per page, from 1 through 100. | Optional |
@@ -926,7 +928,7 @@ Lists and filters network profiles.
 #### Command Example
 
 ```
-!netskopev2-list-network-profiles
+!netskopev2-list-network-profiles name="Sample Network Profile"
 ```
 
 #### Human Readable Output

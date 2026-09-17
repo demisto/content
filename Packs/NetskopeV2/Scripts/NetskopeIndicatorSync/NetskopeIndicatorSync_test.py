@@ -48,7 +48,9 @@ def test_build_query_includes_tags_and_skip_tags():
         - The query string includes a type filter, a tags filter, and a negated skip_tags filter.
     """
     query = build_query(["Domain", "URL"], ["netskope-block"], ["ignore"])
-    assert query == "type:(Domain URL) and tags:(netskope-block) and -tags:(ignore)"
+    assert query == (
+        "type:(Domain URL) and tags:(netskope-block) and -tags:(ignore) " "and (reputation:Bad and expirationStatus:active)"
+    )
 
 
 def test_build_query_without_tags():
@@ -60,7 +62,11 @@ def test_build_query_without_tags():
     Then:
         - The query string only contains the type filter.
     """
-    assert build_query(["Domain"], [], []) == "type:(Domain)"
+    assert build_query(["Domain"], [], []) == "type:(Domain) and (reputation:Bad and expirationStatus:active)"
+
+
+def test_build_query_accepts_explicit_indicator_query():
+    assert build_query(["IP"], [], [], "sourceBrands:UnitTest") == "type:(IP) and (sourceBrands:UnitTest)"
 
 
 def test_find_new_values_skips_existing_and_no_value(mocker):
@@ -142,7 +148,7 @@ def test_main_with_profile_id_appends_and_deploys(mocker):
         - The new values are appended via netskopev2-update-destination-profile-values and the
           profile is deployed via netskopev2-deploy-destination-profiles.
     """
-    mocker.patch.object(demisto, "args", return_value={"indicator_types": "Domain", "profile_id": "5"})
+    mocker.patch.object(demisto, "args", return_value={"indicator_types": "Domain", "profile_id": "5", "deploy": "true"})
     mocker.patch.object(demisto, "searchIndicators", return_value={"iocs": [{"value": "new.com", "indicator_type": "Domain"}]})
     execute_mock = mocker.patch.object(demisto, "executeCommand", return_value=[{"Type": 1, "Contents": "ok"}])
     results_mock = mocker.patch.object(demisto, "results")

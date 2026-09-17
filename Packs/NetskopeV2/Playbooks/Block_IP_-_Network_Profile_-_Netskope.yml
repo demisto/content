@@ -1,6 +1,6 @@
-id: silent-Block IP - Network Profile - Netskope
+id: Block IP - Network Profile - Netskope
 version: -1
-name: silent-Block IP - Network Profile - Netskope
+name: Block IP - Network Profile - Netskope
 description: |-
   Blocks an IP address, IP range, or CIDR netmask via a Netskope Network Profile (shown as
   "Network Location" in the Netskope UI) - the same "check input / check integration enabled /
@@ -15,8 +15,8 @@ description: |-
   no "choose a match type" prompt here; creating a new profile needs nothing beyond the name and
   the value itself.
 
-  Profile names are unique in Netskope, so an exact-match lookup (name eq "<ProfileName>") returns
-  at most one profile - no manual ID lookup needed, just the profile's display name.
+  Profile names are unique in Netskope, so the playbook performs an exact-name lookup without
+  constructing a filter expression.
 
   IMPORTANT: like Destination Profiles, Network Profile values "append" has no server-side dedup -
   calling it twice with the same value (e.g. re-running this playbook for a value that's already
@@ -25,10 +25,8 @@ description: |-
   a safe no-op. Also make sure only one Netskope integration instance is enabled at a time - if
   two are enabled, Cortex XSOAR dispatches the command to both, causing the same double-add.
 
-  Network Profile value changes are staged (pending) until deployed, same as Destination
-  Profiles - this playbook appends the value and then immediately deploys that one profile so the
-  change takes effect right away. Creating a profile with default settings (interactive=false)
-  applies immediately - no separate deploy step is needed for that path.
+  Network Profile changes are staged. Set Deploy to true to apply the pending change; it defaults
+  to false. ChangeNote is recorded only when a deployment is requested.
 starttaskid: "0"
 tasks:
   "0":
@@ -66,7 +64,7 @@ tasks:
       id: 9e7cf8ea-d10b-4697-b619-2ccdb2dee9b7
       version: -1
       name: Is Netskope enabled?
-      description: Verify that there is a valid, active Netskope integration instance enabled (matches any brand name containing "Netskope", so it works against a renamed dev/test instance too).
+      description: Verify that a valid, active Netskope integration instance is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -133,7 +131,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-      - "6"
+      - "11"
     scriptarguments:
       id:
         complex:
@@ -148,7 +146,7 @@ tasks:
       {
         "position": {
           "x": 890,
-          "y": 745
+          "y": 910
         }
       }
     note: false
@@ -173,7 +171,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1090
+          "y": 1420
         }
       }
     note: false
@@ -247,13 +245,14 @@ tasks:
         complex:
           root: Netskope.NetworkProfile.id
       change_note:
-        simple: Appended value via Block IP - Network Profile - Netskope playbook
+        complex:
+          root: inputs.ChangeNote
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 890,
-          "y": 915
+          "x": 700,
+          "y": 1250
         }
       }
     note: false
@@ -278,10 +277,9 @@ tasks:
       "#none#":
       - "8"
     scriptarguments:
-      filter:
-        simple: name eq "${inputs.ProfileName}"
-      limit:
-        simple: "1"
+      name:
+        complex:
+          root: inputs.ProfileName
     separatecontext: false
     view: |-
       {
@@ -369,8 +367,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 660
+          "x": 890,
+          "y": 740
         }
       }
     note: false
@@ -386,14 +384,14 @@ tasks:
       id: d83d00eb-d9ac-483f-b7ff-97e5d0490bc9
       version: -1
       name: Create Network Profile
-      description: No profile with that name exists yet - create one with the value as its first entry. Applies immediately (interactive=false), no separate deploy needed. Network Profiles have no "type" argument, unlike Destination Profiles, so nothing else is needed to create one.
+      description: Create a pending network profile with the value as its first entry.
       script: "|||netskopev2-create-network-profile"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       "#none#":
-      - "4"
+      - "11"
     scriptarguments:
       name:
         complex:
@@ -401,12 +399,57 @@ tasks:
       values:
         complex:
           root: inputs.Value
+      interactive:
+        simple: "true"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 830
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "11":
+    id: "11"
+    taskid: 0488fbab-13de-4a42-8c6b-acde0bfe53e4
+    type: condition
+    task:
+      id: 0488fbab-13de-4a42-8c6b-acde0bfe53e4
+      version: -1
+      name: Deploy the pending change?
+      description: Apply the pending network profile change only when Deploy is explicitly enabled.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.Deploy
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 1080
         }
       }
     note: false
@@ -424,11 +467,13 @@ view: |-
       "8_9_yes": 0.53,
       "8_10_#default#": 0.47,
       "9_4_yes": 0.53,
-      "9_3_#default#": 0.47
+      "9_3_#default#": 0.47,
+      "11_6_yes": 0.53,
+      "11_4_#default#": 0.47
     },
     "paper": {
       "dimensions": {
-        "height": 1400,
+        "height": 1610,
         "width": 1140,
         "x": 130,
         "y": -70
@@ -439,15 +484,27 @@ inputs:
 - key: ProfileName
   value: {}
   required: true
-  description: Name of the Netskope Network Profile (shown as "Network Location" in the Netskope UI) to add the value to. The playbook looks up the profile by this name (netskopev2-list-network-profiles, filter name eq "<ProfileName>"). If no profile with this name exists, one is created with the value as its first entry.
+  description: Name of the Netskope Network Profile (shown as "Network Location" in the Netskope UI). The playbook performs an exact-name lookup without constructing a filter expression.
   playbookInputQuery:
 - key: Value
   value: {}
   required: true
   description: IP address, IP range, or CIDR netmask to add (e.g. "192.0.2.0/27").
   playbookInputQuery:
+- key: Deploy
+  value:
+    simple: "false"
+  required: false
+  description: Whether to deploy the pending Network Profile change. Defaults to false.
+  playbookInputQuery:
+- key: ChangeNote
+  value:
+    simple: Network value block requested from Cortex XSOAR
+  required: false
+  description: Change note recorded when Deploy is true.
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 8.9.0
-issilent: true
+fromversion: 6.10.0
+issilent: false

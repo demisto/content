@@ -3,6 +3,9 @@ args:
   name: tags
 - description: The optional comma-separated indicator tags to exclude - any indicator carrying one of these tags is skipped even if it matches tags/indicator_types.
   name: skip_tags
+- defaultValue: reputation:Bad and expirationStatus:active
+  description: An additional Cortex XSOAR indicator query used to bound the sync. The default selects active indicators with a Bad reputation.
+  name: indicator_query
 - description: The comma-separated indicator types to pull from Cortex XSOAR's Threat Intel. Must be one or more of Domain, URL, IP, CIDR.
   name: indicator_types
   required: true
@@ -16,7 +19,7 @@ args:
 - defaultValue: '10'
   description: The maximum number of values per append call, matching netskopev2-update-destination-profile-values' 1-10-per-call limit.
   name: chunk_size
-- defaultValue: 'true'
+- defaultValue: 'false'
   description: Whether the deploy option is enabled. If profile_id is set and any new values were appended, deploy the profile afterward so the change takes effect immediately.
   name: deploy
   auto: PREDEFINED
@@ -25,7 +28,7 @@ args:
   - 'false'
 - description: The optional change note recorded on the deploy call.
   name: change_note
-comment: Pulls Domain, URL, IP, and CIDR indicators from Cortex XSOAR's Threat Intel Management and formats CIDR values with the "CIDR:" prefix that Netskope's destination profile Definition field expects. It skips values already present in the target profile. When profile_id is given, it appends the new values in batches of at most chunk_size and deploys the result. Without profile_id, it only prepares the new-value list for a separate create-profile step.
+comment: Pulls bounded Domain, URL, IP, and CIDR indicators from Cortex XSOAR's Threat Intel Management and formats CIDR values with the "CIDR:" prefix that Netskope's destination profile Definition field expects. It skips values already present in the target profile. When profile_id is given, it appends the new values in batches of at most chunk_size and deploys only when deploy is explicitly enabled. Without profile_id, it only prepares the new-value list for a separate create-profile step.
 commonfields:
   id: NetskopeIndicatorSync
   version: -1

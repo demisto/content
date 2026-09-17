@@ -16,7 +16,8 @@ Netskope is treated as success, not an error, since the desired state (these has
 present) is already true in that case.
 
 The ListName input must reference a Netskope list that already exists (the tracking List on the
-Cortex XSOAR side is separate and gets created automatically).
+Cortex XSOAR side is separate and gets created automatically). If the tracking List is empty,
+the playbook stops unless AllowEmptyMirrorOverwrite is explicitly enabled.
 
 ## Dependencies
 
@@ -47,6 +48,7 @@ This playbook does not use any sub-playbooks.
 | --- | --- | --- | --- |
 | ListName | Name of an existing Netskope file hash list to update. Must already exist in the Netskope UI. |  | Required |
 | NewHashes | Comma-separated MD5 or SHA256 hashes to add to the list this run. |  | Required |
+| AllowEmptyMirrorOverwrite | Whether to allow replacing the Netskope list when the Cortex XSOAR tracking List is empty. Defaults to false. | false | Optional |
 
 ## Playbook Outputs
 

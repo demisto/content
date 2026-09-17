@@ -6,6 +6,7 @@ from CommonServerPython import *  # noqa: F401
 ALLOWED_TYPES = ["Domain", "URL", "IP", "CIDR"]
 DEFAULT_MAX_INDICATORS = 500
 DEFAULT_CHUNK_SIZE = 10
+DEFAULT_INDICATOR_QUERY = "reputation:Bad and expirationStatus:active"
 
 
 def format_value(indicator_type: str, value: str) -> str:
@@ -20,17 +21,27 @@ def chunk_list(items: list, size: int) -> list:
     return [items[i : i + size] for i in range(0, len(items), size)]
 
 
-def build_query(types: list, tags: list, skip_tags: list) -> str:
+def build_query(types: list, tags: list, skip_tags: list, indicator_query: str = DEFAULT_INDICATOR_QUERY) -> str:
     query = f"type:({' '.join(types)})"
     if tags:
         query += f" and tags:({' '.join(tags)})"
     if skip_tags:
         query += f" and -tags:({' '.join(skip_tags)})"
+    if indicator_query:
+        query += f" and ({indicator_query})"
     return query
 
 
-def find_new_values(types: list, tags: list, skip_tags: list, existing: set, max_indicators: int, chunk_size: int) -> tuple:
-    query = build_query(types, tags, skip_tags)
+def find_new_values(
+    types: list,
+    tags: list,
+    skip_tags: list,
+    existing: set,
+    max_indicators: int,
+    chunk_size: int,
+    indicator_query: str = DEFAULT_INDICATOR_QUERY,
+) -> tuple:
+    query = build_query(types, tags, skip_tags, indicator_query)
     # .get("iocs", []) only falls back when the key is absent - searchIndicators can return
     # {"iocs": None, ...} when nothing matches, so the "or []" is needed too.
     iocs = (demisto.searchIndicators(query=query, size=max_indicators) or {}).get("iocs") or []
@@ -96,6 +107,7 @@ def main():
 
     tags = [t.strip() for t in argToList(args.get("tags")) if t.strip()]
     skip_tags = [t.strip() for t in argToList(args.get("skip_tags")) if t.strip()]
+    indicator_query = (args.get("indicator_query") or DEFAULT_INDICATOR_QUERY).strip()
     profile_id = args.get("profile_id")
     existing = {v.strip() for v in argToList(args.get("existing_values")) if v.strip()}
     max_indicators = cast(
@@ -108,7 +120,7 @@ def main():
     if chunk_size < 1:
         raise DemistoException("chunk_size must be greater than or equal to 1")
 
-    new_values, chunks, stats = find_new_values(types, tags, skip_tags, existing, max_indicators, chunk_size)
+    new_values, chunks, stats = find_new_values(types, tags, skip_tags, existing, max_indicators, chunk_size, indicator_query)
 
     added_count = 0
     deployed = False
@@ -120,7 +132,7 @@ def main():
         for chunk in chunks:
             append_chunk(profile_id, chunk)
             added_count += len(chunk)
-        if added_count and argToBoolean(args.get("deploy", True)):
+        if added_count and argToBoolean(args.get("deploy", False)):
             deploy_profile(profile_id, args.get("change_note", ""))
             deployed = True
 

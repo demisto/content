@@ -270,6 +270,27 @@ def test_list_destination_profiles(client, requests_mock):
     assert requests_mock.last_request.qs.get("filter") == ['name co "eng"']
 
 
+def test_list_destination_profiles_exact_name_is_compared_locally(client, requests_mock):
+    name = 'Finance "or status eq pending"'
+    mock_response = {
+        "elements": [
+            {"id": "1", "name": name},
+            {"id": "2", "name": "Finance"},
+        ]
+    }
+    requests_mock.get(f"{SERVER_URL}api/v2/profiles/destinations", json=mock_response)
+
+    result = list_destination_profiles(client, {"name": name})
+
+    assert result.outputs == [{"id": "1", "name": name}]
+    assert "filter" not in requests_mock.last_request.qs
+
+
+def test_list_destination_profiles_rejects_name_with_filter(client):
+    with pytest.raises(DemistoException, match="Only one"):
+        list_destination_profiles(client, {"name": "Finance", "filter": 'status eq "applied"'})
+
+
 def test_list_destination_profiles_page_calculates_offset(client, requests_mock):
     requests_mock.get(f"{SERVER_URL}api/v2/profiles/destinations", json={"elements": []})
 

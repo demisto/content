@@ -1,6 +1,6 @@
-id: silent-URL Lookup - Netskope
+id: URL Lookup - Netskope
 version: -1
-name: silent-URL Lookup - Netskope
+name: URL Lookup - Netskope
 description: |-
   Looks up a URL's categorization/reputation info via netskopev2-url-lookup and records the
   result as labels directly on the incident.
@@ -50,7 +50,7 @@ tasks:
       id: 6d9f7617-3abf-4a83-9479-221182ec4e53
       version: -1
       name: Is Netskope enabled?
-      description: Verify that there is a valid, active Netskope integration instance enabled (matches any brand name containing "Netskope", so it works against a renamed dev/test instance too).
+      description: Verify that a valid, active Netskope integration instance is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -290,5 +290,5 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 8.9.0
-issilent: true
+fromversion: 6.10.0
+issilent: false

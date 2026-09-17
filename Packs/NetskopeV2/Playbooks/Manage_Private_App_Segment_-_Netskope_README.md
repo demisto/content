@@ -15,11 +15,8 @@ enabled (matching any brand name containing "Netskope"), then branches on Action
   fetches the app's current state and applies these merges before the PATCH is sent.
 - "delete": permanently deletes the private app identified by AppID or AppName.
 
-There's no "replace" (full PUT) action - netskopev2-replace-private-app exists as a command in
-the pack, but the API's write validation silently no-ops the whole request when any field's
-shape doesn't exactly match (confirmed live, twice), which makes it unreliable to drive from a
-playbook. "modify" (PATCH) covers add/remove of individual fields instead, and is what this
-playbook uses.
+The playbook uses the modify operation for partial updates and supports adding or removing
+individual field values without replacing the whole object.
 
 For modify/delete, you can provide AppID directly, or leave it blank and provide AppName
 instead - netskopev2-list-private-apps has no name filter argument at all, so task #30 fetches
@@ -33,13 +30,8 @@ tasks #40 (create) / #42 (modify, only if PublisherNames was provided) resolve e
 build the {"publisher_id": ..., "publisher_name": ...} JSON array the create/update commands
 expect.
 
-Ports likewise takes a plain comma-separated list of port numbers (e.g. "443,8080,22") instead
-of requiring hand-written JSON - task #50 builds the {"type": ..., "port": ...} array the
-create/update commands expect, using ProtocolType (default "tcp") for every port. This also
-sidesteps a real bug that was hit and fixed: passing a bare number like "443" directly as
-"protocols" parses as valid JSON (the integer 443) but isn't the array shape the API needs, so
-it silently created nothing - netskopev2-create-private-app/netskopev2-update-private-app now
-validate the parsed value is actually an array of objects, not just "is it valid JSON at all".
+Ports takes a comma-separated list of port numbers. Task #50 builds the object array expected by
+the create and update commands, which validate that protocols is an array of objects.
 Host already accepts multiple comma-separated values directly (e.g. "10.0.0.1,10.0.0.2") - no
 lookup or building needed for that one.
 
@@ -61,6 +53,7 @@ This playbook does not use any sub-playbooks.
 * NetskopeMergePrivateAppFields
 * NetskopeResolvePrivateAppId
 * NetskopeResolvePublishers
+* PrintErrorEntry
 
 ### Commands
 
@@ -74,7 +67,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Action | One of "create", "modify", or "delete" - which private app operation to perform. "modify" is a partial update via PATCH \(netskopev2-update-private-app\) - only the fields you provide are changed; use HostsToAdd/HostsToRemove, PortsToAdd/PortsToRemove, and TagsToAdd/TagsToRemove to add or remove individual values without retyping the rest. |  | Required |
+| Action | Required. Must be create, modify, or delete. Any other value produces an explicit error and no Netskope command is run. |  | Required |
 | AppID | ID of the existing private app to modify or delete. Optional for Action=modify/delete if AppName is provided instead - netskopev2-list-private-apps has no name filter, so the playbook fetches all apps and resolves AppName to an ID itself \(fails clearly if no app or more than one app matches that name\). Ignored for Action=create. |  | Optional |
 | AppName | Name of the private app. Required for Action=create. For Action=modify, either leave blank to keep the current name, or use it \(with AppID blank\) to look up which app to modify by name. For Action=delete, provide this \(with AppID blank\) to look up which app to delete by name. |  | Optional |
 | Host | IP address or hostname of the private app segment - comma-separated for multiple hosts \(e.g. "10.0.0.1,10.0.0.2" or "webserver.local,192.168.0.1"\), Netskope accepts this directly. Required for Action=create, optional for Action=modify \(leave blank to keep the current host\). |  | Optional |

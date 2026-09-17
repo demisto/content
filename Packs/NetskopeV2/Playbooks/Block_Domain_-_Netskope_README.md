@@ -1,9 +1,7 @@
 Blocks a domain by adding it to an existing Netskope URL List.
 
-Checks whether the Domain input was provided, checks whether a Netskope integration instance is
-enabled (matching any brand name containing "Netskope", so it works against a renamed
-dev/test instance too), and if so blocks the domain by adding it to an existing Netskope URL
-List.
+Checks whether the Domain and ListName inputs were provided, verifies that a Netskope
+integration instance is enabled, and adds the domain to the existing Netskope URL List.
 
 This pack has no "create list" command - the ListName input must reference a list that already
 exists.

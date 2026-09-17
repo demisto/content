@@ -1,13 +1,11 @@
-id: silent-Block Domain - Netskope
+id: Block Domain - Netskope
 version: -1
-name: silent-Block Domain - Netskope
+name: Block Domain - Netskope
 description: |-
   Blocks a domain by adding it to an existing Netskope URL List.
 
-  Checks whether the Domain input was provided, checks whether a Netskope integration instance is
-  enabled (matching any brand name containing "Netskope", so it works against a renamed
-  dev/test instance too), and if so blocks the domain by adding it to an existing Netskope URL
-  List.
+  Checks whether the Domain and ListName inputs were provided, verifies that a Netskope
+  integration instance is enabled, and adds the domain to the existing Netskope URL List.
 
   This pack has no "create list" command - the ListName input must reference a list that already
   exists.
@@ -48,7 +46,7 @@ tasks:
       id: ed0f9ef3-436d-4a15-b558-27d978548146
       version: -1
       name: Is Netskope enabled?
-      description: Verify that there is a valid, active Netskope integration instance enabled (matches any brand name containing "Netskope", so it works against a renamed dev/test instance too).
+      description: Verify that a valid, active Netskope integration instance is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -168,7 +166,7 @@ tasks:
     task:
       id: 4718aaeb-cc1c-4469-a9e4-f6bcd2d477a4
       version: -1
-      name: Check if Domain input was provided
+      name: Check required inputs were provided
       description: Check whether the necessary inputs were provided
       type: condition
       iscommand: false
@@ -187,6 +185,12 @@ tasks:
             value:
               complex:
                 root: inputs.Domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ListName
             iscontext: true
     view: |-
       {
@@ -231,5 +235,5 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 8.9.0
-issilent: true
+fromversion: 6.10.0
+issilent: false

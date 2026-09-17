@@ -726,10 +726,31 @@ def apply_device_tags(client: Client, args: dict[str, Any]) -> CommandResults:
 
 def _list_profiles(client: Client, profile_type: str, args: dict[str, Any]) -> CommandResults:
     config = PROFILE_RESOURCE_CONFIG[profile_type]
-    params = build_list_profiles_params(args)
+    name = args.get("name")
+    if name and args.get("filter"):
+        raise DemistoException('Only one of the "name" and "filter" arguments can be provided')
 
-    r = client.list_profiles(profile_type, params)
-    elements = r.get("elements", [])
+    if name:
+        # Do not interpolate user input into the API's filter expression. Fetch paginated results
+        # and perform an exact comparison locally so profile names containing filter syntax cannot
+        # change the query's meaning.
+        validate_profile_name(name)
+        offset = 0
+        elements = []
+        raw_responses = []
+        while True:
+            response = client.list_profiles(profile_type, {"offset": offset, "limit": MAX_PROFILE_PAGE_SIZE})
+            raw_responses.append(response)
+            page_elements = response.get("elements", [])
+            elements.extend(profile for profile in page_elements if profile.get("name") == name)
+            if elements or len(page_elements) < MAX_PROFILE_PAGE_SIZE:
+                break
+            offset += MAX_PROFILE_PAGE_SIZE
+        r = {"elements": elements, "responses": raw_responses}
+    else:
+        params = build_list_profiles_params(args)
+        r = client.list_profiles(profile_type, params)
+        elements = r.get("elements", [])
 
     markdown = tableToMarkdown(f"{config.outputs_prefix.split('.')[-1]}s", elements)
 

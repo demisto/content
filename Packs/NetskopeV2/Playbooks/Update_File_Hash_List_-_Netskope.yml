@@ -1,6 +1,6 @@
-id: silent-Update File Hash List - Netskope
+id: Update File Hash List - Netskope
 version: -1
-name: silent-Update File Hash List - Netskope
+name: Update File Hash List - Netskope
 description: |-
   Adds hashes to a Netskope file hash list via netskopev2-update-file-hash-list.
 
@@ -20,7 +20,8 @@ description: |-
   present) is already true in that case.
 
   The ListName input must reference a Netskope list that already exists (the tracking List on the
-  Cortex XSOAR side is separate and gets created automatically).
+  Cortex XSOAR side is separate and gets created automatically). If the tracking List is empty,
+  the playbook stops unless AllowEmptyMirrorOverwrite is explicitly enabled.
 starttaskid: "0"
 tasks:
   "0":
@@ -58,7 +59,7 @@ tasks:
       id: 827fa9bc-8e0e-4e4b-bc56-343e48f17f28
       version: -1
       name: Is Netskope enabled?
-      description: Verify that there is a valid, active Netskope integration instance enabled (matches any brand name containing "Netskope", so it works against a renamed dev/test instance too).
+      description: Verify that a valid, active Netskope integration instance is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -101,8 +102,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 700,
-          "y": 230
+          "x": 450,
+          "y": 570
         }
       }
     note: false
@@ -139,8 +140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 890,
-          "y": 400
+          "x": 450,
+          "y": 740
         }
       }
     note: false
@@ -180,8 +181,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 890,
-          "y": 480
+          "x": 450,
+          "y": 910
         }
       }
     note: false
@@ -206,7 +207,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 570
+          "y": 1080
         }
       }
     note: false
@@ -274,7 +275,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-      - "2"
+      - "8"
     scriptarguments:
       listName:
         simple: NetskopeHashList_${inputs.ListName}
@@ -282,8 +283,90 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 700,
-          "y": 130
+          "x": 450,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "8":
+    id: "8"
+    taskid: 08263ea5-1968-4749-acee-d09c67cc1ecb
+    type: condition
+    task:
+      id: 08263ea5-1968-4749-acee-d09c67cc1ecb
+      version: -1
+      name: Is the tracked hash mirror populated?
+      description: Continue automatically only when the Cortex XSOAR mirror contains existing hashes.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "9"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Netskope.XsoarList.Content
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "9":
+    id: "9"
+    taskid: 371120ea-b4f3-4abc-a307-acde46319e4a
+    type: condition
+    task:
+      id: 371120ea-b4f3-4abc-a307-acde46319e4a
+      version: -1
+      name: Allow an empty mirror overwrite?
+      description: Continue with an empty mirror only when the operator explicitly permits a first-run or recovery replacement.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#default#":
+      - "4"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AllowEmptyMirrorOverwrite
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 570
         }
       }
     note: false
@@ -296,12 +379,16 @@ view: |-
     "linkLabelsPosition": {
       "2_3_yes": 0.53,
       "2_4_#default#": 0.47,
-      "5_2_yes": 0.71,
-      "5_4_#default#": 0.53
+      "5_6_yes": 0.71,
+      "5_4_#default#": 0.53,
+      "8_2_yes": 0.53,
+      "8_9_#default#": 0.47,
+      "9_2_yes": 0.53,
+      "9_4_#default#": 0.47
     },
     "paper": {
       "dimensions": {
-        "height": 705,
+        "height": 1260,
         "width": 820,
         "x": 450,
         "y": -70
@@ -319,8 +406,14 @@ inputs:
   required: true
   description: Comma-separated MD5 or SHA256 hashes to add to the list this run.
   playbookInputQuery:
+- key: AllowEmptyMirrorOverwrite
+  value:
+    simple: "false"
+  required: false
+  description: Whether to allow replacing the Netskope list when the Cortex XSOAR tracking List is empty. Defaults to false.
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 8.9.0
-issilent: true
+fromversion: 6.10.0
+issilent: false

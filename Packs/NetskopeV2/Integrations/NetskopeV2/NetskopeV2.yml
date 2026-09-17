@@ -336,6 +336,8 @@ script:
   - name: netskopev2-list-destination-profiles
     description: Lists and filters destination profiles.
     arguments:
+    - name: name
+      description: The exact profile name to find. The comparison is performed locally without interpolating the value into a filter expression. Cannot be used with filter.
     - name: fields
       description: The comma-separated list of fields to return. The id field is always returned.
     - name: page
@@ -848,6 +850,8 @@ script:
   - name: netskopev2-list-network-profiles
     description: Lists and filters network profiles.
     arguments:
+    - name: name
+      description: The exact profile name to find. The comparison is performed locally without interpolating the value into a filter expression. Cannot be used with filter.
     - name: fields
       description: The comma-separated list of fields to return. The id field is always returned.
     - name: page

@@ -9,6 +9,7 @@ from CommonServerPython import *  # noqa: F401
 MD5_PATTERN = re.compile(r"^[a-fA-F0-9]{32}$")
 SHA256_PATTERN = re.compile(r"^[a-fA-F0-9]{64}$")
 DEFAULT_MAX_INDICATORS = 500
+DEFAULT_INDICATOR_QUERY = "reputation:Bad and expirationStatus:active"
 
 
 def is_valid_hash(value: str | None) -> bool:
@@ -29,7 +30,7 @@ def extract_hashes(ioc: dict) -> list:
 FILE_INDICATOR_TYPES = 'File "File MD5" "File SHA-256"'
 
 
-def build_query(tags: list) -> str:
+def build_query(tags: list, skip_tags: list | None = None, indicator_query: str = DEFAULT_INDICATOR_QUERY) -> str:
     # The hash-specific types ("File MD5"/"File SHA-256") may be disabled as selectable indicator
     # types on a given tenant, in which case new hash indicators land under the generic "File"
     # type instead - search both so it works either way. is_valid_hash still does the real
@@ -37,6 +38,10 @@ def build_query(tags: list) -> str:
     query = f"type:({FILE_INDICATOR_TYPES})"
     if tags:
         query += f" and tags:({' '.join(tags)})"
+    if skip_tags:
+        query += f" and -tags:({' '.join(skip_tags)})"
+    if indicator_query:
+        query += f" and ({indicator_query})"
     return query
 
 
@@ -44,6 +49,8 @@ def main():
     args = demisto.args()
 
     tags = [t.strip() for t in argToList(args.get("tags")) if t.strip()]
+    skip_tags = [t.strip() for t in argToList(args.get("skip_tags")) if t.strip()]
+    indicator_query = (args.get("indicator_query") or DEFAULT_INDICATOR_QUERY).strip()
     existing = {h.strip() for h in argToList(args.get("existing_hashes")) if h.strip()}
     max_indicators = cast(
         int,
@@ -52,7 +59,7 @@ def main():
     if max_indicators < 1:
         raise DemistoException("max_indicators must be greater than or equal to 1")
 
-    query = build_query(tags)
+    query = build_query(tags, skip_tags, indicator_query)
     # .get("iocs", []) only falls back when the key is absent - searchIndicators can return
     # {"iocs": None, ...} when nothing matches, so the "or []" is needed too.
     iocs = (demisto.searchIndicators(query=query, size=max_indicators) or {}).get("iocs") or []

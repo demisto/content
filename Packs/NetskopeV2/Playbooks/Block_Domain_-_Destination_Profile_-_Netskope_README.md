@@ -21,11 +21,8 @@ appends when the domain isn't already present, so re-running it for an already-b
 is a safe no-op. Also make sure only one Netskope integration instance is enabled at a time - if
 two are enabled, Cortex XSOAR dispatches the command to both, causing the same double-add.
 
-Unlike URL Lists, Destination Profile value changes are staged (pending) until deployed - this
-playbook appends the value and then immediately deploys that one profile so the change takes
-effect right away. Creating a profile with default settings (interactive=false) applies
-immediately - no separate deploy step is needed for that path, unlike the
-append-to-existing-profile path.
+Destination Profile changes are staged. Set Deploy to true to apply the pending change; it
+defaults to false. ChangeNote is recorded only when a deployment is requested.
 
 ## Dependencies
 
@@ -57,7 +54,9 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | Domain | The domain to block. |  | Required |
-| ProfileName | Name of the Netskope Destination Profile to add the domain to. The playbook looks up the profile by this name \(netskopev2-list-destination-profiles, filter name eq "&lt;ProfileName&gt;"\). If no profile with this name exists, you'll be prompted to pick a match type \(single-select - sensitive, insensitive, or regex\) and one is created with the domain as its first value. |  | Required |
+| ProfileName | Name of the Netskope Destination Profile to add the domain to. The playbook performs an exact-name lookup without constructing a filter expression. If no profile exists, the analyst selects the match type before a pending profile is created. |  | Required |
+| Deploy | Whether to deploy the pending Destination Profile change. Defaults to false. | false | Optional |
+| ChangeNote | Change note recorded when Deploy is true. | Domain block requested from Cortex XSOAR | Optional |
 
 ## Playbook Outputs
 

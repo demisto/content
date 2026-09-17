@@ -1,6 +1,6 @@
-id: silent-Manage Private App Segment - Netskope
+id: Manage Private App Segment - Netskope
 version: -1
-name: silent-Manage Private App Segment - Netskope
+name: Manage Private App Segment - Netskope
 description: |-
   Creates, modifies, or deletes a Netskope private application (ZTNA/NPA) "segment" (Netskope's
   own API models this as one Private App object: a host + its protocol/port entries + publishers,
@@ -19,11 +19,8 @@ description: |-
     fetches the app's current state and applies these merges before the PATCH is sent.
   - "delete": permanently deletes the private app identified by AppID or AppName.
 
-  There's no "replace" (full PUT) action - netskopev2-replace-private-app exists as a command in
-  the pack, but the API's write validation silently no-ops the whole request when any field's
-  shape doesn't exactly match (confirmed live, twice), which makes it unreliable to drive from a
-  playbook. "modify" (PATCH) covers add/remove of individual fields instead, and is what this
-  playbook uses.
+  The playbook uses the modify operation for partial updates and supports adding or removing
+  individual field values without replacing the whole object.
 
   For modify/delete, you can provide AppID directly, or leave it blank and provide AppName
   instead - netskopev2-list-private-apps has no name filter argument at all, so task #30 fetches
@@ -37,13 +34,8 @@ description: |-
   build the {"publisher_id": ..., "publisher_name": ...} JSON array the create/update commands
   expect.
 
-  Ports likewise takes a plain comma-separated list of port numbers (e.g. "443,8080,22") instead
-  of requiring hand-written JSON - task #50 builds the {"type": ..., "port": ...} array the
-  create/update commands expect, using ProtocolType (default "tcp") for every port. This also
-  sidesteps a real bug that was hit and fixed: passing a bare number like "443" directly as
-  "protocols" parses as valid JSON (the integer 443) but isn't the array shape the API needs, so
-  it silently created nothing - netskopev2-create-private-app/netskopev2-update-private-app now
-  validate the parsed value is actually an array of objects, not just "is it valid JSON at all".
+  Ports takes a comma-separated list of port numbers. Task #50 builds the object array expected by
+  the create and update commands, which validate that protocols is an array of objects.
   Host already accepts multiple comma-separated values directly (e.g. "10.0.0.1,10.0.0.2") - no
   lookup or building needed for that one.
 starttaskid: "0"
@@ -83,13 +75,13 @@ tasks:
       id: a3661b57-c021-4fa1-8c15-102b66d0b0bf
       version: -1
       name: Is Netskope enabled?
-      description: Verify that there is a valid, active Netskope integration instance enabled (matches any brand name containing "Netskope", so it works against a renamed dev/test instance too).
+      description: Verify that a valid, active Netskope integration instance is enabled.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "#default#":
-      - "4"
+      - "71"
       "yes":
       - "50"
     separatecontext: false
@@ -127,7 +119,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 230
+          "y": 270
         }
       }
     note: false
@@ -152,7 +144,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1250
+          "y": 2140
         }
       }
     note: false
@@ -191,7 +183,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 60
+          "y": 100
         }
       }
     note: false
@@ -262,7 +254,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 400
+          "y": 610
         }
       }
     note: false
@@ -307,7 +299,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 745
+          "y": 1120
         }
       }
     note: false
@@ -354,8 +346,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 1070
+          "x": 250,
+          "y": 1970
         }
       }
     note: false
@@ -387,8 +379,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 1070
+          "x": 650,
+          "y": 1800
         }
       }
     note: false
@@ -423,8 +415,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 650,
-          "y": 570
+          "x": 450,
+          "y": 1290
         }
       }
     note: false
@@ -462,8 +454,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 650,
-          "y": 740
+          "x": 450,
+          "y": 1460
         }
       }
     note: false
@@ -519,8 +511,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 650,
-          "y": 900
+          "x": 450,
+          "y": 1630
         }
       }
     note: false
@@ -553,7 +545,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 400
+          "y": 780
         }
       }
     note: false
@@ -592,7 +584,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 570
+          "y": 950
         }
       }
     note: false
@@ -624,8 +616,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1050,
-          "y": 400
+          "x": 850,
+          "y": 950
         }
       }
     note: false
@@ -663,8 +655,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1050,
-          "y": 570
+          "x": 850,
+          "y": 1120
         }
       }
     note: false
@@ -702,8 +694,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 400
+          "x": 450,
+          "y": 780
         }
       }
     note: false
@@ -739,7 +731,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 315
+          "y": 440
         }
       }
     note: false
@@ -801,8 +793,40 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 970
+          "x": 250,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+  "71":
+    id: "71"
+    taskid: 5f727b64-91b8-4f33-8fea-00ca785bf5b3
+    type: regular
+    task:
+      id: 5f727b64-91b8-4f33-8fea-00ca785bf5b3
+      version: -1
+      name: Report Invalid Action
+      description: Print an error when Action is not create, modify, or delete.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "#none#":
+      - "4"
+    scriptarguments:
+      message:
+        simple: The Action input must be one of create, modify, or delete.
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 780
         }
       }
     note: false
@@ -820,7 +844,7 @@ view: |-
       "20_40_create": 0.35,
       "20_44_modify": 0.45,
       "20_30_delete": 0.65,
-      "20_4_#default#": 0.3,
+      "20_71_#default#": 0.3,
       "31_32_yes": 0.53,
       "31_4_#default#": 0.47,
       "32_70_modify": 0.4,
@@ -835,8 +859,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1420,
-        "width": 1500,
+        "height": 2350,
+        "width": 1200,
         "x": 50,
         "y": -70
       }
@@ -846,7 +870,7 @@ inputs:
 - key: Action
   value: {}
   required: true
-  description: One of "create", "modify", or "delete" - which private app operation to perform. "modify" is a partial update via PATCH (netskopev2-update-private-app) - only the fields you provide are changed; use HostsToAdd/HostsToRemove, PortsToAdd/PortsToRemove, and TagsToAdd/TagsToRemove to add or remove individual values without retyping the rest.
+  description: Required. Must be create, modify, or delete. Any other value produces an explicit error and no Netskope command is run.
   playbookInputQuery:
 - key: AppID
   value: {}
@@ -917,5 +941,5 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 8.9.0
-issilent: true
+fromversion: 6.10.0
+issilent: false

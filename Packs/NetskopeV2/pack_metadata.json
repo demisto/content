@@ -2,9 +2,9 @@
     "name": "Netskope - Direct to Zero Trust",
     "description": "Manages Netskope policy enforcement with API v1/v2 commands, scripts, and playbooks for Zero Trust workflows.",
     "support": "community",
-    "currentVersion": "1.0.9",
-    "author": "Netskope",
-    "url": "",
+    "currentVersion": "1.1.0",
+    "author": "Cortex XSOAR Community",
+    "url": "https://github.com/demisto/content/tree/master/Packs/NetskopeV2",
     "email": "",
     "created": "2021-12-14T14:21:32Z",
     "categories": [
@@ -14,6 +14,10 @@
     "useCases": [],
     "keywords": [
         "Netskope"
+    ],
+    "githubUser": [
+        "randomizerxd",
+        "Keshavm021"
     ],
     "dependencies": {
         "CommonScripts": {

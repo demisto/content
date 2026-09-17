@@ -1,6 +1,6 @@
-id: silent-Threat Inspection - Netskope
+id: Threat Inspection - Netskope
 version: -1
-name: silent-Threat Inspection - Netskope
+name: Threat Inspection - Netskope
 description: |-
   Submits a file for Netskope's sandbox scan (netskopev2-submit-file-scan /
   netskopev2-get-scan-report) and polls for the result, since the scan is asynchronous and can
@@ -55,7 +55,7 @@ tasks:
       id: c64b8af2-0159-49fd-9168-f8600b11c99a
       version: -1
       name: Is Netskope enabled?
-      description: Verify that there is a valid, active Netskope integration instance enabled (matches any brand name containing "Netskope", so it works against a renamed dev/test instance too).
+      description: Verify that a valid, active Netskope integration instance is enabled.
       type: condition
       iscommand: false
       brand: ""
@@ -392,5 +392,5 @@ inputs:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 8.9.0
-issilent: true
+fromversion: 6.10.0
+issilent: false

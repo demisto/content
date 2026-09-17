@@ -11,8 +11,8 @@ network-profile takes no "type" argument) - so unlike the destination profile pl
 no "choose a match type" prompt here; creating a new profile needs nothing beyond the name and
 the value itself.
 
-Profile names are unique in Netskope, so an exact-match lookup (name eq "<ProfileName>") returns
-at most one profile - no manual ID lookup needed, just the profile's display name.
+Profile names are unique in Netskope, so the playbook performs an exact-name lookup without
+constructing a filter expression.
 
 IMPORTANT: like Destination Profiles, Network Profile values "append" has no server-side dedup -
 calling it twice with the same value (e.g. re-running this playbook for a value that's already
@@ -21,10 +21,8 @@ appends when the value isn't already present, so re-running it for an already-bl
 a safe no-op. Also make sure only one Netskope integration instance is enabled at a time - if
 two are enabled, Cortex XSOAR dispatches the command to both, causing the same double-add.
 
-Network Profile value changes are staged (pending) until deployed, same as Destination
-Profiles - this playbook appends the value and then immediately deploys that one profile so the
-change takes effect right away. Creating a profile with default settings (interactive=false)
-applies immediately - no separate deploy step is needed for that path.
+Network Profile changes are staged. Set Deploy to true to apply the pending change; it defaults
+to false. ChangeNote is recorded only when a deployment is requested.
 
 ## Dependencies
 
@@ -55,8 +53,10 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| ProfileName | Name of the Netskope Network Profile \(shown as "Network Location" in the Netskope UI\) to add the value to. The playbook looks up the profile by this name \(netskopev2-list-network-profiles, filter name eq "&lt;ProfileName&gt;"\). If no profile with this name exists, one is created with the value as its first entry. |  | Required |
+| ProfileName | Name of the Netskope Network Profile \(shown as "Network Location" in the Netskope UI\). The playbook performs an exact-name lookup without constructing a filter expression. |  | Required |
 | Value | IP address, IP range, or CIDR netmask to add \(e.g. "192.0.2.0/27"\). |  | Required |
+| Deploy | Whether to deploy the pending Network Profile change. Defaults to false. | false | Optional |
+| ChangeNote | Change note recorded when Deploy is true. | Network value block requested from Cortex XSOAR | Optional |
 
 ## Playbook Outputs
 
