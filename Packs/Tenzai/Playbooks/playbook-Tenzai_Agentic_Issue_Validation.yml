@@ -20,7 +20,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "8"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -112,6 +112,8 @@ tasks:
     nexttasks:
       '#none#':
       - "3"
+      '#error#':
+      - "9"
     scriptarguments:
       id:
         complex:
@@ -122,6 +124,7 @@ tasks:
       timeout_in_seconds:
         simple: ${inputs.PollingTimeout}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
@@ -211,6 +214,78 @@ tasks:
         "position": {
           "x": 450,
           "y": 1050
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 3f1c0a10-0000-4000-8000-000000000008
+    type: condition
+    task:
+      id: 3f1c0a10-0000-4000-8000-000000000008
+      version: -1
+      name: Is a Tenzai integration instance enabled?
+      description: Checks that an enabled Tenzai integration instance exists before running the Tenzai tasks. If none is available, the playbook ends without changing the issue.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: Tenzai
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 3f1c0a10-0000-4000-8000-000000000009
+    type: regular
+    task:
+      id: 3f1c0a10-0000-4000-8000-000000000009
+      version: -1
+      name: Mark the assessment status Error
+      description: Sets the Tenzai Assessment Status to Error when polling fails or times out, so the issue does not stay Running and can be re-run.
+      script: '|||setIncident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      tenzaiassessmentstatus:
+        simple: Error
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 540
         }
       }
     note: false

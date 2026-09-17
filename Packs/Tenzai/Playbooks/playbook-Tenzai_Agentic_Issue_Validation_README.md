@@ -16,10 +16,12 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
+* IsIntegrationAvailable
 * StartAgenticValidation
 
 ### Commands
 
+* setIncident
 * tenzai-get-scan
 
 ## Playbook Inputs
