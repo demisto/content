@@ -213,7 +213,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1050
+          "y": 710
         }
       }
     note: false
@@ -300,8 +300,8 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1160,
-        "width": 460,
+        "height": 820,
+        "width": 690,
         "x": 230,
         "y": 50
       }
