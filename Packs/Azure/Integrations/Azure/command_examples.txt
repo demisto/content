@@ -30,3 +30,10 @@
 !azure-vm-start-instance subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" virtual_machine_name="my_vm"
 !azure-vm-power-off-instance subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" virtual_machine_name="my_vm"
 
+!azure-firewall-policy-create subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" policy_name="my-firewall-policy" location="eastus" tier="Standard" threat_intelligence_mode="Alert"
+!azure-firewall-policy-update subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" policy_name="my-firewall-policy" threat_intelligence_mode="Deny" enable_proxy="true"
+!azure-firewall-policy-get subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" policy_name="my-firewall-policy"
+!azure-firewall-policy-list subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" limit="50"
+!azure-firewall-policy-attach subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" firewall_name="my-firewall" policy_id="/subscriptions/my-subscription-id/resourceGroups/my_resource_group_name/providers/Microsoft.Network/firewallPolicies/my-firewall-policy"
+!azure-firewall-policy-detach subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" firewall_name="my-firewall"
+!azure-firewall-policy-delete subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" policy_name="my-firewall-policy"
