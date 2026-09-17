@@ -18,6 +18,8 @@ from Azure import (
     set_webapp_config_command,
     update_webapp_auth_command,
     mysql_flexible_server_param_set_command,
+    postgres_flexible_server_configuration_update_command,
+    POSTGRES_FLEXIBLE_API_VERSION,
     monitor_log_profile_update_command,
     disk_update_command,
     webapp_update_command,
@@ -2307,6 +2309,110 @@ def test_flexible_server_param_set_error_handling(mocker, client):
         resource_name=f"{server_name}/{configuration_name}",
         resource_type="MySQL Flexible Server Configuration",
         api_function_name="flexible_server_param_set",
+        subscription_id=subscription_id,
+        resource_group_name=resource_group_name,
+    )
+
+
+def test_postgres_flexible_server_configuration_update_command(mocker, client, mock_params):
+    """
+    Given: An Azure client and a request to update a PostgreSQL Flexible Server configuration.
+    When: The postgres_flexible_server_configuration_update_command function is called with valid parameters.
+    Then: The function should return a success message.
+    """
+    mocker.patch.object(client, "postgres_flexible_server_configuration_update", return_value=None)
+
+    args = {
+        "server_name": "test-postgres-flex",
+        "configuration_name": "log_checkpoints",
+        "source": "user-override",
+        "value": "on",
+    }
+
+    result = postgres_flexible_server_configuration_update_command(client, mock_params, args)
+
+    assert "Updated the configuration log_checkpoints of the PostgreSQL Flexible Server test-postgres-flex" in result.readable_output
+
+
+def test_azure_client_postgres_flexible_server_configuration_update_success(mocker, client):
+    """
+    Given: An Azure client and valid PostgreSQL Flexible Server configuration parameters.
+    When: The postgres_flexible_server_configuration_update method is called.
+    Then: The method should make the correct PUT API call and return the response.
+    """
+    mock_response = {
+        "name": "log_checkpoints",
+        "id": (
+            "/subscriptions/sub-id/resourceGroups/test-rg/providers/Microsoft.DBforPostgreSQL/flexibleServers/test-postgres-flex/"
+            "configurations/log_checkpoints"
+        ),
+        "properties": {"value": "on", "source": "user-override", "description": "Enables logging of checkpoints"},
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_response)
+
+    result = client.postgres_flexible_server_configuration_update(
+        server_name="test-postgres-flex",
+        configuration_name="log_checkpoints",
+        subscription_id="sub-id",
+        resource_group_name="test-rg",
+        source="user-override",
+        value="on",
+    )
+
+    expected_url = (
+        f"{PREFIX_URL_AZURE}sub-id/resourceGroups/test-rg/providers/Microsoft.DBforPostgreSQL/flexibleServers/test-postgres-flex/"
+        "configurations/log_checkpoints"
+    )
+    client.http_request.assert_called_once_with(
+        method="PUT",
+        full_url=expected_url,
+        json_data={"properties": {"source": "user-override", "value": "on"}},
+        params={"api-version": POSTGRES_FLEXIBLE_API_VERSION},
+    )
+
+    assert result == mock_response
+    assert result["name"] == "log_checkpoints"
+    assert result["properties"]["value"] == "on"
+    assert result["properties"]["source"] == "user-override"
+
+
+def test_azure_client_postgres_flexible_server_configuration_update_error_handling(mocker, client):
+    """
+    Given: An Azure client and arguments for updating a PostgreSQL Flexible Server configuration.
+    When: The postgres_flexible_server_configuration_update method is called and an exception occurs.
+    Then: The method should call handle_azure_error with appropriate parameters.
+    """
+    server_name = "test-postgres-flex"
+    configuration_name = "log_checkpoints"
+    subscription_id = "12345678-1234-1234-1234-123456789012"
+    resource_group_name = "test-resource-group"
+    source = "user-override"
+    value = "on"
+
+    mock_exception = Exception("404 Not Found")
+
+    mocker.patch.object(client, "http_request", side_effect=mock_exception)
+    mocker.patch.object(
+        client,
+        "handle_azure_error",
+        side_effect=ValueError("PostgreSQL Flexible Server Configuration not found"),
+    )
+
+    with pytest.raises(ValueError, match="PostgreSQL Flexible Server Configuration not found"):
+        client.postgres_flexible_server_configuration_update(
+            server_name=server_name,
+            configuration_name=configuration_name,
+            subscription_id=subscription_id,
+            resource_group_name=resource_group_name,
+            source=source,
+            value=value,
+        )
+
+    client.handle_azure_error.assert_called_once_with(
+        e=mock_exception,
+        resource_name=f"{server_name}/{configuration_name}",
+        resource_type="PostgreSQL Flexible Server Configuration",
+        api_function_name="postgres_flexible_server_configuration_update",
         subscription_id=subscription_id,
         resource_group_name=resource_group_name,
     )
