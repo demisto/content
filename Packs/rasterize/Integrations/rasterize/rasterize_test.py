@@ -1928,7 +1928,7 @@ def test_wait_for_page_load_normal_completion_no_freeze_on_load(mocker):
     When: Calling wait_for_page_load_with_memory_guard.
     Then: The tab is NOT frozen on the normal-completion path and True is still returned.
 
-    Regression test for XSUP-76577: the unconditional post-load freeze disabled script
+    Regression test for a bug where the unconditional post-load freeze disabled script
     execution and purged the V8 heap, so the Runtime.evaluate used by rasterize-extract
     failed with "Cannot find default execution context".
     """
