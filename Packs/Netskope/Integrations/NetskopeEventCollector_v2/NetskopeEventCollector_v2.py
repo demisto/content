@@ -20,7 +20,8 @@ NETSKOPE_SEMAPHORE_COUNT = 4
 MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE = 10
 # Minimum page size to shrink to when the server keeps truncating the response payload
 MIN_EVENTS_PAGE_SIZE = 100
-# Base backoff (in seconds) used between retries after a truncated/incomplete response payload
+# Base backoff (in seconds) used between retries after a truncated/incomplete response payload.
+# The wait grows exponentially: PAYLOAD_ERROR_BACKOFF_SECONDS * (2 ** (retry - 1)), e.g. 1s, 2s, 4s.
 PAYLOAD_ERROR_BACKOFF_SECONDS = 1
 
 # Netskope response constants
@@ -482,7 +483,8 @@ async def fetch_and_send_events_async(
                     new_limit = max(MIN_EVENTS_PAGE_SIZE, current_limit // 2)
                     params["limit"] = new_limit
                     payload_error_retry_count += 1
-                    backoff = PAYLOAD_ERROR_BACKOFF_SECONDS * payload_error_retry_count
+                    # Exponential backoff: PAYLOAD_ERROR_BACKOFF_SECONDS * (2 ** (retry - 1)), e.g. 1s, 2s, 4s
+                    backoff = PAYLOAD_ERROR_BACKOFF_SECONDS * (2 ** (payload_error_retry_count - 1))
                     demisto.debug(
                         f"[Fetch] Incomplete response payload for {type=} ({str(e)}). "
                         f"Retrying ({payload_error_retry_count}/{MAX_RETRY}) after {backoff}s "

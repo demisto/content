@@ -924,6 +924,8 @@ async def test_fetch_and_send_events_async_retries_on_payload_error(mocker):
     # first attempt used the full page size, retry used a reduced (halved) page size
     assert observed_limits[0] == MAX_EVENTS_PAGE_SIZE
     assert observed_limits[1] == MAX_EVENTS_PAGE_SIZE // 2
+    # exactly two attempts were made: the initial one plus a single retry
+    assert len(observed_limits) == 2
 
 
 @pytest.mark.asyncio
@@ -940,7 +942,7 @@ async def test_fetch_and_send_events_async_payload_error_persists(mocker):
         - The page size was shrunk on each retry but never below the configured floor.
     """
     from aiohttp import ClientPayloadError
-    from NetskopeEventCollector_v2 import fetch_and_send_events_async, MAX_EVENTS_PAGE_SIZE, MIN_EVENTS_PAGE_SIZE
+    from NetskopeEventCollector_v2 import fetch_and_send_events_async, MAX_EVENTS_PAGE_SIZE, MIN_EVENTS_PAGE_SIZE, MAX_RETRY
 
     mocker.patch("NetskopeEventCollector_v2.asyncio.sleep", return_value=None)
     # The failure path logs via demisto.error; mock it so it doesn't write to stdout (conftest forbids it).
@@ -966,3 +968,5 @@ async def test_fetch_and_send_events_async_payload_error_persists(mocker):
     assert len(failures) == 1, f"Expected a single recorded failure, got {failures}"
     # page size was shrunk on each retry but never below the configured floor
     assert min(observed_limits) >= MIN_EVENTS_PAGE_SIZE
+    # the request was attempted exactly MAX_RETRY + 1 times before giving up (1 initial attempt + 3 retries)
+    assert len(observed_limits) == MAX_RETRY + 1
