@@ -1,0 +1,46 @@
+{
+    "name": "Tenzai",
+    "description": "Validate Cortex ASM-discovered exposures with Tenzai's agentic penetration testing.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "created": "2026-09-02T00:00:00Z",
+    "author": "Tenzai",
+    "url": "https://www.tenzai.com",
+    "email": "support@tenzai.com",
+    "githubUser": [
+        "akivah-ten"
+    ],
+    "categories": [
+        "Vulnerability Management"
+    ],
+    "tags": [],
+    "useCases": [
+        "Vulnerability Management"
+    ],
+    "keywords": [
+        "Tenzai",
+        "Attack Surface Management",
+        "ASM",
+        "Exposure Validation",
+        "Agentic",
+        "Penetration Testing",
+        "Cortex"
+    ],
+    "dependencies": {
+        "CortexAttackSurfaceManagement": {
+            "mandatory": true,
+            "display_name": "Cortex Attack Surface Management"
+        }
+    },
+    "marketplaces": [
+        "platform",
+        "marketplacev2"
+    ],
+    "itemPrefix": [
+        "Tenzai"
+    ],
+    "supportedModules": [
+        "asm",
+        "xsiam"
+    ]
+}
