@@ -1,12 +1,6 @@
 id: ANYRUN Detonate File Android for XDR
 version: -1
 fromversion: 6.0.0
-vcShouldKeepItemLegacyProdMachine: false
-aclrelations: []
-aclowner:
-  id: ""
-  type: ""
-  name: ""
 name: ANYRUN Detonate File Android for XDR
 description: This playbook submits a file from a Cortex XDR issue to the ANY.RUN Cloud
   Sandbox for dynamic analysis in an Android environment and automates malware
@@ -23,8 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
+      description: ""
     nexttasks:
       '#none#':
       - "40"
@@ -57,8 +50,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "42"
@@ -103,8 +94,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "7"
@@ -142,8 +131,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "43"
@@ -181,8 +168,6 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "7"
@@ -228,8 +213,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ANY.RUN Cloud Sandbox
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "9"
@@ -289,8 +272,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ANY.RUN Cloud Sandbox
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "10"
@@ -328,8 +309,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
+      description: ""
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -358,8 +338,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "5"
@@ -405,8 +383,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "5"
@@ -444,8 +420,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "5"
@@ -492,8 +466,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ANY.RUN Cloud Sandbox
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "8"
@@ -531,8 +503,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ANY.RUN Cloud Sandbox
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "14"
@@ -580,8 +550,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Cortex Core - IR
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#none#':
       - "5"
@@ -619,8 +587,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "5"
@@ -666,8 +632,6 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
-      istaskmissingcomponenterrordismissed: false
     nexttasks:
       '#default#':
       - "5"
@@ -692,7 +656,6 @@ tasks:
     quietmode: 1
     isoversize: false
     isautoswitchedtoquietmode: false
-outlinetasks: {}
 view: |-
   {
     "linkLabelsPosition": {
@@ -831,9 +794,7 @@ outputs:
   description: The detailed IOC objects prepared for Cortex XDR indicator rules.
   type: Unknown
 quiet: true
-dirtyInputs: true
 adopted: true
-possibleresponses: []
 marketplaces:
 - platform
 - marketplacev2
