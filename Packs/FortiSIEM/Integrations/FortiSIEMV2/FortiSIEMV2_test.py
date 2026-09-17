@@ -1165,3 +1165,290 @@ def test_fetch_incidents_with_concurrent_events(mock_get_events, requests_mock):
         raw_json = json.loads(incident["rawJSON"])
         events = raw_json.get("events", [])
         assert len(events) == 2
+
+
+def test_event_list_by_incident_query_start_command(requests_mock):
+    """
+    Scenario: Initiate the triggering events query for an incident (FortiSIEM v7.3.3+).
+    Given:
+     - User has provided a valid incident ID and a time range within 24 hours.
+    When:
+     - fortisiem-event-list-by-incident-query-start command is called.
+    Then:
+     - Ensure the queryId is returned under FortiSIEM.TriggeringEventQuery.QueryID.
+    """
+    from FortiSIEMV2 import event_list_by_incident_query_start_command
+
+    client = mock_client()
+    mock_response = load_json_mock_response("triggering_events_query_start.json")
+    requests_mock.get(f"{client._base_url}pub/incident/triggeringEvents/start", json=mock_response)
+
+    result = event_list_by_incident_query_start_command(
+        client, {"incident_id": "123", "time_from": "2023-05-16T00:00:00", "time_to": "2023-05-16T01:00:00"}
+    )
+
+    assert result.outputs_prefix == "FortiSIEM.TriggeringEventQuery"
+    assert result.outputs == {"QueryID": "14262"}
+
+
+def test_event_list_by_incident_query_start_command_exceeds_24h():
+    """
+    Scenario: Initiate the triggering events query with a time range exceeding 24 hours.
+    Given:
+     - User has provided a time range larger than 24 hours.
+    When:
+     - fortisiem-event-list-by-incident-query-start command is called.
+    Then:
+     - Ensure a ValueError is raised about the 24 hours limit.
+    """
+    from FortiSIEMV2 import event_list_by_incident_query_start_command
+
+    client = mock_client()
+
+    with pytest.raises(ValueError, match="cannot exceed 24 hours"):
+        event_list_by_incident_query_start_command(
+            client, {"incident_id": "123", "time_from": "2023-05-16T00:00:00", "time_to": "2023-05-18T00:00:00"}
+        )
+
+
+def test_event_list_by_incident_query_progress_command(requests_mock):
+    """
+    Scenario: Retrieve the progress of a triggering events query (FortiSIEM v7.3.3+).
+    Given:
+     - User has provided a valid query ID.
+     - The API returns a bare integer percentage.
+    When:
+     - fortisiem-event-list-by-incident-query-progress command is called.
+    Then:
+     - Ensure the status is returned as a string under FortiSIEM.TriggeringEventQuery.Status.
+    """
+    from FortiSIEMV2 import event_list_by_incident_query_progress_command
+
+    client = mock_client()
+    requests_mock.get(f"{client._base_url}pub/incident/triggeringEvents/progress/14262", json=100)
+
+    result = event_list_by_incident_query_progress_command(client, {"query_id": "14262"})
+
+    assert result.outputs_prefix == "FortiSIEM.TriggeringEventQuery"
+    assert result.outputs == {"QueryID": "14262", "Status": "100"}
+
+
+def test_event_list_by_incident_query_result_command(requests_mock):
+    """
+    Scenario: Retrieve the result data of a triggering events query (FortiSIEM v7.3.3+).
+    Given:
+     - User has provided a valid query ID.
+     - The API returns a response with a 'data' list of events.
+    When:
+     - fortisiem-event-list-by-incident-query-result command is called.
+    Then:
+     - Ensure the events are returned under FortiSIEM.Event.
+     - Ensure the event id is stringified.
+     - Ensure the incidentId is attached when provided.
+    """
+    from FortiSIEMV2 import event_list_by_incident_query_result_command
+
+    client = mock_client()
+    mock_response = load_json_mock_response("triggering_events_query_result.json")
+    requests_mock.get(f"{client._base_url}pub/incident/triggeringEvents/result/14262", json=mock_response)
+
+    result = event_list_by_incident_query_result_command(client, {"query_id": "14262", "incident_id": "123"})
+
+    assert result.outputs_prefix == "FortiSIEM.Event"
+    assert result.outputs_key_field == "id"
+    assert len(result.outputs) == 2
+    assert result.outputs[0]["id"] == "4895412795018308000"
+    assert isinstance(result.outputs[0]["id"], str)
+    assert result.outputs[0]["incidentId"] == "123"
+    assert "List Events Of incident: 123" in result.readable_output
+
+
+def test_event_list_by_incident_query_result_command_empty(requests_mock):
+    """
+    Scenario: Retrieve the result of a triggering events query that returns no events.
+    Given:
+     - The API returns a response with an empty 'data' list.
+    When:
+     - fortisiem-event-list-by-incident-query-result command is called.
+    Then:
+     - Ensure an empty outputs list is returned without raising an error.
+    """
+    from FortiSIEMV2 import event_list_by_incident_query_result_command
+
+    client = mock_client()
+    requests_mock.get(f"{client._base_url}pub/incident/triggeringEvents/result/14262", json={"data": []})
+
+    result = event_list_by_incident_query_result_command(client, {"query_id": "14262"})
+
+    assert result.outputs == []
+
+
+def test_event_list_by_incident_query_with_polling_first_run(mocker, requests_mock):
+    """
+    Scenario: Run the triggering events query with polling for the first time.
+    Given:
+     - User enabled polling and did not provide a query_id yet.
+    When:
+     - fortisiem-event-list-by-incident-query command is called (first run).
+    Then:
+     - Ensure the start command runs and a scheduled command is set to poll progress.
+    """
+    from FortiSIEMV2 import event_list_by_incident_query_with_polling_command
+
+    mocker.patch("FortiSIEMV2.ScheduledCommand.raise_error_if_not_supported", return_value=None)
+    client = mock_client()
+    mock_response = load_json_mock_response("triggering_events_query_start.json")
+    requests_mock.get(f"{client._base_url}pub/incident/triggeringEvents/start", json=mock_response)
+
+    result = event_list_by_incident_query_with_polling_command(
+        client, {"incident_id": "123", "time_from": "2023-05-16T00:00:00", "time_to": "2023-05-16T01:00:00"}
+    )
+
+    assert result.scheduled_command is not None
+    assert result.outputs == {"QueryID": "14262"}
+
+
+def test_event_list_by_incident_query_with_polling_in_progress(mocker, requests_mock):
+    """
+    Scenario: Poll a triggering events query that is not yet complete.
+    Given:
+     - A query_id is provided and the progress is below 100.
+    When:
+     - fortisiem-event-list-by-incident-query command is called (polling run).
+    Then:
+     - Ensure a scheduled command is set to poll again.
+    """
+    from FortiSIEMV2 import event_list_by_incident_query_with_polling_command
+
+    mocker.patch("FortiSIEMV2.ScheduledCommand.raise_error_if_not_supported", return_value=None)
+    client = mock_client()
+    requests_mock.get(f"{client._base_url}pub/incident/triggeringEvents/progress/14262", json=50)
+
+    result = event_list_by_incident_query_with_polling_command(client, {"query_id": "14262"})
+
+    assert result.scheduled_command is not None
+
+
+def test_event_list_by_incident_query_with_polling_complete(mocker, requests_mock):
+    """
+    Scenario: Poll a triggering events query that has completed.
+    Given:
+     - A query_id is provided and the progress is 100.
+    When:
+     - fortisiem-event-list-by-incident-query command is called (polling run).
+    Then:
+     - Ensure the result command runs and events are returned under FortiSIEM.Event.
+    """
+    from FortiSIEMV2 import event_list_by_incident_query_with_polling_command
+
+    mocker.patch("FortiSIEMV2.ScheduledCommand.raise_error_if_not_supported", return_value=None)
+    client = mock_client()
+    result_response = load_json_mock_response("triggering_events_query_result.json")
+    requests_mock.get(f"{client._base_url}pub/incident/triggeringEvents/progress/14262", json=100)
+    requests_mock.get(f"{client._base_url}pub/incident/triggeringEvents/result/14262", json=result_response)
+
+    result = event_list_by_incident_query_with_polling_command(client, {"query_id": "14262"})
+
+    assert result.outputs_prefix == "FortiSIEM.Event"
+    assert len(result.outputs) == 2
+
+
+def test_get_related_events_via_query_for_fetch_command(mocker, requests_mock):
+    """
+    Testing the new query 'triggeringEvents' fetch flow (start -> progress -> result).
+    Given:
+        - legacy fetch mode is disabled, so the new query endpoint is used.
+        - The start request returns a queryId, progress returns 100, and result returns two events.
+    When:
+        - get_related_events_via_query_for_fetch_command is called with a bounded time range.
+    Then:
+        - The two events are returned, each stringified and tagged with the incident ID.
+    """
+    from FortiSIEMV2 import get_related_events_via_query_for_fetch_command
+
+    mocker.patch("FortiSIEMV2.time.sleep", return_value=None)
+    client = mock_client()
+    result_response = load_json_mock_response("triggering_events_query_result.json")
+    requests_mock.get(f"{client._base_url}pub/incident/triggeringEvents/start", json={"queryId": "14262"})
+    requests_mock.get(f"{client._base_url}pub/incident/triggeringEvents/progress/14262", json=100)
+    requests_mock.get(f"{client._base_url}pub/incident/triggeringEvents/result/14262", json=result_response)
+
+    events = get_related_events_via_query_for_fetch_command("123456", 20, client, time_from=1684282200000, time_to=1684282210000)
+
+    assert len(events) == 2
+    assert events[0]["incidentId"] == "123456"
+    assert events[0]["id"] == "4895412795018308000"
+
+
+def test_get_related_events_via_query_for_fetch_command_missing_time_range():
+    """
+    Testing that the new query fetch flow requires a bounded time range.
+    Given:
+        - No time_from/time_to are provided.
+    When:
+        - get_related_events_via_query_for_fetch_command is called.
+    Then:
+        - A ValueError is raised.
+    """
+    from FortiSIEMV2 import get_related_events_via_query_for_fetch_command
+
+    client = mock_client()
+
+    with pytest.raises(ValueError, match="bounded time range"):
+        get_related_events_via_query_for_fetch_command("123456", 20, client)
+
+
+@patch("FortiSIEMV2.get_related_events_via_query_for_fetch_command")
+@patch("FortiSIEMV2.get_related_events_for_fetch_command")
+def test_fetch_events_concurrently_uses_new_query_when_not_legacy(mock_legacy, mock_new_query):
+    """
+    Testing that fetch_events_concurrently routes to the new query flow when legacy mode is disabled.
+    Given:
+        - legacy_fetch_mode is False.
+        - One formatted incident.
+    When:
+        - fetch_events_concurrently is called.
+    Then:
+        - The new query helper is used and the legacy helper is not called.
+    """
+    from FortiSIEMV2 import fetch_events_concurrently
+
+    client = mock_client()
+    sample_incidents = [{"incidentId": 401, "incidentFirstSeen": 1000000, "incidentLastSeen": 2000000}]
+    mock_new_query.return_value = [{"id": "event_401_1"}]
+
+    events_map, _, success_count, fail_count = fetch_events_concurrently(sample_incidents, 20, client, legacy_fetch_mode=False)
+
+    assert success_count == 1
+    assert fail_count == 0
+    assert len(events_map[401]) == 1
+    mock_new_query.assert_called_once()
+    mock_legacy.assert_not_called()
+
+
+@patch("FortiSIEMV2.get_related_events_via_query_for_fetch_command")
+@patch("FortiSIEMV2.get_related_events_for_fetch_command")
+def test_fetch_events_concurrently_uses_legacy_by_default(mock_legacy, mock_new_query):
+    """
+    Testing that fetch_events_concurrently routes to the legacy flow by default.
+    Given:
+        - legacy_fetch_mode is not provided (defaults to True).
+        - One formatted incident.
+    When:
+        - fetch_events_concurrently is called.
+    Then:
+        - The legacy helper is used and the new query helper is not called.
+    """
+    from FortiSIEMV2 import fetch_events_concurrently
+
+    client = mock_client()
+    sample_incidents = [{"incidentId": 501, "incidentFirstSeen": 1000000, "incidentLastSeen": 2000000}]
+    mock_legacy.return_value = [{"Event ID": "event_501_1"}]
+
+    events_map, _, success_count, fail_count = fetch_events_concurrently(sample_incidents, 20, client)
+
+    assert success_count == 1
+    assert fail_count == 0
+    assert len(events_map[501]) == 1
+    mock_legacy.assert_called_once()
+    mock_new_query.assert_not_called()
