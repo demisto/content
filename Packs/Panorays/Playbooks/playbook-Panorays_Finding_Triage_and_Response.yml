@@ -5,23 +5,26 @@ description: |-
   Triages a Panorays "Self Company" finding incident end-to-end without depending on any specific external ITSM tool.
 
   Flow:
-  1. Checks for an existing open (or pending) incident on the same Panorays Finding ID. If found, only the newer
+  1. Verifies the Panorays Findings API integration instance is enabled. If it is not, the incident is routed to
+     a manual review task instead of being triaged automatically against an unreachable integration.
+  2. Checks for an existing open (or pending) incident on the same Panorays Finding ID. If found, only the newer
      of the two incidents (by incident ID) closes itself as a duplicate, so two near-simultaneous incidents for
      the same finding can't both close in favor of the other.
-  2. Branches on finding severity.
-     - Low / Informational: auto-closed, no action required (closeReason/closeNotes configurable via inputs).
+  3. Branches on finding severity.
+     - Low / Informational (INFO): auto-closed, no action required (closeReason/closeNotes configurable via inputs).
      - Medium: a Cortex XSOAR task is created for an analyst to review, after a summary is printed to the War Room.
-     - Critical / High: a notification is sent (via whatever mail/chat integration implementing the generic
-       send-notification command is enabled) and a remediation task with an SLA is created natively in Cortex
+     - Critical / High: a notification is sent (via whatever chat integration implementing the generic
+       send-notification command is enabled - e.g. Slack, Microsoft Teams, Mattermost; email-only integrations
+       such as Gmail/EWS are not covered) and a remediation task with an SLA is created natively in Cortex
        XSOAR, after a summary is printed to the War Room.
      - Any other/unexpected value (including empty): a summary is printed to the War Room and the incident is
        routed to a manual review task instead of being auto-closed, since this field is free-form text from the
        API with no normalization.
-  3. Remediation is tracked entirely with native Cortex XSOAR tasks - this pack does not assume a specific
+  4. Remediation is tracked entirely with native Cortex XSOAR tasks - this pack does not assume a specific
      external ticketing product. See the README for how to extend this playbook with your own ITSM hand-off.
-  4. Reminds the analyst to update the finding status back in Panorays once resolved (a future
+  5. Reminds the analyst to update the finding status back in Panorays once resolved (a future
      panorays-finding-update command can automate this step).
-  5. All paths converge on a final "Done" task.
+  6. All paths converge on a final "Done" task.
 starttaskid: "0"
 tasks:
   "0":
@@ -37,13 +40,74 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "19"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
           "y": 50
+        }
+      }
+
+  "19":
+    id: "19"
+    taskid: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+    type: condition
+    task:
+      id: a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+      version: -1
+      name: Is Panorays Findings API enabled?
+      description: >-
+        Verifies the Panorays Findings API instance is enabled before triaging. If the instance is disabled or
+        its API key has been revoked, the incident should not be auto-closed or handed to a remediation task
+        pointing at an unreachable integration.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      brandname:
+        simple: Panorays Findings API
+    nexttasks:
+      "no":
+      - "20"
+      "yes":
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 135
+        }
+      }
+
+  "20":
+    id: "20"
+    taskid: b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e
+    type: regular
+    task:
+      id: b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e
+      version: -1
+      name: 'Manual task: Panorays Findings API unavailable'
+      description: >-
+        The Panorays Findings API integration instance is disabled, or its API key/connection is otherwise
+        unavailable. Automated triage (duplicate detection, severity routing, auto-close) cannot run reliably
+        without it. Re-enable or reconfigure the instance, then manually disposition this finding. Mark this
+        task complete once reviewed.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 850,
+          "y": 220
         }
       }
 
@@ -220,6 +284,15 @@ tasks:
             value:
               simple: Informational
           ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: incident.panoraysfindingseverity
+            iscontext: true
+          right:
+            value:
+              simple: INFO
+          ignorecase: true
     nexttasks:
       "Critical":
       - "12"
@@ -288,9 +361,11 @@ tasks:
       version: -1
       name: Notify security team (Critical/High)
       description: >-
-        Sends a notification via the generic send-notification command, so this works with whichever mail or
-        chat integration (e.g. Gmail, EWS, MS Teams, Slack) is enabled - no specific product is required. If no
-        such integration is enabled, this task fails gracefully and the playbook continues.
+        Sends a notification via the generic send-notification command, so this works with whichever chat
+        integration implementing that command (e.g. Slack, Slack v3, Microsoft Teams, Mattermost) is enabled -
+        no specific product is required. Note this does not cover email-only integrations such as Gmail or EWS,
+        which implement send-mail instead. If no send-notification integration is enabled, this task fails
+        gracefully and the playbook continues.
       script: '|||send-notification'
       type: regular
       iscommand: true
