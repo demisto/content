@@ -149,3 +149,4 @@ marketplaces:
 supportedModules:
 - xsiam
 - agentix
+excludefromtightlycoupled: true
