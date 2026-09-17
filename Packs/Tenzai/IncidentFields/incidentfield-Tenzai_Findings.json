@@ -17,7 +17,7 @@
             "required": false,
             "script": "",
             "selectValues": null,
-            "type": "html",
+            "type": "shortText",
             "width": 150
         },
         {

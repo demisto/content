@@ -86,7 +86,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 200
+          "y": 410
         }
       }
     note: false
@@ -130,7 +130,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 370
+          "y": 500
         }
       }
     note: false
@@ -185,7 +185,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 540
+          "y": 590
         }
       }
     note: false
@@ -213,7 +213,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 710
+          "y": 680
         }
       }
     note: false
@@ -250,7 +250,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 125
+          "y": 140
         }
       }
     note: false
@@ -285,7 +285,7 @@ tasks:
       {
         "position": {
           "x": 680,
-          "y": 540
+          "y": 500
         }
       }
     note: false
@@ -331,7 +331,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 285
+          "y": 230
         }
       }
     note: false
@@ -388,7 +388,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 420
+          "y": 320
         }
       }
     note: false
@@ -403,7 +403,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 820,
+        "height": 760,
         "width": 690,
         "x": 230,
         "y": 50
