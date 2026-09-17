@@ -1351,3 +1351,104 @@ def test_event_list_by_incident_query_with_polling_complete(mocker, requests_moc
 
     assert result.outputs_prefix == "FortiSIEM.Event"
     assert len(result.outputs) == 2
+
+
+def test_get_related_events_via_query_for_fetch_command(mocker, requests_mock):
+    """
+    Testing the new query 'triggeringEvents' fetch flow (start -> progress -> result).
+    Given:
+        - legacy fetch mode is disabled, so the new query endpoint is used.
+        - The start request returns a queryId, progress returns 100, and result returns two events.
+    When:
+        - get_related_events_via_query_for_fetch_command is called with a bounded time range.
+    Then:
+        - The two events are returned, each stringified and tagged with the incident ID.
+    """
+    from FortiSIEMV2 import get_related_events_via_query_for_fetch_command
+
+    mocker.patch("FortiSIEMV2.time.sleep", return_value=None)
+    client = mock_client()
+    result_response = load_json_mock_response("triggering_events_query_result.json")
+    requests_mock.get(f"{client._base_url}pub/incident/triggeringEvents/start", json={"queryId": "14262"})
+    requests_mock.get(f"{client._base_url}pub/incident/triggeringEvents/progress/14262", json=100)
+    requests_mock.get(f"{client._base_url}pub/incident/triggeringEvents/result/14262", json=result_response)
+
+    events = get_related_events_via_query_for_fetch_command("123456", 20, client, time_from=1684282200000, time_to=1684282210000)
+
+    assert len(events) == 2
+    assert events[0]["incidentId"] == "123456"
+    assert events[0]["id"] == "4895412795018308000"
+
+
+def test_get_related_events_via_query_for_fetch_command_missing_time_range():
+    """
+    Testing that the new query fetch flow requires a bounded time range.
+    Given:
+        - No time_from/time_to are provided.
+    When:
+        - get_related_events_via_query_for_fetch_command is called.
+    Then:
+        - A ValueError is raised.
+    """
+    from FortiSIEMV2 import get_related_events_via_query_for_fetch_command
+
+    client = mock_client()
+
+    with pytest.raises(ValueError, match="bounded time range"):
+        get_related_events_via_query_for_fetch_command("123456", 20, client)
+
+
+@patch("FortiSIEMV2.get_related_events_via_query_for_fetch_command")
+@patch("FortiSIEMV2.get_related_events_for_fetch_command")
+def test_fetch_events_concurrently_uses_new_query_when_not_legacy(mock_legacy, mock_new_query):
+    """
+    Testing that fetch_events_concurrently routes to the new query flow when legacy mode is disabled.
+    Given:
+        - legacy_fetch_mode is False.
+        - One formatted incident.
+    When:
+        - fetch_events_concurrently is called.
+    Then:
+        - The new query helper is used and the legacy helper is not called.
+    """
+    from FortiSIEMV2 import fetch_events_concurrently
+
+    client = mock_client()
+    sample_incidents = [{"incidentId": 401, "incidentFirstSeen": 1000000, "incidentLastSeen": 2000000}]
+    mock_new_query.return_value = [{"id": "event_401_1"}]
+
+    events_map, _, success_count, fail_count = fetch_events_concurrently(sample_incidents, 20, client, legacy_fetch_mode=False)
+
+    assert success_count == 1
+    assert fail_count == 0
+    assert len(events_map[401]) == 1
+    mock_new_query.assert_called_once()
+    mock_legacy.assert_not_called()
+
+
+@patch("FortiSIEMV2.get_related_events_via_query_for_fetch_command")
+@patch("FortiSIEMV2.get_related_events_for_fetch_command")
+def test_fetch_events_concurrently_uses_legacy_by_default(mock_legacy, mock_new_query):
+    """
+    Testing that fetch_events_concurrently routes to the legacy flow by default.
+    Given:
+        - legacy_fetch_mode is not provided (defaults to True).
+        - One formatted incident.
+    When:
+        - fetch_events_concurrently is called.
+    Then:
+        - The legacy helper is used and the new query helper is not called.
+    """
+    from FortiSIEMV2 import fetch_events_concurrently
+
+    client = mock_client()
+    sample_incidents = [{"incidentId": 501, "incidentFirstSeen": 1000000, "incidentLastSeen": 2000000}]
+    mock_legacy.return_value = [{"Event ID": "event_501_1"}]
+
+    events_map, _, success_count, fail_count = fetch_events_concurrently(sample_incidents, 20, client)
+
+    assert success_count == 1
+    assert fail_count == 0
+    assert len(events_map[501]) == 1
+    mock_legacy.assert_called_once()
+    mock_new_query.assert_not_called()

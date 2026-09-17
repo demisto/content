@@ -1,6 +1,7 @@
 import copy
 import json
 import re
+import time
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
@@ -20,6 +21,8 @@ DEFAULT_FETCH = DEFAULT_LIMIT
 DEFAULT_EVENTS_FETCH = "20"
 ALL_STATUS_FILTER = "All"
 MAX_TRIGGERING_EVENTS_INTERVAL_MS = 24 * 60 * 60 * 1000  # 24 hours in milliseconds
+FETCH_QUERY_POLL_INTERVAL_SECS = 5  # Seconds to wait between progress polls in the new-query fetch flow.
+FETCH_QUERY_MAX_POLL_ATTEMPTS = 12  # Maximum number of progress polls before giving up (~60 seconds total).
 
 INCIDENT_STATUS_VALUE_MAPPING = {"Active": 0, "Auto Cleared": 1, "Manually Cleared": 2, "System Cleared": 3}
 
@@ -1390,6 +1393,7 @@ def fetch_incidents(
     fetch_with_events: bool,
     max_events_fetch: int,
     last_run: dict[str, Any],
+    legacy_fetch_mode: bool = True,
 ) -> tuple:
     """
     Fetch incidents. May fetch also the triggered events of each incident if requested.
@@ -1401,6 +1405,9 @@ def fetch_incidents(
         fetch_with_events (bool): Whether or not fetch the incidents with their events.
         max_events_fetch (int): Maximum number of events to fetch per incident.
         last_run (Dict[str,Any]): Last run object.
+        legacy_fetch_mode (bool): When True (default), use the legacy 'triggeringEvents' endpoint
+            (FortiSIEM v7.3.2 and earlier). When False, use the new query 'triggeringEvents'
+            endpoint (FortiSIEM v7.3.3 and later).
     Returns:
        tuple: Fetched incidents & updated last_run.
     """
@@ -1436,7 +1443,7 @@ def fetch_incidents(
     incidents = []
     if fetch_with_events and formatted_incidents:
         events_map, events_total_time, events_success_count, events_fail_count = fetch_events_concurrently(
-            formatted_incidents, max_events_fetch, client
+            formatted_incidents, max_events_fetch, client, legacy_fetch_mode
         )
     else:
         events_map = {}
@@ -1474,6 +1481,7 @@ def fetch_events_concurrently(
     formatted_incidents: List[dict],
     max_events_fetch: int,
     client: FortiSIEMClient,
+    legacy_fetch_mode: bool = True,
 ) -> tuple[dict, float, int, int]:
     """
     Fetch events for all incidents concurrently using a thread pool.
@@ -1482,6 +1490,8 @@ def fetch_events_concurrently(
         formatted_incidents (List[dict]): List of formatted incident dicts.
         max_events_fetch (int): Maximum number of events to fetch per incident.
         client (FortiSIEMClient): FortiSIEM client.
+        legacy_fetch_mode (bool): When True (default), use the legacy 'triggeringEvents' endpoint.
+            When False, use the new query 'triggeringEvents' endpoint (start -> progress -> result).
 
     Returns:
         tuple: A tuple of (events_map, total_time, success_count, fail_count) where
@@ -1505,13 +1515,22 @@ def fetch_events_concurrently(
             incident_last_seen = incident.get("incidentLastSeen")
             time_from = incident_first_seen - EVENTS_TIME_BUFFER_MS if incident_first_seen else None
             time_to = incident_last_seen + EVENTS_TIME_BUFFER_MS if incident_last_seen else None
-            events = get_related_events_for_fetch_command(
-                inc_id,
-                max_events_fetch,
-                client,
-                time_from=time_from,
-                time_to=time_to,
-            )
+            if legacy_fetch_mode:
+                events = get_related_events_for_fetch_command(
+                    inc_id,
+                    max_events_fetch,
+                    client,
+                    time_from=time_from,
+                    time_to=time_to,
+                )
+            else:
+                events = get_related_events_via_query_for_fetch_command(
+                    inc_id,
+                    max_events_fetch,
+                    client,
+                    time_from=time_from,
+                    time_to=time_to,
+                )
             elapsed = (datetime.now() - start).total_seconds()
             return inc_id, events, elapsed, None
         except Exception as e:
@@ -1565,6 +1584,61 @@ def get_related_events_for_fetch_command(
     for event in formatted_events:
         event["Event ID"] = str(event["Event ID"])  # To avoid overridden by XSOAR since it's a huge number.
     return formatted_events
+
+
+def get_related_events_via_query_for_fetch_command(
+    incident_id: str, max_events_fetch: int, client: FortiSIEMClient, time_from: int | None = None, time_to: int | None = None
+) -> List[dict]:
+    """
+    Get triggered events of the specified incident ID using the new query 'triggeringEvents' endpoint
+    (FortiSIEM v7.3.3+), in a convenient format for fetch layout.
+
+    This runs the asynchronous flow synchronously: start the query, poll its progress until it
+    completes (or a timeout is reached), then retrieve the result. It is intended to be called from
+    within the concurrent fetch thread pool, so the blocking poll only blocks its own worker thread.
+
+    Args:
+        incident_id (str): The incident ID of the related events.
+        max_events_fetch (int): The maximum number of events to retrieve.
+        client (FortiSIEMClient): FortiSIEM client.
+        time_from (int | None): Start of time range filter in epoch milliseconds.
+        time_to (int | None): End of time range filter in epoch milliseconds.
+
+    Returns:
+        List[dict]: Formatted events list.
+    """
+    if time_from is None or time_to is None:
+        raise ValueError(
+            "The new query 'triggeringEvents' endpoint requires a bounded time range "
+            "(both 'time_from' and 'time_to' must be provided)."
+        )
+    validate_triggering_events_time_interval(time_from, time_to)
+
+    start_response = client.triggering_events_query_start_request(incident_id, time_to, time_from, max_events_fetch)
+    query_id = start_response.get("queryId") if isinstance(start_response, dict) else start_response
+    if not query_id:
+        demisto.debug(f"No queryId returned when starting triggering events query for incident {incident_id}.")
+        return []
+
+    for attempt in range(1, FETCH_QUERY_MAX_POLL_ATTEMPTS + 1):
+        progress = client.triggering_events_query_progress_request(query_id)
+        if str(progress) == "100":
+            demisto.debug(f"Triggering events query {query_id} for incident {incident_id} completed after {attempt} poll(s).")
+            break
+        demisto.debug(
+            f"Triggering events query {query_id} for incident {incident_id} at {progress}% "
+            f"(attempt {attempt}/{FETCH_QUERY_MAX_POLL_ATTEMPTS}), waiting {FETCH_QUERY_POLL_INTERVAL_SECS}s."
+        )
+        time.sleep(FETCH_QUERY_POLL_INTERVAL_SECS)  # pylint: disable=E9003
+    else:
+        demisto.debug(
+            f"Triggering events query {query_id} for incident {incident_id} did not complete within "
+            f"{FETCH_QUERY_MAX_POLL_ATTEMPTS} poll(s). Attempting to retrieve partial results."
+        )
+
+    result_response = client.triggering_events_query_result_request(query_id, max_events_fetch)
+    events = result_response.get("data", []) if isinstance(result_response, dict) else []
+    return format_triggering_events_output(events, incident_id)
 
 
 def watchlist_entry_get_command(client: FortiSIEMClient, args: dict[str, Any]) -> List[CommandResults]:
@@ -2376,6 +2450,7 @@ def main() -> None:
     max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_FETCH))
     first_fetch = params.get("first_fetch")
     fetch_with_events = params.get("fetch_mode") == "Fetch With Events"
+    legacy_fetch_mode = argToBoolean(params.get("legacy_fetch_mode", True))
     max_events_fetch = arg_to_number(params.get("max_events_fetch", DEFAULT_EVENTS_FETCH))
     status_filter_list = argToList(params.get("status"))
     headers = {}  # type: ignore[var-annotated]
@@ -2421,6 +2496,7 @@ def main() -> None:
                 fetch_with_events,
                 max_events_fetch,  # type: ignore[arg-type]
                 demisto.getLastRun(),
+                legacy_fetch_mode,
             )  # type: ignore[arg-type]
 
             demisto.setLastRun(last_run)
