@@ -1,7 +1,7 @@
 import json
 
 import pytest
-from IBMSecretsManagerEventCollector import (
+from IBMSecretsManager import (
     Client,
     add_time_to_events,
     dedup_events,
@@ -154,7 +154,7 @@ def test_fetch_events_first_run(requests_mock, mocker):
     When: fetching events.
     Then: a token is minted, events are enriched, and last_run captures the latest timestamp.
     """
-    mocker.patch("IBMSecretsManagerEventCollector.DEFAULT_FIRST_FETCH", "1 hour")
+    mocker.patch("IBMSecretsManager.DEFAULT_FIRST_FETCH", "1 hour")
     requests_mock.post(f"{IAM_URL}/identity/token", json={"access_token": "tok", "expires_in": 3600})
     requests_mock.post(
         f"{SERVER_URL}/v1/query",

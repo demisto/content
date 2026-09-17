@@ -1,4 +1,4 @@
-## IBM Secrets Manager Event Collector
+## IBM Secrets Manager
 
 Collect IBM Secrets Manager audit / Activity Tracker events (via IBM Cloud Logs) into Cortex XSIAM.
 

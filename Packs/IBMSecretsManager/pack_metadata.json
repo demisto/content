@@ -1,6 +1,6 @@
 {
     "name": "IBM Secrets Manager",
-    "description": "IBM Secrets Manager is a centralized service to store, manage, and automate the lifecycle of secrets (API keys, passwords, TLS certificates, and arbitrary data), powered by HashiCorp Vault. This pack collects IBM Secrets Manager audit/Activity Tracker events (via IBM Cloud Logs) into Cortex XSIAM.",
+    "description": "IBM Secrets Manager is a centralized service to store, manage, and automate the lifecycle of secrets (API keys, passwords, TLS certificates, and arbitrary data), powered by HashiCorp Vault.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -18,13 +18,12 @@
         "secrets manager",
         "cloud logs",
         "activity tracker",
-        "audit",
-        "event collector"
+        "audit"
     ],
     "marketplaces": [
         "platform"
     ],
-    "defaultDataSource": "IBMSecretsManagerEventCollector",
+    "defaultDataSource": "IBMSecretsManager",
     "supportedModules": [
         "xsiam"
     ]

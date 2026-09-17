@@ -2,7 +2,7 @@ IBM Secrets Manager is a centralized service to store, manage, and automate the 
 
 This integration was integrated and tested with the IBM Cloud Logs query API (v1).
 
-## Configure IBM Secrets Manager Event Collector in Cortex
+## Configure IBM Secrets Manager in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
