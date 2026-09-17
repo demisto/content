@@ -868,7 +868,7 @@ def fetch_indicator_type(
         page_limit = min(API_LIMIT, remaining)
 
         demisto.debug(
-            f"UNIT42FEED: Fetching indicators [{types_label}] page " f"(page_limit={page_limit}, total_so_far={total_fetched})"
+            f"UNIT42FEED: Fetching indicators [{types_label}] page ({page_limit=}, {total_fetched=})"
         )
 
         # Make API call
@@ -941,7 +941,7 @@ def fetch_threat_objects_with_limit(
         remaining = limit - total_fetched
         page_limit = min(API_LIMIT, remaining)
 
-        demisto.debug(f"UNIT42FEED: Fetching threat objects page " f"(page_limit={page_limit}, total_so_far={total_fetched})")
+        demisto.debug(f"UNIT42FEED: Fetching threat objects page ({page_limit=}, {total_fetched=})")
 
         # Make API call
         response = client.get_threat_objects(limit=page_limit, next_page_token=next_page_token)
@@ -1079,9 +1079,9 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
     if total_limit is None or total_limit <= 0:
         total_limit = TOTAL_INDICATOR_LIMIT
 
-    demisto.debug(f"UNIT42FEED: Starting fetch with total_limit={total_limit}, feed_types={feed_types}")
+    demisto.debug(f"UNIT42FEED: Starting fetch with {total_limit=}, {feed_types=}")
     demisto.debug(
-        f"UNIT42FEED: Indicator types: {indicator_types}, start_time={start_time}, cycle_in_progress={cycle_in_progress}"
+        f"UNIT42FEED: {indicator_types=}, {start_time=}, {cycle_in_progress=}"
     )
 
     # Incoming per-feed resume tokens from an interrupted fetch.
@@ -1100,7 +1100,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
         threat_objects_due = True
 
     demisto.debug(
-        f"UNIT42FEED: Threat objects due={threat_objects_due}, to_token={'set' if to_token else 'none'}, "
+        f"UNIT42FEED: {threat_objects_due=}, threat_objects_token={'set' if to_token else 'none'}, "
         f"last_threat_objects_fetch={last_to_fetch}"
     )
 
@@ -1161,7 +1161,7 @@ def fetch_indicators(client: Client, params: dict, current_time: datetime) -> tu
 
     if pending:
         next_run = {"start_time": start_time, "cycle_start_time": cycle_start_time, "pending": pending}
-        demisto.info(
+        demisto.debug(
             f"UNIT42FEED: Fetch limit reached with more data available. "
             f"Next run will resume feeds {list(pending.keys())} from start_time {start_time}."
         )
