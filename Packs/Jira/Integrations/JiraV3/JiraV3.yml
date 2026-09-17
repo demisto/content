@@ -15,7 +15,7 @@ configuration:
   defaultvalue: https://api.atlassian.com/ex/jira
   type: 0
   required: true
-  additionalinfo: The base URL of the Jira instance. For a cloud instance, use the default URL as configured. For an OnPrem instance, use your respective domain.
+  additionalinfo: The base URL. For a cloud instance, use the default URL as configured. For an OnPrem instance, use your respective domain.
   section: Connect
 - display: User name
   name: basic_credentials
