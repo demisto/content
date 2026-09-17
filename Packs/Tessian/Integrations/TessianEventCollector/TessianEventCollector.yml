@@ -1,0 +1,88 @@
+name: TessianEventCollector
+display: Tessian Event Collector
+category: Analytics & SIEM
+provider: Proofpoint
+description: Collects security events from Proofpoint Tessian for Cortex XSIAM ingestion.
+supportlevelheader: xsoar
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: TessianEventCollector
+  version: -1
+configuration:
+- name: url
+  display: Server URL
+  required: true
+  type: 0
+  additionalinfo: 'The Proofpoint Tessian portal URL (for example, https://[subdomain].tessian-platform.com or https://[subdomain].tessian-app.com).'
+  section: Connect
+- displaypassword: API Token
+  additionalinfo: 'The API Token generated in the Proofpoint Portal under Integrations > Security Integrations > Proofpoint API.'
+  name: api_key
+  type: 9
+  hiddenusername: true
+  required: true
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
+- name: isFetchEvents
+  display: Fetch events
+  type: 8
+  section: Collect
+  required: false
+- name: max_fetch
+  display: Maximum number of security events per fetch
+  type: 0
+  defaultvalue: '1000'
+  additionalinfo: 'The maximum number of security events to fetch per cycle. Each cycle makes up to 10 API calls of 100 events each.'
+  section: Collect
+  required: false
+- defaultvalue: '1'
+  display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  section: Collect
+  advanced: true
+  required: false
+script:
+  commands:
+  - name: tessian-get-events
+    description: Retrieves security events from Proofpoint Tessian. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
+    arguments:
+    - name: limit
+      description: The maximum number of events to return. Maximum is 1000.
+      defaultvalue: '100'
+    - name: created_after
+      description: 'The time after which to include events. Accepts an ISO 8601 timestamp (for example, 2024-01-01T00:00:00Z) or a relative time (for example, 3 days).'
+    - name: should_push_events
+      auto: PREDEFINED
+      defaultvalue: 'false'
+      description: Whether to create events in Cortex XSIAM. If true, the command creates events; otherwise, it only displays them.
+      predefined:
+      - 'true'
+      - 'false'
+    outputs: []
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  isfetchevents: true
+  dockerimage: demisto/fastapi:0.125.0.11206988
+fromversion: 8.4.0
+tests:
+- No tests (auto formatted)
+marketplaces:
+- marketplacev2
+- platform
+
