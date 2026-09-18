@@ -1,0 +1,32 @@
+{
+    "trigger_id": "Dataminr Pulse - Enrich IOC",
+    "playbook_id": "Enrich Custom IOCs - Dataminr Pulse",
+    "suggestion_reason": "Recommended for IOC Enrichment with Dataminr Pulse.",
+    "description": "This trigger is responsible for running the Enrich Custom IOCs - Dataminr Pulse playbook on Dataminr Pulse ReGenAI alerts.",
+    "trigger_name": "Dataminr Pulse - Enrich IOC",
+    "alerts_filter": {
+        "filter": {
+            "AND": [
+                {
+                    "SEARCH_FIELD": "alert_type",
+                    "SEARCH_TYPE": "EQ",
+                    "SEARCH_VALUE": "Dataminr Pulse ReGenAI Alert"
+                },
+                {
+                    "OR": [
+                        {
+                            "SEARCH_FIELD": "severity",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "SEV_050_CRITICAL"
+                        },
+                        {
+                            "SEARCH_FIELD": "severity",
+                            "SEARCH_TYPE": "EQ",
+                            "SEARCH_VALUE": "SEV_040_HIGH"
+                        }
+                    ]
+                }
+            ]
+        }
+    }
+}
