@@ -574,3 +574,70 @@ def test_create_incident_link(mocker, is_platform, version_ge, incident_id, expe
     mocker.patch.object(DBotFindSimilarIncidents, "is_demisto_version_ge", return_value=version_ge)
     link_creator = DBotFindSimilarIncidents.get_incident_link_creator()
     assert link_creator(incident_id) == expected_link
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ('Payment Request "0000025803" has been "Approved".', 'Payment Request \\"0000025803\\" has been \\"Approved\\".'),
+        ("no special chars", "no special chars"),
+        ('a "quote"', 'a \\"quote\\"'),
+        ("line1\nline2", "line1\\nline2"),
+        ("carriage\rreturn", "carriage\\rreturn"),
+        ("back\\slash", "back\\\\slash"),
+        (12345, "12345"),
+    ],
+)
+def test_escape_query_value(value, expected):
+    """
+    Given:
+        - A field value that may contain special characters (double quotes, newlines, backslashes).
+    When:
+        - Escaping the value before embedding it in a getIncidents query.
+    Then:
+        - Ensure special characters are escaped so the resulting query is well-formed.
+    """
+    from DBotFindSimilarIncidents import escape_query_value
+
+    assert escape_query_value(value) == expected
+
+
+def test_get_all_incidents_for_time_window_and_exact_match_escapes_special_chars(mocker):
+    """
+    Given:
+        - An incident whose exact-match field value contains unescaped double quotes.
+    When:
+        - Building the getIncidents query in get_all_incidents_for_time_window_and_exact_match.
+    Then:
+        - Ensure the double quotes in the field value are escaped in the query passed to
+          get_incidents_by_query, so the query is not malformed.
+    """
+    import DBotFindSimilarIncidents
+
+    captured = {}
+
+    def fake_get_incidents_by_query(args):
+        captured["query"] = args["query"]
+        return [{"id": "1"}]
+
+    mocker.patch.object(DBotFindSimilarIncidents, "get_incidents_by_query", side_effect=fake_get_incidents_by_query)
+
+    incident = {
+        "id": "173171866",
+        "reportedemailsubject": 'Payment Request "0000025803" has been "Approved".',
+    }
+
+    DBotFindSimilarIncidents.get_all_incidents_for_time_window_and_exact_match(
+        exact_match_fields=["reportedemailsubject"],
+        populate_fields=["id", "reportedemailsubject"],
+        incident=incident,
+        from_date="7 days ago",
+        to_date="now",
+        query_sup="",
+        limit=1000,
+    )
+
+    query = captured["query"]
+    assert 'reportedemailsubject: "Payment Request \\"0000025803\\" has been \\"Approved\\"."' in query
+    # No raw (unescaped) double quote should terminate the value prematurely.
+    assert '"Payment Request "0000025803"' not in query
