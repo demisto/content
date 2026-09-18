@@ -2790,6 +2790,62 @@ class TestEsKibanaDetectionAlertStatusSetCommand:
             Elasticsearch_v2.es_kibana_detection_alert_status_set_command({}, {})
 
 
+class TestEsKibanaEndpointIsolateCommand:
+    """Tests for es_kibana_endpoint_isolate_command."""
+
+    def test_isolate_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "action": "action-1",
+            "data": {
+                "id": "action-1",
+                "agentType": "endpoint",
+                "command": "isolate",
+                "isCompleted": False,
+                "status": "pending",
+                "wasSuccessful": False,
+            },
+        }
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+
+        result = Elasticsearch_v2.es_kibana_endpoint_isolate_command(
+            {
+                "space_id": "security",
+                "endpoint_ids": "endpoint-1,endpoint-2",
+                "agent_type": "endpoint",
+                "alert_ids": "alert-1,alert-2",
+                "case_ids": "case-1",
+                "comment": "Isolating as initial response",
+            },
+            {},
+        )
+
+        mock_request.assert_called_once_with(
+            "POST",
+            "/api/endpoint/action/isolate",
+            space_id="security",
+            json_data={
+                "endpoint_ids": ["endpoint-1", "endpoint-2"],
+                "agent_type": "endpoint",
+                "alert_ids": ["alert-1", "alert-2"],
+                "case_ids": ["case-1"],
+                "comment": "Isolating as initial response",
+            },
+            proxies={},
+        )
+        assert result.outputs == response
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointIsolationAction"
+        assert "action-1" in result.readable_output
+
+    def test_missing_endpoint_ids_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException, match="endpoint_ids"):
+            Elasticsearch_v2.es_kibana_endpoint_isolate_command({}, {})
+
+
 MOCK_EXCEPTION_ITEM = {
     "id": "item-id-1",
     "item_id": "trusted-linux-processes",
