@@ -1,36 +1,33 @@
+commonfields:
+  id: SetWithDuplicates
+  version: -1
+name: SetWithDuplicates
+script: ''
+tags:
+- Utilities
+type: python
+comment: >-
+  Set a value in context under the key, allowing for duplicate values to be
+  retained.
+enabled: true
 args:
 - description: The key to set.
   name: key
   required: true
-  supportedModules: []
 - description: The value to set to the key.
   name: value
   required: true
-  supportedModules: []
 - auto: PREDEFINED
-  defaultValue: "false"
+  defaultValue: 'false'
   description: Whether the argument should be saved as a string.
   name: stringify
   predefined:
-  - "true"
-  - "false"
-  supportedModules: []
-comment: Set a value in context under the key, allowing for duplicate values to be retained.
-commonfields:
-  id: SetWithDuplicates
-  version: -1
-dockerimage: demisto/python3:3.12.13.9059085
-enabled: true
-engineinfo: {}
-mainengineinfo: {}
-name: SetWithDuplicates
-pswd: ""
-restrictioncenter: {}
-runas: DBotWeakRole
-runonce: false
+  - 'true'
+  - 'false'
 scripttarget: 0
-signature: ""
 subtype: python3
-tags:
-- Utilities
-type: python
+dockerimage: 'demisto/python3:3.12.13.9059085'
+runas: DBotWeakRole
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
