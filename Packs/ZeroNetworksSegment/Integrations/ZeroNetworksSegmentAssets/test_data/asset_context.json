@@ -1,0 +1,25 @@
+{
+    "ID": "a:a:JF2xro6g",
+    "Name": "SERVER01",
+    "FQDN": "server.domain.local",
+    "Domain": "domain.local",
+    "AssetType": "Server",
+    "OSType": "Windows",
+    "OperatingSystem": "Windows Server 2019 Datacenter",
+    "IPv4Addresses": [
+        "10.0.0.15"
+    ],
+    "ProtectionState": "Segmented",
+    "IdentityProtectionState": "Unsegmented",
+    "RPCProtectionState": "Unsegmented",
+    "IsQuarantined": false,
+    "RiskScore": 42,
+    "Source": "Active Directory",
+    "HealthStatus": "Healthy",
+    "Labels": [
+        "Crown Jewels",
+        "Production"
+    ],
+    "LastLogon": "2024-08-29T12:00:15.000Z",
+    "ProtectedAt": "2024-07-30T12:00:15.000Z"
+}
