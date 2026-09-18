@@ -21,13 +21,13 @@ configuration:
   type: 8
   section: Connect
   required: false
-- display: Root URL
+- display: Base domain
   name: root_url
   type: 0
   required: false
   section: Connect
   defaultvalue: any.run
-  additionalinfo: Base domain for the ANY.RUN connection. Enter only the domain (e.g. any.run), without a scheme or trailing slash.
+  additionalinfo: The base domain for the ANY.RUN connection. Enter the domain only (for example, any.run), without http://, https://, or a trailing slash. Using an alternative domain requires special access.
 description: ANY.RUN Sandbox is an online interactive sandbox for malware analysis, a tool for detection, monitoring, and research of cyber threats in real time.
 display: ANY.RUN Cloud Sandbox
 name: ANY.RUN Cloud Sandbox
@@ -71,37 +71,57 @@ script:
       defaultValue: 'en-US'
       required: false
       type: String
-    - description: 'Network connection state.'
+    - auto: PREDEFINED
+      description: 'Whether to enable network connection.'
       name: opt_network_connect
-      defaultValue: 'True'
+      defaultValue: true
       required: false
-      type: String
-    - description: 'FakeNet feature status.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to enable the FakeNet feature.'
       name: opt_network_fakenet
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'TOR using.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to use TOR.'
       name: opt_network_tor
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Tor geo location option. Example: US, AU.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - description: 'The TOR geo location option, for example US, AU.'
       name: opt_network_geo
       defaultValue: 'fastest'
       required: false
       type: String
-    - description: 'HTTPS MITM proxy option.'
+    - auto: PREDEFINED
+      description: 'Whether to use the HTTPS MITM proxy.'
       name: opt_network_mitm
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Residential proxy using.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to use a residential proxy.'
       name: opt_network_residential_proxy
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Residential proxy geo location option. Example: US, AU.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - description: 'The residential proxy geo location option, for example US, AU.'
       name: opt_network_residential_proxy_geo
       defaultValue: 'fastest'
       required: false
@@ -123,7 +143,16 @@ script:
       required: false
       type: String
     - auto: PREDEFINED
-      description: 'Start file analysis from the specified directory.'
+      description: 'Whether to enable automated interactivity.'
+      name: opt_automated_interactivity
+      defaultValue: true
+      required: false
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'The directory from which to start the file analysis.'
       name: obj_ext_startfolder
       defaultValue: 'temp'
       required: false
@@ -140,18 +169,26 @@ script:
       name: obj_ext_cmd
       required: false
       type: String
-    - description: 'Forces the file to execute with elevated privileges and an elevated token (for PE32, PE32+, PE64 files only).'
+    - auto: PREDEFINED
+      description: 'Whether to force the file to execute with elevated privileges and an elevated token (for PE32, PE32+, PE64 files only).'
       name: obj_force_elevation
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Change extension to valid.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to change the extension to a valid one.'
       name: obj_ext_extension
-      defaultValue: 'True'
+      defaultValue: true
       required: false
-      type: String
+      type: boolean
+      predefined:
+      - true
+      - false
     name: anyrun-detonate-file-windows
-    description: 'Perform File analysis using Windows VM.'
+    description: 'Perform file analysis using Windows VM.'
     outputs:
     - contextPath: ANYRUN_DetonateFileWindows.TaskID
       description: 'Task UUID.'
@@ -194,37 +231,57 @@ script:
       defaultValue: 'en-US'
       required: false
       type: String
-    - description: 'Network connection state.'
+    - auto: PREDEFINED
+      description: 'Whether to enable network connection.'
       name: opt_network_connect
-      defaultValue: 'True'
+      defaultValue: true
       required: false
-      type: String
-    - description: 'FakeNet feature status.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to enable the FakeNet feature.'
       name: opt_network_fakenet
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'TOR using.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to use TOR.'
       name: opt_network_tor
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Tor geo location option. Example: US, AU.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - description: 'The TOR geo location option, for example US, AU.'
       name: opt_network_geo
       defaultValue: 'fastest'
       required: false
       type: String
-    - description: 'HTTPS MITM proxy option.'
+    - auto: PREDEFINED
+      description: 'Whether to use the HTTPS MITM proxy.'
       name: opt_network_mitm
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Residential proxy using.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to use a residential proxy.'
       name: opt_network_residential_proxy
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Residential proxy geo location option. Example: US, AU.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - description: 'The residential proxy geo location option, for example US, AU.'
       name: opt_network_residential_proxy_geo
       defaultValue: 'fastest'
       required: false
@@ -246,6 +303,15 @@ script:
       required: false
       type: String
     - auto: PREDEFINED
+      description: 'Whether to enable automated interactivity.'
+      name: opt_automated_interactivity
+      defaultValue: true
+      required: false
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
       description: 'Browser name.'
       name: obj_ext_browser
       defaultValue: 'Google Chrome'
@@ -256,13 +322,17 @@ script:
       - 'Mozilla Firefox'
       - 'Internet Explorer'
       - 'Microsoft Edge'
-    - description: 'Change extension to valid.'
+    - auto: PREDEFINED
+      description: 'Whether to change the extension to a valid one.'
       name: obj_ext_extension
-      defaultValue: 'True'
+      defaultValue: true
       required: false
-      type: String
+      type: boolean
+      predefined:
+      - true
+      - false
     name: anyrun-detonate-url-windows
-    description: 'Perform URL analysis using Windows VM.'
+    description: 'Performs URL analysis using Windows VM.'
     outputs:
     - contextPath: ANYRUN_DetonateUrlWindows.TaskID
       description: 'Task UUID.'
@@ -286,37 +356,57 @@ script:
       predefined:
         - 'ubuntu'
         - 'debian'
-    - description: 'Network connection state.'
+    - auto: PREDEFINED
+      description: 'Whether to enable network connection.'
       name: opt_network_connect
-      defaultValue: 'True'
+      defaultValue: true
       required: false
-      type: String
-    - description: 'FakeNet feature status.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to enable the FakeNet feature.'
       name: opt_network_fakenet
-      defaultValue: 'False'
+      defaultValue: true
       required: false
-      type: String
-    - description: 'TOR using.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to use TOR.'
       name: opt_network_tor
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Tor geo location option. Example: US, AU.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - description: 'The TOR geo location option, for example US, AU.'
       name: opt_network_geo
       defaultValue: 'fastest'
       required: false
       type: String
-    - description: 'HTTPS MITM proxy option.'
+    - auto: PREDEFINED
+      description: 'Whether to use the HTTPS MITM proxy.'
       name: opt_network_mitm
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Residential proxy using.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to use a residential proxy.'
       name: opt_network_residential_proxy
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Residential proxy geo location option. Example: US, AU.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - description: 'The residential proxy geo location option, for example US, AU.'
       name: opt_network_residential_proxy_geo
       defaultValue: 'fastest'
       required: false
@@ -338,7 +428,17 @@ script:
       required: false
       type: String
     - auto: PREDEFINED
-      description: 'Start file analysis from the specified directory.'
+      description: 'Whether to enable automated interactivity.'
+      name: opt_automated_interactivity
+      defaultValue: false
+      required: false
+      type: boolean
+      hidden: true
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'The directory from which to start the file analysis.'
       name: obj_ext_startfolder
       defaultValue: 'temp'
       required: false
@@ -355,18 +455,26 @@ script:
       name: obj_ext_cmd
       required: false
       type: String
-    - description: 'Run file with superuser privileges.'
+    - auto: PREDEFINED
+      description: 'Run file with superuser privileges.'
       name: run_as_root
-      defaultValue: 'True'
+      defaultValue: true
       required: false
-      type: String
-    - description: 'Change extension to valid.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to change the extension to a valid one.'
       name: obj_ext_extension
-      defaultValue: 'True'
+      defaultValue: true
       required: false
-      type: String
+      type: boolean
+      predefined:
+      - true
+      - false
     name: anyrun-detonate-file-linux
-    description: 'Perform File analysis using Linux VM.'
+    description: 'Perform file analysis using Linux VM.'
     outputs:
     - contextPath: ANYRUN_DetonateFileLinux.TaskID
       description: 'Task UUID.'
@@ -390,37 +498,57 @@ script:
       predefined:
         - 'ubuntu'
         - 'debian'
-    - description: 'Network connection state.'
+    - auto: PREDEFINED
+      description: 'Whether to enable network connection.'
       name: opt_network_connect
-      defaultValue: 'True'
+      defaultValue: true
       required: false
-      type: String
-    - description: 'FakeNet feature status.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to enable the FakeNet feature.'
       name: opt_network_fakenet
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'TOR using.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to use TOR.'
       name: opt_network_tor
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Tor geo location option. Example: US, AU.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - description: 'The TOR geo location option, for example US, AU.'
       name: opt_network_geo
       defaultValue: 'fastest'
       required: false
       type: String
-    - description: 'HTTPS MITM proxy option.'
+    - auto: PREDEFINED
+      description: 'Whether to use the HTTPS MITM proxy.'
       name: opt_network_mitm
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Residential proxy using.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to use a residential proxy.'
       name: opt_network_residential_proxy
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Residential proxy geo location option. Example: US, AU.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - description: 'The residential proxy geo location option, for example US, AU.'
       name: opt_network_residential_proxy_geo
       defaultValue: 'fastest'
       required: false
@@ -442,6 +570,16 @@ script:
       required: false
       type: String
     - auto: PREDEFINED
+      description: 'Whether to enable automated interactivity.'
+      name: opt_automated_interactivity
+      defaultValue: false
+      required: false
+      type: boolean
+      hidden: true
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
       description: 'Browser name.'
       name: obj_ext_browser
       defaultValue: 'Google Chrome'
@@ -450,13 +588,17 @@ script:
       predefined:
       - 'Google Chrome'
       - 'Mozilla Firefox'
-    - description: 'Change extension to valid.'
+    - auto: PREDEFINED
+      description: 'Whether to change the extension to a valid one.'
       name: obj_ext_extension
-      defaultValue: 'True'
+      defaultValue: true
       required: false
-      type: String
+      type: boolean
+      predefined:
+      - true
+      - false
     name: anyrun-detonate-url-linux
-    description: 'Perform URL analysis using Linux VM.'
+    description: 'Performs URL analysis using Linux VM.'
     outputs:
     - contextPath: ANYRUN_DetonateUrlLinux.TaskID
       description: 'Task UUID.'
@@ -471,37 +613,57 @@ script:
       defaultValue: 'en-US'
       required: false
       type: String
-    - description: 'Network connection state.'
+    - auto: PREDEFINED
+      description: 'Whether to enable network connection.'
       name: opt_network_connect
-      defaultValue: 'True'
+      defaultValue: true
       required: false
-      type: String
-    - description: 'FakeNet feature status.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to enable the FakeNet feature.'
       name: opt_network_fakenet
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'TOR using.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to use TOR.'
       name: opt_network_tor
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Tor geo location option. Example: US, AU.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - description: 'The TOR geo location option, for example US, AU.'
       name: opt_network_geo
       defaultValue: 'fastest'
       required: false
       type: String
-    - description: 'HTTPS MITM proxy option.'
+    - auto: PREDEFINED
+      description: 'Whether to use the HTTPS MITM proxy.'
       name: opt_network_mitm
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Residential proxy using.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to use a residential proxy.'
       name: opt_network_residential_proxy
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Residential proxy geo location option. Example: US, AU.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - description: 'The residential proxy geo location option, for example US, AU.'
       name: opt_network_residential_proxy_geo
       defaultValue: 'fastest'
       required: false
@@ -522,12 +684,22 @@ script:
       defaultValue: '120'
       required: false
       type: String
+    - auto: PREDEFINED
+      description: 'Whether to enable automated interactivity.'
+      name: opt_automated_interactivity
+      defaultValue: false
+      required: false
+      type: boolean
+      hidden: true
+      predefined:
+      - true
+      - false
     - description: 'Optional command line.'
       name: obj_ext_cmd
       required: false
       type: String
     name: anyrun-detonate-file-android
-    description: 'Perform File analysis using Android VM.'
+    description: 'Perform file analysis using Android VM.'
     outputs:
     - contextPath: ANYRUN_DetonateFileAndroid.TaskID
       description: 'Task UUID.'
@@ -542,37 +714,57 @@ script:
       defaultValue: 'en-US'
       required: false
       type: String
-    - description: 'Network connection state.'
+    - auto: PREDEFINED
+      description: 'Whether to enable network connection.'
       name: opt_network_connect
-      defaultValue: 'True'
+      defaultValue: true
       required: false
-      type: String
-    - description: 'FakeNet feature status.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to enable the FakeNet feature.'
       name: opt_network_fakenet
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'TOR using.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to use TOR.'
       name: opt_network_tor
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Tor geo location option. Example: US, AU.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - description: 'The TOR geo location option, for example US, AU.'
       name: opt_network_geo
       defaultValue: 'fastest'
       required: false
       type: String
-    - description: 'HTTPS MITM proxy option.'
+    - auto: PREDEFINED
+      description: 'Whether to use the HTTPS MITM proxy.'
       name: opt_network_mitm
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Residential proxy using.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
+      description: 'Whether to use a residential proxy.'
       name: opt_network_residential_proxy
-      defaultValue: 'False'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Residential proxy geo location option. Example: US, AU.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - description: 'The residential proxy geo location option, for example US, AU.'
       name: opt_network_residential_proxy_geo
       defaultValue: 'fastest'
       required: false
@@ -594,6 +786,16 @@ script:
       required: false
       type: String
     - auto: PREDEFINED
+      description: 'Whether to enable automated interactivity.'
+      name: opt_automated_interactivity
+      defaultValue: false
+      required: false
+      type: boolean
+      hidden: true
+      predefined:
+      - true
+      - false
+    - auto: PREDEFINED
       description: 'Browser name.'
       name: obj_ext_browser
       defaultValue: 'Google Chrome'
@@ -604,7 +806,7 @@ script:
       - 'Google Chrome'
       - 'Mozilla Firefox'
     name: anyrun-detonate-url-android
-    description: 'Perform URL analysis using Android VM.'
+    description: 'Performs URL analysis using Android VM.'
     outputs:
     - contextPath: ANYRUN_DetonateUrlAndroid.TaskID
       description: 'Task UUID.'
@@ -643,12 +845,16 @@ script:
       description: 'Defines limits for parallel runs.'
       type: String
   - arguments:
-    - description: 'Leave this field blank to get your history or specify to get team history.'
+    - auto: PREDEFINED
+      description: 'Whether to get team history (true) or your own history (false).'
       name: team
-      defaultValue: 'False.'
+      defaultValue: false
       required: false
-      type: String
-    - description: 'Skip the specified number of tasks.'
+      type: boolean
+      predefined:
+      - true
+      - false
+    - description: 'Whether to skip the specified number of tasks.'
       name: skip
       defaultValue: '0'
       required: false
@@ -725,6 +931,15 @@ script:
       - 'summary'
       - 'html'
       - 'ioc'
+    - auto: PREDEFINED
+      description: 'Whether to also build Cortex XDR IOC objects when report_format is "ioc".'
+      name: create_xdr_iocs
+      defaultValue: false
+      required: false
+      type: boolean
+      predefined:
+      - true
+      - false
     name: anyrun-get-analysis-report
     description: 'Returns the analysis report summary.'
     outputs:

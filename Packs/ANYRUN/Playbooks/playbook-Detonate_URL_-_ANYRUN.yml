@@ -486,3 +486,14 @@ outputs:
   type: String
 tests:
 - Detonate URL - ANYRUN - Test
+marketplaces:
+- xsoar
+- platform
+- xpanse
+- xsoar_saas
+- marketplacev2
+supportedModules:
+- agentix
+- xsiam
+- cloud
+- cloud_runtime_security

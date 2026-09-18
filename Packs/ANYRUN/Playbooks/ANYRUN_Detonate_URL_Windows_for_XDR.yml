@@ -1,18 +1,18 @@
-id: ANYRUN Detonate File Linux
+id: ANYRUN Detonate URL Windows for XDR
 version: -1
 fromversion: 6.0.0
-name: ANYRUN Detonate File Linux
-description: This playbook submits a file extracted from an incident attachment to
-  the ANY.RUN cloud sandbox for dynamic analysis in an Linux environment. It helps
-  to automate malware detonation and behavior observation on Linux OS.
+name: ANYRUN Detonate URL Windows for XDR
+description: This playbook submits a URL from a Cortex XDR issue to the ANY.RUN Cloud
+  Sandbox for dynamic analysis in a Windows environment and automates malware
+  detonation and behavior observation on Windows OS.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 0eb04656-15f7-49ca-83d1-6b2d0c319b66
+    taskid: 083e190e-3310-44f0-8d62-670e32ebae1e
     type: start
     task:
-      id: 0eb04656-15f7-49ca-83d1-6b2d0c319b66
+      id: 083e190e-3310-44f0-8d62-670e32ebae1e
       version: -1
       name: ""
       iscommand: false
@@ -20,7 +20,7 @@ tasks:
       description: ""
     nexttasks:
       '#none#':
-      - "20"
+      - "40"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -37,25 +37,24 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "20":
-    id: "20"
-    taskid: c7498dac-f323-4751-b8e9-976330367056
+  "40":
+    id: "40"
+    taskid: cfc5da1c-1fdf-4951-a66f-4a85d958841f
     type: condition
     task:
-      id: c7498dac-f323-4751-b8e9-976330367056
+      id: cfc5da1c-1fdf-4951-a66f-4a85d958841f
       version: -1
       name: Is a specific ANY.RUN instance provided?
       description: Checks whether the "Using" playbook input was provided, to
-        determine which ANY.RUN Cloud Sandbox instance to run commands
-        against.
+        determine which ANY.RUN Cloud Sandbox instance to run commands against.
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "22"
+      - "42"
       "yes":
-      - "21"
+      - "41"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -72,7 +71,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 185
+          "y": 220
         }
       }
     note: false
@@ -82,12 +81,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 9a982c26-c18a-4a10-95fe-a479417c6392
+  "41":
+    id: "41"
+    taskid: 025eb243-6077-4dcd-9c4d-b5ad9fabe735
     type: regular
     task:
-      id: 9a982c26-c18a-4a10-95fe-a479417c6392
+      id: 025eb243-6077-4dcd-9c4d-b5ad9fabe735
       version: -1
       name: Set instance to use (from input)
       description: Sets the selected ANY.RUN integration instance in playbook context.
@@ -109,7 +108,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 340
+          "y": 405
         }
       }
     note: false
@@ -119,12 +118,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "22":
-    id: "22"
-    taskid: ceea7cf4-b5dc-45e7-930a-cc14ce21f48a
+  "42":
+    id: "42"
+    taskid: 2d5f38ad-641c-4f44-a6c4-901077d4d9dc
     type: regular
     task:
-      id: ceea7cf4-b5dc-45e7-930a-cc14ce21f48a
+      id: 2d5f38ad-641c-4f44-a6c4-901077d4d9dc
       version: -1
       name: Get active ANY.RUN Cloud Sandbox instances
       description: Returns active ANY.RUN Cloud Sandbox integration instances.
@@ -134,7 +133,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+      - "43"
     scriptarguments:
       brand:
         simple: ANY.RUN Cloud Sandbox
@@ -146,7 +145,7 @@ tasks:
       {
         "position": {
           "x": 600,
-          "y": 340
+          "y": 405
         }
       }
     note: false
@@ -156,12 +155,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
-    taskid: b08b5d0e-dc14-45cc-81df-43218a5d96b6
+  "43":
+    id: "43"
+    taskid: 4593ef8f-65dc-453e-935e-ec32233af197
     type: regular
     task:
-      id: b08b5d0e-dc14-45cc-81df-43218a5d96b6
+      id: 4593ef8f-65dc-453e-935e-ec32233af197
       version: -1
       name: Set instance to use (first active instance)
       description: Sets the first active ANY.RUN integration instance in playbook context.
@@ -191,7 +190,7 @@ tasks:
       {
         "position": {
           "x": 600,
-          "y": 495
+          "y": 590
         }
       }
     note: false
@@ -203,35 +202,39 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 7a25c747-44e0-470d-bf56-94cea07030c7
+    taskid: 2c989c3b-28fc-4ff7-8869-a8f3c1390c71
     type: regular
     task:
-      id: 7a25c747-44e0-470d-bf56-94cea07030c7
+      id: 2c989c3b-28fc-4ff7-8869-a8f3c1390c71
       version: -1
-      name: '[ANY.RUN] Detonate File Linux'
-      description: Perform File analysis using Linux VM.
-      script: '|||anyrun-detonate-file-linux'
+      name: '[ANY.RUN] Detonate URL Windows'
+      description: Performs URL analysis using a Windows VM in ANY.RUN Cloud Sandbox.
+      script: '|||anyrun-detonate-url-windows'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ANY.RUN Cloud Sandbox
     nexttasks:
       '#none#':
       - "9"
     scriptarguments:
       using:
         simple: ${ANYRUNInstance}
+      env_bitness:
+        simple: ${inputs.env_bitness}
       env_locale:
         simple: ${inputs.env_locale}
-      env_os:
-        simple: ${inputs.env_os}
-      file:
-        simple: ${inputs.file}
-      obj_ext_cmd:
-        simple: ${inputs.obj_ext_cmd}
+      env_type:
+        simple: ${inputs.env_type}
+      env_version:
+        simple: ${inputs.env_version}
+      obj_ext_browser:
+        simple: ${inputs.obj_ext_browser}
       obj_ext_extension:
         simple: ${inputs.obj_ext_extension}
-      obj_ext_startfolder:
-        simple: ${inputs.obj_ext_startfolder}
+      obj_url:
+        simple: ${inputs.obj_url}
+      opt_automated_interactivity:
+        simple: ${inputs.opt_automated_interactivity}
       opt_network_connect:
         simple: ${inputs.opt_network_connect}
       opt_network_fakenet:
@@ -250,15 +253,13 @@ tasks:
         simple: ${inputs.opt_privacy_type}
       opt_timeout:
         simple: ${inputs.opt_timeout}
-      run_as_root:
-        simple: ${inputs.run_as_root}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 275,
-          "y": 1000
+          "y": 1100
         }
       }
     note: false
@@ -270,17 +271,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: aeb1eb24-0002-4113-a63d-6f7f9ab1c0ae
+    taskid: 4fc5d4eb-4702-49de-813c-27ccb0203790
     type: regular
     task:
-      id: aeb1eb24-0002-4113-a63d-6f7f9ab1c0ae
+      id: 4fc5d4eb-4702-49de-813c-27ccb0203790
       version: -1
       name: '[ANY.RUN] Get analysis summary'
       description: Returns the analysis report summary.
       script: '|||anyrun-get-analysis-report'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ANY.RUN Cloud Sandbox
     nexttasks:
       '#none#':
       - "10"
@@ -290,14 +291,14 @@ tasks:
       report_format:
         simple: html
       task_uuid:
-        simple: ${ANYRUN_DetonateFileLinux.TaskID}
+        simple: ${ANYRUN_DetonateUrlWindows.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 387.5,
-          "y": 1525
+          "y": 1655
         }
       }
     note: false
@@ -309,10 +310,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 112fe74f-1801-42e0-bd7d-e6f1146bf06c
+    taskid: 57076a54-7a35-47ff-8ce6-832181be34dd
     type: title
     task:
-      id: 112fe74f-1801-42e0-bd7d-e6f1146bf06c
+      id: 57076a54-7a35-47ff-8ce6-832181be34dd
       version: -1
       name: Done
       type: title
@@ -324,8 +325,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2225
+          "x": 80,
+          "y": 2580
         }
       }
     note: false
@@ -337,16 +338,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 91f5ae62-588c-4612-8157-37b109e4d862
+    taskid: 65536f05-f21b-40e5-800d-c8975c09e610
     type: condition
     task:
-      id: 91f5ae62-588c-4612-8157-37b109e4d862
+      id: 65536f05-f21b-40e5-800d-c8975c09e610
       version: -1
-      name: Is there any File to detonate?
+      name: Is there any URL to detonate?
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'.
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "5"
@@ -359,7 +361,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: inputs.file
+              simple: inputs.obj_url
             iscontext: true
           right:
             value: {}
@@ -368,7 +370,7 @@ tasks:
       {
         "position": {
           "x": 162.5,
-          "y": 825
+          "y": 915
         }
       }
     note: false
@@ -380,10 +382,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 6bda10d8-8658-450e-9c09-071864fe4814
+    taskid: ad23a924-ee29-488b-825a-e499616b83d4
     type: condition
     task:
-      id: 6bda10d8-8658-450e-9c09-071864fe4814
+      id: ad23a924-ee29-488b-825a-e499616b83d4
       version: -1
       name: Is there an active ANY.RUN instance?
       description: Returns 'yes' if integration brand is available. Otherwise returns
@@ -406,7 +408,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 650
+          "y": 730
         }
       }
     note: false
@@ -418,10 +420,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 48787ef6-ca44-4380-9db4-facc9841094e
+    taskid: 0ab6b87b-c02e-408a-8715-54ffee5af727
     type: condition
     task:
-      id: 48787ef6-ca44-4380-9db4-facc9841094e
+      id: 0ab6b87b-c02e-408a-8715-54ffee5af727
       version: -1
       name: Was a malicious or suspicious verdict received?
       description: Check whether the values provided in arguments are equal. If either
@@ -451,22 +453,22 @@ tasks:
       {
         "position": {
           "x": 275,
-          "y": 1350
+          "y": 1470
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 2
+    quietmode: 1
     isoversize: false
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 7f744e68-334e-4d03-a107-7594b97da68c
+    taskid: 912fa76a-940d-416b-8bbe-efef545cc163
     type: regular
     task:
-      id: 7f744e68-334e-4d03-a107-7594b97da68c
+      id: 912fa76a-940d-416b-8bbe-efef545cc163
       version: -1
       name: '[ANY.RUN] Get analysis verdict'
       description: 'Returns a threat level text. Possible values: No threats detected,
@@ -474,7 +476,7 @@ tasks:
       script: '|||anyrun-get-analysis-verdict'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ANY.RUN Cloud Sandbox
     nexttasks:
       '#none#':
       - "8"
@@ -482,14 +484,14 @@ tasks:
       using:
         simple: ${ANYRUNInstance}
       task_uuid:
-        simple: ${ANYRUN_DetonateFileLinux.TaskID}
+        simple: ${ANYRUN_DetonateUrlWindows.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 275,
-          "y": 1175
+          "y": 1285
         }
       }
     note: false
@@ -501,34 +503,36 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: fd1528e1-1c06-4f50-b35d-9ac98757958c
+    taskid: ab0c6d57-28e4-4715-8939-f4b0be9979a2
     type: regular
     task:
-      id: fd1528e1-1c06-4f50-b35d-9ac98757958c
+      id: ab0c6d57-28e4-4715-8939-f4b0be9979a2
       version: -1
       name: '[ANY.RUN] Load IOCs to Threat Intel'
       description: Returns the analysis report summary.
       script: '|||anyrun-get-analysis-report'
       type: regular
       iscommand: true
-      brand: ""
+      brand: ANY.RUN Cloud Sandbox
     nexttasks:
       '#none#':
-      - "11"
+      - "14"
     scriptarguments:
       using:
         simple: ${ANYRUNInstance}
       report_format:
         simple: ioc
+      create_xdr_iocs:
+        simple: "true"
       task_uuid:
-        simple: ${ANYRUN_DetonateFileLinux.TaskID}
+        simple: ${ANYRUN_DetonateUrlWindows.TaskID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 387.5,
-          "y": 1700
+          "y": 1840
         }
       }
     note: false
@@ -538,96 +542,131 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: bc6e3c68-77d8-48c7-ac12-b908c1b516a4
+  "13":
+    id: "13"
+    taskid: 7efe4856-610c-4f1b-8585-aeb3fe3c1d2a
+    type: regular
+    task:
+      id: 7efe4856-610c-4f1b-8585-aeb3fe3c1d2a
+      version: -1
+      name: '[XDR] Add ANY.RUN IOCs to XDR IOC rules'
+      description: Upload the IOC rules to Cortex XDR. When the ioc_object is defined,
+        disregard any other provided arguments, as the ioc_object takes precedence.
+        Validates the indicator parameters when ioc_object is used. If `vendor_name`,
+        `vendor_reputation`, and `vendor_reliability` are used, only a single vendor
+        is supported. For multiple vendors, utilize an `ioc_object` in JSON format.
+        Adding a rule with the same indicator, but with different parameters, will
+        update the existing rule.
+      script: Cortex Core - IR|||core-add-indicator-rule
+      type: regular
+      iscommand: true
+      brand: Cortex Core - IR
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      input_format:
+        simple: JSON
+      ioc_object:
+        simple: ${ANYRUN.IOCDetails.ioc_object}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 612.5,
+          "y": 2395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 5c592474-964a-40ec-82af-53f1a11f6b9d
     type: condition
     task:
-      id: bc6e3c68-77d8-48c7-ac12-b908c1b516a4
+      id: 5c592474-964a-40ec-82af-53f1a11f6b9d
       version: -1
-      name: Is there an incident ID and ANY.RUN IOCs?
+      name: Are there ANY.RUN IOC details to add to XDR?
+      description: Checks whether the ANY.RUN IOC report returned an ioc_object that
+        can be uploaded to Cortex XDR IOC rules.
       type: condition
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "5"
-      "Yes":
-      - "12"
+      "yes":
+      - "15"
     separatecontext: false
     conditions:
-    - label: "Yes"
+    - label: "yes"
       condition:
       - - operator: isNotEmpty
           left:
             value:
-              simple: incident.id
+              simple: ANYRUN.IOCDetails.ioc_object
             iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ANYRUN.IOCs
-            iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 387.5,
-          "y": 1875
+          "y": 2025
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 1
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: 2c2f9b10-82be-4531-9670-cb2f0f9465d5
-    type: regular
+  "15":
+    id: "15"
+    taskid: 9da2dd71-d5d3-4a7d-8628-a194cae06c48
+    type: condition
     task:
-      id: 2c2f9b10-82be-4531-9670-cb2f0f9465d5
+      id: 9da2dd71-d5d3-4a7d-8628-a194cae06c48
       version: -1
-      name: Associate IOCs to incident
-      description: commands.local.cmd.associate.indicators
-      script: Builtin|||associateIndicatorsToIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
+      name: Is Cortex Core - IR available?
+      description: Returns 'yes' if Cortex Core - IR is available. Otherwise returns
+        'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
     nexttasks:
-      '#none#':
+      '#default#':
       - "5"
+      "yes":
+      - "13"
     scriptarguments:
-      incidentId:
-        complex:
-          root: incident
-          accessor: id
-      indicatorsValues:
-        simple: ${ANYRUN.IOCs}
-      retry-count:
-        simple: "5"
-      retry-interval:
-        simple: "3"
+      brandname:
+        simple: Cortex Core - IR
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 700,
-          "y": 2050
+          "x": 500,
+          "y": 2210
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
+    quietmode: 1
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -635,8 +674,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2235,
-        "width": 1330,
+        "height": 2590,
+        "width": 942.5,
         "x": 50,
         "y": 50
       }
@@ -649,112 +688,121 @@ inputs:
   description: |-
     The name of the ANY.RUN Cloud Sandbox integration instance to use for running commands in this playbook.
     If left empty, and more than one instance is enabled, the playbook automatically selects the first active instance instead of running commands on every enabled instance.
-  playbookInputQuery:
-- key: file
+  playbookInputQuery: null
+- key: obj_url
   value:
-    simple: ${File.EntryID}
+    simple: ${issue.xdmtargeturl}
   required: false
-  description: The existing War Room file EntryID to submit for analysis.
-  playbookInputQuery:
-- key: run_as_root
-  value:
-    simple: "false"
-  required: false
-  description: Whether to run the file with superuser privileges.
-  playbookInputQuery:
+  description: 'The target URL to submit to ANY.RUN. By default, this playbook uses the Cortex XDR normalized target URL field xdm.target.url (${issue.xdmtargeturl}). If your issue uses another URL field, such as xdm.network.http.url, override this input accordingly. Size range 5-512. Example: (http/https)://(your-link).'
+  playbookInputQuery: null
 - key: env_locale
   value:
     simple: en-US
   required: false
   description: 'The operating system language. Use locale identifier or country name (for example, "en-US" or "Brazil"). Case insensitive.'
-  playbookInputQuery:
-- key: env_os
+  playbookInputQuery: null
+- key: env_bitness
   value:
-    simple: ubuntu
+    simple: "64"
   required: false
-  description: 'The operating system. Possible values: ubuntu, debian.'
-  playbookInputQuery:
+  description: 'The bitness of the operating system. Supports 32 or 64.'
+  playbookInputQuery: null
+- key: env_version
+  value:
+    simple: "10"
+  required: false
+  description: 'The version of the OS. Supports: 7, 10, 11.'
+  playbookInputQuery: null
+- key: env_type
+  value:
+    simple: complete
+  required: false
+  description: The environment preset type. You can select **development** env for OS Windows 10 x64. For all other cases, **complete** env is required.
+  playbookInputQuery: null
 - key: opt_network_connect
   value:
     simple: "true"
   required: false
   description: Whether to enable network connection.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: opt_network_fakenet
   value:
     simple: "false"
   required: false
   description: Whether to enable the FakeNet feature.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: opt_network_tor
   value:
     simple: "false"
   required: false
   description: Whether to use TOR.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: opt_network_geo
   value:
     simple: fastest
   required: false
   description: 'The TOR geo location option, for example US, AU.'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: opt_network_mitm
   value:
     simple: "false"
   required: false
   description: Whether to use the HTTPS MITM proxy.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: opt_network_residential_proxy
   value:
     simple: "false"
   required: false
   description: Whether to use a residential proxy.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: opt_network_residential_proxy_geo
   value:
     simple: fastest
   required: false
   description: 'The residential proxy geo location option, for example US, AU.'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: opt_privacy_type
   value:
     simple: bylink
   required: false
   description: 'The privacy settings. Supports: public, bylink, owner, byteam.'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: opt_timeout
   value:
-    simple: "240"
+    simple: "120"
   required: false
   description: 'The timeout value. Size range: 10-660.'
-  playbookInputQuery:
-- key: obj_ext_cmd
-  value: {}
-  required: false
-  description: The optional command line.
-  playbookInputQuery:
-- key: obj_ext_startfolder
+  playbookInputQuery: null
+- key: opt_automated_interactivity
   value:
-    simple: temp
+    simple: "true"
   required: false
-  description: 'The directory from which to start the file analysis. Supports: desktop, home, downloads, appdata, temp, windows, root.'
-  playbookInputQuery:
+  description: Whether to enable automated interactivity.
+  playbookInputQuery: null
+- key: obj_ext_browser
+  value:
+    simple: Google Chrome
+  required: false
+  description: 'The browser name. Supports: Google Chrome, Mozilla Firefox, Internet Explorer, Microsoft Edge.'
+  playbookInputQuery: null
 - key: obj_ext_extension
   value:
     simple: "true"
   required: false
   description: Whether to change the extension to a valid one.
-  playbookInputQuery:
+  playbookInputQuery: null
 inputSections:
 - inputs:
-  - file
-  - run_as_root
   - Using
-  name: General (Inputs group)
-  description: Generic group for inputs
+  - obj_url
+  name: URL and Instance Selection
+  description: Provide the target URL and optionally select the ANY.RUN instance with
+    Using.
 - inputs:
   - env_locale
-  - env_os
+  - env_bitness
+  - env_version
+  - env_type
   name: Environment
   description: ""
 - inputs:
@@ -767,11 +815,11 @@ inputSections:
   - opt_network_residential_proxy_geo
   - opt_privacy_type
   - opt_timeout
+  - opt_automated_interactivity
   name: Options
   description: ""
 - inputs:
-  - obj_ext_cmd
-  - obj_ext_startfolder
+  - obj_ext_browser
   - obj_ext_extension
   name: Object
   description: ""
@@ -780,7 +828,7 @@ outputSections:
   name: General (Outputs group)
   description: Generic group for outputs
 outputs:
-- contextPath: ANYRUN_DetonateFileLinux.TaskID
+- contextPath: ANYRUN_DetonateUrlWindows.TaskID
   description: The ANY.RUN task UUID.
   type: String
 - contextPath: ANYRUN.SandboxAnalysisReportVerdict
@@ -789,18 +837,13 @@ outputs:
 - contextPath: ANYRUN.IOCs
   description: The IOCs extracted from the ANY.RUN report.
   type: Unknown
+- contextPath: ANYRUN.IOCDetails
+  description: The detailed IOC objects prepared for Cortex XDR indicator rules.
+  type: Unknown
 quiet: true
-tests:
-- No tests (auto formatted)
+adopted: true
 marketplaces:
-- xsoar
 - platform
-- xpanse
-- xsoar_saas
 - marketplacev2
 supportedModules:
-- agentix
-- xsiam
 - edr
-- cloud
-- cloud_runtime_security
