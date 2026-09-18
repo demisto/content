@@ -1435,6 +1435,72 @@ script:
     - contextPath: Elasticsearch.Kibana.SecurityAlertSetStatus.updated
       description: The number of alerts that were updated.
       type: Number
+  - name: es-kibana-endpoint-isolate
+    description: Isolate an endpoint from the network. The endpoint remains isolated until it's released.
+    arguments:
+    - name: space_id
+      description: Refer to https://www.elastic.co/docs/deploy-manage/manage-spaces for more information.
+    - name: endpoint_ids
+      description: Endpoint IDs to isolate. A maximum of 250 IDs can be specified.
+      required: true
+      isArray: true
+    - name: agent_type
+      description: The type of agent on which to run the isolation action.
+      defaultValue: endpoint
+      auto: PREDEFINED
+      predefined:
+      - endpoint
+      - sentinel_one
+      - crowdstrike
+      - microsoft_defender_endpoint
+    - name: alert_ids
+      description: Alert IDs associated with the action. A maximum of 50 IDs can be specified.
+      isArray: true
+    - name: case_ids
+      description: Case IDs in which to log the action. A maximum of 50 IDs can be specified.
+      isArray: true
+    - name: comment
+      description: An optional comment for the isolation action. Maximum length is 30,000 characters.
+    outputs:
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.action
+      description: The response action ID.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.agents
+      description: The agent IDs to which the response action was sent.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.agentState
+      description: The response action state for each agent ID.
+      type: Unknown
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.agentType
+      description: The agent type.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.command
+      description: The response action command.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.createdBy
+      description: The user who created the response action.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.hosts
+      description: The host names associated with the agent IDs.
+      type: Unknown
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.isCompleted
+      description: Whether the response action is complete.
+      type: Boolean
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.isExpired
+      description: Whether the response action is expired.
+      type: Boolean
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.outputs
+      description: The response action outputs for each agent ID.
+      type: Unknown
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.startedAt
+      description: The response action start time.
+      type: Date
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.status
+      description: The response action status.
+      type: String
+    - contextPath: Elasticsearch.Kibana.EndpointIsolationAction.data.wasSuccessful
+      description: Whether the response action was successful.
+      type: Boolean
   - name: es-kibana-endpoint-exception-list-item-create
     description: Create an Elastic Endpoint exception list item, and associate it with the Elastic Endpoint exception list.
     arguments:
