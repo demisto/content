@@ -1,4 +1,5 @@
 import hashlib
+import traceback
 from enum import Enum
 from typing import Any
 
@@ -20,7 +21,7 @@ DEFAULT_MAX_LIMIT = 1000
 DEFAULT_URL = "https://api.xdr.trendmicro.com"
 PRODUCT = "vision_one"
 VENDOR = "trend_micro"
-USER_AGENT = "TMV1CortexXSOAREventCollector/4.5.9"
+USER_AGENT = "TMV1CortexXSOAREventCollector/4.6.0"
 ONE_YEAR = 365
 # per the public API schema, /v3.0/oat/detections only accepts top values of 50, 100 or 200 (default 50).
 OAT_TOP_VALID_VALUES = (50, 100, 200)
@@ -1131,14 +1132,19 @@ def get_audit_logs(
 """ COMMAND FUNCTIONS """
 
 
-def _commit_log_type(logs: list[dict], updated_last_run: dict, last_run: dict, log_type: str, push_to_xsiam: bool) -> None:
+def _commit_log_type(logs: list[dict], updated_last_run: dict, last_run: dict, log_type: str, persist: bool) -> None:
     """
     Push a fetched log type to XSIAM and immediately persist its checkpoint. Doing this per log type
     (instead of merging all types and sending once at the end) gives true partial progress: if one type
     fails, the others are already sent and their checkpoints saved, and memory only ever holds one type's
     events at a time (send_events_to_xsiam chunks internally).
+
+    When persist is False (test-module), neither the events nor the checkpoint are committed, so running
+    test-module does not mutate the fetch state.
     """
-    if logs and push_to_xsiam:
+    if not persist:
+        return
+    if logs:
         send_events_to_xsiam(events=logs, vendor=VENDOR, product=PRODUCT)
         demisto.info(f"Pushed {len(logs)} {log_type} events to XSIAM")
     last_run.update(updated_last_run)
@@ -1160,7 +1166,8 @@ def fetch_events(
         first_fetch (str): The first fetch time.
         limit (int): The maximum number of logs to fetch from each type.
         log_types (list[str]): The list of supported log types to fetch.
-        push_to_xsiam (bool): Whether to send fetched events to XSIAM. False for test-module.
+        push_to_xsiam (bool): Whether to send fetched events to XSIAM and persist checkpoints.
+            False for test-module, which must not mutate the fetch state.
 
     Returns:
         Tuple[List[Dict], Dict]: events & updated last run for all the log types.
@@ -1189,7 +1196,7 @@ def fetch_events(
             except SignalTimeoutError:
                 raise
             except Exception as e:
-                demisto.error(f"Failed fetching {LogTypes.WORKBENCH} logs, keeping checkpoint: {e}")
+                demisto.error(f"Failed fetching {LogTypes.WORKBENCH} logs, keeping checkpoint: {e}\n{traceback.format_exc()}")
             demisto.info(f"Fetched amount of {LogTypes.WORKBENCH} logs: {len(workbench_logs)}")
 
         observed_attack_techniques_logs: list[dict] = []
@@ -1210,7 +1217,7 @@ def fetch_events(
             except SignalTimeoutError:
                 raise
             except Exception as e:
-                demisto.error(f"Failed fetching {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs, keeping checkpoint: {e}")
+                demisto.error(f"Failed fetching {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs, keeping checkpoint: {e}\n{traceback.format_exc()}")
             demisto.info(f"Fetched amount of {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs: {len(observed_attack_techniques_logs)}")
 
         search_detection_logs: list[dict] = []
@@ -1231,7 +1238,7 @@ def fetch_events(
             except SignalTimeoutError:
                 raise
             except Exception as e:
-                demisto.error(f"Failed fetching {LogTypes.SEARCH_DETECTIONS} logs, keeping checkpoint: {e}")
+                demisto.error(f"Failed fetching {LogTypes.SEARCH_DETECTIONS} logs, keeping checkpoint: {e}\n{traceback.format_exc()}")
             demisto.info(f"Fetched amount of {LogTypes.SEARCH_DETECTIONS} logs: {len(search_detection_logs)}")
 
         audit_logs: list[dict] = []
@@ -1246,10 +1253,15 @@ def fetch_events(
             except SignalTimeoutError:
                 raise
             except Exception as e:
-                demisto.error(f"Failed fetching {LogTypes.AUDIT} logs, keeping checkpoint: {e}")
+                demisto.error(f"Failed fetching {LogTypes.AUDIT} logs, keeping checkpoint: {e}\n{traceback.format_exc()}")
             demisto.info(f"Fetched amount of {LogTypes.AUDIT} logs: {len(audit_logs)}")
 
         is_finished = True  # Indicates code block inside `ExecutionTimeout` context manager finished executing in time
+
+    if not push_to_xsiam:
+        # test-module must not mutate the fetch state (no events sent, no checkpoint persisted).
+        demisto.debug("push_to_xsiam=False (test-module): skipping checkpoint persistence")
+        return [], last_run
 
     if is_finished:
         demisto.debug(

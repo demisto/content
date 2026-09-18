@@ -81,7 +81,7 @@ class TestUserAgent:
 
         client.http_request(url_suffix=UrlSuffixes.OBSERVED_ATTACK_TECHNIQUES.value, headers=custom_headers)
 
-        assert captured["headers"]["User-Agent"] == "TMV1CortexXSOAREventCollector/4.5.9"
+        assert captured["headers"]["User-Agent"] == "TMV1CortexXSOAREventCollector/4.6.0"
         assert captured["headers"]["Authorization"]  # Authorization is never lost
 
     def test_get_search_detection_logs_keeps_custom_headers_and_user_agent(self, mocker, client: Client):
@@ -96,7 +96,7 @@ class TestUserAgent:
         client.get_search_detection_logs(start_datetime="2023-01-01T00:00:00Z", top=1000)
 
         assert captured["headers"]["TMV1-Query"] == "*"
-        assert captured["headers"]["User-Agent"] == "TMV1CortexXSOAREventCollector/4.5.9"
+        assert captured["headers"]["User-Agent"] == "TMV1CortexXSOAREventCollector/4.6.0"
 
 
 def get_url_params(url: str) -> Dict[str, str]:
@@ -1026,6 +1026,7 @@ def test_module_main_flow(mocker):
     Then:
         - make sure that test-module returns 'ok'
         - make sure send_events_to_xsiam function was not called
+        - make sure setLastRun was not called (test-module must not mutate the fetch state)
     """
     from TrendMicroVisionOneEventCollector import main
 
@@ -1043,10 +1044,12 @@ def test_module_main_flow(mocker):
 
     return_results_mocker = mocker.patch("TrendMicroVisionOneEventCollector.return_results")
     send_events_to_xsiam_mocker = mocker.patch("TrendMicroVisionOneEventCollector.send_events_to_xsiam")
+    set_last_run_mocker = mocker.patch.object(demisto, "setLastRun")
 
     main()
 
     assert not send_events_to_xsiam_mocker.called
+    assert not set_last_run_mocker.called
     assert return_results_mocker.call_args.args[0] == "ok"
 
 
