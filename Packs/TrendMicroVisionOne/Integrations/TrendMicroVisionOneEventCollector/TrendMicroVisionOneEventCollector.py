@@ -1216,7 +1216,8 @@ def fetch_events(
             except SignalTimeoutError:
                 raise
             except Exception as e:
-                demisto.error(f"Failed fetching {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs, keeping checkpoint: {e}\n{traceback.format_exc()}")
+                error_message = f"Failed fetching {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs, keeping checkpoint: {e}"
+                demisto.error(f"{error_message}\n{traceback.format_exc()}")
             demisto.info(f"Fetched amount of {LogTypes.OBSERVED_ATTACK_TECHNIQUES} logs: {len(observed_attack_techniques_logs)}")
 
         search_detection_logs: list[dict] = []
@@ -1237,7 +1238,9 @@ def fetch_events(
             except SignalTimeoutError:
                 raise
             except Exception as e:
-                demisto.error(f"Failed fetching {LogTypes.SEARCH_DETECTIONS} logs, keeping checkpoint: {e}\n{traceback.format_exc()}")
+                demisto.error(
+                    f"Failed fetching {LogTypes.SEARCH_DETECTIONS} logs, keeping checkpoint: {e}\n{traceback.format_exc()}"
+                )
             demisto.info(f"Fetched amount of {LogTypes.SEARCH_DETECTIONS} logs: {len(search_detection_logs)}")
 
         audit_logs: list[dict] = []
