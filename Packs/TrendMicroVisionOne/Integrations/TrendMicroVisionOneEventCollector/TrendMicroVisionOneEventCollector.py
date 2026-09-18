@@ -203,7 +203,6 @@ class Client(BaseClient):
             status_list_to_retry=RETRY_STATUS_CODE_LIST,
             backoff_factor=API_BACKOFF_FACTOR,
             backoff_jitter=BACKOFF_JITTER,
-            raise_on_status=False,
         )
 
     def get_logs(
