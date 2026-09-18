@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Removed the Censys (Deprecated) integration, which had been deprecated since December 2021. Existing instances of this integration will no longer be available after the upgrade, and playbook or automation tasks that explicitly target it (using-brand=\"Censys\") will fail.\nUse the Censys v2 integration instead. It provides the same ***cen-view*** and ***cen-search*** commands, so unbranded command calls continue to work, but Censys v2 uses the Censys Platform API V3: authentication requires an API Token (Personal Access Token) and an Organization ID rather than an API ID and Secret, and some context paths differ. Review any custom content that consumes Censys context data before upgrading."
+}

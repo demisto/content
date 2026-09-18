@@ -1,5 +1,7 @@
 Note: Support for this Pack was moved to Partner starting April 14, 2026. In case of any issues, please contact the Partner directly at <support@censys.com> or <https://docs.censys.com>.
 
+> **Note:** The legacy **Censys (Deprecated)** integration was removed in pack version 4.0.0. Use the **Censys v2** integration instead. It provides the same ***cen-view*** and ***cen-search*** commands, but authenticates with a Censys Platform API Token (Personal Access Token) and an Organization ID rather than an API ID and Secret.
+
 # Product/Integration Overview
 
 The Censys Platform furnishes real-time intelligence, enabling security teams to reliably detect threats with greater speed, prioritize risks with confidence, and expedite investigations. Through continuous monitoring of the global internet, Censys identifies exposed assets, adversary infrastructure, and security vulnerabilities that conventional tools frequently overlook.
@@ -23,9 +25,13 @@ They also help automate repetitive tasks associated with:
 
 To fully leverage the capabilities of this integration, customers need a Censys Adversary Investigation module license, which facilitates the searching of related infrastructure and provides access to the comprehensive dataset.
 
+<~XSOAR>
+
 ## Dashboard
 
 - **Censys SOAR Dashboard**: This dashboard displays the total number of times the Censys playbook and Censys commands have been executed, including breakdown by execution type.
+
+</~XSOAR>
 
 ## Playbooks
 
