@@ -3307,6 +3307,94 @@ def test_message_handler_filters_invalid_cache_entries(mocker, requests_mock):
     set_context_mock.assert_called_once_with({"teams": json.dumps(mock_teams_cache)})
 
 
+def test_personal_scope_install_event_does_not_trigger_direct_message_handler(mocker):
+    """
+    Given:
+        - A personal-scope conversationUpdate activity fired when the bot is installed/added to a
+          user's one-to-one chat (e.g. via an org-wide "Installs" policy) - not an actual message from the user.
+    When:
+        - The activity is posted to the bot's messaging endpoint.
+    Then:
+        - direct_message_handler is not invoked, since there is no user message to reply to,
+          so no unsolicited error message is sent back to the user.
+    """
+    from MicrosoftTeams import APP
+
+    mock_request_body = {
+        "type": "conversationUpdate",
+        "membersAdded": [
+            {"id": "28:000000000000000000000000000000000000"},
+            {"id": "29:000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"},
+        ],
+        "conversation": {
+            "conversationType": "personal",
+            "id": "19:000000000000000000000000000000000000000000000000000000000",
+            "tenantId": "00000000-0000-0000-0000-000000000000",
+        },
+        "from": {
+            "id": "29:000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        },
+        "recipient": {
+            "id": "28:000000000000000000000000000000000000",
+            "name": "TestBot",
+        },
+    }
+
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value={})
+    mocker.patch("MicrosoftTeams.set_integration_context")
+    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=True)
+    direct_message_handler_mock = mocker.patch("MicrosoftTeams.direct_message_handler")
+
+    APP.testing = True
+    app = APP.test_client()
+    response = app.post("/", data=json.dumps(mock_request_body), content_type="application/json")
+
+    assert response.status_code == 200
+    direct_message_handler_mock.assert_not_called()
+
+
+def test_personal_scope_message_still_triggers_direct_message_handler(mocker):
+    """
+    Given:
+        - An actual "message" activity sent by a user directly to the bot in personal scope.
+    When:
+        - The activity is posted to the bot's messaging endpoint.
+    Then:
+        - direct_message_handler is invoked to process it, confirming genuine direct messages
+          are unaffected by the guard against install/update activities.
+    """
+    from MicrosoftTeams import APP
+
+    mock_request_body = {
+        "type": "message",
+        "text": "hello",
+        "conversation": {
+            "conversationType": "personal",
+            "id": "19:000000000000000000000000000000000000000000000000000000000",
+            "tenantId": "00000000-0000-0000-0000-000000000000",
+        },
+        "from": {
+            "id": "29:000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        },
+        "recipient": {
+            "id": "28:000000000000000000000000000000000000",
+            "name": "TestBot",
+        },
+    }
+
+    mocker.patch("MicrosoftTeams.get_integration_context", return_value={})
+    mocker.patch("MicrosoftTeams.set_integration_context")
+    mocker.patch("MicrosoftTeams.validate_auth_header", return_value=True)
+    direct_message_handler_mock = mocker.patch("MicrosoftTeams.direct_message_handler")
+
+    APP.testing = True
+    app = APP.test_client()
+    response = app.post("/", data=json.dumps(mock_request_body), content_type="application/json")
+
+    assert response.status_code == 200
+    direct_message_handler_mock.assert_called_once()
+
+
 def test_send_notification_with_adaptive_card_from_DlpAskFeedback(mocker, requests_mock):
     """
     Given:
