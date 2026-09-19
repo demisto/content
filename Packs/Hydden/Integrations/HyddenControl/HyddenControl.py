@@ -1,4 +1,5 @@
 import json
+import re
 import time
 import traceback
 from typing import Any
@@ -27,6 +28,11 @@ TOKEN_REFRESH_MARGIN_SECONDS = 60
 # sub-second. BaseClient defaults to 60s, which turns that first call into a
 # read timeout, so default well above it and let the instance override.
 DEFAULT_TIMEOUT_SECONDS = 300
+_UUID_RE = re.compile(
+    r"^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+)
+_LOOKUP_UUID_FIELDS = ("uuid", "id", "ref", "account_id", "account_ref", "accountId")
+_LOOKUP_COLLECTION_KEYS = ("accounts", "items", "data", "results", "uuids", "ids")
 
 
 def _as_blast_radius_string(response: Any) -> str:
@@ -103,6 +109,16 @@ class Client(ContentClient):  # noqa: F405
     def _bearer_headers(self, token: str) -> dict[str, str]:
         return {**(self._headers or {}), "Authorization": f"Bearer {token}"}
 
+    def lookup_accounts(self, query: str, token: str) -> Any:
+        # Cortex issues carry a name or email, not a Hydden UUID. blast-radius
+        # and deprovision both require the UUID as ref; this is the resolver.
+        return self._http_request(
+            method="GET",
+            url_suffix="accounts/lookup",
+            headers=self._bearer_headers(token),
+            params={"q": query},
+        )
+
     def get_blast_radius(self, account_id: str, token: str, subject_type: str = "account") -> Any:
         # The endpoint names its subject "ref", not "account_id": sending
         # account_id gets a 400 "the 'ref' query parameter is required".
@@ -130,6 +146,68 @@ def _get_account_id(args: dict[str, Any]) -> str:
     return str(account_id)
 
 
+def _uuid_from_value(value: Any) -> str | None:
+    if isinstance(value, str):
+        stripped = value.strip()
+        if _UUID_RE.fullmatch(stripped):
+            return stripped
+    return None
+
+
+def _uuids_from_item(item: Any) -> list[str]:
+    if uuid := _uuid_from_value(item):
+        return [uuid]
+    if not isinstance(item, dict):
+        return []
+    for field in _LOOKUP_UUID_FIELDS:
+        if uuid := _uuid_from_value(item.get(field)):
+            return [uuid]
+    return []
+
+
+def _uuids_from_lookup(response: Any) -> list[str]:
+    """Unique Hydden UUIDs from an accounts/lookup payload, in first-seen order."""
+    if isinstance(response, list):
+        items = response
+    elif isinstance(response, dict):
+        items = None
+        for key in _LOOKUP_COLLECTION_KEYS:
+            value = response.get(key)
+            if isinstance(value, list):
+                items = value
+                break
+        if items is None:
+            items = [response]
+    else:
+        items = [response]
+
+    seen: list[str] = []
+    seen_keys: set[str] = set()
+    for item in items:
+        for uuid in _uuids_from_item(item):
+            key = uuid.lower()
+            if key not in seen_keys:
+                seen_keys.add(key)
+                seen.append(uuid)
+    return seen
+
+
+def _resolve_account_uuid(client: Client, token: str, identifier: str) -> str:
+    try:
+        response = client.lookup_accounts(identifier, token)
+    except DemistoException as e:
+        err = str(e)
+        if "404" in err or "Not Found" in err:
+            raise DemistoException(f"Hydden accounts lookup returned no matches for {identifier}.") from e
+        raise
+    uuids = _uuids_from_lookup(response)
+    if not uuids:
+        raise DemistoException(f"Hydden accounts lookup returned no matches for {identifier}.")
+    if len(uuids) > 1:
+        raise DemistoException(f"Hydden accounts lookup returned more than one match for {identifier}.")
+    return uuids[0]
+
+
 def test_module(client: Client) -> str:
     """Validate connectivity and authentication."""
     try:
@@ -145,12 +223,13 @@ def test_module(client: Client) -> str:
 
 
 def hydden_deprovision_account_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    account_id = _get_account_id(args)
+    identifier = _get_account_id(args)
     token = client.get_bearer_token()
+    account_id = _resolve_account_uuid(client, token, identifier)
     raw = client.deprovision_account(account_id, token)
 
     return CommandResults(
-        readable_output=f"Account {account_id} was deprovisioned successfully.",
+        readable_output=f"Account {identifier} ({account_id}) was deprovisioned successfully.",
         outputs_prefix="Hydden.Identity",
         outputs={"deprovisioned": True},
         raw_response=raw,
@@ -158,9 +237,10 @@ def hydden_deprovision_account_command(client: Client, args: dict[str, Any]) -> 
 
 
 def hydden_blast_radius_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    account_id = _get_account_id(args)
+    identifier = _get_account_id(args)
     subject_type = str(args.get("type") or "account")
     token = client.get_bearer_token()
+    account_id = _resolve_account_uuid(client, token, identifier)
     response = client.get_blast_radius(account_id, token, subject_type)
     blast_radius = _as_blast_radius_string(response)
 
@@ -172,7 +252,7 @@ def hydden_blast_radius_command(client: Client, args: dict[str, Any]) -> Command
         outputs = {**response, **outputs}
 
     return CommandResults(
-        readable_output=f"Blast radius for account {account_id}: {blast_radius}",
+        readable_output=f"Blast radius for account {identifier} ({account_id}): {blast_radius}",
         outputs_prefix="Hydden.Identity",
         outputs=outputs,
         raw_response=response,

@@ -1,7 +1,7 @@
 id: Hydden - Blast Radius
 version: -1
 name: Hydden - Blast Radius
-description: When a Cortex issue flags an account, take the account ID from the issue and get its blast radius from Hydden Control. Returns Hydden.Identity.blast_radius as a string.
+description: When a Cortex issue flags an account, take the account name or email from the issue and get its blast radius from Hydden Control. The command looks up a unique Hydden UUID first. Returns Hydden.Identity.blast_radius as a string.
 starttaskid: "0"
 fromversion: "6.10.0"
 inputs:
@@ -105,7 +105,7 @@ tasks:
       id: b1111111-c222-4d33-8e44-f55555555503
       version: -1
       name: Get blast radius from Hydden
-      description: Call hydden-blast-radius with the account ID from the issue. Sets Hydden.Identity.blast_radius to the blast radius information string.
+      description: Call hydden-blast-radius with the Cortex name or email from the issue. The command looks up a unique Hydden UUID via GET /accounts/lookup, then GET /blast-radius. Sets Hydden.Identity.blast_radius.
       script: 'Hydden Control|||hydden-blast-radius'
       type: regular
       iscommand: true

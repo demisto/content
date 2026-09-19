@@ -1,7 +1,7 @@
 id: Hydden - Deprovision Account
 version: -1
 name: Hydden - Deprovision Account
-description: When a Cortex issue indicates a compromised or otherwise high-risk account, take the account ID from the issue and deprovision it with Hydden Control. Returns Hydden.Identity.deprovisioned as true or false.
+description: When a Cortex issue indicates a compromised or otherwise high-risk account, take the account name or email from the issue and deprovision it with Hydden Control. The command looks up a unique Hydden UUID first. Returns Hydden.Identity.deprovisioned as true or false.
 starttaskid: "0"
 fromversion: "6.10.0"
 inputs:
@@ -105,7 +105,7 @@ tasks:
       id: c1111111-d222-4e33-8f44-a55555555503
       version: -1
       name: Deprovision account in Hydden
-      description: Call hydden-deprovision-account (POST /account-actions/deprovision) with the account ID from the issue. Sets Hydden.Identity.deprovisioned to true on success.
+      description: Call hydden-deprovision-account with the Cortex name or email from the issue. The command looks up a unique Hydden UUID via GET /accounts/lookup, then POST /account-actions/deprovision. Sets Hydden.Identity.deprovisioned to true on success.
       script: 'Hydden Control|||hydden-deprovision-account'
       type: regular
       iscommand: true

@@ -58,10 +58,14 @@ from HyddenControl import (
     hydden_blast_radius_command,
     hydden_deprovision_account_command,
     _as_blast_radius_string,
+    _resolve_account_uuid,
+    _uuids_from_lookup,
     test_module as run_test_module,
 )
 
 ACCOUNT_ID = "00000000-0000-0000-0000-000000000000"
+OTHER_UUID = "11111111-1111-1111-1111-111111111111"
+IDENTIFIER = "jdoe@example.com"
 TOKEN = "issued-bearer-token"
 
 
@@ -175,11 +179,13 @@ LIVE_RESPONSE = {
 def test_hydden_blast_radius_command_reads_the_score_field() -> None:
     client = MagicMock()
     client.get_bearer_token.return_value = TOKEN
+    client.lookup_accounts.return_value = [ACCOUNT_ID]
     client.get_blast_radius.return_value = {**LIVE_RESPONSE, "score": 73, "reachable_resources": 7}
 
     result = hydden_blast_radius_command(client, {"account_id": ACCOUNT_ID})
 
     client.get_bearer_token.assert_called_once_with()
+    client.lookup_accounts.assert_called_once_with(ACCOUNT_ID, TOKEN)
     client.get_blast_radius.assert_called_once_with(ACCOUNT_ID, TOKEN, "account")
     assert result.outputs["blast_radius"] == "73"
     assert result.outputs["reachable_resources"] == 7
@@ -190,6 +196,7 @@ def test_hydden_blast_radius_command_keeps_a_zero_score() -> None:
     """A score of 0 is a real answer, not a missing field."""
     client = MagicMock()
     client.get_bearer_token.return_value = TOKEN
+    client.lookup_accounts.return_value = [ACCOUNT_ID]
     client.get_blast_radius.return_value = LIVE_RESPONSE
 
     result = hydden_blast_radius_command(client, {"account_id": ACCOUNT_ID})
@@ -232,11 +239,13 @@ def test_deprovision_account_posts_account_actions_path_with_bearer_token() -> N
 def test_hydden_deprovision_account_command() -> None:
     client = MagicMock()
     client.get_bearer_token.return_value = TOKEN
+    client.lookup_accounts.return_value = [ACCOUNT_ID]
     client.deprovision_account.return_value = ""
 
     result = hydden_deprovision_account_command(client, {"account_id": ACCOUNT_ID})
 
     client.get_bearer_token.assert_called_once_with()
+    client.lookup_accounts.assert_called_once_with(ACCOUNT_ID, TOKEN)
     client.deprovision_account.assert_called_once_with(ACCOUNT_ID, TOKEN)
     assert result.outputs == {"deprovisioned": True}
 
@@ -249,6 +258,7 @@ def test_get_account_id_rejects_empty_value() -> None:
 def test_hydden_blast_radius_command_passes_group_type() -> None:
     client = MagicMock()
     client.get_bearer_token.return_value = TOKEN
+    client.lookup_accounts.return_value = [ACCOUNT_ID]
     client.get_blast_radius.return_value = {**LIVE_RESPONSE, "score": 1}
 
     hydden_blast_radius_command(client, {"account_id": ACCOUNT_ID, "type": "group"})
@@ -302,3 +312,87 @@ def test_client_forwards_verify_and_proxy_to_content_client(monkeypatch) -> None
 
     assert seen["verify"] is False
     assert seen["proxy"] is True
+
+
+def test_lookup_accounts_sends_the_cortex_identifier_as_q() -> None:
+    client = _client_with_mocked_transport([])
+
+    client.lookup_accounts(IDENTIFIER, TOKEN)
+
+    client._http_request.assert_called_once_with(
+        method="GET",
+        url_suffix="accounts/lookup",
+        headers={
+            "accept": "application/json",
+            "content-type": "application/json",
+            "Authorization": f"Bearer {TOKEN}",
+        },
+        params={"q": IDENTIFIER},
+    )
+
+
+def test_uuids_from_lookup_accepts_a_list_of_uuid_strings() -> None:
+    assert _uuids_from_lookup([ACCOUNT_ID]) == [ACCOUNT_ID]
+
+
+def test_uuids_from_lookup_dedupes_wrapped_account_objects() -> None:
+    assert _uuids_from_lookup({"accounts": [{"uuid": ACCOUNT_ID}, {"id": ACCOUNT_ID}]}) == [ACCOUNT_ID]
+
+
+def test_hydden_blast_radius_command_resolves_email_to_a_unique_uuid() -> None:
+    client = MagicMock()
+    client.get_bearer_token.return_value = TOKEN
+    client.lookup_accounts.return_value = [{"uuid": ACCOUNT_ID}]
+    client.get_blast_radius.return_value = {**LIVE_RESPONSE, "score": 73}
+
+    result = hydden_blast_radius_command(client, {"account_id": IDENTIFIER})
+
+    client.lookup_accounts.assert_called_once_with(IDENTIFIER, TOKEN)
+    client.get_blast_radius.assert_called_once_with(ACCOUNT_ID, TOKEN, "account")
+    assert IDENTIFIER in result.readable_output
+    assert ACCOUNT_ID in result.readable_output
+
+
+def test_hydden_blast_radius_command_reports_no_matches() -> None:
+    client = MagicMock()
+    client.get_bearer_token.return_value = TOKEN
+    client.lookup_accounts.return_value = []
+
+    with pytest.raises(DemistoException, match="no matches"):
+        hydden_blast_radius_command(client, {"account_id": IDENTIFIER})
+
+    client.get_blast_radius.assert_not_called()
+
+
+def test_hydden_deprovision_account_command_resolves_email_to_a_unique_uuid() -> None:
+    client = MagicMock()
+    client.get_bearer_token.return_value = TOKEN
+    client.lookup_accounts.return_value = [ACCOUNT_ID]
+    client.deprovision_account.return_value = ""
+
+    result = hydden_deprovision_account_command(client, {"account_id": IDENTIFIER})
+
+    client.lookup_accounts.assert_called_once_with(IDENTIFIER, TOKEN)
+    client.deprovision_account.assert_called_once_with(ACCOUNT_ID, TOKEN)
+    assert result.outputs == {"deprovisioned": True}
+    assert IDENTIFIER in result.readable_output
+    assert ACCOUNT_ID in result.readable_output
+
+
+def test_hydden_deprovision_account_command_reports_more_than_one_match() -> None:
+    client = MagicMock()
+    client.get_bearer_token.return_value = TOKEN
+    client.lookup_accounts.return_value = [ACCOUNT_ID, OTHER_UUID]
+
+    with pytest.raises(DemistoException, match="more than one match"):
+        hydden_deprovision_account_command(client, {"account_id": IDENTIFIER})
+
+    client.deprovision_account.assert_not_called()
+
+
+def test_resolve_account_uuid_treats_lookup_404_as_no_matches() -> None:
+    client = MagicMock()
+    client.lookup_accounts.side_effect = DemistoException("404 Not Found")
+
+    with pytest.raises(DemistoException, match="no matches"):
+        _resolve_account_uuid(client, TOKEN, IDENTIFIER)

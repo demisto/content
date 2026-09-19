@@ -28,7 +28,7 @@ This integration was integrated and tested with the Hydden Control public REST A
 7. Click **Test** to validate the URL, credentials, and connection.
 8. Click **Save & Exit** and leave the instance enabled.
 
-`hydden-deprovision-account` is marked potentially harmful. Use it only for accounts you intend to disable across the Hydden identity fabric.
+`hydden-deprovision-account` is marked potentially harmful. Use it only for accounts you intend to disable across the Hydden identity fabric. Both commands look up the Cortex name or email via `GET /accounts/lookup` and continue only when that returns exactly one Hydden UUID.
 
 ### Troubleshooting
 
@@ -37,3 +37,4 @@ This integration was integrated and tested with the Hydden Control public REST A
 - If the connection requires an outbound proxy, enable **Use system proxy settings**.
 - A cold `hydden-blast-radius` request can take several minutes while Hydden builds the tenant reachability graph. Increase **HTTP request timeout (seconds)** if the request times out.
 - If a playbook reports a missing `account_id`, confirm that the Cortex XSIAM issue contains `${xdm.target.user.identifier}`, or supply the **AccountId** input in the Playbook Debugger.
+- If a command reports no matches or more than one match, the Cortex name or email did not resolve to a unique Hydden UUID. Confirm the identifier and retry.

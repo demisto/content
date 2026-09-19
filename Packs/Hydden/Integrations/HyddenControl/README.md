@@ -25,7 +25,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### hydden-blast-radius
 
 ***
-Return the subject's blast radius from Hydden Control. Calls `GET /blast-radius?ref=ACCOUNT_ID&type=TYPE`.
+Return the subject's blast radius from Hydden Control. Calls `GET /accounts/lookup?q=ACCOUNT_ID` first. If that returns exactly one Hydden UUID, calls `GET /blast-radius?ref=UUID&type=TYPE`. Otherwise the command fails with no matches or more than one match.
 
 #### Base Command
 
@@ -35,7 +35,7 @@ Return the subject's blast radius from Hydden Control. Calls `GET /blast-radius?
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | Cortex account ID. Sent to Hydden as the `ref` query parameter. | Required |
+| account_id | Cortex user or account name or email. Looked up to a Hydden UUID via `GET /accounts/lookup`. | Required |
 | type | Subject the ref names: `account` (default) or `group`. | Optional |
 
 #### Context Output
@@ -54,7 +54,7 @@ Return the subject's blast radius from Hydden Control. Calls `GET /blast-radius?
 
 #### Command example
 
-```!hydden-blast-radius account_id="4f9e7d35-7a64-4e9d-9c8a-51b7d2e6f304" type="account"```
+```!hydden-blast-radius account_id="jdoe@example.com" type="account"```
 
 #### Context Example
 
@@ -74,12 +74,12 @@ Return the subject's blast radius from Hydden Control. Calls `GET /blast-radius?
 
 #### Human Readable Output
 
-> Blast radius for account 4f9e7d35-7a64-4e9d-9c8a-51b7d2e6f304: 73
+> Blast radius for account jdoe@example.com (4f9e7d35-7a64-4e9d-9c8a-51b7d2e6f304): 73
 
 ### hydden-deprovision-account
 
 ***
-Deprovision an account across the fabric, including disabling the account and removing group and role memberships. Calls `POST /account-actions/deprovision?ref=ACCOUNT_ID`. This command is potentially harmful.
+Deprovision an account across the fabric, including disabling the account and removing group and role memberships. Calls `GET /accounts/lookup?q=ACCOUNT_ID` first. If that returns exactly one Hydden UUID, calls `POST /account-actions/deprovision?ref=UUID`. Otherwise the command fails with no matches or more than one match. This command is potentially harmful.
 
 #### Base Command
 
@@ -89,7 +89,7 @@ Deprovision an account across the fabric, including disabling the account and re
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| account_id | Cortex account ID. Sent to Hydden as the `ref` query parameter. | Required |
+| account_id | Cortex user or account name or email. Looked up to a Hydden UUID via `GET /accounts/lookup`. | Required |
 
 #### Context Output
 
@@ -99,7 +99,7 @@ Deprovision an account across the fabric, including disabling the account and re
 
 #### Command example
 
-```!hydden-deprovision-account account_id="4f9e7d35-7a64-4e9d-9c8a-51b7d2e6f304"```
+```!hydden-deprovision-account account_id="jdoe@example.com"```
 
 #### Context Example
 
@@ -115,4 +115,4 @@ Deprovision an account across the fabric, including disabling the account and re
 
 #### Human Readable Output
 
-> Account 4f9e7d35-7a64-4e9d-9c8a-51b7d2e6f304 was deprovisioned successfully.
+> Account jdoe@example.com (4f9e7d35-7a64-4e9d-9c8a-51b7d2e6f304) was deprovisioned successfully.

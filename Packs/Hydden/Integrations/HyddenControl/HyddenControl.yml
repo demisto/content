@@ -46,11 +46,11 @@ sectionorder:
 script:
   commands:
   - name: hydden-blast-radius
-    description: Return the account's blast radius information as a string from Hydden Control using GET /blast-radius?ref=&type=.
+    description: Look up the Cortex account name or email via GET /accounts/lookup. If that returns exactly one Hydden UUID, return the blast radius from GET /blast-radius?ref=&type=.
     arguments:
     - name: account_id
       required: true
-      description: The Cortex account ID. Sent to Hydden as the ref query parameter.
+      description: The Cortex user or account name or email. Resolved to a Hydden UUID via GET /accounts/lookup before blast-radius is called.
     - name: type
       required: false
       description: The subject the ref names. Sent to Hydden as the type query parameter.
@@ -88,12 +88,12 @@ script:
       description: The time when the score was computed, for example 2024-01-15T12:34:56Z.
       type: Date
   - name: hydden-deprovision-account
-    description: Deprovision an account across the Hydden identity fabric using POST /account-actions/deprovision?ref=.
+    description: Look up the Cortex account name or email via GET /accounts/lookup. If that returns exactly one Hydden UUID, deprovision it with POST /account-actions/deprovision?ref=.
     execution: true
     arguments:
     - name: account_id
       required: true
-      description: The Cortex account ID to deprovision. Sent to Hydden as the ref query parameter.
+      description: The Cortex user or account name or email to deprovision. Resolved to a Hydden UUID via GET /accounts/lookup before deprovision is called.
     outputs:
     - contextPath: Hydden.Identity.deprovisioned
       description: The deprovisioning success status.
