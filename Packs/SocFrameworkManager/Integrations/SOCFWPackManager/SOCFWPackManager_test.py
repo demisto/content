@@ -630,7 +630,11 @@ def _install_client(mod, tmp_path, installed_version):
 
     client = _make_client(mod, verify=True)
     client._http_request = lambda **kw: _StreamingResponse(data, headers={"Content-Length": str(len(data))})
+    # Both upload paths are stubbed: the SDK path is the default since 1.2.1,
+    # and leaving it live reaches is_debug_mode(), which the harness does not
+    # provide (it comes from CommonServerPython at runtime).
     client.upload_pack_zip_direct = lambda zp: {"success": True}
+    client.upload_pack_as_system_content = lambda pp: {"success": True}
     client.installed_pack_versions = lambda: {"soc-pack": installed_version}
     return client
 
@@ -690,8 +694,14 @@ def test_install_pack_survives_unreadable_installed_versions(tmp_path):
     assert "verified" not in result["readable_output"]
 
 
-def test_install_pack_uses_direct_path_by_default(tmp_path):
-    """Default must not touch the demisto-sdk rebuild -- that is the timeout."""
+def test_install_pack_uses_sdk_path_by_default(tmp_path):
+    """Default must be the SDK path: it is the one that installs content.
+
+    The direct ZIP POST was briefly the default and reverted -- it registers
+    the pack version and installs none of its content. Verified on a live
+    tenant: soc-optimization-unified reported 3.20.3 with all 24 of its
+    scripts and lists missing.
+    """
     mod, _ = load_integration()
     client = _install_client(mod, tmp_path, installed_version="2.0.0")
 
@@ -705,4 +715,4 @@ def test_install_pack_uses_direct_path_by_default(tmp_path):
         mod.install_pack_command(client, args={"url": "https://x/soc-pack-v2.0.0.zip", "filename": "soc-pack-v2.0.0.zip"})
     finally:
         os.chdir(orig)
-    assert called == ["direct"]
+    assert called == ["sdk"]

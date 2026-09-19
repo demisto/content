@@ -421,11 +421,21 @@ def install_pack_command(client: ContentClient, args: dict[str, Any]) -> Command
         # path is what exhausts the container command timeout (see
         # upload_pack_zip_direct). Kept so a caller can switch back without a
         # redeploy if a pack ever needs the rebuild.
-        if argToBoolean(args.get("use_sdk") or "false"):
+        # Default is the demisto-sdk path. The direct ZIP POST was made the
+        # default and REVERTED: it registers the pack version on the tenant and
+        # installs NO CONTENT. Verified on deathstar 19 Sep 2026 with
+        # soc-optimization-unified v3.20.3 -- direct POST set the version and
+        # left all 24 scripts and lists missing; the same zip through the SDK
+        # path installed all 24. The speed difference (27s vs 63s) was the
+        # absence of the work, not an optimisation.
+        #
+        # use_sdk=false still selects the direct POST, for a caller that wants
+        # a pack record without content. It must not be the default.
+        if not argToBoolean(args.get("use_sdk") or "true"):
+            result = client.upload_pack_zip_direct(zip_path)
+        else:
             pack_path = _prepare_pack_dir(zip_path, filename)
             result = client.upload_pack_as_system_content(pack_path)
-        else:
-            result = client.upload_pack_zip_direct(zip_path)
 
         # Verify the version actually landed before reporting success.
         #

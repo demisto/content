@@ -65,8 +65,8 @@ script:
       predefined:
       - 'true'
       - 'false'
-      defaultValue: 'false'
-      description: 'Fall back to the demisto-sdk rebuild path. Off by default: the rebuild constructs a content graph and is what exhausts the container command timeout on slower tenants.'
+      defaultValue: 'true'
+      description: Install through the demisto-sdk path, which builds the content graph and installs the pack's content items. Default true. Setting false uses a direct ZIP upload that registers the pack version WITHOUT installing its content -- it is not a faster install, it is a different and almost always wrong one.
     compliantpolicies:
     - Domain Blockage
     outputs:
