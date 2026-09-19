@@ -12,7 +12,7 @@ installs, configures integration instances and jobs, and synchronizes the
 
 This integration stores the tenant URL, credentials, TLS verification setting,
 and the pack catalog location. It exposes two commands: `socfw-install-pack`,
-which downloads a pack ZIP and uploads it as system content, and
+which downloads a pack ZIP and installs it on the tenant, and
 `socfw-catalog-url-get`, which returns the configured catalog location so the
 script can read it. Cortex XSIAM integrations cannot call
 `demisto.executeCommand`, so the integration deliberately performs only the
@@ -53,8 +53,11 @@ DBot message appears in the War Room with the command details.
 
 ***
 Downloads a SOC Framework pack ZIP from the supplied URL and installs it on
-the tenant as system content. Called by the SOCFWPackManager script — do not
-invoke directly.
+the tenant. After the upload the command reads the installed pack version back
+from the tenant and compares it against the version in the ZIP filename; if
+they disagree the command fails rather than reporting success, so a pack that
+did not upgrade is not mistaken for one that did. Called by the
+SOCFWPackManager script — do not invoke directly.
 
 #### Base Command
 
@@ -66,6 +69,7 @@ invoke directly.
 | --- | --- | --- |
 | url | URL of the pack ZIP to install (typically a GitHub release asset). | Required |
 | filename | Asset filename, including the `.zip` extension. Derived from the URL when omitted. | Optional |
+| use_sdk | Whether to install through the demisto-sdk rebuild instead of uploading the pack ZIP directly. The rebuild constructs a content graph and is substantially slower; leave false unless a pack requires it. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
@@ -100,7 +104,7 @@ invoke directly.
 
 #### Human Readable Output
 
-> Pack **soc-optimization-unified-v3.6.3.zip** installed successfully.
+> Pack **soc-optimization-unified-v3.6.3.zip** installed successfully (verified).
 >
 ### socfw-catalog-url-get
 
