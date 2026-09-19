@@ -14,9 +14,12 @@ This integration uses the Cisco Email Threat Defense REST API.
 | ETD API Key | API key used to authenticate requests to Cisco ETD. | Yes |
 | Client ID | Cisco ETD OAuth Client ID. | Yes |
 | Client Secret | Cisco ETD OAuth Client Secret. | Yes |
+| Trust any certificate (not secure) | Skips verification of the server TLS certificate. | No |
+| Use system proxy settings | Routes requests through the system proxy. | No |
+| Fetch events | Enables continuous event collection into Cortex XSIAM. | No |
 | Event Types | Select one or more Cisco ETD log types to ingest (`message`, `audit`, or `connection`). | Yes |
-| Max fetch | Maximum number of events to ingest during a single fetch cycle. | No |
-| Fetch Events | Enables continuous event collection into Cortex XSIAM. | No |
+| Max fetch | Maximum number of events to ingest during a single fetch cycle. Default is `5000`. | No |
+| Events Fetch Interval | Interval, in minutes, between fetch cycles. Default is `1`. | No |
 
 ## Commands
 

@@ -10,8 +10,7 @@
         "Analytics & SIEM"
     ],
     "tags": [
-        "Email",
-        "ETD"
+        "Email"
     ],
     "useCases": [],
     "keywords": [
@@ -27,5 +26,9 @@
     "created": "2026-06-15T12:20:10Z",
     "githubUser": [
         "ashwinidoddamani"
+    ],
+    "defaultDataSource": "CiscoETDConnector",
+    "supportedModules": [
+        "xsiam"
     ]
 }
