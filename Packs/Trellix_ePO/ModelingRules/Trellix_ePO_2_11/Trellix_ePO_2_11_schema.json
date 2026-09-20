@@ -1,0 +1,8 @@
+{
+    "trellix_epo_raw": {
+      "parsed_fields": {
+        "type": "string",
+        "is_array": false
+      }
+    }
+  }

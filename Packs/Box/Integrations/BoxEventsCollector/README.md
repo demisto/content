@@ -20,7 +20,7 @@ You can use the guide from [Box V2](https://xsoar.pan.dev/docs/reference/integra
 | Credentials JSON | True |
 | Fetch Events | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
-| The maximum amount of events to fetch at once. 500 is maximum | False |
+| Maximum number of events per fetch | False |
 
 ## Commands
 
@@ -87,3 +87,12 @@ There is no context output for this command.
 >|action_by|additional_details|created_at|created_by|event_id|event_type|ip_address|session_id|source|type|
 >|---|---|---|---|---|---|---|---|---|---|
 >|  |  | 2022-04-10T05:39:15-07:00 | type: user<br/>id: 0000000000<br/>name: John Doe<br/>login: johndoe@example.com | event_id | ADD_LOGIN_ACTIVITY_DEVICE | ip_address |  | type: user<br/>id: 0000000000<br/>name: John Doe<br/>login: johndoe@example.com | event |
+
+## Troubleshooting & Advanced Configuration
+
+Each fetch cycle collects up to the **Maximum number of events per fetch** value (default `2500`, capped internally at `5000`) and then persists its position, so events are collected incrementally across cycles.
+
+If ingestion is falling behind on a high-volume tenant (events arrive faster than they are collected), you can help the collector keep up by:
+
+- **Increasing** *Maximum number of events per fetch* (up to `5000`) so each cycle collects more events.
+- **Decreasing** *Events Fetch Interval* (for example, to 1 minute) so cycles run more frequently.

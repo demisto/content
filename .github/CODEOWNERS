@@ -23,8 +23,6 @@
 /Packs/QRadar/Integrations/QRadar_v3/* @ilappe
 /Packs/Slack/Integrations/* @amshamah419 @rshunim
 /Packs/SplunkPy/Integrations/SplunkPy/* @ilappe
-/Packs/MicrosoftExchangeOnPremise/Integrations @amshamah419
-/Packs/MicrosoftExchangeOnline/Integrations @amshamah419
 /Packs/ContentManagement/* @DeanArbel @kamalq97
 /Packs/TAXIIServer/Integrations/TAXII2Server/* @Ni-Knight
 /Packs/FeedTAXII/Integrations/FeedTAXII2/* @Ni-Knight
@@ -33,8 +31,8 @@
 # Important Scripts
 /Packs/CommonScripts/Scripts/SetGridField/* @melamedbn
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
-/Packs/ApiModules/Scripts/MicrosoftApiModule @michal-dagan @inbalapt1 @noydavidi
-/Packs/ApiModules/Scripts/MicrosoftGraphMailApiModule @michal-dagan @inbalapt1 @noydavidi
+/Packs/ApiModules/Scripts/MicrosoftApiModule @noydavidi
+/Packs/ApiModules/Scripts/MicrosoftGraphMailApiModule @noydavidi
 /Packs/ApiModules/Scripts/EWSApiModule @noydavidi
 /Packs/ApiModules/Scripts/TAXII2ApiModule/* @Ni-Knight
 /Packs/CommonScripts/Scripts/StixCreator/* @Ni-Knight
@@ -61,9 +59,9 @@
 validation_config.toml @yedidyacohenpalo
 
 # XDR Related
-/Packs/CortexXDR/Integrations/ @jlevypaloalto
-/Packs/Core/Integrations/ @jlevypaloalto
-/Packs/ApiModules/Scripts/CoreIRApiModule/* @jlevypaloalto
+/Packs/CortexXDR/Integrations/ @jlevypaloalto @Shellyber
+/Packs/Core/Integrations/ @jlevypaloalto @Shellyber
+/Packs/ApiModules/Scripts/CoreIRApiModule/* @jlevypaloalto @Shellyber
 
 # Demisto Class
 Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavori
@@ -77,27 +75,6 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 /Packs/ApiModules/Scripts/TAXII2ApiModule/* @MosheEichler
 /Packs/ApiModules/Scripts/NGINXApiModule/* @MosheEichler
 
-# ML scripts
-/Packs/ML/ @jlevypaloalto
-/Packs/PhishingURL/ @jlevypaloalto
-/Packs/Phishing/Scripts/PhishingDedupPreprocessingRule @jlevypaloalto
-/Packs/Phishing/Scripts/FindDuplicateEmailIncidents @jlevypaloalto
-/Packs/Base/Scripts/DrawRelatedIncidentsCanvas@jlevypaloalto
-/Packs/Campaign/Scripts/FindEmailCampaign/ @jlevypaloalto
-/Packs/CortexXDR/Scripts/DBotGroupXDRIncidents/ @jlevypaloalto
-/Packs/Base/Scripts/FindSimilarIncidentsByText/ @jlevypaloalto
-/Packs/Base/Scripts/DBotTrainTextClassifierV2/ @jlevypaloalto
-/Packs/Base/Scripts/DBotShowClusteringModelInfo/ @jlevypaloalto
-/Packs/Base/Scripts/DBotPredictPhishingWords/ @jlevypaloalto
-/Packs/Base/Scripts/DBotFindSimilarIncidents/ @jlevypaloalto
-/Packs/Base/Scripts/DBotTrainClustering/ @jlevypaloalto
-/Packs/Base/Scripts/DBotBuildPhishingClassifier/ @jlevypaloalto
-/Packs/Base/Scripts/DBotPreprocessTextData/ @jlevypaloalto
-/Packs/Base/Scripts/DBotFindSimilarIncidentsByIndicators/ @jlevypaloalto
-/Packs/Base/Scripts/DBotSuggestClassifierMapping/ @jlevypaloalto
-/Packs/Base/Scripts/GetMLModelEvaluation/ @jlevypaloalto
-/Packs/Base/Scripts/DBotMLFetchData/ @jlevypaloalto
-
 # Platform Automation
 /Packs/AzureDevOps/ @omerKarkKatz
 /Packs/Jira/ @omerKarkKatz
@@ -105,12 +82,11 @@ Packs/ApiModules/Scripts/DemistoClassApiModule/DemistoClassApiModule.py @dantavo
 /Packs/MicrosoftTeams/ @omerKarkKatz
 /Packs/Slack/ @omerKarkKatz
 
-/Packs/PingIdentity @Shellyber
-/Packs/Okta @Shellyber
+/Packs/Okta/Integrations/Okta_v2 @Shellyber
 /Packs/Core @Shellyber
 /Packs/CortexXDR @Shellyber
 /Packs/SentinelOne @Shellyber
-/Packs/CrowdStrikeFalcon @Shellyber @talzich @JasBeilin
+/Packs/CrowdStrikeFalcon @Shellyber @talzich
 /Packs/CrowdStrikeFalconSandbox @Shellyber
 /Packs/CrowdStrikeFalconStreamingV2 @Shellyber
 /Packs/MicrosoftExchangeOnline @Shellyber @noydavidi
