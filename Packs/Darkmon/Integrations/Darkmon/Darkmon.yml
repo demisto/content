@@ -632,3 +632,4 @@ marketplaces:
 - xsoar
 - marketplacev2
 - platform
+excludefromtightlycoupled: true
