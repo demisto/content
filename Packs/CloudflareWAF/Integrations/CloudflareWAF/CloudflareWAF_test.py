@@ -1298,3 +1298,237 @@ class TestRulesetEntrypointCommands:
 
         with pytest.raises(ValueError, match="Failed to parse rules JSON"):
             cloudflare_waf_ruleset_entrypoint_update_command(mock_client, args)
+
+
+class TestRulesetVersionCommands:
+    """Tests for the cloudflare-waf-ruleset-version-* commands."""
+
+    def test_ruleset_version_list_zone_scope(self, requests_mock, mock_client):
+        """
+        Scenario: List ruleset versions using the zone scope (default from client).
+        Given:
+         - A client configured with a zone_id.
+         - A valid ruleset_id argument.
+        When:
+         - cloudflare_waf_ruleset_version_list_command is called.
+        Then:
+         - The GET request hits the zone-scoped versions URL.
+         - The outputs prefix is CloudflareWAF.Ruleset.
+         - All three versions are returned and a sample version value matches.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_version_list_command
+
+        ruleset_id = "ruleset_id_1"
+        mock_response = load_mock_response("list_ruleset_versions.json")
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/{ruleset_id}/versions"
+        requests_mock.get(url, json=mock_response)
+
+        args = {"ruleset_id": ruleset_id}
+
+        result = cloudflare_waf_ruleset_version_list_command(mock_client, args)
+
+        assert requests_mock.last_request.path == f"/client/v4/zones/{ZONE_ID}/rulesets/{ruleset_id}/versions"
+        assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+        assert len(result.outputs) == 3
+        assert result.outputs[0]["version"] == "1"
+        assert result.outputs[2]["version"] == "3"
+
+    def test_ruleset_version_list_limit_truncation(self, requests_mock, mock_client):
+        """
+        Scenario: List ruleset versions with a limit smaller than the result count.
+        Given:
+         - A mock response with three versions.
+         - limit set to 2 in args.
+        When:
+         - cloudflare_waf_ruleset_version_list_command is called.
+        Then:
+         - Only the first two versions are returned (client-side truncation).
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_version_list_command
+
+        ruleset_id = "ruleset_id_1"
+        mock_response = load_mock_response("list_ruleset_versions.json")
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/{ruleset_id}/versions"
+        requests_mock.get(url, json=mock_response)
+
+        args = {"ruleset_id": ruleset_id, "limit": "2"}
+
+        result = cloudflare_waf_ruleset_version_list_command(mock_client, args)
+
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["version"] == "1"
+        assert result.outputs[1]["version"] == "2"
+
+    def test_ruleset_version_list_account_scope_override(self, requests_mock):
+        """
+        Scenario: List ruleset versions using an account_id argument override.
+        Given:
+         - A client configured WITHOUT a zone_id.
+         - account_id passed via args.
+        When:
+         - cloudflare_waf_ruleset_version_list_command is called.
+        Then:
+         - The GET request hits the account-scoped versions URL.
+         - No zone segment is present in the request path.
+        """
+        from CloudflareWAF import Client, cloudflare_waf_ruleset_version_list_command
+
+        client_no_zone = Client(
+            account_id=ACCOUNT_ID, zone_id=None, credentials=CREDENTIALS, base_url=BASE_URL, proxy=False, insecure=True
+        )
+
+        ruleset_id = "ruleset_id_1"
+        arg_account = "arg_account"
+        mock_response = load_mock_response("list_ruleset_versions.json")
+        url = f"{BASE_URL}accounts/{arg_account}/rulesets/{ruleset_id}/versions"
+        requests_mock.get(url, json=mock_response)
+
+        args = {"ruleset_id": ruleset_id, "account_id": arg_account}
+
+        result = cloudflare_waf_ruleset_version_list_command(client_no_zone, args)
+
+        assert requests_mock.last_request.path == f"/client/v4/accounts/{arg_account}/rulesets/{ruleset_id}/versions"
+        assert "zones" not in requests_mock.last_request.path
+        assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+
+    def test_ruleset_version_list_mutually_exclusive(self, mock_client):
+        """
+        Scenario: List ruleset versions with BOTH zone_id and account_id in args.
+        Given:
+         - args contains both zone_id and account_id.
+        When:
+         - cloudflare_waf_ruleset_version_list_command is called.
+        Then:
+         - A ValueError matching "mutually exclusive" is raised by _resolve_scope_ids.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_version_list_command
+
+        args = {"ruleset_id": "ruleset_id_1", "zone_id": "arg_zone", "account_id": "arg_account"}
+
+        with pytest.raises(ValueError, match="mutually exclusive"):
+            cloudflare_waf_ruleset_version_list_command(mock_client, args)
+
+    def test_ruleset_version_get_zone_scope(self, requests_mock, mock_client):
+        """
+        Scenario: Get a specific ruleset version using the zone scope (default from client).
+        Given:
+         - A client configured with a zone_id.
+         - Valid ruleset_id and version arguments.
+        When:
+         - cloudflare_waf_ruleset_version_get_command is called.
+        Then:
+         - The GET request hits the zone-scoped version URL including the version segment.
+         - The outputs prefix is CloudflareWAF.Ruleset.
+         - The managed rule's categories survive into outputs (missing expression tolerated).
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_version_get_command
+
+        ruleset_id = "ruleset_id_1"
+        version = "2"
+        mock_response = load_mock_response("get_ruleset_version.json")
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/{ruleset_id}/versions/{version}"
+        requests_mock.get(url, json=mock_response)
+
+        args = {"ruleset_id": ruleset_id, "version": version}
+
+        result = cloudflare_waf_ruleset_version_get_command(mock_client, args)
+
+        assert requests_mock.last_request.path == f"/client/v4/zones/{ZONE_ID}/rulesets/{ruleset_id}/versions/{version}"
+        assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+        assert result.outputs["version"] == "2"
+        assert result.outputs["rules"][0]["categories"] == ["wordpress", "php"]
+        assert "expression" not in result.outputs["rules"][0]
+
+    def test_ruleset_version_get_missing_version(self, mock_client):
+        """
+        Scenario: Get a ruleset version without providing the version argument.
+        Given:
+         - args contains ruleset_id but no version.
+        When:
+         - cloudflare_waf_ruleset_version_get_command is called.
+        Then:
+         - A ValueError with message "version is required." is raised.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_version_get_command
+
+        args = {"ruleset_id": "ruleset_id_1"}
+
+        with pytest.raises(ValueError, match="version is required."):
+            cloudflare_waf_ruleset_version_get_command(mock_client, args)
+
+    def test_ruleset_version_delete_readable_output(self, requests_mock, mock_client):
+        """
+        Scenario: Delete a ruleset version using the zone scope.
+        Given:
+         - A client configured with a zone_id.
+        When:
+         - cloudflare_waf_ruleset_version_delete_command is called.
+        Then:
+         - The readable_output matches the expected deletion message.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_version_delete_command
+
+        ruleset_id = "ruleset_id_1"
+        version = "2"
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/{ruleset_id}/versions/{version}"
+        requests_mock.delete(url, json=load_mock_response("delete_ruleset_version.json"))
+
+        args = {"ruleset_id": ruleset_id, "version": version}
+
+        result = cloudflare_waf_ruleset_version_delete_command(mock_client, args)
+
+        assert result.readable_output == f"Version {version} of ruleset {ruleset_id} was successfully deleted."
+
+    def test_ruleset_version_delete_dry_run(self, requests_mock, mock_client):
+        """
+        Scenario: Delete a ruleset version with dry_run=true.
+        Given:
+         - dry_run set to 'true' in args.
+        When:
+         - cloudflare_waf_ruleset_version_delete_command is called.
+        Then:
+         - The request includes the dry_run=true query parameter.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_version_delete_command
+
+        ruleset_id = "ruleset_id_1"
+        version = "2"
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/{ruleset_id}/versions/{version}"
+        requests_mock.delete(url, json=load_mock_response("delete_ruleset_version.json"))
+
+        args = {"ruleset_id": ruleset_id, "version": version, "dry_run": "true"}
+
+        cloudflare_waf_ruleset_version_delete_command(mock_client, args)
+
+        assert requests_mock.last_request.qs.get("dry_run") == ["true"]
+
+    def test_ruleset_version_delete_account_scope_override(self, requests_mock):
+        """
+        Scenario: Delete a ruleset version using an account_id argument override.
+        Given:
+         - A client configured WITHOUT a zone_id.
+         - account_id passed via args.
+        When:
+         - cloudflare_waf_ruleset_version_delete_command is called.
+        Then:
+         - The DELETE request hits the account-scoped version URL with no zone segment.
+        """
+        from CloudflareWAF import Client, cloudflare_waf_ruleset_version_delete_command
+
+        client_no_zone = Client(
+            account_id=ACCOUNT_ID, zone_id=None, credentials=CREDENTIALS, base_url=BASE_URL, proxy=False, insecure=True
+        )
+
+        ruleset_id = "ruleset_id_1"
+        version = "2"
+        arg_account = "arg_account"
+        url = f"{BASE_URL}accounts/{arg_account}/rulesets/{ruleset_id}/versions/{version}"
+        requests_mock.delete(url, json=load_mock_response("delete_ruleset_version.json"))
+
+        args = {"ruleset_id": ruleset_id, "version": version, "account_id": arg_account}
+
+        result = cloudflare_waf_ruleset_version_delete_command(client_no_zone, args)
+
+        assert requests_mock.last_request.path == f"/client/v4/accounts/{arg_account}/rulesets/{ruleset_id}/versions/{version}"
+        assert "zones" not in requests_mock.last_request.path
+        assert result.readable_output == f"Version {version} of ruleset {ruleset_id} was successfully deleted."
