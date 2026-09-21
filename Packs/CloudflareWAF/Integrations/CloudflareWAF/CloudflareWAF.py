@@ -678,6 +678,92 @@ class Client(BaseClient):
 
         return self._http_request(method="PUT", url_suffix=url_suffix, json_data=json_data, params=params)
 
+    def cloudflare_waf_ruleset_version_list_request(
+        self,
+        ruleset_id: str,
+        zone_id: str = None,
+        account_id: str = None,
+    ) -> dict[str, Any]:
+        """List all versions of a ruleset.
+
+        Args:
+            ruleset_id (str): The ruleset identifier.
+            zone_id (str, optional): Zone identifier. If provided, lists zone-level ruleset versions.
+                If not provided, lists account-level ruleset versions.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+
+        Returns:
+            dict: API response from Cloudflare (an array of ruleset header objects).
+        """
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/{ruleset_id}/versions"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/{ruleset_id}/versions"
+
+        return self._http_request(method="GET", url_suffix=url_suffix)
+
+    def cloudflare_waf_ruleset_version_get_request(
+        self,
+        ruleset_id: str,
+        version: str,
+        zone_id: str = None,
+        account_id: str = None,
+    ) -> dict[str, Any]:
+        """Get a specific version of a ruleset.
+
+        Args:
+            ruleset_id (str): The ruleset identifier.
+            version (str): The version of the ruleset. Mapped into the {ruleset_version} path segment.
+            zone_id (str, optional): Zone identifier. If provided, gets a zone-level ruleset version.
+                If not provided, gets an account-level ruleset version.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+
+        Returns:
+            dict: API response from Cloudflare (the full ruleset at that version).
+        """
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/{ruleset_id}/versions/{version}"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/{ruleset_id}/versions/{version}"
+
+        return self._http_request(method="GET", url_suffix=url_suffix)
+
+    def cloudflare_waf_ruleset_version_delete_request(
+        self,
+        ruleset_id: str,
+        version: str,
+        zone_id: str = None,
+        account_id: str = None,
+        dry_run: bool = None,
+    ) -> dict[str, Any]:
+        """Delete a specific version of a ruleset.
+
+        Args:
+            ruleset_id (str): The ruleset identifier.
+            version (str): The version of the ruleset. Mapped into the {ruleset_version} path segment.
+            zone_id (str, optional): Zone identifier. If provided, deletes a zone-level ruleset version.
+                If not provided, deletes an account-level ruleset version.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+            dry_run (bool, optional): If True, validates the deletion without applying it.
+
+        Returns:
+            dict: API response from Cloudflare.
+        """
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/{ruleset_id}/versions/{version}"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/{ruleset_id}/versions/{version}"
+
+        params = {"dry_run": "true"} if dry_run else None
+
+        return self._http_request(
+            method="DELETE",
+            url_suffix=url_suffix,
+            params=params,
+            resp_type="response",
+            return_empty_response=True,
+        )
+
 
 def validate_pagination_arguments(page: int = None, page_size: int = None, limit: int = None):
     """Validate pagination arguments according to their default.
@@ -1944,6 +2030,118 @@ def cloudflare_waf_ruleset_entrypoint_update_command(client: Client, args: dict[
     )
 
 
+def cloudflare_waf_ruleset_version_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List all versions of a ruleset at the account or zone level.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    ruleset_id = args.get("ruleset_id")
+    if not ruleset_id:
+        raise ValueError("ruleset_id is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+    limit = arg_to_number(args.get("limit")) or 50
+
+    response = client.cloudflare_waf_ruleset_version_list_request(
+        ruleset_id=ruleset_id,
+        zone_id=zone_id,
+        account_id=account_id,
+    )
+
+    output = response.get("result", [])
+    output = output[:limit]
+
+    readable_output = tableToMarkdown(
+        name="Ruleset versions",
+        t=output,
+        headers=["id", "name", "kind", "phase", "description", "source", "version", "last_updated"],
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CloudflareWAF.Ruleset",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
+def cloudflare_waf_ruleset_version_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a specific version of a ruleset, including its rules.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    ruleset_id = args.get("ruleset_id")
+    if not ruleset_id:
+        raise ValueError("ruleset_id is required.")
+    version = args.get("version")
+    if not version:
+        raise ValueError("version is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+
+    response = client.cloudflare_waf_ruleset_version_get_request(
+        ruleset_id=ruleset_id,
+        version=version,
+        zone_id=zone_id,
+        account_id=account_id,
+    )
+
+    output = response.get("result", {})
+
+    readable_output = _ruleset_readable_output("Ruleset details", output)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CloudflareWAF.Ruleset",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
+def cloudflare_waf_ruleset_version_delete_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Delete a specific version of a ruleset.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: readable outputs for XSOAR.
+    """
+    ruleset_id = args.get("ruleset_id")
+    if not ruleset_id:
+        raise ValueError("ruleset_id is required.")
+    version = args.get("version")
+    if not version:
+        raise ValueError("version is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+    dry_run = arg_to_boolean(args.get("dry_run"))  # type: ignore[arg-type]
+
+    client.cloudflare_waf_ruleset_version_delete_request(
+        ruleset_id=ruleset_id,
+        version=version,
+        zone_id=zone_id,
+        account_id=account_id,
+        dry_run=dry_run,
+    )
+
+    return CommandResults(readable_output=f"Version {version} of ruleset {ruleset_id} was successfully deleted.")
+
+
 def test_module(client: Client):
     try:
         client.cloudflare_waf_zone_list_request()
@@ -2087,6 +2285,9 @@ def main() -> None:
         "cloudflare-waf-ruleset-rule-delete": cloudflare_waf_ruleset_rule_delete_command,
         "cloudflare-waf-ruleset-entrypoint-get": cloudflare_waf_ruleset_entrypoint_get_command,
         "cloudflare-waf-ruleset-entrypoint-update": cloudflare_waf_ruleset_entrypoint_update_command,
+        "cloudflare-waf-ruleset-version-list": cloudflare_waf_ruleset_version_list_command,
+        "cloudflare-waf-ruleset-version-get": cloudflare_waf_ruleset_version_get_command,
+        "cloudflare-waf-ruleset-version-delete": cloudflare_waf_ruleset_version_delete_command,
     }
     try:
         credentials = get_headers(params)
