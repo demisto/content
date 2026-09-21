@@ -177,6 +177,502 @@ Configures security settings for GKE clusters, including access controls and vis
 | GCP.Container.Operations.privateClusterConfig.enablePrivateEndpoint | Boolean | Whether private endpoint is enabled for the cluster control plane. |
 | GCP.Container.Operations.masterVersion | String | The current version of the Kubernetes master in the GKE cluster. |
 
+### gcp-gke-cluster-legacy-abac-auth-set
+
+***
+Enables or disables legacy ABAC authorization for a GKE cluster. Required permissions: container.clusters.update.
+
+#### Base Command
+
+`gcp-gke-cluster-legacy-abac-auth-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the cluster. | Required |
+| resource_name | The name of the GKE cluster. | Required |
+| enabled | Whether to enable legacy ABAC authorization on the cluster. Possible values are: true, false. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.GKE.Operations.clusterConditions | Unknown | Which conditions caused the current cluster state. |
+| GCP.GKE.Operations.detail | String | Detailed operation progress, if available. |
+| GCP.GKE.Operations.endTime | String | The time the operation completed, in RFC3339 text format. |
+| GCP.GKE.Operations.error | Unknown | The error result of the operation in case of failure. |
+| GCP.GKE.Operations.location | String | The name of the Google Compute Engine zone or region in which the cluster resides. |
+| GCP.GKE.Operations.name | String | The server-assigned ID for the operation. |
+| GCP.GKE.Operations.nodepoolConditions | Unknown | Which conditions caused the current node pool state. |
+| GCP.GKE.Operations.operationType | String | The operation type. |
+| GCP.GKE.Operations.progress | Unknown | Progress information for an operation. |
+| GCP.GKE.Operations.selfLink | String | Server-defined URI for the operation. |
+| GCP.GKE.Operations.startTime | String | The time the operation started, in RFC3339 text format. |
+| GCP.GKE.Operations.status | String | The current status of the operation. |
+| GCP.GKE.Operations.statusMessage | String | If an error has occurred, a textual description of the error. |
+| GCP.GKE.Operations.targetLink | String | Server-defined URI for the target of the operation. |
+| GCP.GKE.Operations.zone | String | The name of the Google Compute Engine zone in which the operation is taking place. |
+
+### gcp-gke-clusters-list
+
+***
+Lists all GKE clusters owned by a project in the specified location. Required permissions: container.clusters.list.
+
+#### Base Command
+
+`gcp-gke-clusters-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) to list clusters from. Use "-" to list clusters from all locations. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.GKE.Clusters.addonsConfig | Unknown | Configurations for the various addons available to run in the cluster. |
+| GCP.GKE.Clusters.alphaClusterFeatureGates | Unknown | The list of user specified Kubernetes feature gates. |
+| GCP.GKE.Clusters.anonymousAuthenticationConfig | Unknown | Configuration for limiting anonymous access to all endpoints except the health checks. |
+| GCP.GKE.Clusters.authenticatorGroupsConfig | Unknown | Configuration controlling RBAC group membership information. |
+| GCP.GKE.Clusters.autopilot | Unknown | Autopilot configuration for the cluster. |
+| GCP.GKE.Clusters.autoscaling | Unknown | Cluster-level autoscaling configuration. |
+| GCP.GKE.Clusters.binaryAuthorization | Unknown | Configuration for Binary Authorization. |
+| GCP.GKE.Clusters.clusterIpv4Cidr | String | The IP address range of the container pods in this cluster, in CIDR notation. |
+| GCP.GKE.Clusters.compliancePostureConfig | Unknown | Compliance posture configuration for the cluster \(no longer supported\). |
+| GCP.GKE.Clusters.conditions | Unknown | Which conditions caused the current cluster state. |
+| GCP.GKE.Clusters.confidentialNodes | Unknown | Configuration of Confidential Nodes. |
+| GCP.GKE.Clusters.controlPlaneEgress | Unknown | Configuration for control plane egress control. |
+| GCP.GKE.Clusters.controlPlaneEndpointsConfig | Unknown | Configuration for all cluster's control plane endpoints. |
+| GCP.GKE.Clusters.costManagementConfig | Unknown | Configuration for the fine-grained cost management feature. |
+| GCP.GKE.Clusters.createTime | String | The time the cluster was created, in RFC3339 text format. |
+| GCP.GKE.Clusters.currentEmulatedVersion | String | The current emulated version of the master endpoint. |
+| GCP.GKE.Clusters.currentMasterVersion | String | The current software version of the master endpoint. |
+| GCP.GKE.Clusters.currentNodeCount | Number | The number of nodes currently in the cluster. |
+| GCP.GKE.Clusters.currentNodeVersion | String | The current version of the Kubernetes nodes in the cluster \(deprecated; use the node pool version instead\). |
+| GCP.GKE.Clusters.databaseEncryption | Unknown | Configuration of etcd encryption. |
+| GCP.GKE.Clusters.defaultMaxPodsConstraint | Unknown | The default constraint on the maximum number of pods that can be run simultaneously on a node in the node pool of this cluster. |
+| GCP.GKE.Clusters.description | String | An optional description of this cluster. |
+| GCP.GKE.Clusters.enableK8sBetaApis | Unknown | Beta APIs Config. |
+| GCP.GKE.Clusters.enableKubernetesAlpha | Boolean | Kubernetes alpha features are enabled on this cluster. |
+| GCP.GKE.Clusters.enableTpu | Boolean | Enable the ability to use Cloud TPUs in this cluster. |
+| GCP.GKE.Clusters.endpoint | String | The IP address of this cluster's master endpoint. |
+| GCP.GKE.Clusters.enterpriseConfig | Unknown | GKE Enterprise Configuration. |
+| GCP.GKE.Clusters.etag | String | This checksum is computed by the server based on the value of cluster fields, and may be sent on update requests to ensure the client has an up-to-date value before proceeding. |
+| GCP.GKE.Clusters.expireTime | String | The time the cluster will be automatically deleted in RFC3339 text format. |
+| GCP.GKE.Clusters.fleet | Unknown | Fleet information for the cluster. |
+| GCP.GKE.Clusters.gkeAutoUpgradeConfig | Unknown | Configuration for GKE auto upgrades. |
+| GCP.GKE.Clusters.id | String | Unique id for the cluster. |
+| GCP.GKE.Clusters.identityServiceConfig | Unknown | Configuration for Identity Service component. |
+| GCP.GKE.Clusters.initialClusterVersion | String | The initial Kubernetes version for this cluster. |
+| GCP.GKE.Clusters.initialNodeCount | Number | The number of nodes to create in this cluster. |
+| GCP.GKE.Clusters.instanceGroupUrls | Unknown | The instanceGroupUrls of the resource. |
+| GCP.GKE.Clusters.ipAllocationPolicy | Unknown | Configuration for cluster IP allocation. |
+| GCP.GKE.Clusters.labelFingerprint | String | The fingerprint of the set of labels for this cluster. |
+| GCP.GKE.Clusters.legacyAbac | Unknown | Configuration for the legacy ABAC authorization mode. |
+| GCP.GKE.Clusters.location | String | The name of the Google Compute Engine zone or region in which the cluster resides. |
+| GCP.GKE.Clusters.locations | Unknown | The list of Google Compute Engine zones in which the cluster's nodes should be located. |
+| GCP.GKE.Clusters.loggingConfig | Unknown | Logging configuration for the cluster. |
+| GCP.GKE.Clusters.loggingService | String | The logging service the cluster should use to write logs. |
+| GCP.GKE.Clusters.maintenancePolicy | Unknown | Configure the maintenance policy for this cluster. |
+| GCP.GKE.Clusters.managedMachineLearningDiagnosticsConfig | Unknown | Configuration for Managed Machine Learning Diagnostics. |
+| GCP.GKE.Clusters.managedOpentelemetryConfig | Unknown | Configuration for Managed OpenTelemetry pipeline. |
+| GCP.GKE.Clusters.masterAuth | Unknown | The authentication information for accessing the master endpoint. |
+| GCP.GKE.Clusters.masterAuthorizedNetworksConfig | Unknown | The configuration options for master authorized networks feature. |
+| GCP.GKE.Clusters.meshCertificates | Unknown | Configuration for issuance of mTLS keys and certificates to Kubernetes pods. |
+| GCP.GKE.Clusters.monitoringConfig | Unknown | Monitoring configuration for the cluster. |
+| GCP.GKE.Clusters.monitoringService | String | The monitoring service the cluster should use to write metrics. |
+| GCP.GKE.Clusters.name | String | The name of this cluster. |
+| GCP.GKE.Clusters.network | String | The name of the Google Compute Engine network to which the cluster is connected. |
+| GCP.GKE.Clusters.networkConfig | Unknown | Configuration for cluster networking. |
+| GCP.GKE.Clusters.networkPolicy | Unknown | Configuration options for the NetworkPolicy feature. |
+| GCP.GKE.Clusters.nodeConfig | Unknown | Parameters used in creating the cluster's nodes. |
+| GCP.GKE.Clusters.nodeCreationConfig | Unknown | Configuration for Node Creation Mode. |
+| GCP.GKE.Clusters.nodeIpv4CidrSize | Number | The size of the address space on each node for hosting containers. |
+| GCP.GKE.Clusters.nodePoolAutoConfig | Unknown | Node pool configs that apply to all auto-provisioned node pools in autopilot clusters and node auto-provisioning enabled clusters. |
+| GCP.GKE.Clusters.nodePoolDefaults | Unknown | Default NodePool settings for the entire cluster. |
+| GCP.GKE.Clusters.nodePools | Unknown | The node pools associated with this cluster. |
+| GCP.GKE.Clusters.notificationConfig | Unknown | Notification configuration of the cluster. |
+| GCP.GKE.Clusters.parentProductConfig | Unknown | The configuration of the parent product of the cluster. |
+| GCP.GKE.Clusters.podAutoscaling | Unknown | The config for pod autoscaling. |
+| GCP.GKE.Clusters.privateClusterConfig | Unknown | Configuration for private cluster. |
+| GCP.GKE.Clusters.rbacBindingConfig | Unknown | RBACBindingConfig allows user to restrict ClusterRoleBindings an RoleBindings that can be created. |
+| GCP.GKE.Clusters.releaseChannel | Unknown | Release channel configuration. |
+| GCP.GKE.Clusters.resourceLabels | Unknown | The resource labels for the cluster to use to annotate any related Google Compute Engine resources. |
+| GCP.GKE.Clusters.resourceUsageExportConfig | Unknown | Configuration for exporting resource usages. |
+| GCP.GKE.Clusters.rollbackSafeUpgrade | Unknown | The rollback safe upgrade information of the cluster. |
+| GCP.GKE.Clusters.satisfiesPzi | Boolean | Reserved for future use. |
+| GCP.GKE.Clusters.satisfiesPzs | Boolean | Reserved for future use. |
+| GCP.GKE.Clusters.scheduleUpgradeConfig | Unknown | Configuration for scheduled upgrades. |
+| GCP.GKE.Clusters.secretManagerConfig | Unknown | Secret CSI driver configuration. |
+| GCP.GKE.Clusters.secretSyncConfig | Unknown | Configuration for sync Secret Manager secrets as k8s secrets. |
+| GCP.GKE.Clusters.securityPostureConfig | Unknown | Enable/Disable Security Posture API features for the cluster. |
+| GCP.GKE.Clusters.selfLink | String | Server-defined URL for the resource. |
+| GCP.GKE.Clusters.servicesIpv4Cidr | String | The IP address range of the Kubernetes services in this cluster, in CIDR notation. |
+| GCP.GKE.Clusters.shieldedNodes | Unknown | Shielded Nodes configuration. |
+| GCP.GKE.Clusters.status | String | The current status of this cluster. |
+| GCP.GKE.Clusters.statusMessage | String | The statusMessage of the resource. |
+| GCP.GKE.Clusters.subnetwork | String | The name of the Google Compute Engine subnetwork to which the cluster is connected. |
+| GCP.GKE.Clusters.tpuIpv4CidrBlock | String | The IP address range of the Cloud TPUs in this cluster, in CIDR notation. |
+| GCP.GKE.Clusters.userManagedKeysConfig | Unknown | The Custom keys configuration for the cluster. |
+| GCP.GKE.Clusters.verticalPodAutoscaling | Unknown | Cluster-level Vertical Pod Autoscaling configuration. |
+| GCP.GKE.Clusters.workloadIdentityConfig | Unknown | Configuration for the use of Kubernetes Service Accounts in IAM policies. |
+| GCP.GKE.Clusters.zone | String | The name of the Google Compute Engine zone in which the cluster resides. |
+
+### gcp-gke-cluster-get
+
+***
+Gets the details of a specific GKE cluster. Required permissions: container.clusters.get.
+
+#### Base Command
+
+`gcp-gke-cluster-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the cluster. | Required |
+| resource_name | The name of the GKE cluster. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.GKE.Clusters.addonsConfig | Unknown | Configurations for the various addons available to run in the cluster. |
+| GCP.GKE.Clusters.alphaClusterFeatureGates | Unknown | The list of user specified Kubernetes feature gates. |
+| GCP.GKE.Clusters.anonymousAuthenticationConfig | Unknown | Configuration for limiting anonymous access to all endpoints except the health checks. |
+| GCP.GKE.Clusters.authenticatorGroupsConfig | Unknown | Configuration controlling RBAC group membership information. |
+| GCP.GKE.Clusters.autopilot | Unknown | Autopilot configuration for the cluster. |
+| GCP.GKE.Clusters.autoscaling | Unknown | Cluster-level autoscaling configuration. |
+| GCP.GKE.Clusters.binaryAuthorization | Unknown | Configuration for Binary Authorization. |
+| GCP.GKE.Clusters.clusterIpv4Cidr | String | The IP address range of the container pods in this cluster, in CIDR notation. |
+| GCP.GKE.Clusters.compliancePostureConfig | Unknown | Compliance posture configuration for the cluster \(no longer supported\). |
+| GCP.GKE.Clusters.conditions | Unknown | Which conditions caused the current cluster state. |
+| GCP.GKE.Clusters.confidentialNodes | Unknown | Configuration of Confidential Nodes. |
+| GCP.GKE.Clusters.controlPlaneEgress | Unknown | Configuration for control plane egress control. |
+| GCP.GKE.Clusters.controlPlaneEndpointsConfig | Unknown | Configuration for all cluster's control plane endpoints. |
+| GCP.GKE.Clusters.costManagementConfig | Unknown | Configuration for the fine-grained cost management feature. |
+| GCP.GKE.Clusters.createTime | String | The time the cluster was created, in RFC3339 text format. |
+| GCP.GKE.Clusters.currentEmulatedVersion | String | The current emulated version of the master endpoint. |
+| GCP.GKE.Clusters.currentMasterVersion | String | The current software version of the master endpoint. |
+| GCP.GKE.Clusters.currentNodeCount | Number | The number of nodes currently in the cluster. |
+| GCP.GKE.Clusters.currentNodeVersion | String | The current version of the Kubernetes nodes in the cluster \(deprecated; use the node pool version instead\). |
+| GCP.GKE.Clusters.databaseEncryption | Unknown | Configuration of etcd encryption. |
+| GCP.GKE.Clusters.defaultMaxPodsConstraint | Unknown | The default constraint on the maximum number of pods that can be run simultaneously on a node in the node pool of this cluster. |
+| GCP.GKE.Clusters.description | String | An optional description of this cluster. |
+| GCP.GKE.Clusters.enableK8sBetaApis | Unknown | Beta APIs Config. |
+| GCP.GKE.Clusters.enableKubernetesAlpha | Boolean | Kubernetes alpha features are enabled on this cluster. |
+| GCP.GKE.Clusters.enableTpu | Boolean | Enable the ability to use Cloud TPUs in this cluster. |
+| GCP.GKE.Clusters.endpoint | String | The IP address of this cluster's master endpoint. |
+| GCP.GKE.Clusters.enterpriseConfig | Unknown | GKE Enterprise Configuration. |
+| GCP.GKE.Clusters.etag | String | This checksum is computed by the server based on the value of cluster fields, and may be sent on update requests to ensure the client has an up-to-date value before proceeding. |
+| GCP.GKE.Clusters.expireTime | String | The time the cluster will be automatically deleted in RFC3339 text format. |
+| GCP.GKE.Clusters.fleet | Unknown | Fleet information for the cluster. |
+| GCP.GKE.Clusters.gkeAutoUpgradeConfig | Unknown | Configuration for GKE auto upgrades. |
+| GCP.GKE.Clusters.id | String | Unique id for the cluster. |
+| GCP.GKE.Clusters.identityServiceConfig | Unknown | Configuration for Identity Service component. |
+| GCP.GKE.Clusters.initialClusterVersion | String | The initial Kubernetes version for this cluster. |
+| GCP.GKE.Clusters.initialNodeCount | Number | The number of nodes to create in this cluster. |
+| GCP.GKE.Clusters.instanceGroupUrls | Unknown | The instanceGroupUrls of the resource. |
+| GCP.GKE.Clusters.ipAllocationPolicy | Unknown | Configuration for cluster IP allocation. |
+| GCP.GKE.Clusters.labelFingerprint | String | The fingerprint of the set of labels for this cluster. |
+| GCP.GKE.Clusters.legacyAbac | Unknown | Configuration for the legacy ABAC authorization mode. |
+| GCP.GKE.Clusters.location | String | The name of the Google Compute Engine zone or region in which the cluster resides. |
+| GCP.GKE.Clusters.locations | Unknown | The list of Google Compute Engine zones in which the cluster's nodes should be located. |
+| GCP.GKE.Clusters.loggingConfig | Unknown | Logging configuration for the cluster. |
+| GCP.GKE.Clusters.loggingService | String | The logging service the cluster should use to write logs. |
+| GCP.GKE.Clusters.maintenancePolicy | Unknown | Configure the maintenance policy for this cluster. |
+| GCP.GKE.Clusters.managedMachineLearningDiagnosticsConfig | Unknown | Configuration for Managed Machine Learning Diagnostics. |
+| GCP.GKE.Clusters.managedOpentelemetryConfig | Unknown | Configuration for Managed OpenTelemetry pipeline. |
+| GCP.GKE.Clusters.masterAuth | Unknown | The authentication information for accessing the master endpoint. |
+| GCP.GKE.Clusters.masterAuthorizedNetworksConfig | Unknown | The configuration options for master authorized networks feature. |
+| GCP.GKE.Clusters.meshCertificates | Unknown | Configuration for issuance of mTLS keys and certificates to Kubernetes pods. |
+| GCP.GKE.Clusters.monitoringConfig | Unknown | Monitoring configuration for the cluster. |
+| GCP.GKE.Clusters.monitoringService | String | The monitoring service the cluster should use to write metrics. |
+| GCP.GKE.Clusters.name | String | The name of this cluster. |
+| GCP.GKE.Clusters.network | String | The name of the Google Compute Engine network to which the cluster is connected. |
+| GCP.GKE.Clusters.networkConfig | Unknown | Configuration for cluster networking. |
+| GCP.GKE.Clusters.networkPolicy | Unknown | Configuration options for the NetworkPolicy feature. |
+| GCP.GKE.Clusters.nodeConfig | Unknown | Parameters used in creating the cluster's nodes. |
+| GCP.GKE.Clusters.nodeCreationConfig | Unknown | Configuration for Node Creation Mode. |
+| GCP.GKE.Clusters.nodeIpv4CidrSize | Number | The size of the address space on each node for hosting containers. |
+| GCP.GKE.Clusters.nodePoolAutoConfig | Unknown | Node pool configs that apply to all auto-provisioned node pools in autopilot clusters and node auto-provisioning enabled clusters. |
+| GCP.GKE.Clusters.nodePoolDefaults | Unknown | Default NodePool settings for the entire cluster. |
+| GCP.GKE.Clusters.nodePools | Unknown | The node pools associated with this cluster. |
+| GCP.GKE.Clusters.notificationConfig | Unknown | Notification configuration of the cluster. |
+| GCP.GKE.Clusters.parentProductConfig | Unknown | The configuration of the parent product of the cluster. |
+| GCP.GKE.Clusters.podAutoscaling | Unknown | The config for pod autoscaling. |
+| GCP.GKE.Clusters.privateClusterConfig | Unknown | Configuration for private cluster. |
+| GCP.GKE.Clusters.rbacBindingConfig | Unknown | RBACBindingConfig allows user to restrict ClusterRoleBindings an RoleBindings that can be created. |
+| GCP.GKE.Clusters.releaseChannel | Unknown | Release channel configuration. |
+| GCP.GKE.Clusters.resourceLabels | Unknown | The resource labels for the cluster to use to annotate any related Google Compute Engine resources. |
+| GCP.GKE.Clusters.resourceUsageExportConfig | Unknown | Configuration for exporting resource usages. |
+| GCP.GKE.Clusters.rollbackSafeUpgrade | Unknown | The rollback safe upgrade information of the cluster. |
+| GCP.GKE.Clusters.satisfiesPzi | Boolean | Reserved for future use. |
+| GCP.GKE.Clusters.satisfiesPzs | Boolean | Reserved for future use. |
+| GCP.GKE.Clusters.scheduleUpgradeConfig | Unknown | Configuration for scheduled upgrades. |
+| GCP.GKE.Clusters.secretManagerConfig | Unknown | Secret CSI driver configuration. |
+| GCP.GKE.Clusters.secretSyncConfig | Unknown | Configuration for sync Secret Manager secrets as k8s secrets. |
+| GCP.GKE.Clusters.securityPostureConfig | Unknown | Enable/Disable Security Posture API features for the cluster. |
+| GCP.GKE.Clusters.selfLink | String | Server-defined URL for the resource. |
+| GCP.GKE.Clusters.servicesIpv4Cidr | String | The IP address range of the Kubernetes services in this cluster, in CIDR notation. |
+| GCP.GKE.Clusters.shieldedNodes | Unknown | Shielded Nodes configuration. |
+| GCP.GKE.Clusters.status | String | The current status of this cluster. |
+| GCP.GKE.Clusters.statusMessage | String | The statusMessage of the resource. |
+| GCP.GKE.Clusters.subnetwork | String | The name of the Google Compute Engine subnetwork to which the cluster is connected. |
+| GCP.GKE.Clusters.tpuIpv4CidrBlock | String | The IP address range of the Cloud TPUs in this cluster, in CIDR notation. |
+| GCP.GKE.Clusters.userManagedKeysConfig | Unknown | The Custom keys configuration for the cluster. |
+| GCP.GKE.Clusters.verticalPodAutoscaling | Unknown | Cluster-level Vertical Pod Autoscaling configuration. |
+| GCP.GKE.Clusters.workloadIdentityConfig | Unknown | Configuration for the use of Kubernetes Service Accounts in IAM policies. |
+| GCP.GKE.Clusters.zone | String | The name of the Google Compute Engine zone in which the cluster resides. |
+
+### gcp-gke-node-pools-list
+
+***
+Lists the node pools for a GKE cluster. Required permissions: container.clusters.get.
+
+#### Base Command
+
+`gcp-gke-node-pools-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the cluster. | Required |
+| cluster | The name of the GKE cluster. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.GKE.NodePools.autoscaling | Unknown | Autoscaler configuration for this NodePool. |
+| GCP.GKE.NodePools.bestEffortProvisioning | Unknown | Enable best effort provisioning for nodes. |
+| GCP.GKE.NodePools.conditions | Unknown | Which conditions caused the current node pool state. |
+| GCP.GKE.NodePools.config | Unknown | The node configuration of the pool. |
+| GCP.GKE.NodePools.etag | String | This checksum is computed by the server based on the value of node pool fields, and may be sent on update requests to ensure the client has an up-to-date value before proceeding. |
+| GCP.GKE.NodePools.initialNodeCount | Number | The initial node count for the pool. |
+| GCP.GKE.NodePools.instanceGroupUrls | Unknown | The resource URLs of the managed instance groups associated with this node pool. |
+| GCP.GKE.NodePools.kubeletCertInfo | Unknown | Contains expiry information about the kubelet certificate. |
+| GCP.GKE.NodePools.locations | Unknown | The list of Google Compute Engine zones in which the NodePool's nodes should be located. |
+| GCP.GKE.NodePools.maintenancePolicy | Unknown | Specifies the maintenance policy for the node pool. |
+| GCP.GKE.NodePools.management | Unknown | NodeManagement configuration for this NodePool. |
+| GCP.GKE.NodePools.maxPodsConstraint | Unknown | The constraint on the maximum number of pods that can be run simultaneously on a node in the node pool. |
+| GCP.GKE.NodePools.name | String | The name of the node pool. |
+| GCP.GKE.NodePools.networkConfig | Unknown | Networking configuration for this NodePool. |
+| GCP.GKE.NodePools.nodeDrainConfig | Unknown | Specifies the node drain configuration for this node pool. |
+| GCP.GKE.NodePools.placementPolicy | Unknown | Specifies the node placement policy. |
+| GCP.GKE.NodePools.podIpv4CidrSize | Number | The pod CIDR block size per node in this node pool. |
+| GCP.GKE.NodePools.queuedProvisioning | Unknown | Specifies the configuration of queued provisioning. |
+| GCP.GKE.NodePools.selfLink | String | Server-defined URL for the resource. |
+| GCP.GKE.NodePools.status | String | The status of the nodes in this pool instance. |
+| GCP.GKE.NodePools.statusMessage | String | Additional information about the current status of the node pool, if available. |
+| GCP.GKE.NodePools.updateInfo | Unknown | Update info contains relevant information during a node pool update. |
+| GCP.GKE.NodePools.upgradeSettings | Unknown | Upgrade settings control disruption and speed of the upgrade. |
+| GCP.GKE.NodePools.version | String | The version of Kubernetes running on this NodePool's nodes. |
+| GCP.GKE.NodePools.config.machineType | String | The machine type of the Compute Engine instances in the node pool. |
+| GCP.GKE.NodePools.config.diskSizeGb | Number | The disk size \(in GB\) of the nodes in the node pool. |
+| GCP.GKE.NodePools.autoscaling.enabled | Boolean | Whether autoscaling is enabled for the node pool. |
+| GCP.GKE.NodePools.autoscaling.minNodeCount | Number | The minimum number of nodes when autoscaling is enabled. |
+| GCP.GKE.NodePools.autoscaling.maxNodeCount | Number | The maximum number of nodes when autoscaling is enabled. |
+| GCP.GKE.NodePools.management.autoRepair | Boolean | Whether node auto-repair is enabled for the node pool. |
+| GCP.GKE.NodePools.management.autoUpgrade | Boolean | Whether node auto-upgrade is enabled for the node pool. |
+
+### gcp-gke-node-pool-get
+
+***
+Gets the details of a specific node pool in a GKE cluster. Required permissions: container.clusters.get.
+
+#### Base Command
+
+`gcp-gke-node-pool-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the cluster. | Required |
+| cluster | The name of the GKE cluster. | Required |
+| node_pool | The name of the node pool. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.GKE.NodePools.autoscaling | Unknown | Autoscaler configuration for this NodePool. |
+| GCP.GKE.NodePools.bestEffortProvisioning | Unknown | Enable best effort provisioning for nodes. |
+| GCP.GKE.NodePools.conditions | Unknown | Which conditions caused the current node pool state. |
+| GCP.GKE.NodePools.config | Unknown | The node configuration of the pool. |
+| GCP.GKE.NodePools.etag | String | This checksum is computed by the server based on the value of node pool fields, and may be sent on update requests to ensure the client has an up-to-date value before proceeding. |
+| GCP.GKE.NodePools.initialNodeCount | Number | The initial node count for the pool. |
+| GCP.GKE.NodePools.instanceGroupUrls | Unknown | The resource URLs of the managed instance groups associated with this node pool. |
+| GCP.GKE.NodePools.kubeletCertInfo | Unknown | Contains expiry information about the kubelet certificate. |
+| GCP.GKE.NodePools.locations | Unknown | The list of Google Compute Engine zones in which the NodePool's nodes should be located. |
+| GCP.GKE.NodePools.maintenancePolicy | Unknown | Specifies the maintenance policy for the node pool. |
+| GCP.GKE.NodePools.management | Unknown | NodeManagement configuration for this NodePool. |
+| GCP.GKE.NodePools.maxPodsConstraint | Unknown | The constraint on the maximum number of pods that can be run simultaneously on a node in the node pool. |
+| GCP.GKE.NodePools.name | String | The name of the node pool. |
+| GCP.GKE.NodePools.networkConfig | Unknown | Networking configuration for this NodePool. |
+| GCP.GKE.NodePools.nodeDrainConfig | Unknown | Specifies the node drain configuration for this node pool. |
+| GCP.GKE.NodePools.placementPolicy | Unknown | Specifies the node placement policy. |
+| GCP.GKE.NodePools.podIpv4CidrSize | Number | The pod CIDR block size per node in this node pool. |
+| GCP.GKE.NodePools.queuedProvisioning | Unknown | Specifies the configuration of queued provisioning. |
+| GCP.GKE.NodePools.selfLink | String | Server-defined URL for the resource. |
+| GCP.GKE.NodePools.status | String | The status of the nodes in this pool instance. |
+| GCP.GKE.NodePools.statusMessage | String | Additional information about the current status of the node pool, if available. |
+| GCP.GKE.NodePools.updateInfo | Unknown | Update info contains relevant information during a node pool update. |
+| GCP.GKE.NodePools.upgradeSettings | Unknown | Upgrade settings control disruption and speed of the upgrade. |
+| GCP.GKE.NodePools.version | String | The version of Kubernetes running on this NodePool's nodes. |
+| GCP.GKE.NodePools.config.machineType | String | The machine type of the Compute Engine instances in the node pool. |
+| GCP.GKE.NodePools.config.diskSizeGb | Number | The disk size \(in GB\) of the nodes in the node pool. |
+| GCP.GKE.NodePools.autoscaling.enabled | Boolean | Whether autoscaling is enabled for the node pool. |
+| GCP.GKE.NodePools.autoscaling.minNodeCount | Number | The minimum number of nodes when autoscaling is enabled. |
+| GCP.GKE.NodePools.autoscaling.maxNodeCount | Number | The maximum number of nodes when autoscaling is enabled. |
+| GCP.GKE.NodePools.management.autoRepair | Boolean | Whether node auto-repair is enabled for the node pool. |
+| GCP.GKE.NodePools.management.autoUpgrade | Boolean | Whether node auto-upgrade is enabled for the node pool. |
+
+### gcp-gke-node-pool-management-set
+
+***
+Enables or disables the auto-repair and/or auto-upgrade management features of a node pool. Required permissions: container.clusters.update.
+
+#### Base Command
+
+`gcp-gke-node-pool-management-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the cluster. | Required |
+| cluster | The name of the GKE cluster. | Required |
+| node_pool | The name of the node pool. | Required |
+| auto_repair | Whether to enable node auto-repair for the node pool. Possible values are: true, false. | Optional |
+| auto_upgrade | Whether to enable node auto-upgrade for the node pool. Possible values are: true, false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.GKE.Operations.clusterConditions | Unknown | Which conditions caused the current cluster state. |
+| GCP.GKE.Operations.detail | String | Detailed operation progress, if available. |
+| GCP.GKE.Operations.endTime | String | The time the operation completed, in RFC3339 text format. |
+| GCP.GKE.Operations.error | Unknown | The error result of the operation in case of failure. |
+| GCP.GKE.Operations.location | String | The name of the Google Compute Engine zone or region in which the cluster resides. |
+| GCP.GKE.Operations.name | String | The server-assigned ID for the operation. |
+| GCP.GKE.Operations.nodepoolConditions | Unknown | Which conditions caused the current node pool state. |
+| GCP.GKE.Operations.operationType | String | The operation type. |
+| GCP.GKE.Operations.progress | Unknown | Progress information for an operation. |
+| GCP.GKE.Operations.selfLink | String | Server-defined URI for the operation. |
+| GCP.GKE.Operations.startTime | String | The time the operation started, in RFC3339 text format. |
+| GCP.GKE.Operations.status | String | The current status of the operation. |
+| GCP.GKE.Operations.statusMessage | String | If an error has occurred, a textual description of the error. |
+| GCP.GKE.Operations.targetLink | String | Server-defined URI for the target of the operation. |
+| GCP.GKE.Operations.zone | String | The name of the Google Compute Engine zone in which the operation is taking place. |
+
+### gcp-gke-operations-list
+
+***
+Lists all GKE operations in a project for the specified location. Required permissions: container.operations.list.
+
+#### Base Command
+
+`gcp-gke-operations-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) to list operations from. Use "-" to list operations from all locations. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.GKE.Operations.clusterConditions | Unknown | Which conditions caused the current cluster state. |
+| GCP.GKE.Operations.detail | String | Detailed operation progress, if available. |
+| GCP.GKE.Operations.endTime | String | The time the operation completed, in RFC3339 text format. |
+| GCP.GKE.Operations.error | Unknown | The error result of the operation in case of failure. |
+| GCP.GKE.Operations.location | String | The name of the Google Compute Engine zone or region in which the cluster resides. |
+| GCP.GKE.Operations.name | String | The server-assigned ID for the operation. |
+| GCP.GKE.Operations.nodepoolConditions | Unknown | Which conditions caused the current node pool state. |
+| GCP.GKE.Operations.operationType | String | The operation type. |
+| GCP.GKE.Operations.progress | Unknown | Progress information for an operation. |
+| GCP.GKE.Operations.selfLink | String | Server-defined URI for the operation. |
+| GCP.GKE.Operations.startTime | String | The time the operation started, in RFC3339 text format. |
+| GCP.GKE.Operations.status | String | The current status of the operation. |
+| GCP.GKE.Operations.statusMessage | String | If an error has occurred, a textual description of the error. |
+| GCP.GKE.Operations.targetLink | String | Server-defined URI for the target of the operation. |
+| GCP.GKE.Operations.zone | String | The name of the Google Compute Engine zone in which the operation is taking place. |
+
+### gcp-gke-operation-get
+
+***
+Gets the details of a specific GKE operation. Required permissions: container.operations.get.
+
+#### Base Command
+
+`gcp-gke-operation-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the operation. | Required |
+| operation | The name of the operation. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.GKE.Operations.clusterConditions | Unknown | Which conditions caused the current cluster state. |
+| GCP.GKE.Operations.detail | String | Detailed operation progress, if available. |
+| GCP.GKE.Operations.endTime | String | The time the operation completed, in RFC3339 text format. |
+| GCP.GKE.Operations.error | Unknown | The error result of the operation in case of failure. |
+| GCP.GKE.Operations.location | String | The name of the Google Compute Engine zone or region in which the cluster resides. |
+| GCP.GKE.Operations.name | String | The server-assigned ID for the operation. |
+| GCP.GKE.Operations.nodepoolConditions | Unknown | Which conditions caused the current node pool state. |
+| GCP.GKE.Operations.operationType | String | The operation type. |
+| GCP.GKE.Operations.progress | Unknown | Progress information for an operation. |
+| GCP.GKE.Operations.selfLink | String | Server-defined URI for the operation. |
+| GCP.GKE.Operations.startTime | String | The time the operation started, in RFC3339 text format. |
+| GCP.GKE.Operations.status | String | The current status of the operation. |
+| GCP.GKE.Operations.statusMessage | String | If an error has occurred, a textual description of the error. |
+| GCP.GKE.Operations.targetLink | String | Server-defined URI for the target of the operation. |
+| GCP.GKE.Operations.zone | String | The name of the Google Compute Engine zone in which the operation is taking place. |
+
+### gcp-gke-operation-cancel
+
+***
+Cancels a specific GKE operation. Required permissions: container.operations.get.
+
+#### Base Command
+
+`gcp-gke-operation-cancel`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The GCP location (zone or region) of the operation. | Required |
+| operation | The name of the operation. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
 ### gcp-storage-bucket-metadata-update
 
 ***
@@ -2090,7 +2586,7 @@ Retrieves the IAM policy for a specific object in a bucket. Required permission:
 ### gcp-gke-cluster-security-update
 
 ***
-Configures security settings for GKE clusters, including access controls and visibility. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list.
+Configures security settings for GKE clusters, including access controls and visibility. Only one update may be applied to a cluster per request. Provide exactly one of the supported security flags. Required permissions: container.clusters.update, container.clusters.get, container.clusters.list.
 
 #### Base Command
 
@@ -2105,7 +2601,12 @@ Configures security settings for GKE clusters, including access controls and vis
 | resource_name | Name of the GKE cluster. | Required |
 | enable_intra_node_visibility | Whether to enable intra-node visibility. Possible values are: true, false. | Optional |
 | enable_master_authorized_networks | Whether to enable Master Authorized Networks. Possible values are: true, false. | Optional |
-| cidrs | A comma-separated list of up to 50 CIDR blocks (e.g., "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.<br/>If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.<br/>. | Optional |
+| cidrs | A comma-separated list of up to 50 CIDR blocks (for example, "192.168.0.0/24,10.0.0.0/32") that are allowed to access the Kubernetes master via HTTPS.<br/>If enable_master_authorized_networks is true and no CIDRs are provided, all access will be blocked.<br/>. | Optional |
+| enable_binary_authorization | Whether to enable Binary Authorization on the cluster. Possible values are: true, false. | Optional |
+| enable_http_load_balancing | Whether to enable the HTTP load balancing add-on on the cluster. Possible values are: true, false. | Optional |
+| enable_kubernetes_dashboard | Whether to enable the Kubernetes dashboard add-on on the cluster. Possible values are: true, false. | Optional |
+| enable_network_policy | Whether to enable the network policy add-on on the cluster. Possible values are: true, false. | Optional |
+| enable_stackdriver_kubernetes | Whether to enable Stackdriver Kubernetes monitoring and logging on the cluster. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -4802,3 +5303,694 @@ Returns the specified machine type. Required permission: compute.machineTypes.ge
 | GCP.Compute.MachineTypes.selfLink | string | The server-defined URL for the resource. |
 | GCP.Compute.MachineTypes.isSharedCpu | boolean | Whether this machine type has a shared CPU. See Shared-core machine types for more information. |
 | GCP.Compute.MachineTypes.kind | string | The type of the resource. Always compute\#machineType for machine types. |
+
+### gcp-compute-region-operation-delete
+
+***
+Deletes the specified region-specific Operations resource. Required permission: compute.regionOperations.delete.
+
+#### Base Command
+
+`gcp-compute-region-operation-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The name of the region for this request. | Required |
+| operation | The name of the Operations resource to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### gcp-compute-global-operation-delete
+
+***
+Deletes the specified global Operations resource. Required permission: compute.globalOperations.delete.
+
+#### Base Command
+
+`gcp-compute-global-operation-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| operation | The name of the Operations resource to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### gcp-compute-zone-operation-get
+
+***
+Retrieves the specified zone-specific Operations resource. Required permission: compute.zoneOperations.get.
+
+#### Base Command
+
+`gcp-compute-zone-operation-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone for this request. | Required |
+| operation | The name of the Operations resource to return. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation. |
+| GCP.Compute.Operations.zone | String | The URL of the zone where the operation resides. Only applicable when performing per-zone operations. |
+| GCP.Compute.Operations.clientOperationId | String | The value of the request ID if one was provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the disk that the snapshot was created from. |
+| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | String | The status of the operation. Possible values are PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | String | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | String | The user who requested the operation, for example, "user@example.com". |
+| GCP.Compute.Operations.progress | Number | The optional progress indicator, ranging from 0 to 100. This number monotonically increases as the operation progresses. |
+| GCP.Compute.Operations.insertTime | String | The time the operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | String | The time the operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | String | The time the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
+| GCP.Compute.Operations.warnings.code | String | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
+| GCP.Compute.Operations.warnings.message | String | The human-readable description of the warning code. |
+| GCP.Compute.Operations.warnings.data | Unknown | The metadata about this warning, in key: value format, where the key provides more detail on the warning being returned and the value is the corresponding warning data value. |
+| GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message that was returned if the operation failed, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
+| GCP.Compute.Operations.description | String | The textual description of the operation, set when the operation is created. |
+| GCP.Compute.Operations.operationGroupId | String | The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request. |
+| GCP.Compute.Operations.setCommonInstanceMetadataOperationMetadata | Unknown | The information on all underlying zonal actions and their state. Populated when the operation is for projects.setCommonInstanceMetadata. |
+| GCP.Compute.Operations.instancesBulkInsertOperationMetadata | Unknown | The per-location status of the operation. Populated when the operation is for a bulk insert of instances. |
+| GCP.Compute.Operations.getVersionOperationMetadata | Unknown | The inline SBOM information for the operation, containing the current and target component versions. |
+| GCP.Compute.Operations.kind | String | The type of the resource. Always compute\#operation for Operation resources. |
+
+### gcp-compute-global-operation-list
+
+***
+Lists the global Operations resources in the specified project. Required permission: compute.globalOperations.list.
+
+#### Base Command
+
+`gcp-compute-global-operation-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| limit | The maximum number of results to return. Possible values are 1 to 500. Default is 50. | Optional |
+| next_token | The token for the next set of results to return, used for pagination. Use the value of GCP.Compute.GlobalOperationsNextToken from the previous response. | Optional |
+| filter | The filter expression that filters resources listed in the response. The expression must specify a field name, a comparison operator, and a value (for example, "status = DONE"). | Optional |
+| order_by | The order to sort list results by. By default, results are returned in alphanumerical order based on the resource name (for example, "creationTimestamp desc"). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation. |
+| GCP.Compute.Operations.clientOperationId | String | The value of the request ID if one was provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the disk that the snapshot was created from. |
+| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | String | The status of the operation. Possible values are PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | String | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | String | The user who requested the operation, for example, "user@example.com". |
+| GCP.Compute.Operations.progress | Number | The optional progress indicator, ranging from 0 to 100. This number monotonically increases as the operation progresses. |
+| GCP.Compute.Operations.insertTime | String | The time the operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | String | The time the operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | String | The time the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
+| GCP.Compute.Operations.warnings.code | String | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
+| GCP.Compute.Operations.warnings.message | String | The human-readable description of the warning code. |
+| GCP.Compute.Operations.warnings.data | Unknown | The metadata about this warning, in key: value format, where the key provides more detail on the warning being returned and the value is the corresponding warning data value. |
+| GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message that was returned if the operation failed, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
+| GCP.Compute.Operations.description | String | The textual description of the operation, set when the operation is created. |
+| GCP.Compute.Operations.operationGroupId | String | The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request. |
+| GCP.Compute.Operations.setCommonInstanceMetadataOperationMetadata | Unknown | The information on all underlying zonal actions and their state. Populated when the operation is for projects.setCommonInstanceMetadata. |
+| GCP.Compute.Operations.instancesBulkInsertOperationMetadata | Unknown | The per-location status of the operation. Populated when the operation is for a bulk insert of instances. |
+| GCP.Compute.Operations.getVersionOperationMetadata | Unknown | The inline SBOM information for the operation, containing the current and target component versions. |
+| GCP.Compute.Operations.kind | String | The type of the resource. Always compute\#operation for Operation resources. |
+| GCP.Compute.GlobalOperationsNextToken | String | The token to use as the next_token argument to retrieve the next page of results. |
+
+### gcp-compute-region-operation-list
+
+***
+Lists the region-specific Operations resources in the specified project and region. Required permission: compute.regionOperations.list.
+
+#### Base Command
+
+`gcp-compute-region-operation-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The name of the region for this request. | Required |
+| limit | The maximum number of results to return. Possible values are 1 to 500. Default is 50. | Optional |
+| next_token | The token for the next set of results to return, used for pagination. Use the value of GCP.Compute.RegionOperationsNextToken from the previous response. | Optional |
+| filter | The filter expression that filters resources listed in the response. The expression must specify a field name, a comparison operator, and a value (for example, "status = DONE"). | Optional |
+| order_by | The order to sort list results by. By default, results are returned in alphanumerical order based on the resource name (for example, "creationTimestamp desc"). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation. |
+| GCP.Compute.Operations.region | String | The URL of the region where the operation resides. Only applicable when performing regional operations. |
+| GCP.Compute.Operations.clientOperationId | String | The value of the request ID if one was provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the disk that the snapshot was created from. |
+| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | String | The status of the operation. Possible values are PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | String | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | String | The user who requested the operation, for example, "user@example.com". |
+| GCP.Compute.Operations.progress | Number | The optional progress indicator, ranging from 0 to 100. This number monotonically increases as the operation progresses. |
+| GCP.Compute.Operations.insertTime | String | The time the operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | String | The time the operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | String | The time the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
+| GCP.Compute.Operations.warnings.code | String | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
+| GCP.Compute.Operations.warnings.message | String | The human-readable description of the warning code. |
+| GCP.Compute.Operations.warnings.data | Unknown | The metadata about this warning, in key: value format, where the key provides more detail on the warning being returned and the value is the corresponding warning data value. |
+| GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message that was returned if the operation failed, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
+| GCP.Compute.Operations.description | String | The textual description of the operation, set when the operation is created. |
+| GCP.Compute.Operations.operationGroupId | String | The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request. |
+| GCP.Compute.Operations.setCommonInstanceMetadataOperationMetadata | Unknown | The information on all underlying zonal actions and their state. Populated when the operation is for projects.setCommonInstanceMetadata. |
+| GCP.Compute.Operations.instancesBulkInsertOperationMetadata | Unknown | The per-location status of the operation. Populated when the operation is for a bulk insert of instances. |
+| GCP.Compute.Operations.getVersionOperationMetadata | Unknown | The inline SBOM information for the operation, containing the current and target component versions. |
+| GCP.Compute.Operations.kind | String | The type of the resource. Always compute\#operation for Operation resources. |
+| GCP.Compute.RegionOperationsNextToken | String | The token to use as the next_token argument to retrieve the next page of results. |
+
+### gcp-compute-zone-operation-delete
+
+***
+Deletes the specified zone-specific Operations resource. Required permission: compute.zoneOperations.delete.
+
+#### Base Command
+
+`gcp-compute-zone-operation-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone for this request. | Required |
+| operation | The name of the Operations resource to delete. | Required |
+
+#### Context Output
+
+There is no context output for this command.
+
+### gcp-compute-zone-operation-list
+
+***
+Lists the zone-specific Operations resources in the specified project and zone. Required permission: compute.zoneOperations.list.
+
+#### Base Command
+
+`gcp-compute-zone-operation-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone for this request. | Required |
+| limit | The maximum number of results to return. Possible values are 1 to 500. Default is 50. | Optional |
+| next_token | The token for the next set of results to return, used for pagination. Use the value of GCP.Compute.ZoneOperationsNextToken from the previous response. | Optional |
+| filter | The filter expression that filters resources listed in the response. The expression must specify a field name, a comparison operator, and a value (for example, "status = DONE"). | Optional |
+| order_by | The order to sort list results by. By default, results are returned in alphanumerical order based on the resource name (for example, "creationTimestamp desc"). | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation. |
+| GCP.Compute.Operations.zone | String | The URL of the zone where the operation resides. Only applicable when performing per-zone operations. |
+| GCP.Compute.Operations.clientOperationId | String | The value of the request ID if one was provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the disk that the snapshot was created from. |
+| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | String | The status of the operation. Possible values are PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | String | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | String | The user who requested the operation, for example, "user@example.com". |
+| GCP.Compute.Operations.progress | Number | The optional progress indicator, ranging from 0 to 100. This number monotonically increases as the operation progresses. |
+| GCP.Compute.Operations.insertTime | String | The time the operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | String | The time the operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | String | The time the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
+| GCP.Compute.Operations.warnings.code | String | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
+| GCP.Compute.Operations.warnings.message | String | The human-readable description of the warning code. |
+| GCP.Compute.Operations.warnings.data | Unknown | The metadata about this warning, in key: value format, where the key provides more detail on the warning being returned and the value is the corresponding warning data value. |
+| GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message that was returned if the operation failed, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
+| GCP.Compute.Operations.description | String | The textual description of the operation, set when the operation is created. |
+| GCP.Compute.Operations.operationGroupId | String | The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request. |
+| GCP.Compute.Operations.setCommonInstanceMetadataOperationMetadata | Unknown | The information on all underlying zonal actions and their state. Populated when the operation is for projects.setCommonInstanceMetadata. |
+| GCP.Compute.Operations.instancesBulkInsertOperationMetadata | Unknown | The per-location status of the operation. Populated when the operation is for a bulk insert of instances. |
+| GCP.Compute.Operations.getVersionOperationMetadata | Unknown | The inline SBOM information for the operation, containing the current and target component versions. |
+| GCP.Compute.Operations.kind | String | The type of the resource. Always compute\#operation for Operation resources. |
+| GCP.Compute.ZoneOperationsNextToken | String | The token to use as the next_token argument to retrieve the next page of results. |
+
+### gcp-compute-global-operation-get
+
+***
+Retrieves the specified global Operations resource. Required permission: compute.globalOperations.get.
+
+#### Base Command
+
+`gcp-compute-global-operation-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| operation | The name of the Operations resource to return. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation. |
+| GCP.Compute.Operations.clientOperationId | String | The value of the request ID if one was provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the disk that the snapshot was created from. |
+| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | String | The status of the operation. Possible values are PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | String | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | String | The user who requested the operation, for example, "user@example.com". |
+| GCP.Compute.Operations.progress | Number | The optional progress indicator, ranging from 0 to 100. This number monotonically increases as the operation progresses. |
+| GCP.Compute.Operations.insertTime | String | The time the operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | String | The time the operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | String | The time the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
+| GCP.Compute.Operations.warnings.code | String | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
+| GCP.Compute.Operations.warnings.message | String | The human-readable description of the warning code. |
+| GCP.Compute.Operations.warnings.data | Unknown | The metadata about this warning, in key: value format, where the key provides more detail on the warning being returned and the value is the corresponding warning data value. |
+| GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message that was returned if the operation failed, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
+| GCP.Compute.Operations.description | String | The textual description of the operation, set when the operation is created. |
+| GCP.Compute.Operations.operationGroupId | String | The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request. |
+| GCP.Compute.Operations.setCommonInstanceMetadataOperationMetadata | Unknown | The information on all underlying zonal actions and their state. Populated when the operation is for projects.setCommonInstanceMetadata. |
+| GCP.Compute.Operations.instancesBulkInsertOperationMetadata | Unknown | The per-location status of the operation. Populated when the operation is for a bulk insert of instances. |
+| GCP.Compute.Operations.getVersionOperationMetadata | Unknown | The inline SBOM information for the operation, containing the current and target component versions. |
+| GCP.Compute.Operations.kind | String | The type of the resource. Always compute\#operation for Operation resources. |
+
+### gcp-compute-region-operation-get
+
+***
+Retrieves the specified region-specific Operations resource. Required permission: compute.regionOperations.get.
+
+#### Base Command
+
+`gcp-compute-region-operation-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The name of the region for this request. | Required |
+| operation | The name of the Operations resource to return. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | String | The unique identifier for the operation, defined by the server. |
+| GCP.Compute.Operations.name | String | The name of the operation. |
+| GCP.Compute.Operations.region | String | The URL of the region where the operation resides. Only applicable when performing regional operations. |
+| GCP.Compute.Operations.clientOperationId | String | The value of the request ID if one was provided in the request. Not present otherwise. |
+| GCP.Compute.Operations.operationType | String | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | String | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the disk that the snapshot was created from. |
+| GCP.Compute.Operations.targetId | String | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | String | The status of the operation. Possible values are PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | String | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | String | The user who requested the operation, for example, "user@example.com". |
+| GCP.Compute.Operations.progress | Number | The optional progress indicator, ranging from 0 to 100. This number monotonically increases as the operation progresses. |
+| GCP.Compute.Operations.insertTime | String | The time the operation was requested, in RFC3339 text format. |
+| GCP.Compute.Operations.startTime | String | The time the operation was started by the server, in RFC3339 text format. |
+| GCP.Compute.Operations.endTime | String | The time the operation was completed, in RFC3339 text format. |
+| GCP.Compute.Operations.error.errors | Unknown | The array of errors encountered while processing the operation, including the error type identifier, the field in the request that caused the error, the optional human-readable error message, and the optional list of messages that contain the error details. |
+| GCP.Compute.Operations.warnings.code | String | The warning code, if applicable. For example, NO_RESULTS_ON_PAGE is returned when there are no results in the response. |
+| GCP.Compute.Operations.warnings.message | String | The human-readable description of the warning code. |
+| GCP.Compute.Operations.warnings.data | Unknown | The metadata about this warning, in key: value format, where the key provides more detail on the warning being returned and the value is the corresponding warning data value. |
+| GCP.Compute.Operations.httpErrorStatusCode | Number | The HTTP error status code that was returned if the operation failed, for example, 404 when the resource was not found. |
+| GCP.Compute.Operations.httpErrorMessage | String | The HTTP error message that was returned if the operation failed, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | String | The server-defined URL for the resource. |
+| GCP.Compute.Operations.description | String | The textual description of the operation, set when the operation is created. |
+| GCP.Compute.Operations.operationGroupId | String | The ID that represents a group of operations, such as when a group of operations results from a bulkInsert API request. |
+| GCP.Compute.Operations.setCommonInstanceMetadataOperationMetadata | Unknown | The information on all underlying zonal actions and their state. Populated when the operation is for projects.setCommonInstanceMetadata. |
+| GCP.Compute.Operations.instancesBulkInsertOperationMetadata | Unknown | The per-location status of the operation. Populated when the operation is for a bulk insert of instances. |
+| GCP.Compute.Operations.getVersionOperationMetadata | Unknown | The inline SBOM information for the operation, containing the current and target component versions. |
+| GCP.Compute.Operations.kind | String | The type of the resource. Always compute\#operation for Operation resources. |
+
+### gcp-compute-instance-group-instances-list
+
+***
+Lists the instances in the specified instance group. Required permission: compute.instanceGroups.list.
+
+#### Base Command
+
+`gcp-compute-instance-group-instances-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone where the instance group is located. | Required |
+| instance_group | The name of the instance group from which to generate the list of included instances. | Required |
+| instance_state | The filter for the state of the instances in the instance group. If not specified, the list includes all instances regardless of their state. Possible values are: ALL, RUNNING. | Optional |
+| limit | The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| filter | The expression to filter resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value (string, number, or boolean). For example, to exclude an instance group named example-group, specify name != example-group. | Optional |
+| order_by | The sort order for the results. By default, results are returned in alphanumerical order by resource name. To sort in descending order by creation timestamp, use order_by=creationTimestamp desc. | Optional |
+| next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to retrieve the next page of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.InstanceGroups.id | string | The name of the instance group whose instances were listed. |
+| GCP.Compute.InstanceGroups.Instances.instance | string | The URL of the instance. |
+| GCP.Compute.InstanceGroups.Instances.status | string | The status of the instance. |
+| GCP.Compute.InstanceGroups.Instances.namedPorts | Unknown | The named ports assigned to the instance. Each named port contains: name - the name of the named port, which must be 1 to 63 characters long and comply with RFC1035; port - the port number, which can be a value between 1 and 65535. |
+| GCP.Compute.InstanceGroups.InstanceGroupsInstancesNextToken | string | The token to use to retrieve the next page of instance group instances results. |
+
+### gcp-compute-instance-group-insert
+
+***
+Creates an instance group in the specified project and zone. Required permission: compute.instanceGroups.create.
+
+#### Base Command
+
+`gcp-compute-instance-group-insert`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone where the instance group is created. | Required |
+| name | The name of the instance group. The name must be 1 to 63 characters long and comply with RFC1035. | Required |
+| description | The optional description of this resource. | Optional |
+| named_ports | The named ports to assign to the instance group. For example: name=http,port=80;name=https,port=443. | Optional |
+| network | The URL of the network to which all instances in the instance group belong. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique identifier for the server-defined resource. |
+| GCP.Compute.Operations.name | string | The name of the resource. |
+| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | The user who requested the operation. |
+| GCP.Compute.Operations.progress | number | The optional progress indicator that ranges from 0 to 100. |
+| GCP.Compute.Operations.insertTime | string | The date and time that this operation was requested in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.startTime | string | The date and time that this operation was started by the server, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.endTime | string | The date and time that this operation was completed, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.error | Unknown | The errors generated during processing of the operation, containing an errors array with code, location, and message fields. |
+| GCP.Compute.Operations.warnings | Unknown | The warning messages generated during processing of the operation, containing code, message, and data fields. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that is returned if the operation fails. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that is returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Operations.kind | string | The type of the resource. The value is always compute\#operation for Operation resources. |
+
+### gcp-compute-instance-groups-aggregated-list
+
+***
+Retrieves the list of instance groups in the specified project across all zones. Required permission: compute.instanceGroups.list.
+
+#### Base Command
+
+`gcp-compute-instance-groups-aggregated-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| limit | The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| filter | The expression to filter resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value (string, number, or boolean). For example, to exclude an instance group named example-group, specify name != example-group. | Optional |
+| order_by | The sort order for the results. By default, results are returned in alphanumerical order by resource name. To sort in descending order by creation timestamp, use order_by=creationTimestamp desc. | Optional |
+| next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to retrieve the next page of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.InstanceGroups.id | string | The unique identifier for the server-defined resource. |
+| GCP.Compute.InstanceGroups.creationTimestamp | string | The creation timestamp for this instance group in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.InstanceGroups.name | string | The name of the instance group. The name must be 1 to 63 characters long and comply with RFC1035. |
+| GCP.Compute.InstanceGroups.description | string | The optional description of this resource. |
+| GCP.Compute.InstanceGroups.namedPorts.name | string | The name of the named port. The name must be 1 to 63 characters long and comply with RFC1035. |
+| GCP.Compute.InstanceGroups.namedPorts.port | number | The port number, which can be a value between 1 and 65535. |
+| GCP.Compute.InstanceGroups.network | string | The URL of the network to which all instances in the instance group belong. |
+| GCP.Compute.InstanceGroups.fingerprint | string | The fingerprint of the named ports. The system uses this fingerprint to detect conflicts when multiple users change the named ports concurrently. |
+| GCP.Compute.InstanceGroups.zone | string | The URL of the zone where the instance group is located \(for zonal resources\). |
+| GCP.Compute.InstanceGroups.selfLink | string | The server-generated URL for this instance group. |
+| GCP.Compute.InstanceGroups.size | number | The total number of instances in the instance group. |
+| GCP.Compute.InstanceGroups.region | string | The URL of the region where the instance group is located \(for regional resources\). |
+| GCP.Compute.InstanceGroups.subnetwork | string | The URL of the subnetwork to which all instances in the instance group belong. |
+| GCP.Compute.InstanceGroups.kind | string | The resource type, which is always compute\#instanceGroup for instance groups. |
+| GCP.Compute.AggregatedInstanceGroupsNextToken | string | The token to use to retrieve the next page of aggregated instance group results. |
+| GCP.Compute.AggregatedInstanceGroupsSelfLink | string | The server-defined URL for the aggregated instance groups list request. |
+| GCP.Compute.AggregatedInstanceGroupsWarning | Unknown | The informational warning which replaces the list of instance groups when the list is empty. |
+
+### gcp-compute-instance-groups-list
+
+***
+Retrieves the list of instance groups that are located in the specified project and zone. Required permission: compute.instanceGroups.list.
+
+#### Base Command
+
+`gcp-compute-instance-groups-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone where the instance groups are located. | Required |
+| limit | The maximum number of results per page that should be returned. If the number of available results is larger than limit, Compute Engine returns a nextPageToken that can be used to get the next page of results in subsequent list requests. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| filter | The expression to filter resources listed in the response. The expression must specify a field name, a comparison operator (=, !=, &gt;, or &lt;), and a value (string, number, or boolean). For example, to exclude an instance group named example-group, specify name != example-group. | Optional |
+| order_by | The sort order for the results. By default, results are returned in alphanumerical order by resource name. To sort in descending order by creation timestamp, use order_by=creationTimestamp desc. | Optional |
+| next_token | The page token to use. Set next_token to the nextPageToken returned by a previous list request to retrieve the next page of results. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.InstanceGroups.id | string | The unique identifier for the server-defined resource. |
+| GCP.Compute.InstanceGroups.creationTimestamp | string | The creation timestamp for this instance group in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.InstanceGroups.name | string | The name of the instance group. The name must be 1 to 63 characters long and comply with RFC1035. |
+| GCP.Compute.InstanceGroups.description | string | The optional description of this resource. |
+| GCP.Compute.InstanceGroups.namedPorts.name | string | The name of the named port. The name must be 1 to 63 characters long and comply with RFC1035. |
+| GCP.Compute.InstanceGroups.namedPorts.port | number | The port number, which can be a value between 1 and 65535. |
+| GCP.Compute.InstanceGroups.network | string | The URL of the network to which all instances in the instance group belong. |
+| GCP.Compute.InstanceGroups.fingerprint | string | The fingerprint of the named ports. The system uses this fingerprint to detect conflicts when multiple users change the named ports concurrently. |
+| GCP.Compute.InstanceGroups.zone | string | The URL of the zone where the instance group is located \(for zonal resources\). |
+| GCP.Compute.InstanceGroups.selfLink | string | The server-generated URL for this instance group. |
+| GCP.Compute.InstanceGroups.size | number | The total number of instances in the instance group. |
+| GCP.Compute.InstanceGroups.region | string | The URL of the region where the instance group is located \(for regional resources\). |
+| GCP.Compute.InstanceGroups.subnetwork | string | The URL of the subnetwork to which all instances in the instance group belong. |
+| GCP.Compute.InstanceGroups.kind | string | The resource type, which is always compute\#instanceGroup for instance groups. |
+| GCP.Compute.InstanceGroupsNextToken | string | The token to use to retrieve the next page of instance group results. |
+| GCP.Compute.InstanceGroupsSelfLink | string | The server-defined URL for the instance groups list request. |
+| GCP.Compute.InstanceGroupsWarning | Unknown | The informational warning which replaces the list of instance groups when the list is empty. |
+
+### gcp-compute-instance-group-named-ports-set
+
+***
+Sets the named ports for the specified instance group. Required permission: compute.instanceGroups.update.
+
+#### Base Command
+
+`gcp-compute-instance-group-named-ports-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone where the instance group is located. | Required |
+| instance_group | The name of the instance group where the named ports are updated. | Required |
+| named_ports | The list of named ports to set for this instance group. For example: name=http,port=80;name=https,port=443. | Required |
+| fingerprint | The fingerprint of the named ports information for this instance group. Use this optional argument to prevent conflicts when multiple users change the named ports settings concurrently. Obtain the fingerprint with the gcp-compute-instance-group-get command. A request with an incorrect fingerprint fails with error 412 conditionNotMet. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique identifier for the server-defined resource. |
+| GCP.Compute.Operations.name | string | The name of the resource. |
+| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | The user who requested the operation. |
+| GCP.Compute.Operations.progress | number | The optional progress indicator that ranges from 0 to 100. |
+| GCP.Compute.Operations.insertTime | string | The date and time that this operation was requested, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.startTime | string | The date and time that this operation was started by the server, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.endTime | string | The date and time that this operation was completed, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.error | Unknown | The errors generated during processing of the operation, containing an errors array with code, location, and message fields. |
+| GCP.Compute.Operations.warnings | Unknown | The warning messages generated during processing of the operation, containing code, message, and data fields. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that is returned if the operation fails. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that is returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Operations.kind | string | The type of the resource. The value is always compute\#operation for Operation resources. |
+
+### gcp-compute-instance-group-instances-add
+
+***
+Adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network or subnetwork. Required permission: compute.instanceGroups.update.
+
+#### Base Command
+
+`gcp-compute-instance-group-instances-add`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone where the instance group is located. | Required |
+| instance_group | The name of the instance group where the instances are added. | Required |
+| instances | A comma-separated list of URLs of the instances to add to the instance group. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique identifier for the server-defined resource. |
+| GCP.Compute.Operations.name | string | The name of the resource. |
+| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | The user who requested the operation. |
+| GCP.Compute.Operations.progress | number | The optional progress indicator that ranges from 0 to 100. |
+| GCP.Compute.Operations.insertTime | string | The date and time that this operation was requested, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.startTime | string | The date and time that this operation was started by the server, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.endTime | string | The date and time that this operation was completed, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.error | Unknown | The errors generated during processing of the operation, containing an errors array with code, location, and message fields. |
+| GCP.Compute.Operations.warnings | Unknown | The warning messages generated during processing of the operation, containing code, message, and data fields. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that is returned if the operation fails. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that is returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Operations.kind | string | The type of the resource. The value is always compute\#operation for Operation resources. |
+
+### gcp-compute-instance-group-delete
+
+***
+Deletes the specified instance group. The instances in the group are not deleted. The instance group must not belong to a back-end service. Required permission: compute.instanceGroups.delete.
+
+#### Base Command
+
+`gcp-compute-instance-group-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone where the instance group is located. | Required |
+| instance_group | The name of the instance group to delete. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique identifier for the server-defined resource. |
+| GCP.Compute.Operations.name | string | The name of the resource. |
+| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | The user who requested the operation. |
+| GCP.Compute.Operations.progress | number | The optional progress indicator that ranges from 0 to 100. |
+| GCP.Compute.Operations.insertTime | string | The date and time that this operation was requested, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.startTime | string | The date and time that this operation was started by the server, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.endTime | string | The date and time that this operation was completed, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.error | Unknown | The errors generated during processing of the operation, containing an errors array with code, location, and message fields. |
+| GCP.Compute.Operations.warnings | Unknown | The warning messages generated during processing of the operation, containing code, message, and data fields. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that is returned if the operation fails. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that is returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Operations.kind | string | The type of the resource. The value is always compute\#operation for Operation resources. |
+
+### gcp-compute-instance-group-instances-remove
+
+***
+Removes one or more instances from the specified instance group, but does not delete those instances. If the group is part of a back-end service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration for the VM instance to be removed or deleted. Required permission: compute.instanceGroups.update.
+
+#### Base Command
+
+`gcp-compute-instance-group-instances-remove`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| zone | The name of the zone where the instance group is located. | Required |
+| instance_group | The name of the instance group from which the instances are removed. | Required |
+| instances | A comma-separated list of URLs of the instances to remove from the instance group. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique identifier for the server-defined resource. |
+| GCP.Compute.Operations.name | string | The name of the resource. |
+| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. |
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete. |
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. |
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. |
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING, RUNNING, or DONE. |
+| GCP.Compute.Operations.statusMessage | string | The optional textual description of the current status of the operation. |
+| GCP.Compute.Operations.user | string | The user who requested the operation. |
+| GCP.Compute.Operations.progress | number | The optional progress indicator that ranges from 0 to 100. |
+| GCP.Compute.Operations.insertTime | string | The date and time that this operation was requested, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.startTime | string | The date and time that this operation was started by the server, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.endTime | string | The date and time that this operation was completed, in RFC3339 format \(for example, 2024-01-15T12:34:56Z\). |
+| GCP.Compute.Operations.error | Unknown | The errors generated during processing of the operation, containing an errors array with code, location, and message fields. |
+| GCP.Compute.Operations.warnings | Unknown | The warning messages generated during processing of the operation, containing code, message, and data fields. |
+| GCP.Compute.Operations.httpErrorStatusCode | number | The HTTP error status code that is returned if the operation fails. |
+| GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that is returned if the operation fails, such as NOT FOUND. |
+| GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
+| GCP.Compute.Operations.kind | string | The type of the resource. The value is always compute\#operation for Operation resources. |
