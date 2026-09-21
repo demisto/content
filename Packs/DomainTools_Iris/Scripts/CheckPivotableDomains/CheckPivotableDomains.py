@@ -105,7 +105,7 @@ def check_pivotable_ssl_email(ssl_infos: list[dict[str, Any]], max_property_coun
     pivotable = []
     try:
         for ssl_info in ssl_infos:
-            emails = ssl_info.get("email", []) if ssl_info is not None else []
+            emails = ssl_info.get("email") or [] if ssl_info is not None else []
             for email in emails:
                 count = int(email.get("count") or 0)
                 if max_property_count >= count >= 1:
