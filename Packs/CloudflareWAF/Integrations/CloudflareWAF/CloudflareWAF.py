@@ -612,6 +612,72 @@ class Client(BaseClient):
             return_empty_response=True,
         )
 
+    def cloudflare_waf_ruleset_entrypoint_get_request(
+        self,
+        phase: str,
+        zone_id: str = None,
+        account_id: str = None,
+    ) -> dict[str, Any]:
+        """Get the entry point ruleset for a given phase.
+
+        Args:
+            phase (str): The phase of the ruleset. Mapped into the {ruleset_phase} path segment.
+            zone_id (str, optional): Zone identifier. If provided, gets a zone-level entry point ruleset.
+                If not provided, gets an account-level entry point ruleset.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+
+        Returns:
+            dict: API response from Cloudflare (the full entry point ruleset).
+        """
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/phases/{phase}/entrypoint"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/phases/{phase}/entrypoint"
+
+        return self._http_request(method="GET", url_suffix=url_suffix)
+
+    def cloudflare_waf_ruleset_entrypoint_update_request(
+        self,
+        phase: str,
+        zone_id: str = None,
+        account_id: str = None,
+        name: str = None,
+        description: str = None,
+        rules: list = None,
+        dry_run: bool = None,
+    ) -> dict[str, Any]:
+        """Update the entry point ruleset for a given phase, creating a new version.
+
+        Args:
+            phase (str): The phase of the ruleset. Mapped into the {ruleset_phase} path segment.
+            zone_id (str, optional): Zone identifier. If provided, updates a zone-level entry point ruleset.
+                If not provided, updates an account-level entry point ruleset.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+            name (str, optional): The human-readable name of the ruleset.
+            description (str, optional): A description of the ruleset.
+            rules (list, optional): The list of rules that replaces all existing entry-point rules.
+            dry_run (bool, optional): If True, validates the update without applying it.
+
+        Returns:
+            dict: API response from Cloudflare (the full entry point ruleset).
+        """
+        json_data = remove_empty_elements(
+            {
+                "name": name,
+                "description": description,
+                "rules": rules,
+            }
+        )
+
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/phases/{phase}/entrypoint"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/phases/{phase}/entrypoint"
+
+        params = {"dry_run": "true"} if dry_run else None
+
+        return self._http_request(method="PUT", url_suffix=url_suffix, json_data=json_data, params=params)
+
 
 def validate_pagination_arguments(page: int = None, page_size: int = None, limit: int = None):
     """Validate pagination arguments according to their default.
@@ -1624,12 +1690,12 @@ def cloudflare_waf_ruleset_delete_command(client: Client, args: dict[str, Any]) 
     return CommandResults(readable_output=f"Ruleset {ruleset_id} was successfully deleted.")
 
 
-def _ruleset_rule_readable_output(name: str, result: dict[str, Any]) -> str:
-    """Build the readable output for a ruleset-rule command from the full parent ruleset.
+def _ruleset_readable_output(name: str, result: dict[str, Any]) -> str:
+    """Build the readable output for a full ruleset (header table plus rules table).
 
     Args:
         name (str): The header table name.
-        result (dict): The full parent ruleset returned by the API.
+        result (dict): The full ruleset returned by the API.
 
     Returns:
         str: The markdown readable output (ruleset header table plus rules table).
@@ -1699,7 +1765,7 @@ def cloudflare_waf_ruleset_rule_create_command(client: Client, args: dict[str, A
 
     output = response.get("result", {})
 
-    readable_output = _ruleset_rule_readable_output("Ruleset details", output)
+    readable_output = _ruleset_readable_output("Ruleset details", output)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1749,7 +1815,7 @@ def cloudflare_waf_ruleset_rule_update_command(client: Client, args: dict[str, A
 
     output = response.get("result", {})
 
-    readable_output = _ruleset_rule_readable_output("Ruleset details", output)
+    readable_output = _ruleset_readable_output("Ruleset details", output)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1789,6 +1855,93 @@ def cloudflare_waf_ruleset_rule_delete_command(client: Client, args: dict[str, A
     )
 
     return CommandResults(readable_output=f"Rule {rule_id} was successfully deleted from ruleset {ruleset_id}.")
+
+
+def cloudflare_waf_ruleset_entrypoint_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get the entry point ruleset for a specific phase at the account or zone level.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    phase = args.get("phase")
+    if not phase:
+        raise ValueError("phase is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+
+    response = client.cloudflare_waf_ruleset_entrypoint_get_request(
+        phase=phase,
+        zone_id=zone_id,
+        account_id=account_id,
+    )
+
+    output = response.get("result", {})
+
+    readable_output = _ruleset_readable_output("Ruleset details", output)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CloudflareWAF.Ruleset",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
+def cloudflare_waf_ruleset_entrypoint_update_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Update the entry point ruleset for a specific phase. When rules are provided,
+        they replace all existing entry-point rules.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    phase = args.get("phase")
+    if not phase:
+        raise ValueError("phase is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+    dry_run = arg_to_boolean(args.get("dry_run"))  # type: ignore[arg-type]
+
+    name = args.get("name")
+    description = args.get("description")
+    rules_json = args.get("rules")
+
+    rules = None
+    if rules_json:
+        try:
+            rules = json.loads(rules_json)
+        except json.JSONDecodeError as e:
+            raise ValueError(f"Failed to parse rules JSON: {e}")
+
+    response = client.cloudflare_waf_ruleset_entrypoint_update_request(
+        phase=phase,
+        zone_id=zone_id,
+        account_id=account_id,
+        name=name,
+        description=description,
+        rules=rules,
+        dry_run=dry_run,
+    )
+
+    output = response.get("result", {})
+
+    readable_output = _ruleset_readable_output("Ruleset details", output)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CloudflareWAF.Ruleset",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
 
 
 def test_module(client: Client):
@@ -1932,6 +2085,8 @@ def main() -> None:
         "cloudflare-waf-ruleset-rule-create": cloudflare_waf_ruleset_rule_create_command,
         "cloudflare-waf-ruleset-rule-update": cloudflare_waf_ruleset_rule_update_command,
         "cloudflare-waf-ruleset-rule-delete": cloudflare_waf_ruleset_rule_delete_command,
+        "cloudflare-waf-ruleset-entrypoint-get": cloudflare_waf_ruleset_entrypoint_get_command,
+        "cloudflare-waf-ruleset-entrypoint-update": cloudflare_waf_ruleset_entrypoint_update_command,
     }
     try:
         credentials = get_headers(params)

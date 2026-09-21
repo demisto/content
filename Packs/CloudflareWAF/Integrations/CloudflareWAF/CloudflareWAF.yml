@@ -1018,6 +1018,169 @@ script:
     execution: true
     name: cloudflare-waf-ruleset-rule-delete
     outputs: []
+  - arguments:
+    - auto: PREDEFINED
+      description: The phase of the ruleset.
+      name: phase
+      predefined:
+      - ddos_l4
+      - ddos_l7
+      - http_config_settings
+      - http_custom_errors
+      - http_log_custom_fields
+      - http_ratelimit
+      - http_request_cache_settings
+      - http_request_dynamic_redirect
+      - http_request_firewall_custom
+      - http_request_firewall_managed
+      - http_request_late_transform
+      - http_request_origin
+      - http_request_redirect
+      - http_request_sanitize
+      - http_request_sbfm
+      - http_request_transform
+      - http_response_compression
+      - http_response_firewall_managed
+      - http_response_headers_transform
+      - magic_transit
+      required: true
+    - description: Account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
+      name: account_id
+    - description: Zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
+      name: zone_id
+    description: The command retrieves the entry point ruleset for a specific phase at the account or zone level.
+    name: cloudflare-waf-ruleset-entrypoint-get
+    outputs:
+    - contextPath: CloudflareWAF.Ruleset.id
+      description: The ruleset identifier.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.name
+      description: The name of the ruleset.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.kind
+      description: The kind of the ruleset.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.phase
+      description: The phase of the ruleset.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.description
+      description: The description of the ruleset.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.version
+      description: The version of the ruleset.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.last_updated
+      description: 'The timestamp of when the ruleset was last updated. For example, 2024-08-01T17:37:12.291474Z.'
+      type: Date
+    - contextPath: CloudflareWAF.Ruleset.rules.id
+      description: The rule identifier.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.rules.action
+      description: The action to perform when the rule matches.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.rules.expression
+      description: The filter expression for the rule.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.rules.description
+      description: The description of the rule.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.rules.enabled
+      description: Whether the rule is enabled.
+      type: Boolean
+    - contextPath: CloudflareWAF.Ruleset.rules.version
+      description: The version of the rule.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.rules.ref
+      description: The reference of the rule.
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      description: The phase of the ruleset.
+      name: phase
+      predefined:
+      - ddos_l4
+      - ddos_l7
+      - http_config_settings
+      - http_custom_errors
+      - http_log_custom_fields
+      - http_ratelimit
+      - http_request_cache_settings
+      - http_request_dynamic_redirect
+      - http_request_firewall_custom
+      - http_request_firewall_managed
+      - http_request_late_transform
+      - http_request_origin
+      - http_request_redirect
+      - http_request_sanitize
+      - http_request_sbfm
+      - http_request_transform
+      - http_response_compression
+      - http_response_firewall_managed
+      - http_response_headers_transform
+      - magic_transit
+      required: true
+    - description: The human-readable name of the ruleset.
+      name: name
+    - description: The description of the ruleset.
+      name: description
+    - description: 'The JSON array of rule objects that replaces all existing entry-point rules. For example: [{"action": "block", "expression": "(ip.src eq 192.0.2.1)", "description": "Block bad IP"}].'
+      name: rules
+    - auto: PREDEFINED
+      description: If true, validates the update without applying it.
+      name: dry_run
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
+      name: account_id
+    - description: Zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
+      name: zone_id
+    description: The command updates the entry point ruleset for a specific phase. When rules are provided, they replace all existing entry-point rules.
+    execution: true
+    name: cloudflare-waf-ruleset-entrypoint-update
+    outputs:
+    - contextPath: CloudflareWAF.Ruleset.id
+      description: The ruleset identifier.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.name
+      description: The name of the ruleset.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.kind
+      description: The kind of the ruleset.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.phase
+      description: The phase of the ruleset.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.description
+      description: The description of the ruleset.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.version
+      description: The version of the ruleset.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.last_updated
+      description: 'The timestamp of when the ruleset was last updated. For example, 2024-08-01T17:37:12.291474Z.'
+      type: Date
+    - contextPath: CloudflareWAF.Ruleset.rules.id
+      description: The rule identifier.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.rules.action
+      description: The action to perform when the rule matches.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.rules.expression
+      description: The filter expression for the rule.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.rules.description
+      description: The description of the rule.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.rules.enabled
+      description: Whether the rule is enabled.
+      type: Boolean
+    - contextPath: CloudflareWAF.Ruleset.rules.version
+      description: The version of the rule.
+      type: String
+    - contextPath: CloudflareWAF.Ruleset.rules.ref
+      description: The reference of the rule.
+      type: String
   dockerimage: demisto/python3:3.12.13.10404775
   runonce: false
   script: '-'
