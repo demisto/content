@@ -839,3 +839,245 @@ class TestResolveScopeIds:
 
         assert zone_id is None
         assert account_id == ACCOUNT_ID
+
+
+class TestRulesetRuleCommands:
+    """Tests for the cloudflare-waf-ruleset-rule-* commands."""
+
+    def test_ruleset_rule_create_zone_scope(self, requests_mock, mock_client):
+        """
+        Scenario: Create a ruleset rule using the zone scope (default from client).
+        Given:
+         - A client configured with a zone_id.
+         - A valid rule JSON string.
+        When:
+         - cloudflare_waf_ruleset_rule_create_command is called.
+        Then:
+         - The POST request hits the zone-scoped rules URL.
+         - The outputs prefix is CloudflareWAF.Ruleset.
+         - A sample rules[] value matches the mock response.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_rule_create_command
+
+        ruleset_id = "ruleset_id_1"
+        mock_response = load_mock_response("create_ruleset_rule.json")
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/{ruleset_id}/rules"
+        requests_mock.post(url, json=mock_response)
+
+        args = {
+            "ruleset_id": ruleset_id,
+            "rule": '{"action": "challenge", "expression": "(ip.src eq 120.2.2.8)", "description": "Challenge suspicious IP"}',
+        }
+
+        result = cloudflare_waf_ruleset_rule_create_command(mock_client, args)
+
+        assert requests_mock.last_request.path == f"/client/v4/zones/{ZONE_ID}/rulesets/{ruleset_id}/rules"
+        assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+        assert result.outputs["rules"][1]["id"] == "new_rule_id"
+        assert result.outputs["rules"][1]["action"] == "challenge"
+
+    def test_ruleset_rule_create_account_scope_override(self, requests_mock):
+        """
+        Scenario: Create a ruleset rule using an account_id argument override.
+        Given:
+         - A client configured WITHOUT a zone_id.
+         - account_id passed via args.
+        When:
+         - cloudflare_waf_ruleset_rule_create_command is called.
+        Then:
+         - The POST request hits the account-scoped rules URL.
+         - No zone segment is present in the request path.
+        """
+        from CloudflareWAF import Client, cloudflare_waf_ruleset_rule_create_command
+
+        client_no_zone = Client(
+            account_id=ACCOUNT_ID, zone_id=None, credentials=CREDENTIALS, base_url=BASE_URL, proxy=False, insecure=True
+        )
+
+        ruleset_id = "ruleset_id_1"
+        arg_account = "arg_account"
+        mock_response = load_mock_response("create_ruleset_rule.json")
+        url = f"{BASE_URL}accounts/{arg_account}/rulesets/{ruleset_id}/rules"
+        requests_mock.post(url, json=mock_response)
+
+        args = {
+            "ruleset_id": ruleset_id,
+            "account_id": arg_account,
+            "rule": '{"action": "block", "expression": "(ip.src eq 192.0.2.1)"}',
+        }
+
+        result = cloudflare_waf_ruleset_rule_create_command(client_no_zone, args)
+
+        assert requests_mock.last_request.path == f"/client/v4/accounts/{arg_account}/rulesets/{ruleset_id}/rules"
+        assert "zones" not in requests_mock.last_request.path
+        assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+
+    def test_ruleset_rule_create_invalid_json(self, mock_client):
+        """
+        Scenario: Create a ruleset rule with an invalid rule JSON string.
+        Given:
+         - A rule argument that is not valid JSON.
+        When:
+         - cloudflare_waf_ruleset_rule_create_command is called.
+        Then:
+         - A ValueError with message "Failed to parse rule JSON" is raised.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_rule_create_command
+
+        args = {"ruleset_id": "ruleset_id_1", "rule": "{not valid json"}
+
+        with pytest.raises(ValueError, match="Failed to parse rule JSON"):
+            cloudflare_waf_ruleset_rule_create_command(mock_client, args)
+
+    def test_ruleset_rule_create_dry_run(self, requests_mock, mock_client):
+        """
+        Scenario: Create a ruleset rule with dry_run=true.
+        Given:
+         - dry_run set to 'true' in args.
+        When:
+         - cloudflare_waf_ruleset_rule_create_command is called.
+        Then:
+         - The request includes the dry_run=true query parameter.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_rule_create_command
+
+        ruleset_id = "ruleset_id_1"
+        mock_response = load_mock_response("create_ruleset_rule.json")
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/{ruleset_id}/rules"
+        requests_mock.post(url, json=mock_response)
+
+        args = {
+            "ruleset_id": ruleset_id,
+            "rule": '{"action": "block", "expression": "(ip.src eq 192.0.2.1)"}',
+            "dry_run": "true",
+        }
+
+        cloudflare_waf_ruleset_rule_create_command(mock_client, args)
+
+        assert requests_mock.last_request.qs.get("dry_run") == ["true"]
+
+    def test_ruleset_rule_create_mutually_exclusive(self, mock_client):
+        """
+        Scenario: Create a ruleset rule with BOTH zone_id and account_id in args.
+        Given:
+         - args contains both zone_id and account_id.
+        When:
+         - cloudflare_waf_ruleset_rule_create_command is called.
+        Then:
+         - A ValueError matching "mutually exclusive" is raised by _resolve_scope_ids.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_rule_create_command
+
+        args = {
+            "ruleset_id": "ruleset_id_1",
+            "rule": '{"action": "block", "expression": "(ip.src eq 192.0.2.1)"}',
+            "zone_id": "arg_zone",
+            "account_id": "arg_account",
+        }
+
+        with pytest.raises(ValueError, match="mutually exclusive"):
+            cloudflare_waf_ruleset_rule_create_command(mock_client, args)
+
+    def test_ruleset_rule_update_zone_scope(self, requests_mock, mock_client):
+        """
+        Scenario: Update a ruleset rule using the zone scope (default from client).
+        Given:
+         - A client configured with a zone_id.
+         - A valid full rule JSON string.
+        When:
+         - cloudflare_waf_ruleset_rule_update_command is called.
+        Then:
+         - The PATCH request hits the zone-scoped rule URL with the rule_id.
+         - The outputs prefix is CloudflareWAF.Ruleset.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_rule_update_command
+
+        ruleset_id = "ruleset_id_1"
+        rule_id = "rule_id_1"
+        mock_response = load_mock_response("update_ruleset_rule.json")
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/{ruleset_id}/rules/{rule_id}"
+        requests_mock.patch(url, json=mock_response)
+
+        args = {
+            "ruleset_id": ruleset_id,
+            "rule_id": rule_id,
+            "rule": '{"action": "log", "expression": "(ip.src eq 192.0.2.1)", "description": "Log bad IP instead of block"}',
+        }
+
+        result = cloudflare_waf_ruleset_rule_update_command(mock_client, args)
+
+        assert requests_mock.last_request.path == f"/client/v4/zones/{ZONE_ID}/rulesets/{ruleset_id}/rules/{rule_id}"
+        assert requests_mock.last_request.method == "PATCH"
+        assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+        assert result.outputs["rules"][0]["action"] == "log"
+
+    def test_ruleset_rule_update_invalid_json(self, mock_client):
+        """
+        Scenario: Update a ruleset rule with an invalid rule JSON string.
+        Given:
+         - A rule argument that is not valid JSON.
+        When:
+         - cloudflare_waf_ruleset_rule_update_command is called.
+        Then:
+         - A ValueError with message "Failed to parse rule JSON" is raised.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_rule_update_command
+
+        args = {"ruleset_id": "ruleset_id_1", "rule_id": "rule_id_1", "rule": "{not valid json"}
+
+        with pytest.raises(ValueError, match="Failed to parse rule JSON"):
+            cloudflare_waf_ruleset_rule_update_command(mock_client, args)
+
+    def test_ruleset_rule_delete_readable_output(self, requests_mock, mock_client):
+        """
+        Scenario: Delete a ruleset rule using the zone scope.
+        Given:
+         - A client configured with a zone_id.
+        When:
+         - cloudflare_waf_ruleset_rule_delete_command is called.
+        Then:
+         - The readable_output matches the expected deletion message.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_rule_delete_command
+
+        ruleset_id = "ruleset_id_1"
+        rule_id = "rule_id_1"
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/{ruleset_id}/rules/{rule_id}"
+        requests_mock.delete(url, json=load_mock_response("delete_ruleset_rule.json"))
+
+        args = {"ruleset_id": ruleset_id, "rule_id": rule_id}
+
+        result = cloudflare_waf_ruleset_rule_delete_command(mock_client, args)
+
+        assert result.readable_output == f"Rule {rule_id} was successfully deleted from ruleset {ruleset_id}."
+
+    def test_ruleset_rule_delete_account_scope_override(self, requests_mock):
+        """
+        Scenario: Delete a ruleset rule using an account_id argument override.
+        Given:
+         - A client configured WITHOUT a zone_id.
+         - account_id passed via args.
+        When:
+         - cloudflare_waf_ruleset_rule_delete_command is called.
+        Then:
+         - The DELETE request hits the account-scoped rule URL with no zone segment.
+        """
+        from CloudflareWAF import Client, cloudflare_waf_ruleset_rule_delete_command
+
+        client_no_zone = Client(
+            account_id=ACCOUNT_ID, zone_id=None, credentials=CREDENTIALS, base_url=BASE_URL, proxy=False, insecure=True
+        )
+
+        ruleset_id = "ruleset_id_1"
+        rule_id = "rule_id_1"
+        arg_account = "arg_account"
+        url = f"{BASE_URL}accounts/{arg_account}/rulesets/{ruleset_id}/rules/{rule_id}"
+        requests_mock.delete(url, json=load_mock_response("delete_ruleset_rule.json"))
+
+        args = {"ruleset_id": ruleset_id, "rule_id": rule_id, "account_id": arg_account}
+
+        result = cloudflare_waf_ruleset_rule_delete_command(client_no_zone, args)
+
+        assert requests_mock.last_request.path == f"/client/v4/accounts/{arg_account}/rulesets/{ruleset_id}/rules/{rule_id}"
+        assert "zones" not in requests_mock.last_request.path
+        assert result.readable_output == f"Rule {rule_id} was successfully deleted from ruleset {ruleset_id}."
