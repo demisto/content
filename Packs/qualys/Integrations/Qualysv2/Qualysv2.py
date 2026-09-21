@@ -1812,10 +1812,7 @@ class Client(BaseClient):
         # Read Timeout does *not* specify request max execution time! Handle using a timed thread (via `ThreadPoolExecutor`)
 
         try:
-            url_suffix = urljoin(
-                API_SUFFIX_DETECTION, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1"
-            )
-            response = self._request_with_concurrency_retry(url_suffix, params, timeout, method="GET")
+            response = self._request_host_list_with_concurrency_retry(params, timeout)
 
         # Handle response timeout (`ReadTimeout`) or response ending prematurely (`ChunkedEncodingError`)
         except (requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError) as e:
@@ -1840,21 +1837,16 @@ class Client(BaseClient):
             demisto.debug(f"Got host list detections response length of {len(response)} characters. Used query params: {params}.")
         return response, set_new_limit
 
-    def _request_with_concurrency_retry(
-        self, url_suffix: str, params: dict[str, Any], timeout: tuple[int, int], method: str = "GET"
-    ) -> str:
-        """Perform a Qualys request, retrying on the concurrency-limit error (HTTP 409, Error Code 1960).
+    def _request_host_list_with_concurrency_retry(self, params: dict[str, Any], timeout: tuple[int, int]) -> str:
+        """Perform the host-list-detection request, retrying on Qualys concurrency-limit (Error Code 1960).
 
-        Qualys allows only one running instance of certain APIs (e.g. host-list-detection, knowledge_base)
-        per account. If a previous (possibly timed-out) instance is still executing, Qualys returns HTTP 409
-        with Error Code 1960. The `X-RateLimit-ToWait-Sec` header is unreliable for this case, so we back off
-        by a fixed interval before retrying.
+        Qualys allows only one running instance of this API per account. If a previous (possibly timed-out)
+        instance is still executing, Qualys returns HTTP 409 with Error Code 1960. The `X-RateLimit-ToWait-Sec`
+        header is unreliable for this case, so we back off by a fixed interval before retrying.
 
         Args:
-            url_suffix (str): The API endpoint suffix for the request.
             params (dict[str, Any]): Query params for the request.
             timeout (tuple[int, int]): (connection, read) timeout for the request.
-            method (str): The HTTP method to use (defaults to "GET").
 
         Returns:
             str: The raw response text.
@@ -1862,10 +1854,11 @@ class Client(BaseClient):
         Raises:
             DemistoException: For non-1960 errors, or a 1960 error after retries are exhausted.
         """
+        url_suffix = urljoin(API_SUFFIX_DETECTION, "asset/host/vm/detection/?action=list&host_metadata=all&show_cloud_tags=1")
         for attempt in range(CONCURRENCY_LIMIT_MAX_RETRIES + 1):
             try:
                 return self._http_request(
-                    method=method,
+                    method="GET",
                     url_suffix=url_suffix,
                     resp_type="text",
                     params=params,
@@ -1928,8 +1921,14 @@ class Client(BaseClient):
         )
 
         try:
-            url_suffix = urljoin(API_SUFFIX_KNOWLEDGEBASE, "knowledge_base/vuln/?action=list")
-            response = self._request_with_concurrency_retry(url_suffix, params, timeout, method="POST")
+            response = self._http_request(
+                method="POST",
+                url_suffix=urljoin(API_SUFFIX_KNOWLEDGEBASE, "knowledge_base/vuln/?action=list"),
+                resp_type="text",
+                params=params,
+                timeout=timeout,
+                error_handler=self.error_handler,
+            )
         except (requests.exceptions.ReadTimeout, requests.exceptions.ChunkedEncodingError) as e:
             demisto.error(f"An error occurred during the vulnerabilities request: {str(e)}. Will retry in the next fetch cycle.")
             raise
