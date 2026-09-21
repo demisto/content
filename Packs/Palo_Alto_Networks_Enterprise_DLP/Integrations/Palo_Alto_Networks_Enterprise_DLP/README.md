@@ -48,6 +48,7 @@ Fetches DLP reports associated with a report ID.
 | --- | --- | --- |
 | report_id | DLP report ID. | Required |
 | fetch_snippets | If True, includes snippets with the reports. Possible values are: true, false. Default is false. | Optional |
+| service_name | The DLP service that the report belongs to. Determines which backend the report is retrieved from. When empty, the request does not specify a service and the server retrieves the report from Prisma Access. Possible values are: ngfw, prisma-access, prisma-saas, prisma-access-browser, endpoint-dlp. | Optional |
 
 #### Context Output
 
@@ -71,6 +72,19 @@ Fetches DLP reports associated with a report ID.
 | DLP.Report.DataProfiles.DataPatterns.OccurrenceOperatorType | String | The occurrence operator type \(e.g., "more_than_equal_to", "between"\). |
 | DLP.Report.DataProfiles.DataPatterns.OccurrenceLow | Number | The low bound for "between" operator type. |
 | DLP.Report.DataProfiles.DataPatterns.OccurrenceHigh | Number | The high bound for "between" operator type. |
+
+#### Command example
+
+```!pan-dlp-get-report report_id=3165792284 service_name=prisma-saas```
+
+#### Human Readable Output
+
+>### DLP Report for profile: Sample-Data-Profile
+>
+>|DataPatternName|ConfidenceFrequency|MatchedConfidenceLevel|
+>|---|---|---|
+>| National Id - US Social Security Number - SSN | Low: 30<br>Medium: 0<br>High: 30 | high |
+>| Credit Card Number | Low: 30<br>Medium: 30<br>High: 30 | high |
 
 ### pan-dlp-update-incident
 
