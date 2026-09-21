@@ -1081,3 +1081,220 @@ class TestRulesetRuleCommands:
         assert requests_mock.last_request.path == f"/client/v4/accounts/{arg_account}/rulesets/{ruleset_id}/rules/{rule_id}"
         assert "zones" not in requests_mock.last_request.path
         assert result.readable_output == f"Rule {rule_id} was successfully deleted from ruleset {ruleset_id}."
+
+
+class TestRulesetEntrypointCommands:
+    """Tests for the cloudflare-waf-ruleset-entrypoint-* commands."""
+
+    def test_ruleset_entrypoint_get_zone_scope(self, requests_mock, mock_client):
+        """
+        Scenario: Get the entry point ruleset using the zone scope (default from client).
+        Given:
+         - A client configured with a zone_id.
+         - A valid phase argument.
+        When:
+         - cloudflare_waf_ruleset_entrypoint_get_command is called.
+        Then:
+         - The GET request hits the zone-scoped entrypoint URL.
+         - The outputs prefix is CloudflareWAF.Ruleset.
+         - A sample rules[] value matches the mock response.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_entrypoint_get_command
+
+        phase = "http_request_firewall_managed"
+        mock_response = load_mock_response("get_entrypoint_ruleset.json")
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/phases/{phase}/entrypoint"
+        requests_mock.get(url, json=mock_response)
+
+        args = {"phase": phase}
+
+        result = cloudflare_waf_ruleset_entrypoint_get_command(mock_client, args)
+
+        assert requests_mock.last_request.path == f"/client/v4/zones/{ZONE_ID}/rulesets/phases/{phase}/entrypoint"
+        assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+        assert result.outputs["rules"][0]["action"] == "execute"
+        assert result.outputs["rules"][0]["action_parameters"]["id"] == "efb7b8c949ac4650a09736fc376e9aee"
+        assert result.outputs["rules"][1]["action"] == "block"
+
+    def test_ruleset_entrypoint_get_account_scope_override(self, requests_mock):
+        """
+        Scenario: Get the entry point ruleset using an account_id argument override.
+        Given:
+         - A client configured WITHOUT a zone_id.
+         - account_id passed via args.
+        When:
+         - cloudflare_waf_ruleset_entrypoint_get_command is called.
+        Then:
+         - The GET request hits the account-scoped entrypoint URL.
+         - No zone segment is present in the request path.
+        """
+        from CloudflareWAF import Client, cloudflare_waf_ruleset_entrypoint_get_command
+
+        client_no_zone = Client(
+            account_id=ACCOUNT_ID, zone_id=None, credentials=CREDENTIALS, base_url=BASE_URL, proxy=False, insecure=True
+        )
+
+        phase = "http_request_firewall_managed"
+        arg_account = "arg_account"
+        mock_response = load_mock_response("get_entrypoint_ruleset.json")
+        url = f"{BASE_URL}accounts/{arg_account}/rulesets/phases/{phase}/entrypoint"
+        requests_mock.get(url, json=mock_response)
+
+        args = {"phase": phase, "account_id": arg_account}
+
+        result = cloudflare_waf_ruleset_entrypoint_get_command(client_no_zone, args)
+
+        assert requests_mock.last_request.path == f"/client/v4/accounts/{arg_account}/rulesets/phases/{phase}/entrypoint"
+        assert "zones" not in requests_mock.last_request.path
+        assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+
+    def test_ruleset_entrypoint_get_missing_phase(self, mock_client):
+        """
+        Scenario: Get the entry point ruleset without a phase argument.
+        Given:
+         - args does not contain phase.
+        When:
+         - cloudflare_waf_ruleset_entrypoint_get_command is called.
+        Then:
+         - A ValueError with message "phase is required." is raised.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_entrypoint_get_command
+
+        with pytest.raises(ValueError, match="phase is required."):
+            cloudflare_waf_ruleset_entrypoint_get_command(mock_client, {})
+
+    def test_ruleset_entrypoint_get_mutually_exclusive(self, mock_client):
+        """
+        Scenario: Get the entry point ruleset with BOTH zone_id and account_id in args.
+        Given:
+         - args contains both zone_id and account_id.
+        When:
+         - cloudflare_waf_ruleset_entrypoint_get_command is called.
+        Then:
+         - A ValueError matching "mutually exclusive" is raised by _resolve_scope_ids.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_entrypoint_get_command
+
+        args = {
+            "phase": "http_request_firewall_managed",
+            "zone_id": "arg_zone",
+            "account_id": "arg_account",
+        }
+
+        with pytest.raises(ValueError, match="mutually exclusive"):
+            cloudflare_waf_ruleset_entrypoint_get_command(mock_client, args)
+
+    def test_ruleset_entrypoint_update_zone_scope(self, requests_mock, mock_client):
+        """
+        Scenario: Update the entry point ruleset using the zone scope (default from client).
+        Given:
+         - A client configured with a zone_id.
+         - name, description and a valid rules JSON array.
+        When:
+         - cloudflare_waf_ruleset_entrypoint_update_command is called.
+        Then:
+         - The PUT request hits the zone-scoped entrypoint URL.
+         - The outputs prefix is CloudflareWAF.Ruleset.
+         - The request json body contains the provided name/description/rules.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_entrypoint_update_command
+
+        phase = "http_request_firewall_managed"
+        mock_response = load_mock_response("update_entrypoint_ruleset.json")
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/phases/{phase}/entrypoint"
+        requests_mock.put(url, json=mock_response)
+
+        args = {
+            "phase": phase,
+            "name": "updated entry point",
+            "description": "Updated entry point ruleset",
+            "rules": '[{"action": "challenge", "expression": "(ip.src eq 192.0.2.1)", "description": "Challenge IP"}]',
+        }
+
+        result = cloudflare_waf_ruleset_entrypoint_update_command(mock_client, args)
+
+        assert requests_mock.last_request.path == f"/client/v4/zones/{ZONE_ID}/rulesets/phases/{phase}/entrypoint"
+        assert requests_mock.last_request.method == "PUT"
+        assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+
+        body = requests_mock.last_request.json()
+        assert body["name"] == "updated entry point"
+        assert body["description"] == "Updated entry point ruleset"
+        assert body["rules"][0]["action"] == "challenge"
+
+    def test_ruleset_entrypoint_update_name_description_only(self, requests_mock, mock_client):
+        """
+        Scenario: Update the entry point ruleset with only name and description (no rules).
+        Given:
+         - A client configured with a zone_id.
+         - name and description but no rules argument.
+        When:
+         - cloudflare_waf_ruleset_entrypoint_update_command is called.
+        Then:
+         - The request body has NO "rules" key (remove_empty_elements dropped it).
+         - The command succeeds with the CloudflareWAF.Ruleset outputs prefix.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_entrypoint_update_command
+
+        phase = "http_request_firewall_managed"
+        mock_response = load_mock_response("update_entrypoint_ruleset.json")
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/phases/{phase}/entrypoint"
+        requests_mock.put(url, json=mock_response)
+
+        args = {
+            "phase": phase,
+            "name": "renamed entry point",
+            "description": "Only metadata changed",
+        }
+
+        result = cloudflare_waf_ruleset_entrypoint_update_command(mock_client, args)
+
+        body = requests_mock.last_request.json()
+        assert "rules" not in body
+        assert body["name"] == "renamed entry point"
+        assert body["description"] == "Only metadata changed"
+        assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+
+    def test_ruleset_entrypoint_update_dry_run(self, requests_mock, mock_client):
+        """
+        Scenario: Update the entry point ruleset with dry_run=true.
+        Given:
+         - dry_run set to 'true' in args.
+        When:
+         - cloudflare_waf_ruleset_entrypoint_update_command is called.
+        Then:
+         - The request includes the dry_run=true query parameter.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_entrypoint_update_command
+
+        phase = "http_request_firewall_managed"
+        mock_response = load_mock_response("update_entrypoint_ruleset.json")
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/phases/{phase}/entrypoint"
+        requests_mock.put(url, json=mock_response)
+
+        args = {
+            "phase": phase,
+            "name": "dry run name",
+            "dry_run": "true",
+        }
+
+        cloudflare_waf_ruleset_entrypoint_update_command(mock_client, args)
+
+        assert requests_mock.last_request.qs.get("dry_run") == ["true"]
+
+    def test_ruleset_entrypoint_update_invalid_json(self, mock_client):
+        """
+        Scenario: Update the entry point ruleset with an invalid rules JSON string.
+        Given:
+         - A rules argument that is not valid JSON.
+        When:
+         - cloudflare_waf_ruleset_entrypoint_update_command is called.
+        Then:
+         - A ValueError with message "Failed to parse rules JSON" is raised.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_entrypoint_update_command
+
+        args = {"phase": "http_request_firewall_managed", "rules": "{not valid json"}
+
+        with pytest.raises(ValueError, match="Failed to parse rules JSON"):
+            cloudflare_waf_ruleset_entrypoint_update_command(mock_client, args)
