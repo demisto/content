@@ -1518,7 +1518,7 @@ The command updates an existing rule in a ruleset. Replaces the whole rule. Repl
 ### cloudflare-waf-ruleset-version-get
 
 ***
-The command retrieves a specific version of a ruleset, including its rules. Replaces the deprecated cloudflare-waf-firewall-rule-list command (inspect the returned rules).
+The command retrieves a specific version of a ruleset, including its rules. Replaces the deprecated cloudflare-waf-firewall-rule-list command.
 
 #### Base Command
 

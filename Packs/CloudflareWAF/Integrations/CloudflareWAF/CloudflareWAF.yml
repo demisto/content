@@ -1245,7 +1245,7 @@ script:
       name: account_id
     - description: Zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
       name: zone_id
-    description: The command retrieves a specific version of a ruleset, including its rules. Replaces the deprecated cloudflare-waf-firewall-rule-list command (inspect the returned rules).
+    description: The command retrieves a specific version of a ruleset, including its rules. Replaces the deprecated cloudflare-waf-firewall-rule-list command.
     name: cloudflare-waf-ruleset-version-get
     outputs:
     - contextPath: CloudflareWAF.Ruleset.id
