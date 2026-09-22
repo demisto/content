@@ -1,0 +1,64 @@
+{
+  "lenels2_netbox_raw": {
+    "type": {
+      "type": "string",
+      "is_array": false
+    },
+    "typecode": {
+      "type": "string",
+      "is_array": false
+    },
+    "logkey": {
+      "type": "string",
+      "is_array": false
+    },
+    "reason": {
+      "type": "string",
+      "is_array": false
+    },
+    "reasoncode": {
+      "type": "string",
+      "is_array": false
+    },
+    "firstname": {
+      "type": "string",
+      "is_array": false
+    },
+    "lastname": {
+      "type": "string",
+      "is_array": false
+    },
+    "personid": {
+      "type": "string",
+      "is_array": false
+    },
+    "personkey": {
+      "type": "string",
+      "is_array": false
+    },
+    "portalkey": {
+      "type": "string",
+      "is_array": false
+    },
+    "portalname": {
+      "type": "string",
+      "is_array": false
+    },
+    "readerkey": {
+      "type": "string",
+      "is_array": false
+    },
+    "readername": {
+      "type": "string",
+      "is_array": false
+    },
+    "partitionkey": {
+      "type": "string",
+      "is_array": false
+    },
+    "readerpartitionname": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}
