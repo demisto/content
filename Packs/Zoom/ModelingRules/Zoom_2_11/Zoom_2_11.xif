@@ -1,5 +1,5 @@
 [MODEL: dataset=zoom_zoom_raw]
-filter
+filter //Saas to Audit Mapping
     event_type = "operation_log"
 | alter
     xdm.event.type = "saas audit",
@@ -32,12 +32,12 @@ filter
     xdm.event.description = operation_detail,
     xdm.event.outcome_reason = action; //need to check on that
 
-filter
+filter //Authentication Mapping
     event_type = "activity_log" and type = "Sign in"
 | alter 
     get_is_service = if(
         email ~= "^rooms_", true,
-        client_type ~= "^rooms_", true,
+        client_type ~= "^rooms_", true, //is it necessary to check on this?
         false)
 
 | alter //XDM Mapping
@@ -52,7 +52,7 @@ filter
     xdm.logon.type = if(get_is_service, XDM_CONST.LOGON_TYPE_SERVICE, XDM_CONST.LOGON_TYPE_INTERACTIVE),
     xdm.auth.service = "SP",
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
-    xdm.event.outcome_reason = "OTHER",
+    xdm.event.outcome_reason = "OTHER", //check if we can leave it null
     xdm.source.user.upn = email,
     xdm.source.identity.upn = email,
     xdm.source.user.username = email, //maybe should extract from email just the username, need to check on this
@@ -63,7 +63,7 @@ filter
     xdm.target.resource.name = "Zoom",
     xdm.source.user_agent = concat(client_type, " ", version),
     xdm.source.host.device_category = if(
-        client_type in ("win*", "mac*", "Browser"), "Computer",
+        client_type in ("win", "mac", "Browser"), "Computer",
         client_type in ("iphone", "android"), "Mobile",
         client_type = "ipad", "Tablet",
         client_type = "watchOS", "IOT"),
