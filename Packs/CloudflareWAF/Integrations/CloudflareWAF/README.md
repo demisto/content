@@ -1568,7 +1568,7 @@ The command lists all versions of a ruleset at the account or zone level.
 | ruleset_id | The ruleset identifier. | Required |
 | account_id | Account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID. | Optional |
 | zone_id | Zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id. | Optional |
-| limit | The maximum number of records to return. Default is 50. Default is 50. | Optional |
+| limit | The maximum number of records to return. Default is 50. | Optional |
 | all_results | If true, retrieves all results, overriding the limit argument. Possible values are: true, false. | Optional |
 
 #### Context Output
@@ -1658,7 +1658,7 @@ The command lists all versions of the entry point ruleset for a specific phase a
 | phase | The phase of the ruleset. Possible values are: ddos_l4, ddos_l7, http_config_settings, http_custom_errors, http_log_custom_fields, http_ratelimit, http_request_cache_settings, http_request_dynamic_redirect, http_request_firewall_custom, http_request_firewall_managed, http_request_late_transform, http_request_origin, http_request_redirect, http_request_sanitize, http_request_sbfm, http_request_transform, http_response_cache_settings, http_response_compression, http_response_firewall_managed, http_response_headers_transform, magic_transit, magic_transit_ids_managed, magic_transit_managed, magic_transit_ratelimit. | Required |
 | account_id | Account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID. | Optional |
 | zone_id | Zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id. | Optional |
-| limit | The maximum number of records to return. Default is 50. Default is 50. | Optional |
+| limit | The maximum number of records to return. Default is 50. | Optional |
 | all_results | If true, retrieves all results, overriding the limit argument. Possible values are: true, false. | Optional |
 
 #### Context Output
