@@ -1532,3 +1532,352 @@ class TestRulesetVersionCommands:
         assert requests_mock.last_request.path == f"/client/v4/accounts/{arg_account}/rulesets/{ruleset_id}/versions/{version}"
         assert "zones" not in requests_mock.last_request.path
         assert result.readable_output == f"Version {version} of ruleset {ruleset_id} was successfully deleted."
+
+
+class TestRulesetEntrypointVersionAndTagCommands:
+    """Tests for the entrypoint-version-* and rule-list-by-tag commands."""
+
+    def test_entrypoint_version_list_zone_scope(self, requests_mock, mock_client):
+        """
+        Scenario: List entry point ruleset versions using the zone scope (default from client).
+        Given:
+         - A client configured with a zone_id.
+         - A valid phase argument.
+        When:
+         - cloudflare_waf_ruleset_entrypoint_version_list_command is called.
+        Then:
+         - The GET request hits the zone-scoped entrypoint versions URL.
+         - The outputs prefix is CloudflareWAF.Ruleset and all three versions are returned.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_entrypoint_version_list_command
+
+        phase = "http_request_firewall_managed"
+        mock_response = load_mock_response("list_entrypoint_versions.json")
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/phases/{phase}/entrypoint/versions"
+        requests_mock.get(url, json=mock_response)
+
+        args = {"phase": phase}
+
+        result = cloudflare_waf_ruleset_entrypoint_version_list_command(mock_client, args)
+
+        assert requests_mock.last_request.path == f"/client/v4/zones/{ZONE_ID}/rulesets/phases/{phase}/entrypoint/versions"
+        assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+        assert len(result.outputs) == 3
+        assert result.outputs[0]["version"] == "1"
+        assert result.outputs[2]["version"] == "3"
+
+    def test_entrypoint_version_list_limit_truncation(self, requests_mock, mock_client):
+        """
+        Scenario: List entry point ruleset versions with a limit smaller than the result count.
+        Given:
+         - A mock response with three versions.
+         - limit set to 2 in args.
+        When:
+         - cloudflare_waf_ruleset_entrypoint_version_list_command is called.
+        Then:
+         - Only the first two versions are returned (client-side truncation).
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_entrypoint_version_list_command
+
+        phase = "http_request_firewall_managed"
+        mock_response = load_mock_response("list_entrypoint_versions.json")
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/phases/{phase}/entrypoint/versions"
+        requests_mock.get(url, json=mock_response)
+
+        args = {"phase": phase, "limit": "2"}
+
+        result = cloudflare_waf_ruleset_entrypoint_version_list_command(mock_client, args)
+
+        assert len(result.outputs) == 2
+        assert result.outputs[0]["version"] == "1"
+        assert result.outputs[1]["version"] == "2"
+
+    def test_entrypoint_version_list_account_scope_override(self, requests_mock):
+        """
+        Scenario: List entry point ruleset versions using an account_id argument override.
+        Given:
+         - A client configured WITHOUT a zone_id.
+         - account_id passed via args.
+        When:
+         - cloudflare_waf_ruleset_entrypoint_version_list_command is called.
+        Then:
+         - The GET request hits the account-scoped entrypoint versions URL with no zone segment.
+        """
+        from CloudflareWAF import Client, cloudflare_waf_ruleset_entrypoint_version_list_command
+
+        client_no_zone = Client(
+            account_id=ACCOUNT_ID, zone_id=None, credentials=CREDENTIALS, base_url=BASE_URL, proxy=False, insecure=True
+        )
+
+        phase = "http_request_firewall_managed"
+        arg_account = "arg_account"
+        mock_response = load_mock_response("list_entrypoint_versions.json")
+        url = f"{BASE_URL}accounts/{arg_account}/rulesets/phases/{phase}/entrypoint/versions"
+        requests_mock.get(url, json=mock_response)
+
+        args = {"phase": phase, "account_id": arg_account}
+
+        result = cloudflare_waf_ruleset_entrypoint_version_list_command(client_no_zone, args)
+
+        assert requests_mock.last_request.path == f"/client/v4/accounts/{arg_account}/rulesets/phases/{phase}/entrypoint/versions"
+        assert "zones" not in requests_mock.last_request.path
+        assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+
+    def test_entrypoint_version_list_mutually_exclusive(self, mock_client):
+        """
+        Scenario: List entry point ruleset versions with BOTH zone_id and account_id in args.
+        Given:
+         - args contains both zone_id and account_id.
+        When:
+         - cloudflare_waf_ruleset_entrypoint_version_list_command is called.
+        Then:
+         - A ValueError matching "mutually exclusive" is raised by _resolve_scope_ids.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_entrypoint_version_list_command
+
+        args = {"phase": "http_request_firewall_managed", "zone_id": "arg_zone", "account_id": "arg_account"}
+
+        with pytest.raises(ValueError, match="mutually exclusive"):
+            cloudflare_waf_ruleset_entrypoint_version_list_command(mock_client, args)
+
+    def test_entrypoint_version_list_missing_phase(self, mock_client):
+        """
+        Scenario: List entry point ruleset versions without providing the phase argument.
+        Given:
+         - args contains no phase.
+        When:
+         - cloudflare_waf_ruleset_entrypoint_version_list_command is called.
+        Then:
+         - A ValueError with message "phase is required." is raised.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_entrypoint_version_list_command
+
+        with pytest.raises(ValueError, match="phase is required."):
+            cloudflare_waf_ruleset_entrypoint_version_list_command(mock_client, {})
+
+    def test_entrypoint_version_get_zone_scope(self, requests_mock, mock_client):
+        """
+        Scenario: Get a specific entry point ruleset version using the zone scope (default from client).
+        Given:
+         - A client configured with a zone_id.
+         - Valid phase and version arguments.
+        When:
+         - cloudflare_waf_ruleset_entrypoint_version_get_command is called.
+        Then:
+         - The GET request hits the zone-scoped entrypoint version URL including the version segment.
+         - The outputs prefix is CloudflareWAF.Ruleset and a rules[] sample matches.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_entrypoint_version_get_command
+
+        phase = "http_request_firewall_managed"
+        version = "2"
+        mock_response = load_mock_response("get_entrypoint_version.json")
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/phases/{phase}/entrypoint/versions/{version}"
+        requests_mock.get(url, json=mock_response)
+
+        args = {"phase": phase, "version": version}
+
+        result = cloudflare_waf_ruleset_entrypoint_version_get_command(mock_client, args)
+
+        assert (
+            requests_mock.last_request.path == f"/client/v4/zones/{ZONE_ID}/rulesets/phases/{phase}/entrypoint/versions/{version}"
+        )
+        assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+        assert result.outputs["version"] == "2"
+        assert result.outputs["rules"][0]["action"] == "execute"
+        assert result.outputs["rules"][0]["action_parameters"]["id"] == "managed_ruleset_id_1"
+
+    def test_entrypoint_version_get_missing_version(self, mock_client):
+        """
+        Scenario: Get an entry point ruleset version without providing the version argument.
+        Given:
+         - args contains phase but no version.
+        When:
+         - cloudflare_waf_ruleset_entrypoint_version_get_command is called.
+        Then:
+         - A ValueError with message "version is required." is raised.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_entrypoint_version_get_command
+
+        args = {"phase": "http_request_firewall_managed"}
+
+        with pytest.raises(ValueError, match="version is required."):
+            cloudflare_waf_ruleset_entrypoint_version_get_command(mock_client, args)
+
+    def test_by_tag_match(self, requests_mock, mock_client):
+        """
+        Scenario: List managed ruleset rules by tag when the tag matches rules.
+        Given:
+         - A client configured with an account_id.
+         - Valid ruleset_id, version and tag arguments.
+        When:
+         - cloudflare_waf_ruleset_rule_list_by_tag_command is called.
+        Then:
+         - The GET request hits the account-scoped by_tag URL.
+         - The matched rule's categories survive into outputs and the HR shows "Matched rules".
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_rule_list_by_tag_command
+
+        ruleset_id = "managed_ruleset_id_1"
+        version = "2"
+        tag = "wordpress"
+        mock_response = load_mock_response("by_tag_match.json")
+        url = f"{BASE_URL}accounts/{ACCOUNT_ID}/rulesets/{ruleset_id}/versions/{version}/by_tag/{tag}"
+        requests_mock.get(url, json=mock_response)
+
+        args = {"ruleset_id": ruleset_id, "version": version, "tag": tag}
+
+        result = cloudflare_waf_ruleset_rule_list_by_tag_command(mock_client, args)
+
+        assert (
+            requests_mock.last_request.path
+            == f"/client/v4/accounts/{ACCOUNT_ID}/rulesets/{ruleset_id}/versions/{version}/by_tag/{tag}"
+        )
+        assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+        assert result.outputs["rules"][0]["categories"] == ["wordpress", "php"]
+        assert "Managed ruleset" in result.readable_output
+        assert "Matched rules" in result.readable_output
+
+    def test_by_tag_no_match(self, requests_mock, mock_client):
+        """
+        Scenario: List managed ruleset rules by tag when the tag matches no rules.
+        Given:
+         - A mock response with no rules key.
+        When:
+         - cloudflare_waf_ruleset_rule_list_by_tag_command is called.
+        Then:
+         - The command succeeds, outputs has no "rules", and the HR shows the header
+           table but NOT "Matched rules".
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_rule_list_by_tag_command
+
+        ruleset_id = "managed_ruleset_id_1"
+        version = "2"
+        tag = "no-match-tag"
+        mock_response = load_mock_response("by_tag_no_match.json")
+        url = f"{BASE_URL}accounts/{ACCOUNT_ID}/rulesets/{ruleset_id}/versions/{version}/by_tag/{tag}"
+        requests_mock.get(url, json=mock_response)
+
+        args = {"ruleset_id": ruleset_id, "version": version, "tag": tag}
+
+        result = cloudflare_waf_ruleset_rule_list_by_tag_command(mock_client, args)
+
+        assert not result.outputs.get("rules")
+        assert "Managed ruleset" in result.readable_output
+        assert "Matched rules" not in result.readable_output
+
+    def test_by_tag_account_id_override(self, requests_mock):
+        """
+        Scenario: List managed ruleset rules by tag using an account_id argument override.
+        Given:
+         - A client whose account_id differs from the argument.
+         - account_id passed via args.
+        When:
+         - cloudflare_waf_ruleset_rule_list_by_tag_command is called.
+        Then:
+         - The GET request uses the argument account id, not the client's.
+        """
+        from CloudflareWAF import Client, cloudflare_waf_ruleset_rule_list_by_tag_command
+
+        client_other = Client(
+            account_id="instance_account", zone_id=None, credentials=CREDENTIALS, base_url=BASE_URL, proxy=False, insecure=True
+        )
+
+        ruleset_id = "managed_ruleset_id_1"
+        version = "2"
+        tag = "wordpress"
+        arg_account = "arg_account"
+        mock_response = load_mock_response("by_tag_match.json")
+        url = f"{BASE_URL}accounts/{arg_account}/rulesets/{ruleset_id}/versions/{version}/by_tag/{tag}"
+        requests_mock.get(url, json=mock_response)
+
+        args = {"ruleset_id": ruleset_id, "version": version, "tag": tag, "account_id": arg_account}
+
+        result = cloudflare_waf_ruleset_rule_list_by_tag_command(client_other, args)
+
+        assert (
+            requests_mock.last_request.path
+            == f"/client/v4/accounts/{arg_account}/rulesets/{ruleset_id}/versions/{version}/by_tag/{tag}"
+        )
+        assert "instance_account" not in requests_mock.last_request.path
+        assert result.outputs_prefix == "CloudflareWAF.Ruleset"
+
+    def test_by_tag_ignores_zone_id(self, requests_mock, mock_client):
+        """
+        Scenario: List managed ruleset rules by tag when a stray zone_id appears in args.
+        Given:
+         - args contains ruleset_id, version, tag AND a zone_id.
+        When:
+         - cloudflare_waf_ruleset_rule_list_by_tag_command is called.
+        Then:
+         - The built path is always account-scoped; the zone_id is ignored (no zone routing).
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_rule_list_by_tag_command
+
+        ruleset_id = "managed_ruleset_id_1"
+        version = "2"
+        tag = "wordpress"
+        mock_response = load_mock_response("by_tag_match.json")
+        url = f"{BASE_URL}accounts/{ACCOUNT_ID}/rulesets/{ruleset_id}/versions/{version}/by_tag/{tag}"
+        requests_mock.get(url, json=mock_response)
+
+        args = {"ruleset_id": ruleset_id, "version": version, "tag": tag, "zone_id": "stray_zone"}
+
+        cloudflare_waf_ruleset_rule_list_by_tag_command(mock_client, args)
+
+        assert (
+            requests_mock.last_request.path
+            == f"/client/v4/accounts/{ACCOUNT_ID}/rulesets/{ruleset_id}/versions/{version}/by_tag/{tag}"
+        )
+        assert "zones" not in requests_mock.last_request.path
+
+    def test_by_tag_missing_tag(self, mock_client):
+        """
+        Scenario: List managed ruleset rules by tag without providing the tag argument.
+        Given:
+         - args contains ruleset_id and version but no tag.
+        When:
+         - cloudflare_waf_ruleset_rule_list_by_tag_command is called.
+        Then:
+         - A ValueError with message "tag is required." is raised.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_rule_list_by_tag_command
+
+        args = {"ruleset_id": "managed_ruleset_id_1", "version": "2"}
+
+        with pytest.raises(ValueError, match="tag is required."):
+            cloudflare_waf_ruleset_rule_list_by_tag_command(mock_client, args)
+
+    def test_by_tag_missing_ruleset_id(self, mock_client):
+        """
+        Scenario: List managed ruleset rules by tag without providing the ruleset_id argument.
+        Given:
+         - args contains version and tag but no ruleset_id.
+        When:
+         - cloudflare_waf_ruleset_rule_list_by_tag_command is called.
+        Then:
+         - A ValueError with message "ruleset_id is required." is raised.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_rule_list_by_tag_command
+
+        args = {"version": "2", "tag": "wordpress"}
+
+        with pytest.raises(ValueError, match="ruleset_id is required."):
+            cloudflare_waf_ruleset_rule_list_by_tag_command(mock_client, args)
+
+    def test_by_tag_missing_version(self, mock_client):
+        """
+        Scenario: List managed ruleset rules by tag without providing the version argument.
+        Given:
+         - args contains ruleset_id and tag but no version.
+        When:
+         - cloudflare_waf_ruleset_rule_list_by_tag_command is called.
+        Then:
+         - A ValueError with message "version is required." is raised.
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_rule_list_by_tag_command
+
+        args = {"ruleset_id": "managed_ruleset_id_1", "tag": "wordpress"}
+
+        with pytest.raises(ValueError, match="version is required."):
+            cloudflare_waf_ruleset_rule_list_by_tag_command(mock_client, args)
