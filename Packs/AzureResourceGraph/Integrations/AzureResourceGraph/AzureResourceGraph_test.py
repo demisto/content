@@ -170,7 +170,7 @@ def test_test_module_command(mocker) -> None:
         "cred_auth_id": {"password": "test_api"},
         "unsecure": False,
         "proxy": False,
-        "private_key": "test-key",
+        "private_key": {"password": "test-key"},
         "self_deployed": True,
         "enc_key": "test",
     }
@@ -326,7 +326,7 @@ class TestGovAccountToggle:
             "cred_auth_id": {"password": "test_api"},
             "unsecure": False,
             "proxy": False,
-            "private_key": "test-key",
+            "private_key": {"password": "test-key"},
             "self_deployed": True,
             "enc_key": "test",
             "gov_account": True,
@@ -368,7 +368,7 @@ class TestGovAccountToggle:
             "cred_auth_id": {"password": "test_api"},
             "unsecure": False,
             "proxy": False,
-            "private_key": "test-key",
+            "private_key": {"password": "test-key"},
             "self_deployed": True,
             "enc_key": "test",
         }
