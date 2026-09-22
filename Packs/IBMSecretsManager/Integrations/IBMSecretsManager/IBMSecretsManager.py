@@ -134,7 +134,7 @@ def parse_sse_results(raw_response: str) -> list[dict]:
         if line.startswith(":"):  # keep-alive comment
             continue
         if line.startswith("data:"):
-            data_lines.append(line[len("data:"):].lstrip())
+            data_lines.append(line[len("data:") :].lstrip())
     flush()  # trailing frame not followed by a blank line
     demisto.debug(f"[parse_sse_results] Extracted {len(events)} events.")
     return events
@@ -312,8 +312,10 @@ def main() -> None:  # pragma: no cover
             demisto.debug(f"[main] fetch-events last_run={last_run}.")
             events, new_last_run = fetch_events(client, query=DEFAULT_QUERY, page_size=page_size, last_run=last_run)
             if events:
-                demisto.debug(f"[main] Sending {len(events)} events to Cortex.")
-                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+                demisto.debug(f"[main] Streaming {len(events)} events to Cortex.")
+                # use_streaming_send keeps peak memory flat but consumes the events iterable; safe here since
+                # fetch-events does not reuse the list afterwards. Not used in get-events (needs events for output).
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT, use_streaming_send=True)
             demisto.setLastRun(new_last_run)
             demisto.debug(f"[main] Saved last_run={new_last_run}.")
 
