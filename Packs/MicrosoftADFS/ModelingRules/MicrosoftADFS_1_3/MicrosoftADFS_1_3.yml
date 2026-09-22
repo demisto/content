@@ -1,5 +1,4 @@
 fromversion: 8.3.0
-toversion: 8.14.0
 id: Microsoft_ADFS_Collection
 name: Microsoft ADFS Collection
 rules: ''
