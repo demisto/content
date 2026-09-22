@@ -515,8 +515,7 @@ def test_create_search_alerts_filters(args, expected_params, is_fetch):
                 "service_source": "microsoftDefenderForCloudApps",
                 "status": "inProgress",
             },
-            "classification eq 'truePositive' and serviceSource eq 'microsoftDefenderForCloudApps' "
-            "and status eq 'inProgress'",
+            "classification eq 'truePositive' and serviceSource eq 'microsoftDefenderForCloudApps' " "and status eq 'inProgress'",
         ),
         (
             {"filter": "Category eq 'Malware'", "service_source": "microsoftDefenderForIdentity"},
