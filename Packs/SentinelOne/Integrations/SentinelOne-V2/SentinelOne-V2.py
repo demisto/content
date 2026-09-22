@@ -6135,6 +6135,7 @@ def fetch_uam_alerts(client: Client, args):
         uam_last_fetch, view_type, fetch_limit, filter_by_updated_at=False, end_timestamp=uam_query_to
     )
 
+    last_incident_date = uam_last_fetch
     for alert in uam_alerts:
         alert.update(get_mirroring_fields(args))
         incident = to_incident("UAM Alert", alert)
@@ -6142,9 +6143,16 @@ def fetch_uam_alerts(client: Client, args):
         incident_date = int(date_occurred_dt.timestamp() * 1000)
         if incident_date > uam_last_fetch:
             incidents.append(incident)
+        if incident_date > last_incident_date:
+            last_incident_date = incident_date
 
-    # Always advance to the end of the queried window, even if no alerts were found,
-    # so the next fetch starts from here and does not re-query the same window.
+    # If we received a full page there may be more alerts in the window — advance to the
+    # last seen alert's date so the next run continues from there (handles backfill / catch-up).
+    # If the page was partial the window is exhausted — advance to uam_query_to so the
+    # window slides forward and we do not re-query the same period.
+    fetch_limit_int = int(fetch_limit) if fetch_limit else 1000
+    if len(uam_alerts) >= fetch_limit_int and last_incident_date > uam_last_fetch:
+        return incidents, last_incident_date
     return incidents, uam_query_to
 
 
