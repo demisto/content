@@ -26,7 +26,7 @@ configuration:
   section: Collect
 - additionalinfo: |-
     ID of the project to use for fetching incidents. If ID is not provided it will be taken from the provided service account JSON.
-    Only required if the XSOAR instance is running on AWS or Azure cloud solutions.
+    Only required if the Cortex XSOAR instance is running on AWS or Azure cloud solutions.
   display: Project ID
   name: project_id
   type: 0

@@ -1,5 +1,5 @@
 Security Command Center is a security and risk management platform for Google Cloud. Security Command Center enables you to understand your security and data attack surface by providing asset inventory and discovery, identifying vulnerabilities and threats, and helping you mitigate and remediate risks across an organization. This integration helps you to perform tasks related to findings and assets.
-This integration was integrated and tested with version v1 of GoogleCloudSCC.
+This integration was integrated and tested with version v1 and v2 APIs of GoogleCloudSCC.
 
 ## Detailed Description
 
@@ -79,7 +79,7 @@ To fetch incidents using Google Pub/Sub, we need to configure Pub/Sub first. Thi
 * The basic parameters required for setting up pub/sub notifications are ORGANIZATION_ID, PUBSUB_TOPIC, DESCRIPTION and FILTER.
 * Before creating a Pub/Sub notification, make sure to check the filter parameters using the **google-cloud-scc-v2-finding-list** command provided in this integration (**google-cloud-scc-finding-list** is deprecated). The total size applicable for the filter provided can be checked using _Total retrieved findings_ available inside the command results section. A maximum of 200 findings per minute is recommended.
 
-## Configure GoogleCloudSCC on Cortex XSOAR
+## Configure GoogleCloudSCC on Cortex
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for GoogleCloudSCC.
@@ -90,7 +90,7 @@ To fetch incidents using Google Pub/Sub, we need to configure Pub/Sub first. Thi
     | Service Account Configuration | If the application runs on cloud provider (AWS, Azure) use workload identity federation configuration setup file otherwise use service account credential file. | True |
     | Organization ID | Organization ID defines from which organization incidents need to be fetched. | True |
     | Fetch incidents | Enables fetch incident. | False |
-    | Project ID | ID of the project to use for fetching incidents. If ID is not provided it will be taken from the provided service account JSON. <br>Only required if the XSOAR instance is running on AWS or Azure cloud solutions. | False |
+    | Project ID | ID of the project to use for fetching incidents. If ID is not provided it will be taken from the provided service account JSON. <br>Only required if the Cortex XSOAR instance is running on AWS or Azure cloud solutions. | False |
     | Subscription ID | ID of subscription from which to fetch incidents. | False |
     | Max Incidents | The maximum number of incidents to fetch every time. | False |
     | Incident type | Type of incident. | False |
@@ -858,7 +858,7 @@ This command is backed by the Security Command Center v1 API. Its own behavior, 
 
 #### Command Example
 
-```!google-cloud-scc-finding-state-update name="organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d" state=ACTIVE"```
+```!google-cloud-scc-finding-state-update name="organizations/595779152576/sources/10134421585261057824/findings/00002906967111ea87141217baf6db4d" state="ACTIVE"```
 
 #### Context Example
 
@@ -1538,7 +1538,7 @@ Lists an organization or source's findings using the Security Command Center v2 
 | GoogleCloudSCC.Token.nextPageToken | String | Token to retrieve the next page of results, or empty if there are no more results. |
 | GoogleCloudSCC.Token.name | String | Name of the command. |
 
-#### Command Example
+#### Command example
 
 ```!google-cloud-scc-v2-finding-list location="global" sourceTypeId="-" pageSize="3" state="ACTIVE"```
 
@@ -3043,7 +3043,7 @@ Update an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.discoveredWorkload.detectedRelevantKeywords | Boolean | A boolean flag set to true if associated keywords strongly predict the workload type. |
 | GoogleCloudSCC.FindingV2.discoveredWorkload.detectedRelevantHardware | Boolean | A boolean flag set to true if associated hardware strongly predicts the workload type. |
 
-#### Command Example
+#### Command example
 
 ```!google-cloud-scc-v2-finding-update name="organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a" severity="CRITICAL"```
 
@@ -4415,7 +4415,7 @@ Update the state of an organization's or source's finding using the Security Com
 | GoogleCloudSCC.FindingV2.discoveredWorkload.detectedRelevantKeywords | Boolean | A boolean flag set to true if associated keywords strongly predict the workload type. |
 | GoogleCloudSCC.FindingV2.discoveredWorkload.detectedRelevantHardware | Boolean | A boolean flag set to true if associated hardware strongly predicts the workload type. |
 
-#### Command Example
+#### Command example
 
 ```!google-cloud-scc-v2-finding-state-update name="organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a" state="INACTIVE"```
 
@@ -5786,7 +5786,7 @@ Mute an organization's or source's finding using the Security Command Center v2 
 | GoogleCloudSCC.FindingV2.discoveredWorkload.detectedRelevantKeywords | Boolean | A boolean flag set to true if associated keywords strongly predict the workload type. |
 | GoogleCloudSCC.FindingV2.discoveredWorkload.detectedRelevantHardware | Boolean | A boolean flag set to true if associated hardware strongly predicts the workload type. |
 
-#### Command Example
+#### Command example
 
 ```!google-cloud-scc-finding-mute name="organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a"```
 
@@ -7157,7 +7157,7 @@ Unmute an organization's or source's finding using the Security Command Center v
 | GoogleCloudSCC.FindingV2.discoveredWorkload.detectedRelevantKeywords | Boolean | A boolean flag set to true if associated keywords strongly predict the workload type. |
 | GoogleCloudSCC.FindingV2.discoveredWorkload.detectedRelevantHardware | Boolean | A boolean flag set to true if associated hardware strongly predicts the workload type. |
 
-#### Command Example
+#### Command example
 
 ```!google-cloud-scc-finding-unmute name="organizations/1094826489209/sources/5629340921983475201/locations/global/findings/6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a"```
 
@@ -8037,7 +8037,7 @@ Get a mute rule (mute config) of an organization using the Security Command Cent
 | GoogleCloudSCC.MuteRule.expiryTime | String | The expiry of the mute rule. Only applicable for dynamic mute rules. |
 | GoogleCloudSCC.MuteRule.cryptoKeyName | String | The resource name of the Cloud KMS CryptoKey used to encrypt this configuration data, if CMEK was enabled during Security Command Center activation. |
 
-#### Command Example
+#### Command example
 
 ```!google-cloud-scc-mute-rule-get name="organizations/123/locations/global/muteConfigs/mute-cryptomining-alerts"```
 
@@ -8103,7 +8103,7 @@ Create a mute rule (mute config) for an organization using the Security Command 
 | GoogleCloudSCC.MuteRule.expiryTime | String | The expiry of the mute rule. Only applicable for dynamic mute rules. |
 | GoogleCloudSCC.MuteRule.cryptoKeyName | String | The resource name of the Cloud KMS CryptoKey used to encrypt this configuration data, if CMEK was enabled during Security Command Center activation. |
 
-#### Command Example
+#### Command example
 
 ```!google-cloud-scc-mute-rule-create muteConfigId="mute-cryptomining-alerts" filter="severity=\"LOW\" AND category=\"Malware: Cryptomining Bad IP\"" type="DYNAMIC" description="Mute low severity cryptomining findings for the staging project." expiryTime="2020-03-18T07:26:42Z" location="global"```
 
