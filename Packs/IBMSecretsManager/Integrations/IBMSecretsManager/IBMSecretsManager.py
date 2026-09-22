@@ -296,17 +296,30 @@ def fetch_events(client: Client, query: str, max_events: int, last_run: dict) ->
 
 
 def get_events_command(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
-    """Manually pull events (for debugging / on-demand use) without persisting run state.
+    """Manually pull events over a given time window (for debugging / on-demand use).
+
+    This does not persist or read run state. The time window is controlled by the optional
+    ``start_date`` / ``end_date`` arguments (any date format supported by ``arg_to_datetime``,
+    e.g. ``2026-07-13T00:00:00Z`` or ``3 days``). When omitted, ``start_date`` defaults to the
+    look-back window and ``end_date`` defaults to now.
 
     Args:
         client (Client): The configured client.
-        args (dict): Command arguments (``limit``).
+        args (dict): Command arguments (``limit``, ``start_date``, ``end_date``).
 
     Returns:
         tuple[list[dict], CommandResults]: The events and their human-readable representation.
     """
     limit = arg_to_number(args.get("limit")) or 50
-    events, _ = fetch_events(client, query=DEFAULT_QUERY, max_events=limit, last_run={})
+
+    end_dt = arg_to_datetime(args.get("end_date")) or datetime.now(timezone.utc)
+    start_dt = arg_to_datetime(args.get("start_date")) or (end_dt - timedelta(hours=1))
+    start_date = start_dt.strftime(DATE_FORMAT)
+    end_date = end_dt.strftime(DATE_FORMAT)
+
+    raw_events = client.query_events(query=DEFAULT_QUERY, start_date=start_date, end_date=end_date, limit=limit)
+    events = raw_events[:limit]
+    add_time_to_events(events)
 
     human_readable = tableToMarkdown(
         name="IBM Secrets Manager Events",

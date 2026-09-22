@@ -32,6 +32,8 @@ Manual command to fetch events from IBM Secrets Manager and display them. Used m
 | --- | --- | --- |
 | should_push_events | If true, the fetched events are sent to Cortex. If false, only displayed. Possible values are: true, false. Default is false. | Optional |
 | limit | The maximum number of events to return. Default is 50. | Optional |
+| start_date | The start of the time window to query (inclusive). Accepts an absolute date (e.g. 2026-07-13T00:00:00Z) or a relative time (e.g. 3 days). Defaults to one hour before end_date. | Optional |
+| end_date | The end of the time window to query (exclusive). Accepts an absolute date (e.g. 2026-07-13T00:00:00Z) or a relative time (e.g. 1 hour). Defaults to now. | Optional |
 
 #### Context Output
 

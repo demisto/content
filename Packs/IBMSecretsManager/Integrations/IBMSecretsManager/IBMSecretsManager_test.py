@@ -7,6 +7,7 @@ from IBMSecretsManager import (
     dedup_events,
     fetch_events,
     get_event_timestamp,
+    get_events_command,
     parse_sse_results,
 )
 
@@ -258,3 +259,49 @@ def test_get_access_token_remints_when_within_safety_window(requests_mock, mocke
     client = build_client()
     assert client.get_access_token() == "new"
     assert adapter.call_count == 1
+
+
+""" get_events_command """
+
+
+def test_get_events_command_with_explicit_date_range(requests_mock):
+    """
+    Given: explicit start_date and end_date arguments.
+    When: running the get-events command.
+    Then: the query is issued for that window and events are returned and enriched.
+    """
+    requests_mock.post(f"{IAM_URL}/identity/token", json={"access_token": "tok", "expires_in": 3600})
+    query_adapter = requests_mock.post(
+        f"{SERVER_URL}/v1/query",
+        text=sse_frame([make_event("1", "2026-07-13T00:00:01.000Z")]),
+    )
+    client = build_client()
+    args = {"start_date": "2026-07-13T00:00:00Z", "end_date": "2026-07-13T01:00:00Z", "limit": "10"}
+    events, results = get_events_command(client, args)
+
+    assert len(events) == 1
+    assert events[0]["_source_log_type"] == "ibm_secrets_manager_audit"
+    body = query_adapter.last_request.json()
+    assert body["metadata"]["start_date"].startswith("2026-07-13T00:00:00")
+    assert body["metadata"]["end_date"].startswith("2026-07-13T01:00:00")
+    assert "IBM Secrets Manager Events" in results.readable_output
+
+
+def test_get_events_command_defaults_window_when_dates_missing(requests_mock):
+    """
+    Given: no start_date/end_date arguments.
+    When: running the get-events command.
+    Then: a default one-hour look-back window is used and a query is still issued.
+    """
+    requests_mock.post(f"{IAM_URL}/identity/token", json={"access_token": "tok", "expires_in": 3600})
+    query_adapter = requests_mock.post(
+        f"{SERVER_URL}/v1/query",
+        text=sse_frame([make_event("1", "2026-07-13T00:00:01.000Z")]),
+    )
+    client = build_client()
+    events, _ = get_events_command(client, {})
+
+    assert len(events) == 1
+    body = query_adapter.last_request.json()
+    assert "start_date" in body["metadata"]
+    assert "end_date" in body["metadata"]
