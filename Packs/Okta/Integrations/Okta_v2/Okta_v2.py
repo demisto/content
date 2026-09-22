@@ -1260,27 +1260,6 @@ def main():
     try:
         params = demisto.params()
 
-        # [UCP-VERIFY] Binding 3 (field delivered-name -> demisto.params() key) for the
-        # xsoar-okta-v2 handler. Confirms every manifest field arrives under the name the code
-        # reads. Secrets are logged only as present/absent (never values). Under UCP the brokered
-        # credential is NOT in params (url/insecure/proxy come from general_configurations).
-        demisto.debug(
-            "[UCP-VERIFY][Okta_v2] delivered params: "
-            "url={!r} insecure={!r} proxy={!r} use_oauth={!r} "
-            "client_id_present={} private_key_present={} key_id_present={} "
-            "jwt_algorithm={!r} legacy_apitoken_present={} credentials.password_present={}".format(
-                params.get("url"),
-                params.get("insecure"),
-                params.get("proxy"),
-                params.get("use_oauth"),
-                bool(params.get("client_id")),
-                bool(params.get("private_key")),
-                bool(params.get("key_id")),
-                params.get("jwt_algorithm"),
-                bool(params.get("apitoken")),
-                bool(params.get("credentials", {}).get("password")),
-            )
-        )
         demisto.debug(f"Command being called is {demisto.command()}")
         commands = {
             "test-module": module_test,
