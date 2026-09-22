@@ -3,6 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
+import time
 import traceback
 from datetime import datetime, UTC
 
@@ -14,6 +15,7 @@ and the commands to perform different updates on the alerts
 
 import urllib3
 from typing import Any, Callable  # noqa: UP035
+from urllib.parse import urlsplit
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -50,8 +52,24 @@ ACTIVE_QUEUE_STATES = {"doppel_review", "actioned", "needs_confirmation"}
 # Client attribution sent with every Doppel API request (usage attribution only; the header
 # is optional server-side and never affects request handling). The version is the pack
 # version and must be bumped on each release (pack_metadata.json is not readable at runtime).
-PACK_VERSION = "1.2.0"
+PACK_VERSION = "1.4.0"
 CLIENT_ATTRIBUTION = f"xsoar/{PACK_VERSION}"
+
+# --- API V2 (OAuth 2.0 client credentials) constants ---
+API_VERSION_V1 = "v1"
+API_VERSION_V2 = "v2"
+OAUTH_TOKEN_PATH = "/oauth/token"
+OAUTH_AUDIENCE = "doppel-external"
+# Key under which the minted token is cached in the integration context.
+OAUTH_CONTEXT_KEY = "oauth_token"
+# Tracks which screenshot version (GCS blob path) was last attached per alert, so
+# re-signed URLs for an unchanged screenshot never produce duplicate file entries.
+SCREENSHOT_VERSIONS_CONTEXT_KEY = "screenshot_versions"
+SCREENSHOT_VERSIONS_MAX_TRACKED = 5000
+# Tokens are valid for 24h; refresh a bit early so a token never expires mid-request.
+OAUTH_EXPIRY_SAFETY_MARGIN_SECONDS = 300
+# Fallback if the token response omits expires_in (documented value: 86400 = 24h).
+OAUTH_DEFAULT_EXPIRES_IN_SECONDS = 86400
 
 
 """ CLIENT CLASS """
@@ -69,28 +87,42 @@ class Client(BaseClient):
 
     def __init__(
         self,
-        base_url,
-        api_key,
-        user_api_key=None,
-        organization_code=None,
-        verify=None,
-        proxy=None,
-        retry_total=DEFAULT_RETRY_TOTAL,
-        retry_backoff_factor=DEFAULT_RETRY_BACKOFF_FACTOR,
-        retry_status_list=DEFAULT_RETRY_STATUS_LIST,
-    ):
+        base_url: str,
+        api_key: str | None = None,
+        user_api_key: str | None = None,
+        organization_code: str | None = None,
+        verify: bool | None = None,
+        proxy: bool | None = None,
+        retry_total: int = DEFAULT_RETRY_TOTAL,
+        retry_backoff_factor: int = DEFAULT_RETRY_BACKOFF_FACTOR,
+        retry_status_list: list[int] = DEFAULT_RETRY_STATUS_LIST,
+        api_version: str = API_VERSION_V1,
+        oauth_client_id: str | None = None,
+        oauth_client_secret: str | None = None,
+        token_url: str | None = None,
+    ) -> None:
         super().__init__(base_url, verify=verify, proxy=proxy)
+
+        self._api_version = api_version
+        self._oauth_client_id = oauth_client_id
+        self._oauth_client_secret = oauth_client_secret
+        self._token_url = token_url
 
         self._headers = {
             "accept": "application/json",
-            "x-api-key": api_key,
             "x-doppel-client": CLIENT_ATTRIBUTION,
             "User-Agent": f"doppel-{CLIENT_ATTRIBUTION}",
         }
-        if user_api_key:
-            self._headers["x-user-api-key"] = user_api_key
-        if organization_code:
-            self._headers["x-organization-code"] = organization_code
+        if api_version == API_VERSION_V2:
+            # The Authorization: Bearer header is attached lazily per request
+            # (see _http_request) so the token is only minted when needed.
+            pass
+        else:
+            self._headers["x-api-key"] = api_key
+            if user_api_key:
+                self._headers["x-user-api-key"] = user_api_key
+            if organization_code:
+                self._headers["x-organization-code"] = organization_code
 
         # Store retry configuration on the client and leverage BaseClient._http_request parameters
         self._retries = retry_total
@@ -98,9 +130,102 @@ class Client(BaseClient):
         self._status_list_to_retry = retry_status_list
 
         demisto.debug(
-            f"Initialized HTTP client using BaseClient._http_request retry params: total={retry_total}, "
-            f"backoff_factor={retry_backoff_factor}, status_list={retry_status_list}"
+            f"Initialized HTTP client (api_version={api_version}) using BaseClient._http_request retry params: "
+            f"total={retry_total}, backoff_factor={retry_backoff_factor}, status_list={retry_status_list}"
         )
+
+    def _http_request(self, *args: Any, **kwargs: Any) -> Any:
+        """Wrap BaseClient._http_request with V2 bearer-token handling.
+
+        For V1 this is a pass-through. For V2, a valid cached token is attached
+        as a Bearer header; on a 401 (token revoked or expired early) the cache
+        is invalidated and the request is retried exactly once with a fresh token.
+        """
+        if self._api_version != API_VERSION_V2:
+            return super()._http_request(*args, **kwargs)
+
+        self._headers["Authorization"] = f"Bearer {self._get_oauth_token()}"
+        try:
+            return super()._http_request(*args, **kwargs)
+        except DemistoException as e:
+            status_code = getattr(getattr(e, "res", None), "status_code", None)
+            if status_code != 401:
+                raise
+            demisto.debug("Received 401 with cached OAuth token; minting a fresh token and retrying once.")
+            self._invalidate_cached_token()
+            self._headers["Authorization"] = f"Bearer {self._mint_oauth_token()}"
+            return super()._http_request(*args, **kwargs)
+
+    def _get_oauth_token(self) -> str:
+        """Return a valid access token, reusing the integration-context cache when possible.
+
+        Token caching is NOT an optimization: Doppel's token endpoint allows only a
+        handful of successful mints per client per hour, so every code path must go
+        through this cache. Do not replace this with a mint-per-request call.
+        """
+        cached = (get_integration_context() or {}).get(OAUTH_CONTEXT_KEY) or {}
+        access_token = cached.get("access_token")
+        expiry_epoch = arg_to_number(cached.get("expiry_epoch")) or 0
+        if access_token and int(time.time()) < expiry_epoch:
+            return access_token
+        return self._mint_oauth_token()
+
+    def _mint_oauth_token(self) -> str:
+        """Mint a new access token via the client-credentials flow and cache it."""
+
+        def _token_error_handler(response: requests.Response) -> None:
+            if response.status_code == 429:
+                retry_after = response.headers.get("Retry-After", "3600")
+                raise DemistoException(
+                    f"Doppel token request limit reached (a few successful token requests are allowed per hour "
+                    f"per Client ID). Retry after {retry_after} seconds. If this recurs, check whether other "
+                    f"tools share this Client ID and mint tokens aggressively."
+                )
+            if response.status_code in (401, 403):
+                raise DemistoException(
+                    "Authorization Error while requesting an OAuth token: make sure the Client ID and "
+                    "Client Secret are correctly set."
+                )
+            raise DemistoException(f"Failed to obtain an OAuth token: {response.status_code} {response.text}")
+
+        # Call super() directly: going through self._http_request would try to
+        # attach a Bearer token and recurse back into this method.
+        response = super()._http_request(
+            method="POST",
+            full_url=self._token_url,
+            headers={
+                "accept": "application/json",
+                "Content-Type": "application/json",
+                "x-doppel-client": CLIENT_ATTRIBUTION,
+                "User-Agent": f"doppel-{CLIENT_ATTRIBUTION}",
+            },
+            json_data={
+                "client_id": self._oauth_client_id,
+                "client_secret": self._oauth_client_secret,
+                "audience": OAUTH_AUDIENCE,
+                "grant_type": "client_credentials",
+            },
+            resp_type="response",
+            ok_codes=(200,),
+            error_handler=_token_error_handler,
+        )
+        token_data = response.json()
+        access_token = token_data.get("access_token")
+        if not access_token:
+            raise DemistoException("The Doppel token endpoint returned a response without an access_token.")
+
+        expires_in = arg_to_number(token_data.get("expires_in")) or OAUTH_DEFAULT_EXPIRES_IN_SECONDS
+        expiry_epoch = int(time.time()) + expires_in - OAUTH_EXPIRY_SAFETY_MARGIN_SECONDS
+        context = get_integration_context() or {}
+        context[OAUTH_CONTEXT_KEY] = {"access_token": access_token, "expiry_epoch": expiry_epoch}
+        set_integration_context(context)
+        demisto.debug(f"Minted a new OAuth token; cached until epoch {expiry_epoch}.")
+        return access_token
+
+    def _invalidate_cached_token(self) -> None:
+        context = get_integration_context() or {}
+        if context.pop(OAUTH_CONTEXT_KEY, None) is not None:
+            set_integration_context(context)
 
     def get_alert(self, id: str, entity: str) -> dict[str, Any]:
         """Return the alert's details when provided the Alert ID or Entity as input
@@ -129,6 +254,32 @@ class Client(BaseClient):
             status_list_to_retry=self._status_list_to_retry,
         )
         return response_content
+
+    def download_screenshot(self, signed_url: str) -> bytes:
+        """Download the alert screenshot binary from its pre-signed GCS URL.
+
+        The URL is authenticated by its own signature, so this call deliberately goes
+        through ``super()._http_request`` (bypassing the V2 bearer-token wrapper) with
+        explicit minimal headers: Doppel API keys or OAuth tokens must never be sent
+        to the storage host.
+
+        :type signed_url: ``str``
+        :param signed_url: The pre-signed screenshot URL from an alert payload.
+
+        :return: The raw image bytes.
+        :rtype: ``bytes``
+        """
+        if urlsplit(signed_url).scheme != "https":
+            raise DemistoException(f"Refusing to download screenshot over a non-HTTPS URL: {signed_url}")
+        return super()._http_request(
+            method="GET",
+            full_url=signed_url,
+            headers={"Accept": "*/*"},
+            resp_type="content",
+            retries=self._retries,
+            backoff_factor=self._backoff_factor,
+            status_list_to_retry=self._status_list_to_retry,
+        )
 
     def update_alert(
         self,
@@ -290,14 +441,80 @@ def _reopen_entry_if_revived(updated_doppel_alert: dict, audit_logs: Any, last_u
             continue
         if log_time and log_time > last_update:
             demisto.debug(
-                f"Doppel - Alert moved into active queue {queue_state!r} at {audit_log.get('timestamp')}; "
-                f"sending reopen entry."
+                f"Doppel - Alert moved into active queue {queue_state!r} at {audit_log.get('timestamp')}; sending reopen entry."
             )
             return {"Type": EntryType.NOTE, "Contents": {"dbotIncidentReopen": True}, "ContentsFormat": EntryFormat.JSON}
     return None
 
 
-def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id: str, last_update_str: str):
+def _screenshot_blob_path(screenshot_url: str) -> str:
+    """Return the stable identity of a screenshot: host + object path, without the signature.
+
+    Doppel signs screenshot URLs fresh on every API response (the signature and expiry
+    live in the query string), while the underlying GCS object path only changes when a
+    genuinely new screenshot version is captured. Stripping the query string therefore
+    yields a stable dedup key across re-signed URLs.
+    """
+    parts = urlsplit(screenshot_url)
+    return f"{parts.netloc}{parts.path}"
+
+
+def _screenshot_version_label(blob_path: str) -> str:
+    """Short human-readable version label: the GCS object basename."""
+    return blob_path.rsplit("/", 1)[-1] or blob_path
+
+
+def _screenshot_file_name(alert_id: str, blob_path: str) -> str:
+    """Version-stamped file name so successive screenshot versions coexist in the War Room."""
+    base = _screenshot_version_label(blob_path)
+    if "." not in base:
+        base = f"{base}.png"
+    return f"{alert_id}-screenshot-{base}"
+
+
+def _get_tracked_screenshot_versions() -> dict[str, str]:
+    return (get_integration_context() or {}).get(SCREENSHOT_VERSIONS_CONTEXT_KEY) or {}
+
+
+def _track_screenshot_version(alert_id: str, blob_path: str) -> None:
+    """Record the attached screenshot version, pruning the oldest entries beyond the cap."""
+    context = get_integration_context() or {}
+    versions: dict[str, str] = context.get(SCREENSHOT_VERSIONS_CONTEXT_KEY) or {}
+    versions.pop(alert_id, None)  # re-insert to refresh recency (dicts keep insertion order)
+    versions[alert_id] = blob_path
+    while len(versions) > SCREENSHOT_VERSIONS_MAX_TRACKED:
+        versions.pop(next(iter(versions)))
+    context[SCREENSHOT_VERSIONS_CONTEXT_KEY] = versions
+    set_integration_context(context)
+
+
+def _attach_screenshot_if_new(
+    client: Client, alert_id: str, screenshot_url: str | None, force: bool = False
+) -> tuple[dict[str, Any] | None, str | None, str]:
+    """Download and build a file entry when the alert's screenshot version is new.
+
+    Shared by the ``doppel-get-alert-screenshot`` command (manual/playbook trigger) and
+    incoming mirroring (opt-in auto-attach): fetch happens seconds after the URL is
+    signed, so the 60-minute signed-URL expiry can never bite, and the file bytes are
+    stored durably in XSOAR itself.
+
+    :return: (file entry or None, blob path or None, human-readable message)
+    """
+    if not screenshot_url:
+        return None, None, f"Alert {alert_id} has no screenshot available."
+    blob_path = _screenshot_blob_path(screenshot_url)
+    version = _screenshot_version_label(blob_path)
+    if not force and _get_tracked_screenshot_versions().get(alert_id) == blob_path:
+        return None, blob_path, f"Screenshot for alert {alert_id} is already current (version {version}); nothing attached."
+    image_bytes = client.download_screenshot(screenshot_url)
+    file_entry = fileResult(_screenshot_file_name(alert_id, blob_path), image_bytes)
+    _track_screenshot_version(alert_id, blob_path)
+    return file_entry, blob_path, f"Attached screenshot version {version} for alert {alert_id}."
+
+
+def _get_remote_updated_incident_data_with_entry(
+    client: Client, doppel_alert_id: str, last_update_str: str, attach_screenshots: bool = False
+):
     """
     Retrieves updated incident data from the remote system based on the given alert ID and last update timestamp.
 
@@ -354,6 +571,19 @@ def _get_remote_updated_incident_data_with_entry(client: Client, doppel_alert_id
     reopen_entry = _reopen_entry_if_revived(updated_doppel_alert, audit_logs, last_update)
     if reopen_entry:
         entries.append(reopen_entry)
+
+    # Opt-in: attach the alert screenshot as a durable file entry when its version changed.
+    # A failed download must never block the field sync itself.
+    if attach_screenshots:
+        try:
+            screenshot_entry, _, message = _attach_screenshot_if_new(
+                client, doppel_alert_id, updated_doppel_alert.get("screenshot_url")
+            )
+            demisto.debug(f"Doppel - {message}")
+            if screenshot_entry:
+                entries.append(screenshot_entry)
+        except Exception as e:
+            demisto.debug(f"Doppel - Failed to attach screenshot for {doppel_alert_id}: {e}")
 
     demisto.debug(f"Successfully returning the updated alert and entries: {updated_doppel_alert, entries}")
     return updated_doppel_alert, entries
@@ -435,7 +665,7 @@ def test_module(client: Client) -> str:
 
     except DemistoException as e:
         if "Forbidden" in str(e) or "Authorization" in str(e):
-            message = "Authorization Error: make sure API Key is correctly set"
+            message = "Authorization Error: make sure the API Key (V1) or the Client ID and Client Secret (V2) are correctly set"
         else:
             raise e
     return message
@@ -647,6 +877,46 @@ def doppel_create_abuse_alert_command(client: Client, args: dict[str, Any]) -> C
     )
 
 
+def doppel_get_alert_screenshot_command(client: Client, args: dict[str, Any]) -> list:
+    """Fetch the alert's current screenshot and attach it to the incident as a file entry.
+
+    Re-fetches the alert from Doppel (which signs a fresh screenshot URL), then attaches
+    the image only when its version differs from the one already attached — so analysts
+    can safely re-run this on stale incidents to confirm they hold the latest evidence.
+
+    :param client: Client instance to interact with the API.
+    :param args: ``id`` (required) the Doppel alert ID; ``force`` re-attach even when current.
+    :return: list of results — a file entry when attached, plus a summary CommandResults.
+    """
+    alert_id = args.get("id")
+    if not alert_id:
+        raise ValueError("id must be specified to fetch the alert screenshot.")
+    force = argToBoolean(args.get("force", False))
+
+    alert = client.get_alert(id=alert_id, entity="")
+    if not alert:
+        raise Exception(f"Failed to fetch the alert {alert_id} to retrieve its screenshot.")
+
+    file_entry, blob_path, message = _attach_screenshot_if_new(client, alert_id, alert.get("screenshot_url"), force=force)
+
+    results: list = []
+    if file_entry:
+        results.append(file_entry)
+    results.append(
+        CommandResults(
+            readable_output=message,
+            outputs_prefix="Doppel.AlertScreenshot",
+            outputs_key_field="id",
+            outputs={
+                "id": alert_id,
+                "version": _screenshot_version_label(blob_path) if blob_path else None,
+                "attached": bool(file_entry),
+            },
+        )
+    )
+    return results
+
+
 def _parse_fetch_timeout():
     """Parse the fetch_timeout param. Blank or invalid means no timeout limit."""
     raw = demisto.params().get("fetch_timeout")
@@ -856,17 +1126,17 @@ def get_modified_remote_data_command(client: Client, args: dict[str, Any]) -> Ge
         return GetModifiedRemoteDataResponse([])
 
 
-def get_remote_data_command(client: Client, args: dict[str, Any]) -> GetRemoteDataResponse:
+def get_remote_data_command(client: Client, args: dict[str, Any], attach_screenshots: bool = False) -> GetRemoteDataResponse:
     try:
         remote_updated_incident_data: dict[str, Any] = {}
         mirrored_object: dict[str, Any] = {}
         demisto.debug(f'Calling the "get-remote-data" for {args["id"]}')
         parsed_args = GetRemoteDataArgs(args)
         remote_updated_incident_data, parsed_entries = _get_remote_updated_incident_data_with_entry(
-            client, parsed_args.remote_incident_id, parsed_args.last_update
+            client, parsed_args.remote_incident_id, parsed_args.last_update, attach_screenshots=attach_screenshots
         )
         if remote_updated_incident_data:
-            demisto.debug(f'Found updates in the alert with id: {args["id"]}')
+            demisto.debug(f"Found updates in the alert with id: {args['id']}")
             return GetRemoteDataResponse(remote_updated_incident_data, parsed_entries)
         else:
             demisto.debug(f"Nothing new in the incident {parsed_args.remote_incident_id}")
@@ -1009,22 +1279,34 @@ def get_mapping_fields_command(client: Client, args: dict[str, Any]) -> GetMappi
 
 def main() -> None:
     """Main function, parses params and runs command functions."""
-    api_key = demisto.params().get("credentials", {}).get("password")
-    user_api_key = demisto.params().get("user_credentials", {}).get("password")
-    organization_code = demisto.params().get("organization_code")
-    verify = not demisto.params().get("insecure")
-    proxy = demisto.params().get("proxy")
+    params = demisto.params()
+    api_key = (params.get("credentials") or {}).get("password")
+    user_api_key = (params.get("user_credentials") or {}).get("password")
+    organization_code = params.get("organization_code")
+    oauth_client_id = (params.get("client_credentials") or {}).get("identifier")
+    oauth_client_secret = (params.get("client_credentials") or {}).get("password")
+    verify = not params.get("insecure")
+    proxy = params.get("proxy")
 
-    demisto.debug(f"Verify SSL: {verify} and Proxy: {proxy}")
+    # The dropdown values are display-friendly (e.g. "V2 (OAuth 2.0 Client Credentials)");
+    # anything that does not start with V2 falls back to V1 for backwards compatibility.
+    api_version = API_VERSION_V2 if (params.get("api_version") or "").lower().startswith(API_VERSION_V2) else API_VERSION_V1
+
+    demisto.debug(f"Verify SSL: {verify} and Proxy: {proxy} and API Version: {api_version}")
 
     # Get the service API URL
-    base_url = urljoin(demisto.params()["url"], "/v1")
+    server_url = params["url"]
+    base_url = urljoin(server_url, f"/{api_version}")
+    token_url = urljoin(server_url, OAUTH_TOKEN_PATH)
+
+    # Read once here and pass down: functions below must not reach for demisto.params() themselves.
+    attach_screenshots: bool = argToBoolean(params.get("attach_screenshots", False))
 
     # Explicitly define the type for the command function dictionary
     supported_commands: dict[str, Callable[[Client, dict[str, Any]], Any]] = {
         "fetch-incidents": fetch_incidents_command,
         "get-modified-remote-data": get_modified_remote_data_command,
-        "get-remote-data": get_remote_data_command,
+        "get-remote-data": lambda client, args: get_remote_data_command(client, args, attach_screenshots=attach_screenshots),
         "update-remote-system": update_remote_system_command,
         "get-mapping-fields": get_mapping_fields_command,
         "doppel-get-alert": doppel_get_alert_command,
@@ -1032,6 +1314,7 @@ def main() -> None:
         "doppel-get-alerts": doppel_get_alerts_command,
         "doppel-create-alert": doppel_create_alert_command,
         "doppel-create-abuse-alert": doppel_create_abuse_alert_command,
+        "doppel-get-alert-screenshot": doppel_get_alert_screenshot_command,
     }
 
     # Special case for 'test-module' which does not take args
@@ -1041,6 +1324,12 @@ def main() -> None:
     demisto.info(f"Command being called is {current_command}")
 
     try:
+        if api_version == API_VERSION_V2:
+            if not (oauth_client_id and oauth_client_secret):
+                raise DemistoException("API Version V2 requires both a Client ID and a Client Secret.")
+        elif not api_key:
+            raise DemistoException("API Version V1 requires an API Key.")
+
         client = Client(
             base_url=base_url,
             api_key=api_key,
@@ -1048,6 +1337,10 @@ def main() -> None:
             organization_code=organization_code,
             verify=verify,
             proxy=proxy,
+            api_version=api_version,
+            oauth_client_id=oauth_client_id,
+            oauth_client_secret=oauth_client_secret,
+            token_url=token_url,
         )
 
         if current_command in supported_commands_test_module:
