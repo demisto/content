@@ -15401,6 +15401,7 @@ def test_logging_log_entries_list_api_error_propagates(mocker):
 
     assert e.value.resp.status == 403
 
+
 def test_validate_limit_none_is_allowed():
     """
     Given: No limit value (the argument was omitted, so arg_to_number returned None).
