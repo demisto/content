@@ -82,7 +82,7 @@ The War Room CLI requires double quotes around values containing spaces. For a
 JSON argument, escape its inner double quotes as `\"`. In a playbook task,
 enter the JSON directly in the argument field without CLI escaping.
 
-## Copy-ready XSIAM playbook example
+## Example XSIAM playbook configuration
 
 After configuring and testing the integration instance, add an **Automation**
 task to a playbook and select `jev-choice`. A separate automation script is not
@@ -108,7 +108,7 @@ TypeSafeJev.Choice.model
 TypeSafeJev.Choice.usage
 ```
 
-Example policy:
+Illustrative branching policy:
 
 ```text
 IF TypeSafeJev.Choice.choice == "isolate_endpoint"
