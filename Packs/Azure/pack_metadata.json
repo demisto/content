@@ -24,5 +24,6 @@
         "agentix",
         "xsiam"
     ],
-    "derivedSource": "cooc"
+    "source": "cooc",
+    "managed": true
 }

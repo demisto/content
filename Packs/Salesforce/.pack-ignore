@@ -34,6 +34,3 @@ ignore=PR101
 [file:SalesforceModelingRule.yml]
 ignore=MR108
 
-
-[file:pack_metadata.json]
-ignore=RN105

@@ -1,6 +1,6 @@
 category: Cloud Services
 provider: Amazon
-description: Cloud integrations are installed from the **Data Sources** page. To configure a cloud integration in Cortex XSOAR, go to Settings > Data Sources and click "Add Data Source", select AWS, then in Advanced Settings > Security Capabilities, enable "Automation".
+description: Cloud integrations are installed from the **Data Sources** page. To configure a cloud integration, go to Settings > Data Sources and click "Add Data Source", select AWS, then in Advanced Settings > Security Capabilities, enable "Automation".
 display: Amazon Web Services
 name: AWS
 commonfields:
@@ -21119,7 +21119,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.10221838
+  dockerimage: demisto/boto3py3:1.0.0.12887184
 supportsquickactions: true
 fromversion: 5.5.0
 source: 'cooc'
