@@ -18,10 +18,11 @@ SOURCE_LOG_TYPE = "ibm_secrets_manager_audit"
 
 DEFAULT_IAM_URL = "https://iam.cloud.ibm.com"
 DEFAULT_PAGE_SIZE = 50000  # max results per /v1/query call
-# Base query scoping to Secrets Manager audit events (kept in code, validated against a live instance).
+# Base query scoping to Secrets Manager audit events
 DEFAULT_QUERY = 'source logs | filter applicationname == "secrets-manager"'
 DEFAULT_FIRST_FETCH = "1 hour"
-MAX_CALLS_PER_FETCH = 10  # per-cycle cap = page_size x MAX_CALLS_PER_FETCH (e.g. 50000 x 10 = 500000)
+# per-cycle cap = page_size x MAX_CALLS_PER_FETCH (e.g. 50000 x 10 = 500000)
+MAX_CALLS_PER_FETCH = 10
 TOKEN_EXPIRY_SAFETY_WINDOW = 60  # seconds; refresh token proactively before it expires
 DEFAULT_TOKEN_TTL = 3600  # fallback token lifetime (~1h) if IAM omits expiry
 
@@ -69,7 +70,10 @@ class Client(BaseClient):
         if not access_token:
             raise DemistoException("Failed to obtain an IAM access token from the provided API key.")
 
-        expires_in = arg_to_number(response.get("expires_in")) or DEFAULT_TOKEN_TTL
+        response_expires_in = arg_to_number(response.get("expires_in"))
+        expires_in = response_expires_in or DEFAULT_TOKEN_TTL
+        ttl_source = "API response" if response_expires_in else f"fallback (DEFAULT_TOKEN_TTL={DEFAULT_TOKEN_TTL})"
+        demisto.debug(f"[_request_new_token] expires_in={expires_in}s (source: {ttl_source}).")
         expires_at = int(time.time()) + expires_in
         set_integration_context({"access_token": access_token, "expires_at": expires_at})
         demisto.debug(f"[_request_new_token] New token cached, expires_at={expires_at}.")
@@ -96,6 +100,7 @@ class Client(BaseClient):
         )
         results = parse_sse_results(raw_response)
         demisto.debug(f"[query_events] Parsed {len(results)} results from the SSE stream.")
+        _debug_verify_order(results)  # TEMPORARY: verify API result order; remove after testing.
         return results
 
 
@@ -141,6 +146,25 @@ def get_event_timestamp(event: dict) -> str:
     return metadata.get("timestamp", "")
 
 
+def get_event_id(event: dict) -> str:
+    """Return the event's id (falls back to logid), or ''."""
+    return event.get("id") or event.get("logid") or ""
+
+
+def _debug_verify_order(events: list[dict]) -> None:
+    """TEMPORARY: log whether the batch is timestamp-ordered and in which direction. Remove after testing."""
+    timestamps = [get_event_timestamp(event) for event in events]
+    if len(timestamps) < 2:
+        demisto.debug(f"[_debug_verify_order] Only {len(timestamps)} event(s); order not determinable.")
+        return
+    ascending = all(timestamps[i] <= timestamps[i + 1] for i in range(len(timestamps) - 1))
+    descending = all(timestamps[i] >= timestamps[i + 1] for i in range(len(timestamps) - 1))
+    order = "ascending" if ascending else "descending" if descending else "UNORDERED"
+    demisto.debug(
+        f"[_debug_verify_order] batch order={order}; first_ts={timestamps[0]} last_ts={timestamps[-1]} count={len(timestamps)}."
+    )
+
+
 def add_time_to_events(events: list[dict]) -> None:
     """Enrich events in-place with _time and _source_log_type."""
     demisto.debug(f"[add_time_to_events] Enriching {len(events)} events.")
@@ -150,24 +174,32 @@ def add_time_to_events(events: list[dict]) -> None:
 
 
 def dedup_events(events: list[dict], last_ids: set[str], boundary_ts: str) -> tuple[list[dict], set[str], str]:
-    """Drop boundary duplicates (same timestamp + id as last run) and return new state."""
-    new_events: list[dict] = []
-    for event in events:
-        event_id = event.get("id") or event.get("logid") or ""
-        event_ts = get_event_timestamp(event)
-        if event_ts == boundary_ts and event_id in last_ids:
-            continue
-        new_events.append(event)
+    """Drop boundary duplicates and return new state.
+
+    Assumes events are timestamp-ascending (oldest first), so boundary duplicates (same ts as last run)
+    are only at the head, and the newest events are at the tail. Scans only those ends.
+    """
+    # Head: skip only the leading run whose timestamp == boundary and whose id was already seen.
+    start = 0
+    while start < len(events) and get_event_timestamp(events[start]) == boundary_ts:
+        if get_event_id(events[start]) in last_ids:
+            start += 1
+        else:
+            break
+    new_events = events[start:]
 
     if not new_events:
         demisto.debug("[dedup_events] All events were boundary duplicates; state unchanged.")
         return [], last_ids, boundary_ts
 
-    latest_ts = max(get_event_timestamp(event) for event in new_events)
-    latest_ids = {
-        (event.get("id") or event.get("logid") or "") for event in new_events if get_event_timestamp(event) == latest_ts
-    }
-    demisto.debug(f"[dedup_events] Kept {len(new_events)} events; new boundary_ts={latest_ts}.")
+    # Tail: the newest timestamp is the last event's; collect the trailing run sharing it.
+    latest_ts = get_event_timestamp(new_events[-1])
+    latest_ids: set[str] = set()
+    for event in reversed(new_events):
+        if get_event_timestamp(event) != latest_ts:
+            break
+        latest_ids.add(get_event_id(event))
+    demisto.debug(f"[dedup_events] Kept {len(new_events)} events (skipped {start} head dupes); new boundary_ts={latest_ts}.")
     return new_events, latest_ids, latest_ts
 
 

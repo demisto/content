@@ -146,6 +146,42 @@ def test_dedup_events_no_new_events_keeps_state():
     assert new_ts == boundary_ts
 
 
+def test_dedup_events_keeps_new_event_at_boundary_timestamp():
+    """
+    Given: ascending events where a NEW id shares the boundary timestamp (not yet ingested).
+    When: de-duplicating (head-only scan).
+    Then: the previously-seen boundary id is dropped but the new same-timestamp event is kept.
+    """
+    boundary_ts = "2026-07-13T00:00:00.000Z"
+    events = [
+        make_event("1", boundary_ts),  # already ingested -> dropped
+        make_event("2", boundary_ts),  # new event at same ts -> must be kept
+        make_event("3", "2026-07-13T00:00:05.000Z"),
+    ]
+    new_events, new_ids, new_ts = dedup_events(events, last_ids={"1"}, boundary_ts=boundary_ts)
+    assert [e["id"] for e in new_events] == ["2", "3"]
+    assert new_ts == "2026-07-13T00:00:05.000Z"
+    assert new_ids == {"3"}
+
+
+def test_dedup_events_tail_run_collected_for_last_run():
+    """
+    Given: ascending events whose last two share the newest timestamp.
+    When: de-duplicating.
+    Then: new boundary state includes only the trailing run of ids sharing the newest timestamp.
+    """
+    boundary_ts = "2026-07-13T00:00:00.000Z"
+    events = [
+        make_event("1", "2026-07-13T00:00:01.000Z"),
+        make_event("2", "2026-07-13T00:00:09.000Z"),
+        make_event("3", "2026-07-13T00:00:09.000Z"),
+    ]
+    new_events, new_ids, new_ts = dedup_events(events, last_ids=set(), boundary_ts=boundary_ts)
+    assert len(new_events) == 3
+    assert new_ts == "2026-07-13T00:00:09.000Z"
+    assert new_ids == {"2", "3"}
+
+
 """ fetch_events (integration with mocked HTTP) """
 
 
