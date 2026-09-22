@@ -201,13 +201,13 @@ def get_event_id(event: dict[str, Any], log_type: str) -> str:
     if log_type == "message":
         message = event.get("message")
         if isinstance(message, dict) and message.get("id"):
-            verdict = message.get("verdict") if isinstance(message.get("verdict"), dict) else {}
-            action = message.get("action") if isinstance(message.get("action"), dict) else {}
+            verdict = message.get("verdict")
+            action = message.get("action")
             identity = {
                 "id": message.get("id"),
                 "eventType": message.get("eventType"),
-                "verdictTimestamp": verdict.get("timestamp"),
-                "actionTimestamp": action.get("timestamp"),
+                "verdictTimestamp": verdict.get("timestamp") if isinstance(verdict, dict) else None,
+                "actionTimestamp": action.get("timestamp") if isinstance(action, dict) else None,
             }
             return hash_identity(identity)
     return hash_identity(event)
@@ -267,7 +267,8 @@ class FetchState:
     def to_last_run(self, last_hour: str) -> dict[str, Any]:
         """Serialize the state, pruning files that fall outside the next lookback window."""
         retain_from = parse_hour(last_hour) - timedelta(hours=LOOKBACK_HOURS)
-        retained = [path for path in self.processed_files if self._file_hour(path) is None or self._file_hour(path) >= retain_from]
+        # A path whose hour cannot be parsed is kept, so an unexpected layout never drops state.
+        retained = [path for path in self.processed_files if self._is_within(self._file_hour(path), retain_from)]
         if len(retained) > MAX_TRACKED_FILES:
             demisto.debug(f"Tracking {len(retained)} export files, keeping the newest {MAX_TRACKED_FILES}.")
             retained = retained[-MAX_TRACKED_FILES:]
@@ -275,6 +276,10 @@ class FetchState:
         if self.partial_file:
             last_run["partial_file"] = self.partial_file
         return last_run
+
+    @staticmethod
+    def _is_within(file_hour: datetime | None, retain_from: datetime) -> bool:
+        return file_hour is None or file_hour >= retain_from
 
     @staticmethod
     def _file_hour(path: str) -> datetime | None:
@@ -606,7 +611,10 @@ def cisco_etd_get_events_command(client: ETDClient, args: dict[str, Any]) -> Com
 
     readable = tableToMarkdown(
         f"Cisco ETD events ({format_hour(start_dt)} -> {format_hour(end_dt)})",
-        [{"Event ID": event.get("event_id"), "Log Type": event.get("source_log_type"), "Time": event.get("_time")} for event in events],
+        [
+            {"Event ID": event.get("event_id"), "Log Type": event.get("source_log_type"), "Time": event.get("_time")}
+            for event in events
+        ],
         headers=["Event ID", "Log Type", "Time"],
         removeNull=True,
     )

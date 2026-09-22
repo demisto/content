@@ -302,13 +302,16 @@ def test_stream_events_parses_and_enriches():
     assert (offset, completed) == (1, True)
 
 
-def test_stream_events_skips_blank_and_malformed_lines():
+def test_stream_events_skips_blank_and_malformed_lines(mocker):
     """A bad line must not discard the good lines that follow it in the same file."""
+    error = mocker.patch("CiscoETDConnector.demisto.error")
     client = build_client()
     mock_download(client, ['{"message":{"id":"1"}}', "", "   ", "not json", "[1,2]", '{"message":{"id":"2"}}'])
     events, _, completed = client.stream_events("message", LINK, WINDOW_START, 100)
     assert [event["message"]["id"] for event in events] == ["1", "2"]
     assert completed is True
+    # Both the unparsable line and the non-object line are reported.
+    assert error.call_count == 2
 
 
 def test_stream_events_stops_at_limit_and_reports_offset():
@@ -565,21 +568,22 @@ def test_fetch_events_deduplicates_across_files(mocker, fetch_mocks):
 
 def test_fetch_events_raises_and_preserves_window_on_error(mocker, fetch_mocks):
     """Regression: a failure must surface and must not advance past the failed hour."""
+    error = mocker.patch("CiscoETDConnector.demisto.error")
     client = build_client()
-    mocker.patch.object(
-        ETDClient, "request_log_export", side_effect=DemistoException("denied", res=MagicMock(status_code=403))
-    )
+    mocker.patch.object(ETDClient, "request_log_export", side_effect=DemistoException("denied", res=MagicMock(status_code=403)))
     with pytest.raises(DemistoException, match="denied"):
         fetch_events(client, {"max_fetch": 100, "event_type": ["message"]})
 
     last_run = fetch_mocks["set_last_run"].call_args[0][0]
     assert last_run["processed_files"] == []
+    error.assert_called_once()
 
 
 def test_fetch_events_partial_progress_is_kept_on_error(mocker):
     """Files ingested before a mid-cycle failure are not downloaded again on the retry."""
     now_hour = datetime.now(UTC).replace(minute=0, second=0, microsecond=0)
     link, path = recent_link(hours_ago=3)
+    mocker.patch("CiscoETDConnector.demisto.error")
     mocker.patch(
         "CiscoETDConnector.demisto.getLastRun",
         return_value={"last_hour": (now_hour - timedelta(hours=3)).strftime("%Y-%m-%dT%H")},
@@ -661,9 +665,7 @@ def test_get_events_command_pushes_when_requested(mocker):
     send = mocker.patch("CiscoETDConnector.send_events_to_xsiam")
     mocker.patch.object(ETDClient, "request_log_export", return_value={"data": {"message": [LINK]}})
     mocker.patch.object(ETDClient, "stream_events", return_value=([{"event_id": "1", "_time": "t"}], 1, True))
-    cisco_etd_get_events_command(
-        client, {"start_time": "3 hours ago", "end_time": "1 hour ago", "should_push_events": "true"}
-    )
+    cisco_etd_get_events_command(client, {"start_time": "3 hours ago", "end_time": "1 hour ago", "should_push_events": "true"})
     send.assert_called_once()
 
 
@@ -722,6 +724,7 @@ def test_test_module_propagates_auth_error(mocker):
 
 def test_main_reports_the_real_error(mocker):
     """Regression: failures must not all be reported as an authentication problem."""
+    mocker.patch("CiscoETDConnector.demisto.error")
     mocker.patch("CiscoETDConnector.demisto.params", return_value={"etd_base_url": "https://api.us.etd.cisco.com"})
     mocker.patch("CiscoETDConnector.demisto.command", return_value="fetch-events")
     mocker.patch.object(ETDClient, "__init__", return_value=None)
@@ -737,6 +740,7 @@ def test_main_reports_the_real_error(mocker):
 
 
 def test_main_rejects_unknown_command(mocker):
+    mocker.patch("CiscoETDConnector.demisto.error")
     mocker.patch("CiscoETDConnector.demisto.params", return_value={})
     mocker.patch("CiscoETDConnector.demisto.command", return_value="cisco-etd-unknown")
     mocker.patch.object(ETDClient, "__init__", return_value=None)
