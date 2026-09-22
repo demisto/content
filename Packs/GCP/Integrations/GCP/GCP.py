@@ -169,6 +169,7 @@ class GCPServices(Enum):
     RESOURCE_MANAGER = ("cloudresourcemanager", "v3", "cloudresourcemanager.googleapis.com")
     BIGQUERY = ("bigquery", "v2", "bigquery.googleapis.com")
     KMS = ("cloudkms", "v1", "cloudkms.googleapis.com")
+    LOGGING = ("logging", "v2", "logging.googleapis.com")
 
     # The following services are currently unsupported:
     # IAM_V1 = ("iam", "v1", "iam.googleapis.com")
@@ -276,6 +277,11 @@ class GCPServices(Enum):
             # KMS has no project-level testIamPermissions; a lightweight locations list verifies connectivity.
             client.projects().locations().list(  # pylint: disable=E1101
                 name=f"projects/{project_id}", pageSize=1
+            ).execute()
+        elif self == GCPServices.LOGGING:
+            # Logging has no project-level testIamPermissions; a minimal log-entries list verifies connectivity.
+            client.entries().list(  # pylint: disable=E1101
+                body={"resourceNames": [f"projects/{project_id}"], "pageSize": 1}
             ).execute()
         else:
             raise NotImplementedError(f"No connectivity probe defined for service {self.api_name}")
@@ -591,6 +597,10 @@ COMMAND_REQUIREMENTS: dict[str, tuple[GCPServices, list[str]]] = {
     "gcp-kms-symmetric-decrypt": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.useToDecrypt"]),
     "gcp-kms-asymmetric-encrypt": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.viewPublicKey"]),
     "gcp-kms-asymmetric-decrypt": (GCPServices.KMS, ["cloudkms.cryptoKeyVersions.useToDecrypt"]),
+    "gcp-logging-log-entries-list": (
+        GCPServices.LOGGING,
+        ["logging.logEntries.list"],
+    ),
     # The following commands are currently unsupported:
     # "gcp-compute-instance-metadata-add": (
     #     GCPServices.COMPUTE,
@@ -1553,7 +1563,7 @@ def storage_bucket_object_policy_set(creds: Credentials, args: dict[str, Any]) -
         update_params = {"bucket": bucket_name, "object": object_name, "entity": entity, "body": entry, "generation": generation}
         remove_nulls_from_dictionary(update_params)
         try:
-            demisto.debug(f"[GCP: storage_bucket_object_policy_set] Updating ACL #{idx+1} for entity {entity}")
+            demisto.debug(f"[GCP: storage_bucket_object_policy_set] Updating ACL #{idx + 1} for entity {entity}")
             resp = storage.objectAccessControls().patch(**update_params).execute()  # pylint: disable=E1101
             results.append(resp)
             continue
@@ -2759,7 +2769,7 @@ def compute_network_tag_set(creds: Credentials, args: dict[str, Any]) -> Command
 
     demisto.debug(f"Add network tag response for {project_id}: \n{response}")
     new_tag = args.get("tag")
-    readable_output = f"Added '{new_tag}' tag to instance {resource_name} successfully\n" f"The full network tag list is: {tags}"
+    readable_output = f"Added '{new_tag}' tag to instance {resource_name} successfully\nThe full network tag list is: {tags}"
 
     return CommandResults(
         readable_output=readable_output,
@@ -5819,6 +5829,82 @@ def kms_asymmetric_decrypt(creds: Credentials, args: dict[str, Any]) -> CommandR
     )
 
 
+def logging_log_entries_list(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Lists log entries from one or more parent resources (project/organization/billing account/folder).
+
+    Args:
+        creds (Credentials): Authorized GCP credentials used to access the Cloud Logging API.
+        args (dict): Command arguments including:
+            - project_id (str, optional): The GCP project to read log entries from.
+            - organization_names (str, optional): Comma-separated organization IDs to read log entries from.
+            - billing_account_names (str, optional): Comma-separated billing account IDs to read log entries from.
+            - folder_names (str, optional): Comma-separated folder IDs to read log entries from.
+            - filter (str, optional): Advanced logs filter expression.
+            - order_by (str, optional): "timestamp asc" or "timestamp desc".
+            - limit (int, optional): The maximum number of entries to return (1-500).
+            - next_token (str, optional): Token to retrieve the next page of results.
+
+    Returns:
+        CommandResults: The log entries under `GCP.Logging.LogEntries` and the continuation
+        token under `GCP.Logging(true).LogEntriesNextToken`.
+
+    Raises:
+        DemistoException: If none of the parent resource arguments are provided.
+    """
+    resource_project = argToList(args.get("project_id"))
+    resource_organizations = argToList(args.get("organization_names"))
+    resource_billing_accounts = argToList(args.get("billing_account_names"))
+    resource_folders = argToList(args.get("folder_names"))
+
+    if not (resource_project or resource_organizations or resource_billing_accounts or resource_folders):
+        raise DemistoException(
+            "At least one of the following resources must be provided: "
+            "project_id, organization_names, billing_account_names, or folder_names."
+        )
+
+    resource_names = [f"projects/{project}" for project in resource_project]
+    resource_names += [f"organizations/{organization}" for organization in resource_organizations]
+    resource_names += [f"billingAccounts/{billing_account}" for billing_account in resource_billing_accounts]
+    resource_names += [f"folders/{folder}" for folder in resource_folders]
+
+    limit = arg_to_number(args.get("limit")) or 50
+    validate_limit(limit)
+
+    request_body: dict[str, Any] = {
+        "resourceNames": resource_names,
+        "filter": args.get("filter"),
+        "orderBy": args.get("order_by"),
+        "pageSize": limit,
+        "pageToken": args.get("next_token"),
+    }
+    remove_nulls_from_dictionary(request_body)
+
+    logging_service = GCPServices.LOGGING.build(creds)
+    response = logging_service.entries().list(body=request_body).execute()  # pylint: disable=E1101
+    entries = response.get("entries", [])
+    next_token = response.get("nextPageToken")
+
+    headers = ["timestamp", "logName", "insertId", "resource", "severity", "operation"]
+    readable_output = tableToMarkdown(
+        "GCP Logging Log Entries",
+        entries,
+        headers=headers,
+        headerTransform=pascalToSpace,
+        removeNull=True,
+    )
+
+    outputs: dict[str, Any] = {
+        "GCP.Logging.LogEntries(val.insertId && val.insertId == obj.insertId)": entries,
+        "GCP.Logging(true)": {"LogEntriesNextToken": next_token},
+    }
+    return CommandResults(
+        outputs=outputs,
+        readable_output=readable_output,
+        raw_response=entries,
+    )
+
+
 def validate_limit(limit):
     """
     Validates that the provided limit argument is within the allowed range.
@@ -5944,6 +6030,7 @@ def test_module(creds: Credentials, params: dict[str, Any]) -> str:
         GCPServices.CONTAINER,
         GCPServices.BIGQUERY,
         GCPServices.KMS,
+        GCPServices.LOGGING,
     ]
 
     for service in services_to_try:
@@ -8575,6 +8662,8 @@ def main():  # pragma: no cover
             "gcp-kms-symmetric-decrypt": kms_symmetric_decrypt,
             "gcp-kms-asymmetric-encrypt": kms_asymmetric_encrypt,
             "gcp-kms-asymmetric-decrypt": kms_asymmetric_decrypt,
+            # Logging commands
+            "gcp-logging-log-entries-list": logging_log_entries_list,
             # Quick Actions - Firewall
             "gcp-compute-firewall-patch-disable-gcp-default-firewall-rule-quick-action": compute_firewall_patch,
             # Quick Actions - Storage Bucket Policy
