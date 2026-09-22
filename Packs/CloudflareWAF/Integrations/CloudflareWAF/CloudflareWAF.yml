@@ -788,10 +788,14 @@ script:
       - http_request_sanitize
       - http_request_sbfm
       - http_request_transform
+      - http_response_cache_settings
       - http_response_compression
       - http_response_firewall_managed
       - http_response_headers_transform
       - magic_transit
+      - magic_transit_ids_managed
+      - magic_transit_managed
+      - magic_transit_ratelimit
       required: true
     - description: The description of the ruleset.
       name: description
@@ -1039,10 +1043,14 @@ script:
       - http_request_sanitize
       - http_request_sbfm
       - http_request_transform
+      - http_response_cache_settings
       - http_response_compression
       - http_response_firewall_managed
       - http_response_headers_transform
       - magic_transit
+      - magic_transit_ids_managed
+      - magic_transit_managed
+      - magic_transit_ratelimit
       required: true
     - description: Account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
       name: account_id
@@ -1114,10 +1122,14 @@ script:
       - http_request_sanitize
       - http_request_sbfm
       - http_request_transform
+      - http_response_cache_settings
       - http_response_compression
       - http_response_firewall_managed
       - http_response_headers_transform
       - magic_transit
+      - magic_transit_ids_managed
+      - magic_transit_managed
+      - magic_transit_ratelimit
       required: true
     - description: The human-readable name of the ruleset.
       name: name
@@ -1314,10 +1326,14 @@ script:
       - http_request_sanitize
       - http_request_sbfm
       - http_request_transform
+      - http_response_cache_settings
       - http_response_compression
       - http_response_firewall_managed
       - http_response_headers_transform
       - magic_transit
+      - magic_transit_ids_managed
+      - magic_transit_managed
+      - magic_transit_ratelimit
       required: true
     - description: Account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
       name: account_id
@@ -1371,10 +1387,14 @@ script:
       - http_request_sanitize
       - http_request_sbfm
       - http_request_transform
+      - http_response_cache_settings
       - http_response_compression
       - http_response_firewall_managed
       - http_response_headers_transform
       - magic_transit
+      - magic_transit_ids_managed
+      - magic_transit_managed
+      - magic_transit_ratelimit
       required: true
     - description: The version of the ruleset.
       name: version
