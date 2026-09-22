@@ -2997,6 +2997,15 @@ class Client:
 
         return response
 
+    def query_devices_combined_request(self, offset, limit, sort, filter_):
+        params = assign_params(offset=offset, limit=limit, sort=sort, filter=filter_)
+
+        headers = self.cs_client._headers
+
+        response = self.cs_client.http_request("get", "devices/combined/devices/v1", params=params, headers=headers)
+
+        return response
+
     def query_devices_by_filter_scroll_request(self, offset, limit, sort, filter_):
         params = assign_params(offset=offset, limit=limit, sort=sort, filter=filter_)
 
@@ -8145,6 +8154,23 @@ def query_devices_by_filter_command(client, args):
     return command_results
 
 
+def query_devices_combined_command(client, args):
+    offset = args.get("offset", None)
+    limit = args.get("limit", None)
+    sort = str(args.get("sort", ""))
+    filter_ = str(args.get("filter_", ""))
+
+    response = client.query_devices_combined_request(offset, limit, sort, filter_)
+    command_results = CommandResults(
+        outputs_prefix="CrowdStrike.domainDeviceDetailsResponseSwagger",
+        outputs_key_field="",
+        outputs=response,
+        raw_response=response,
+    )
+
+    return command_results
+
+
 def query_devices_by_filter_scroll_command(client, args):
     offset = str(args.get("offset", ""))
     limit = args.get("limit", None)
@@ -10393,6 +10419,7 @@ def main():
             "cs-query-device-control-policies": query_device_control_policies_command,
             "cs-query-device-control-policy-members": query_device_control_policy_members_command,
             "cs-query-devices-by-filter": query_devices_by_filter_command,
+            "cs-query-devices-combined": query_devices_combined_command,
             "cs-query-devices-by-filter-scroll": query_devices_by_filter_scroll_command,
             "cs-query-escalations-filter": query_escalations_filter_command,
             "cs-query-firewall-policies": query_firewall_policies_command,
