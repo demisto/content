@@ -139,9 +139,12 @@ This pack ships two pieces that work together:
   pack catalog, sequences installs, and configures integration instances,
   jobs, and lookup datasets from each pack's `xsoar_config.json`.
 - **SOC Framework Pack Manager (integration)** — credential storage and a
-  single `socfw-install-pack` command that downloads a pack ZIP, installs it,
-  and verifies the version landed. The integration is internal plumbing; end
-  users do not call it directly.
+  single `socfw-install-pack` command that downloads a pack ZIP, installs it
+  through the demisto-sdk path, and checks that the tenant's version record
+  moved to the expected version. That check catches an upload that did not
+  take; it is not proof the pack's content items installed, which the tenant
+  records separately. The integration is internal plumbing; end users do not
+  call it directly.
 
 The split exists because Cortex XSIAM integrations cannot call
 `demisto.executeCommand`, so all multi-step orchestration must live in the

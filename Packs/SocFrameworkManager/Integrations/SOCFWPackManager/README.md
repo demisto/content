@@ -55,9 +55,15 @@ DBot message appears in the War Room with the command details.
 Downloads a SOC Framework pack ZIP from the supplied URL and installs it on
 the tenant. After the upload the command reads the installed pack version back
 from the tenant and compares it against the version in the ZIP filename; if
-they disagree the command fails rather than reporting success, so a pack that
-did not upgrade is not mistaken for one that did. Called by the
-SOCFWPackManager script — do not invoke directly.
+they disagree the command fails rather than reporting success, so an upload
+that left the tenant on its previous version is not reported as an upgrade.
+
+Note that this check confirms only that the version record changed. A tenant
+registers a pack's version separately from its content, so a pack can carry
+the expected version while none of its scripts, lists, playbooks or rules
+were installed. Confirming an install means reading the content items back
+off the tenant, not reading the version. Called by the SOCFWPackManager
+script — do not invoke directly.
 
 #### Base Command
 
@@ -69,7 +75,7 @@ SOCFWPackManager script — do not invoke directly.
 | --- | --- | --- |
 | url | URL of the pack ZIP to install (typically a GitHub release asset). | Required |
 | filename | Asset filename, including the `.zip` extension. Derived from the URL when omitted. | Optional |
-| use_sdk | Whether to install through the demisto-sdk rebuild instead of uploading the pack ZIP directly. The rebuild constructs a content graph and is substantially slower; leave false unless a pack requires it. Possible values are: true, false. Default is false. | Optional |
+| use_sdk | Install through the demisto-sdk path, which builds the content graph and installs the pack's content items. Default true. Setting false uses a direct ZIP upload that registers the pack version WITHOUT installing its content -- it is not a faster install, it is a different and almost always wrong one. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
