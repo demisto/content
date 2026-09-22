@@ -1178,7 +1178,7 @@ class TestFetchIncidents:
 
         client = init_mock_client(requests_mock)
         mock_response = load_mock_response("alert_list.json")
-       # Strip the fractional seconds from the last item to reproduce the reported failure.
+        # Strip the fractional seconds from the last item to reproduce the reported failure.
         mock_response["items"][-1]["raisedAt"] = "2026-07-22T08:37:31Z"
         requests_mock.post(f"{BASE_URL}/common/v1/alerts/search", json=mock_response)
 
