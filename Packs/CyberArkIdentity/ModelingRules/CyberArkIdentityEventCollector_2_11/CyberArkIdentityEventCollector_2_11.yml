@@ -1,0 +1,7 @@
+fromversion: 8.15.0
+id: CyberArk_Identity_ModelingRule
+name: CyberArk Identity Modeling Rule
+rules: ''
+schema: ''
+supportedModules:
+- xsiam

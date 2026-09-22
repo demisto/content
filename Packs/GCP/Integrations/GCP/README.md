@@ -5994,3 +5994,183 @@ Removes one or more instances from the specified instance group, but does not de
 | GCP.Compute.Operations.httpErrorMessage | string | The HTTP error message that is returned if the operation fails, such as NOT FOUND. |
 | GCP.Compute.Operations.selfLink | string | The server-defined URL for the resource. |
 | GCP.Compute.Operations.kind | string | The type of the resource. The value is always compute\#operation for Operation resources. |
+
+### gcp-logging-log-entries-list
+
+***
+Lists log entries. Use this command to retrieve log entries that originated from a project, organization, billing account, or folder. Required Permissions: logging.logEntries.list.
+
+#### Base Command
+
+`gcp-logging-log-entries-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID to read log entries from. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| organization_names | A comma-separated list of organization IDs of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional |
+| billing_account_names | A comma-separated list of billing account IDs of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional |
+| folder_names | A comma-separated list of folder IDs of parent resources from which to retrieve log entries. A maximum of 100 resources may be specified. | Optional |
+| filter | The filter to limit results to log entries that match. The maximum length of a filter is 20,000 characters. For example: "protoPayload.requestMetadata.callerIp:1.1.1.1 AND protoPayload.serviceName:name". | Optional |
+| order_by | The criteria to use for sorting the results. Can be "timestamp asc" or "timestamp desc". Possible values are: timestamp asc, timestamp desc. Default is timestamp asc. | Optional |
+| limit | The maximum number of results to return. Valid range is 1-500. Default is 50. | Optional |
+| next_token | The token used to retrieve the next batch of results. Must be the value of LogEntriesNextToken from the previous response. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Logging.LogEntries.logName | String | The resource name of the log to which this log entry belongs. |
+| GCP.Logging.LogEntries.resource.type | String | The monitored resource type. |
+| GCP.Logging.LogEntries.resource.labels | Unknown | The values for all labels listed in the associated monitored resource descriptor. |
+| GCP.Logging.LogEntries.timestamp | String | The time the event described by the log entry occurred, in RFC 3339 UTC "Zulu" format. For example: "2014-10-02T15:01:23Z". |
+| GCP.Logging.LogEntries.receiveTimestamp | String | The time the log entry was received by Logging, in RFC 3339 UTC "Zulu" format. For example: "2014-10-02T15:01:23Z". |
+| GCP.Logging.LogEntries.severity | String | The severity of the log entry. The default value is LogSeverity.DEFAULT. |
+| GCP.Logging.LogEntries.insertId | String | A unique identifier for the log entry. |
+| GCP.Logging.LogEntries.httpRequest | Unknown | The HTTP request associated with the log entry, containing requestMethod, requestUrl, status, userAgent, remoteIp, and other fields. |
+| GCP.Logging.LogEntries.labels | Unknown | The map of key-value pairs that provides additional information about the log entry. |
+| GCP.Logging.LogEntries.operation | Unknown | The information about an operation associated with the log entry, containing the ID, producer, first, and last fields. |
+| GCP.Logging.LogEntries.trace | String | The REST resource name of the trace being written to Cloud Trace in association with this log entry. |
+| GCP.Logging.LogEntries.spanId | String | The ID of the Cloud Trace span associated with the current operation in which the log is being written. |
+| GCP.Logging.LogEntries.traceSampled | Boolean | The sampling decision of the trace associated with the log entry. |
+| GCP.Logging.LogEntries.sourceLocation | Unknown | The source code location information associated with the log entry, containing file, line, and function fields. |
+| GCP.Logging.LogEntries.split | Unknown | The information indicating this LogEntry is part of a sequence of multiple log entries split from a single LogEntry, containing the UID, index, and totalSplits fields. |
+| GCP.Logging.LogEntries.errorGroups | Unknown | The Error Reporting error groups associated with this LogEntry, if any. |
+| GCP.Logging.LogEntries.apphub | Unknown | The AppHub application metadata associated with the monitored resource of this log entry. |
+| GCP.Logging.LogEntries.apphubDestination | Unknown | The AppHub application metadata associated with the destination of this log entry. |
+| GCP.Logging.LogEntries.apphubSource | Unknown | The AppHub application metadata associated with the source of this log entry. |
+| GCP.Logging.LogEntries.protoPayload | Unknown | The log entry payload, represented as a protocol buffer. A log entry has exactly one of protoPayload, textPayload, or jsonPayload. |
+| GCP.Logging.LogEntries.textPayload | String | The log entry payload, represented as a Unicode string \(UTF-8\). A log entry has exactly one of protoPayload, textPayload, or jsonPayload. |
+| GCP.Logging.LogEntries.jsonPayload | Unknown | The log entry payload, represented as a structure that is expressed as a JSON object. A log entry has exactly one of protoPayload, textPayload, or jsonPayload. |
+| GCP.Logging.LogEntriesNextToken | String | The nextPageToken included when there are more results than those appearing in this response. To get the next set of results, call this command again using the value of nextPageToken as next_token. |
+
+### gcp-cloudrun-functions-list
+
+***
+Lists Google Cloud Functions in the specified project and region. Required Permission: cloudfunctions.functions.list.
+
+#### Base Command
+
+`gcp-cloudrun-functions-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The region of the Google Cloud functions. Default is all regions. To get a full list of regions, run the gcp-cloudrun-locations-list command. | Optional |
+| limit | The maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| next_token | The pagination token used to return the next set of items. | Optional |
+| filter | The filter expression for the functions listed in the response. For example, to return only active functions, use state="ACTIVE". | Optional |
+| order_by | A comma-separated list of fields by which to sort the returned functions. Append desc to a field to sort it in descending order. For example, name desc. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.CloudRun.Functions.name | String | The user-defined name of the function, which must be globally unique and match the pattern projects//locations//functions/\*. |
+| GCP.CloudRun.Functions.description | String | The user-provided description of the function. |
+| GCP.CloudRun.Functions.buildConfig | Unknown | The build step of the function that builds a container from the given source. |
+| GCP.CloudRun.Functions.serviceConfig | Unknown | The fully managed Cloud Run service being deployed. |
+| GCP.CloudRun.Functions.eventTrigger | Unknown | The source that fires events in response to a condition in another service. |
+| GCP.CloudRun.Functions.state | String | The state of the function. Possible values are: STATE_UNSPECIFIED, ACTIVE, FAILED, DEPLOYING, DELETING, UNKNOWN, DETACHING, DETACH_FAILED. |
+| GCP.CloudRun.Functions.updateTime | Date | The last update timestamp of the function. For example: "2014-10-02T15:01:23Z". |
+| GCP.CloudRun.Functions.labels | Unknown | The labels associated with the function. |
+| GCP.CloudRun.Functions.stateMessages | Unknown | The state messages for the function. |
+| GCP.CloudRun.Functions.environment | String | The generation of the function. Can be "ENVIRONMENT_UNSPECIFIED", "GEN_1", or "GEN_2". |
+| GCP.CloudRun.Functions.upgradeInfo | Unknown | The upgrade information for the function. |
+| GCP.CloudRun.Functions.url | String | The deployed URL of the function. |
+| GCP.CloudRun.Functions.kmsKeyName | String | The user-managed resource name of a KMS crypto key used to encrypt or decrypt function resources, matching the pattern projects/\{project\}/locations/\{location\}/keyRings/\{key_ring\}/cryptoKeys/\{crypto_key\}. |
+| GCP.CloudRun.Functions.createTime | Date | The creation timestamp of the function. Applicable only to 2nd Gen functions. For example: 2014-10-02T15:01:23Z. |
+| GCP.CloudRun.FunctionsNextToken | String | The token to retrieve the next page of Google Cloud Run functions. |
+
+### gcp-cloudrun-locations-list
+
+***
+Lists all available Google Cloud Functions regions in the project. Required permission: cloudfunctions.locations.list.
+
+#### Base Command
+
+`gcp-cloudrun-locations-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| limit | The maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
+| next_token | The pagination token used to return the next set of items. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.CloudRun.Locations.name | String | The resource name for the location, which may vary between implementations. For example: projects/example-project/locations/us-east1. |
+| GCP.CloudRun.Locations.locationId | String | The canonical ID for this location. For example: us-east1. |
+| GCP.CloudRun.Locations.displayName | String | The friendly name for the location, typically a nearby city name such as Tokyo. |
+| GCP.CloudRun.Locations.labels | Unknown | The cross-service attributes for the location, such as \{"cloud.googleapis.com/region": "us-east1"\}. |
+| GCP.CloudRun.Locations.metadata | Unknown | The service-specific metadata, such as the available capacity at the given location. |
+| GCP.CloudRun.LocationsNextToken | String | The token used to retrieve the next page of locations. |
+
+### gcp-cloudrun-function-get
+
+***
+Gets the details of a specific Google Cloud function. Required permission: cloudfunctions.functions.get.
+
+#### Base Command
+
+`gcp-cloudrun-function-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The region of the Google Cloud function. To get a full list of regions, run the gcp-cloudrun-locations-list command. | Required |
+| function_name | The name of the function. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.CloudRun.Functions.name | String | The user-defined name of the function, which must be globally unique and match the pattern projects/locations/functions/\*. |
+| GCP.CloudRun.Functions.description | String | The user-provided description of the function. |
+| GCP.CloudRun.Functions.buildConfig | Unknown | The build step of the function that builds a container from the given source. |
+| GCP.CloudRun.Functions.serviceConfig | Unknown | The fully managed Cloud Run service being deployed. |
+| GCP.CloudRun.Functions.eventTrigger | Unknown | The source that fires events in response to a condition in another service. |
+| GCP.CloudRun.Functions.state | String | The state of the function. Possible values are: STATE_UNSPECIFIED, ACTIVE, FAILED, DEPLOYING, DELETING, UNKNOWN, DETACHING, DETACH_FAILED. |
+| GCP.CloudRun.Functions.updateTime | Date | The last update timestamp of the function. For example: "2014-10-02T15:01:23Z". |
+| GCP.CloudRun.Functions.labels | Unknown | The labels associated with the function. |
+| GCP.CloudRun.Functions.stateMessages | Unknown | The state messages for the function. |
+| GCP.CloudRun.Functions.environment | String | The generation of the function. Can be "ENVIRONMENT_UNSPECIFIED", "GEN_1", or "GEN_2". |
+| GCP.CloudRun.Functions.upgradeInfo | Unknown | The upgrade information for the function. |
+| GCP.CloudRun.Functions.url | String | The deployed URL of the function. |
+| GCP.CloudRun.Functions.kmsKeyName | String | The user-managed resource name of a KMS crypto key used to encrypt or decrypt function resources, matching the pattern projects/\{project\}/locations/\{location\}/keyRings/\{key_ring\}/cryptoKeys/\{crypto_key\}. |
+| GCP.CloudRun.Functions.createTime | Date | The creation timestamp of the function. Applicable only to 2nd Gen functions. For example: 2014-10-02T15:01:23Z. |
+
+### gcp-cloudfunctions-function-execute
+
+***
+Synchronously invokes a deployed Google Cloud (1st Gen) function and returns its execution result. Required permission: cloudfunctions.functions.call.
+
+#### Base Command
+
+`gcp-cloudfunctions-function-execute`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| region | The region of the Google Cloud function. To get a full list of regions, run the gcp-cloudrun-locations-list command. | Required |
+| function_name | The name of the function to invoke. | Required |
+| data | The input data passed to the function, such as a JSON-encoded string. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.CloudFunctions.Execution.executionId | String | The execution ID of the function invocation. |
+| GCP.CloudFunctions.Execution.result | String | The result of the function invocation, returned as a string. |
+| GCP.CloudFunctions.Execution.error | String | The error message if the function execution resulted in an error. |
