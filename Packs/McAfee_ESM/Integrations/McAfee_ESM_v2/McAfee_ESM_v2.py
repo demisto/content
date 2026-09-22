@@ -5,11 +5,72 @@ from datetime import datetime, timedelta
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from urllib3 import disable_warnings
 
 disable_warnings()
 
 CONTEXT_INTEGRATION_NAME = "McAfeeESM."
+
+# Supported ESM versions. Versions earlier than 11.6 reached Trellix end-of-life and are no longer supported.
+# See https://www.trellix.com/support/end-of-life-products/
+VERSION_AES = "11.6.11 and later"
+VERSION_BASE64 = "11.6.0 - 11.6.10"
+SUPPORTED_VERSIONS = (VERSION_AES, VERSION_BASE64)
+
+# Starting with ESM 11.6.11, the login API requires the username and password to be AES-encrypted.
+# The key and IV below are fixed constants published by Trellix for all customers in KB90289
+# (https://support.trellix.com/s/article/KB90289) - they are not secret and are not instance-specific.
+# The KB documents the equivalent CLI command:
+#   echo -n 'NGCP' | openssl enc -aes-128-cbc -K 3132...3738 -iv 3132...3738 -base64
+# NOTE: because the key is public, this encoding provides obfuscation only, not confidentiality.
+# It is not a substitute for TLS, which remains controlled by the "insecure" parameter.
+ESM_AES_KEY = bytes.fromhex("31323334353637383132333435363738")
+ESM_AES_IV = bytes.fromhex("31323334353637383132333435363738")
+AES_BLOCK_SIZE_BITS = 128
+
+
+def encrypt_credential(value: str) -> str:
+    """AES-128-CBC encrypts a credential and base64-encodes the ciphertext, as required by ESM 11.6.11+.
+
+    :param value: The plaintext credential (username or password).
+    :return: The base64-encoded ciphertext.
+    """
+    padder = padding.PKCS7(AES_BLOCK_SIZE_BITS).padder()
+    padded = padder.update(value.encode("utf-8")) + padder.finalize()
+    encryptor = Cipher(algorithms.AES(ESM_AES_KEY), modes.CBC(ESM_AES_IV)).encryptor()
+    return base64.b64encode(encryptor.update(padded) + encryptor.finalize()).decode()
+
+
+def encode_credential(value: str, version: str) -> str:
+    """Encodes a credential for the login request according to the configured ESM version.
+
+    ESM 11.6.11 and later require AES-encrypted credentials; earlier 11.6.x versions use Base64.
+
+    :param value: The plaintext credential (username or password).
+    :param version: The configured ESM version, one of SUPPORTED_VERSIONS.
+    :return: The encoded credential to send in the login body.
+    """
+    if version == VERSION_AES:
+        return encrypt_credential(value)
+    return base64.b64encode(value.encode("utf-8")).decode()
+
+
+def validate_version(version: str) -> None:
+    """Validates that the configured ESM version is still supported.
+
+    :param version: The configured ESM version.
+    :raises DemistoException: If the version is not one of SUPPORTED_VERSIONS.
+    """
+    if version not in SUPPORTED_VERSIONS:
+        raise DemistoException(
+            f'McAfee ESM v2 no longer supports ESM version "{version}". '
+            f"Versions earlier than 11.6 reached Trellix end-of-life "
+            f"(see https://www.trellix.com/support/end-of-life-products/). "
+            f'Edit the integration instance and set the "Version" parameter to '
+            f'"{VERSION_AES}" or "{VERSION_BASE64}".'
+        )
 
 
 class EmptyFile(Exception):
@@ -24,7 +85,8 @@ class McAfeeESMClient(BaseClient):
         self.__user_name = params.get("credentials", {}).get("identifier", "")
         self.__password = params.get("credentials", {}).get("password", "")
         self.difference = int(params.get("timezone", 0))
-        self.version = params.get("version", "10.2")
+        self.version = params.get("version", VERSION_AES)
+        validate_version(self.version)
         super().__init__(
             "{}/rs/esm/v2/".format(params.get("url", "").strip("/")),
             proxy=params.get("proxy", False),
@@ -55,8 +117,8 @@ class McAfeeESMClient(BaseClient):
 
     def __login(self):
         params = {
-            "username": base64.b64encode(self.__user_name.encode("ascii")).decode(),
-            "password": base64.b64encode(self.__password.encode("ascii")).decode(),
+            "username": encode_credential(self.__user_name, self.version),
+            "password": encode_credential(self.__password, self.version),
             "locale": "en_US",
         }
         res = self._http_request("POST", "login", data=json.dumps(params), resp_type="response", timeout=20)
@@ -460,7 +522,8 @@ class McAfeeESMClient(BaseClient):
         path = f"alarm{command}TriggeredAlarm"
         alarm_ids = argToList(str(self.args.get("alarmIds")))
         alarm_ids = [int(i) for i in alarm_ids]
-        data = {"triggeredIds": {"alarmIdList": alarm_ids} if not self.version < "11.3" else alarm_ids}
+        # All supported versions (11.6 and later) expect the alarm IDs wrapped in an "alarmIdList" object.
+        data = {"triggeredIds": {"alarmIdList": alarm_ids}}
         self.__request(path, data=data)
 
     def get_alarm_event_details(self) -> tuple[str, dict, dict]:
@@ -694,13 +757,9 @@ class McAfeeESMClient(BaseClient):
         command = "sysRemoveWatchlist"
         ids_to_delete = argToList(self.args.get("ids", ""))
         ids_to_delete.extend(list(map(self.__get_watchlist_id, argToList(self.args.get("names")))))
-        if self.version.startswith("11."):
-            data = {"ids": {"watchlistIdList": ids_to_delete}}
-            self.__request(command, data)
-        else:
-            for single_id in ids_to_delete:
-                data = {"id": single_id}
-                self.__request(command, data)
+        # All supported versions (11.6 and later) accept the watchlist IDs in a single "watchlistIdList" request.
+        data = {"ids": {"watchlistIdList": ids_to_delete}}
+        self.__request(command, data)
         return "Watchlists removed", {}, {}
 
     def watchlist_add_entry(self):

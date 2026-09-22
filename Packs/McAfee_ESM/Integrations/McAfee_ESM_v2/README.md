@@ -1,6 +1,10 @@
 
 Run queries and receive alarms from Intel Security ESM.
-This integration was integrated and tested with version 11.3 of McAfee ESM v2.
+This integration was integrated and tested with version 11.6 of McAfee ESM v2.
+
+Versions earlier than 11.6 are not supported, as they reached [Trellix end-of-life](https://www.trellix.com/support/end-of-life-products/).
+
+Starting with ESM 11.6.11, the login API requires the username and password to be AES-encrypted. When the **Version** parameter is set to *11.6.11 and later*, the integration applies this encryption automatically - no manual encryption is required.
 Previous versions have been declared [EOL](https://kc.mcafee.com/corporate/index?page=content&id=KB94822) by the vendor.
 
 ## Configure McAfee ESM v2 in Cortex
@@ -9,7 +13,7 @@ Previous versions have been declared [EOL](https://kc.mcafee.com/corporate/index
 | --- | --- | --- |
 | url | Base URL \(e.g. https://example.com\) | True |
 | credentials | Username | True |
-| version | Version: \(one of 10.0, 10.1, 10.2, 10.3, 11.1, 11.3\) | True |
+| version | Version | True |
 | isFetch | Fetch incidents | False |
 | incidentType | Incident type | False |
 | fetchType | Fetch Types: cases, alarms, both \(relevant only for fetch incident mode\) | False |

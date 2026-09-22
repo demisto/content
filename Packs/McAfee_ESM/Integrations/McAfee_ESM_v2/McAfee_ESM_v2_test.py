@@ -142,7 +142,7 @@ def test_edit_case(mocker):
         "url": "https://example.com",
         "insecure": True,
         "credentials": {"identifier": "TEST", "password": "TEST"},
-        "version": "11.3",
+        "version": VERSION_AES,
     }
     raw_response_has_event_list = {
         "assignedTo": 8207,
@@ -212,7 +212,7 @@ def test_alarm_to_incidents(mocker):
         "url": "https://example.com",
         "insecure": True,
         "credentials": {"identifier": "TEST", "password": "TEST"},
-        "version": "11.3",
+        "version": VERSION_AES,
         "fetchTime": create_time_difference_string(days=3, hours=6),
         "startingFetchID": 0,
     }
@@ -273,7 +273,7 @@ class TestTestModule:
             "url": "https://example.com",
             "insecure": True,
             "credentials": {"identifier": "Shahaf", "password": "TEST"},
-            "version": "11.3",
+            "version": VERSION_AES,
         }
         mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__login", return_value={})
         mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__request", return_value={})
@@ -293,7 +293,7 @@ class TestTestModule:
                 "identifier": "Shahaf",
                 "password": "TEST",
             },
-            "version": "11.3",
+            "version": VERSION_AES,
             "startingFetchID": "",
             "isFetch": True,
         }
@@ -303,3 +303,192 @@ class TestTestModule:
         client = McAfeeESMClient(params)
         with pytest.raises(DemistoException):
             client.test_module()
+
+
+# Test vectors published by Trellix in KB90289 (https://support.trellix.com/s/article/KB90289).
+# The article's prose labels the second plaintext "Trellix123!", but its ciphertext actually
+# decrypts to "Mcafee123!" - a stale value left over from the McAfee-to-Trellix rebrand.
+# The plaintext below is the one that genuinely round-trips against the published ciphertext.
+data_test_encrypt_credential = [
+    ("NGCP", "jwNLgaSY2PFsAjF87bRyPg=="),
+    ("Mcafee123!", "uTl8FIeRQJNFOybh6521Hg=="),
+]
+
+
+@pytest.mark.parametrize("plaintext, expected", data_test_encrypt_credential)
+def test_encrypt_credential_matches_vendor_vectors(plaintext, expected):
+    """
+    Given:
+    - A credential and the matching AES ciphertext published by Trellix in KB90289.
+
+    When:
+    - Encrypting the credential for an ESM 11.6.11+ login.
+
+    Then:
+    - The result matches the vendor's published ciphertext exactly, confirming the
+      integration interoperates with the ESM login API (AES-128-CBC, PKCS7, base64).
+    """
+    assert encrypt_credential(plaintext) == expected
+
+
+def test_encode_credential_aes_version():
+    """
+    Given:
+    - An instance configured with ESM 11.6.11 and later.
+
+    When:
+    - Encoding a credential for the login request.
+
+    Then:
+    - The credential is AES-encrypted rather than only base64-encoded.
+    """
+    assert encode_credential("NGCP", VERSION_AES) == "jwNLgaSY2PFsAjF87bRyPg=="
+
+
+def test_encode_credential_base64_version():
+    """
+    Given:
+    - An instance configured with ESM 11.6.0 - 11.6.10.
+
+    When:
+    - Encoding a credential for the login request.
+
+    Then:
+    - The legacy base64 encoding is used, unchanged from previous versions.
+    """
+    assert encode_credential("NGCP", VERSION_BASE64) == base64.b64encode(b"NGCP").decode()
+
+
+def test_encode_credential_non_ascii():
+    """
+    Given:
+    - A password containing non-ASCII characters.
+
+    When:
+    - Encoding it for either supported version.
+
+    Then:
+    - Encoding succeeds (UTF-8), and the AES result decrypts back to the original password.
+    """
+    password = "sécrèt-ñ-密碼"
+    assert encode_credential(password, VERSION_BASE64) == base64.b64encode(password.encode("utf-8")).decode()
+
+    from cryptography.hazmat.primitives import padding as crypto_padding
+    from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+
+    ciphertext = base64.b64decode(encode_credential(password, VERSION_AES))
+    decryptor = Cipher(algorithms.AES(ESM_AES_KEY), modes.CBC(ESM_AES_IV)).decryptor()
+    padded = decryptor.update(ciphertext) + decryptor.finalize()
+    unpadder = crypto_padding.PKCS7(AES_BLOCK_SIZE_BITS).unpadder()
+    assert (unpadder.update(padded) + unpadder.finalize()).decode("utf-8") == password
+
+
+@pytest.mark.parametrize("version", ["10.2", "11.1", "11.3", "11.5", "", "11.6"])
+def test_validate_version_rejects_unsupported(version):
+    """
+    Given:
+    - An instance still configured with an ESM version that is no longer supported.
+
+    When:
+    - Initializing the client.
+
+    Then:
+    - A DemistoException is raised naming the configured version and both supported options,
+      so the user can fix the instance instead of hitting an opaque login failure.
+    """
+    with pytest.raises(DemistoException) as exception_info:
+        validate_version(version)
+
+    message = str(exception_info.value)
+    assert version in message
+    assert VERSION_AES in message
+    assert VERSION_BASE64 in message
+
+
+@pytest.mark.parametrize("version", [VERSION_AES, VERSION_BASE64])
+def test_validate_version_accepts_supported(version):
+    """
+    Given:
+    - An instance configured with a supported ESM version.
+
+    When:
+    - Validating the version.
+
+    Then:
+    - No exception is raised.
+    """
+    validate_version(version)
+
+
+@pytest.mark.filterwarnings("ignore::pytest.PytestUnraisableExceptionWarning")
+def test_client_init_rejects_unsupported_version(mocker):
+    """
+    Given:
+    - An existing instance that was configured before support for versions earlier than 11.6 was removed.
+
+    When:
+    - The client is initialized after the upgrade.
+
+    Then:
+    - Initialization fails fast with an actionable error, before any login attempt is made.
+    """
+    mocker.patch.object(McAfeeESMClient, "_McAfeeESMClient__login", return_value={})
+    params = {
+        "url": "https://example.com",
+        "insecure": True,
+        "credentials": {"identifier": "TEST", "password": "TEST"},
+        "version": "11.3",
+    }
+    with pytest.raises(DemistoException, match="no longer supports"):
+        McAfeeESMClient(params)
+
+
+@pytest.mark.filterwarnings(
+    "ignore::urllib3.exceptions.InsecureRequestWarning", "ignore::pytest.PytestUnraisableExceptionWarning"
+)
+@pytest.mark.parametrize(
+    "version, expected_username",
+    [
+        (VERSION_AES, "jwNLgaSY2PFsAjF87bRyPg=="),
+        (VERSION_BASE64, base64.b64encode(b"NGCP").decode()),
+    ],
+)
+def test_login_body_encoding_per_version(mocker, version, expected_username):
+    """
+    Given:
+    - An instance configured with each of the supported ESM versions.
+
+    When:
+    - The client logs in.
+
+    Then:
+    - The login request body carries the credentials encoded as that version requires,
+      and the session headers are taken from the response.
+    """
+
+    class MockResponse:
+        status_code = 200
+        text = ""
+        headers = {"Xsrf-Token": "test-xsrf"}
+
+        class cookies:  # noqa: N801
+            @staticmethod
+            def get(_name):
+                return "test-jwt"
+
+    http_request = mocker.patch.object(McAfeeESMClient, "_http_request", return_value=MockResponse())
+    params = {
+        "url": "https://example.com",
+        "insecure": True,
+        "credentials": {"identifier": "NGCP", "password": "NGCP"},
+        "version": version,
+    }
+
+    client = McAfeeESMClient(params)
+
+    login_body = json.loads(http_request.call_args.kwargs["data"])
+    assert login_body["username"] == expected_username
+    assert login_body["password"] == expected_username
+    assert login_body["locale"] == "en_US"
+    assert client._headers["Cookie"] == "JWTToken=test-jwt"
+    assert client._headers["X-Xsrf-Token"] == "test-xsrf"

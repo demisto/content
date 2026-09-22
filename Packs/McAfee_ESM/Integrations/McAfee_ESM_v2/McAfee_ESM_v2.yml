@@ -17,11 +17,17 @@ configuration:
   required: true
   type: 9
   section: Connect
-- defaultvalue: '10.2'
-  display: 'Version: (one of 10.0, 10.1, 10.2, 10.3, 11.1, 11.3)'
+- defaultvalue: 11.6.11 and later
+  display: Version
+  additionalinfo: The ESM version of your instance. Version 11.6.11 and later require AES-encrypted credentials, which the integration
+    applies automatically at login - no manual encryption is needed. Versions earlier than 11.6 are not supported, as they reached
+    Trellix end-of-life.
   name: version
+  options:
+  - 11.6.11 and later
+  - 11.6.0 - 11.6.10
   required: true
-  type: 0
+  type: 15
   section: Connect
 - display: Fetch incidents
   name: isFetch
@@ -90,7 +96,7 @@ configuration:
   type: 8
   required: false
   section: Connect
-description: This integration runs queries and receives alarms from McAfee Enterprise Security Manager (ESM). Supports version 10 and above.
+description: This integration runs queries and receives alarms from McAfee Enterprise Security Manager (ESM). Supports version 11.6 and later.
 display: McAfee ESM v2
 name: McAfee ESM v2
 script:
@@ -709,7 +715,7 @@ script:
     - contextPath: McAfeeESM.Watchlist.name
       description: The name of the watchlist.
       type: string
-  dockerimage: demisto/python3:3.12.13.10116658
+  dockerimage: demisto/crypto:1.0.0.8931184
   isfetch: true
   runonce: false
   script: '-'
@@ -717,6 +723,5 @@ script:
   type: python
 tests:
 - McAfee ESM v2 - Test
-- McAfee ESM v2 (v11.3) - Test
 - McAfee ESM Watchlists - Test
 fromversion: 5.0.0
