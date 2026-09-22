@@ -24,5 +24,4 @@ For more information, see the [IBM Cloud Logs query permissions](https://cloud.i
 
 ### Notes
 
-- The IAM access token is short-lived (~1 hour). The integration caches the token and reuses it while it is valid, automatically obtaining a new one from the API key shortly before it expires.
 - For non-default IAM environments, override the **IAM URL** advanced parameter.
