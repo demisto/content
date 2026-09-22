@@ -1,0 +1,17 @@
+{
+    "model": "jev-1.13.0",
+    "answers": {
+        "malicious": {
+            "type": "noul",
+            "noul": 0.91
+        },
+        "result": {
+            "type": "noul",
+            "noul": 0.91
+        }
+    },
+    "usage": {
+        "input_tokens": 100,
+        "output_tokens": 20
+    }
+}
