@@ -1121,6 +1121,73 @@ class TestFetchIncidents:
         assert last_fetch.get("last_fetch") == 100000001
         assert len(incidents) == 0
 
+    @staticmethod
+    @pytest.mark.parametrize(
+        "raw_value, expected_iso",
+        [
+            ("2020-11-04T09:31:19.895Z", "2020-11-04T09:31:19.895000"),
+            ("2026-07-22T08:37:31Z", "2026-07-22T08:37:31"),
+        ],
+    )
+    def test_parse_alert_raised_at_supports_both_formats(raw_value, expected_iso):
+        """
+        Scenario: Parse Sophos ``raisedAt`` timestamps.
+        Given:
+        - The Sophos Central API returns ISO-8601 values either with or without fractional seconds.
+        When:
+        - ``parse_alert_raised_at`` is called with each variant.
+        Then:
+        - The value is parsed successfully into a naive ``datetime`` matching the input.
+        """
+        from SophosCentral import parse_alert_raised_at
+
+        parsed = parse_alert_raised_at(raw_value)
+        assert parsed.tzinfo is None
+        assert parsed.isoformat() == expected_iso
+
+    @staticmethod
+    def test_parse_alert_raised_at_rejects_unknown_format():
+        """
+        Scenario: Parse an unexpected Sophos timestamp shape.
+        Given:
+        - A ``raisedAt`` string that matches neither supported format.
+        When:
+        - ``parse_alert_raised_at`` is called.
+        Then:
+        - A ``DemistoException`` is raised, surfacing the offending value.
+        """
+        from SophosCentral import parse_alert_raised_at
+
+        with pytest.raises(DemistoException, match="Unsupported Sophos raisedAt"):
+            parse_alert_raised_at("not-a-timestamp")
+
+    @staticmethod
+    def test_raised_at_without_fractional_seconds(requests_mock):
+        """
+        Scenario: Fetch incidents where the last alert's ``raisedAt`` timestamp has no fractional seconds.
+        Given:
+        - User has provided valid credentials.
+        - Sophos returns ISO-8601 ``raisedAt`` values without fractional seconds.
+        When:
+        - ``fetch_incidents`` is called.
+        Then:
+        - The command does not raise a ``ValueError`` when parsing the timestamp.
+        - ``last_fetch`` is computed from the trimmed timestamp plus one millisecond.
+        """
+        from SophosCentral import fetch_incidents
+
+        client = init_mock_client(requests_mock)
+        mock_response = load_mock_response("alert_list.json")
+       # Strip the fractional seconds from the last item to reproduce the reported failure.
+        mock_response["items"][-1]["raisedAt"] = "2026-07-22T08:37:31Z"
+        requests_mock.post(f"{BASE_URL}/common/v1/alerts/search", json=mock_response)
+
+        last_fetch, incidents = fetch_incidents(client, {"last_fetch": 1}, "1 days", ["x"], ["x"], "50")
+
+        wanted_time = datetime.timestamp(datetime.strptime("2026-07-22T08:37:31Z", "%Y-%m-%dT%H:%M:%SZ"))
+        assert last_fetch.get("last_fetch") == wanted_time * 1000 + 1
+        assert len(incidents) == 3
+
 
 class TestMain:
     @staticmethod
