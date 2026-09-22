@@ -8,7 +8,7 @@ IBM Secrets Manager is a centralized service to store, manage, and automate the 
 | API Key | The IBM Cloud IAM API key. Exchanged for a short-lived Bearer token. | True |
 | IAM URL | IAM token endpoint. Override only for non-default IAM environments. | False |
 | Fetch events | Whether to fetch events. | False |
-| The maximum number of events per fetch | The maximum number of events to fetch per cycle from IBM Cloud Logs. | False |
+| The maximum number of events per fetch | The page size (maximum results per IBM Cloud Logs /v1/query call). Each fetch cycle performs up to 10 calls, so the effective maximum number of events per fetch is this value multiplied by 10 (e.g. 50000 x 10 = 500,000). | False |
 | Trust any certificate (not secure) | Whether to trust any certificate. | False |
 | Use system proxy settings | Whether to use system proxy settings. | False |
 

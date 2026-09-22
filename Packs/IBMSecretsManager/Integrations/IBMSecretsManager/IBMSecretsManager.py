@@ -11,31 +11,25 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # IBM Cloud Logs timestamp format (RFC3339 with millis)
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"  # RFC3339 with millis
 VENDOR = "ibm"
 PRODUCT = "secrets_manager"
 SOURCE_LOG_TYPE = "ibm_secrets_manager_audit"
 
 DEFAULT_IAM_URL = "https://iam.cloud.ibm.com"
-DEFAULT_MAX_EVENTS_PER_FETCH = 50000
-# Base DataPrime query scoping to Secrets Manager audit events. The exact filter field/value
-# is intentionally kept in code (not exposed as a param) and is validated against a live instance.
+DEFAULT_PAGE_SIZE = 50000  # max results per /v1/query call
+# Base query scoping to Secrets Manager audit events (kept in code, validated against a live instance).
 DEFAULT_QUERY = 'source logs | filter applicationname == "secrets-manager"'
-# Default first-fetch look-back when there is no previous run state.
 DEFAULT_FIRST_FETCH = "1 hour"
-# Per the design: bound a single fetch cycle to at most this many calls to /v1/query.
-MAX_CALLS_PER_FETCH = 10
-# Safety window (in seconds) subtracted from the token expiry so a token that is about to
-# expire is refreshed proactively rather than used moments before it becomes invalid.
-TOKEN_EXPIRY_SAFETY_WINDOW = 60
-# Fallback token lifetime (seconds) if the IAM response omits expiry information (~1h).
-DEFAULT_TOKEN_TTL = 3600
+MAX_CALLS_PER_FETCH = 10  # per-cycle cap = page_size x MAX_CALLS_PER_FETCH (e.g. 50000 x 10 = 500000)
+TOKEN_EXPIRY_SAFETY_WINDOW = 60  # seconds; refresh token proactively before it expires
+DEFAULT_TOKEN_TTL = 3600  # fallback token lifetime (~1h) if IAM omits expiry
 
 """ CLIENT CLASS """
 
 
 class Client(BaseClient):
-    """Client to interact with IBM Cloud Logs (audit collection) and IBM Cloud IAM (auth)."""
+    """Client for IBM Cloud Logs (audit collection) and IBM Cloud IAM (auth)."""
 
     def __init__(self, server_url: str, api_key: str, iam_url: str, verify: bool, proxy: bool):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy)
@@ -43,34 +37,22 @@ class Client(BaseClient):
         self.iam_url = iam_url.rstrip("/")
 
     def get_access_token(self) -> str:
-        """Return a valid IAM Bearer access token, using the integration context as a cache.
-
-        A previously obtained token is reused while it is still valid (accounting for a small
-        safety window). Only when there is no cached token, or the cached token is about to
-        expire, is a new token minted from the IAM API key. No refresh flow exists
-        (``refresh_token`` is ``not_supported``), so an expired token is simply re-minted.
-
-        Returns:
-            str: A valid Bearer access token.
-        """
+        """Return a valid IAM Bearer token, reusing the cached one until it nears expiry."""
         context = get_integration_context()
         cached_token = context.get("access_token")
         expires_at = context.get("expires_at", 0)
         now = int(time.time())
 
         if cached_token and now < (expires_at - TOKEN_EXPIRY_SAFETY_WINDOW):
-            demisto.debug("Reusing cached IAM access token from integration context.")
+            demisto.debug("[get_access_token] Reusing cached IAM token.")
             return cached_token
 
-        demisto.debug("Minting a new IAM access token.")
+        demisto.debug("[get_access_token] Cached token missing/expiring, minting a new one.")
         return self._request_new_token()
 
     def _request_new_token(self) -> str:
-        """Exchange the IAM API key for a new access token and cache it in the integration context.
-
-        Returns:
-            str: The newly obtained Bearer access token.
-        """
+        """Exchange the API key for a new token and cache it in the integration context."""
+        demisto.debug(f"[_request_new_token] Requesting IAM token from {self.iam_url}/identity/token.")
         response = self._http_request(
             method="POST",
             full_url=f"{self.iam_url}/identity/token",
@@ -90,32 +72,17 @@ class Client(BaseClient):
         expires_in = arg_to_number(response.get("expires_in")) or DEFAULT_TOKEN_TTL
         expires_at = int(time.time()) + expires_in
         set_integration_context({"access_token": access_token, "expires_at": expires_at})
+        demisto.debug(f"[_request_new_token] New token cached, expires_at={expires_at}.")
         return access_token
 
     def query_events(self, query: str, start_date: str, end_date: str, limit: int) -> list[dict]:
-        """Run a DataPrime query against IBM Cloud Logs ``POST /v1/query``.
-
-        The endpoint responds with Server-Sent Events (``text/event-stream``); this method
-        parses the stream and returns the collected log results.
-
-        Args:
-            query (str): DataPrime query string.
-            start_date (str): Inclusive start of the (half-open) time window, RFC3339.
-            end_date (str): Exclusive end of the (half-open) time window, RFC3339.
-            limit (int): Maximum number of results to request from the query.
-
-        Returns:
-            list[dict]: The list of result records returned by the query.
-        """
+        """Run a DataPrime query against POST /v1/query and parse the SSE response."""
         token = self.get_access_token()
         body = {
             "query": f"{query} | limit {limit}",
-            "metadata": {
-                "start_date": start_date,
-                "end_date": end_date,
-                "syntax": "dataprime",
-            },
+            "metadata": {"start_date": start_date, "end_date": end_date, "syntax": "dataprime"},
         }
+        demisto.debug(f"[query_events] POST /v1/query window=[{start_date}, {end_date}) limit={limit}.")
         raw_response = self._http_request(
             method="POST",
             url_suffix="/v1/query",
@@ -127,24 +94,16 @@ class Client(BaseClient):
             data=json.dumps(body),
             resp_type="text",
         )
-        return parse_sse_results(raw_response)
+        results = parse_sse_results(raw_response)
+        demisto.debug(f"[query_events] Parsed {len(results)} results from the SSE stream.")
+        return results
 
 
 """ HELPER FUNCTIONS """
 
 
 def parse_sse_results(raw_response: str) -> list[dict]:
-    """Parse a Server-Sent Events (``text/event-stream``) response body from ``/v1/query``.
-
-    Each SSE frame carries one or more ``data:`` lines whose concatenation is a JSON object.
-    The JSON contains query results under ``result.results``.
-
-    Args:
-        raw_response (str): The raw SSE response body.
-
-    Returns:
-        list[dict]: Flattened list of result records extracted from all frames.
-    """
+    """Parse a text/event-stream body; results live under result.results in each data frame."""
     events: list[dict] = []
     data_lines: list[str] = []
 
@@ -156,7 +115,7 @@ def parse_sse_results(raw_response: str) -> list[dict]:
         try:
             parsed = json.loads(payload)
         except (ValueError, TypeError):
-            demisto.debug(f"Skipping non-JSON SSE frame: {payload[:200]}")
+            demisto.debug(f"[parse_sse_results] Skipping non-JSON frame: {payload[:200]}")
             return
         results = dict_safe_get(parsed, ["result", "results"], default_return_value=[])
         if isinstance(results, list):
@@ -164,60 +123,34 @@ def parse_sse_results(raw_response: str) -> list[dict]:
 
     for raw_line in raw_response.splitlines():
         line = raw_line.rstrip("\r")
-        if line == "":
-            # Blank line terminates an SSE frame.
+        if line == "":  # blank line ends a frame
             flush()
             continue
-        if line.startswith(":"):
-            # SSE comment / keep-alive line.
+        if line.startswith(":"):  # keep-alive comment
             continue
         if line.startswith("data:"):
             data_lines.append(line[len("data:") :].lstrip())
-    # Flush any trailing frame not followed by a blank line.
-    flush()
+    flush()  # trailing frame not followed by a blank line
+    demisto.debug(f"[parse_sse_results] Extracted {len(events)} events.")
     return events
 
 
 def get_event_timestamp(event: dict) -> str:
-    """Extract the event timestamp used for ``_TIME`` and de-dup.
-
-    Args:
-        event (dict): A single log result record.
-
-    Returns:
-        str: The event's ``metadata.timestamp`` value, or empty string if absent.
-    """
+    """Return the event's metadata.timestamp (used for _TIME and de-dup), or ''."""
     metadata = event.get("metadata") or {}
     return metadata.get("timestamp", "")
 
 
 def add_time_to_events(events: list[dict]) -> None:
-    """Enrich each event in-place with the XSIAM ``_time`` and ``_source_log_type`` fields.
-
-    Args:
-        events (list[dict]): Events to enrich.
-    """
+    """Enrich events in-place with _time and _source_log_type."""
+    demisto.debug(f"[add_time_to_events] Enriching {len(events)} events.")
     for event in events:
         event["_time"] = get_event_timestamp(event)
         event["_source_log_type"] = SOURCE_LOG_TYPE
 
 
 def dedup_events(events: list[dict], last_ids: set[str], boundary_ts: str) -> tuple[list[dict], set[str], str]:
-    """Remove events already ingested at the previous window boundary and compute new state.
-
-    Uses a half-open ``[start, end)`` window plus a set of IDs seen at the latest timestamp to
-    avoid re-ingesting boundary events that share the same timestamp across fetch cycles.
-
-    Args:
-        events (list[dict]): Raw events returned by the query (may contain boundary duplicates).
-        last_ids (set[str]): IDs already ingested at ``boundary_ts`` in a previous run.
-        boundary_ts (str): The last-seen timestamp persisted from the previous run.
-
-    Returns:
-        tuple[list[dict], set[str], str]:
-            The de-duplicated events, the set of IDs at the new latest timestamp,
-            and the new latest timestamp to persist as the next ``start_date``.
-    """
+    """Drop boundary duplicates (same timestamp + id as last run) and return new state."""
     new_events: list[dict] = []
     for event in events:
         event_id = event.get("id") or event.get("logid") or ""
@@ -227,12 +160,14 @@ def dedup_events(events: list[dict], last_ids: set[str], boundary_ts: str) -> tu
         new_events.append(event)
 
     if not new_events:
+        demisto.debug("[dedup_events] All events were boundary duplicates; state unchanged.")
         return [], last_ids, boundary_ts
 
     latest_ts = max(get_event_timestamp(event) for event in new_events)
     latest_ids = {
         (event.get("id") or event.get("logid") or "") for event in new_events if get_event_timestamp(event) == latest_ts
     }
+    demisto.debug(f"[dedup_events] Kept {len(new_events)} events; new boundary_ts={latest_ts}.")
     return new_events, latest_ids, latest_ts
 
 
@@ -240,14 +175,8 @@ def dedup_events(events: list[dict], last_ids: set[str], boundary_ts: str) -> tu
 
 
 def test_module(client: Client) -> str:
-    """Validate connectivity and credentials by minting a token and running a bounded query.
-
-    Args:
-        client (Client): The configured client.
-
-    Returns:
-        str: ``"ok"`` on success.
-    """
+    """Validate connectivity/credentials via a minimal query."""
+    demisto.debug("[test_module] Running connectivity check.")
     now = datetime.now(timezone.utc).replace(tzinfo=None)
     start_date = (now - timedelta(minutes=1)).strftime(DATE_FORMAT)
     end_date = now.strftime(DATE_FORMAT)
@@ -255,67 +184,45 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def fetch_events(client: Client, query: str, max_events: int, last_run: dict) -> tuple[list[dict], dict]:
-    """Fetch Secrets Manager audit events from IBM Cloud Logs since the last run.
-
-    Args:
-        client (Client): The configured client.
-        query (str): The base DataPrime query.
-        max_events (int): Maximum number of events to collect in this cycle.
-        last_run (dict): The previous run state (``last_timestamp`` and ``last_ids``).
-
-    Returns:
-        tuple[list[dict], dict]: The collected events and the new run state to persist.
-    """
+def fetch_events(client: Client, query: str, page_size: int, last_run: dict) -> tuple[list[dict], dict]:
+    """Fetch audit events since last run, paging via time-window slicing (cap = page_size x MAX_CALLS_PER_FETCH)."""
     now = datetime.now(timezone.utc).replace(tzinfo=None)
     end_date = now.strftime(DATE_FORMAT)
 
-    last_timestamp = last_run.get("last_timestamp")
-    if not last_timestamp:
+    cursor = last_run.get("last_timestamp")
+    if not cursor:
         first_fetch = dateparser.parse(DEFAULT_FIRST_FETCH, settings={"TIMEZONE": "UTC"})
-        last_timestamp = first_fetch.strftime(DATE_FORMAT) if first_fetch else end_date
-    last_ids = set(last_run.get("last_ids", []))
+        cursor = first_fetch.strftime(DATE_FORMAT) if first_fetch else end_date
+        demisto.debug(f"[fetch_events] First run; starting from {cursor}.")
+    seen_ids = set(last_run.get("last_ids", []))
 
-    per_call_limit = min(max_events, DEFAULT_MAX_EVENTS_PER_FETCH)
-    demisto.debug(f"Fetching IBM Secrets Manager events in window [{last_timestamp}, {end_date}), limit={per_call_limit}.")
+    collected: list[dict] = []
+    for call_number in range(1, MAX_CALLS_PER_FETCH + 1):
+        demisto.debug(f"[fetch_events] Call {call_number}/{MAX_CALLS_PER_FETCH}, window=[{cursor}, {end_date}).")
+        raw_events = client.query_events(query=query, start_date=cursor, end_date=end_date, limit=page_size)
 
-    raw_events = client.query_events(
-        query=query,
-        start_date=last_timestamp,
-        end_date=end_date,
-        limit=per_call_limit,
-    )
-    demisto.debug(f"Received {len(raw_events)} raw events from IBM Cloud Logs.")
+        new_events, seen_ids, cursor = dedup_events(raw_events, seen_ids, cursor)
+        collected.extend(new_events)
 
-    events, new_ids, new_timestamp = dedup_events(raw_events, last_ids, last_timestamp)
-    events = events[:max_events]
-    add_time_to_events(events)
+        if len(raw_events) < page_size:
+            demisto.debug(f"[fetch_events] Short page ({len(raw_events)} < {page_size}); stopping.")
+            break
 
-    new_last_run = {"last_timestamp": new_timestamp, "last_ids": list(new_ids)}
-    return events, new_last_run
+    add_time_to_events(collected)
+    new_last_run = {"last_timestamp": cursor, "last_ids": list(seen_ids)}
+    demisto.debug(f"[fetch_events] Collected {len(collected)} events; new_last_run={new_last_run}.")
+    return collected, new_last_run
 
 
 def get_events_command(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
-    """Manually pull events over a given time window (for debugging / on-demand use).
-
-    This does not persist or read run state. The time window is controlled by the optional
-    ``start_date`` / ``end_date`` arguments (any date format supported by ``arg_to_datetime``,
-    e.g. ``2026-07-13T00:00:00Z`` or ``3 days``). When omitted, ``start_date`` defaults to the
-    look-back window and ``end_date`` defaults to now.
-
-    Args:
-        client (Client): The configured client.
-        args (dict): Command arguments (``limit``, ``start_date``, ``end_date``).
-
-    Returns:
-        tuple[list[dict], CommandResults]: The events and their human-readable representation.
-    """
+    """Manually pull events for an optional [start_date, end_date) window (no run state)."""
     limit = arg_to_number(args.get("limit")) or 50
 
     end_dt = arg_to_datetime(args.get("end_date")) or datetime.now(timezone.utc)
     start_dt = arg_to_datetime(args.get("start_date")) or (end_dt - timedelta(hours=1))
     start_date = start_dt.strftime(DATE_FORMAT)
     end_date = end_dt.strftime(DATE_FORMAT)
+    demisto.debug(f"[get_events_command] window=[{start_date}, {end_date}) limit={limit}.")
 
     raw_events = client.query_events(query=DEFAULT_QUERY, start_date=start_date, end_date=end_date, limit=limit)
     events = raw_events[:limit]
@@ -333,8 +240,8 @@ def get_events_command(client: Client, args: dict) -> tuple[list[dict], CommandR
         ],
         removeNull=True,
     )
-    command_results = CommandResults(readable_output=human_readable)
-    return events, command_results
+    demisto.debug(f"[get_events_command] Returning {len(events)} events.")
+    return events, CommandResults(readable_output=human_readable)
 
 
 """ MAIN FUNCTION """
@@ -351,9 +258,9 @@ def main() -> None:  # pragma: no cover
     iam_url = params.get("iam_url") or DEFAULT_IAM_URL
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    max_events = arg_to_number(params.get("max_events_per_fetch")) or DEFAULT_MAX_EVENTS_PER_FETCH
+    page_size = arg_to_number(params.get("max_events_per_fetch")) or DEFAULT_PAGE_SIZE
 
-    demisto.debug(f"Command being called is {command}")
+    demisto.debug(f"[main] Command being called is {command}.")
     try:
         client = Client(server_url=server_url, api_key=api_key, iam_url=iam_url, verify=verify, proxy=proxy)
 
@@ -363,17 +270,19 @@ def main() -> None:  # pragma: no cover
         elif command == "ibm-secrets-manager-get-events":
             events, command_results = get_events_command(client, args)
             if events and argToBoolean(args.get("should_push_events", False)):
+                demisto.debug(f"[main] Pushing {len(events)} events to Cortex from get-events.")
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             return_results(command_results)
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
-            events, new_last_run = fetch_events(client, query=DEFAULT_QUERY, max_events=max_events, last_run=last_run)
+            demisto.debug(f"[main] fetch-events last_run={last_run}.")
+            events, new_last_run = fetch_events(client, query=DEFAULT_QUERY, page_size=page_size, last_run=last_run)
             if events:
-                demisto.debug(f"Sending {len(events)} events to Cortex.")
+                demisto.debug(f"[main] Sending {len(events)} events to Cortex.")
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(new_last_run)
-            demisto.debug(f"Successfully saved last_run={new_last_run}")
+            demisto.debug(f"[main] Saved last_run={new_last_run}.")
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")

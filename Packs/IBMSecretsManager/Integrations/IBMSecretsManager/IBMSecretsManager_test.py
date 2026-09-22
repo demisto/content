@@ -167,27 +167,80 @@ def test_fetch_events_first_run(requests_mock, mocker):
         ),
     )
     client = build_client()
-    events, new_last_run = fetch_events(client, query="source logs", max_events=100, last_run={})
+    events, new_last_run = fetch_events(client, query="source logs", page_size=100, last_run={})
     assert len(events) == 2
     assert all(e["_source_log_type"] == "ibm_secrets_manager_audit" for e in events)
     assert new_last_run["last_timestamp"] == "2026-07-13T00:00:02.000Z"
     assert new_last_run["last_ids"] == ["2"]
 
 
-def test_fetch_events_respects_max_events(requests_mock):
+def test_fetch_events_stops_on_short_page(requests_mock):
     """
-    Given: a query response with more events than max_events.
-    When: fetching events with a small max_events cap.
-    Then: only up to max_events events are returned.
+    Given: a single page with fewer results than page_size.
+    When: fetching events.
+    Then: only one query call is made (the loop stops on the short page).
     """
     requests_mock.post(f"{IAM_URL}/identity/token", json={"access_token": "tok", "expires_in": 3600})
-    requests_mock.post(
+    query_adapter = requests_mock.post(
         f"{SERVER_URL}/v1/query",
         text=sse_frame([make_event(str(i), f"2026-07-13T00:00:0{i}.000Z") for i in range(5)]),
     )
     client = build_client()
-    events, _ = fetch_events(client, query="source logs", max_events=3, last_run={})
-    assert len(events) == 3
+    events, _ = fetch_events(client, query="source logs", page_size=50, last_run={})
+    assert len(events) == 5
+    assert query_adapter.call_count == 1
+
+
+def test_fetch_events_paginates_across_multiple_calls(requests_mock, mocker):
+    """
+    Given: full pages (== page_size) followed by a short page.
+    When: fetching events.
+    Then: the loop keeps calling /v1/query (advancing the window) until a short page is returned,
+          collecting events across all pages.
+    """
+    mocker.patch("IBMSecretsManager.MAX_CALLS_PER_FETCH", 10)
+    requests_mock.post(f"{IAM_URL}/identity/token", json={"access_token": "tok", "expires_in": 3600})
+    # page_size=2: two full pages then a short (1-event) page -> 3 calls total.
+    responses = [
+        {"text": sse_frame([make_event("1", "2026-07-13T00:00:01.000Z"), make_event("2", "2026-07-13T00:00:02.000Z")])},
+        {"text": sse_frame([make_event("3", "2026-07-13T00:00:03.000Z"), make_event("4", "2026-07-13T00:00:04.000Z")])},
+        {"text": sse_frame([make_event("5", "2026-07-13T00:00:05.000Z")])},
+    ]
+    query_adapter = requests_mock.post(f"{SERVER_URL}/v1/query", responses)
+    client = build_client()
+    events, new_last_run = fetch_events(client, query="source logs", page_size=2, last_run={})
+    assert {e["id"] for e in events} == {"1", "2", "3", "4", "5"}
+    assert query_adapter.call_count == 3
+    assert new_last_run["last_timestamp"] == "2026-07-13T00:00:05.000Z"
+
+
+def test_fetch_events_respects_max_calls_budget(requests_mock, mocker):
+    """
+    Given: every page is full (== page_size), so there is always "more" data.
+    When: fetching events.
+    Then: the loop is bounded by MAX_CALLS_PER_FETCH calls.
+    """
+    mocker.patch("IBMSecretsManager.MAX_CALLS_PER_FETCH", 3)
+    requests_mock.post(f"{IAM_URL}/identity/token", json={"access_token": "tok", "expires_in": 3600})
+
+    counter = {"n": 0}
+
+    def always_full_page(request, context):
+        counter["n"] += 1
+        base = counter["n"] * 10
+        # Always return a full page (2 events) with strictly increasing timestamps.
+        return sse_frame(
+            [
+                make_event(str(base + 1), f"2026-07-13T00:00:{base + 1:02d}.000Z"),
+                make_event(str(base + 2), f"2026-07-13T00:00:{base + 2:02d}.000Z"),
+            ]
+        )
+
+    query_adapter = requests_mock.post(f"{SERVER_URL}/v1/query", text=always_full_page)
+    client = build_client()
+    events, _ = fetch_events(client, query="source logs", page_size=2, last_run={})
+    assert query_adapter.call_count == 3  # capped by MAX_CALLS_PER_FETCH
+    assert len(events) == 6  # 2 per call x 3 calls
 
 
 def test_get_access_token_failure(requests_mock, mocker):
