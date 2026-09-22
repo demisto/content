@@ -200,7 +200,7 @@ script:
       default: false
       required: false
       secret: false
-  dockerimage: demisto/vendors-sdk:1.0.0.10470199
+  dockerimage: demisto/vendors-sdk:1.0.0.11778894
   feed: true
   isfetch: false
   longRunning: false

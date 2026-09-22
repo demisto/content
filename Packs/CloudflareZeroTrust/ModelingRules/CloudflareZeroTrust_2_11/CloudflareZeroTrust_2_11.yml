@@ -1,8 +1,0 @@
-fromversion: 8.15.0
-id: CloudflareZeroTrust_ModelingRule
-name: CloudflareZeroTrust Modeling Rule
-rules: ''
-schema: ''
-tags: 
-supportedModules:
-- xsiam

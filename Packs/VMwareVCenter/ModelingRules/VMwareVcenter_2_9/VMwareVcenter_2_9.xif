@@ -319,6 +319,7 @@ alter
 | alter
     xdm.event.tags = arraycreate("VIRTUALIZATION"),
 	xdm.source.process.identifier = process_id,
+    xdm.source.process.pid = to_integer(process_id),
 	xdm.source.process.name = process_name,
     xdm.event.format = if(_raw_log ~= "^<\d+>1\s", "0",
                           _raw_log ~= "^<\d+>\s", "1");  
