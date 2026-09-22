@@ -1,6 +1,9 @@
 import asyncio
 import aiohttp
+import base64
+import binascii
 import hashlib
+import re
 import traceback
 from enum import Enum
 from types import DynamicClassAttribute
@@ -415,6 +418,52 @@ def convert_to_siem_filter_format(filter_datetime: datetime) -> str:
     return filter_datetime.strftime(SIEM_DATE_FILTER_FORMAT)[:-3] + "Z"
 
 
+def is_valid_cursor(cursor: str | None) -> bool:
+    """
+    Determines whether a SIEM `@nextPage` cursor is valid (usable) for pagination.
+
+    A Mimecast SIEM cursor is a base64-encoded string of the form:
+        [type_1=<from>-<to>, type_2=<from>-<to>, ...]:<page>:<token>
+    e.g. "[attachment_protect=0-0, av=0-0, ..., url_protect=0-0]:0:null".
+
+    The cursor is considered *invalid* when every event type inside the "[...]" block
+    has an offset of "0-0", which means the cursor points to the very beginning for all
+    types (i.e. it carries no real pagination progress). Empty or undecodable cursors
+    are also considered invalid.
+
+    Args:
+        cursor (str | None): The base64-encoded SIEM cursor string.
+
+    Returns:
+        bool: True if the cursor is valid (has at least one non "0-0" offset), False otherwise.
+    """
+    if not cursor:
+        return False
+
+    try:
+        decoded = base64.b64decode(cursor, validate=True).decode("utf-8")
+    except (binascii.Error, ValueError, UnicodeDecodeError):
+        demisto.debug(f"{EventTypes.SIEM.log_prefix} Failed to base64-decode cursor. Treating it as invalid.")
+        return False
+
+    # Extract the "[...]" block containing the per-type offsets
+    match = re.search(r"\[(.*?)\]", decoded)
+    if not match:
+        demisto.debug(f"{EventTypes.SIEM.log_prefix} No offsets block found in decoded cursor. Treating it as invalid.")
+        return False
+
+    offsets_block = match.group(1)
+    # Each entry looks like "type=<from>-<to>"; the cursor is valid if any offset is not "0-0"
+    offset_values = re.findall(r"=\s*([\d]+-[\d]+)", offsets_block)
+    if not offset_values:
+        demisto.debug(f"{EventTypes.SIEM.log_prefix} No parsable offsets in decoded cursor. Treating it as invalid.")
+        return False
+
+    is_valid = any(offset != "0-0" for offset in offset_values)
+    demisto.debug(f"{EventTypes.SIEM.log_prefix} Evaluated cursor validity as {is_valid=} (found {offset_values=}).")
+    return is_valid
+
+
 def is_within_last_24_hours(filter_datetime: datetime | str) -> bool:
     """
     Checks if a given timezone-aware datetime is within the last 24 hours.
@@ -587,6 +636,12 @@ async def get_siem_events(
     all_events: list[dict[str, Any]] = []
     page_number: int = 0
 
+    # The cursor must be validated before *every* use. An invalid cursor (offset 0-0 for all types) is discarded
+    # so the request falls back to the start date. The cursor is only used within a single fetch cycle.
+    if next_page and not is_valid_cursor(next_page):
+        demisto.info(f"{log_prefix} Ignoring invalid initial cursor. Falling back to {start_date=}.")
+        next_page = None
+
     demisto.debug(f"{log_prefix} Starting to fetch SIEM logs between {start_date=} and {end_date=} with {next_page=}.")
     while len(all_events) < limit:
         page_number += 1
@@ -620,6 +675,12 @@ async def get_siem_events(
                 f"{log_prefix} No more events available after {page_number=}. "
                 f"Got {len(page_events)} page events and {next_page=}. Breaking..."
             )
+            break
+
+        # Validate the returned cursor before using it for the next page. A "bad" cursor (offset 0-0 for all types)
+        # would restart pagination from the beginning, so stop paginating instead.
+        if not is_valid_cursor(next_page):
+            demisto.info(f"{log_prefix} Received invalid cursor after {page_number=}. Stopping pagination for this fetch cycle.")
             break
 
         if len(all_events) >= limit:
@@ -784,39 +845,54 @@ async def fetch_siem_events(
     default_start_date = convert_to_siem_filter_format(UTC_MINUTE_AGO)
     last_fetched_ids = siem_last_run.get(LAST_FETCHED_IDS_KEY, [])
     start_date = siem_last_run.get(START_DATE_KEY) or default_start_date
-    next_page = siem_last_run.get(NEXT_PAGE_KEY)
 
-    # Ensure the start date within than 24 hours to avoid HTTP 400 (bad request) errors from SIEM API endpoint
-    # If no events were fetched within the last 24 hours, the start date may not be within the allowed API range
+    # Migration from the previous integration version, which persisted the cursor between fetch cycles:
+    # only reuse a persisted cursor if it is valid (offset is not 0-0 for all types). Either way, the cursor is
+    # no longer persisted going forward - it is only used within a single fetch cycle.
+    persisted_cursor = siem_last_run.get(NEXT_PAGE_KEY)
+    initial_next_page = persisted_cursor if is_valid_cursor(persisted_cursor) else None
+    if initial_next_page:
+        demisto.info(
+            f"{log_prefix} Found a valid persisted cursor from a previous integration version. "
+            f"Reusing it for this fetch cycle only (it will not be persisted going forward)."
+        )
+    elif persisted_cursor:
+        demisto.info(f"{log_prefix} Discarding invalid persisted cursor from last run. Falling back to the start date.")
+    else:
+        demisto.debug(f"{log_prefix} No persisted cursor in last run. Using the start date for the first request.")
+
+    # Ensure the start date is within the last 24 hours to avoid HTTP 400 (bad request) errors from SIEM API endpoint.
+    # If no events were fetched within the last 24 hours, the start date may not be within the allowed API range.
     if not is_within_last_24_hours(start_date):
         demisto.info(f"{log_prefix} {start_date=} is older than 24 hours. Skipping forward to last 23 hours.")
         start_date = convert_to_siem_filter_format(UTC_NOW - timedelta(hours=23))
 
-    siem_events, new_next_page = await get_siem_events(
+    siem_events, _ = await get_siem_events(
         client,
         start_date=start_date,
         limit=max_fetch,
         last_fetched_ids=last_fetched_ids,
-        next_page=next_page,
+        next_page=initial_next_page,
     )
 
-    # Handle empty results
+    # Handle empty results. Even when no events are returned (e.g. the cursor/date yielded nothing), always persist
+    # the current (possibly clamped) start date and existing IDs so the last date is never lost and a stale/invalid
+    # date is not kept. The cursor is never persisted between fetch cycles.
     if not siem_events:
-        demisto.debug(f"{log_prefix} No new events found. Keeping {siem_last_run=}.")
-        return siem_last_run, []
+        siem_next_run = {START_DATE_KEY: start_date, LAST_FETCHED_IDS_KEY: last_fetched_ids}
+        demisto.debug(f"{log_prefix} No new events found. Persisting {siem_next_run=}.")
+        return siem_next_run, []
 
-    # Update state with newest events
+    # Update state with newest events. The cursor is intentionally NOT persisted - only the latest event
+    # date and the IDs of the events at that date (for deduplication) are saved between fetch cycles.
     new_start_time, new_last_fetched_ids = get_siem_new_start_time_last_fetched_ids(siem_events)
-    siem_next_run = {START_DATE_KEY: new_start_time, LAST_FETCHED_IDS_KEY: new_last_fetched_ids, NEXT_PAGE_KEY: new_next_page}
+    siem_next_run = {START_DATE_KEY: new_start_time, LAST_FETCHED_IDS_KEY: new_last_fetched_ids}
 
     # Remove internal key used for deduplication purposes before sending events to dataset
     for event in siem_events:
         event.pop(FILTER_TIME_KEY)
 
-    demisto.debug(
-        f"{log_prefix} Finished fetching {len(siem_events)} events. "
-        f"Got {new_start_time=}, {new_next_page=}, {new_last_fetched_ids=}."
-    )
+    demisto.debug(f"{log_prefix} Finished fetching {len(siem_events)} events. Got {new_start_time=}, {new_last_fetched_ids=}.")
     return siem_next_run, siem_events
 
 
