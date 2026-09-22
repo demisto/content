@@ -880,16 +880,16 @@ script:
       name: rule
       required: true
     - auto: PREDEFINED
-      description: If true, validates the rule without applying it.
+      description: Whether to validate the rule without applying it.
       name: dry_run
       predefined:
       - 'true'
       - 'false'
-    - description: Account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
+    - description: The account scope. Overrides the instance-configured Account ID. Mutually exclusive with zone_id. Defaults to the instance Account ID.
       name: account_id
     - description: Zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
       name: zone_id
-    description: The command creates a new rule in a ruleset at the account or zone level. Replaces the deprecated cloudflare-waf-firewall-rule-create and cloudflare-waf-filter-create commands.
+    description: Creates a new rule in a ruleset at the account or zone level. Replaces the deprecated cloudflare-waf-firewall-rule-create and cloudflare-waf-filter-create commands.
     execution: true
     name: cloudflare-waf-ruleset-rule-create
     outputs:
@@ -1202,7 +1202,7 @@ script:
     - description: Zone scope. Overrides the instance-configured Zone ID. Mutually exclusive with account_id.
       name: zone_id
     - defaultValue: '50'
-      description: The maximum number of records to return. Default is 50.
+      description: The maximum number of records to return.
       name: limit
     - auto: PREDEFINED
       description: If true, retrieves all results, overriding the limit argument.
