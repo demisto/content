@@ -4764,7 +4764,7 @@ def nsg_security_rule_delete_command(client: AzureClient, params: dict[str, Any]
 
 def build_firewall_network_rule(
     rule_name: str,
-    description: str,
+    description: str | None,
     protocols: list,
     source_type: str,
     source_ips: list,
