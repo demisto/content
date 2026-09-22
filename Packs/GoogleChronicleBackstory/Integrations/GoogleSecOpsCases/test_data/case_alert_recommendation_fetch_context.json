@@ -1,0 +1,13 @@
+{
+    "recommendationId": "00000000-0000-0000-0000-000000001000",
+    "recommendation": "*Step 1: Recommendation for Analyst Actions*\n\nThe SOC analyst should manually complete the \"Enrich IPs\" action, as indicated by its completion in similar alerts such as \"Sample Alert_00000000-0000-0000-0000-000000000004\". The current alert also shows this action as \"PendingUserInput\" automatically.\n\n*Step 2: Recommendation for Marketplace Actions*\n\nNo marketplace actions are recommended based on the provided data, as the `marketplace actions triggered on this alert manually` field was empty for all identified similar alerts.\n\n*Step 3: Closure Recommendation*\n\nClose the alert as \"Malicious\".\n\n*Step 4: Identify Similar Alerts*\n\nThe following characteristics are shared between the current alert and the similar alerts:\n\n*   `AlertRuleGenerator`: \"Manual Case\"\n*   `AlertDisplayName`: \"Sample Alert\"\n*   `Environment`: \"Default Environment\"\n*   `AlertIsManual`: true\n*   `AlertPriority`: \"Informative\"\n*   `Entities`: Includes \"0.0.0.1\" (ADDRESS type).\n*   `WorkflowName`: \"DummyTool - Rescan\"\n\nThe similar alerts are:\n\n*   \"Sample Alert_00000000-0000-0000-0000-000000000003\"\n*   \"Sample Alert_00000000-0000-0000-0000-000000000004\"\n\n*Step 5: Analyze Playbook Usage in Similar Alerts*\n\nThe \"DummyTool - Rescan\" playbook (WorkflowDefinitionIdentifier: `00000000-0000-0000-0000-000000000005`) was used in both identified similar alerts. Within this playbook, `Initiate Rescan`, `Get Rescan Status`, and `DummyIntegration_Create Entity` actions were performed and completed. The `Enrich IPs` action was manually completed in \"Sample Alert_00000000-0000-0000-0000-000000000004\". Several automatic actions within the playbooks also show \"PendingUserInput\" statuses due to missing parameters in both similar alerts, similar to the current alert.\n\n*Step 6: Analyze Case Closure Information*\n\nBoth identified similar alerts were closed with the reason \"Malicious\" and a root cause of \"External attack\". The common comment for closure was \"All attached playbooks and playbook blocks have been terminated. All Alerts were closed.\"",
+    "alertIdentifierToCaseId": {
+        "sample_alert_00000000-0000-0000-0000-000000000001": 100001,
+        "sample_alert_00000000-0000-0000-0000-000000000002": 100002
+    },
+    "marketplaceActionsTriggeredManually": [
+        "Enrich Web Properties",
+        "Enrich IPs"
+    ],
+    "state": "SUCCEEDED"
+}

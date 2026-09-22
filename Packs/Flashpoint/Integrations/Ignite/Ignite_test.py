@@ -11,6 +11,7 @@ import pytest
 from CommonServerPython import DemistoException, get_current_time
 from Ignite import (
     DATE_FORMAT,
+    DEFAULT_SEVERITY,
     LIBRARY_AND_PACKAGE_SORT_VALUES,
     MESSAGES,
     URL_SUFFIX,
@@ -42,6 +43,8 @@ from Ignite import (
     create_relationships_list_for_community_search,
     ip_lookup_command,
     truncate_message,
+    get_resource_url,
+    prepare_incidents_from_alerts_data,
 )
 
 """ CONSTANTS """
@@ -2288,6 +2291,7 @@ def test_fetch_incidents_alerts_success(mocker, mock_client, requests_mock):
             "00000000-0000-0000-0000-000000000003",
             "00000000-0000-0000-0000-000000000004",
             "00000000-0000-0000-0000-000000000005",
+            "00000000-0000-0000-0000-000000000006",
         ],
     }
 
@@ -2340,6 +2344,7 @@ def test_fetch_incidents_alerts_when_params_not_provided_and_last_run_provided(m
             "00000000-0000-0000-0000-000000000003",
             "00000000-0000-0000-0000-000000000004",
             "00000000-0000-0000-0000-000000000005",
+            "00000000-0000-0000-0000-000000000006",
         ],
     }
     assert incidents == incidents_response
@@ -2368,6 +2373,7 @@ def test_fetch_incidents_alerts_to_check_duplicates_incidents(mock_client, reque
             "00000000-0000-0000-0000-000000000003",
             "00000000-0000-0000-0000-000000000004",
             "00000000-0000-0000-0000-000000000005",
+            "00000000-0000-0000-0000-000000000006",
         ],
     }
 
@@ -2389,6 +2395,7 @@ def test_fetch_incidents_alerts_to_check_duplicates_incidents(mock_client, reque
             "00000000-0000-0000-0000-000000000003",
             "00000000-0000-0000-0000-000000000004",
             "00000000-0000-0000-0000-000000000005",
+            "00000000-0000-0000-0000-000000000006",
         ],
     }
     assert incidents == []
@@ -2805,7 +2812,7 @@ def test_vulnerability_list_command_success(mock_client, requests_mock):
     Then:
        - Returns a valid output and verifies request parameters are sent correctly.
     """
-    mock_response = util_load_json("test_data/vulnurability_list_response.json")
+    mock_response = util_load_json("test_data/vulnerability_list_response.json")
 
     hr_output = open("test_data/vulnerability_list_hr.md").read()
     expected_outputs = util_load_json("test_data/vulnerability_list_context.json")
@@ -2831,6 +2838,34 @@ def test_vulnerability_list_command_success(mock_client, requests_mock):
     assert results[0].outputs == expected_outputs
 
 
+@pytest.mark.parametrize(
+    "vulnerability_ids, expected_ids",
+    [
+        ("463513,463512", "463513,463512"),
+        ("FP-VULN-463513,FP-VULN-463512", "463513,463512"),
+        ("FP-VULN-463513,463512", "463513,463512"),
+    ],
+)
+def test_vulnerability_list_command_with_vulnerability_ids(mock_client, requests_mock, vulnerability_ids, expected_ids):
+    """
+    Test case scenario for execution of flashpoint-ignite-vulnerability-list command with vulnerability_ids filter.
+
+    Given:
+       - command arguments with comma-separated vulnerability IDs, with and without the FP-VULN- prefix
+    When:
+       - Calling `vulnerability_list_command` function
+    Then:
+       - Sends the IDs as the 'ids' key of the request body with the FP-VULN- prefix stripped.
+    """
+    mock_response = util_load_json("test_data/vulnerability_list_response.json")
+
+    requests_mock.post(f'{MOCK_URL}{URL_SUFFIX["VULNERABILITY_LIST"]}', json=mock_response, status_code=200)
+
+    vulnerability_list_command(mock_client, args={"vulnerability_ids": vulnerability_ids})
+
+    assert requests_mock.last_request.json()["ids"] == expected_ids
+
+
 def test_vulnerability_list_command_with_pagination(mock_client, requests_mock):
     """
     Test case scenario for execution of flashpoint-ignite-vulnerability-list command with pagination hint.
@@ -2842,7 +2877,7 @@ def test_vulnerability_list_command_with_pagination(mock_client, requests_mock):
     Then:
        - Returns a valid output that includes a pagination hint in the human-readable output.
     """
-    mock_response = util_load_json("test_data/vulnurability_list_response.json")
+    mock_response = util_load_json("test_data/vulnerability_list_response.json")
 
     requests_mock.post(f'{MOCK_URL}{URL_SUFFIX["VULNERABILITY_LIST"]}', json=mock_response, status_code=200)
 
@@ -2914,6 +2949,14 @@ def test_vulnerability_list_command_when_empty_response(mock_client, requests_mo
         (
             {"cwe_ids": "abc"},
             MESSAGES["INVALID_INT_PARAMS_PROVIDED"].format(["abc"], "CWE IDs"),
+        ),
+        (
+            {"vulnerability_ids": "abc"},
+            MESSAGES["INVALID_INT_PARAMS_PROVIDED"].format(["abc"], "Vulnerability IDs"),
+        ),
+        (
+            {"vulnerability_ids": "463513,abc,FP-VULN-xyz"},
+            MESSAGES["INVALID_INT_PARAMS_PROVIDED"].format(["abc", "xyz"], "Vulnerability IDs"),
         ),
         (
             {"updated_after": "2024-06-01T00:00:00Z", "updated_before": "2024-05-01T00:00:00Z"},
@@ -4004,3 +4047,99 @@ def test_ip_lookup_community_search_message_truncated_to_client_param_limit(requ
     stored_message = outputs[0].get("message", "")
 
     assert stored_message == long_message[:custom_limit] + MESSAGE_TRUNCATION_SUFFIX
+
+
+@pytest.mark.parametrize(
+    "source, resource_id, expected_url",
+    [
+        ("reports", "abc123", MOCK_URL + "/cti/intelligence/report/abc123"),
+        ("communities", "cid", MOCK_URL + "/search/context/communities/cid"),
+        ("marketplaces", "mid", MOCK_URL + "/search/context/marketplaces/mid"),
+        ("media", "mediaid", MOCK_URL + "/search/results/media?include.date=all+time&include.media_id=mediaid"),
+        ("unknown_source", "xyz", MOCK_URL),
+    ],
+)
+def test_get_resource_url_based_on_source(source, resource_id, expected_url):
+    """
+    Test that get_resource_url builds the correct deep link for each source type,
+    including the new "reports" source and an unmapped source that falls back to an empty suffix.
+
+    Given:
+        - A source type, resource ID and platform URL.
+    When:
+        - Calling get_resource_url.
+    Then:
+        - The generated URL matches the expected deep link for the source type.
+    """
+    assert get_resource_url(source, resource_id, MOCK_URL) == expected_url
+
+
+def test_prepare_incidents_from_alerts_data_vulnerabilities_uses_ignite_search_url(mocker):
+    """
+    Test that for a "vulnerabilities" source alert, the resource URL is taken from
+    the resource's "ignite_search_url" field.
+
+    Given:
+        - An alerts response containing an alert with source "vulnerabilities".
+    When:
+        - Calling prepare_incidents_from_alerts_data.
+    Then:
+        - The alert's resource "url" is set to the "ignite_search_url" value.
+    """
+    mocker.patch.object(demisto, "params", return_value={"severity": DEFAULT_SEVERITY})
+
+    ignite_search_url = MOCK_URL + "/vulns/search?query=abc"
+    response = {
+        "items": [
+            {
+                "id": "alert-1",
+                "source": "Vulnerabilities",
+                "reason": {"name": "CVE detected", "origin": "searches"},
+                "resource": {"id": "res-1", "ignite_search_url": ignite_search_url},
+                "generated_at": CURRENT_TIME_STRING,
+            }
+        ]
+    }
+
+    next_run, incidents = prepare_incidents_from_alerts_data(
+        response=response, last_run={}, fetch_params={"created_before": CURRENT_TIME_STRING}, platform_url=MOCK_URL
+    )
+
+    assert len(incidents) == 1
+    raw = json.loads(incidents[0]["rawJSON"])
+    assert raw["resource"]["url"] == ignite_search_url
+    assert next_run["alert_ids"] == ["alert-1"]
+
+
+def test_prepare_incidents_from_alerts_data_non_vulnerabilities_keeps_resource_url(mocker):
+    """
+    Test that for a non-vulnerabilities source alert, the existing resource URL is preserved.
+
+    Given:
+        - An alerts response with an alert whose resource already has a "url".
+    When:
+        - Calling prepare_incidents_from_alerts_data.
+    Then:
+        - The alert's resource "url" is unchanged and ignite_search_url is not used.
+    """
+    mocker.patch.object(demisto, "params", return_value={"severity": DEFAULT_SEVERITY})
+
+    existing_url = MOCK_URL + "/search/context/communities/res-1"
+    response = {
+        "items": [
+            {
+                "id": "alert-2",
+                "source": "communities",
+                "reason": {"name": "Community hit", "origin": "searches"},
+                "resource": {"id": "res-1", "url": existing_url, "ignite_search_url": MOCK_URL + "/should-not-use"},
+                "generated_at": CURRENT_TIME_STRING,
+            }
+        ]
+    }
+
+    _, incidents = prepare_incidents_from_alerts_data(
+        response=response, last_run={}, fetch_params={"created_before": CURRENT_TIME_STRING}, platform_url=MOCK_URL
+    )
+
+    raw = json.loads(incidents[0]["rawJSON"])
+    assert raw["resource"]["url"] == existing_url

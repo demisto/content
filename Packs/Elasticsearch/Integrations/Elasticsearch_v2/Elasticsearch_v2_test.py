@@ -1,6 +1,6 @@
 import importlib
 import unittest
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from unittest import mock
 from unittest.mock import patch, MagicMock
 
@@ -519,7 +519,7 @@ def test_incident_creation_e6(params, mocker):
     from Elasticsearch_v2 import results_to_incidents_datetime
 
     last_fetch = "2019-08-29T14:44:00Z"
-    incidents, last_fetch2 = results_to_incidents_datetime(ES_V6_RESPONSE, last_fetch)
+    incidents, last_fetch2, _ = results_to_incidents_datetime(ES_V6_RESPONSE, last_fetch)
 
     # last fetch should not truncate the milliseconds
     assert str(last_fetch2) == "2019-08-29T14:46:00.123456+00:00"
@@ -536,7 +536,7 @@ def test_incident_creation_e7(params, mocker):
     from Elasticsearch_v2 import results_to_incidents_datetime
 
     last_fetch = "2019-08-27T17:59:00"
-    incidents, last_fetch2 = results_to_incidents_datetime(ES_V7_RESPONSE, last_fetch)
+    incidents, last_fetch2, _ = results_to_incidents_datetime(ES_V7_RESPONSE, last_fetch)
 
     # last fetch should not truncate the milliseconds
     assert str(last_fetch2) == "2019-08-27T18:01:25.343212+00:00"
@@ -576,12 +576,208 @@ def test_incident_creation_with_timestamp_e7(params, mocker):
     from Elasticsearch_v2 import results_to_incidents_timestamp
 
     lastfetch = int(datetime.strptime("2019-08-27T17:59:00Z", "%Y-%m-%dT%H:%M:%SZ").timestamp())
-    incidents, last_fetch2 = results_to_incidents_timestamp(ES_V7_RESPONSE_WITH_TIMESTAMP, lastfetch)
+    incidents, last_fetch2, _ = results_to_incidents_timestamp(ES_V7_RESPONSE_WITH_TIMESTAMP, lastfetch)
     assert last_fetch2 == 1572502640
     if params.get("map_labels"):
         assert str(incidents) == MOCK_ES7_INCIDENTS_FROM_TIMESTAMP
     else:
         assert str(incidents) == MOCK_ES7_INCIDENTS_FROM_TIMESTAMP_WITHOUT_LABELS
+
+
+# XSUP-72750: three documents sharing an identical sub-second timestamp at the fetch boundary.
+ES_IDENTICAL_TIMESTAMP_RESPONSE = {
+    "took": 1,
+    "timed_out": False,
+    "_shards": {"total": 1, "successful": 1, "skipped": 0, "failed": 0},
+    "hits": {
+        "total": {"value": 3, "relation": "eq"},
+        "max_score": 1.0,
+        "hits": [
+            {"_index": "customer", "_type": "doc", "_id": "a1", "_source": {"Date": "2019-08-27T18:00:00.120000Z"}},
+            {"_index": "customer", "_type": "doc", "_id": "a2", "_source": {"Date": "2019-08-27T18:00:00.120000Z"}},
+            {"_index": "customer", "_type": "doc", "_id": "a3", "_source": {"Date": "2019-08-27T18:00:00.120000Z"}},
+        ],
+    },
+}
+
+
+@pytest.mark.parametrize("params", MOCK_PARAMS)
+def test_datetime_identical_timestamps_no_data_loss_across_fetches(params, mocker):
+    """
+    XSUP-72750 regression test (Simple-Date / datetime path).
+
+    Given:
+        - Three documents that share an identical sub-second timestamp which is the
+          fetch high-water-mark, split across two fetch cycles (first fetch returns
+          only 'a1', second fetch returns all three because the query lower bound is now inclusive).
+    When:
+        - Running results_to_incidents_datetime twice, feeding the returned last_fetch and
+          last_fetch_ids from the first call into the second (mimicking demisto.setLastRun/getLastRun).
+    Then:
+        - All three documents are ingested exactly once (no data loss, no duplicates).
+    """
+    mocker.patch.object(demisto, "params", return_value=params)
+    importlib.reload(Elasticsearch_v2)
+    from Elasticsearch_v2 import results_to_incidents_datetime
+
+    first_response = {"hits": {"hits": [ES_IDENTICAL_TIMESTAMP_RESPONSE["hits"]["hits"][0]]}}
+
+    # First fetch: only 'a1' is available (page boundary cuts the rest off).
+    incidents1, last_fetch1, ids1 = results_to_incidents_datetime(first_response, "2019-08-27T17:59:00Z")
+    assert [inc["dbotMirrorId"] for inc in incidents1] == ["a1"]
+    assert ids1 == ["a1"]
+
+    # Second fetch: query is now gte the boundary timestamp, so all three are returned.
+    incidents2, last_fetch2, ids2 = results_to_incidents_datetime(ES_IDENTICAL_TIMESTAMP_RESPONSE, last_fetch1, ids1)
+    # 'a1' must be skipped (already ingested), 'a2' and 'a3' must be ingested.
+    assert [inc["dbotMirrorId"] for inc in incidents2] == ["a2", "a3"]
+    assert sorted(ids2) == ["a1", "a2", "a3"]
+
+    # Overall: all three ingested exactly once.
+    all_ingested = [inc["dbotMirrorId"] for inc in incidents1 + incidents2]
+    assert sorted(all_ingested) == ["a1", "a2", "a3"]
+
+
+@pytest.mark.parametrize("params", MOCK_PARAMS)
+def test_datetime_identical_timestamps_no_duplicates_on_replay(params, mocker):
+    """
+    XSUP-72750 regression test (Simple-Date / datetime path) - idempotency.
+
+    Given:
+        - A fetch that already ingested all three identically-timestamped documents.
+    When:
+        - The exact same response is returned again (e.g. no new documents arrived).
+    Then:
+        - No incidents are produced (all skipped by _id de-duplication), so no duplicates.
+    """
+    mocker.patch.object(demisto, "params", return_value=params)
+    importlib.reload(Elasticsearch_v2)
+    from Elasticsearch_v2 import results_to_incidents_datetime
+
+    incidents1, last_fetch1, ids1 = results_to_incidents_datetime(ES_IDENTICAL_TIMESTAMP_RESPONSE, "2019-08-27T17:59:00Z")
+    assert sorted(inc["dbotMirrorId"] for inc in incidents1) == ["a1", "a2", "a3"]
+
+    # Replay the same response with the persisted state.
+    incidents2, last_fetch2, ids2 = results_to_incidents_datetime(ES_IDENTICAL_TIMESTAMP_RESPONSE, last_fetch1, ids1)
+    assert incidents2 == []
+    assert sorted(ids2) == ["a1", "a2", "a3"]
+
+
+@pytest.mark.parametrize("params", MOCK_PARAMS)
+def test_timestamp_identical_timestamps_no_data_loss_across_fetches(params, mocker):
+    """
+    XSUP-72750 regression test (Timestamp path).
+
+    Given:
+        - Three documents that share an identical epoch-millisecond timestamp which is the
+          fetch high-water-mark, split across two fetch cycles.
+    When:
+        - Running results_to_incidents_timestamp twice, feeding the returned last_fetch and
+          last_fetch_ids from the first call into the second.
+    Then:
+        - All three documents are ingested exactly once (no data loss, no duplicates).
+    """
+    mocker.patch.object(demisto, "params", return_value=params)
+    importlib.reload(Elasticsearch_v2)
+    mocker.patch("Elasticsearch_v2.TIME_METHOD", "Timestamp-Milliseconds")
+    from Elasticsearch_v2 import results_to_incidents_timestamp
+
+    ts = 1566928800120  # 2019-08-27T18:00:00.120Z in epoch milliseconds
+    hit = {"_index": "customer", "_type": "doc", "_source": {"Date": ts}}
+    response = {
+        "hits": {
+            "hits": [
+                {**hit, "_id": "a1"},
+                {**hit, "_id": "a2"},
+                {**hit, "_id": "a3"},
+            ]
+        }
+    }
+    first_response = {"hits": {"hits": [{**hit, "_id": "a1"}]}}
+
+    last_fetch = 1566928740000  # earlier than ts
+    incidents1, last_fetch1, ids1 = results_to_incidents_timestamp(first_response, last_fetch)
+    assert [inc["dbotMirrorId"] for inc in incidents1] == ["a1"]
+    assert last_fetch1 == ts
+    assert ids1 == ["a1"]
+
+    incidents2, last_fetch2, ids2 = results_to_incidents_timestamp(response, last_fetch1, ids1)
+    assert [inc["dbotMirrorId"] for inc in incidents2] == ["a2", "a3"]
+    assert last_fetch2 == ts
+    assert sorted(ids2) == ["a1", "a2", "a3"]
+
+
+@pytest.mark.parametrize("params", MOCK_PARAMS)
+def test_datetime_identical_timestamps_boundary_ids_persist_over_three_fetches(params, mocker):
+    """
+    XSUP-72750 regression test - continuity over three fetch cycles.
+
+    Given:
+        - Three documents sharing an identical boundary timestamp, revealed one per fetch.
+    When:
+        - Running results_to_incidents_datetime three times, always feeding back the persisted
+          last_fetch and last_fetch_ids (mimicking demisto.getLastRun/setLastRun).
+    Then:
+        - Each document is ingested exactly once and the boundary id set never drifts,
+          so no document is ever re-ingested as a duplicate on a later cycle.
+    """
+    mocker.patch.object(demisto, "params", return_value=params)
+    importlib.reload(Elasticsearch_v2)
+    from Elasticsearch_v2 import results_to_incidents_datetime
+
+    hits = ES_IDENTICAL_TIMESTAMP_RESPONSE["hits"]["hits"]
+    fetch1 = {"hits": {"hits": hits[:1]}}
+    fetch2 = {"hits": {"hits": hits[:2]}}
+    fetch3 = {"hits": {"hits": hits[:3]}}
+
+    incidents1, last_fetch, ids = results_to_incidents_datetime(fetch1, "2019-08-27T17:59:00Z")
+    incidents2, last_fetch, ids = results_to_incidents_datetime(fetch2, last_fetch, ids)
+    incidents3, last_fetch, ids = results_to_incidents_datetime(fetch3, last_fetch, ids)
+
+    assert [inc["dbotMirrorId"] for inc in incidents1] == ["a1"]
+    assert [inc["dbotMirrorId"] for inc in incidents2] == ["a2"]
+    assert [inc["dbotMirrorId"] for inc in incidents3] == ["a3"]
+    assert sorted(ids) == ["a1", "a2", "a3"]
+
+    all_ingested = [inc["dbotMirrorId"] for inc in incidents1 + incidents2 + incidents3]
+    assert sorted(all_ingested) == ["a1", "a2", "a3"]
+
+
+@pytest.mark.parametrize("params", MOCK_PARAMS)
+def test_datetime_newer_timestamp_resets_boundary_ids(params, mocker):
+    """
+    XSUP-72750 regression test - boundary id reset when a newer timestamp appears.
+
+    Given:
+        - A page containing some documents at the boundary timestamp and some at a strictly
+          newer timestamp.
+    When:
+        - Running results_to_incidents_datetime with the boundary id already persisted.
+    Then:
+        - The previously-fetched boundary id is skipped, new documents are ingested, and the
+          returned boundary id set contains only the ids at the new (newer) high-water-mark.
+    """
+    mocker.patch.object(demisto, "params", return_value=params)
+    importlib.reload(Elasticsearch_v2)
+    from Elasticsearch_v2 import results_to_incidents_datetime
+
+    response = {
+        "hits": {
+            "hits": [
+                {"_index": "c", "_type": "doc", "_id": "a1", "_source": {"Date": "2019-08-27T18:00:00.120000Z"}},
+                {"_index": "c", "_type": "doc", "_id": "a2", "_source": {"Date": "2019-08-27T18:00:00.120000Z"}},
+                {"_index": "c", "_type": "doc", "_id": "b1", "_source": {"Date": "2019-08-27T18:05:00.500000Z"}},
+            ]
+        }
+    }
+
+    # 'a1' was already ingested at the previous boundary (18:00:00.120000).
+    incidents, last_fetch, ids = results_to_incidents_datetime(response, "2019-08-27T18:00:00.120000Z", ["a1"])
+
+    # 'a1' skipped, 'a2' and 'b1' ingested; the boundary advanced to b1's timestamp,
+    # so only 'b1' remains as the boundary id.
+    assert [inc["dbotMirrorId"] for inc in incidents] == ["a2", "b1"]
+    assert ids == ["b1"]
 
 
 @pytest.mark.parametrize("params", MOCK_PARAMS)
@@ -761,14 +957,14 @@ class TestIncidentLabelMaker(unittest.TestCase):
             "",
             "1.1.2000 12:00:00Z",
             "2.1.2000 12:00:00Z",
-            {"range": {"time_field": {"gt": 946728000000, "lt": 949406400000}}},
+            {"range": {"time_field": {"gte": 946728000000, "lt": 949406400000}}},
         ),
         (
             "Timestamp-Milliseconds",
             946728000000,
             "",
             "2.1.2000 12:00:00Z",
-            {"range": {"time_field": {"gt": 946728000000, "lt": 949406400000}}},
+            {"range": {"time_field": {"gte": 946728000000, "lt": 949406400000}}},
         ),
         ("Timestamp-Milliseconds", "", "", "2.1.2000 12:00:00Z", {"range": {"time_field": {"lt": 949406400000}}}),
         (
@@ -776,7 +972,7 @@ class TestIncidentLabelMaker(unittest.TestCase):
             "2.1.2000 12:00:00.000000",
             "",
             "",
-            {"range": {"time_field": {"gt": "2.1.2000 12:00:00.000000", "format": Elasticsearch_v2.ES_DEFAULT_DATETIME_FORMAT}}},
+            {"range": {"time_field": {"gte": "2.1.2000 12:00:00.000000", "format": Elasticsearch_v2.ES_DEFAULT_DATETIME_FORMAT}}},
         ),
     ],
 )
@@ -1488,3 +1684,2404 @@ class TestGetElasticToken:
             Elasticsearch_v2.get_elastic_token()
 
         assert reason in str(exc_info.value)
+
+
+class TestGetKibanaBaseUrl:
+    """Tests for the get_kibana_base_url function."""
+
+    def test_get_kibana_base_url_success(self, mocker):
+        """
+        Given:
+            - No configured Kibana Server URL, and a Server URL containing the ".es." Elastic Cloud subdomain segment
+        When:
+            - Calling get_kibana_base_url
+        Then:
+            - Return the URL with ".es." replaced by ".kb."
+        """
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": ""})
+        mocker.patch("Elasticsearch_v2.SERVER", "https://my-deployment-af38b6.es.us-central1.gcp.cloud.es.io")
+
+        result = Elasticsearch_v2.get_kibana_base_url()
+
+        assert result == "https://my-deployment-af38b6.kb.us-central1.gcp.cloud.es.io"
+
+    def test_get_kibana_base_url_from_configured_param(self, mocker):
+        """
+        Given:
+            - A configured Kibana Server URL of an on-premises deployment, and a Server URL without ".es."
+        When:
+            - Calling get_kibana_base_url
+        Then:
+            - Return the configured Kibana Server URL as-is, without attempting any derivation
+        """
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": "https://kibana.example.com:5601"})
+        mocker.patch("Elasticsearch_v2.SERVER", "https://on-prem-elastic.example.com:9200")
+
+        result = Elasticsearch_v2.get_kibana_base_url()
+
+        assert result == "https://kibana.example.com:5601"
+
+    def test_get_kibana_base_url_configured_param_strips_trailing_slash(self, mocker):
+        """
+        Given:
+            - A configured Kibana Server URL that ends with a trailing slash
+        When:
+            - Calling get_kibana_base_url
+        Then:
+            - Return the URL without the trailing slash, so paths are joined correctly
+        """
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": "https://kibana.example.com:5601/"})
+        mocker.patch("Elasticsearch_v2.SERVER", "https://on-prem-elastic.example.com:9200")
+
+        result = Elasticsearch_v2.get_kibana_base_url()
+
+        assert result == "https://kibana.example.com:5601"
+
+    def test_get_kibana_base_url_configured_param_takes_precedence(self, mocker):
+        """
+        Given:
+            - Both a configured Kibana Server URL and an Elastic Cloud Server URL containing ".es."
+        When:
+            - Calling get_kibana_base_url
+        Then:
+            - Return the configured Kibana Server URL, which takes precedence over the derivation
+        """
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": "https://custom-kibana.example.com"})
+        mocker.patch("Elasticsearch_v2.SERVER", "https://my-deployment-af38b6.es.us-central1.gcp.cloud.es.io")
+
+        result = Elasticsearch_v2.get_kibana_base_url()
+
+        assert result == "https://custom-kibana.example.com"
+
+    def test_get_kibana_base_url_missing_es_segment(self, mocker):
+        """
+        Given:
+            - No configured Kibana Server URL, and a Server URL that does not contain the ".es." segment
+        When:
+            - Calling get_kibana_base_url
+        Then:
+            - Raise a DemistoException instructing the user to configure the Kibana Server URL
+        """
+        from CommonServerPython import DemistoException
+
+        mocker.patch.dict(Elasticsearch_v2.PARAMS, {"kibana_url": ""})
+        mocker.patch("Elasticsearch_v2.SERVER", "https://on-prem-elastic.example.com:9200")
+
+        with pytest.raises(DemistoException) as exc_info:
+            Elasticsearch_v2.get_kibana_base_url()
+
+        assert "Could not determine the Kibana URL" in str(exc_info.value)
+        assert "Kibana Server URL" in str(exc_info.value)
+
+
+class TestGetKibanaAuthHeaders:
+    """Tests for the get_kibana_auth_headers function."""
+
+    def test_api_key_auth(self, mocker):
+        """
+        Given:
+            - Auth type is API key auth
+        When:
+            - Calling get_kibana_auth_headers
+        Then:
+            - Return an Authorization header built from the API key
+        """
+        import Elasticsearch_v2
+
+        mocker.patch("Elasticsearch_v2.AUTH_TYPE", Elasticsearch_v2.API_KEY_AUTH)
+        mocker.patch("Elasticsearch_v2.API_KEY", ("id123", "secret456"))
+
+        headers = Elasticsearch_v2.get_kibana_auth_headers()
+
+        assert headers["Authorization"].startswith("ApiKey ")
+
+    def test_bearer_auth(self, mocker):
+        """
+        Given:
+            - Auth type is Bearer auth
+        When:
+            - Calling get_kibana_auth_headers
+        Then:
+            - Return an Authorization header built from the elastic OAuth token
+        """
+        import Elasticsearch_v2
+
+        mocker.patch("Elasticsearch_v2.AUTH_TYPE", Elasticsearch_v2.BEARER_AUTH)
+        mocker.patch("Elasticsearch_v2.get_elastic_token", return_value="my-token")
+
+        headers = Elasticsearch_v2.get_kibana_auth_headers()
+
+        assert headers["Authorization"] == "Bearer my-token"
+
+    def test_basic_auth(self, mocker):
+        """
+        Given:
+            - Auth type is Basic auth with username and password configured
+        When:
+            - Calling get_kibana_auth_headers
+        Then:
+            - Return a Basic Authorization header
+        """
+        import Elasticsearch_v2
+
+        mocker.patch("Elasticsearch_v2.AUTH_TYPE", Elasticsearch_v2.BASIC_AUTH)
+        mocker.patch("Elasticsearch_v2.USERNAME", "user")
+        mocker.patch("Elasticsearch_v2.PASSWORD", "pass")
+
+        headers = Elasticsearch_v2.get_kibana_auth_headers()
+
+        assert headers["Authorization"].startswith("Basic ")
+
+    def test_missing_credentials_raises(self, mocker):
+        """
+        Given:
+            - Auth type is Basic auth but username/password are missing
+        When:
+            - Calling get_kibana_auth_headers
+        Then:
+            - Raise a DemistoException
+        """
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        mocker.patch("Elasticsearch_v2.AUTH_TYPE", Elasticsearch_v2.BASIC_AUTH)
+        mocker.patch("Elasticsearch_v2.USERNAME", None)
+        mocker.patch("Elasticsearch_v2.PASSWORD", None)
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.get_kibana_auth_headers()
+
+
+class TestBuildKibanaPath:
+    """Tests for the build_kibana_path function."""
+
+    def test_without_space_id(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.build_kibana_path("/api/cases") == "/api/cases"
+
+    def test_without_leading_slash(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.build_kibana_path("api/cases") == "/api/cases"
+
+    def test_with_space_id(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.build_kibana_path("/api/cases", space_id="my-space") == "/s/my-space/api/cases"
+
+
+class TestKibanaHttpRequest:
+    """Tests for the kibana_http_request function."""
+
+    @pytest.fixture(autouse=True)
+    def setup(self, mocker):
+        mocker.patch("Elasticsearch_v2.SERVER", "https://my-deployment.es.us-central1.gcp.cloud.es.io")
+        mocker.patch("Elasticsearch_v2.get_kibana_auth_headers", return_value={"Authorization": "Basic dXNlcjpwYXNz"})
+        mocker.patch("Elasticsearch_v2.INSECURE", True)
+        mocker.patch("Elasticsearch_v2.TIMEOUT", 60)
+        mocker.patch("Elasticsearch_v2.DEFAULT_SPACE_ID", "")
+
+    def test_get_request_success(self, mocker):
+        """
+        Given:
+            - A successful GET response from Kibana
+        When:
+            - Calling kibana_http_request
+        Then:
+            - Return the parsed JSON response
+        """
+        import Elasticsearch_v2
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.content = b'{"id": "123"}'
+        mock_response.json.return_value = {"id": "123"}
+        mock_request = mocker.patch("Elasticsearch_v2.requests.request", return_value=mock_response)
+
+        result = Elasticsearch_v2.kibana_http_request("GET", "/api/cases/123")
+
+        assert result == {"id": "123"}
+        call_kwargs = mock_request.call_args[1]
+        assert call_kwargs["url"] == "https://my-deployment.kb.us-central1.gcp.cloud.es.io/api/cases/123"
+        assert "kbn-xsrf" not in call_kwargs["headers"]
+
+    def test_post_request_adds_xsrf_header(self, mocker):
+        """
+        Given:
+            - A POST request to Kibana
+        When:
+            - Calling kibana_http_request
+        Then:
+            - The kbn-xsrf header is added to the request
+        """
+        import Elasticsearch_v2
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.content = b"{}"
+        mock_response.json.return_value = {}
+        mock_request = mocker.patch("Elasticsearch_v2.requests.request", return_value=mock_response)
+
+        Elasticsearch_v2.kibana_http_request("POST", "/api/cases", json_data={"title": "test"})
+
+        call_kwargs = mock_request.call_args[1]
+        assert call_kwargs["headers"]["kbn-xsrf"] == "true"
+        assert call_kwargs["json"] == {"title": "test"}
+
+    def test_space_id_prefixes_path(self, mocker):
+        """
+        Given:
+            - A space_id argument
+        When:
+            - Calling kibana_http_request
+        Then:
+            - The request URL includes the "/s/{space_id}" prefix
+        """
+        import Elasticsearch_v2
+
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.content = b"{}"
+        mock_response.json.return_value = {}
+        mock_request = mocker.patch("Elasticsearch_v2.requests.request", return_value=mock_response)
+
+        Elasticsearch_v2.kibana_http_request("GET", "/api/cases", space_id="my-space")
+
+        call_kwargs = mock_request.call_args[1]
+        assert call_kwargs["url"] == "https://my-deployment.kb.us-central1.gcp.cloud.es.io/s/my-space/api/cases"
+
+    def test_default_space_id_used_when_not_provided(self, mocker):
+        """
+        Given:
+            - No explicit space_id argument, but a configured DEFAULT_SPACE_ID
+        When:
+            - Calling kibana_http_request
+        Then:
+            - The request URL includes the default space prefix
+        """
+        import Elasticsearch_v2
+
+        mocker.patch("Elasticsearch_v2.DEFAULT_SPACE_ID", "default-space")
+        mock_response = MagicMock()
+        mock_response.status_code = 200
+        mock_response.content = b"{}"
+        mock_response.json.return_value = {}
+        mock_request = mocker.patch("Elasticsearch_v2.requests.request", return_value=mock_response)
+
+        Elasticsearch_v2.kibana_http_request("GET", "/api/cases")
+
+        call_kwargs = mock_request.call_args[1]
+        assert "/s/default-space/api/cases" in call_kwargs["url"]
+
+    def test_error_status_code_raises(self, mocker):
+        """
+        Given:
+            - A Kibana response with a non-ok status code and a JSON error body
+        When:
+            - Calling kibana_http_request
+        Then:
+            - Raise a DemistoException containing the error message
+        """
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        mock_response = MagicMock()
+        mock_response.status_code = 404
+        mock_response.content = b'{"message": "Case not found"}'
+        mock_response.json.return_value = {"message": "Case not found"}
+        mock_response.text = '{"message": "Case not found"}'
+        mocker.patch("Elasticsearch_v2.requests.request", return_value=mock_response)
+
+        with pytest.raises(DemistoException) as exc_info:
+            Elasticsearch_v2.kibana_http_request("GET", "/api/cases/unknown")
+
+        assert "Case not found" in str(exc_info.value)
+
+    def test_connection_error_raises_demisto_exception(self, mocker):
+        """
+        Given:
+            - requests.request raises a connection error
+        When:
+            - Calling kibana_http_request
+        Then:
+            - Raise a DemistoException
+        """
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        mocker.patch("Elasticsearch_v2.requests.request", side_effect=requests.exceptions.ConnectionError("boom"))
+
+        with pytest.raises(DemistoException) as exc_info:
+            Elasticsearch_v2.kibana_http_request("GET", "/api/cases")
+
+        assert "Failed connecting to Kibana" in str(exc_info.value)
+
+    def test_empty_response_returns_empty_dict(self, mocker):
+        """
+        Given:
+            - A 204 No Content response
+        When:
+            - Calling kibana_http_request
+        Then:
+            - Return an empty dict
+        """
+        import Elasticsearch_v2
+
+        mock_response = MagicMock()
+        mock_response.status_code = 204
+        mock_response.content = b""
+        mocker.patch("Elasticsearch_v2.requests.request", return_value=mock_response)
+
+        result = Elasticsearch_v2.kibana_http_request("DELETE", "/api/cases/123")
+
+        assert result == {}
+
+
+class TestGetJsonBodyFromEntryId:
+    """Tests for the get_json_body_from_entry_id function."""
+
+    def test_valid_json_file(self, mocker, tmp_path):
+        """
+        Given:
+            - An entry_id pointing to a valid JSON file
+        When:
+            - Calling get_json_body_from_entry_id
+        Then:
+            - Return the parsed JSON content
+        """
+        import Elasticsearch_v2
+
+        file_path = tmp_path / "body.json"
+        file_path.write_text(json.dumps({"title": "test case"}))
+        mocker.patch("Elasticsearch_v2.demisto.getFilePath", return_value={"path": str(file_path), "name": "body.json"})
+
+        result = Elasticsearch_v2.get_json_body_from_entry_id("123@abc")
+
+        assert result == {"title": "test case"}
+
+    def test_invalid_json_raises(self, mocker, tmp_path):
+        """
+        Given:
+            - An entry_id pointing to a file with invalid JSON content
+        When:
+            - Calling get_json_body_from_entry_id
+        Then:
+            - Raise a DemistoException
+        """
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        file_path = tmp_path / "body.json"
+        file_path.write_text("not valid json")
+        mocker.patch("Elasticsearch_v2.demisto.getFilePath", return_value={"path": str(file_path), "name": "body.json"})
+
+        with pytest.raises(DemistoException) as exc_info:
+            Elasticsearch_v2.get_json_body_from_entry_id("123@abc")
+
+        assert "does not contain valid JSON" in str(exc_info.value)
+
+    def test_missing_file_path_raises(self, mocker):
+        """
+        Given:
+            - demisto.getFilePath returns no path
+        When:
+            - Calling get_json_body_from_entry_id
+        Then:
+            - Raise a DemistoException
+        """
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        mocker.patch("Elasticsearch_v2.demisto.getFilePath", return_value={})
+
+        with pytest.raises(DemistoException) as exc_info:
+            Elasticsearch_v2.get_json_body_from_entry_id("bad-entry-id")
+
+        assert "Could not resolve file path" in str(exc_info.value)
+
+    def test_get_file_path_exception_raises(self, mocker):
+        """
+        Given:
+            - demisto.getFilePath raises an exception (e.g. entry not found)
+        When:
+            - Calling get_json_body_from_entry_id
+        Then:
+            - Raise a DemistoException
+        """
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        mocker.patch("Elasticsearch_v2.demisto.getFilePath", side_effect=Exception("not found"))
+
+        with pytest.raises(DemistoException) as exc_info:
+            Elasticsearch_v2.get_json_body_from_entry_id("bad-entry-id")
+
+        assert "Failed to retrieve file info" in str(exc_info.value)
+
+
+MOCK_KIBANA_CASE = {
+    "id": "case-id-1",
+    "title": "Test Case",
+    "description": "A test case",
+    "owner": "cases",
+    "severity": "medium",
+    "status": "open",
+    "created_at": "2024-01-01T00:00:00.000Z",
+    "connector": {"type": ".none"},
+}
+
+
+class TestBuildCaseConnector:
+    """Tests for build_case_connector and build_case_connector_fields."""
+
+    def test_raw_connector_fields_json_string_takes_precedence(self):
+        import Elasticsearch_v2
+
+        args = {
+            "connector_id": "conn1",
+            "connector_fields": '{"custom": "value"}',
+            "connector_fields_priority_jira": "High",
+        }
+        connector = Elasticsearch_v2.build_case_connector(args)
+
+        assert connector["fields"] == {"custom": "value"}
+        assert connector["id"] == "conn1"
+
+    def test_flattened_jira_fields(self):
+        import Elasticsearch_v2
+
+        args = {
+            "connector_type": ".jira",
+            "connector_fields_issue_type_jira": "Bug",
+            "connector_fields_priority_jira": "High",
+        }
+        connector = Elasticsearch_v2.build_case_connector(args)
+
+        assert connector["type"] == ".jira"
+        assert connector["fields"] == {"issueType": "Bug", "priority": "High"}
+
+    def test_servicenow_boolean_fields(self):
+        import Elasticsearch_v2
+
+        args = {
+            "connector_type": ".servicenow",
+            "connector_fields_dest_ip_servicenow": "true",
+            "connector_fields_malware_hash_servicenow": "false",
+        }
+        connector = Elasticsearch_v2.build_case_connector(args)
+
+        assert connector["fields"] == {"destIp": True, "malwareHash": False}
+
+    def test_no_connector_args_returns_none(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.build_case_connector({}) is None
+
+
+class TestBuildCaseBody:
+    """Tests for build_case_body."""
+
+    def test_builds_basic_fields(self):
+        import Elasticsearch_v2
+
+        args = {"title": "My Case", "description": "desc", "owner": "cases", "severity": "high", "tags": "a,b"}
+        body = Elasticsearch_v2.build_case_body(args)
+
+        assert body["title"] == "My Case"
+        assert body["owner"] == "cases"
+        assert body["tags"] == ["a", "b"]
+
+    def test_require_owner_raises_when_missing(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.build_case_body({"title": "x"}, require_owner=True)
+
+    def test_assignees_built_from_uid_list(self):
+        import Elasticsearch_v2
+
+        body = Elasticsearch_v2.build_case_body({"assignee_uid": "uid1,uid2"})
+
+        assert body["assignees"] == [{"uid": "uid1"}, {"uid": "uid2"}]
+
+    def test_settings_built_from_sync_and_extract(self):
+        import Elasticsearch_v2
+
+        body = Elasticsearch_v2.build_case_body({"sync_alerts": "true", "extract_observables": "false"})
+
+        assert body["settings"] == {"syncAlerts": True, "extractObservables": False}
+
+
+class TestEsKibanaCaseCreateCommand:
+    """Tests for es_kibana_case_create_command."""
+
+    def test_create_case_success(self, mocker):
+        """
+        Given:
+            - Arguments to create a Kibana case
+        When:
+            - Calling es_kibana_case_create_command
+        Then:
+            - POST /api/cases is called and a CommandResults with the case data is returned
+        """
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_KIBANA_CASE)
+
+        result = Elasticsearch_v2.es_kibana_case_create_command(
+            {"title": "Test Case", "owner": "cases", "description": "A test case"}, {}
+        )
+
+        assert result.outputs == MOCK_KIBANA_CASE
+        assert result.outputs_prefix == "Elasticsearch.Kibana.Case"
+        assert result.outputs_key_field == "id"
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "POST"
+        assert call_args[0][1] == "/api/cases"
+
+    def test_create_case_with_entry_id_overrides_args(self, mocker):
+        """
+        Given:
+            - An entry_id argument along with other case arguments
+        When:
+            - Calling es_kibana_case_create_command
+        Then:
+            - The JSON body from the file is used instead of the individual arguments
+        """
+        import Elasticsearch_v2
+
+        mocker.patch("Elasticsearch_v2.get_json_body_from_entry_id", return_value={"title": "From File"})
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_KIBANA_CASE)
+
+        Elasticsearch_v2.es_kibana_case_create_command({"entry_id": "123@abc", "title": "Ignored"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[1]["json_data"] == {"title": "From File"}
+
+    def test_create_case_missing_owner_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_case_create_command({"title": "Test Case"}, {})
+
+
+class TestEsKibanaCaseUpdateCommand:
+    """Tests for es_kibana_case_update_command."""
+
+    def test_update_case_success(self, mocker):
+        """
+        Given:
+            - case_id, version and fields to update
+        When:
+            - Calling es_kibana_case_update_command
+        Then:
+            - PATCH /api/cases is called with a "cases" array payload
+        """
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=[MOCK_KIBANA_CASE])
+
+        result = Elasticsearch_v2.es_kibana_case_update_command({"case_id": "case-id-1", "version": "v1", "status": "closed"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "PATCH"
+        payload = call_args[1]["json_data"]
+        assert payload["cases"][0]["id"] == "case-id-1"
+        assert payload["cases"][0]["version"] == "v1"
+        assert payload["cases"][0]["status"] == "closed"
+        assert result.outputs == MOCK_KIBANA_CASE
+
+    def test_update_case_missing_case_id_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_case_update_command({"version": "v1"}, {})
+
+    def test_update_case_missing_version_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_case_update_command({"case_id": "case-id-1"}, {})
+
+
+class TestEsKibanaCaseDeleteCommand:
+    """Tests for es_kibana_case_delete_command."""
+
+    def test_delete_case_success(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={})
+
+        result = Elasticsearch_v2.es_kibana_case_delete_command({"case_id": "case-id-1,case-id-2"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "DELETE"
+        assert "case-id-1" in result.readable_output
+        assert "case-id-2" in result.readable_output
+
+    def test_delete_case_missing_case_id_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_case_delete_command({}, {})
+
+
+class TestEsKibanaCaseListCommand:
+    """Tests for es_kibana_case_list_command."""
+
+    def test_list_by_case_id(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_KIBANA_CASE)
+
+        result = Elasticsearch_v2.es_kibana_case_list_command({"case_id": "case-id-1"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/cases/case-id-1"
+        assert result.outputs == [MOCK_KIBANA_CASE]
+
+    def test_list_search(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"cases": [MOCK_KIBANA_CASE]})
+
+        result = Elasticsearch_v2.es_kibana_case_list_command({"status": "open", "page": "1", "size": "20"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/cases/_find"
+        assert call_args[1]["params"]["status"] == "open"
+        assert call_args[1]["params"]["perPage"] == "20"
+        assert result.outputs == [MOCK_KIBANA_CASE]
+
+
+class TestEsKibanaCaseAlertsListCommand:
+    """Tests for es_kibana_case_alerts_list_command."""
+
+    def test_list_alerts_success(self, mocker):
+        import Elasticsearch_v2
+
+        alerts = [{"id": "alert-1", "index": "idx1", "attached_at": "2024-01-01T00:00:00.000Z"}]
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=alerts)
+
+        result = Elasticsearch_v2.es_kibana_case_alerts_list_command({"case_id": "case-id-1"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/cases/case-id-1/alerts"
+        assert result.outputs == alerts
+        assert result.outputs_prefix == "Elasticsearch.Kibana.Case.case-id-1.Alert"
+
+    def test_missing_case_id_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_case_alerts_list_command({}, {})
+
+
+class TestEsKibanaCaseCommentCommands:
+    """Tests for es_kibana_case_comment_add_command, update_command, and delete_command."""
+
+    def test_comment_add_user_type(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "id": "case-id-1",
+            "comments": [{"comment": "hello", "created_by": {"username": "bob"}}],
+        }
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+
+        result = Elasticsearch_v2.es_kibana_case_comment_add_command(
+            {"case_id": "case-id-1", "owner": "cases", "type": "user", "comment": "hello"}, {}
+        )
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "POST"
+        assert call_args[0][1] == "/api/cases/case-id-1/comments"
+        assert call_args[1]["json_data"]["comment"] == "hello"
+        assert result.outputs == response
+
+    def test_comment_add_alert_type(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"id": "case-id-1", "comments": []})
+
+        Elasticsearch_v2.es_kibana_case_comment_add_command(
+            {"case_id": "case-id-1", "owner": "securitySolution", "type": "alert", "alert_id": "a1", "index": "i1"}, {}
+        )
+
+        call_args = mock_request.call_args
+        body = call_args[1]["json_data"]
+        assert body["alertId"] == "a1"
+        assert body["index"] == "i1"
+
+    def test_comment_add_missing_type_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_case_comment_add_command({"case_id": "case-id-1", "owner": "cases"}, {})
+
+    def test_comment_update_success(self, mocker):
+        import Elasticsearch_v2
+
+        response = {
+            "id": "case-id-1",
+            "comments": [{"id": "comment-1", "comment": "updated", "updated_by": {"username": "bob"}}],
+        }
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+
+        result = Elasticsearch_v2.es_kibana_case_comment_update_command(
+            {
+                "case_id": "case-id-1",
+                "owner": "cases",
+                "type": "user",
+                "comment": "updated",
+                "comment_id": "comment-1",
+                "version": "v1",
+            },
+            {},
+        )
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "PATCH"
+        assert call_args[1]["json_data"]["id"] == "comment-1"
+        assert result.outputs == response
+
+    def test_comment_delete_success(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={})
+
+        result = Elasticsearch_v2.es_kibana_case_comment_delete_command({"case_id": "case-id-1"}, {})
+
+        assert "case-id-1" in result.readable_output
+
+    def test_comment_delete_missing_case_id_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_case_comment_delete_command({}, {})
+
+
+class TestEsKibanaCaseFileAttachCommand:
+    """Tests for es_kibana_case_file_attach_command."""
+
+    def test_attach_file_success(self, mocker, tmp_path):
+        import Elasticsearch_v2
+
+        file_path = tmp_path / "report.pdf"
+        file_path.write_bytes(b"%PDF-1.4 fake content")
+        mocker.patch("Elasticsearch_v2.demisto.getFilePath", return_value={"path": str(file_path), "name": "report.pdf"})
+        response = {"id": "case-id-1", "comments": [{"updated_by": {"username": "bob"}}]}
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=response)
+
+        result = Elasticsearch_v2.es_kibana_case_file_attach_command({"case_id": "case-id-1", "entry_id": "123@abc"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "POST"
+        assert call_args[0][1] == "/api/cases/case-id-1/files"
+        assert "files" in call_args[1]
+        assert result.outputs == response
+
+    def test_attach_file_missing_case_id_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_case_file_attach_command({"entry_id": "123@abc"}, {})
+
+    def test_attach_file_missing_entry_id_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_case_file_attach_command({"case_id": "case-id-1"}, {})
+
+
+MOCK_ALERTING_HEALTH_RESPONSE = {
+    "is_sufficiently_secure": True,
+    "has_permanent_encryption_key": True,
+    "alerting_framework_health": {
+        "decryption_health": {"status": "ok"},
+        "execution_health": {"status": "ok"},
+        "read_health": {"status": "ok"},
+    },
+}
+
+MOCK_RULE = {
+    "id": "rule-id-1",
+    "enabled": True,
+    "name": "Test Rule",
+    "rule_type_id": ".index-threshold",
+    "created_at": "2024-01-01T00:00:00.000Z",
+}
+
+
+class TestEsKibanaAlertingHealthGetCommand:
+    """Tests for es_kibana_alerting_health_get_command."""
+
+    def test_get_health_success(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_ALERTING_HEALTH_RESPONSE)
+
+        result = Elasticsearch_v2.es_kibana_alerting_health_get_command({}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "GET"
+        assert call_args[0][1] == "/api/alerting/_health"
+        assert result.outputs == MOCK_ALERTING_HEALTH_RESPONSE
+        assert result.outputs_prefix == "Elasticsearch.Kibana.AlertingHealth"
+        assert "Is sufficiently secure" in result.readable_output
+
+
+class TestEsKibanaRuleTypesListCommand:
+    """Tests for es_kibana_rule_types_list_command."""
+
+    def test_list_rule_types_success(self, mocker):
+        import Elasticsearch_v2
+
+        rule_types = [{"id": "type1", "name": "Type 1", "category": "cat", "producer": "prod", "action_groups": [{"id": "ag1"}]}]
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=rule_types)
+
+        result = Elasticsearch_v2.es_kibana_rule_types_list_command({}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/alerting/rule_types"
+        assert result.outputs == rule_types
+        assert result.outputs_prefix == "Elasticsearch.Kibana.RuleTypes"
+
+
+class TestEsKibanaRuleListCommand:
+    """Tests for es_kibana_rule_list_command."""
+
+    def test_list_by_rule_id(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_RULE)
+
+        result = Elasticsearch_v2.es_kibana_rule_list_command({"rule_id": "rule-id-1"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/alerting/rule/rule-id-1"
+        assert result.outputs == [MOCK_RULE]
+
+    def test_list_search(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"data": [MOCK_RULE]})
+
+        result = Elasticsearch_v2.es_kibana_rule_list_command({"search": "test", "page": "1", "size": "10"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/alerting/rules/_find"
+        assert call_args[1]["params"]["search"] == "test"
+        assert result.outputs == [MOCK_RULE]
+
+
+class TestEsKibanaRuleEnableDisableCommands:
+    """Tests for es_kibana_rule_enable_command and es_kibana_rule_disable_command."""
+
+    def test_enable_rule_success(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={})
+
+        result = Elasticsearch_v2.es_kibana_rule_enable_command({"rule_id": "rule-id-1"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "POST"
+        assert call_args[0][1] == "/api/alerting/rule/rule-id-1/_enable"
+        assert "rule-id-1" in result.readable_output
+        assert "enabled" in result.readable_output
+
+    def test_enable_rule_missing_rule_id_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_rule_enable_command({}, {})
+
+    def test_disable_rule_success(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={})
+
+        result = Elasticsearch_v2.es_kibana_rule_disable_command({"rule_id": "rule-id-1"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/alerting/rule/rule-id-1/_disable"
+        assert "disabled" in result.readable_output
+
+    def test_disable_rule_missing_rule_id_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_rule_disable_command({}, {})
+
+
+class TestBuildRuleUpdateBody:
+    """Tests for build_rule_update_body."""
+
+    def test_basic_fields(self):
+        import Elasticsearch_v2
+
+        body = Elasticsearch_v2.build_rule_update_body({"name": "New name", "schedule_interval": "5m"})
+
+        assert body["name"] == "New name"
+        assert body["schedule"] == {"interval": "5m"}
+
+    def test_flapping_fields_merged(self):
+        import Elasticsearch_v2
+
+        body = Elasticsearch_v2.build_rule_update_body(
+            {"flapping_enabled": "true", "flapping_look_back_window": "5", "flapping_status_change_threshold": "3"}
+        )
+
+        assert body["flapping"] == {"enabled": True, "look_back_window": 5, "status_change_threshold": 3}
+
+    def test_artifacts_fields(self):
+        import Elasticsearch_v2
+
+        body = Elasticsearch_v2.build_rule_update_body(
+            {"artifacts_dashboards_id": "d1,d2", "artifacts_investigation_guide_blob": "guide text"}
+        )
+
+        assert body["artifacts"]["dashboards"] == [{"id": "d1"}, {"id": "d2"}]
+        assert body["artifacts"]["investigation_guide"] == {"blob": "guide text"}
+
+
+class TestEsKibanaRuleUpdateCommand:
+    """Tests for es_kibana_rule_update_command."""
+
+    def test_update_rule_success(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_RULE)
+
+        result = Elasticsearch_v2.es_kibana_rule_update_command({"rule_id": "rule-id-1", "name": "Updated"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "PUT"
+        assert call_args[0][1] == "/api/alerting/rule/rule-id-1"
+        assert call_args[1]["json_data"] == {"name": "Updated"}
+        assert result.outputs == MOCK_RULE
+        assert "rule-id-1" in result.readable_output
+
+    def test_update_rule_with_entry_id(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch("Elasticsearch_v2.get_json_body_from_entry_id", return_value={"name": "From File"})
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_RULE)
+
+        Elasticsearch_v2.es_kibana_rule_update_command({"rule_id": "rule-id-1", "entry_id": "123@abc"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[1]["json_data"] == {"name": "From File"}
+
+    def test_update_rule_missing_rule_id_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_rule_update_command({}, {})
+
+
+class TestEsKibanaRuleAlertMuteUnmuteCommands:
+    """Tests for es_kibana_rule_alert_mute_command and es_kibana_rule_alert_unmute_command."""
+
+    def test_mute_specific_alert(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={})
+
+        result = Elasticsearch_v2.es_kibana_rule_alert_mute_command({"rule_id": "rule-id-1", "alert_id": "alert-1"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/alerting/rule/rule-id-1/alert/alert-1/_mute"
+        assert "alert-1" in result.readable_output
+
+    def test_mute_all(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={})
+
+        Elasticsearch_v2.es_kibana_rule_alert_mute_command({"rule_id": "rule-id-1", "mute_all": "true"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/alerting/rule/rule-id-1/_mute_all"
+
+    def test_mute_missing_alert_id_and_mute_all_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_rule_alert_mute_command({"rule_id": "rule-id-1"}, {})
+
+    def test_mute_missing_rule_id_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_rule_alert_mute_command({"alert_id": "alert-1"}, {})
+
+    def test_unmute_specific_alert(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={})
+
+        result = Elasticsearch_v2.es_kibana_rule_alert_unmute_command({"rule_id": "rule-id-1", "alert_id": "alert-1"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/alerting/rule/rule-id-1/alert/alert-1/_unmute"
+        assert "alert-1" in result.readable_output
+
+    def test_unmute_all(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={})
+
+        Elasticsearch_v2.es_kibana_rule_alert_unmute_command({"rule_id": "rule-id-1", "unmute_all": "true"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/alerting/rule/rule-id-1/_unmute_all"
+
+
+class TestEsKibanaDetectionAlertStatusSetCommand:
+    """Tests for es_kibana_detection_alert_status_set_command."""
+
+    def test_set_status_by_signal_ids(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"total": 2, "updated": 2})
+        mocker.patch("Elasticsearch_v2.safe_load_json", return_value=None)
+
+        result = Elasticsearch_v2.es_kibana_detection_alert_status_set_command({"status": "closed", "signal_ids": "id1,id2"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "POST"
+        assert call_args[0][1] == "/api/detection_engine/signals/status"
+        assert call_args[1]["json_data"]["signal_ids"] == ["id1", "id2"]
+        assert result.outputs == {"total": 2, "updated": 2}
+
+    def test_set_status_by_query(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"total": 1, "updated": 1})
+
+        Elasticsearch_v2.es_kibana_detection_alert_status_set_command({"status": "open", "query": '{"match_all": {}}'}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[1]["json_data"]["query"] == {"match_all": {}}
+
+    def test_missing_status_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_detection_alert_status_set_command({}, {})
+
+
+MOCK_EXCEPTION_ITEM = {
+    "id": "item-id-1",
+    "item_id": "trusted-linux-processes",
+    "list_id": "list-id-1",
+    "name": "Test Item",
+    "description": "A test item",
+    "created_at": "2024-01-01T00:00:00.000Z",
+}
+
+MOCK_EXCEPTION_LIST = {
+    "id": "list-id-1",
+    "list_id": "trusted-linux-processes",
+    "name": "Test List",
+    "description": "A test list",
+    "created_at": "2024-01-01T00:00:00.000Z",
+}
+
+
+class TestBuildExceptionEntry:
+    """Tests for build_exception_entry."""
+
+    def test_no_entries_returns_none(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.build_exception_entry({}) is None
+
+    def test_simple_value_entry(self):
+        import Elasticsearch_v2
+
+        entry = Elasticsearch_v2.build_exception_entry(
+            {"entries_field": "file.path", "entries_type": "match", "entries_operator": "included", "entries_value": "/bin/bash"}
+        )
+
+        assert entry == {"field": "file.path", "type": "match", "operator": "included", "value": "/bin/bash"}
+
+    def test_list_type_entry(self):
+        import Elasticsearch_v2
+
+        entry = Elasticsearch_v2.build_exception_entry(
+            {
+                "entries_field": "file.hash",
+                "entries_type": "list",
+                "entries_list_id": "list1",
+                "entries_list_type": "keyword",
+            }
+        )
+
+        assert entry["list"] == {"id": "list1", "type": "keyword"}
+
+
+class TestEsKibanaEndpointExceptionListItemCreateCommand:
+    """Tests for es_kibana_endpoint_exception_list_item_create_command."""
+
+    def test_create_success(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_EXCEPTION_ITEM)
+
+        result = Elasticsearch_v2.es_kibana_endpoint_exception_list_item_create_command(
+            {"name": "Test Item", "description": "A test item"}, {}
+        )
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "POST"
+        assert call_args[0][1] == "/api/endpoint_list/items"
+        assert call_args[1]["json_data"]["type"] == "simple"
+        assert result.outputs == MOCK_EXCEPTION_ITEM
+        assert result.outputs_prefix == "Elasticsearch.Kibana.EndpointExceptionListItem"
+
+    def test_create_with_entry_id(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch("Elasticsearch_v2.get_json_body_from_entry_id", return_value={"name": "From File"})
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_EXCEPTION_ITEM)
+
+        Elasticsearch_v2.es_kibana_endpoint_exception_list_item_create_command({"entry_id": "123@abc"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[1]["json_data"] == {"name": "From File"}
+
+
+class TestEsKibanaEndpointExceptionListItemUpdateCommand:
+    """Tests for es_kibana_endpoint_exception_list_item_update_command."""
+
+    def test_update_success(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_EXCEPTION_ITEM)
+
+        result = Elasticsearch_v2.es_kibana_endpoint_exception_list_item_update_command(
+            {"exception_list_item_id": "item-id-1", "_version": "v1", "name": "Updated"}, {}
+        )
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "PUT"
+        assert call_args[1]["json_data"]["id"] == "item-id-1"
+        assert call_args[1]["json_data"]["_version"] == "v1"
+        assert result.outputs == MOCK_EXCEPTION_ITEM
+
+
+class TestEsKibanaEndpointExceptionListItemDeleteCommand:
+    """Tests for es_kibana_endpoint_exception_list_item_delete_command."""
+
+    def test_delete_success(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={})
+
+        result = Elasticsearch_v2.es_kibana_endpoint_exception_list_item_delete_command(
+            {"item_id": "trusted-linux-processes"}, {}
+        )
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "DELETE"
+        assert "trusted-linux-processes" in result.readable_output
+
+    def test_missing_item_id_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_endpoint_exception_list_item_delete_command({}, {})
+
+
+class TestEsKibanaEndpointExceptionListItemListCommand:
+    """Tests for es_kibana_endpoint_exception_list_item_list_command."""
+
+    def test_list_by_item_id(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_EXCEPTION_ITEM)
+
+        result = Elasticsearch_v2.es_kibana_endpoint_exception_list_item_list_command({"item_id": "trusted-linux-processes"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/endpoint_list/items"
+        assert result.outputs == [MOCK_EXCEPTION_ITEM]
+
+    def test_list_find(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"data": [MOCK_EXCEPTION_ITEM]})
+
+        result = Elasticsearch_v2.es_kibana_endpoint_exception_list_item_list_command({"page": "1"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/endpoint_list/items/_find"
+        assert result.outputs == [MOCK_EXCEPTION_ITEM]
+
+
+class TestEsKibanaExceptionListListCommand:
+    """Tests for es_kibana_exception_list_list_command."""
+
+    def test_list_by_id(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_EXCEPTION_LIST)
+
+        result = Elasticsearch_v2.es_kibana_exception_list_list_command({"exception_list_id": "list-id-1"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/exception_lists"
+        assert result.outputs == [MOCK_EXCEPTION_LIST]
+
+    def test_list_find(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"data": [MOCK_EXCEPTION_LIST]})
+
+        result = Elasticsearch_v2.es_kibana_exception_list_list_command({}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/exception_lists/_find"
+        assert result.outputs == [MOCK_EXCEPTION_LIST]
+
+
+class TestEsKibanaExceptionListCreateCommand:
+    """Tests for es_kibana_exception_list_create_command."""
+
+    def test_create_success(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_EXCEPTION_LIST)
+
+        result = Elasticsearch_v2.es_kibana_exception_list_create_command({"name": "Test List", "type": "detection"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "POST"
+        assert call_args[1]["json_data"]["type"] == "detection"
+        assert result.outputs == MOCK_EXCEPTION_LIST
+
+    def test_missing_type_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_exception_list_create_command({"name": "Test List"}, {})
+
+
+class TestEsKibanaExceptionListUpdateCommand:
+    """Tests for es_kibana_exception_list_update_command."""
+
+    def test_update_success(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_EXCEPTION_LIST)
+
+        result = Elasticsearch_v2.es_kibana_exception_list_update_command(
+            {"description": "desc", "name": "Test List", "type": "detection", "exception_list_id": "list-id-1"}, {}
+        )
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "PUT"
+        assert call_args[1]["json_data"]["id"] == "list-id-1"
+        assert result.outputs == MOCK_EXCEPTION_LIST
+
+    def test_missing_required_field_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_exception_list_update_command({"name": "Test List", "type": "detection"}, {})
+
+
+class TestEsKibanaExceptionListDeleteCommand:
+    """Tests for es_kibana_exception_list_delete_command."""
+
+    def test_delete_success(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={})
+
+        result = Elasticsearch_v2.es_kibana_exception_list_delete_command({"exception_list_id": "list-id-1"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "DELETE"
+        assert "list-id-1" in result.readable_output
+
+    def test_missing_identifiers_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_exception_list_delete_command({}, {})
+
+
+class TestEsKibanaExceptionListItemListCommand:
+    """Tests for es_kibana_exception_list_item_list_command."""
+
+    def test_list_by_id(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_EXCEPTION_ITEM)
+
+        result = Elasticsearch_v2.es_kibana_exception_list_item_list_command({"exception_list_item_id": "item-id-1"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/exception_lists/items"
+        assert result.outputs == [MOCK_EXCEPTION_ITEM]
+
+    def test_list_find(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"data": [MOCK_EXCEPTION_ITEM]})
+
+        result = Elasticsearch_v2.es_kibana_exception_list_item_list_command({"search": "test"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/exception_lists/items/_find"
+        assert result.outputs == [MOCK_EXCEPTION_ITEM]
+
+
+class TestEsKibanaExceptionListItemCreateCommand:
+    """Tests for es_kibana_exception_list_item_create_command."""
+
+    def test_create_success(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_EXCEPTION_ITEM)
+
+        result = Elasticsearch_v2.es_kibana_exception_list_item_create_command({"name": "Test Item", "list_id": "list-id-1"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "POST"
+        assert call_args[0][1] == "/api/exception_lists/items"
+        assert result.outputs == MOCK_EXCEPTION_ITEM
+
+
+class TestEsKibanaExceptionItemListUpdateCommand:
+    """Tests for es_kibana_exception_item_list_update_command."""
+
+    def test_update_success(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_EXCEPTION_ITEM)
+
+        result = Elasticsearch_v2.es_kibana_exception_item_list_update_command(
+            {"exception_list_item_id": "item-id-1", "name": "Updated"}, {}
+        )
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "PUT"
+        assert call_args[1]["json_data"]["id"] == "item-id-1"
+        assert result.outputs == MOCK_EXCEPTION_ITEM
+
+
+class TestEsKibanaExceptionListItemDeleteCommand:
+    """Tests for es_kibana_exception_list_item_delete_command."""
+
+    def test_delete_success(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={})
+
+        result = Elasticsearch_v2.es_kibana_exception_list_item_delete_command({"exception_list_item_id": "item-id-1"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "DELETE"
+        assert "item-id-1" in result.readable_output
+
+    def test_missing_identifiers_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_exception_list_item_delete_command({}, {})
+
+
+MOCK_VALUE_LIST = {
+    "id": "value-list-id-1",
+    "name": "Test Value List",
+    "description": "A test value list",
+    "created_at": "2024-01-01T00:00:00.000Z",
+}
+
+MOCK_VALUE_LIST_ITEM = {
+    "id": "value-list-item-id-1",
+    "list_id": "value-list-id-1",
+    "name": "Test Item",
+    "description": "A test value list item",
+    "created_at": "2024-01-01T00:00:00.000Z",
+}
+
+
+class TestEsKibanaValueListsListCommand:
+    """Tests for es_kibana_value_lists_list_command."""
+
+    def test_list_by_id(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_VALUE_LIST)
+
+        result = Elasticsearch_v2.es_kibana_value_lists_list_command({"value_list_id": "value-list-id-1"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/lists"
+        assert result.outputs == [MOCK_VALUE_LIST]
+
+    def test_list_find(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"data": [MOCK_VALUE_LIST]})
+
+        result = Elasticsearch_v2.es_kibana_value_lists_list_command({}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/lists/_find"
+        assert result.outputs == [MOCK_VALUE_LIST]
+
+
+class TestEsKibanaValueListItemGetCommand:
+    """Tests for es_kibana_value_list_item_get_command."""
+
+    def test_get_by_item_id(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_VALUE_LIST_ITEM)
+
+        result = Elasticsearch_v2.es_kibana_value_list_item_get_command({"value_list_item_id": "item-1"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/lists/items"
+        assert result.outputs == [MOCK_VALUE_LIST_ITEM]
+
+    def test_get_by_value_only(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_VALUE_LIST_ITEM)
+
+        Elasticsearch_v2.es_kibana_value_list_item_get_command({"value": "1.2.3.4"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/lists/items"
+        assert call_args[1]["params"]["value"] == "1.2.3.4"
+
+    def test_get_find(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={"data": [MOCK_VALUE_LIST_ITEM]})
+
+        result = Elasticsearch_v2.es_kibana_value_list_item_get_command({"value_list_id": "value-list-id-1"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][1] == "/api/lists/items/_find"
+        assert result.outputs == [MOCK_VALUE_LIST_ITEM]
+
+
+class TestEsKibanaValueListItemCreateCommand:
+    """Tests for es_kibana_value_list_item_create_command."""
+
+    def test_create_success(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_VALUE_LIST_ITEM)
+
+        result = Elasticsearch_v2.es_kibana_value_list_item_create_command(
+            {"value_list_id": "value-list-id-1", "value": "1.2.3.4"}, {}
+        )
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "POST"
+        assert call_args[1]["json_data"] == {"list_id": "value-list-id-1", "value": "1.2.3.4"}
+        assert result.outputs == MOCK_VALUE_LIST_ITEM
+
+    def test_missing_value_list_id_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_value_list_item_create_command({"value": "1.2.3.4"}, {})
+
+    def test_missing_value_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_value_list_item_create_command({"value_list_id": "value-list-id-1"}, {})
+
+
+class TestEsKibanaValueListItemUpdateCommand:
+    """Tests for es_kibana_value_list_item_update_command."""
+
+    def test_update_success(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=MOCK_VALUE_LIST_ITEM)
+
+        result = Elasticsearch_v2.es_kibana_value_list_item_update_command(
+            {"value_list_item_id": "item-1", "value": "5.6.7.8"}, {}
+        )
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "PUT"
+        assert call_args[1]["json_data"]["id"] == "item-1"
+        assert result.outputs == MOCK_VALUE_LIST_ITEM
+
+    def test_missing_value_list_item_id_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_value_list_item_update_command({"value": "1.2.3.4"}, {})
+
+
+class TestEsKibanaValueListItemDeleteCommand:
+    """Tests for es_kibana_value_list_item_delete_command."""
+
+    def test_delete_by_item_id(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={})
+
+        result = Elasticsearch_v2.es_kibana_value_list_item_delete_command({"value_list_item_id": "item-1"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "DELETE"
+        assert "item-1" in result.readable_output
+
+    def test_delete_by_list_id_and_value(self, mocker):
+        import Elasticsearch_v2
+
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value={})
+
+        Elasticsearch_v2.es_kibana_value_list_item_delete_command({"value_list_id": "value-list-id-1", "value": "1.2.3.4"}, {})
+
+        call_args = mock_request.call_args
+        assert call_args[1]["params"]["list_id"] == "value-list-id-1"
+        assert call_args[1]["params"]["value"] == "1.2.3.4"
+
+    def test_missing_identifiers_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_value_list_item_delete_command({}, {})
+
+
+class TestEsKibanaValueListItemExportCommand:
+    """Tests for es_kibana_value_list_item_export_command."""
+
+    def test_export_success(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch("Elasticsearch_v2.kibana_http_request", return_value="1.2.3.4\n5.6.7.8")
+        mocker.patch("Elasticsearch_v2.fileResult", return_value={"Type": 3, "File": "value-list-items.txt"})
+
+        results = Elasticsearch_v2.es_kibana_value_list_item_export_command({"value_list_id": "value-list-id-1"}, {})
+
+        assert isinstance(results, list)
+        assert len(results) == 2
+        assert results[0].readable_output == "Successful response"
+
+
+class TestEsKibanaValueListItemImportCommand:
+    """Tests for es_kibana_value_list_item_import_command."""
+
+    def test_import_success(self, mocker, tmp_path):
+        import Elasticsearch_v2
+
+        file_path = tmp_path / "values.txt"
+        file_path.write_text("1.2.3.4\n5.6.7.8")
+        mocker.patch("Elasticsearch_v2.demisto.getFilePath", return_value={"path": str(file_path), "name": "values.txt"})
+        mock_request = mocker.patch("Elasticsearch_v2.kibana_http_request", return_value=[MOCK_VALUE_LIST_ITEM])
+
+        result = Elasticsearch_v2.es_kibana_value_list_item_import_command(
+            {"entry_id": "123@abc", "value_list_id": "value-list-id-1", "type": "ip"}, {}
+        )
+
+        call_args = mock_request.call_args
+        assert call_args[0][0] == "POST"
+        assert call_args[0][1] == "/api/lists/items/_import"
+        assert "files" in call_args[1]
+        assert result.outputs == [MOCK_VALUE_LIST_ITEM]
+
+    def test_missing_entry_id_raises(self):
+        import Elasticsearch_v2
+        from CommonServerPython import DemistoException
+
+        with pytest.raises(DemistoException):
+            Elasticsearch_v2.es_kibana_value_list_item_import_command({}, {})
+
+
+class TestBuildFetchExtraParams:
+    """Tests for build_fetch_extra_params.
+    A blank "Fields to Fetch" parameter must not add an empty "fields": [] entry to the
+    fetch request body, otherwise Elasticsearch fails with:
+    ParsingException 400 'Unknown key for a START_ARRAY in [fields]'.
+    """
+
+    def test_empty_fields_list_omits_fields_key(self):
+        import Elasticsearch_v2
+
+        extra_params = Elasticsearch_v2.build_fetch_extra_params([])
+
+        assert "fields" not in extra_params
+        assert extra_params == {"_source": True}
+
+    def test_populated_fields_list_includes_fields_key(self):
+        import Elasticsearch_v2
+
+        extra_params = Elasticsearch_v2.build_fetch_extra_params(["field_a", "field_b"])
+
+        assert extra_params == {"_source": True, "fields": ["field_a", "field_b"]}
+
+
+class TestElasticEntityKind:
+    """Tests for the ``elastic_entity_kind`` field added to mirrored/fetched incidents.
+
+    The field carries the source entity kind so the incoming mapper can distinguish
+    security alerts from cases. Security alerts derive it from ``event.kind`` (falling
+    back to ``signal``); cases derive it from the case ``owner`` (falling back to
+    ``securitySolution``).
+    """
+
+    def test_get_remote_data_security_alert_uses_event_kind(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT)
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_INCIDENT", False)
+        mocker.patch.object(Elasticsearch_v2.demisto, "integrationInstance", return_value="instance-1")
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "search_security_alerts",
+            return_value={
+                "hits": {
+                    "hits": [
+                        {
+                            "_index": "alerts",
+                            "_id": "alert-1",
+                            "_source": {
+                                "kibana.alert.uuid": "alert-1",
+                                "kibana.alert.severity": "high",
+                                "kibana.alert.workflow_status": "open",
+                                "event.kind": "signal",
+                            },
+                        }
+                    ]
+                }
+            },
+        )
+
+        response = Elasticsearch_v2.get_remote_data_command({"id": "alert-1", "lastUpdate": ""}, {})
+
+        assert response.mirrored_object[Elasticsearch_v2.ELASTIC_ENTITY_KIND_FIELD] == "signal"
+
+    def test_get_remote_data_security_alert_defaults_kind(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT)
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_INCIDENT", False)
+        mocker.patch.object(Elasticsearch_v2.demisto, "integrationInstance", return_value="instance-1")
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "search_security_alerts",
+            return_value={
+                "hits": {
+                    "hits": [
+                        {
+                            "_index": "alerts",
+                            "_id": "alert-2",
+                            "_source": {
+                                "kibana.alert.uuid": "alert-2",
+                                "kibana.alert.severity": "low",
+                                "kibana.alert.workflow_status": "open",
+                            },
+                        }
+                    ]
+                }
+            },
+        )
+
+        response = Elasticsearch_v2.get_remote_data_command({"id": "alert-2", "lastUpdate": ""}, {})
+
+        assert response.mirrored_object[Elasticsearch_v2.ELASTIC_ENTITY_KIND_FIELD] == Elasticsearch_v2.ENTITY_KIND_SECURITY_ALERT
+
+    def test_get_remote_data_security_alert_exposes_flat_workflow_tags(self, mocker):
+        """Mirroring-in must expose workflow tags under a dot-free key the incoming mapper can read.
+
+        Alerts-as-data documents store the tags under the flat dotted key
+        ``kibana.alert.workflow_tags``; the mapper's ``simple`` selector would otherwise treat that
+        as nested-object traversal and resolve nothing, so tags would never mirror in.
+        """
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT)
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_INCIDENT", False)
+        mocker.patch.object(Elasticsearch_v2.demisto, "integrationInstance", return_value="instance-1")
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "search_security_alerts",
+            return_value={
+                "hits": {
+                    "hits": [
+                        {
+                            "_index": "alerts",
+                            "_id": "alert-tags",
+                            "_source": {
+                                "kibana.alert.uuid": "alert-tags",
+                                "kibana.alert.severity": "low",
+                                "kibana.alert.workflow_status": "open",
+                                "kibana.alert.workflow_tags": ["new tag", "Duplicate"],
+                            },
+                        }
+                    ]
+                }
+            },
+        )
+
+        response = Elasticsearch_v2.get_remote_data_command({"id": "alert-tags", "lastUpdate": ""}, {})
+
+        assert response.mirrored_object["kibana_alert_workflow_tags"] == ["new tag", "Duplicate"]
+
+    def test_get_remote_data_security_alert_tags_default_empty(self, mocker):
+        """When an alert has no workflow tags, mirroring-in exposes an empty list, not a missing key."""
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT)
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_INCIDENT", False)
+        mocker.patch.object(Elasticsearch_v2.demisto, "integrationInstance", return_value="instance-1")
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "search_security_alerts",
+            return_value={
+                "hits": {
+                    "hits": [
+                        {
+                            "_index": "alerts",
+                            "_id": "alert-no-tags",
+                            "_source": {
+                                "kibana.alert.uuid": "alert-no-tags",
+                                "kibana.alert.severity": "low",
+                                "kibana.alert.workflow_status": "open",
+                            },
+                        }
+                    ]
+                }
+            },
+        )
+
+        response = Elasticsearch_v2.get_remote_data_command({"id": "alert-no-tags", "lastUpdate": ""}, {})
+
+        assert response.mirrored_object["kibana_alert_workflow_tags"] == []
+
+    def test_get_remote_data_case_uses_owner(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_CASE)
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_INCIDENT", False)
+        mocker.patch.object(Elasticsearch_v2, "FETCH_ALERTS_FOR_CASE", False)
+        mocker.patch.object(Elasticsearch_v2.demisto, "integrationInstance", return_value="instance-1")
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "kibana_http_request",
+            return_value={"id": "case-1", "status": "open", "severity": "medium", "owner": "observability"},
+        )
+
+        response = Elasticsearch_v2.get_remote_data_command({"id": "case-1", "lastUpdate": ""}, {})
+
+        assert response.mirrored_object[Elasticsearch_v2.ELASTIC_ENTITY_KIND_FIELD] == "observability"
+
+    def test_get_remote_data_case_defaults_kind(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_CASE)
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_INCIDENT", False)
+        mocker.patch.object(Elasticsearch_v2, "FETCH_ALERTS_FOR_CASE", False)
+        mocker.patch.object(Elasticsearch_v2.demisto, "integrationInstance", return_value="instance-1")
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "kibana_http_request",
+            return_value={"id": "case-2", "status": "open", "severity": "medium"},
+        )
+
+        response = Elasticsearch_v2.get_remote_data_command({"id": "case-2", "lastUpdate": ""}, {})
+
+        assert response.mirrored_object[Elasticsearch_v2.ELASTIC_ENTITY_KIND_FIELD] == Elasticsearch_v2.ENTITY_KIND_CASE
+
+
+class TestMirroringHelpers:
+    """Unit tests for the small, pure helpers introduced with the mirroring feature."""
+
+    def test_get_value_by_dot_notation_nested(self):
+        import Elasticsearch_v2
+
+        source = {"kibana": {"alert": {"uuid": "abc"}}}
+        assert Elasticsearch_v2.get_value_by_dot_notation(source, "kibana.alert.uuid") == "abc"
+
+    def test_get_value_by_dot_notation_missing(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.get_value_by_dot_notation({"a": 1}, "a.b.c") is None
+
+    def test_get_alert_source_value_prefers_flat_key(self):
+        import Elasticsearch_v2
+
+        source = {"kibana.alert.uuid": "flat", "kibana": {"alert": {"uuid": "nested"}}}
+        assert Elasticsearch_v2.get_alert_source_value(source, "kibana.alert.uuid") == "flat"
+
+    def test_get_alert_source_value_falls_back_to_nested(self):
+        import Elasticsearch_v2
+
+        source = {"kibana": {"alert": {"uuid": "nested"}}}
+        assert Elasticsearch_v2.get_alert_source_value(source, "kibana.alert.uuid") == "nested"
+
+    def test_get_alert_source_value_non_dict(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.get_alert_source_value("not-a-dict", "any.key") is None
+
+    @pytest.mark.parametrize(
+        "name,expected",
+        [("critical", 4), ("high", 3), ("medium", 2), ("low", 1), ("CRITICAL", 4), ("unknown", 0), (None, 0)],
+    )
+    def test_convert_severity(self, name, expected):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.convert_severity(name) == expected
+
+    @pytest.mark.parametrize(
+        "value,expected",
+        [(4, "critical"), (3, "high"), (2, "medium"), (1, "low"), ("high", "high"), ("HIGH", "high"), (0, None), ("bogus", None)],
+    )
+    def test_convert_severity_to_elastic(self, value, expected):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.convert_severity_to_elastic(value) == expected
+
+    def test_flatten_alert_hit_merges_source_and_keeps_metadata(self):
+        import Elasticsearch_v2
+
+        hit = {"_index": "alerts", "_id": "1", "_source": {"a": 1, "b": 2}}
+        flattened = Elasticsearch_v2.flatten_alert_hit(hit)
+        assert flattened == {"_index": "alerts", "_id": "1", "a": 1, "b": 2}
+        assert "_source" not in flattened
+
+    def test_flatten_alert_hit_handles_missing_source(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.flatten_alert_hit({"_id": "1"}) == {"_id": "1"}
+
+    def test_build_alert_lookup_body(self):
+        import Elasticsearch_v2
+
+        body = Elasticsearch_v2.build_alert_lookup_body("remote-1", size=5)
+        should = body["query"]["bool"]["should"]
+        assert {"term": {"kibana.alert.uuid": "remote-1"}} in should
+        assert {"ids": {"values": ["remote-1"]}} in should
+        assert body["query"]["bool"]["minimum_should_match"] == 1
+        assert body["size"] == 5
+
+    @pytest.mark.parametrize(
+        "message,expected",
+        [
+            ("Error 429 Too Many Requests", True),
+            ("hit the rate limit", True),
+            ("too many requests", True),
+            ("connection refused", False),
+        ],
+    )
+    def test_is_rate_limit_error(self, message, expected):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2._is_rate_limit_error(Exception(message)) is expected
+
+    def test_parse_to_utc_valid(self):
+        import Elasticsearch_v2
+
+        parsed = Elasticsearch_v2.parse_to_utc("2020-01-01T00:00:00Z")
+        assert parsed is not None
+        assert parsed.tzinfo is not None
+
+    def test_parse_to_utc_empty(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.parse_to_utc("") is None
+        assert Elasticsearch_v2.parse_to_utc(None) is None
+
+
+class TestIsIncidentClosing:
+    """Tests for is_incident_closing."""
+
+    def test_status_done_is_closing(self):
+        import Elasticsearch_v2
+        from CommonServerPython import IncidentStatus
+
+        assert Elasticsearch_v2.is_incident_closing(IncidentStatus.DONE, {}) is True
+
+    def test_close_delta_key_is_closing(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.is_incident_closing(None, {"closeReason": "Resolved"}) is True
+
+    def test_not_closing(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.is_incident_closing(None, {"status": "open"}) is False
+
+    def test_none_delta_not_closing(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.is_incident_closing(None, None) is False
+
+
+class TestGetIncidentType:
+    """Tests for get_incident_type."""
+
+    def test_returns_type(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2.demisto, "incident", return_value={"type": "Elasticsearch Case"})
+        assert Elasticsearch_v2.get_incident_type() == "Elasticsearch Case"
+
+    def test_returns_empty_when_no_type(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2.demisto, "incident", return_value={})
+        assert Elasticsearch_v2.get_incident_type() == ""
+
+    def test_returns_empty_on_exception(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2.demisto, "incident", side_effect=Exception("no context"))
+        assert Elasticsearch_v2.get_incident_type() == ""
+
+    def test_returns_empty_when_not_dict(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2.demisto, "incident", return_value="not-a-dict")
+        assert Elasticsearch_v2.get_incident_type() == ""
+
+
+class TestGetConfiguredFetchIncidentType:
+    """Tests for get_configured_fetch_incident_type."""
+
+    def test_fetch_incident_type_param(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "PARAMS", {"fetch_incident_type": "Elasticsearch Case"})
+        assert Elasticsearch_v2.get_configured_fetch_incident_type() == "Elasticsearch Case"
+
+    def test_incident_type_param_fallback(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "PARAMS", {"incidentType": "Elasticsearch Security Alert"})
+        assert Elasticsearch_v2.get_configured_fetch_incident_type() == "Elasticsearch Security Alert"
+
+    def test_unrecognized_returns_empty(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "PARAMS", {"fetch_incident_type": "Something Else"})
+        assert Elasticsearch_v2.get_configured_fetch_incident_type() == ""
+
+
+class TestPruneFetchedIds:
+    """Tests for prune_fetched_ids."""
+
+    def test_keeps_recent_and_drops_expired(self):
+        import Elasticsearch_v2
+        from datetime import datetime, timedelta
+
+        now = datetime(2020, 1, 30, tzinfo=UTC)
+        fetched = {
+            "recent": (now - timedelta(days=1)).isoformat(),
+            "expired": (now - timedelta(days=Elasticsearch_v2.FETCHED_IDS_RETENTION_DAYS + 5)).isoformat(),
+        }
+        pruned = Elasticsearch_v2.prune_fetched_ids(fetched, now=now)
+        assert "recent" in pruned
+        assert "expired" not in pruned
+
+    def test_keeps_unparsable(self):
+        import Elasticsearch_v2
+        from datetime import datetime
+
+        now = datetime(2020, 1, 30, tzinfo=UTC)
+        pruned = Elasticsearch_v2.prune_fetched_ids({"weird": "not-a-date"}, now=now)
+        assert "weird" in pruned
+
+    def test_empty_input(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.prune_fetched_ids({}) == {}
+        assert Elasticsearch_v2.prune_fetched_ids(None) == {}
+
+
+class TestResolveRemoteIncidentType:
+    """Tests for resolve_remote_incident_type."""
+
+    def test_empty_remote_id(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2.resolve_remote_incident_type("", {}) == ""
+
+    def test_resolves_case(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "kibana_http_request", return_value={"id": "case-1"})
+        assert Elasticsearch_v2.resolve_remote_incident_type("case-1", {}) == Elasticsearch_v2.INCIDENT_TYPE_CASE
+
+    def test_resolves_alert(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "kibana_http_request", return_value=None)
+        mocker.patch.object(Elasticsearch_v2, "search_security_alerts", return_value={"hits": {"hits": [{"_id": "a1"}]}})
+        assert Elasticsearch_v2.resolve_remote_incident_type("a1", {}) == Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT
+
+    def test_falls_back_to_configured_type(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "kibana_http_request", side_effect=Exception("down"))
+        mocker.patch.object(Elasticsearch_v2, "search_security_alerts", side_effect=Exception("down"))
+        mocker.patch.object(
+            Elasticsearch_v2, "get_configured_fetch_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_CASE
+        )
+        assert Elasticsearch_v2.resolve_remote_incident_type("x", {}) == Elasticsearch_v2.INCIDENT_TYPE_CASE
+
+    def test_matches_nothing(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "kibana_http_request", return_value=None)
+        mocker.patch.object(Elasticsearch_v2, "search_security_alerts", return_value={"hits": {"hits": []}})
+        mocker.patch.object(Elasticsearch_v2, "get_configured_fetch_incident_type", return_value="")
+        assert Elasticsearch_v2.resolve_remote_incident_type("x", {}) == ""
+
+
+class TestSearchSecurityAlerts:
+    """Tests for search_security_alerts fallback behavior."""
+
+    def test_falls_back_to_kibana(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "elasticsearch_builder", side_effect=Exception("es down"))
+        kibana = mocker.patch.object(Elasticsearch_v2, "kibana_http_request", return_value={"hits": {"hits": [{"_id": "1"}]}})
+        result = Elasticsearch_v2.search_security_alerts({"query": {}}, {})
+        assert result == {"hits": {"hits": [{"_id": "1"}]}}
+        assert kibana.called
+
+    def test_raises_when_both_fail(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "elasticsearch_builder", side_effect=Exception("es down"))
+        mocker.patch.object(Elasticsearch_v2, "kibana_http_request", side_effect=Exception("kibana down"))
+        mocker.patch.object(Elasticsearch_v2, "mirror_error")
+        with pytest.raises(Exception):
+            Elasticsearch_v2.search_security_alerts({"query": {}}, {})
+
+
+class TestGetRemoteDataClose:
+    """Tests for the close-incident entries returned by get_remote_data_command."""
+
+    def test_alert_closed_adds_close_entry(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT)
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_INCIDENT", True)
+        mocker.patch.object(Elasticsearch_v2.demisto, "integrationInstance", return_value="inst")
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "search_security_alerts",
+            return_value={
+                "hits": {
+                    "hits": [
+                        {
+                            "_id": "a1",
+                            "_source": {
+                                "kibana.alert.uuid": "a1",
+                                "kibana.alert.workflow_status": "closed",
+                                "kibana.alert.workflow_reason": "false_positive",
+                                "kibana.alert.severity": "low",
+                            },
+                        }
+                    ]
+                }
+            },
+        )
+        response = Elasticsearch_v2.get_remote_data_command({"id": "a1", "lastUpdate": ""}, {})
+        assert any(e["Contents"].get("dbotIncidentClose") for e in response.entries)
+        close_entry = response.entries[0]["Contents"]
+        assert close_entry["closeReason"] == "false_positive"
+
+    def test_case_closed_adds_close_entry(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_CASE)
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_INCIDENT", True)
+        mocker.patch.object(Elasticsearch_v2, "FETCH_ALERTS_FOR_CASE", False)
+        mocker.patch.object(Elasticsearch_v2.demisto, "integrationInstance", return_value="inst")
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "kibana_http_request",
+            return_value={"id": "c1", "status": "closed", "severity": "low", "closeReason": "duplicate"},
+        )
+        response = Elasticsearch_v2.get_remote_data_command({"id": "c1", "lastUpdate": ""}, {})
+        assert response.entries[0]["Contents"]["dbotIncidentClose"] is True
+        assert response.entries[0]["Contents"]["closeReason"] == "duplicate"
+
+    def test_case_rate_limit_raises(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_CASE)
+        mocker.patch.object(Elasticsearch_v2, "kibana_http_request", side_effect=Exception("429 too many requests"))
+        return_error = mocker.patch.object(Elasticsearch_v2, "return_error", side_effect=SystemExit)
+        with pytest.raises(SystemExit):
+            Elasticsearch_v2.get_remote_data_command({"id": "c1", "lastUpdate": ""}, {})
+        assert return_error.called
+
+
+class TestUpdateRemoteSystemCommand:
+    """Tests for update_remote_system_command routing."""
+
+    def test_no_remote_id_returns_empty(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_CASE)
+        args = {"remoteId": "", "data": {}, "entries": [], "incidentChanged": True, "delta": {}, "status": 1}
+        assert Elasticsearch_v2.update_remote_system_command(args, {}) == ""
+
+    def test_routes_to_alert(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT)
+        mirror_out = mocker.patch.object(Elasticsearch_v2, "_mirror_out_security_alert")
+        args = {
+            "remoteId": "a1",
+            "data": {"type": Elasticsearch_v2.INCIDENT_TYPE_SECURITY_ALERT},
+            "entries": [],
+            "incidentChanged": True,
+            "delta": {"status": "closed"},
+            "status": 1,
+        }
+        assert Elasticsearch_v2.update_remote_system_command(args, {}) == "a1"
+        assert mirror_out.called
+
+    def test_routes_to_case_and_entries(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "get_incident_type", return_value=Elasticsearch_v2.INCIDENT_TYPE_CASE)
+        mirror_case = mocker.patch.object(Elasticsearch_v2, "_mirror_out_case")
+        mirror_entries = mocker.patch.object(Elasticsearch_v2, "_mirror_out_case_entries")
+        args = {
+            "remoteId": "c1",
+            "data": {"type": Elasticsearch_v2.INCIDENT_TYPE_CASE},
+            "entries": [{"ID": "1"}],
+            "incidentChanged": True,
+            "delta": {"title": "new"},
+            "status": 1,
+        }
+        assert Elasticsearch_v2.update_remote_system_command(args, {}) == "c1"
+        assert mirror_case.called
+        assert mirror_entries.called
+
+
+class TestMirrorOutCaseEntries:
+    """Tests for _mirror_out_case_entries."""
+
+    def test_posts_comment_for_tagged_entry(self, mocker):
+        import Elasticsearch_v2
+
+        req = mocker.patch.object(Elasticsearch_v2, "kibana_http_request")
+        Elasticsearch_v2._mirror_out_case_entries("c1", [{"ID": "1", "Tags": ["comment"], "Contents": "hello"}], {})
+        assert req.called
+        _, kwargs = req.call_args
+        assert kwargs["json_data"]["comment"] == "hello"
+
+    def test_skips_untagged_entry(self, mocker):
+        import Elasticsearch_v2
+
+        req = mocker.patch.object(Elasticsearch_v2, "kibana_http_request")
+        Elasticsearch_v2._mirror_out_case_entries("c1", [{"ID": "1", "Tags": [], "Contents": "hello"}], {})
+        assert not req.called
+
+    def test_serializes_dict_contents(self, mocker):
+        import Elasticsearch_v2
+
+        req = mocker.patch.object(Elasticsearch_v2, "kibana_http_request")
+        Elasticsearch_v2._mirror_out_case_entries("c1", [{"ID": "1", "Tags": ["comment"], "Contents": {"a": 1}}], {})
+        _, kwargs = req.call_args
+        assert kwargs["json_data"]["comment"] == json.dumps({"a": 1})
+
+
+class TestMirrorOutSecurityAlert:
+    """Tests for _mirror_out_security_alert."""
+
+    def test_updates_status(self, mocker):
+        import Elasticsearch_v2
+
+        req = mocker.patch.object(Elasticsearch_v2, "kibana_http_request", return_value={"updated": 1})
+        Elasticsearch_v2._mirror_out_security_alert("a1", {"status": "acknowledged"}, 1, {})
+        assert req.called
+        _, kwargs = req.call_args
+        assert kwargs["json_data"]["status"] == "acknowledged"
+
+    def test_nothing_to_mirror_logs_error(self, mocker):
+        import Elasticsearch_v2
+
+        req = mocker.patch.object(Elasticsearch_v2, "kibana_http_request")
+        err = mocker.patch.object(Elasticsearch_v2, "mirror_error")
+        Elasticsearch_v2._mirror_out_security_alert("a1", {"severity": 3}, 1, {})
+        assert not req.called
+        assert err.called
+
+    def test_close_sets_status_and_reason(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "CLOSE_ELASTIC_INCIDENT", True)
+        req = mocker.patch.object(Elasticsearch_v2, "kibana_http_request", return_value={"updated": 1})
+        Elasticsearch_v2._mirror_out_security_alert("a1", {"closeReason": "Resolved"}, Elasticsearch_v2.IncidentStatus.DONE, {})
+        _, kwargs = req.call_args
+        assert kwargs["json_data"]["status"] == "closed"
+        assert kwargs["json_data"]["reason"] == "true_positive"
+
+    def test_updates_tags(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "search_security_alerts",
+            return_value={"hits": {"hits": [{"_id": "doc1", "_source": {"kibana.alert.workflow_tags": ["old"]}}]}},
+        )
+        req = mocker.patch.object(Elasticsearch_v2, "kibana_http_request")
+        Elasticsearch_v2._mirror_out_security_alert("a1", {"tags": ["new"]}, 1, {})
+        # Last call should be to the tags endpoint.
+        args, kwargs = req.call_args
+        assert args[1] == "/api/detection_engine/signals/tags"
+        assert kwargs["json_data"]["tags"]["tags_to_add"] == ["new"]
+        assert kwargs["json_data"]["tags"]["tags_to_remove"] == ["old"]
+
+
+class TestMirrorOutCase:
+    """Tests for _mirror_out_case."""
+
+    def test_case_not_found_skips(self, mocker):
+        import Elasticsearch_v2
+
+        req = mocker.patch.object(Elasticsearch_v2, "kibana_http_request", return_value=None)
+        Elasticsearch_v2._mirror_out_case("c1", {"title": "x"}, 1, {}, {})
+        # Only the initial GET was attempted.
+        assert req.call_count == 1
+
+    def test_updates_supported_fields(self, mocker):
+        import Elasticsearch_v2
+
+        calls = []
+
+        def fake_request(method, path, **kwargs):
+            calls.append((method, path, kwargs))
+            if method == "GET":
+                return {"version": "v1"}
+            return {}
+
+        mocker.patch.object(Elasticsearch_v2, "kibana_http_request", side_effect=fake_request)
+        Elasticsearch_v2._mirror_out_case("c1", {"title": "new title", "severity": 3}, 1, {}, {})
+        patch_call = [c for c in calls if c[0] == "PATCH"][0]
+        case_payload = patch_call[2]["json_data"]["cases"][0]
+        assert case_payload["title"] == "new title"
+        assert case_payload["severity"] == "high"
+
+    def test_no_supported_fields_skips_patch(self, mocker):
+        import Elasticsearch_v2
+
+        calls = []
+
+        def fake_request(method, path, **kwargs):
+            calls.append(method)
+            if method == "GET":
+                return {"version": "v1"}
+            return {}
+
+        mocker.patch.object(Elasticsearch_v2, "kibana_http_request", side_effect=fake_request)
+        Elasticsearch_v2._mirror_out_case("c1", {"unsupported": "x"}, 1, {}, {})
+        assert "PATCH" not in calls
+
+
+class TestGetModifiedRemoteData:
+    """Tests for get_modified_remote_data_command and its helpers."""
+
+    def test_get_modified_alert_ids_empty_update(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2._get_modified_alert_ids("", {}) == []
+
+    def test_get_modified_alert_ids_uses_uuid_then_docid(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "search_security_alerts",
+            return_value={
+                "hits": {
+                    "hits": [
+                        {"_id": "doc1", "_source": {"kibana.alert.uuid": "uuid1"}},
+                        {"_id": "doc2", "_source": {}},
+                    ]
+                }
+            },
+        )
+        ids = Elasticsearch_v2._get_modified_alert_ids("2020-01-01T00:00:00Z", {})
+        assert ids == ["uuid1", "doc2"]
+
+    def test_get_modified_case_ids_filters_by_time(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(
+            Elasticsearch_v2,
+            "kibana_http_request",
+            return_value={
+                "cases": [
+                    {"id": "new", "updated_at": "2020-01-02T00:00:00Z"},
+                    {"id": "old", "updated_at": "2019-12-01T00:00:00Z"},
+                ]
+            },
+        )
+        ids = Elasticsearch_v2._get_modified_case_ids("2020-01-01T00:00:00Z", {})
+        assert ids == ["new"]
+
+    def test_get_modified_case_ids_bad_update(self):
+        import Elasticsearch_v2
+
+        assert Elasticsearch_v2._get_modified_case_ids("not-a-date", {}) == []
+
+    def test_command_dedups_ids(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "_get_modified_alert_ids", return_value=["a", "b"])
+        mocker.patch.object(Elasticsearch_v2, "_get_modified_case_ids", return_value=["b", "c"])
+        response = Elasticsearch_v2.get_modified_remote_data_command({"lastUpdate": "2020-01-01T00:00:00Z"}, {})
+        assert response.modified_incident_ids == ["a", "b", "c"]
+
+    def test_command_rate_limit_on_alerts(self, mocker):
+        import Elasticsearch_v2
+
+        mocker.patch.object(Elasticsearch_v2, "_get_modified_alert_ids", side_effect=Exception("429"))
+        return_error = mocker.patch.object(Elasticsearch_v2, "return_error", side_effect=SystemExit)
+        with pytest.raises(SystemExit):
+            Elasticsearch_v2.get_modified_remote_data_command({"lastUpdate": "2020-01-01T00:00:00Z"}, {})
+        assert return_error.called

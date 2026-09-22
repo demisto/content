@@ -45,7 +45,7 @@ Returns a list of alerts.
 
 | **Argument Name** | **Description**                                                                                                    | **Required** |
 |-------------------|--------------------------------------------------------------------------------------------------------------------|--------------|
-| limit             | The maximum number of alerts per fetch. Default is 10000.                                                          | Optional     |
+| limit             | The maximum number of events to return per event type. Events are retrieved in pages of up to 500 (the API page-size limit). Default is 5000. | Optional     |
 | after             | The first fetch time (&lt;number&gt; &lt;time unit&gt;, for example 12 hours, 1 day, 3 months). Default is 3 days. | Optional     |
 | push_to_xsiam     | Whether to push the fetched event to XSIAM or not. Possible values are: false, true. Default is false.             | Optional     |
 

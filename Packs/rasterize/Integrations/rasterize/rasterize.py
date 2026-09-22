@@ -488,6 +488,7 @@ def wait_for_page_load_with_memory_guard(
     tab_id: str = "",
     path: str = "",
     tab: Optional[pychrome.Tab] = None,
+    freeze_on_load: bool = True,
 ) -> bool:
     """
     Waits for *tab_ready_event* to be set, but aborts the wait early if available container
@@ -510,6 +511,15 @@ def wait_for_page_load_with_memory_guard(
         tab_id: Tab identifier for logging.
         path: URL/path being loaded, for logging.
         tab: Optional pychrome.Tab used to stop loading and reclaim memory on early exit.
+        freeze_on_load: Whether to freeze the tab once the page has finished loading normally.
+            Defaults to True, which is correct for screenshot/PDF captures: they only need the
+            last painted frame, which survives a freeze, so freezing early caps memory growth.
+            Callers that must keep executing JavaScript in the page afterwards (currently only
+            text extraction, which runs ``Runtime.evaluate`` - see
+            :func:`extract_content_from_tab`) MUST pass False, because the freeze disables script
+            execution and purges the V8 heap, destroying the JS execution context. This flag does
+            not affect the memory-pressure freeze below: under real memory pressure the tab is
+            frozen regardless, since avoiding the OOM takes precedence over the extraction.
 
     Returns:
         bool: True if the event was set normally (page finished loading or timed out),
@@ -533,7 +543,15 @@ def wait_for_page_load_with_memory_guard(
     while True:
         # Check if the page has finished loading.
         if tab_ready_event.wait(timeout=poll_interval):
-            _freeze_tab_for_screenshot(tab, tab_id, path)
+            if freeze_on_load:
+                _freeze_tab_for_screenshot(tab, tab_id, path)
+            else:
+                # The caller still needs a live JavaScript execution context (text extraction).
+                # Freezing here disables script execution and purges the V8 heap, which makes the
+                # subsequent Runtime.evaluate fail with "Cannot find default execution context".
+                demisto.debug(
+                    f"wait_for_page_load_with_memory_guard: skipping post-load freeze, {tab_id=}, {path=}",
+                )
             demisto.debug(
                 f"wait_for_page_load_with_memory_guard: normal completion, "
                 f"available={get_container_available_memory_bytes() / (1024 * 1024):.1f} MiB, "
@@ -1534,7 +1552,25 @@ def setup_tab_event(
     return tab_event_handler, tab_ready_event
 
 
-def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_timeout) -> PychromeEventHandler:  # pragma: no cover
+def navigate_to_path(
+    browser, tab: pychrome.Tab, path, wait_time, navigation_timeout, freeze_on_load: bool = True
+) -> PychromeEventHandler:  # pragma: no cover
+    """Navigates *tab* to *path* and waits for the page to finish loading.
+
+    Args:
+        browser: The Chrome browser instance.
+        tab: The Chrome tab to navigate.
+        path: The URL or file path to navigate to.
+        wait_time: Time in seconds to sleep after the page has loaded.
+        navigation_timeout: Maximum time in seconds to wait for the page to load.
+        freeze_on_load: Forwarded to :func:`wait_for_page_load_with_memory_guard` in lightweight
+            mode. Pass False when the caller needs to run JavaScript in the page afterwards
+            (text extraction); see that function's docstring for the full rationale. Ignored in
+            non-lightweight mode, which never freezes the tab.
+
+    Returns:
+        PychromeEventHandler: The event handler bound to this navigation.
+    """
     tab_event_handler, tab_ready_event = setup_tab_event(browser, tab, path, navigation_timeout)
 
     try:
@@ -1559,6 +1595,7 @@ def navigate_to_path(browser, tab: pychrome.Tab, path, wait_time, navigation_tim
                 tab_id=tab.id,
                 path=path,
                 tab=tab,
+                freeze_on_load=freeze_on_load,
             )
             if not page_loaded_normally:
                 return_warning(
@@ -1827,7 +1864,11 @@ def extract_text_content(
     Raises:
         DemistoException: If the URL is a mailto or private network URL.
     """
-    tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout)
+    # freeze_on_load=False: text extraction is the only rasterize type that runs JavaScript in the
+    # page (Runtime.evaluate, in extract_content_from_tab). The lightweight memory guard's post-load
+    # freeze disables script execution and purges the V8 heap, which would destroy the execution
+    # context before we get to use it, failing with "Cannot find default execution context".
+    tab_event_handler = navigate_to_path(browser, tab, path, wait_time, navigation_timeout, freeze_on_load=False)
 
     if tab_event_handler.is_mailto or tab_event_handler.is_private_network_url:
         error_msg = f'Cannot rasterize "mailto:" or private network URLs. URL: {tab_event_handler.document_url}'
@@ -2511,7 +2552,13 @@ def rasterize_extract_command():  # pragma: no cover
         if isinstance(extracted_content, str) and extracted_content.startswith("Extraction Error:"):
             results.append(
                 CommandResults(
-                    readable_output=f"Error extracting content from {url!r}:\n{extracted_content}",
+                    readable_output=(
+                        f"Error extracting content from {url!r}:\n{extracted_content}\n"
+                        "The page did not render within the page-load timeout. It may be slow to load, "
+                        "or protected by anti-bot/bot-detection (for example Cloudflare, or the Chrome Web Store). "
+                        "If this URL is expected to be slow, retry once with a higher 'max_page_load_time'; "
+                        "otherwise the page is likely blocked and a different source/action should be used for it."
+                    ),
                     entry_type=EntryType.ERROR,
                 )
             )

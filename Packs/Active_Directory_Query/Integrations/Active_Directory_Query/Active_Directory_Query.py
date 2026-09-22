@@ -1225,6 +1225,45 @@ def create_group():
 """ UPDATE OBJECT """
 
 
+def prepare_attribute_value(attribute_value: str | None, attribute_type: str | None) -> bytes | str | None:
+    """
+    Converts an attribute value string to the appropriate Python type for the LDAP modify call.
+
+    When *attribute_type* is ``"byte"``, the value is interpreted as a comma-separated list of
+    decimal integers (0-255) and converted to a raw :class:`bytes` object so that ldap3 sends a
+    proper Octet String over the wire.  This is required for binary AD attributes such as
+    ``logonHours``, ``objectSID``, and ``objectGUID``.
+
+    For all other attribute types the value is returned unchanged as a plain string.
+
+    :param attribute_value: The raw string value supplied by the caller.
+    :param attribute_type: Optional type hint.  Pass ``"byte"`` for binary/Octet String attributes.
+    :return: A :class:`bytes` object for binary attributes, or the original string otherwise.
+    :raises ValueError: If *attribute_type* is ``"byte"`` but the value cannot be parsed as a
+        comma-separated list of integers in the range 0-255.
+    """
+    if not (attribute_type and attribute_type.lower() == "byte"):
+        demisto.debug(f"attribute-type argument is not 'byte', returning value as string: {attribute_value}")
+        return attribute_value
+
+    if not attribute_value:
+        raise DemistoException("attribute-value must be provided when attribute-type is 'byte'.")
+    try:
+        byte_values = argToList(attribute_value, transform=int)
+    except ValueError:
+        raise DemistoException(
+            f"attribute-value '{attribute_value}' cannot be parsed as a comma-separated list of integers. "
+            "When attribute-type is 'byte', provide values as comma-separated decimal integers, "
+            "e.g. '0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0'."
+        )
+    if any(b < 0 or b > 255 for b in byte_values):
+        raise DemistoException(
+            f"attribute-value contains out-of-range integers. Each byte must be between 0 and 255, got: {byte_values}"
+        )
+    demisto.debug(f"attribute-type is 'byte', returning value as bytes: {byte_values}")
+    return bytes(byte_values)
+
+
 def modify_object(dn, modification):
     """
     modifies object in the DIT
@@ -1242,11 +1281,12 @@ def update_user(default_base_dn):
     sam_account_name = args.get("username")
     attribute_name = args.get("attribute-name")
     attribute_value = args.get("attribute-value")
+    attribute_type = args.get("attribute-type")
     search_base = args.get("base-dn") or default_base_dn
     dn = user_dn(sam_account_name, search_base)
 
     modification = {}
-    modification[attribute_name] = [("MODIFY_REPLACE", attribute_value)]
+    modification[attribute_name] = [("MODIFY_REPLACE", prepare_attribute_value(attribute_value, attribute_type))]
 
     # modify user
     modify_object(dn, modification)
@@ -1265,10 +1305,11 @@ def update_group(default_base_dn):
     sam_account_name = args.get("groupname")
     attribute_name = args.get("attributename")
     attribute_value = args.get("attributevalue")
+    attribute_type = args.get("attribute-type")
     search_base = args.get("basedn") or default_base_dn
     dn = group_dn(sam_account_name, search_base)
 
-    modification = {attribute_name: [("MODIFY_REPLACE", attribute_value)]}
+    modification = {attribute_name: [("MODIFY_REPLACE", prepare_attribute_value(attribute_value, attribute_type))]}
     modify_object(dn, modification)
 
     demisto_entry = {
@@ -1283,8 +1324,11 @@ def update_contact():
     args = demisto.args()
 
     contact_dn = args.get("contact-dn")
+    attribute_name = args.get("attribute-name")
+    attribute_value = args.get("attribute-value")
+    attribute_type = args.get("attribute-type")
     modification = {}
-    modification[args.get("attribute-name")] = [("MODIFY_REPLACE", args.get("attribute-value"))]
+    modification[attribute_name] = [("MODIFY_REPLACE", prepare_attribute_value(attribute_value, attribute_type))]
 
     # modify
     modify_object(contact_dn, modification)
@@ -1292,7 +1336,7 @@ def update_contact():
     demisto_entry = {
         "ContentsFormat": formats["text"],
         "Type": entryTypes["note"],
-        "Contents": "Updated contact's {} to: {} ".format(args.get("attribute-name"), args.get("attribute-value")),
+        "Contents": f"Updated contact's {attribute_name} to: {attribute_value} ",
     }
     demisto.results(demisto_entry)
 

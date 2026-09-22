@@ -7,13 +7,17 @@ Click Connect, then click Show advanced settings, and under Additional Security 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Application ID |  |  |
-| Default Subscription ID | You can set the value either in the configuration or directly within the commands. If you set it in both places, the value in the command will override the configuration setting. |  |
+| Default Subscription ID | You can set the value either in the configuration or directly within the commands. If you set it in both places, the value in the command will override the configuration setting. | True |
 | Default Resource Group Name | You can set the value either in the configuration or directly within the commands. If you set it in both places, the value in the command will override the configuration setting. |  |
 | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
+| Authentication Type | The type of authentication. Can be Client Credentials (default authentication type), Device Code, Authorization Code, or Azure Managed Identities. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| Tenant ID |  | False |
-| Client Secret |  | False |
+| Tenant ID | The tenant ID of the Azure app registration. | False |
+| Client Secret | The client secret of the Azure app registration. Required when using the Client Credentials flow. | False |
+| Application redirect URI | The application redirect URI for the Authorization Code flow. | False |
+| Authorization code | The authorization code for the Authorization Code flow, received from the authorization step. See the Detailed Instructions (?) section. | False |
+| Azure Managed Identities Client ID | The managed identities client ID for authentication. Relevant only when the integration is running on an Azure VM. | False |
 
 ## Commands
 
@@ -71,7 +75,7 @@ Update a security rule. If one does not exist, it will be created. The command i
 ### azure-storage-account-update
 
 ***
-Updates a specific account storage. Required Permissions: Microsoft.Storage/storageAccounts/read, Microsoft.Storage/storageAccounts/write.
+Updates a specific account storage. Required permissions: Microsoft.Storage/storageAccounts/read, Microsoft.Storage/storageAccounts/write.
 
 #### Base Command
 
@@ -82,7 +86,7 @@ Updates a specific account storage. Required Permissions: Microsoft.Storage/stor
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_group_name | The resource group name. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | account_name | The name of the storage account. | Required |
 | sku | Gets or sets the SKU name, Required for account creation; optional for update. Possible values are: Premium_LRS, Premium_ZRS, Standard_GRS, Standard_GZRS, Standard_LRS, Standard_RAGRS, Standard_RAGZRS, Standard_ZRS. | Optional |
 | kind | Indicates the type of storage account, Required for account creation; optional for update. Possible values are: Storage, StorageV2, BlobStorage, FileStorage, BlockBlobStorage. | Optional |
@@ -173,7 +177,7 @@ Sets properties for the blob service in a specific account storage. The command 
 ### azure-policy-assignment-create
 
 ***
-Creates a policy assignment. Required Permissions: Microsoft.Authorization/policyAssignments/read, Microsoft.Authorization/policyAssignments/write.
+Creates a policy assignment. Required permissions: Microsoft.Authorization/policyAssignments/read, Microsoft.Authorization/policyAssignments/write.
 
 #### Base Command
 
@@ -184,7 +188,7 @@ Creates a policy assignment. Required Permissions: Microsoft.Authorization/polic
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Name of the policy assignment. | Required |
-| subscription_id | Subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | scope | The scope of the policy assignment. | Required |
 | policy_definition_id | The ID of the policy definition or policy set definition being assigned. | Optional |
 | display_name | The assignment display name. | Optional |
@@ -351,7 +355,7 @@ Updates the authentication and authorization settings of an existing Azure Web A
 ### azure-mysql-flexible-server-param-set
 
 ***
-Updates a configuration of a server. Required Permissions: Microsoft.DBforMySQL/flexibleServers/configurations/read, Microsoft.DBforMySQL/flexibleServers/configurations/write.
+Updates a server configuration. Required permissions: Microsoft.DBforMySQL/flexibleServers/configurations/read, Microsoft.DBforMySQL/flexibleServers/configurations/write.
 
 #### Base Command
 
@@ -361,8 +365,8 @@ Updates a configuration of a server. Required Permissions: Microsoft.DBforMySQL/
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| resource_group_name | The resource group name. | Optional |
-| subscription_id | Subscription ID. | Optional |
+| resource_group_name | The resource group name. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | server_name | Name of the MySQL flexible server. | Required |
 | configuration_name | The name of the server configuration. | Required |
 | source | Source of the configuration. | Optional |
@@ -375,7 +379,7 @@ There is no context output for this command.
 ### azure-monitor-log-profile-update
 
 ***
-Updates a log profile in Azure Monitoring REST API. Required Permissions: Microsoft.Insights/logprofiles/read, Microsoft.Insights/logprofiles/write.
+Updates a log profile in Azure Monitoring REST API. Required permissions: Microsoft.Insights/logprofiles/read, Microsoft.Insights/logprofiles/write.
 
 #### Base Command
 
@@ -386,7 +390,7 @@ Updates a log profile in Azure Monitoring REST API. Required Permissions: Micros
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | log_profile_name | The name of the log profile to update. | Required |
-| subscription_id | subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | location | Resource location. | Optional |
 | retention_policy_days | Number of days to retain logs. | Optional |
 | retention_policy_enabled | Whether to enable the retention policy. Possible values are: true, false. | Optional |
@@ -733,7 +737,7 @@ Updates the database's threat detection policy. The command is deprecated, pleas
 ### azure-sql-db-transparent-data-encryption-set
 
 ***
-Updates a logical database's transparent data encryption configuration. Required Permissions: Microsoft.Sql/servers/databases/transparentDataEncryption/read, Microsoft.Sql/servers/databases/transparentDataEncryption/write.
+Updates a logical database's transparent data encryption configuration. Required permissions: Microsoft.Sql/servers/databases/transparentDataEncryption/read, Microsoft.Sql/servers/databases/transparentDataEncryption/write.
 
 #### Base Command
 
@@ -746,79 +750,12 @@ Updates a logical database's transparent data encryption configuration. Required
 | server_name | Server name. | Required |
 | db_name | Database name. | Required |
 | state | The state of the transparent data encryption. Possible values are: Disabled, Enabled. | Required |
-| subscription_id | Subscription ID. | Optional |
-| resource_group_name | The name of the resource group. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
 
 #### Context Output
 
 There is no context output for this command.
-
-### azure-cosmos-db-update
-
-***
-Updates the properties of an existing Azure Cosmos DB database account. The command is deprecated, please use azure-cosmosdb-db-account-update. Required Permissions: Microsoft.DocumentDB/databaseAccounts/read, Microsoft.DocumentDB/databaseAccounts/write.
-
-#### Base Command
-
-`azure-cosmos-db-update`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| account_name | Cosmos DB database account name. | Required |
-| disable_key_based_metadata_write_access | Whether to disable write operations on metadata resources via account keys. Possible values are: true, false. | Optional |
-| subscription_id | Subscription ID. | Optional |
-| resource_group_name | The name of the resource group. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Azure.CosmosDB.id | String | The unique resource identifier of the ARM resource. |
-| Azure.CosmosDB.name | String | The name of the ARM resource. |
-| Azure.CosmosDB.location | String | The location of the resource group to which the resource belongs. |
-| Azure.CosmosDB.kind | String | The database account type. |
-| Azure.CosmosDB.identity.type | String | The type of identity used for the resource. |
-| Azure.CosmosDB.identity.userAssignedIdentities | Dictionary | The list of user identities associated with the resource. |
-| Azure.CosmosDB.properties.analyticalStorageConfiguration.schemaType | String | The analytical storage schema types. |
-| Azure.CosmosDB.properties.apiProperties | Dictionary | API specific properties. |
-| Azure.CosmosDB.properties.backupPolicy | unknown | The policy for taking backups on an account. |
-| Azure.CosmosDB.properties.capabilities | List | List of Cosmos DB capabilities for the account. |
-| Azure.CosmosDB.properties.capacity | Integer | Properties related to capacity enforcement on an account. |
-| Azure.CosmosDB.properties.connectorOffer | String | The Cassandra connector offer type for the Cosmos DB database account. |
-| Azure.CosmosDB.properties.consistencyPolicy | String | The consistency policy for the Cosmos DB database account. |
-| Azure.CosmosDB.properties.cors | List | The CORS policy for the Cosmos DB database account. |
-| Azure.CosmosDB.properties.createMode | String | The mode of account creation. |
-| Azure.CosmosDB.properties.customerManagedKeyStatus | String | Status of the Customer Managed Key feature on the account. |
-| Azure.CosmosDB.properties.databaseAccountOfferType | String | The offer type for the Cosmos DB database account. |
-| Azure.CosmosDB.properties.defaultIdentity | String | The default identity for accessing key vault used in features like customer managed keys. |
-| Azure.CosmosDB.properties.disableKeyBasedMetadataWriteAccess | Boolean | Whether write operations on metadata resources via account keys is disabled. |
-| Azure.CosmosDB.properties.disableLocalAuth | Boolean | Whether local authentication is disabled. |
-| Azure.CosmosDB.properties.documentEndpoint | String | The connection endpoint for the Cosmos DB database account. |
-| Azure.CosmosDB.properties.enableAnalyticalStorage | Boolean | Whether storage analytics are enabled. |
-| Azure.CosmosDB.properties.enableAutomaticFailover | Boolean | Enables automatic failover of the write region. |
-| Azure.CosmosDB.properties.enableBurstCapacity | Boolean | Whether Burst Capacity is enabled. |
-| Azure.CosmosDB.properties.enableCassandraConnector | Boolean | Enables the Cassandra connector on the Cosmos DB account. |
-| Azure.CosmosDB.properties.enableFreeTier | Boolean | Whether Free Tier is enabled. |
-| Azure.CosmosDB.properties.enableMultipleWriteLocations | Boolean | Enables the account to write in multiple locations. |
-| Azure.CosmosDB.properties.enablePartitionMerge | Boolean | Whether Partition Merge is enabled. |
-| Azure.CosmosDB.properties.enablePerRegionPerPartitionAutoscale | Boolean | Whether PerRegionPerPartitionAutoscale is enabled. |
-| Azure.CosmosDB.properties.failoverPolicies | List | An array that contains the regions ordered by their failover priorities. |
-| Azure.CosmosDB.properties.instanceId | String | A unique identifier assigned to the database account. |
-| Azure.CosmosDB.properties.ipRules | List | List of IP rules. |
-| Azure.CosmosDB.properties.isVirtualNetworkFilterEnabled | Boolean | Whether the Virtual Network ACL rules are enabled. |
-| Azure.CosmosDB.properties.keyVaultKeyUri | String | The URI of the key vault. |
-| Azure.CosmosDB.properties.keysMetadata | Dictionary | Metadata related to each access key for the given Cosmos DB database account. |
-| Azure.CosmosDB.properties.locations | List | An array that contains all of the locations enabled for the Cosmos DB account. |
-| Azure.CosmosDB.properties.minimalTlsVersion | String | The minimum allowed TLS version. |
-| Azure.CosmosDB.properties.networkAclBypass | String | Which services are allowed to bypass firewall checks. |
-| Azure.CosmosDB.properties.networkAclBypassResourceIds | List | List of resource IDs that are allowed to bypass firewall checks. |
-| Azure.CosmosDB.properties.privateEndpointConnections | List | List of private endpoint connections. |
-| Azure.CosmosDB.properties.provisioningState | String | The status of the Cosmos DB account at the time the operation was called. |
-| Azure.CosmosDB.properties.readLocations | List | An array that contains the read locations enabled for the Cosmos DB account. |
-| Azure.CosmosDB.properties.virtualNetworkRules | List | List of Virtual Network ACL rules. |
-| Azure.CosmosDB.properties.writeLocations | List | An array that contains the write locations enabled for the Cosmos DB account. |
 
 ### azure-vm-instance-details-get
 
@@ -1295,7 +1232,7 @@ Powers off a given virtual machine. The command is deprecated, please use azure-
 ### azure-billing-usage-list
 
 ***
-Returns actual usage and cost details for a given time period, optionally filtered by service name. Required Permissions: Microsoft.Consumption/usageDetails/read.
+Returns actual usage and cost details for a given time period, optionally filtered by service name. Required permission: Microsoft.Consumption/usageDetails/read.
 
 #### Base Command
 
@@ -1305,11 +1242,11 @@ Returns actual usage and cost details for a given time period, optionally filter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID on which to run the command. It will be sent as a scope parameter - /subscriptions/{subscriptionId}/. | Required |
-| expand_result | Whether to expand the result. Default - false. | Optional |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| expand_result | Whether to expand the result. Default - false. Possible values are: false, true. | Optional |
 | filter | Optional filter for the API. API argument - $filter. | Optional |
 | metric | The metric to retrieve. API values [actualcost, amortizedcost, usage]. Possible values are: Actual Cost, Amortized Cost, Usage. | Optional |
-| max_results | Maximum results to return. Default - 50, Max - 1000. | Optional |
+| max_results | Maximum results to return. Default - 50, Max - 1000. Default is 50. | Optional |
 | next_page_token | Next page token for pagination. Use value from Azure.Billing.UsageNextToken. | Optional |
 
 #### Context Output
@@ -1377,7 +1314,7 @@ Returns actual usage and cost details for a given time period, optionally filter
 ### azure-billing-forecast-list
 
 ***
-Returns cost forecast for a subscription over a given time range. Required Permissions: Microsoft.CostManagement/forecast/read.
+Returns cost forecast for a subscription over a given time range. Required permission: Microsoft.CostManagement/forecast/read.
 
 #### Base Command
 
@@ -1385,18 +1322,18 @@ Returns cost forecast for a subscription over a given time range. Required Permi
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subscription_id | Azure subscription ID (required). | Required |
-| type | Forecast type (required). Possible values are: Usage, ActualCost, AmortizedCost. | Required |
-| aggregation_function_name | The name of the column to aggregate (required). Possible values are: PreTaxCostUSD, Cost, CostUSD, PreTaxCost. | Required |
-| aggregation_function_type | The name of the aggregation function to use. Default is Sum. | Optional |
-| granularity | The granularity of the forecast. Default is Daily. | Optional |
-| start_date | Start date for the forecast. Default value current time. | Optional |
-| end_date | End date for the forecast. Default value 7 days from current time. | Optional |
-| filter | A URL parameter to filter forecasts by properties/usageDate (Utc time), properties/chargeType or properties/grain. The filter supports 'eq', 'lt', 'gt', 'le', 'ge', and 'and'. It does not currently support 'ne', 'or', or 'not'. | Optional |
-| include_actual_cost | Include actual cost data. Possible values are: true, false. Default is false. | Optional |
-| include_fresh_partial_cost | Include fresh partial cost data. Possible values are: true, false. Default is false. | Optional |
+| **Argument Name** | **Description**                                                                                                                                                                                                                                  | **Required** |
+| --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| type | Forecast type (required). Possible values are: Usage, ActualCost, AmortizedCost.                                                                                                                                                                 | Required |
+| aggregation_function_name | The name of the column to aggregate (required). Possible values are: PreTaxCostUSD, Cost, CostUSD, PreTaxCost.                                                                                                                                   | Required |
+| aggregation_function_type | The name of the aggregation function to use. Default is Sum.                                                                                                                                                                                     | Optional |
+| granularity | The granularity of the forecast. Default is Daily.                                                                                                                                                                                               | Optional |
+| start_date | Start date for the forecast. Default value current time (UTC). e.g. 2022-01-01T00:00:00Z.                                                                                                                                                        | Optional |
+| end_date | End date for the forecast. Default value 7 days from current time (UTC). e.g. 2022-01-01T00:00:00Z.                                                                                                                                                                                                                       | Optional |
+| filter | A URL parameter to filter forecasts by properties/usageDate (Utc time), properties/chargeType or properties/grain. The filter supports 'eq', 'lt', 'gt', 'le', 'ge', and 'and'. It does not currently support 'ne', 'or', or 'not'.              | Optional |
+| include_actual_cost | Include actual cost data. Possible values are: true, false. Default is false.                                                                                                                                                                    | Optional |
+| include_fresh_partial_cost | Include fresh partial cost data. Possible values are: true, false. Default is false.                                                                                                                                                             | Optional |
 
 #### Context Output
 
@@ -1412,7 +1349,7 @@ Returns cost forecast for a subscription over a given time range. Required Permi
 ### azure-billing-budgets-list
 
 ***
-Lists configured budgets at the subscription or resource group scope. Required Permissions: Microsoft.Consumption/budgets/read.
+Lists configured budgets at the subscription or resource group level. Required permission: Microsoft.Consumption/budgets/read.
 
 #### Base Command
 
@@ -1422,7 +1359,7 @@ Lists configured budgets at the subscription or resource group scope. Required P
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The Azure subscription ID on which to run the command. Will be sent as a scope parameter - /subscriptions/{subscriptionId}/. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | budget_name | Name of the budget. Optional; if provided, returns a specific budget. | Optional |
 
 #### Context Output
@@ -1461,7 +1398,7 @@ Lists configured budgets at the subscription or resource group scope. Required P
 ### azure-storage-container-property-get
 
 ***
-Retrieve properties for the specified Container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/read.
+Retrieves properties for a specific Container. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/read.
 
 #### Base Command
 
@@ -1472,7 +1409,7 @@ Retrieve properties for the specified Container. Required Permissions: Microsoft
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | container_name | The name of the Container. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 
@@ -1491,7 +1428,7 @@ Retrieve properties for the specified Container. Required Permissions: Microsoft
 ### azure-storage-container-create
 
 ***
-Create a new Container under the specified account. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/write.
+Creates a new Container under the specified account. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/write.
 
 #### Base Command
 
@@ -1502,7 +1439,7 @@ Create a new Container under the specified account. Required Permissions: Micros
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | container_name | The name of the Container to create. Rules for naming containers can be found here:<br/>https://docs.microsoft.com/en-us/rest/api/storageservices/naming-and-referencing-containers--blobs--and-metadata<br/>. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 
@@ -1513,7 +1450,7 @@ There is no context output for this command.
 ### azure-storage-container-delete
 
 ***
-Marks the specified Container for deletion. The Container and any Blobs contained within it, will be deleted during garbage collection. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/delete.
+Marks a specific Container for deletion. The Container and any Blobs contained within it will be deleted during garbage collection. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/delete.
 
 #### Base Command
 
@@ -1524,7 +1461,7 @@ Marks the specified Container for deletion. The Container and any Blobs containe
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | container_name | The name of the Container to delete. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 
@@ -1710,7 +1647,7 @@ There is no context output for this command.
 ### azure-storage-container-public-access-block
 
 ***
-Block public access to a container. Required Permissions: Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action.
+Blocks public access to a container. Required permission: Microsoft.Storage/storageAccounts/blobServices/containers/setAcl/action.
 
 #### Base Command
 
@@ -1721,46 +1658,13 @@ Block public access to a container. Required Permissions: Microsoft.Storage/stor
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | container_name | Name of a container. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 
 #### Context Output
 
 There is no context output for this command.
-
-### azure-nsg-security-rules-list
-
-***
-Gets all security rules in a network security group. The command is deprecated, please use azure-vn-security-rules-list. Required Permissions: Microsoft.Network/networkSecurityGroups/securityRules/read.
-
-#### Base Command
-
-`azure-nsg-security-rules-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
-| resource_group_name | Resource group name. | Required |
-| network_security_group_name | The name of the network security group. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Azure.NSGRule.name | String | The rule's name. |
-| Azure.NSGRule.id | String | The rule's ID. |
-| Azure.NSGRule.properties.provisioningState | String | The rule's provisioning state. |
-| Azure.NSGRule.properties.protocol | String | The protocol, which can be "TCP", "UDP", "ICMP", or "\*". |
-| Azure.NSGRule.properties.sourcePortRange | String | For a single port, the source port or a range of ports. |
-| Azure.NSGRule.properties.destinationPortRange | String | For a single port, the destination port or range of ports. |
-| Azure.NSGRule.properties.sourceAddressPrefix | String | The source address. |
-| Azure.NSGRule.properties.destinationAddressPrefix | String | The destination address. |
-| Azure.NSGRule.properties.access | String | The rule's access. Can be "Allow" or "Deny". |
-| Azure.NSGRule.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
-| Azure.NSGRule.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
 
 ### azure-storage-blob-property-get
 
@@ -1777,7 +1681,7 @@ Retrieve Blob properties. Required Permissions: Microsoft.Storage/storageAccount
 | --- | --- | --- |
 | container_name | The name of the Blob Container. | Required |
 | blob_name | The name of the blob. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 
@@ -1821,7 +1725,7 @@ Retrieve the tags of the specified Blob. Required Permissions: Microsoft.Storage
 | --- | --- | --- |
 | container_name | The name of the Blob Container. | Required |
 | blob_name | The name of the blob. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 
@@ -1847,7 +1751,7 @@ Lists all the virtual machines in the specified subscription. Use the next_token
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group. | Required |
 | next_token | The URI to fetch the next page of results. | Optional |
 
@@ -1927,7 +1831,7 @@ Gets the properties of a given virtual machine. Required Permissions: Microsoft.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group to which the virtual machine belongs. | Required |
 | virtual_machine_name | The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-compute-vm-list` command. | Required |
 | expand | The expand expression to apply on the operation. 'InstanceView' retrieves a snapshot of the runtime properties of the virtual machine that is managed by the platform and can change outside of control plane operations. 'UserData' retrieves the UserData property as part of the VM model view that was provided by the user during the VM Create/Update operation. Possible values are: instanceView, userData, resiliencyView. Default is instanceView. | Optional |
@@ -1963,7 +1867,7 @@ Creates a network security group. Required Permissions: Microsoft.Network/networ
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | security_group_name | The name of the network security group. | Required |
 | location | The location of the network security group. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilsouth, brazilsoutheast, brazilus, canadacentral, canadaeast, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, francecentral, francesouth, germanynorth, germanywestcentral, israelcentral, italynorth, japaneast, japanwest, jioindiacentral, jioindiawest, koreacentral, koreasouth, malaysiasouth, mexicocentral, newzealandnorth, northcentralus, northeurope, norwayeast, norwaywest, polandcentral, qatarcentral, southafricanorth, southafricawest, southcentralus, southeastasia, southindia, spaincentral, swedencentral, swedensouth, switzerlandnorth, switzerlandwest, uaecentral, uaenorth, uksouth, ukwest, westcentralus, westeurope, westindia, westus, westus2, westus3, australiaeastfoundational, austriaeast, chilecentral, eastusslv, indonesiacentral, israelnorthwest, malaysiawest, southcentralus2, southeastus, southeastus3, southwestus, usgovarizona, usgovtexas, usgovvirginia. | Required |
@@ -1999,7 +1903,7 @@ Powers off a given virtual machine. Required Permissions: Microsoft.Compute/virt
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group to which the virtual machine belongs. To see all the resource groups associated with your subscription, run the `azure-rm-resource-groups-list` command. | Required |
 | virtual_machine_name | The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-compute-vm-list` command. | Required |
 | skip_shutdown | Set to True to request non-graceful VM shutdown. Possible values are: true, false. Default is false. | Optional |
@@ -2025,7 +1929,7 @@ Powers on a given virtual machine. Required Permissions: Microsoft.Compute/virtu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | Resource Group to which the virtual machine belongs. | Required |
 | virtual_machine_name | Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-compute-vm-list` command. | Required |
 
@@ -2052,7 +1956,7 @@ Updates the properties of an existing Azure Cosmos DB database account. The requ
 | --- | --- | --- |
 | account_name | Cosmos DB database account name. | Required |
 | disable_key_based_metadata_write_access | Whether to disable write operations on metadata resources via account keys. Possible values are: true, false. | Optional |
-| subscription_id | Subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group. | Required |
 
 #### Context Output
@@ -2067,7 +1971,7 @@ Updates the properties of an existing Azure Cosmos DB database account. The requ
 | Azure.CosmosDB.DBAccounts.identity.userAssignedIdentities | Unknown | The list of user identities associated with the resource. |
 | Azure.CosmosDB.DBAccounts.properties.analyticalStorageConfiguration | Unknown | Analytical storage specific properties. |
 | Azure.CosmosDB.DBAccounts.properties.apiProperties | Unknown | API specific properties. |
-| Azure.CosmosDB.DBAccounts.properties.backupPolicy | unknown | The policy for taking backups on an account. |
+| Azure.CosmosDB.DBAccounts.properties.backupPolicy | Unknown | The policy for taking backups on an account. |
 | Azure.CosmosDB.DBAccounts.properties.capabilities | Unknown | List of Cosmos DB capabilities for the account. |
 | Azure.CosmosDB.DBAccounts.properties.capacity | Number | Properties related to capacity enforcement on an account. |
 | Azure.CosmosDB.DBAccounts.properties.connectorOffer | String | The Cassandra connector offer type for the Cosmos DB database account. |
@@ -2118,7 +2022,7 @@ Updates a key vault in the specified subscription. The required permissions are:
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | vault_name | Key Vault name. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group. | Required |
 | enable_purge_protection | Whether protection against purge is enabled for this vault. This functionality is always enabled, it cannot be disabled. Possible values are: true, false. | Optional |
 | enable_soft_delete | Whether soft delete is enabled for this key vault. This functionality is always enabled, it cannot be disabled. Possible values are: true, false. | Optional |
@@ -2159,7 +2063,7 @@ Gets all resource groups for a subscription. Required Permissions: Microsoft.Res
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | Limit on the number of resource groups to return. Default is 50. | Optional |
 | tag | A single tag in the form of `{"Tag Name":"Tag Value"}` to filter the list by. | Optional |
 
@@ -2196,7 +2100,7 @@ Updates a database's security alert policy. The required permissions are: Micros
 | server_name | Server name. | Required |
 | db_name | Database name. | Required |
 | email_account_admins_enabled | Whether the alert is sent to the account administrators. Possible values are: true, false. | Optional |
-| subscription_id | Subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group. | Required |
 
 #### Context Output
@@ -2234,7 +2138,7 @@ Gets network interfaces in a resource group. Required permissions: Microsoft.Net
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_group_name | The resource group name. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | The maximum number of records to return. Default is 50. | Optional |
 | all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. Default is false. | Optional |
 
@@ -2269,9 +2173,9 @@ Gets public IP addresses in a resource group. Required permissions: Microsoft.Ne
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_group_name | The resource group name. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | The maximum number of records to return. Default is 50. | Optional |
-| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. | Optional |
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. Default is false. | Optional |
 
 #### Context Output
 
@@ -2305,7 +2209,7 @@ List all network security groups. Required permissions: Microsoft.Network/networ
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 
 #### Context Output
@@ -2337,7 +2241,7 @@ Create a security rule. Required permissions: Microsoft.Network/networkSecurityG
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | Resource group name. | Required |
 | security_group_name | The name of the security group. | Required |
 | security_rule_name | The name of the rule to create. | Required |
@@ -2346,9 +2250,9 @@ Create a security rule. Required permissions: Microsoft.Network/networkSecurityG
 | protocol | The protocol on which to apply the rule. Possible values are: Any, TCP, UDP, ICMP. Default is Any. | Optional |
 | source | The source IP address range from which incoming traffic is allowed or denied by this rule. Possible values are "Any", an IP address range, an application security group, or a default tag. Default is Any. | Optional |
 | priority | The priority of the rule, with a value between 100 and 4096. Each rule in the collection must have a unique priority number. Lower numbers indicate higher priority. | Required |
-| source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is`*`. | Optional |
+| source_ports | The source ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is `*`. | Optional |
 | destination | The destination IP address range for outgoing traffic that is allowed or denied by this rule. The destination filter can be "Any", an IP address range, an application security group, or a default tag. Default is Any. | Optional |
-| destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is`*`. | Optional |
+| destination_ports | The destination ports from which traffic is allowed or denied by this rule. Provide a single port, such as 80; a port range, such as 1024-65535; or a comma-separated list of single ports and/or port ranges, such as 80,1024-65535. Use an asterisk (*) to allow traffic on any port. Default is*. | Optional |
 | description | A description to add to the rule. | Optional |
 
 #### Context Output
@@ -2384,7 +2288,7 @@ Updates a network interface. Required Permissions: Microsoft.Network/networkInte
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group to which the network interface belongs. | Required |
 | network_interface_name | The name of the network interface to update. | Required |
 | location | The location of the network security group. Possible values are: australiacentral, australiacentral2, australiaeast, australiasoutheast, brazilsouth, brazilsoutheast, brazilus, canadacentral, canadaeast, centralindia, centralus, centraluseuap, eastasia, eastus, eastus2, eastus2euap, francecentral, francesouth, germanynorth, germanywestcentral, israelcentral, italynorth, japaneast, japanwest, jioindiacentral, jioindiawest, koreacentral, koreasouth, malaysiasouth, mexicocentral, newzealandnorth, northcentralus, northeurope, norwayeast, norwaywest, polandcentral, qatarcentral, southafricanorth, southafricawest, southcentralus, southeastasia, southindia, spaincentral, swedencentral, swedensouth, switzerlandnorth, switzerlandwest, uaecentral, uaenorth, uksouth, ukwest, westcentralus, westeurope, westindia, westus, westus2, westus3, australiaeastfoundational, austriaeast, chilecentral, eastusslv, indonesiacentral, israelnorthwest, malaysiawest, southcentralus2, southeastus, southeastus3, southwestus, usgovarizona, usgovtexas, usgovvirginia. | Optional |
@@ -2446,7 +2350,7 @@ Delete a security rule. Required permissions: Microsoft.Network/networkSecurityG
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | Resource group name. | Required |
 | security_group_name | The name of the security group. | Required |
 | security_rule_name | The name of the rule to delete. | Required |
@@ -2468,7 +2372,7 @@ Get a specific rule. Required permissions: Microsoft.Network/networkSecurityGrou
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | Resource group name. | Required |
 | security_group_name | The name of the security group. | Required |
 | security_rule_name | The name of the rule to get. | Required |
@@ -2507,7 +2411,7 @@ Update a security rule. If one does not exist, it will be created. Required perm
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The name of the resource group. | Required |
 | security_group_name | The name of the security group. | Required |
 | security_rule_name | The name of the rule to be updated. | Required |
@@ -2554,7 +2458,7 @@ Gets all security rules in a network security group. Required permissions: Micro
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | Resource group name. | Required |
 | network_security_group_name | The name of the network security group. | Required |
 
@@ -2574,6 +2478,8 @@ Gets all security rules in a network security group. Required permissions: Micro
 | Azure.VirtualNetworks.SecurityRules.properties.priority | Number | The rule’s priority, ranging from 100 to 4096. |
 | Azure.VirtualNetworks.SecurityRules.properties.direction | String | The rule's direction, which can be "Inbound" or "Outbound". |
 
+#### Base Command
+
 ### azure-vn-network-interface-get
 
 ***
@@ -2587,7 +2493,7 @@ Gets the properties of a given network interface. Required permissions: Microsof
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group to which the network interface belongs. | Required |
 | network_interface_name | The name of the network interface you want to view the details of. | Required |
 
@@ -2600,7 +2506,6 @@ Gets the properties of a given network interface. Required permissions: Microsof
 | Azure.VirtualNetworks.NetworkInterfaces.name | String | The interface name. |
 | Azure.VirtualNetworks.NetworkInterfaces.location | String | The interface location. |
 | Azure.VirtualNetworks.NetworkInterfaces.id | String | The interface ID. |
-| Azure.VirtualNetworks.NetworkInterfaces.location | String | The Azure region where the network interface is deployed. |
 | Azure.VirtualNetworks.NetworkInterfaces.etag | String | A unique read-only string that changes whenever the network interface resource is updated. |
 | Azure.VirtualNetworks.NetworkInterfaces.kind | String | The type of the network interface resource, used for Azure internal classification. |
 | Azure.VirtualNetworks.NetworkInterfaces.properties.tapConfigurations | String | The list of tap configurations attached to the network interface for traffic mirroring. |
@@ -2623,7 +2528,7 @@ Gets the properties of a given public IP address. Permissions required: Microsof
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group to which the IP address belongs. | Required |
 | address_name | The IP address name. | Required |
 
@@ -2659,7 +2564,7 @@ Updates container properties as specified in request body. Properties not mentio
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 | container_name | The container name. | Required |
@@ -2692,7 +2597,7 @@ Create a new Blob under the specified Container. Required permissions: Microsoft
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 | container_name | The name of the Blob Container. | Required |
@@ -2716,7 +2621,7 @@ Retrieve a Blob from a Container. Required permissions: Microsoft.Storage/storag
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 | container_name | The name of the Blob Container. | Required |
@@ -2734,7 +2639,7 @@ Retrieve a Blob from a Container. Required permissions: Microsoft.Storage/storag
 | File.EntryID | String | The entry ID of the file. |
 | File.Info | String | File information. |
 | File.Type | String | The file type. |
-| File.MD5 | Unknown | The MD5 hash of the file. |
+| File.MD5 | String | The MD5 hash of the file. |
 | File.Extension | String | The file extension. |
 
 ### azure-storage-blob-tag-set
@@ -2753,7 +2658,7 @@ Updates the tags for the specified Blob. The command can replace the entire tags
 | container_name | The name of the Blob Container. | Required |
 | blob_name | The name of the blob. | Required |
 | tags | Tags fields in JSON format: {"tag-name-1": "tag-value-1", "tag-name-2": "tag-value-2"}. The tags fields may contain at most 10 tags. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 | append | Whether to append tags to the existing tags or not. Default is false. Possible values are: true, false. | Optional |
@@ -2777,7 +2682,7 @@ Set Blob properties. Required permissions: Microsoft.Storage/storageAccounts/blo
 | --- | --- | --- |
 | container_name | The name of the Blob Container. | Required |
 | blob_name | The name of the blob. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 | content_type | Blob content type. Indicates the media type of the blob. | Optional |
@@ -2807,7 +2712,7 @@ Updates the configuration settings of an existing Azure Web App. Required permis
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_group_name | The resource group name. | Required |
-| subscription_id | Subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | name | Name of the Web App. | Required |
 | http20_enabled | Configures a web site to allow clients to connect over http2.0. Possible values are: true, false. | Optional |
 | remote_debugging_enabled | True if remote debugging is enabled; otherwise, false. Possible values are: true, false. | Optional |
@@ -2860,7 +2765,7 @@ Updates the authentication and authorization settings of an existing Azure Web A
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_group_name | The resource group name. | Required |
-| subscription_id | Subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | name | Name of the Web App. | Required |
 | enabled | True if the Authentication / Authorization feature is enabled for the current app; otherwise, false. Possible values are: true, false. | Optional |
 
@@ -2915,7 +2820,7 @@ Updates a disk. Required permissions: Microsoft.Compute/disks/read, Microsoft.Co
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_group_name | The resource group name. | Required |
-| subscription_id | Subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | disk_name | The name of the managed disk that is being created. Supported characters for the name are a-z, A-Z, 0-9, _ and -. The maximum name length is 80 characters. | Required |
 | public_network_access | Policy for controlling export on the disk. Possible values are: Disabled, Enabled. | Optional |
 | network_access_policy | Policy for accessing the disk via network. Possible values are: AllowAll, AllowPrivate, DenyAll. | Optional |
@@ -2979,7 +2884,7 @@ Updates an Azure Web App. The required permissions are: Microsoft.Web/sites/read
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_group_name | The resource group name. | Required |
-| subscription_id | Subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | name | Name of the Web App. | Required |
 | identity_type | Managed service identity type. Possible values are: None, SystemAssigned. | Optional |
 | https_only | Configures the web site to accept only https requests. Possible values are: true, false. | Optional |
@@ -3028,7 +2933,7 @@ Updates a container registry. Required permissions: Microsoft.ContainerRegistry/
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_group_name | The resource group name. | Required |
-| subscription_id | Subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | registry_name | The name of the container registry. | Required |
 | allow_exports | Whether artifacts can be exported. Possible values are: disabled, enabled. | Optional |
 | public_network_access | Whether public network access is allowed for the container registry. Possible values are: disabled, enabled. | Optional |
@@ -3076,7 +2981,7 @@ Run this command to get the blob service properties of a specific account storag
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | resource_group_name | The resource group name. | Required |
 | account_name | The storage account name. | Required |
 
@@ -3112,7 +3017,7 @@ Sets properties for the blob service in a specific account storage. Required per
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | resource_group_name | The resource group name. | Required |
-| subscription_id | The subscription ID. | Required |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | account_name | The name of the storage account. | Required |
 | delete_retention_policy_enabled | Whether DeleteRetentionPolicy is enabled. Possible values are: true, false. | Optional |
 | delete_retention_policy_days | The number of days the deleted item should be retained. | Optional |
@@ -3134,3 +3039,88 @@ Sets properties for the blob service in a specific account storage. Required per
 | Azure.Storage.BlobServices.properties.restorePolicy | Unknown | The blob service properties for blob restore policy. |
 | Azure.Storage.BlobServices.sku.name | String | The SKU name. |
 | Azure.Storage.BlobServices.sku.tier | String | The SKU tier. |
+
+### azure-auth-test
+
+***
+Tests the connectivity to Azure. Relevant for the Device Code and Authorization Code authentication flows (used instead of the Test button for these interactive flows).
+
+#### Base Command
+
+`azure-auth-test`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-generate-login-url
+
+***
+Generates the login URL used for authorization. Relevant only for the Authorization Code authentication flow.
+
+#### Base Command
+
+`azure-generate-login-url`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-auth-complete
+
+***
+Completes the authorization process for the Device Code flow. Should be used after running the azure-auth-start command.
+
+#### Base Command
+
+`azure-auth-complete`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-auth-reset
+
+***
+Resets the authentication process. Relevant for the Device Code and Authorization Code authentication flows.
+
+#### Base Command
+
+`azure-auth-reset`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+### azure-auth-start
+
+***
+Starts the authorization process for the Device Code / Authorization Code flows. Follow the instructions in the command results.
+
+#### Base Command
+
+`azure-auth-start`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.

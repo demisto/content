@@ -1,0 +1,569 @@
+[
+  {
+    "id": "evt_start_001abc",
+    "timestamp": "2026-01-15T10:28:45Z",
+    "action": {
+      "kind": "copy",
+      "blocked": false,
+      "data_size": 2048576,
+      "content": {
+        "tags": [
+          "pii",
+          "confidential"
+        ],
+        "attributes": {
+          "word_count": 1500,
+          "page_count": 3,
+          "record_count": 250,
+          "sensitivity_score": 95
+        },
+        "upload_filename": "employee_salaries_2026.xlsx",
+        "custom_data": {
+          "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        },
+        "inspected": true
+      },
+      "sensor_kind": "endpoint",
+      "hostname": "WORKSTATION-NYC-042",
+      "machine_serial_number": "C02XK1JFHV2R",
+      "custom_data": {
+        "os_version": "Windows 11 22H2"
+      },
+      "ip_address": "192.168.1.100",
+      "device_type": "managed",
+      "temporary_blocked": false,
+      "fail_close_statuses": [
+        {
+          "temporary_blocked": false,
+          "dlp_api_status": "SUCCESS",
+          "dlp_precondition": "DLP_PRECONDITION_MET",
+          "action_status": "ACTION_STATUS_COMPLETED"
+        }
+      ],
+      "process_id": 4821,
+      "parent_process_id": 1024
+    },
+    "user": {
+      "id": "usr_john_doe_001",
+      "local_username": "john.doe",
+      "local_id": "S-1-5-21-3623811015-3361044348-030300820-1013",
+      "custom_data": {
+        "session_id": "sess_20260115_001"
+      }
+    },
+    "source": {
+      "id": "src_local_001abc",
+      "display_name": "employee_salaries_2026.xlsx",
+      "datastore_id": "dstore_endpoint_01",
+      "dataset_sensitivity": "sensitivity_high",
+      "dataset_ids": [
+        "ds_hr_confidential"
+      ],
+      "object_type": "file",
+      "state": "active",
+      "content": {
+        "tags": [
+          "pii",
+          "confidential"
+        ],
+        "attributes": {
+          "record_count": 250
+        },
+        "upload_filename": "employee_salaries_2026.xlsx",
+        "custom_data": {
+          "classification": "confidential",
+          "last_scan": "2026-01-10T09:00:00Z",
+          "scan_result": "contains_pii",
+          "owner_department": "HR"
+        },
+        "inspected": true
+      },
+      "data": {
+        "labels": [
+          "PII",
+          "Confidential",
+          "HR Data"
+        ],
+        "label_ids": [
+          "lbl_pii",
+          "lbl_confidential"
+        ]
+      },
+      "app": {
+        "name": "Microsoft Excel",
+        "description": "Microsoft Office Spreadsheet Application",
+        "package_name": "com.microsoft.excel",
+        "binary_path": "C:\\Program Files\\Microsoft Office\\root\\Office16\\EXCEL.EXE",
+        "command_line": "\"EXCEL.EXE\" /e",
+        "main_window_title": "employee_salaries_2026.xlsx - Excel",
+        "custom_data": {
+          "version": "16.0.17126.20132",
+          "publisher": "Microsoft Corporation",
+          "signed": "true",
+          "install_date": "2023-06-01"
+        }
+      },
+      "file": {
+        "name": "employee_salaries_2026.xlsx",
+        "extension": "xlsx",
+        "size": 2048576,
+        "md5_hash": "d41d8cd98f00b204e9800998ecf8427e",
+        "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "custom_data": {
+          "creator": "john.doe",
+          "last_modified_by": "jane.smith",
+          "revision": "3"
+        },
+        "created_at": "2026-01-10T09:00:00Z",
+        "modified_at": "2026-01-15T08:30:00Z",
+        "owner": {
+          "name": "john.doe",
+          "id": "usr_john_doe_001"
+        }
+      },
+      "local_file": {
+        "id": "lf_001abc",
+        "path": "C:\\Users\\john.doe\\Documents\\HR\\employee_salaries_2026.xlsx"
+      },
+      "network_share": {
+        "hostname": "FILESERVER-01",
+        "path": "\\\\FILESERVER-01\\HR\\Compensation",
+        "custom_data": {
+          "share_type": "SMB",
+          "mount_point": "Z:"
+        }
+      },
+      "email": {
+        "id": "email_src_001",
+        "from": "john.doe@company.com",
+        "to": [
+          "personal@gmail.com"
+        ],
+        "cc": [
+          "backup@gmail.com"
+        ],
+        "bcc": [
+          "archive@gmail.com"
+        ],
+        "subject": "Salary Data Backup",
+        "custom_data": {
+          "message_id": "<20260115102845.001@company.com>"
+        }
+      },
+      "email_attachment": {
+        "id": "attach_src_001",
+        "custom_data": {
+          "attachment_index": "0",
+          "content_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        }
+      },
+      "web": {
+        "url": "https://drive.google.com/upload",
+        "domain": "drive.google.com",
+        "category": "cloud_storage",
+        "download_url": "https://drive.google.com/file/d/1abc123/view",
+        "title": "Google Drive - Upload",
+        "custom_data": {
+          "referrer": "https://drive.google.com/"
+        },
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+      },
+      "cloud_app": {
+        "provider": "google",
+        "name": "google_drive",
+        "user_name": "john.doe",
+        "user_email": "john.doe@personal.com",
+        "custom_data": {
+          "tenant_id": "tenant_google_001",
+          "app_version": "2026.1"
+        },
+        "instance_id": "gdrive_inst_001",
+        "instance_name": "Personal Google Drive"
+      },
+      "cloud_file": {
+        "id": "cf_src_001",
+        "content_uri": "https://drive.google.com/file/d/1abc123/content",
+        "path": "/My Drive/HR Data/employee_salaries_2026.xlsx",
+        "custom_data": {
+          "mime_type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+          "revision_id": "rev_001"
+        }
+      },
+      "cloud_share_recipient": {
+        "scope": "share_external",
+        "user_ids": [
+          "external_user_001"
+        ],
+        "role": "role_viewer",
+        "custom_data": {
+          "expiry_date": "2026-12-31"
+        }
+      },
+      "printer": {
+        "name": "HP LaserJet Pro M404n",
+        "description": "Office Laser Printer - Floor 3",
+        "physical_location": "3rd Floor Copy Room",
+        "server": "PRINTSERVER-01",
+        "share_name": "HP-LaserJet-3F",
+        "port": "IP_192.168.1.200",
+        "driver": "HP LaserJet Pro M404n PCL 6",
+        "is_local": false,
+        "job_id": "print_job_4521",
+        "custom_data": {
+          "pages_printed": "12"
+        },
+        "connectivity": "network"
+      },
+      "removable_storage": {
+        "id": "usb_src_001",
+        "name": "SanDisk Ultra 64GB",
+        "usb_id": "usb_0781_5581",
+        "vendor_id": "0781",
+        "product_id": "5581",
+        "custom_data": {
+          "serial_number": "4C530001041120115283"
+        }
+      },
+      "im_message": {
+        "sender": "john.doe@company.com",
+        "recipient_users": [
+          "personal.contact@gmail.com"
+        ],
+        "recipient_groups": [
+          "external-group-001"
+        ],
+        "domain": "teams.microsoft.com",
+        "workspace": "Personal Chat",
+        "custom_data": {
+          "message_id": "msg_001abc",
+          "platform": "teams"
+        }
+      },
+      "source_code_repo": {
+        "organization": "company-org",
+        "name": "hr-data-scripts",
+        "custom_data": {
+          "visibility": "private"
+        },
+        "branch": "main",
+        "id": "repo_001"
+      },
+      "labels": [
+        "PII",
+        "Confidential"
+      ],
+      "label_ids": [
+        "lbl_pii",
+        "lbl_confidential"
+      ],
+      "matched_policies": [
+        {
+          "policy_type": "dlp",
+          "id": "pol_dlp_hr_001",
+          "version": 3,
+          "definition_rule_ids": [
+            "rule_pii_detection",
+            "rule_confidential_data"
+          ],
+          "action_rule_id": "action_rule_block",
+          "matched_at": "2026-01-15T10:28:45Z"
+        }
+      ],
+      "issues": [
+        {
+          "id": "issue_001abc",
+          "policy_type": "dlp",
+          "matched_policy_id": "pol_dlp_hr_001",
+          "policy_action_rule_id": "action_rule_block",
+          "severity": "issue_severity_high",
+          "detected_at": "2026-01-15T10:28:45Z"
+        }
+      ],
+      "custom_data": {
+        "data_classification": "confidential"
+      },
+      "outline": "Spreadsheet containing employee salary and compensation data for 250 employees in the Engineering department.",
+      "type": "website",
+      "domain": "company.com",
+      "discovered_at": "2026-01-10T09:00:00Z",
+      "updated_at": "2026-01-15T10:28:45Z",
+      "update_event": {
+        "id": "upd_evt_001",
+        "action_kind": "read",
+        "timestamp": "2026-01-15T10:28:45Z",
+        "user": {
+          "id": "usr_john_doe_001",
+          "local_username": "john.doe",
+          "local_id": "S-1-5-21-3623811015-3361044348-030300820-1013",
+          "custom_data": {
+            "session_id": "sess_20260115_001",
+            "ad_group": "Domain Users"
+          }
+        }
+      },
+      "version_id": "ver_001abc",
+      "cloud_connector": {
+        "id": "cc_snowflake_001",
+        "type": "snowflake",
+        "name": "Company Snowflake Integration",
+        "onboarding_account": "snowflake-admin@company.com",
+        "account_id": "sf_snowflake_001"
+      }
+    },
+    "destination": {
+      "id": "dst_usb_001abc",
+      "display_name": "SanDisk Ultra 64GB (E:)",
+      "datastore_id": "dstore_usb_01",
+      "dataset_ids": [
+        "ds_removable_default"
+      ],
+      "object_type": "removable_storage",
+      "state": "active",
+      "content": {
+        "tags": [
+          "external",
+          "removable"
+        ],
+        "attributes": {
+          "file_count": 1
+        },
+        "upload_filename": "employee_salaries_2026.xlsx",
+        "custom_data": {
+          "destination_path": "E:\\Backup\\HR",
+          "overwrite": "false"
+        },
+        "inspected": true
+      },
+      "data": {
+        "labels": [
+          "External Storage",
+          "Removable Media"
+        ],
+        "label_ids": [
+          "lbl_external_storage",
+          "lbl_removable_media"
+        ]
+      },
+      "app": {
+        "name": "Windows Explorer",
+        "description": "Windows File Explorer",
+        "package_name": "com.microsoft.explorer",
+        "binary_path": "C:\\Windows\\explorer.exe",
+        "command_line": "explorer.exe /select,\"E:\\Backup\\HR\\employee_salaries_2026.xlsx\"",
+        "main_window_title": "E:\\Backup\\HR",
+        "custom_data": {
+          "version": "10.0.22621.1",
+          "elevated": "false"
+        }
+      },
+      "file": {
+        "name": "employee_salaries_2026.xlsx",
+        "extension": "xlsx",
+        "size": 2048576,
+        "md5_hash": "d41d8cd98f00b204e9800998ecf8427e",
+        "sha256_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "custom_data": {
+          "destination_created": "true",
+          "is_copy": "true"
+        },
+        "created_at": "2026-01-15T10:28:50Z",
+        "modified_at": "2026-01-15T10:28:50Z",
+        "owner": {
+          "name": "john.doe",
+          "id": "usr_john_doe_001"
+        }
+      },
+      "local_file": {
+        "id": "lf_dst_001",
+        "path": "E:\\Backup\\HR\\employee_salaries_2026.xlsx"
+      },
+      "network_share": {
+        "hostname": "FILESERVER-01",
+        "path": "\\\\FILESERVER-01\\Backup\\HR",
+        "custom_data": {
+          "share_type": "SMB"
+        }
+      },
+      "email": {
+        "id": "email_dst_001",
+        "from": "john.doe@company.com",
+        "to": [
+          "personal@gmail.com"
+        ],
+        "cc": [
+          "backup@gmail.com"
+        ],
+        "bcc": [
+          "archive@gmail.com"
+        ],
+        "subject": "Salary Data Backup",
+        "custom_data": {
+          "message_id": "<20260115102845.001@company.com>"
+        }
+      },
+      "email_attachment": {
+        "id": "attach_dst_001",
+        "custom_data": {
+          "attachment_index": "0"
+        }
+      },
+      "web": {
+        "url": "https://drive.google.com/upload/resumable",
+        "domain": "drive.google.com",
+        "category": "cloud_storage",
+        "download_url": "https://drive.google.com/file/d/1abc123/view",
+        "title": "Google Drive - Upload Complete",
+        "custom_data": {
+          "upload_session_id": "upload_sess_001"
+        },
+        "user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+      },
+      "cloud_app": {
+        "provider": "google",
+        "name": "google_drive",
+        "user_name": "john.doe",
+        "user_email": "john.doe@personal.com",
+        "custom_data": {
+          "upload_complete": "true"
+        },
+        "instance_id": "gdrive_inst_001",
+        "instance_name": "Personal Google Drive"
+      },
+      "cloud_file": {
+        "id": "cf_dst_001",
+        "content_uri": "https://drive.google.com/file/d/1abc123/content",
+        "path": "/My Drive/HR Backup/employee_salaries_2026.xlsx",
+        "custom_data": {
+          "upload_timestamp": "2026-01-15T10:29:00Z",
+          "file_id": "1abc123xyz",
+          "revision_id": "rev_001"
+        }
+      },
+      "cloud_share_recipient": {
+        "scope": "share_external",
+        "user_ids": [
+          "external_user_001",
+          "external_user_002"
+        ],
+        "role": "role_viewer",
+        "custom_data": {
+          "expiry_date": "2026-12-31",
+          "notify_on_access": "true"
+        }
+      },
+      "printer": {
+        "name": "HP LaserJet Pro M404n",
+        "description": "Office Laser Printer - Floor 3",
+        "physical_location": "3rd Floor Copy Room",
+        "server": "PRINTSERVER-01",
+        "share_name": "HP-LaserJet-3F",
+        "port": "IP_192.168.1.200",
+        "driver": "HP LaserJet Pro M404n PCL 6",
+        "is_local": false,
+        "job_id": "print_job_4521",
+        "custom_data": {
+          "pages_printed": "12"
+        },
+        "connectivity": "network"
+      },
+      "removable_storage": {
+        "id": "usb_dst_001",
+        "name": "SanDisk Ultra 64GB",
+        "usb_id": "usb_0781_5581",
+        "vendor_id": "0781",
+        "product_id": "5581",
+        "custom_data": {
+          "serial_number": "4C530001041120115283",
+          "drive_letter": "E"
+        }
+      },
+      "im_message": {
+        "sender": "john.doe@company.com",
+        "recipient_users": [
+          "personal.contact@gmail.com"
+        ],
+        "recipient_groups": [
+          "external-group-001"
+        ],
+        "domain": "teams.microsoft.com",
+        "workspace": "Personal Chat",
+        "custom_data": {
+          "message_id": "msg_dst_001"
+        }
+      },
+      "source_code_repo": {
+        "organization": "personal-org",
+        "name": "personal-backup-repo",
+        "custom_data": {
+          "visibility": "private"
+        },
+        "branch": "main",
+        "id": "repo_dst_001"
+      },
+      "labels": [
+        "External Storage",
+        "Removable Media"
+      ],
+      "label_ids": [
+        "lbl_external_storage",
+        "lbl_removable_media"
+      ],
+      "matched_policies": [
+        {
+          "policy_type": "dlp",
+          "id": "pol_dlp_removable_001",
+          "version": 2,
+          "definition_rule_ids": [
+            "rule_removable_media_write"
+          ],
+          "action_rule_id": "action_rule_alert",
+          "matched_at": "2026-01-15T10:28:50Z"
+        }
+      ],
+      "issues": [
+        {
+          "id": "issue_dst_001",
+          "policy_type": "dlp",
+          "matched_policy_id": "pol_dlp_removable_001",
+          "policy_action_rule_id": "action_rule_alert",
+          "severity": "issue_severity_high",
+          "detected_at": "2026-01-15T10:28:50Z"
+        }
+      ],
+      "custom_data": {
+        "endpoint_risk": "high",
+        "device_approved": "false",
+        "destination_type": "removable_media",
+        "risk_assessment": "critical",
+        "flagged_by": "dlp_engine"
+      },
+      "outline": "SanDisk USB removable storage device used as unauthorized destination for confidential HR data transfer.",
+      "type": "cloud_apps",
+      "domain": "company.com",
+      "discovered_at": "2026-01-15T10:28:45Z",
+      "updated_at": "2026-01-15T10:28:50Z",
+      "update_event": {
+        "id": "upd_evt_dst_001",
+        "action_kind": "write",
+        "timestamp": "2026-01-15T10:28:50Z",
+        "user": {
+          "id": "usr_john_doe_001",
+          "local_username": "john.doe",
+          "local_id": "S-1-5-21-3623811015-3361044348-030300820-1013",
+          "custom_data": {
+            "session_id": "sess_20260115_001",
+            "ad_group": "Domain Users"
+          }
+        }
+      },
+      "version_id": "ver_dst_001",
+      "cloud_connector": {
+        "id": "cc_salesforce_001",
+        "type": "salesforce",
+        "name": "Company Salesforce Integration",
+        "onboarding_account": "admin@company.com",
+        "account_id": "sf_acct_001"
+      }
+    }
+  }
+]

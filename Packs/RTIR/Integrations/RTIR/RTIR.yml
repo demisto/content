@@ -48,6 +48,13 @@ configuration:
   type: 13
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - defaultvalue: 'new,open'
   display: 'Fetch incidents of the following status:'
   name: fetch_status
@@ -449,7 +456,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.3296088
+  dockerimage: demisto/python3:3.12.13.10116658
 tests:
 - RTIR Test
 fromversion: 5.0.0

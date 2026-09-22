@@ -40,6 +40,13 @@ configuration:
   defaultvalue: Recorded Future ASI Alert
   required: false
   section: Collect
+- display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: '1'
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
 - defaultvalue: 'Informational'
   display: Minimum severity of alerts to fetch
   name: min_severity
@@ -91,7 +98,7 @@ script:
     - name: expand_issues
       description: true/false to make an incident per host & per new issue.
     description: Gets the issues for a project from a particular snapshot (defaults to recent).
-  dockerimage: demisto/python3:3.12.11.4284848
+  dockerimage: demisto/python3:3.12.13.10116658
   isfetch: true
   subtype: python3
 fromversion: 6.5.0
