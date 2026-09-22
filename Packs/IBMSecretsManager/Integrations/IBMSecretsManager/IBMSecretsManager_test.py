@@ -189,28 +189,72 @@ def test_fetch_events_respects_max_events(requests_mock):
     assert len(events) == 3
 
 
-def test_get_access_token_failure(requests_mock):
+def test_get_access_token_failure(requests_mock, mocker):
     """
-    Given: an IAM token endpoint that returns no access_token.
+    Given: an IAM token endpoint that returns no access_token and an empty integration context.
     When: requesting an access token.
     Then: a DemistoException is raised.
     """
     from CommonServerPython import DemistoException
 
+    mocker.patch("IBMSecretsManager.get_integration_context", return_value={})
+    mocker.patch("IBMSecretsManager.set_integration_context")
     requests_mock.post(f"{IAM_URL}/identity/token", json={})
     client = build_client()
     with pytest.raises(DemistoException):
         client.get_access_token()
 
 
-def test_get_access_token_cached(requests_mock):
+def test_get_access_token_mints_and_caches_when_context_empty(requests_mock, mocker):
     """
-    Given: a successful token exchange.
-    When: requesting the token twice.
-    Then: the token is cached and the IAM endpoint is called only once.
+    Given: an empty integration context and a successful token exchange.
+    When: requesting an access token.
+    Then: a new token is minted and stored in the integration context with an expiry.
     """
+    mocker.patch("IBMSecretsManager.get_integration_context", return_value={})
+    set_context = mocker.patch("IBMSecretsManager.set_integration_context")
+    mocker.patch("IBMSecretsManager.time.time", return_value=1000)
     adapter = requests_mock.post(f"{IAM_URL}/identity/token", json={"access_token": "tok", "expires_in": 3600})
+
     client = build_client()
     assert client.get_access_token() == "tok"
-    assert client.get_access_token() == "tok"
+    assert adapter.call_count == 1
+    set_context.assert_called_once_with({"access_token": "tok", "expires_at": 1000 + 3600})
+
+
+def test_get_access_token_reuses_valid_cached_token(requests_mock, mocker):
+    """
+    Given: a cached, still-valid token in the integration context.
+    When: requesting an access token.
+    Then: the cached token is returned and the IAM endpoint is not called.
+    """
+    mocker.patch("IBMSecretsManager.time.time", return_value=1000)
+    mocker.patch(
+        "IBMSecretsManager.get_integration_context",
+        return_value={"access_token": "cached", "expires_at": 5000},
+    )
+    adapter = requests_mock.post(f"{IAM_URL}/identity/token", json={"access_token": "new", "expires_in": 3600})
+
+    client = build_client()
+    assert client.get_access_token() == "cached"
+    assert adapter.call_count == 0
+
+
+def test_get_access_token_remints_when_within_safety_window(requests_mock, mocker):
+    """
+    Given: a cached token whose expiry falls inside the safety window.
+    When: requesting an access token.
+    Then: a fresh token is minted instead of reusing the almost-expired cached token.
+    """
+    # now=1000, expires_at=1030 -> 1000 >= (1030 - 60) so it must re-mint.
+    mocker.patch("IBMSecretsManager.time.time", return_value=1000)
+    mocker.patch(
+        "IBMSecretsManager.get_integration_context",
+        return_value={"access_token": "cached", "expires_at": 1030},
+    )
+    mocker.patch("IBMSecretsManager.set_integration_context")
+    adapter = requests_mock.post(f"{IAM_URL}/identity/token", json={"access_token": "new", "expires_in": 3600})
+
+    client = build_client()
+    assert client.get_access_token() == "new"
     assert adapter.call_count == 1

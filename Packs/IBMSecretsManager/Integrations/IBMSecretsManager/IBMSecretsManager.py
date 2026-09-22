@@ -25,6 +25,11 @@ DEFAULT_QUERY = 'source logs | filter applicationname == "secrets-manager"'
 DEFAULT_FIRST_FETCH = "1 hour"
 # Per the design: bound a single fetch cycle to at most this many calls to /v1/query.
 MAX_CALLS_PER_FETCH = 10
+# Safety window (in seconds) subtracted from the token expiry so a token that is about to
+# expire is refreshed proactively rather than used moments before it becomes invalid.
+TOKEN_EXPIRY_SAFETY_WINDOW = 60
+# Fallback token lifetime (seconds) if the IAM response omits expiry information (~1h).
+DEFAULT_TOKEN_TTL = 3600
 
 """ CLIENT CLASS """
 
@@ -36,20 +41,36 @@ class Client(BaseClient):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy)
         self.api_key = api_key
         self.iam_url = iam_url.rstrip("/")
-        self._access_token: str | None = None
 
     def get_access_token(self) -> str:
-        """Exchange the IAM API key for a short-lived Bearer access token.
+        """Return a valid IAM Bearer access token, using the integration context as a cache.
 
-        Integrations are stateless and the token is short-lived (~1h), so a fresh token is
-        fetched per run. No refresh flow exists (``refresh_token`` is ``not_supported``).
+        A previously obtained token is reused while it is still valid (accounting for a small
+        safety window). Only when there is no cached token, or the cached token is about to
+        expire, is a new token minted from the IAM API key. No refresh flow exists
+        (``refresh_token`` is ``not_supported``), so an expired token is simply re-minted.
 
         Returns:
-            str: A Bearer access token.
+            str: A valid Bearer access token.
         """
-        if self._access_token:
-            return self._access_token
+        context = get_integration_context()
+        cached_token = context.get("access_token")
+        expires_at = context.get("expires_at", 0)
+        now = int(time.time())
 
+        if cached_token and now < (expires_at - TOKEN_EXPIRY_SAFETY_WINDOW):
+            demisto.debug("Reusing cached IAM access token from integration context.")
+            return cached_token
+
+        demisto.debug("Minting a new IAM access token.")
+        return self._request_new_token()
+
+    def _request_new_token(self) -> str:
+        """Exchange the IAM API key for a new access token and cache it in the integration context.
+
+        Returns:
+            str: The newly obtained Bearer access token.
+        """
         response = self._http_request(
             method="POST",
             full_url=f"{self.iam_url}/identity/token",
@@ -65,7 +86,10 @@ class Client(BaseClient):
         access_token = response.get("access_token")
         if not access_token:
             raise DemistoException("Failed to obtain an IAM access token from the provided API key.")
-        self._access_token = access_token
+
+        expires_in = arg_to_number(response.get("expires_in")) or DEFAULT_TOKEN_TTL
+        expires_at = int(time.time()) + expires_in
+        set_integration_context({"access_token": access_token, "expires_at": expires_at})
         return access_token
 
     def query_events(self, query: str, start_date: str, end_date: str, limit: int) -> list[dict]:
