@@ -5,20 +5,20 @@ filter //Saas to Audit Mapping
     xdm.event.type = "saas audit",
     xdm.event.original_event_type = action,
     xdm.event.operation = if(
-        action in ("Add", "REST API - Add", "Add Member", "Add Group Admin", "Assign", "REST API - SSO Create"), XDM_CONST.OPERATION_TYPE_CREATE,
-        action in ("Delete", "REST API - Delete", "Permanently Delete", "REST API - Permanently Delete", "Delete Member", "Delete Group Admin", "Empty Trash"), XDM_CONST.OPERATION_TYPE_DELETE,
-        action in ("Update", "REST API - Update", "Batch Update", "Configure group settings", "Lock", "Unlock", "Trim Recording", "Restore Trimmed Recording", "Cancel Auto Delete", "Disable", "Control"), XDM_CONST.OPERATION_TYPE_UPDATE,
+        action in("Add", "REST API - Add", "Add Member", "Add Group Admin", "Assign", "REST API - SSO Create"), XDM_CONST.OPERATION_TYPE_CREATE,
+        action in("Delete", "REST API - Delete", "Permanently Delete", "REST API - Permanently Delete", "Delete Member", "Delete Group Admin", "Empty Trash"), XDM_CONST.OPERATION_TYPE_DELETE,
+        action in("Update", "REST API - Update", "Batch Update", "Configure group settings", "Lock", "Unlock", "Trim Recording", "Restore Trimmed Recording", "Cancel Auto Delete", "Disable", "Control"), XDM_CONST.OPERATION_TYPE_UPDATE,
         "OTHER"),
     xdm.source.user.upn = operator,
     xdm.source.identity.upn = operator,
     xdm.source.user.identifier = operator,
     xdm.source.identity.identifier = operator,
     xdm.source.user.identity_type = if(
-        operator CONTAINS "room_*@", XDM_CONST.IDENTITY_TYPE_VIRTUAL,
+        operator CONTAINS "room_*@", XDM_CONST.IDENTITY_TYPE_APPLICATION,
         operator CONTAINS "@", XDM_CONST.IDENTITY_TYPE_USER,
         XDM_CONST.IDENTITY_TYPE_APPLICATION),
     xdm.source.identity.identity_type = if(
-        operator CONTAINS "room_*@", XDM_CONST.IDENTITY_TYPE_VIRTUAL,
+        operator CONTAINS "room_*@", XDM_CONST.IDENTITY_TYPE_APPLICATION,
         operator CONTAINS "@", XDM_CONST.IDENTITY_TYPE_USER,
         XDM_CONST.IDENTITY_TYPE_APPLICATION),
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
@@ -30,15 +30,12 @@ filter //Saas to Audit Mapping
     xdm.source.user.full_domain_name = if(operator CONTAINS "@", arrayindex(split(operator, "@"), 1)),
     xdm.source.identity.full_domain_name = if(operator ~= "@", arrayindex(split(operator, "@"), 1)),
     xdm.event.description = operation_detail,
-    xdm.event.outcome_reason = action; //need to check on that
+    xdm.event.outcome_reason = action;
 
 filter //Authentication Mapping
     event_type = "activity_log" and type = "Sign in"
 | alter 
-    get_is_service = if(
-        email ~= "^rooms_", true,
-        client_type ~= "^rooms_", true, //is it necessary to check on this?
-        false)
+    get_is_service = if(email ~= "^rooms_", true, false)
 
 | alter //XDM Mapping
     xdm.event.type = "authentication",
@@ -52,10 +49,10 @@ filter //Authentication Mapping
     xdm.logon.type = if(get_is_service, XDM_CONST.LOGON_TYPE_SERVICE, XDM_CONST.LOGON_TYPE_INTERACTIVE),
     xdm.auth.service = "SP",
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS,
-    xdm.event.outcome_reason = "OTHER", //check if we can leave it null
+    xdm.event.outcome_reason = "OTHER",
     xdm.source.user.upn = email,
     xdm.source.identity.upn = email,
-    xdm.source.user.username = email, //maybe should extract from email just the username, need to check on this
+    xdm.source.user.username = email, //need to extract the username
     xdm.source.identity.username = email,
     xdm.source.user.user_type = if(get_is_service, XDM_CONST.USER_TYPE_SERVICE_ACCOUNT, XDM_CONST.USER_TYPE_REGULAR),
     xdm.source.identity.user_type = if(get_is_service, XDM_CONST.USER_TYPE_SERVICE_ACCOUNT, XDM_CONST.USER_TYPE_REGULAR),
