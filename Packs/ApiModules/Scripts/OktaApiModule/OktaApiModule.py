@@ -45,16 +45,26 @@ def resolve_ucp_auth_type(default=AuthType.API_TOKEN):
     :rtype: ``AuthType``
     """
     if not should_use_ucp_auth():
+        demisto.debug("[UCP-VERIFY][OktaApiModule] should_use_ucp_auth=False -> legacy path; auth_type default={}".format(default))
         return default
     try:
         creds = get_ucp_credentials()
         cred_type = creds.get("type") if isinstance(creds, dict) else None
+        # [UCP-VERIFY] Binding 2: profile `type` -> credential envelope `type`.
+        # external_auth.okta_jwt normalises to "oauth2"; api_key -> "api_key".
+        demisto.debug(
+            "[UCP-VERIFY][OktaApiModule] resolve_ucp_auth_type: envelope type={!r}, "
+            "envelope keys={}".format(cred_type, list(creds.keys()) if isinstance(creds, dict) else None)
+        )
         if cred_type and str(cred_type).startswith("oauth2"):
+            demisto.debug("[UCP-VERIFY][OktaApiModule] -> OAUTH (Bearer, /users test endpoint)")
             return AuthType.OAUTH
         if cred_type == "api_key":
+            demisto.debug("[UCP-VERIFY][OktaApiModule] -> API_TOKEN (SSWS, /users/me test endpoint)")
             return AuthType.API_TOKEN
     except Exception as e:
         demisto.debug("[UCP][OktaApiModule] resolve_ucp_auth_type could not read envelope: {}".format(e))
+    demisto.debug("[UCP-VERIFY][OktaApiModule] resolve_ucp_auth_type fell through -> default={}".format(default))
     return default
 
 
@@ -272,7 +282,7 @@ class OktaClient(BaseClient):
         key = api_key_data.get("key", "")
         if not key:
             demisto.error("[UCP][OktaApiModule] API key is empty in UCP credentials")
-            raise UcpException()
+            raise UcpException
         ctx.headers["Authorization"] = f"SSWS {key}"
 
     def http_request(self, auth_type: AuthType | None = None, resp_type: str = "json", **kwargs):
@@ -289,11 +299,22 @@ class OktaClient(BaseClient):
         # Under UCP the platform brokers the credential and BaseClient injects the auth header,
         # so build the legacy header only when UCP is off (also covers the grouped connector).
         if not should_use_ucp_auth():
+            # [UCP-VERIFY] UCP OFF: legacy header path (grouped connector / non-UCP instances).
             if auth_type == AuthType.OAUTH:
                 auth_headers["Authorization"] = f"Bearer {self.get_token()}"
+                demisto.debug("[UCP-VERIFY][OktaApiModule] http_request UCP-OFF wrote legacy 'Bearer <token>' header")
 
             elif auth_type == AuthType.API_TOKEN:
                 auth_headers["Authorization"] = f"SSWS {self.api_token}"
+                demisto.debug("[UCP-VERIFY][OktaApiModule] http_request UCP-OFF wrote legacy 'SSWS <token>' header")
+        else:
+            # [UCP-VERIFY] UCP ON: NO legacy header here; BaseClient._apply_ucp_* injects it.
+            # If this branch writes nothing and the request still authenticates, the brokered
+            # header is being applied (Bearer for oauth2, SSWS via _apply_ucp_api_key override).
+            demisto.debug(
+                "[UCP-VERIFY][OktaApiModule] http_request UCP-ON: no legacy header written; "
+                "resolved auth_type={} -> credential injected by BaseClient".format(auth_type)
+            )
 
         original_headers = kwargs.get("headers") or self._headers or {}
         kwargs["headers"] = {**auth_headers, **original_headers}

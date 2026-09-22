@@ -1197,7 +1197,12 @@ def create_group_command(client, args):
 
 
 def reset_auth_command(client, args):
-    reset_integration_context()
+    # Under UCP the token is cached per method_unique_id in CSP, not the integration context;
+    # invalidate the UCP cache. Off UCP (grouped/legacy), clear the integration context as before.
+    if should_use_ucp_auth():
+        invalidate_ucp_credentials(get_ucp_method_unique_id())
+    else:
+        reset_integration_context()
     return CommandResults(readable_output="Authentication data cleared successfully.")
 
 
@@ -1255,6 +1260,27 @@ def main():
     try:
         params = demisto.params()
 
+        # [UCP-VERIFY] Binding 3 (field delivered-name -> demisto.params() key) for the
+        # xsoar-okta-v2 handler. Confirms every manifest field arrives under the name the code
+        # reads. Secrets are logged only as present/absent (never values). Under UCP the brokered
+        # credential is NOT in params (url/insecure/proxy come from general_configurations).
+        demisto.debug(
+            "[UCP-VERIFY][Okta_v2] delivered params: "
+            "url={!r} insecure={!r} proxy={!r} use_oauth={!r} "
+            "client_id_present={} private_key_present={} key_id_present={} "
+            "jwt_algorithm={!r} legacy_apitoken_present={} credentials.password_present={}".format(
+                params.get("url"),
+                params.get("insecure"),
+                params.get("proxy"),
+                params.get("use_oauth"),
+                bool(params.get("client_id")),
+                bool(params.get("private_key")),
+                bool(params.get("key_id")),
+                params.get("jwt_algorithm"),
+                bool(params.get("apitoken")),
+                bool(params.get("credentials", {}).get("password")),
+            )
+        )
         demisto.debug(f"Command being called is {demisto.command()}")
         commands = {
             "test-module": module_test,

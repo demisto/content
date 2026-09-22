@@ -52,7 +52,7 @@ class Client(BaseClient):
         key = api_key_data.get("key", "")
         if not key:
             demisto.error("[UCP][Okta_IAM] API key is empty in UCP credentials")
-            raise UcpException()
+            raise UcpException
         ctx.headers["Authorization"] = f"SSWS {key}"
 
     def test_connection(self):
@@ -922,6 +922,34 @@ def main():
     auto_generate_query_filter = params.get("auto_generate_query_filter")
     fetch_query_filter = params.get("fetch_query_filter")
     context = demisto.getIntegrationContext()
+
+    # [UCP-VERIFY] D8 leak test (per-handler param routing) for the xsoar-okta-iam handler.
+    # xsoar-okta-v2 and xsoar-okta-iam BOTH bind the flat automation-and-remediation capability;
+    # routing is via each handler's serializer.yaml. These IAM-only controls MUST be PRESENT here
+    # (D8.2) and ABSENT on the Okta v2 handler (D8.1). Also verifies Binding 3 (field id ->
+    # demisto.params() key) for url/insecure/proxy and the mapper fields, and D7.6 (isFetch off).
+    demisto.debug(
+        "[UCP-VERIFY][Okta_IAM] delivered params: "
+        "url={!r} insecure={!r} proxy={!r} isFetch={!r} "
+        "mapper_in={!r} mapper_out={!r} "
+        "create-user-enabled={!r} update-user-enabled={!r} enable-user-enabled={!r} "
+        "disable-user-enabled={!r} create-if-not-exists={!r} "
+        "legacy_apitoken_present={} credentials.password_present={}".format(
+            params.get("url"),
+            params.get("insecure"),
+            params.get("proxy"),
+            params.get("isFetch"),
+            params.get("mapper-in"),
+            params.get("mapper-out"),
+            params.get("create-user-enabled"),
+            params.get("update-user-enabled"),
+            params.get("enable-user-enabled"),
+            params.get("disable-user-enabled"),
+            params.get("create-if-not-exists"),
+            bool(params.get("apitoken")),
+            bool(params.get("credentials", {}).get("password")),
+        )
+    )
 
     # Under UCP do NOT set the legacy SSWS header or it overwrites the brokered one and 401s;
     # set it only when UCP is off (which includes the coexisting grouped connector).
