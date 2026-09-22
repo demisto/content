@@ -764,6 +764,78 @@ class Client(BaseClient):
             return_empty_response=True,
         )
 
+    def cloudflare_waf_ruleset_entrypoint_version_list_request(
+        self,
+        phase: str,
+        zone_id: str = None,
+        account_id: str = None,
+    ) -> dict[str, Any]:
+        """List all versions of the entry point ruleset for a given phase.
+
+        Args:
+            phase (str): The phase of the ruleset. Mapped into the {ruleset_phase} path segment.
+            zone_id (str, optional): Zone identifier. If provided, lists zone-level entry point ruleset versions.
+                If not provided, lists account-level entry point ruleset versions.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+
+        Returns:
+            dict: API response from Cloudflare (an array of ruleset header objects).
+        """
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/phases/{phase}/entrypoint/versions"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/phases/{phase}/entrypoint/versions"
+
+        return self._http_request(method="GET", url_suffix=url_suffix)
+
+    def cloudflare_waf_ruleset_entrypoint_version_get_request(
+        self,
+        phase: str,
+        version: str,
+        zone_id: str = None,
+        account_id: str = None,
+    ) -> dict[str, Any]:
+        """Get a specific version of the entry point ruleset for a given phase.
+
+        Args:
+            phase (str): The phase of the ruleset. Mapped into the {ruleset_phase} path segment.
+            version (str): The version of the ruleset. Mapped into the {ruleset_version} path segment.
+            zone_id (str, optional): Zone identifier. If provided, gets a zone-level entry point ruleset version.
+                If not provided, gets an account-level entry point ruleset version.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+
+        Returns:
+            dict: API response from Cloudflare (the full entry point ruleset at that version).
+        """
+        if zone_id:
+            url_suffix = f"zones/{zone_id}/rulesets/phases/{phase}/entrypoint/versions/{version}"
+        else:
+            url_suffix = f"accounts/{account_id or self.account_id}/rulesets/phases/{phase}/entrypoint/versions/{version}"
+
+        return self._http_request(method="GET", url_suffix=url_suffix)
+
+    def cloudflare_waf_ruleset_rule_list_by_tag_request(
+        self,
+        ruleset_id: str,
+        version: str,
+        tag: str,
+        account_id: str = None,
+    ) -> dict[str, Any]:
+        """List the rules of a managed ruleset version filtered by tag. Account scope only.
+
+        Args:
+            ruleset_id (str): The ruleset identifier.
+            version (str): The version of the ruleset. Mapped into the {ruleset_version} path segment.
+            tag (str): The tag/category of the rules. Mapped into the {rule_tag} path segment.
+            account_id (str, optional): Account identifier. Overrides the instance-configured account ID.
+
+        Returns:
+            dict: API response from Cloudflare (the managed ruleset; rules present only on a tag match).
+        """
+        url_suffix = f"accounts/{account_id or self.account_id}/rulesets/{ruleset_id}/versions/{version}/by_tag/{tag}"
+
+        return self._http_request(method="GET", url_suffix=url_suffix)
+
 
 def validate_pagination_arguments(page: int = None, page_size: int = None, limit: int = None):
     """Validate pagination arguments according to their default.
@@ -2142,6 +2214,156 @@ def cloudflare_waf_ruleset_version_delete_command(client: Client, args: dict[str
     return CommandResults(readable_output=f"Version {version} of ruleset {ruleset_id} was successfully deleted.")
 
 
+def cloudflare_waf_ruleset_entrypoint_version_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List all versions of the entry point ruleset for a specific phase at the account or zone level.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    phase = args.get("phase")
+    if not phase:
+        raise ValueError("phase is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+    limit = arg_to_number(args.get("limit")) or 50
+
+    response = client.cloudflare_waf_ruleset_entrypoint_version_list_request(
+        phase=phase,
+        zone_id=zone_id,
+        account_id=account_id,
+    )
+
+    output = response.get("result", [])
+    output = output[:limit]
+
+    readable_output = tableToMarkdown(
+        name="Entry point ruleset versions",
+        t=output,
+        headers=["id", "name", "kind", "phase", "description", "source", "version", "last_updated"],
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CloudflareWAF.Ruleset",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
+def cloudflare_waf_ruleset_entrypoint_version_get_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """Get a specific version of the entry point ruleset for a phase, including its rules.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    phase = args.get("phase")
+    if not phase:
+        raise ValueError("phase is required.")
+    version = args.get("version")
+    if not version:
+        raise ValueError("version is required.")
+
+    zone_id, account_id = _resolve_scope_ids(args, client)
+
+    response = client.cloudflare_waf_ruleset_entrypoint_version_get_request(
+        phase=phase,
+        version=version,
+        zone_id=zone_id,
+        account_id=account_id,
+    )
+
+    output = response.get("result", {})
+
+    readable_output = _ruleset_readable_output("Ruleset details", output)
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CloudflareWAF.Ruleset",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
+def cloudflare_waf_ruleset_rule_list_by_tag_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """List the rules of a managed ruleset filtered by tag/category. Account scope only.
+
+    Args:
+        client (Client): Cloudflare API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: outputs, readable outputs and raw response for XSOAR.
+    """
+    ruleset_id = args.get("ruleset_id")
+    if not ruleset_id:
+        raise ValueError("ruleset_id is required.")
+    version = args.get("version")
+    if not version:
+        raise ValueError("version is required.")
+    tag = args.get("tag")
+    if not tag:
+        raise ValueError("tag is required.")
+
+    account_id = args.get("account_id") or client.account_id
+    if not account_id:
+        raise ValueError("account_id is required (via argument or instance configuration).")
+
+    response = client.cloudflare_waf_ruleset_rule_list_by_tag_request(
+        ruleset_id=ruleset_id,
+        version=version,
+        tag=tag,
+        account_id=account_id,
+    )
+
+    output = response.get("result", {})
+
+    ruleset = {
+        "id": output.get("id"),
+        "name": output.get("name"),
+        "description": output.get("description"),
+        "kind": output.get("kind"),
+        "phase": output.get("phase"),
+        "source": output.get("source"),
+        "version": output.get("version"),
+        "last_updated": output.get("last_updated"),
+    }
+
+    readable_output = tableToMarkdown(
+        name="Managed ruleset",
+        t=ruleset,
+        headers=["id", "name", "description", "kind", "phase", "source", "version", "last_updated"],
+        headerTransform=string_to_table_header,
+    )
+
+    rules = output.get("rules")
+    if rules:
+        readable_output += "\n" + tableToMarkdown(
+            name="Matched rules",
+            t=rules,
+            headers=["id", "description", "action", "categories", "enabled"],
+            headerTransform=string_to_table_header,
+        )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CloudflareWAF.Ruleset",
+        outputs_key_field="id",
+        outputs=output,
+        raw_response=response,
+    )
+
+
 def test_module(client: Client):
     try:
         client.cloudflare_waf_zone_list_request()
@@ -2288,6 +2510,9 @@ def main() -> None:
         "cloudflare-waf-ruleset-version-list": cloudflare_waf_ruleset_version_list_command,
         "cloudflare-waf-ruleset-version-get": cloudflare_waf_ruleset_version_get_command,
         "cloudflare-waf-ruleset-version-delete": cloudflare_waf_ruleset_version_delete_command,
+        "cloudflare-waf-ruleset-entrypoint-version-list": cloudflare_waf_ruleset_entrypoint_version_list_command,
+        "cloudflare-waf-ruleset-entrypoint-version-get": cloudflare_waf_ruleset_entrypoint_version_get_command,
+        "cloudflare-waf-ruleset-rule-list-by-tag": cloudflare_waf_ruleset_rule_list_by_tag_command,
     }
     try:
         credentials = get_headers(params)
