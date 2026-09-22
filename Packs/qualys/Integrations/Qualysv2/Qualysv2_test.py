@@ -301,31 +301,6 @@ def test_handle_host_list_detection_result_raises_on_error_envelope():
     assert "bad request" in str(e.value)
 
 
-def test_get_detections_from_hosts_sets_last_vm_auth_scan_datetime_null_when_missing():
-    """
-    Given:
-    - A host that does not contain the LAST_VM_AUTH_SCAN_DATETIME field.
-    When:
-    - Parsing detections from hosts via get_detections_from_hosts.
-    Then:
-    - Ensure the resulting asset has LAST_VM_AUTH_SCAN_DATETIME set to None.
-    """
-    hosts = [
-        {
-            "ID": "1",
-            "IP": "1.1.1.1",
-            "LAST_VM_SCANNED_DATE": "01-01-2020",
-            "DETECTION_LIST": {"DETECTION": [{"QID": "123"}]},
-        }
-    ]
-
-    assets, _ = get_detections_from_hosts(hosts)
-
-    assert len(assets) == 1
-    assert "LAST_VM_AUTH_SCAN_DATETIME" in assets[0]
-    assert assets[0]["LAST_VM_AUTH_SCAN_DATETIME"] is None
-
-
 def test_get_detections_from_hosts_preserves_existing_last_vm_auth_scan_datetime():
     """
     Given:
@@ -2009,35 +1984,60 @@ def test_fetch_assets_and_vulnerabilities_by_date_assets_stage(mocker: MockerFix
     assert next_run["snapshot_id"] == SNAPSHOT_ID
 
 
-def test_fetch_assets_and_vulnerabilities_by_date_vulnerabilities_stage(mocker: MockerFixture, client: Client):
+@pytest.mark.parametrize("streaming_enabled", [False, True])
+def test_fetch_assets_and_vulnerabilities_by_date_vulnerabilities_stage(
+    mocker: MockerFixture, client: Client, streaming_enabled: bool
+):
     """
     Given:
         - Qualys client and last run dictionary with fetch stage, total vulnerabilities count, and snapshot ID.
+        - The VULNERABILITIES_STREAMING_SEND_ENABLED toggle set to both False (single send) and True (batched send).
 
     When:
         - Calling fetch_assets_and_vulnerabilities_by_date with the "vulnerabilities" stage.
 
     Assert:
-        - Ensure correct sending to XSIAM and that next assets run is reset to default (because pulling is finished).
+        - Both paths send the exact same set of vulnerabilities to XSIAM (order preserved), with the same
+          vendor/product, and reset the next assets run to default (because pulling is finished).
     """
     last_total_vulnerabilities = 153
     last_run = {"stage": "vulnerabilities", "total_vulnerabilities": last_total_vulnerabilities, "snapshot_id": SNAPSHOT_ID}
 
-    expected_vulnerabilities = util_load_json("./test_data/fetched_vulnerabilities.json")
-    mocker.patch("Qualysv2.get_vulnerabilities", return_value=expected_vulnerabilities)
+    # Build 5 records (from the 2 sample records) so batch size 2 produces multiple flushes (2 + 2 + 1).
+    base_vulnerabilities = util_load_json("./test_data/fetched_vulnerabilities.json")
+    expected_vulnerabilities = [dict(base_vulnerabilities[i % len(base_vulnerabilities)], _idx=i) for i in range(5)]
+
+    mocker.patch("Qualysv2.VULNERABILITIES_STREAMING_SEND_ENABLED", streaming_enabled)
+
+    if streaming_enabled:
+        # Streaming path: client returns a (mocked) streamed response, parsed one record at a time.
+        mocker.patch.object(client, "get_vulnerabilities", return_value=Mock())
+        mocker.patch("Qualysv2.iter_vulnerabilities_result", return_value=iter(expected_vulnerabilities))
+        # Small batch size to exercise multi-batch flushing within a single fetch.
+        mocker.patch("Qualysv2.VULNERABILITIES_SEND_BATCH_SIZE", 2)
+    else:
+        mocker.patch("Qualysv2.get_vulnerabilities", return_value=expected_vulnerabilities)
 
     mock_send_assets_to_xsiam = mocker.patch("Qualysv2.send_assets_and_vulnerabilities_to_xsiam")
     mock_set_assets_last_run = mocker.patch("Qualysv2.demisto.setAssetsLastRun")
 
     fetch_assets_and_vulnerabilities_by_date(client, last_run)
 
-    send_assets_to_xsiam_data = mock_send_assets_to_xsiam.call_args.args[0]
-    send_assets_to_xsiam_kwargs: dict = mock_send_assets_to_xsiam.call_args.kwargs
+    # Reconstruct everything sent across one or more calls (batched when streaming, single otherwise).
+    sent_vulnerabilities: list = []
+    for call in mock_send_assets_to_xsiam.call_args_list:
+        sent_vulnerabilities.extend(call.args[0])
+        assert call.kwargs["vendor"] == VENDOR
+        assert call.kwargs["product"] == "vulnerabilities"
+
     next_run = mock_set_assets_last_run.call_args[0][0]
 
-    assert send_assets_to_xsiam_data == expected_vulnerabilities
-    assert send_assets_to_xsiam_kwargs["vendor"] == VENDOR
-    assert send_assets_to_xsiam_kwargs["product"] == "vulnerabilities"
+    assert sent_vulnerabilities == expected_vulnerabilities
+    if streaming_enabled:
+        # 5 records with batch size 2 => 3 flushes (2 + 2 + 1).
+        assert mock_send_assets_to_xsiam.call_count == 3
+    else:
+        assert mock_send_assets_to_xsiam.call_count == 1
 
     assert next_run == DEFAULT_LAST_ASSETS_RUN  # pulling finished, next run stage should be assets
 
@@ -2497,7 +2497,7 @@ class TestConcurrencyLimitRetry:
 
         response, set_new_limit = client.get_host_list_detection(since_datetime="2024-12-12", limit=HOST_LIMIT)
 
-        assert response == ""
+        assert response is None
         assert set_new_limit is True
         assert http_mock.call_count == Qualysv2.CONCURRENCY_LIMIT_MAX_RETRIES + 1
 

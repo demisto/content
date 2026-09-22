@@ -1,7 +1,7 @@
 import copy
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from typing import Any
 import csv
 import io
@@ -35,6 +35,10 @@ ASSET_SIZE_LIMIT = 10**6  # 1MB
 TEST_FROM_DATE = "one day"
 FETCH_ASSETS_COMMAND_TIME_OUT = 180
 QIDS_BATCH_SIZE = 500
+VULNERABILITIES_SEND_BATCH_SIZE = 5000
+# Stream the by-date vulnerabilities send in bounded batches. By-date only: it's a standalone non-snapshot send
+# of one huge response. Excludes by-QIDs (already batched per fetch, and sealed into one snapshot with assets).
+VULNERABILITIES_STREAMING_SEND_ENABLED = True
 # Retry configuration for Qualys rate-limit (HTTP 409, Error Code 1965) responses.
 RATE_LIMIT_STATUS_CODE = 409
 RATE_LIMIT_TO_WAIT_HEADER = "X-RateLimit-ToWait-Sec"
@@ -3008,6 +3012,8 @@ def handle_host_list_detection_result(raw_response: Optional[requests.Response])
     simple_response: dict = {}
     response_next_url: str = ""
 
+    raw_response.raw.decode_content = True
+
     # Single low-memory pass over the streamed body. Data must be extracted from each element *during* iteration,
     # because `stream_xml_elements` clears each element once the generator advances past it.
     for local_tag, element in stream_xml_elements(raw_response.raw, tags=["HOST", "WARNING", "SIMPLE_RETURN"]):
@@ -3051,22 +3057,35 @@ def handle_vulnerabilities_result(raw_response: Optional[requests.Response]) -> 
     """
     demisto.debug("Going to stream-parse the vulnerabilities response into the vulnerabilities list")
 
-    if raw_response is None:
-        demisto.debug("Received an empty (None) vulnerabilities response. Returning no vulnerabilities.")
-        return []
-
-    vulnerabilities: list = []
-
-    # Single low-memory pass over the streamed body. Data must be extracted from each element *during* iteration,
-    # because `stream_xml_elements` clears each element once the generator advances past it.
-    for _local_tag, element in stream_xml_elements(raw_response.raw, tags=["VULN"]):
-        # Convert this single VULN subtree to the same JSON structure produced previously by `xml2json`.
-        vuln_dict = json.loads(xml2json(ElementTree.tostring(element)))
-        vulnerabilities.append(vuln_dict.get("VULN", vuln_dict))
+    vulnerabilities = list(iter_vulnerabilities_result(raw_response))
 
     demisto.debug(f"Extracted a list of {len(vulnerabilities)} vulnerabilities")
 
     return vulnerabilities
+
+
+def iter_vulnerabilities_result(raw_response: Optional[requests.Response]) -> Iterator[dict]:
+    """
+    Yields vulnerability dicts one at a time from the streamed response, without accumulating the full list.
+
+    This is the generator form of ``handle_vulnerabilities_result``: it enables the caller to consume and send
+    vulnerabilities in bounded batches, keeping peak memory proportional to the batch size rather than the total
+    number of vulnerabilities. Parsing semantics are identical to ``handle_vulnerabilities_result``.
+
+    Args:
+        raw_response (Optional[requests.Response]): the streamed response received from the Qualys API command.
+    Yields:
+        One vulnerability dict per ``VULN`` element.
+    """
+    if raw_response is None:
+        demisto.debug("Received an empty (None) vulnerabilities response. Yielding no vulnerabilities.")
+        return
+
+    raw_response.raw.decode_content = True
+
+    for _local_tag, element in stream_xml_elements(raw_response.raw, tags=["VULN"]):
+        vuln_dict = json.loads(xml2json(ElementTree.tostring(element)))
+        yield vuln_dict.get("VULN", vuln_dict)
 
 
 def remove_last_events(events, time_to_remove, time_field):
@@ -3460,6 +3479,51 @@ def fetch_vulnerabilities(client: Client, last_run: dict[str, Any], detection_qi
     return vulnerabilities, new_last_run
 
 
+def fetch_and_send_vulnerabilities_streamed(client: Client, last_run: dict[str, Any]) -> dict[str, Any]:
+    """Fetches vulnerabilities (by last modified date) and sends them to XSIAM in bounded batches.
+
+    Consumes the streamed response one record at a time and flushes every ``VULNERABILITIES_SEND_BATCH_SIZE``
+    records, so peak memory is proportional to the batch size instead of the total number of vulnerabilities.
+    The vulnerabilities dataset is a non-snapshot assets-type send (no snapshot_id / items_count), so batched
+    appends are safe and produce the same dataset as a single send.
+
+    Args:
+        client (Client): Qualys client.
+        last_run (dict): The last run.
+    Returns:
+        dict: The new last run to save.
+    """
+    since_datetime = (
+        last_run.get("since_datetime") or arg_to_datetime(ASSETS_FETCH_FROM, required=True).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
+    )
+    demisto.debug(f"Getting vulnerabilities modified after {since_datetime} (streamed batches)")
+
+    raw_response = client.get_vulnerabilities(since_datetime=since_datetime)
+
+    batch: list = []
+    total_sent = 0
+
+    def flush(records: list) -> None:
+        if not records:
+            return
+        send_assets_and_vulnerabilities_to_xsiam(records, vendor=VENDOR, product="vulnerabilities")
+
+    for vuln in iter_vulnerabilities_result(raw_response):
+        batch.append(vuln)
+        if len(batch) >= VULNERABILITIES_SEND_BATCH_SIZE:
+            flush(batch)
+            total_sent += len(batch)
+            batch = []
+            log_memory_usage(f"fetch by date - after sending vulnerabilities batch (total sent: {total_sent})")
+
+    flush(batch)
+    total_sent += len(batch)
+    batch = []
+
+    demisto.debug(f"Finished streaming vulnerabilities to XSIAM. Total sent: {total_sent}.")
+    return DEFAULT_LAST_ASSETS_RUN
+
+
 def get_qid_for_cve(client: Client, cve: str, cloud_agent_scan_type: str | None = None) -> CommandResults:
     """
     This function retrieves the Qualys QID (Qualys ID) associated with a specified CVE.
@@ -3719,11 +3783,15 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
         demisto.setAssetsLastRun(new_last_run)
 
     elif fetch_stage == "vulnerabilities":
-        vulnerabilities, new_last_run = fetch_vulnerabilities(client, last_run)
-        log_memory_usage("fetch by date - after pulling vulnerabilities")
-        demisto.debug(f"Sending {len(vulnerabilities)} vulnerabilities to XSIAM.")
-        send_assets_and_vulnerabilities_to_xsiam(vulnerabilities, vendor=VENDOR, product="vulnerabilities")
-        log_memory_usage("fetch by date - after sending vulnerabilities to XSIAM")
+        if VULNERABILITIES_STREAMING_SEND_ENABLED:
+            new_last_run = fetch_and_send_vulnerabilities_streamed(client, last_run)
+            log_memory_usage("fetch by date - after sending vulnerabilities to XSIAM")
+        else:
+            vulnerabilities, new_last_run = fetch_vulnerabilities(client, last_run)
+            log_memory_usage("fetch by date - after pulling vulnerabilities")
+            demisto.debug(f"Sending {len(vulnerabilities)} vulnerabilities to XSIAM.")
+            send_assets_and_vulnerabilities_to_xsiam(vulnerabilities, vendor=VENDOR, product="vulnerabilities")
+            log_memory_usage("fetch by date - after sending vulnerabilities to XSIAM")
         demisto.setAssetsLastRun(new_last_run)
 
     log_memory_usage("fetch by date - end of fetch cycle")
