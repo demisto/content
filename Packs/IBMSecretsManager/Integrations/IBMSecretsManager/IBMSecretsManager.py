@@ -100,7 +100,7 @@ class Client(BaseClient):
         )
         results = parse_sse_results(raw_response)
         demisto.debug(f"[query_events] Parsed {len(results)} results from the SSE stream.")
-        _debug_verify_order(results)  # TEMPORARY: verify API result order; remove after testing.
+        _debug_verify_order(results)  # TODO: TEMPORARY - remove _debug_verify_order after confirming API order in testing.
         return results
 
 
@@ -134,7 +134,7 @@ def parse_sse_results(raw_response: str) -> list[dict]:
         if line.startswith(":"):  # keep-alive comment
             continue
         if line.startswith("data:"):
-            data_lines.append(line[len("data:") :].lstrip())
+            data_lines.append(line[len("data:"):].lstrip())
     flush()  # trailing frame not followed by a blank line
     demisto.debug(f"[parse_sse_results] Extracted {len(events)} events.")
     return events
@@ -152,6 +152,7 @@ def get_event_id(event: dict) -> str:
 
 
 def _debug_verify_order(events: list[dict]) -> None:
+    # TODO: TEMPORARY - remove this function (and its call in query_events) after confirming API order in testing.
     """TEMPORARY: log whether the batch is timestamp-ordered and in which direction. Remove after testing."""
     timestamps = [get_event_timestamp(event) for event in events]
     if len(timestamps) < 2:
