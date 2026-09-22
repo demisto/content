@@ -12514,7 +12514,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: region
       description: The region of the Google Cloud functions. Default is all regions. To get a full list of regions, run the gcp-cloudrun-locations-list command.
       required: false
@@ -12579,7 +12579,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: limit
       defaultValue: '50'
       description: The maximum number of results to return. Acceptable values are 1 to 500, inclusive.
@@ -12610,7 +12610,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: region
       description: The region of the Google Cloud function. To get a full list of regions, run the gcp-cloudrun-locations-list command.
       required: true
@@ -12666,7 +12666,7 @@ script:
     - name: project_id
       required: false
       required:platform: true
-      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
+      description: The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version >=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version < 3.0, where it can be retrieved from the integration configuration.
     - name: region
       description: The region of the Google Cloud function. To get a full list of regions, run the gcp-cloudrun-locations-list command.
       required: true

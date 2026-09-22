@@ -6058,7 +6058,7 @@ Lists Google Cloud Functions in the specified project and region. Required Permi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | region | The region of the Google Cloud functions. Default is all regions. To get a full list of regions, run the gcp-cloudrun-locations-list command. | Optional |
 | limit | The maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
 | next_token | The pagination token used to return the next set of items. | Optional |
@@ -6098,7 +6098,7 @@ Lists all available Google Cloud Functions regions in the project. Required perm
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | limit | The maximum number of results to return. Acceptable values are 1 to 500, inclusive. Default is 50. | Optional |
 | next_token | The pagination token used to return the next set of items. | Optional |
 
@@ -6126,7 +6126,7 @@ Gets the details of a specific Google Cloud function. Required permission: cloud
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | region | The region of the Google Cloud function. To get a full list of regions, run the gcp-cloudrun-locations-list command. | Required |
 | function_name | The name of the function. | Required |
 
@@ -6162,7 +6162,7 @@ Synchronously invokes a deployed Google Cloud (1st Gen) function and returns its
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| project_id | The GCP project ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0, Cortex Cloud, and Cortex Agentix). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
 | region | The region of the Google Cloud function. To get a full list of regions, run the gcp-cloudrun-locations-list command. | Required |
 | function_name | The name of the function to invoke. | Required |
 | data | The input data passed to the function, such as a JSON-encoded string. | Optional |
