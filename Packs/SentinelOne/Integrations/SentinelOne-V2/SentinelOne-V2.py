@@ -6292,27 +6292,25 @@ def get_alert_with_raw_indicators_command(client: Client, args: dict) -> Command
     if indicators:
         readable += tableToMarkdown(
             "Indicators",
-            [
-                {"ID": ind.get("id"), "Type": ind.get("type"), "Severity": ind.get("severity"), "Primary": ind.get("primary")}
-                for ind in indicators
-            ],
+            indicators,
             headers=["ID", "Type", "Severity", "Primary"],
             removeNull=True,
         )
-    related_events = alert.get("rawData", {}).get("related_events", []) if alert.get("rawData") else []
+    raw_data = alert.get("rawData") or {}
+    related_events = (raw_data.get("finding_info") or {}).get("related_events") or []
     if related_events:
         readable += tableToMarkdown(
             "Related Events",
             [
                 {
-                    "Type": e.get("type_name"),
+                    "Type": e.get("type"),
                     "Time": e.get("time"),
                     "Severity": e.get("severity"),
-                    "Process Name": ((e.get("actor") or {}).get("process") or {}).get("name"),
+                    "UID": e.get("uid"),
                 }
                 for e in related_events
             ],
-            headers=["Type", "Time", "Severity", "Process Name"],
+            headers=["Type", "Time", "Severity", "UID"],
             removeNull=True,
         )
     if raw_indicators:
