@@ -2117,6 +2117,7 @@ def cloudflare_waf_ruleset_version_list_command(client: Client, args: dict[str, 
         raise ValueError("ruleset_id is required.")
 
     zone_id, account_id = _resolve_scope_ids(args, client)
+    all_results = arg_to_boolean(args.get("all_results"))  # type: ignore[arg-type]
     limit = arg_to_number(args.get("limit")) or 50
 
     response = client.cloudflare_waf_ruleset_version_list_request(
@@ -2126,7 +2127,8 @@ def cloudflare_waf_ruleset_version_list_command(client: Client, args: dict[str, 
     )
 
     output = response.get("result", [])
-    output = output[:limit]
+    if not all_results:
+        output = output[:limit]
 
     readable_output = tableToMarkdown(
         name="Ruleset versions",
@@ -2229,6 +2231,7 @@ def cloudflare_waf_ruleset_entrypoint_version_list_command(client: Client, args:
         raise ValueError("phase is required.")
 
     zone_id, account_id = _resolve_scope_ids(args, client)
+    all_results = arg_to_boolean(args.get("all_results"))  # type: ignore[arg-type]
     limit = arg_to_number(args.get("limit")) or 50
 
     response = client.cloudflare_waf_ruleset_entrypoint_version_list_request(
@@ -2238,7 +2241,8 @@ def cloudflare_waf_ruleset_entrypoint_version_list_command(client: Client, args:
     )
 
     output = response.get("result", [])
-    output = output[:limit]
+    if not all_results:
+        output = output[:limit]
 
     readable_output = tableToMarkdown(
         name="Entry point ruleset versions",

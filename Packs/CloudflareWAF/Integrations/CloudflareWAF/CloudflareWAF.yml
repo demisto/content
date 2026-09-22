@@ -1204,6 +1204,12 @@ script:
     - defaultValue: '50'
       description: The maximum number of records to return. Default is 50.
       name: limit
+    - auto: PREDEFINED
+      description: If true, retrieves all results, overriding the limit argument.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
     description: The command lists all versions of a ruleset at the account or zone level.
     name: cloudflare-waf-ruleset-version-list
     outputs:
@@ -1342,6 +1348,12 @@ script:
     - defaultValue: '50'
       description: The maximum number of records to return. Default is 50.
       name: limit
+    - auto: PREDEFINED
+      description: If true, retrieves all results, overriding the limit argument.
+      name: all_results
+      predefined:
+      - 'true'
+      - 'false'
     description: The command lists all versions of the entry point ruleset for a specific phase at the account or zone level.
     name: cloudflare-waf-ruleset-entrypoint-version-list
     outputs:

@@ -1359,6 +1359,30 @@ class TestRulesetVersionCommands:
         assert result.outputs[0]["version"] == "1"
         assert result.outputs[1]["version"] == "2"
 
+    def test_ruleset_version_list_all_results_overrides_limit(self, requests_mock, mock_client):
+        """
+        Scenario: List ruleset versions with all_results=true and a small limit.
+        Given:
+         - A mock response with three versions.
+         - limit set to 2 but all_results set to 'true' in args.
+        When:
+         - cloudflare_waf_ruleset_version_list_command is called.
+        Then:
+         - All three versions are returned (limit is overridden).
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_version_list_command
+
+        ruleset_id = "ruleset_id_1"
+        mock_response = load_mock_response("list_ruleset_versions.json")
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/{ruleset_id}/versions"
+        requests_mock.get(url, json=mock_response)
+
+        args = {"ruleset_id": ruleset_id, "limit": "2", "all_results": "true"}
+
+        result = cloudflare_waf_ruleset_version_list_command(mock_client, args)
+
+        assert len(result.outputs) == 3
+
     def test_ruleset_version_list_account_scope_override(self, requests_mock):
         """
         Scenario: List ruleset versions using an account_id argument override.
@@ -1591,6 +1615,30 @@ class TestRulesetEntrypointVersionAndTagCommands:
         assert len(result.outputs) == 2
         assert result.outputs[0]["version"] == "1"
         assert result.outputs[1]["version"] == "2"
+
+    def test_entrypoint_version_list_all_results_overrides_limit(self, requests_mock, mock_client):
+        """
+        Scenario: List entry point ruleset versions with all_results=true and a small limit.
+        Given:
+         - A mock response with three versions.
+         - limit set to 2 but all_results set to 'true' in args.
+        When:
+         - cloudflare_waf_ruleset_entrypoint_version_list_command is called.
+        Then:
+         - All three versions are returned (limit is overridden).
+        """
+        from CloudflareWAF import cloudflare_waf_ruleset_entrypoint_version_list_command
+
+        phase = "http_request_firewall_managed"
+        mock_response = load_mock_response("list_entrypoint_versions.json")
+        url = f"{BASE_URL}zones/{ZONE_ID}/rulesets/phases/{phase}/entrypoint/versions"
+        requests_mock.get(url, json=mock_response)
+
+        args = {"phase": phase, "limit": "2", "all_results": "true"}
+
+        result = cloudflare_waf_ruleset_entrypoint_version_list_command(mock_client, args)
+
+        assert len(result.outputs) == 3
 
     def test_entrypoint_version_list_account_scope_override(self, requests_mock):
         """
