@@ -3125,6 +3125,44 @@ There are no input arguments for this command.
 
 There is no context output for this command.
 
+### azure-firewall-rule-list
+
+***
+Lists the rules of an Azure firewall rule collection or of a firewall policy rule collection group. You must provide exactly one of the arguments firewall_name or policy_name. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/read.
+
+#### Base Command
+
+`azure-firewall-rule-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
+| firewall_name | The name of the Azure firewall that contains the rules. You must provide exactly one of firewall_name or policy_name. | Optional |
+| policy_name | The name of the Azure firewall policy that contains the rules. You must provide exactly one of firewall_name or policy_name. | Optional |
+| rule_type | The rule type to retrieve. Required when the firewall_name argument is provided. Possible values are: application_rule, network_rule, nat_rule. | Optional |
+| collection_name | The name of the rule collection that contains the rules. | Required |
+| limit | The maximum number of records to return. Default is 50. | Optional |
+| all_results | Whether to retrieve all results by overriding the default limit. Possible values are: false, true. Default is false. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Firewall.Rules.name | String | The name of the rule. |
+| Azure.Firewall.Rules.description | String | The description of the rule. |
+| Azure.Firewall.Rules.ruleType | String | The type of the rule. |
+| Azure.Firewall.Rules.protocols | Unknown | The protocols of the rule. |
+| Azure.Firewall.Rules.sourceAddresses | Unknown | The source addresses of the rule. |
+| Azure.Firewall.Rules.destinationAddresses | Unknown | The destination addresses of the rule. |
+| Azure.Firewall.Rules.destinationPorts | Unknown | The destination ports of the rule. |
+| Azure.Firewall.Rules.sourceIpGroups | Unknown | The source IP groups of the rule. |
+| Azure.Firewall.Rules.destinationIpGroups | Unknown | The destination IP groups of the rule. |
+| Azure.Firewall.Rules.destinationFqdns | Unknown | The destination FQDNs of the rule. |
+| Azure.Firewall.Rules.targetFqdns | Unknown | The target FQDNs of the rule. |
+
 ### azure-firewall-instance-list
 
 ***
@@ -3164,6 +3202,41 @@ Lists the Azure firewalls in the specified resource group or subscription. Use t
 | Azure.Firewall.Instances.properties.natRuleCollections | Unknown | The NAT rule collections of the firewall, containing name, id, etag, and properties fields. |
 | Azure.Firewall.InstancesNextToken | String | The URI to fetch the next page of firewalls. Run the same command with the next_token argument to get the next page of firewalls. |
 
+### azure-firewall-rule-collection-list
+
+***
+Lists the rule collections of an Azure firewall or of a firewall policy. You must provide exactly one of the arguments firewall_name or policy_name. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/read.
+
+#### Base Command
+
+`azure-firewall-rule-collection-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
+| resource_group_name | The name of the resource group. | Required |
+| firewall_name | The name of the Azure firewall that contains the rule collections. You must provide exactly one of firewall_name or policy_name. | Optional |
+| policy_name | The name of the Azure firewall policy that contains the rule collections. You must provide exactly one of firewall_name or policy_name. | Optional |
+| rule_type | The rule collection type to retrieve. Possible values are: application_rule, network_rule, nat_rule. | Required |
+| next_token | The token for the next set of items to return, used for pagination. The token is the value of Azure.Firewall.RuleCollectionsNextToken from the previous response. Relevant only when the policy_name argument is provided. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Azure.Firewall.RuleCollections.id | String | The ID of the rule collection resource. |
+| Azure.Firewall.RuleCollections.name | String | The name of the rule collection resource. |
+| Azure.Firewall.RuleCollections.type | String | The type of the rule collection resource. |
+| Azure.Firewall.RuleCollections.etag | String | The ETag of the rule collection, used to prevent overwriting concurrent updates. |
+| Azure.Firewall.RuleCollections.properties.priority | Number | The priority of the rule collection. |
+| Azure.Firewall.RuleCollections.properties.provisioningState | String | The provisioning state of the rule collection resource. |
+| Azure.Firewall.RuleCollections.properties.action | Unknown | The action of the firewall rule collection, containing the type field. |
+| Azure.Firewall.RuleCollections.properties.rules | Unknown | The rules of the firewall rule collection, containing name, protocols, sourceAddresses, destinationAddresses, and destinationPorts fields. |
+| Azure.Firewall.RuleCollections.properties.ruleCollections | Unknown | The rule collections of the policy rule collection group, containing ruleCollectionType, name, priority, action, and rules fields. |
+| Azure.Firewall.RuleCollectionsNextToken | String | The URI to fetch the next page of rule collections. Run the same command with the next_token argument to get the next page of rule collections. |
+
 ### azure-firewall-instance-get
 
 ***
@@ -3200,77 +3273,6 @@ Gets the properties of a given Azure firewall. Required permission: Microsoft.Ne
 | Azure.Firewall.Instances.properties.networkRuleCollections | Unknown | The network rule collections of the firewall, containing name, id, etag, and properties fields. |
 | Azure.Firewall.Instances.properties.applicationRuleCollections | Unknown | The application rule collections of the firewall, containing name, id, etag, and properties fields. |
 | Azure.Firewall.Instances.properties.natRuleCollections | Unknown | The NAT rule collections of the firewall, containing name, id, etag, and properties fields. |
-
-### azure-firewall-rule-collection-list
-
-***
-Lists the rule collections of an Azure firewall or of a firewall policy. You must provide exactly one of the arguments firewall_name or policy_name. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/read.
-
-#### Base Command
-
-`azure-firewall-rule-collection-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group. | Required |
-| firewall_name | The name of the Azure firewall that contains the rule collections. You must provide exactly one of firewall_name or policy_name. | Optional |
-| policy_name | The name of the Azure firewall policy that contains the rule collections. You must provide exactly one of firewall_name or policy_name. | Optional |
-| rule_type | The rule collection type to retrieve. Possible values are: application_rule, network_rule, nat_rule. | Required |
-| next_token | The token for the next set of items to return, used for pagination. The token is the value of Azure.Firewall.RuleCollectionsNextToken from the previous response. Relevant only when the policy_name argument is provided. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Azure.Firewall.RuleCollections.id | String | The ID of the rule collection resource. |
-| Azure.Firewall.RuleCollections.name | String | The name of the rule collection resource. |
-| Azure.Firewall.RuleCollections.type | String | The type of the rule collection resource. |
-| Azure.Firewall.RuleCollections.etag | String | The ETag of the rule collection, used to prevent overwriting concurrent updates. |
-| Azure.Firewall.RuleCollections.properties.priority | Number | The priority of the rule collection. |
-| Azure.Firewall.RuleCollections.properties.provisioningState | String | The provisioning state of the rule collection resource. |
-| Azure.Firewall.RuleCollections.properties.action | Unknown | The action of the firewall rule collection, containing the type field. |
-| Azure.Firewall.RuleCollections.properties.rules | Unknown | The rules of the firewall rule collection, containing name, protocols, sourceAddresses, destinationAddresses, and destinationPorts fields. |
-| Azure.Firewall.RuleCollections.properties.ruleCollections | Unknown | The rule collections of the policy rule collection group, containing ruleCollectionType, name, priority, action, and rules fields. |
-| Azure.Firewall.RuleCollectionsNextToken | String | The URI to fetch the next page of rule collections. Run the same command with the next_token argument to get the next page of rule collections. |
-
-### azure-firewall-rule-list
-
-***
-Lists the rules of an Azure firewall rule collection or of a firewall policy rule collection group. You must provide exactly one of the arguments firewall_name or policy_name. Required permissions: Microsoft.Network/azureFirewalls/read, Microsoft.Network/firewallPolicies/ruleCollectionGroups/read.
-
-#### Base Command
-
-`azure-firewall-rule-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| subscription_id | The Azure subscription ID. Required for Cortex Platform (which includes Cortex XSIAM version &gt;=3.0 and Cortex Cloud). Optional for Cortex XSOAR and Cortex XSIAM version &lt; 3.0, where it can be retrieved from the integration configuration. | Optional |
-| resource_group_name | The name of the resource group. | Required |
-| firewall_name | The name of the Azure firewall that contains the rules. You must provide exactly one of firewall_name or policy_name. | Optional |
-| policy_name | The name of the Azure firewall policy that contains the rules. You must provide exactly one of firewall_name or policy_name. | Optional |
-| rule_type | The rule type to retrieve. Required when the firewall_name argument is provided. Possible values are: application_rule, network_rule, nat_rule. | Optional |
-| collection_name | The name of the rule collection that contains the rules. | Required |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Azure.Firewall.Rules.name | String | The name of the rule. |
-| Azure.Firewall.Rules.description | String | The description of the rule. |
-| Azure.Firewall.Rules.ruleType | String | The type of the rule. |
-| Azure.Firewall.Rules.protocols | Unknown | The protocols of the rule. |
-| Azure.Firewall.Rules.sourceAddresses | Unknown | The source addresses of the rule. |
-| Azure.Firewall.Rules.destinationAddresses | Unknown | The destination addresses of the rule. |
-| Azure.Firewall.Rules.destinationPorts | Unknown | The destination ports of the rule. |
-| Azure.Firewall.Rules.sourceIpGroups | Unknown | The source IP groups of the rule. |
-| Azure.Firewall.Rules.destinationIpGroups | Unknown | The destination IP groups of the rule. |
-| Azure.Firewall.Rules.destinationFqdns | Unknown | The destination FQDNs of the rule. |
-| Azure.Firewall.Rules.targetFqdns | Unknown | The target FQDNs of the rule. |
 
 ### azure-firewall-rule-get
 

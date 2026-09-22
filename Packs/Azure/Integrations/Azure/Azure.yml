@@ -11249,6 +11249,17 @@ script:
     - name: collection_name
       description: "The name of the rule collection that contains the rules."
       required: true
+    - name: limit
+      description: The maximum number of records to return.
+      defaultValue: 50
+      type: Number
+    - name: all_results
+      description: Whether to retrieve all results by overriding the default limit.
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+        - "false"
+        - "true"
     outputs:
       - contextPath: Azure.Firewall.Rules.name
         description: The name of the rule.

@@ -7643,6 +7643,31 @@ POLICY_RULE_COLLECTION_GROUP = {
     },
 }
 
+# A rule collection group holding more than one rule collection, where the requested rule type is not the first one.
+MULTI_POLICY_RULE_COLLECTION_GROUP = {
+    "id": "/subscriptions/sub1/resourceGroups/rg1/providers/Microsoft.Network/firewallPolicies/policy1"
+    "/ruleCollectionGroups/collection1",
+    "name": "collection1",
+    "properties": {
+        "ruleCollections": [
+            {
+                "ruleCollectionType": "FirewallPolicyFilterRuleCollection",
+                "name": "app-collection",
+                "priority": 100,
+                "action": {"type": "Allow"},
+                "rules": [{"name": "app-rule", "ruleType": "ApplicationRule"}],
+            },
+            {
+                "ruleCollectionType": "FirewallPolicyNatRuleCollection",
+                "name": "nat-collection",
+                "priority": 200,
+                "action": {"type": "Dnat"},
+                "rules": [{"name": "nat-rule", "ruleType": "NatRule"}],
+            },
+        ]
+    },
+}
+
 
 def test_firewall_list_command_success(mocker):
     """
@@ -8031,6 +8056,157 @@ def test_firewall_rule_list_command_no_rules(mocker):
     )
 
     assert result.readable_output == "No rules were found in the 'missing-collection' rule collection of 'fw1'."
+
+
+def test_filter_policy_rule_collections_matches_non_first_collection():
+    """
+    Given:
+        - A rule collection group whose matching rule collection is not the first one in the group.
+    When:
+        - Calling filter_policy_rule_collections.
+    Then:
+        - Ensure the group is returned and not silently dropped.
+    """
+    from Azure import filter_policy_rule_collections
+
+    assert filter_policy_rule_collections([MULTI_POLICY_RULE_COLLECTION_GROUP], "nat_rule") == [
+        MULTI_POLICY_RULE_COLLECTION_GROUP
+    ]
+
+
+def test_filter_policy_rule_collections_no_match():
+    """
+    Given:
+        - A rule collection group that has no rule collection of the requested type.
+    When:
+        - Calling filter_policy_rule_collections.
+    Then:
+        - Ensure the group is filtered out.
+    """
+    from Azure import filter_policy_rule_collections
+
+    assert filter_policy_rule_collections([POLICY_RULE_COLLECTION_GROUP], "nat_rule") == []
+
+
+def test_firewall_rule_list_command_policy_aggregates_all_collections(mocker):
+    """
+    Given:
+        - A rule collection group that contains several rule collections.
+    When:
+        - Calling firewall_rule_list_command.
+    Then:
+        - Ensure the rules of all the rule collections in the group are returned and not only the first ones.
+    """
+    from Azure import firewall_rule_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_rule_collection_get_request.return_value = MULTI_POLICY_RULE_COLLECTION_GROUP
+
+    result = firewall_rule_list_command(
+        client,
+        {},
+        {
+            "subscription_id": "sub1",
+            "resource_group_name": "rg1",
+            "policy_name": "policy1",
+            "collection_name": "collection1",
+        },
+    )
+
+    assert result.outputs == [
+        {"name": "app-rule", "ruleType": "ApplicationRule"},
+        {"name": "nat-rule", "ruleType": "NatRule"},
+    ]
+
+
+def test_firewall_rule_collection_list_command_policy_displays_all_collections(mocker):
+    """
+    Given:
+        - A rule collection group that contains several rule collections.
+    When:
+        - Calling firewall_rule_collection_list_command.
+    Then:
+        - Ensure the readable output contains a row for each rule collection in the group.
+    """
+    from Azure import firewall_rule_collection_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_policy_rule_collection_list_request.return_value = {"value": [MULTI_POLICY_RULE_COLLECTION_GROUP]}
+
+    result = firewall_rule_collection_list_command(
+        client,
+        {},
+        {
+            "subscription_id": "sub1",
+            "resource_group_name": "rg1",
+            "policy_name": "policy1",
+            "rule_type": "nat_rule",
+        },
+    )
+
+    assert "app-collection" in result.readable_output
+    assert "nat-collection" in result.readable_output
+
+
+def test_firewall_rule_list_command_limit(mocker):
+    """
+    Given:
+        - A collection that contains more rules than the requested limit.
+    When:
+        - Calling firewall_rule_list_command with the limit argument.
+    Then:
+        - Ensure only the requested number of rules is returned.
+    """
+    from Azure import firewall_rule_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_get_request.return_value = FIREWALL_RESPONSE
+
+    result = firewall_rule_list_command(
+        client,
+        {},
+        {
+            "subscription_id": "sub1",
+            "resource_group_name": "rg1",
+            "firewall_name": "fw1",
+            "rule_type": "network_rule",
+            "collection_name": "collection1",
+            "limit": "1",
+        },
+    )
+
+    assert result.outputs == [{"name": "rule1"}]
+
+
+def test_firewall_rule_list_command_all_results(mocker):
+    """
+    Given:
+        - A collection that contains more rules than the requested limit, and the all_results argument.
+    When:
+        - Calling firewall_rule_list_command.
+    Then:
+        - Ensure the limit is ignored and all the rules are returned.
+    """
+    from Azure import firewall_rule_list_command
+
+    client = mocker.MagicMock()
+    client.firewall_get_request.return_value = FIREWALL_RESPONSE
+
+    result = firewall_rule_list_command(
+        client,
+        {},
+        {
+            "subscription_id": "sub1",
+            "resource_group_name": "rg1",
+            "firewall_name": "fw1",
+            "rule_type": "network_rule",
+            "collection_name": "collection1",
+            "limit": "1",
+            "all_results": "true",
+        },
+    )
+
+    assert result.outputs == [{"name": "rule1"}, {"name": "rule2"}]
 
 
 def test_firewall_rule_get_command_firewall(mocker):

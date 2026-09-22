@@ -5639,9 +5639,12 @@ def filter_policy_rule_collections(rule_collection_groups: list, rule_type: str)
         rule_collections = dict_safe_get(collection_group, ["properties", "ruleCollections"], [])
         if not isinstance(rule_collections, list) or not rule_collections:
             continue
-        rule_collection = rule_collections[0]
-        rules = rule_collection.get("rules") or []
-        if rule_collection.get("ruleCollectionType") == collection_type and rules and rules[0].get("ruleType") == rule_key:
+        # A rule collection group can hold several rule collections, so all of them are checked for a match.
+        if any(
+            rule_collection.get("ruleCollectionType") == collection_type
+            and any(rule.get("ruleType") == rule_key for rule in rule_collection.get("rules") or [])
+            for rule_collection in rule_collections
+        ):
             filtered.append(collection_group)
 
     return filtered
@@ -5730,8 +5733,10 @@ def get_policy_rule_collection_rules(
     rules: list = []
     rule_collections = dict_safe_get(response, ["properties", "ruleCollections"], [])
 
-    if isinstance(rule_collections, list) and rule_collections:
-        rules = rule_collections[0].get("rules") or []
+    if isinstance(rule_collections, list):
+        # A rule collection group can hold several rule collections, so the rules of all of them are aggregated.
+        for rule_collection in rule_collections:
+            rules.extend(rule_collection.get("rules") or [])
 
     return response, rules
 
@@ -5901,14 +5906,15 @@ def firewall_rule_collection_list_command(client: AzureClient, params: dict[str,
                 }
             )
         else:
-            policy_collection = dict_safe_get(collection, ["properties", "ruleCollections"], [{}])[0]
-            readable_data.append(
-                {
-                    "name": policy_collection.get("name"),
-                    "action": dict_safe_get(policy_collection, ["action", "type"]),
-                    "priority": policy_collection.get("priority"),
-                }
-            )
+            # A rule collection group can hold several rule collections, so a row is displayed for each one of them.
+            for policy_collection in dict_safe_get(collection, ["properties", "ruleCollections"], []):
+                readable_data.append(
+                    {
+                        "name": policy_collection.get("name"),
+                        "action": dict_safe_get(policy_collection, ["action", "type"]),
+                        "priority": policy_collection.get("priority"),
+                    }
+                )
 
     outputs = {
         "Azure.Firewall.RuleCollections(val.id && val.id == obj.id)": rule_collections,
@@ -5947,6 +5953,8 @@ def firewall_rule_list_command(client: AzureClient, params: dict[str, Any], args
     policy_name: str = args.get("policy_name", "")
     rule_type = args.get("rule_type", "")
     collection_name = args.get("collection_name", "")
+    all_results = argToBoolean(args.get("all_results", "false"))
+    limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
 
     validate_firewall_or_policy_provided(firewall_name, policy_name)
 
@@ -5974,6 +5982,9 @@ def firewall_rule_list_command(client: AzureClient, params: dict[str, Any], args
                 f"No rules were found in the '{collection_name}' rule collection of '{firewall_name or policy_name}'."
             )
         )
+
+    if not all_results:
+        rules = rules[:limit]
 
     readable_output = tableToMarkdown(
         f"{firewall_name or policy_name} {collection_name} Rules List",

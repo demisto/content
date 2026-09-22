@@ -30,3 +30,9 @@
 !azure-vm-start-instance subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" virtual_machine_name="my_vm"
 !azure-vm-power-off-instance subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" virtual_machine_name="my_vm"
 
+!azure-firewall-instance-list subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" resource="resource_group"
+!azure-firewall-instance-get subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" firewall_name="my-firewall"
+!azure-firewall-rule-collection-list subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" firewall_name="my-firewall" rule_type="network_rule"
+!azure-firewall-rule-list subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" firewall_name="my-firewall" rule_type="network_rule" collection_name="my-rule-collection"
+!azure-firewall-rule-get subscription_id="my-subscription-id" resource_group_name="my_resource_group_name" firewall_name="my-firewall" rule_type="network_rule" collection_name="my-rule-collection" rule_name="my-rule"
+!azure-firewall-service-tag-list subscription_id="my-subscription-id" location="eastus"
