@@ -3018,16 +3018,16 @@ def handle_host_list_detection_result(raw_response: Optional[requests.Response])
     # because `stream_xml_elements` clears each element once the generator advances past it.
     for local_tag, element in stream_xml_elements(raw_response.raw, tags=["HOST", "WARNING", "SIMPLE_RETURN"]):
         if local_tag == "HOST":
-            # Convert this single HOST subtree to the same JSON structure produced previously by `xml2json`.
-            host_dict = json.loads(xml2json(ElementTree.tostring(element)))
+            # Convert this single HOST subtree to the same structure produced previously by `xml2json`.
+            host_dict = element_to_dict(element)
             hosts.append(host_dict.get("HOST", host_dict))
         elif local_tag == "WARNING":
             # Pagination block (RESPONSE/WARNING/URL). Small subtree, parse fully and read the exact path.
-            warning_dict = json.loads(xml2json(ElementTree.tostring(element))).get("WARNING", {})
+            warning_dict = element_to_dict(element).get("WARNING", {})
             response_next_url = warning_dict.get("URL", "") or response_next_url
         elif local_tag == "SIMPLE_RETURN":
             # Error envelope (SIMPLE_RETURN/RESPONSE/{CODE,TEXT}). Small subtree, parse fully.
-            simple_return = json.loads(xml2json(ElementTree.tostring(element)))
+            simple_return = element_to_dict(element)
             simple_response = get_simple_response_from_raw(simple_return) or {}
 
     if simple_response and simple_response.get("CODE"):
@@ -3064,6 +3064,22 @@ def handle_vulnerabilities_result(raw_response: Optional[requests.Response]) -> 
     return vulnerabilities
 
 
+def element_to_dict(element: "ElementTree.Element") -> dict:
+    """
+    Converts a parsed XML element into a dict, reusing the shared ``elem_to_internal`` helper.
+
+    This yields the same structure as ``json.loads(xml2json(ElementTree.tostring(element)))`` but avoids the
+    serialize-then-reparse round-trip (element -> XML string -> re-parsed element -> JSON string -> dict),
+    which lowers transient allocations per record on the memory-heavy streaming paths.
+
+    Args:
+        element (ElementTree.Element): a single parsed XML element from the streamed body.
+    Returns:
+        The element converted to a dict (top-level key is the element's tag).
+    """
+    return elem_to_internal(element)
+
+
 def iter_vulnerabilities_result(raw_response: Optional[requests.Response]) -> Iterator[dict]:
     """
     Yields vulnerability dicts one at a time from the streamed response, without accumulating the full list.
@@ -3084,7 +3100,7 @@ def iter_vulnerabilities_result(raw_response: Optional[requests.Response]) -> It
     raw_response.raw.decode_content = True
 
     for _local_tag, element in stream_xml_elements(raw_response.raw, tags=["VULN"]):
-        vuln_dict = json.loads(xml2json(ElementTree.tostring(element)))
+        vuln_dict = element_to_dict(element)
         yield vuln_dict.get("VULN", vuln_dict)
 
 

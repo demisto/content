@@ -1,6 +1,7 @@
 import io
 import re
 from unittest.mock import Mock, PropertyMock
+from xml.etree import ElementTree
 import Qualysv2
 import pytest
 import requests
@@ -36,6 +37,7 @@ from Qualysv2 import (
     get_detections_from_hosts,
     handle_host_list_detection_result,
     handle_vulnerabilities_result,
+    element_to_dict,
     fetch_vulnerabilities,
     fetch_assets_and_vulnerabilities_by_date,
     fetch_assets_and_vulnerabilities_by_qids,
@@ -469,6 +471,34 @@ def test_handle_vulnerabilities_result_streams_vulnerabilities():
     vulnerabilities = handle_vulnerabilities_result(_streamed_response(xml_bytes))
 
     assert vulnerabilities == expected_vulnerabilities
+
+
+@pytest.mark.parametrize(
+    "xml_bytes",
+    [
+        b"<VULN><QID>1</QID><TITLE>Example</TITLE></VULN>",
+        b"<HOST><ID>1</ID><IP>1.1.1.1</IP><DETECTION_LIST>"
+        b"<DETECTION><QID>10</QID></DETECTION><DETECTION><QID>20</QID></DETECTION>"
+        b"</DETECTION_LIST></HOST>",
+        b"<WARNING><CODE>1980</CODE><URL>https://qualys.example/api?id_min=3</URL></WARNING>",
+    ],
+)
+def test_element_to_dict_matches_xml2json_roundtrip(xml_bytes: bytes):
+    """
+    Given:
+    - A parsed XML element (single VULN, a HOST with repeated DETECTION children, and a WARNING block).
+    When:
+    - Converting it with element_to_dict.
+    Then:
+    - The result is identical to the previous json.loads(xml2json(ElementTree.tostring(element))) round-trip,
+      proving the optimization preserves the exact dict structure (including repeated-element lists).
+    """
+    element = ElementTree.fromstring(xml_bytes)
+
+    optimized = element_to_dict(element)
+    legacy = json.loads(xml2json(ElementTree.tostring(element)))
+
+    assert optimized == legacy
 
 
 class TestIsEmptyResult:
