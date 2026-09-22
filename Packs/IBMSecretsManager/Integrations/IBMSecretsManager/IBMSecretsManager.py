@@ -282,6 +282,7 @@ def get_events_command(client: Client, args: dict) -> tuple[list[dict], CommandR
 
 def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions"""
+    #TODO go over the comments in teh ticket before merging
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
