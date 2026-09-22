@@ -6206,42 +6206,75 @@ def get_alert_with_raw_indicators_command(client: Client, args: dict) -> Command
         "DetectionTime": alert.get("detectionTime"),
     }
 
-    alert_summary = {
-        k: v
-        for k, v in context_entry.items()
-        if k
-        not in (
-            "Indicators",
-            "RawIndicators",
-            "RawData",
-            "EventSearchParams",
-            "Asset",
-            "DetectionSource",
-            "Process",
-            "Observables",
-            "DetectionTime",
-            "Description",
-        )
-    }
-
     readable = tableToMarkdown(
         "SentinelOne - Alert With Raw Indicators",
-        alert_summary,
-        headers=list(alert_summary.keys()),
+        {
+            "ID": alert.get("id"),
+            "Name": alert.get("name"),
+            "Severity": alert.get("severity"),
+            "Classification": alert.get("classification"),
+            "Status": alert.get("status"),
+            "AnalystVerdict": alert.get("analystVerdict"),
+            "ConfidenceLevel": alert.get("confidenceLevel"),
+            "Result": alert.get("result"),
+            "CreatedAt": alert.get("createdAt"),
+            "DetectedAt": alert.get("detectedAt"),
+        },
+        headers=["ID", "Name", "Severity", "Classification", "Status", "AnalystVerdict", "ConfidenceLevel", "Result", "CreatedAt", "DetectedAt"],
         removeNull=True,
     )
+    if alert.get("asset"):
+        asset = alert.get("asset", {})
+        readable += tableToMarkdown(
+            "Asset",
+            [{"Name": asset.get("name"), "OS Type": asset.get("osType"), "OS Version": asset.get("osVersion"), "Last User": asset.get("lastLoggedInUser"), "Status": asset.get("status")}],
+            headers=["Name", "OS Type", "OS Version", "Last User", "Status"],
+            removeNull=True,
+        )
+    if alert.get("detectionSource"):
+        readable += tableToMarkdown(
+            "Detection Source",
+            [alert.get("detectionSource")],
+            headers=["product", "vendor"],
+            removeNull=True,
+        )
+    if alert.get("process"):
+        process = alert.get("process", {})
+        file_info = process.get("file", {}) or {}
+        readable += tableToMarkdown(
+            "Process",
+            [{"Username": process.get("username"), "File Name": file_info.get("name"), "File Path": file_info.get("path"), "SHA256": file_info.get("sha256")}],
+            headers=["Username", "File Name", "File Path", "SHA256"],
+            removeNull=True,
+        )
+    if alert.get("observables"):
+        readable += tableToMarkdown(
+            "Observables",
+            alert.get("observables"),
+            headers=["name", "type", "value"],
+            removeNull=True,
+        )
+    if (alert.get("detectionTime") or {}).get("scope"):
+        scope = (alert.get("detectionTime") or {}).get("scope", {})
+        readable += tableToMarkdown(
+            "Detection Scope",
+            [{"Account": scope.get("accountName"), "Site": scope.get("siteName"), "Group": scope.get("groupName")}],
+            headers=["Account", "Site", "Group"],
+            removeNull=True,
+        )
     if indicators:
         readable += tableToMarkdown(
             "Indicators",
-            [{k: v for k, v in ind.items() if k != "Attacks"} for ind in indicators],
-            headers=["ID", "Type", "Severity", "Primary", "EventTime"],
+            [{"ID": ind.get("id"), "Type": ind.get("type"), "Severity": ind.get("severity"), "Primary": ind.get("primary")} for ind in indicators],
+            headers=["ID", "Type", "Severity", "Primary"],
             removeNull=True,
         )
-    if event_search_params:
+    related_events = alert.get("rawData", {}).get("related_events", []) if alert.get("rawData") else []
+    if related_events:
         readable += tableToMarkdown(
-            "Event Search Parameters",
-            [event_search_params],
-            headers=list(event_search_params.keys()),
+            "Related Events",
+            [{"Type": e.get("type_name"), "Time": e.get("time"), "Severity": e.get("severity"), "Process Name": ((e.get("actor") or {}).get("process") or {}).get("name")} for e in related_events],
+            headers=["Type", "Time", "Severity", "Process Name"],
             removeNull=True,
         )
     readable += f"\n**Raw Indicators:** {len(raw_indicators)} event(s) returned."
