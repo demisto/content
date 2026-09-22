@@ -499,6 +499,66 @@ def test_create_search_alerts_filters(args, expected_params, is_fetch):
 
 
 @pytest.mark.parametrize(
+    "args, expected_filter",
+    [
+        (
+            {"service_source": "microsoftDefenderForEndpoint"},
+            "serviceSource eq 'microsoftDefenderForEndpoint'",
+        ),
+        (
+            {"service_source": "microsoftDefenderForOffice365", "status": "resolved"},
+            "serviceSource eq 'microsoftDefenderForOffice365' and status eq 'resolved'",
+        ),
+        (
+            {
+                "classification": "truePositive",
+                "service_source": "microsoftDefenderForCloudApps",
+                "status": "inProgress",
+            },
+            "classification eq 'truePositive' and serviceSource eq 'microsoftDefenderForCloudApps' "
+            "and status eq 'inProgress'",
+        ),
+        (
+            {"filter": "Category eq 'Malware'", "service_source": "microsoftDefenderForIdentity"},
+            "(Category eq 'Malware') and serviceSource eq 'microsoftDefenderForIdentity'",
+        ),
+        ({"classification": "falsePositive"}, "classification eq 'falsePositive'"),
+        ({"status": "newAlert"}, "status eq 'newAlert'"),
+        ({}, ""),
+    ],
+)
+def test_create_search_alerts_filters_maps_snake_case_args_to_odata_properties(args, expected_filter):
+    """
+    Regression test for XSUP-77232 - msg-search-alerts dropped the service_source argument.
+
+    Given:
+    - The msg-search-alerts command arguments, as declared in the YAML (snake_case, e.g. `service_source`).
+    - Case 1: Only service_source.
+    - Case 2: service_source together with status.
+    - Case 3: classification, service_source and status together.
+    - Case 4: A user-supplied `filter` together with service_source.
+    - Case 5: Only classification (regression guard - identically named arg must keep working).
+    - Case 6: Only status (regression guard - identically named arg must keep working).
+    - Case 7: No filtering arguments at all.
+
+    When:
+    - Running create_search_alerts_filters on the command path (is_fetch=False).
+
+    Then:
+    - The XSOAR argument name `service_source` must be translated to the Graph OData property `serviceSource`
+      and appended to the $filter. Before the fix the code looked up `args.get("serviceSource")`, which was always
+      None for the snake_case YAML argument, so the clause was silently dropped and alerts from every service
+      source were returned.
+    - `classification` and `status` must keep producing their identically named OData clauses.
+    - Multiple clauses must be joined with ` and `, and a user-supplied `filter` stays wrapped in parentheses.
+    - With no filtering arguments the $filter must be an empty string.
+    """
+    params = create_search_alerts_filters(args, is_fetch=False)
+
+    assert params["$filter"] == expected_filter
+
+
+@pytest.mark.parametrize(
     "user_filter",
     [
         "severity eq 'high' or severity eq 'medium'",
