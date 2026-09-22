@@ -36,6 +36,11 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+- name: isFetchEvents
+  display: Fetch events
+  required: false
+  type: 8
+  section: Collect
 - name: max_fetch
   display: Maximum alerts per fetch
   required: false
@@ -44,6 +49,13 @@ configuration:
   advanced: true
   defaultvalue: "10000"
   additionalinfo: Maximum number of alerts to fetch per cycle.
+- name: eventFetchInterval
+  display: Events Fetch Interval
+  required: false
+  type: 19
+  section: Collect
+  advanced: true
+  defaultvalue: "1"
 script:
   commands:
   - name: sap-etd-get-events
@@ -97,11 +109,13 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/fastapi:0.125.0.10158186
+  dockerimage: demisto/fastapi:0.125.0.12689358
 fromversion: 8.11.0
 supportlevelheader: xsoar
 marketplaces:
 - marketplacev2
 - platform
+supportedModules:
+- xsiam
 tests:
 - No tests (auto formatted)
