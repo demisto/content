@@ -1,54 +1,39 @@
-# Cisco ETD Connector
+Cisco Secure Email Threat Defense (ETD) is a cloud-native email security service that detects and remediates threats such as phishing, business email compromise, and malware.
 
-The Cisco ETD Connector enables Cortex XSIAM to ingest Cisco Email Threat Defense (ETD) logs for centralized monitoring, analytics, and threat investigation.
+## Enable Log Export in Cisco ETD
 
-The integration retrieves Cisco ETD Message, Audit, and Connection logs and sends them to Cortex XSIAM for visualization, correlation, and alerting.
+Events are only available after log export is enabled in the Cisco ETD UI.
 
-## Use Cases
+1. Sign in to the Cisco Secure Email Threat Defense portal.
+2. Navigate to **Administration > Business**.
+3. In the **Export Log Preferences** section, select the log types you want to collect: message event logs, audit logs, and blocked connection logs.
+4. Wait for the first export files to be generated: 15 minutes for audit and connection logs, 20 minutes for message event logs.
 
-- Email threat monitoring
-- Security analytics
-- SIEM correlation
-- Email activity investigation
-- Threat hunting and reporting
+Blocked connection logs require Inline Mode and an ETD Advantage license.
 
-## Prerequisites
+## Obtain API Credentials
 
-Before configuring the integration, ensure that the following requirements are met:
+1. In the Cisco Secure Email Threat Defense portal, navigate to **Administration > API Clients**.
+2. Create a new API client.
+3. Record the **Client ID**, **Client Secret**, and **API Key**. The Client Secret is shown only once.
 
-- Access to a Cisco Email Threat Defense (ETD) tenant
-- Cisco ETD API credentials
-- A Cortex XSIAM tenant with permissions to configure integrations
+## Configure the Instance
 
-## Obtain Cisco ETD API Credentials
+1. Set **ETD API Base URL** to the endpoint for your region:
 
-1. Sign in to the Cisco Email Threat Defense administration portal.
-2. Navigate to the API access or application management section.
-3. Create or locate an API application.
-4. Record the following values:
+   | Region | Base URL |
+   | --- | --- |
+   | Americas | `https://api.us.etd.cisco.com` |
+   | Europe | `https://api.de.etd.cisco.com` |
+   | Australia | `https://api.au.etd.cisco.com` |
+   | India | `https://api.in.etd.cisco.com` |
+   | UAE | `https://api.ae.etd.cisco.com` |
 
-- Client ID
-- Client Secret
-- API Key
+2. Enter the **ETD API Key**, **Client ID**, and **Client Secret** recorded above.
+3. Select the **Event Types** to collect. These must match the log types enabled in the ETD UI.
+4. Enable **Fetch events**.
+5. Click **Test** to verify connectivity, then **Save**.
 
-These credentials are required when configuring the integration instance.
+## Collection Behavior
 
-## Configure the Integration
-
-1. Navigate to **Settings → Configurations → Integrations**.
-2. Search for **Cisco ETD Connector**.
-3. Click **Add Instance**.
-4. Configure the following parameters:
-
-- ETD API Base URL
-- Client ID
-- Client Secret
-- API Key
-- Event Type
-- Max Fetch
-
-5. Enable **Fetch Events**.
-6. Click **Test** to verify connectivity.
-7. Click **Save**.
-
-After the integration is enabled, Cisco ETD logs are continuously collected and ingested into Cortex XSIAM for analysis and reporting.
+Cisco ETD publishes logs as hourly export files, and the hour currently in progress cannot be retrieved. Events therefore appear in Cortex XSIAM with a delay of up to roughly 90 minutes. On the first fetch only the most recent completed hour is collected; historical data is not backfilled.

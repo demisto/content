@@ -1,11 +1,7 @@
-!cisco-etd-get-events start_time="2026-06-25T09" end_time="2026-06-25T10"
-
-!cisco-etd-get-events start_time="2026-06-25T09" end_time="2026-06-25T10" log_type="message"
-
-!cisco-etd-get-events start_time="2026-06-25T09" end_time="2026-06-25T10" log_type="audit"
-
-!cisco-etd-get-events start_time="2026-06-25T09" end_time="2026-06-25T10" log_type="connection"
-
-!cisco-etd-get-events start_time="2026-06-25T09" end_time="2026-06-25T10" log_type="message,audit" limit="100"
-
-!cisco-etd-get-events start_time="2026-06-25T09" end_time="2026-06-25T10" log_type="message" should_push_events="true"
+!cisco-etd-get-events
+!cisco-etd-get-events start_time="3 hours ago" end_time="1 hour ago"
+!cisco-etd-get-events start_time="2026-06-25T09:00:00Z" end_time="2026-06-25T12:00:00Z" log_type="message"
+!cisco-etd-get-events start_time="6 hours ago" end_time="now" log_type="audit"
+!cisco-etd-get-events start_time="6 hours ago" end_time="now" log_type="connection"
+!cisco-etd-get-events start_time="1 day ago" end_time="now" log_type="message,audit" limit="500"
+!cisco-etd-get-events start_time="2 hours ago" end_time="1 hour ago" log_type="message" should_push_events="true"

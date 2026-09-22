@@ -1,6 +1,6 @@
 name: CiscoETDConnector
 display: Cisco Email Threat Defense Connector
-description: Ingests Cisco ETD logs to Cortex XSIAM.
+description: Cisco Secure Email Threat Defense (ETD) is a cloud-native email security service that detects and remediates email threats such as phishing, business email compromise, and malware. This collector ingests ETD message, audit, and blocked connection logs into Cortex XSIAM.
 category: Analytics & SIEM
 commonfields:
   id: CiscoETDConnector
@@ -58,10 +58,10 @@ configuration:
   - message
   - audit
   - connection
-  defaultvalue: message
-  additionalinfo: The ETD log types to fetch.
+  defaultvalue: message,audit,connection
+  additionalinfo: The Cisco ETD log types to collect. Each type must also be enabled in the ETD UI under Administration > Business > Export Log Preferences. If no type is selected, all types are collected.
   section: Collect
-  required: true
+  required: false
 - display: Max fetch
   name: max_fetch
   type: 0
@@ -69,7 +69,7 @@ configuration:
   required: false
   advanced: true
   defaultvalue: '5000'
-  additionalinfo: The maximum number of events to fetch per fetch cycle.
+  additionalinfo: The maximum number of events to collect per fetch cycle. Any remainder is collected on the following cycle.
   supportedModules:
   - xsiam
 - display: Events Fetch Interval
@@ -78,7 +78,8 @@ configuration:
   section: Collect
   required: false
   advanced: true
-  defaultvalue: "1"
+  defaultvalue: "60"
+  additionalinfo: Cisco ETD publishes log export files on an hourly basis, so intervals shorter than 60 minutes produce no additional events.
   supportedModules:
   - xsiam
 script:
@@ -92,13 +93,13 @@ script:
     description: Retrieves ETD logs from Cisco. Use this command for development and debugging only, as it may produce duplicate events, exceed API rate limits, or disrupt the fetch mechanism.
     arguments:
     - name: start_time
-      description: Start time in YYYY-MM-DDTHH format.
-      required: true
+      description: Start of the time range. Accepts a date, a timestamp, or a relative expression such as "3 hours ago". Rounded down to the start of the hour, since Cisco ETD exports logs hourly.
+      defaultValue: 1 hour ago
     - name: end_time
-      description: End time in YYYY-MM-DDTHH format.
-      required: true
+      description: End of the time range. Accepts a date, a timestamp, or a relative expression such as "now". Rounded down to the start of the hour. The hour currently in progress cannot be retrieved.
+      defaultValue: now
     - name: log_type
-      description: Log type(s) to fetch.
+      description: Log type(s) to retrieve. If not provided, all types are retrieved.
       auto: PREDEFINED
       predefined:
       - message
