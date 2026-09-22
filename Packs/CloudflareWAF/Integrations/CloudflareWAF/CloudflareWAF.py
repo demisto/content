@@ -2118,7 +2118,9 @@ def cloudflare_waf_ruleset_version_list_command(client: Client, args: dict[str, 
 
     zone_id, account_id = _resolve_scope_ids(args, client)
     all_results = arg_to_boolean(args.get("all_results"))  # type: ignore[arg-type]
-    limit = arg_to_number(args.get("limit")) or 50
+    limit = arg_to_number(args.get("limit", 50))
+    if limit is not None and limit <= 0:
+        raise ValueError("limit must be a positive integer.")
 
     response = client.cloudflare_waf_ruleset_version_list_request(
         ruleset_id=ruleset_id,
@@ -2232,7 +2234,9 @@ def cloudflare_waf_ruleset_entrypoint_version_list_command(client: Client, args:
 
     zone_id, account_id = _resolve_scope_ids(args, client)
     all_results = arg_to_boolean(args.get("all_results"))  # type: ignore[arg-type]
-    limit = arg_to_number(args.get("limit")) or 50
+    limit = arg_to_number(args.get("limit", 50))
+    if limit is not None and limit <= 0:
+        raise ValueError("limit must be a positive integer.")
 
     response = client.cloudflare_waf_ruleset_entrypoint_version_list_request(
         phase=phase,
