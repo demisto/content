@@ -2819,7 +2819,7 @@ class AzureClient:
 
     def firewall_policy_create_or_update(
         self, subscription_id: str, resource_group_name: str, policy_name: str, policy_data: dict
-    ) -> dict:
+    ):
         """
         Create or update a firewall policy.
 
@@ -2856,7 +2856,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def firewall_policy_get(self, subscription_id: str, resource_group_name: str, policy_name: str) -> dict:
+    def firewall_policy_get(self, subscription_id: str, resource_group_name: str, policy_name: str):
         """
         Get a firewall policy.
 
@@ -2887,7 +2887,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def firewall_policy_delete(self, subscription_id: str, resource_group_name: str, policy_name: str) -> requests.Response:
+    def firewall_policy_delete(self, subscription_id: str, resource_group_name: str, policy_name: str):
         """
         Delete a firewall policy.
 
@@ -2923,7 +2923,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def firewall_policy_list(self, subscription_id: str, resource_group_name: str, next_token: str = "") -> dict:
+    def firewall_policy_list(self, subscription_id: str, resource_group_name: str, next_token: str = ""):
         """
         List the firewall policies in a resource group.
 
@@ -2960,7 +2960,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def firewall_get(self, subscription_id: str, resource_group_name: str, firewall_name: str) -> dict:
+    def firewall_get(self, subscription_id: str, resource_group_name: str, firewall_name: str):
         """
         Get an Azure firewall.
 
@@ -2991,7 +2991,7 @@ class AzureClient:
                 resource_group_name=resource_group_name,
             )
 
-    def firewall_update(self, subscription_id: str, resource_group_name: str, firewall_name: str, firewall_data: dict) -> dict:
+    def firewall_update(self, subscription_id: str, resource_group_name: str, firewall_name: str, firewall_data: dict):
         """
         Create or update an Azure firewall.
 
