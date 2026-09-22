@@ -592,7 +592,7 @@ def test_apply_ucp_api_key_uses_ssws_scheme():
     assert ctx.headers["Authorization"] == "SSWS my-token"
 
 
-def test_apply_ucp_api_key_empty_key_raises():
+def test_apply_ucp_api_key_empty_key_raises(capfd):
     """
     Given: An Okta IAM Client and a brokered api_key envelope with an empty key.
     When: _apply_ucp_api_key is applied.
@@ -603,7 +603,7 @@ def test_apply_ucp_api_key_empty_key_raises():
     client = mock_client()
     ctx = UcpRequestContext({}, {}, None, None, None)
 
-    with pytest.raises(UcpException):
+    with pytest.raises(UcpException), capfd.disabled():
         client._apply_ucp_api_key({"api_key": {"key": ""}}, ctx)
 
 

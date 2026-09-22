@@ -25,37 +25,30 @@ class AuthType(Enum):
 
 
 def resolve_ucp_auth_type(default=AuthType.API_TOKEN):
-    """Pick the AuthType that matches the credential UCP will actually broker.
+    """
+    Map the UCP-brokered credential to an AuthType (OAUTH for oauth2*, API_TOKEN for api_key).
 
-    Under UCP the legacy ``use_oauth`` param is absent, so the historic
-    ``AuthType.OAUTH if use_oauth else AuthType.API_TOKEN`` decision always
-    resolved to API_TOKEN -- which drives the ``/users/me`` test endpoint and the
-    ``SSWS`` header. But the platform can broker an ``oauth2`` credential (the
-    ``external_auth.okta_jwt`` plugin normalises its result to a typed OAuth2
-    envelope with ``type: "oauth2"``; ``oauth2_client_credentials`` behaves the
-    same), whose app token has no ``me`` user and must use ``Bearer`` +
-    ``/api/v1/users``.
+    Args:
+        default (AuthType): The AuthType to return when UCP auth is off (legacy path).
 
-    So when UCP auth is active we inspect the brokered envelope ``type`` and
-    return OAUTH for an ``oauth2*`` credential, API_TOKEN for ``api_key`` (SSWS),
-    otherwise ``default``. When UCP is off we return ``default`` and the caller's
-    legacy ``use_oauth`` logic stands.
+    Returns:
+        AuthType: The AuthType matching the brokered credential, or default when UCP is off.
 
-    :return: the AuthType matching the brokered credential, or ``default``.
-    :rtype: ``AuthType``
+    Raises:
+        DemistoException: When UCP is active but the brokered envelope type is unrecognized.
     """
     if not should_use_ucp_auth():
         return default
-    try:
-        creds = get_ucp_credentials()
-        cred_type = creds.get("type") if isinstance(creds, dict) else None
-        if cred_type and str(cred_type).startswith("oauth2"):
-            return AuthType.OAUTH
-        if cred_type == "api_key":
-            return AuthType.API_TOKEN
-    except Exception as e:
-        demisto.debug("[UCP][OktaApiModule] resolve_ucp_auth_type could not read envelope: {}".format(e))
-    return default
+    creds = get_ucp_credentials()
+    cred_type = creds.get("type") if isinstance(creds, dict) else None
+    if cred_type and str(cred_type).startswith("oauth2"):
+        return AuthType.OAUTH
+    if cred_type == "api_key":
+        return AuthType.API_TOKEN
+    raise DemistoException(
+        "UCP authentication failed: the system does not recognize the authentication method "
+        "(unrecognized credential type {!r}).".format(cred_type)
+    )
 
 
 class OktaClient(BaseClient):

@@ -476,7 +476,7 @@ def test_apply_ucp_api_key_uses_ssws_scheme(mocker):
     assert ctx.headers["Authorization"] == "SSWS my-token"
 
 
-def test_apply_ucp_api_key_empty_key_raises(mocker):
+def test_apply_ucp_api_key_empty_key_raises(mocker, capfd):
     """
     Given: An OktaClient and a brokered api_key envelope with an empty key.
     When: _apply_ucp_api_key is applied.
@@ -485,7 +485,7 @@ def test_apply_ucp_api_key_empty_key_raises(mocker):
     client = OktaClient(base_url="https://test.url", api_token="X", auth_type=AuthType.API_TOKEN)
     ctx = UcpRequestContext({}, {}, None, None, None)
 
-    with pytest.raises(UcpException):
+    with pytest.raises(UcpException), capfd.disabled():
         client._apply_ucp_api_key({"api_key": {"key": ""}}, ctx)
 
 
@@ -502,3 +502,40 @@ def test_reset_integration_context(mocker):
 
     assert set_integration_context_mock.call_count == 1
     assert set_integration_context_mock.call_args.args[0] == {}
+
+
+@pytest.mark.parametrize(
+    "ucp_on, creds, expected",
+    [
+        (False, None, AuthType.API_TOKEN),
+        (True, {"type": "oauth2"}, AuthType.OAUTH),
+        (True, {"type": "api_key"}, AuthType.API_TOKEN),
+    ],
+)
+def test_resolve_ucp_auth_type(mocker, ucp_on, creds, expected):
+    """
+    Given: UCP auth off, or on with an oauth2 / api_key brokered envelope.
+    When:  Resolving the AuthType.
+    Then:  Returns default when off, OAUTH for oauth2, API_TOKEN for api_key.
+    """
+    import OktaApiModule
+
+    mocker.patch.object(OktaApiModule, "should_use_ucp_auth", return_value=ucp_on)
+    mocker.patch.object(OktaApiModule, "get_ucp_credentials", return_value=creds)
+
+    assert resolve_ucp_auth_type() == expected
+
+
+def test_resolve_ucp_auth_type_unrecognized_raises(mocker):
+    """
+    Given: UCP auth on with an unrecognized brokered envelope type.
+    When:  Resolving the AuthType.
+    Then:  A DemistoException is raised indicating the auth method is not recognized.
+    """
+    import OktaApiModule
+
+    mocker.patch.object(OktaApiModule, "should_use_ucp_auth", return_value=True)
+    mocker.patch.object(OktaApiModule, "get_ucp_credentials", return_value={"type": "passthrough"})
+
+    with pytest.raises(DemistoException, match="does not recognize the authentication method"):
+        resolve_ucp_auth_type()
